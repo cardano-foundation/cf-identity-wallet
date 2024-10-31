@@ -1,7 +1,9 @@
+import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multSigFixtures";
 import {
   CredentialShortDetails,
   CredentialStatus,
 } from "../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../core/agent/services/identifier.types";
 
 const filteredCredsFix: CredentialShortDetails[] = [
   {
@@ -10,6 +12,8 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
@@ -17,6 +21,8 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec23",
@@ -24,6 +30,8 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqbo",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 
@@ -34,6 +42,8 @@ const revokedCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.REVOKED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 

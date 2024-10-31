@@ -11,7 +11,7 @@ async function resolveOobi(req: Request, res: Response, next: NextFunction) {
     success: true,
     data: "OOBI resolved successfully",
   };
-  httpResponse(res, response);      
+  httpResponse(res, response);
 }
 
 export { resolveOobi };

@@ -30,6 +30,7 @@ const initialState: StateCacheProps = {
       attempts: 0,
       lockedUntil: Date.now(),
     },
+    firstAppLaunch: true,
   },
   currentOperation: OperationType.IDLE,
   queueIncomingRequest: {
@@ -37,6 +38,7 @@ const initialState: StateCacheProps = {
     queues: [],
     isPaused: false,
   },
+  showConnections: false,
   toastMsgs: [],
 };
 
@@ -71,6 +73,9 @@ const stateCacheSlice = createSlice({
     },
     setLoginAttempt: (state, action: PayloadAction<LoginAttempts>) => {
       state.authentication.loginAttempt = { ...action.payload };
+    },
+    setFirstAppLaunch: (state, action: PayloadAction<boolean>) => {
+      state.authentication.firstAppLaunch = action.payload;
     },
     login: (state) => {
       state.authentication = {
@@ -157,6 +162,9 @@ const stateCacheSlice = createSlice({
     showGenericError: (state, action: PayloadAction<boolean | undefined>) => {
       state.showGenericError = action.payload;
     },
+    showConnections: (state, action: PayloadAction<boolean>) => {
+      state.showConnections = action.payload;
+    },
   },
 });
 
@@ -177,8 +185,10 @@ const {
   enqueueIncomingRequest,
   setIsOnline,
   setLoginAttempt,
+  setFirstAppLaunch,
   setCameraDirection,
   showGenericError,
+  showConnections,
   removeToastMessage,
 } = stateCacheSlice.actions;
 
@@ -196,10 +206,14 @@ const getQueueIncomingRequest = (state: RootState) =>
 const getIsOnline = (state: RootState) => state.stateCache.isOnline;
 const getLoginAttempt = (state: RootState) =>
   state.stateCache.authentication.loginAttempt;
+const geFirstAppLaunch = (state: RootState) =>
+  state.stateCache.authentication.firstAppLaunch;
 const getCameraDirection = (state: RootState) =>
   state.stateCache.cameraDirection;
 const getShowCommonError = (state: RootState) =>
   state.stateCache.showGenericError;
+const getShowConnections = (state: RootState) =>
+  state.stateCache.showConnections;
 const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
 
 export type {
@@ -218,9 +232,11 @@ export {
   getIsInitialized,
   getIsOnline,
   getLoginAttempt,
+  geFirstAppLaunch,
   getQueueIncomingRequest,
   getRoutes,
   getShowCommonError,
+  getShowConnections,
   getStateCache,
   getToastMgs,
   getToastMsgs,
@@ -238,9 +254,11 @@ export {
   setInitialized,
   setIsOnline,
   setLoginAttempt,
+  setFirstAppLaunch,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
   showGenericError,
+  showConnections,
   stateCacheSlice,
 };

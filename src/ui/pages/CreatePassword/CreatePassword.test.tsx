@@ -31,6 +31,9 @@ jest.mock("../../components/CustomInput", () => ({
           {props.optional && (
             <span className="custom-input-optional">(optional)</span>
           )}
+          {
+            props.labelAction
+          }
         </IonLabel>
         <IonInput
           data-testid={props.dataTestId}
@@ -188,34 +191,6 @@ describe("Create Password Page", () => {
         ionFireEvent.ionInput(hintInput, "hint");
       });
 
-      await waitFor(() => {
-        expect(
-          getByTestId("password-validation-length-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-uppercase-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-lowercase-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-number-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-symbol-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-      });
-
       const submitButton = getByTestId("primary-button-create-password");
 
       act(() => {
@@ -294,34 +269,6 @@ describe("Create Password Page", () => {
         ionFireEvent.ionInput(hintInput, "hint");
       });
 
-      await waitFor(() => {
-        expect(
-          getByTestId("password-validation-length-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-uppercase-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-lowercase-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-number-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-symbol-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-      });
-
       const submitButton = getByTestId("primary-button-create-password");
 
       act(() => {
@@ -375,34 +322,6 @@ describe("Create Password Page", () => {
         ionFireEvent.ionInput(input, "Passsssss1@");
         ionFireEvent.ionInput(confirmInput, "Passsssss1@");
         ionFireEvent.ionInput(hintInput, "hint");
-      });
-
-      await waitFor(() => {
-        expect(
-          getByTestId("password-validation-length-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-uppercase-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-lowercase-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-number-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
-        expect(
-          getByTestId("password-validation-symbol-icon").classList.contains(
-            "pass"
-          )
-        ).toBe(true);
       });
 
       const submitButton = getByTestId("primary-button-create-password");

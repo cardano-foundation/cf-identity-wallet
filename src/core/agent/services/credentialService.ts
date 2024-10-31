@@ -8,8 +8,13 @@ import {
 } from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { getCredentialShortDetails, OnlineOnly } from "./utils";
-import { CredentialStorage, NotificationStorage } from "../records";
+import {
+  CredentialStorage,
+  IdentifierStorage,
+  NotificationStorage,
+} from "../records";
 import { AcdcStateChangedEvent, EventTypes } from "../event.types";
+import { IdentifierType } from "./identifier.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -20,15 +25,18 @@ class CredentialService extends AgentService {
 
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage!: NotificationStorage;
+  protected readonly identifierStorage!: IdentifierStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     credentialStorage: CredentialStorage,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
+    this.identifierStorage = identifierStorage;
   }
 
   onAcdcStateChanged(callback: (event: AcdcStateChangedEvent) => void) {
@@ -41,13 +49,9 @@ class CredentialService extends AgentService {
     const listMetadatas = await this.credentialStorage.getAllCredentialMetadata(
       isGetArchive
     );
-    // Only get credentials that are not deleted
-    // @TODO - foconnor: Should be filtering via SQL for the deleted ones.
-    return listMetadatas
-      .filter((item) => !item.isDeleted)
-      .map((element: CredentialMetadataRecord) =>
-        this.getCredentialShortDetails(element)
-      );
+    return listMetadatas.map((element: CredentialMetadataRecord) =>
+      this.getCredentialShortDetails(element)
+    );
   }
 
   private getCredentialShortDetails(
@@ -59,6 +63,8 @@ class CredentialService extends AgentService {
       credentialType: metadata.credentialType,
       status: metadata.status,
       schema: metadata.schema,
+      identifierType: metadata.identifierType,
+      identifierId: metadata.identifierId,
     };
   }
 
@@ -80,6 +86,8 @@ class CredentialService extends AgentService {
       id: credentialShortDetails.id,
       schema: credentialShortDetails.schema,
       status: credentialShortDetails.status,
+      identifierId: credentialShortDetails.identifierId,
+      identifierType: credentialShortDetails.identifierType,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {
@@ -95,10 +103,7 @@ class CredentialService extends AgentService {
   }
 
   async createMetadata(data: CredentialMetadataRecordProps) {
-    const metadataRecord = new CredentialMetadataRecord({
-      ...data,
-    });
-
+    const metadataRecord = new CredentialMetadataRecord(data);
     await this.credentialStorage.saveCredentialMetadataRecord(metadataRecord);
   }
 
@@ -145,25 +150,6 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  private async saveAcdcMetadataRecord(
-    credentialId: string,
-    dateTime: string,
-    schemaTitle: string,
-    connectionId: string,
-    schema: string
-  ): Promise<void> {
-    const credentialDetails: CredentialMetadataRecordProps = {
-      id: credentialId,
-      isArchived: false,
-      credentialType: schemaTitle,
-      issuanceDate: new Date(dateTime).toISOString(),
-      status: CredentialStatus.PENDING,
-      connectionId,
-      schema,
-    };
-    await this.createMetadata(credentialDetails);
-  }
-
   @OnlineOnly
   async syncACDCs() {
     const signifyCredentials = await this.props.signifyClient
@@ -179,13 +165,27 @@ class CredentialService extends AgentService {
     if (unSyncedData.length) {
       //sync the storage with the signify data
       for (const credential of unSyncedData) {
-        await this.saveAcdcMetadataRecord(
-          credential.sad.d,
-          credential.sad.a.dt,
-          credential.schema.title,
-          credential.sad.i,
-          credential.schema.$id
-        );
+        try {
+          const identifier = await this.identifierStorage.getIdentifierMetadata(
+            credential.sad.a.i
+          );
+          await this.createMetadata({
+            id: credential.sad.d,
+            isArchived: false,
+            issuanceDate: new Date(credential.sad.a.dt).toISOString(),
+            credentialType: credential.schema.title,
+            status: CredentialStatus.PENDING,
+            connectionId: credential.sad.i,
+            schema: credential.schema.$id,
+            identifierId: credential.sad.a.i,
+            identifierType: identifier.multisigManageAid
+              ? IdentifierType.Group
+              : IdentifierType.Individual,
+          });
+        } catch (error) {
+          /* eslint-disable no-console */
+          console.error(error);
+        }
       }
     }
   }

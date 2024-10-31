@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { addOutline } from "ionicons/icons";
 import { IonButton, IonIcon } from "@ionic/react";
 import { SubMenuData, SubMenuKey } from "../Menu.types";
 import { Profile } from "./Profile";
 import { i18n } from "../../../../i18n";
-import { Connections } from "../../Connections";
 import { ConnectWallet, ConnectWalletOptionRef } from "./ConnectWallet";
 import { Settings } from "./Settings";
 import { ManagePassword } from "./Settings/components/ManagePassword";
 import { RecoverySeedPhrase } from "./Settings/components/RecoverySeedPhrase";
 import { TermsAndPrivacy } from "./Settings/components/TermsAndPrivacy";
 import { ProfileOptionRef } from "./Profile/Profile.types";
-import { ConnectionsOptionRef } from "../../Connections/Connections.types";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -27,20 +25,11 @@ const emptySubMenu = {
   renderAsModal: false,
 };
 
-const SubMenuItems = (
-  selectedOption: unknown,
-  showSelectedOption: (key: SubMenuKey) => void
-) => {
+const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
   const profileRef = useRef<ProfileOptionRef>(null);
-  const connectionsRef = useRef<ConnectionsOptionRef>(null);
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [showConnections, setShowConnections] = useState(false);
   const RENDER_SETTING_AS_MODAL = false;
-
-  useEffect(() => {
-    setShowConnections(selectedOption === SubMenuKey.Connections);
-  }, [selectedOption]);
 
   const backToParentMenu = useCallback(() => {
     showSelectedOption(SubMenuKey.Settings);
@@ -69,51 +58,20 @@ const SubMenuItems = (
           />
         ),
         closeButtonLabel: isEditingProfile
-          ? `${i18n.t("menu.tab.items.profile.actioncancel")}`
+          ? `${i18n.t("tabs.menu.tab.items.profile.actioncancel")}`
           : undefined,
         closeButtonAction: isEditingProfile ? toggleEditProfile : undefined,
         title: isEditingProfile
-          ? "menu.tab.items.profile.tabedit"
-          : "menu.tab.items.profile.tabheader",
+          ? "tabs.menu.tab.items.profile.tabedit"
+          : "tabs.menu.tab.items.profile.tabheader",
         pageId: isEditingProfile ? "edit-profile" : "view-profile",
         additionalButtons: <></>,
         nestedMenu: false,
         actionButton: true,
         actionButtonAction: isEditingProfile ? saveChanges : toggleEditProfile,
         actionButtonLabel: isEditingProfile
-          ? `${i18n.t("menu.tab.items.profile.actionconfirm")}`
-          : `${i18n.t("menu.tab.items.profile.actionedit")}`,
-        renderAsModal: false,
-      },
-    ],
-    [
-      SubMenuKey.Connections,
-      {
-        Component: () => (
-          <Connections
-            showConnections={showConnections}
-            setShowConnections={setShowConnections}
-            selfPaginated={false}
-            ref={connectionsRef}
-          />
-        ),
-        title: "connections.tab.title",
-        pageId: "connections",
-        additionalButtons: (
-          <IonButton
-            shape="round"
-            className="add-button"
-            data-testid="add-connection-button"
-            onClick={() => connectionsRef.current?.handleConnectModalButton()}
-          >
-            <IonIcon
-              slot="icon-only"
-              icon={addOutline}
-              color="primary"
-            />
-          </IonButton>
-        ),
-        nestedMenu: false,
+          ? `${i18n.t("tabs.menu.tab.items.profile.actionconfirm")}`
+          : `${i18n.t("tabs.menu.tab.items.profile.actionedit")}`,
         renderAsModal: false,
       },
     ],
@@ -121,7 +79,7 @@ const SubMenuItems = (
       SubMenuKey.ConnectWallet,
       {
         Component: () => <ConnectWallet ref={connectWalletRef} />,
-        title: "menu.tab.items.connectwallet.tabheader",
+        title: "tabs.menu.tab.items.connectwallet.tabheader",
         pageId: "connect-wallet",
         nestedMenu: false,
         additionalButtons: (
@@ -153,7 +111,7 @@ const SubMenuItems = (
             switchView={showSelectedOption}
           />
         ),
-        title: "settings.sections.header",
+        title: "tabs.menu.tab.settings.sections.header",
         additionalButtons: <></>,
         pageId: "menu-setting",
         nestedMenu: false,
@@ -164,7 +122,8 @@ const SubMenuItems = (
       SubMenuKey.ManagePassword,
       {
         Component: ManagePassword,
-        title: "settings.sections.security.managepassword.page.title",
+        title:
+          "tabs.menu.tab.settings.sections.security.managepassword.page.title",
         additionalButtons: <></>,
         pageId: "manage-password",
         nestedMenu: true,
@@ -175,7 +134,7 @@ const SubMenuItems = (
       SubMenuKey.RecoverySeedPhrase,
       {
         Component: () => <RecoverySeedPhrase onClose={backToParentMenu} />,
-        title: "settings.sections.security.seedphrase.page.title",
+        title: "tabs.menu.tab.settings.sections.security.seedphrase.page.title",
         pageId: "recovery-seed-phrase",
         nestedMenu: true,
         additionalButtons: <></>,
@@ -186,7 +145,7 @@ const SubMenuItems = (
       SubMenuKey.TermsAndPrivacy,
       {
         Component: TermsAndPrivacy,
-        title: "settings.sections.support.terms.submenu.title",
+        title: "tabs.menu.tab.settings.sections.support.terms.submenu.title",
         pageId: "term-and-privacy",
         nestedMenu: true,
         additionalButtons: <></>,

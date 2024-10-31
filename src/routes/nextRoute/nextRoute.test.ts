@@ -39,7 +39,9 @@ describe("NextRoute", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
+        showConnections: false,
         toastMsgs: [],
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -71,9 +73,15 @@ describe("NextRoute", () => {
         connectedWallet: null,
         pendingConnection: null,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-        favouriteIndex: 0,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       biometricsCache: {
         enabled: false,
@@ -286,7 +294,9 @@ describe("getNextRoute", () => {
           attempts: 0,
           lockedUntil: Date.now(),
         },
+        firstAppLaunch: false,
       },
+      showConnections: false,
       toastMsgs: [],
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {
@@ -318,9 +328,15 @@ describe("getNextRoute", () => {
       connectedWallet: null,
       pendingConnection: null,
     },
-    identifierViewTypeCacheCache: {
-      viewType: null,
-      favouriteIndex: 0,
+    viewTypeCache: {
+      identifier: {
+        viewType: null,
+        favouriteIndex: 0,
+      },
+      credential: {
+        viewType: null,
+        favouriteIndex: 0,
+      }
     },
     biometricsCache: {
       enabled: false,

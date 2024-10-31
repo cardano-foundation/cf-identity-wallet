@@ -4,7 +4,7 @@ import { ErrorMessageProps } from "./ErrorMessage.types";
 
 const MESSAGE_MILLISECONDS = 1500;
 
-const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
+const ErrorMessage = ({ message, timeout, action }: ErrorMessageProps) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
             className="text-fadein"
             data-testid="error-message-text"
           >
-            {message}
+            {message} {action}
           </p>
         </div>
       ) : (

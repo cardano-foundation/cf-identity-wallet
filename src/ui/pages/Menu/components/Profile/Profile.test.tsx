@@ -107,7 +107,11 @@ const initialState = {
         attempts: 0,
         lockedUntil: 0,
       },
+      firstAppLaunch: false,
     },
+  },
+  walletConnectionsCache: {
+    showConnectWallet: false,
   },
 };
 
@@ -126,7 +130,7 @@ describe("Profile page", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
 
@@ -139,19 +143,19 @@ describe("Profile page", () => {
     const actionButton = getByTestId("action-button");
 
     expect(getByTestId("profile-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.profile.tabheader
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
     );
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.actionedit)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.name)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.name)
     ).toBeInTheDocument();
     expect(actionButton).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.profile.actionedit
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit
     );
     expect(getByTestId("profile-item-view-name")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.profile.name + "Frank"
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.name + "Frank"
     );
 
     act(() => {
@@ -162,13 +166,13 @@ describe("Profile page", () => {
 
     await waitFor(() => {
       expect(getByTestId("edit-profile-title")).toHaveTextContent(
-        EN_TRANSLATIONS.menu.tab.items.profile.tabedit
+        EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabedit
       );
       expect(actionButton).toHaveTextContent(
-        EN_TRANSLATIONS.menu.tab.items.profile.actionconfirm
+        EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionconfirm
       );
       expect(getByTestId("name-input-title")).toHaveTextContent(
-        EN_TRANSLATIONS.menu.tab.items.profile.name
+        EN_TRANSLATIONS.tabs.menu.tab.items.profile.name
       );
     });
 
@@ -198,6 +202,7 @@ describe("Profile page", () => {
             attempts: 0,
             lockedUntil: 0,
           },
+          firstAppLaunch: false,
         })
       );
     });
@@ -212,7 +217,7 @@ describe("Profile page", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
 

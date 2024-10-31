@@ -23,7 +23,6 @@ interface IdentifierShortDetails {
 }
 
 interface IdentifierDetails extends IdentifierShortDetails {
-  signifyOpName?: string;
   s: string;
   dt: string;
   kt: string | string[];
@@ -33,6 +32,7 @@ interface IdentifierDetails extends IdentifierShortDetails {
   bt: string;
   b: string[];
   di?: string;
+  members?: string[];
 }
 
 interface MultiSigIcpRequestDetails {
@@ -48,6 +48,11 @@ interface CreateIdentifierResult {
   isPending: boolean;
 }
 
+enum IdentifierType {
+  Individual = "individual",
+  Group = "group",
+}
+
 export type {
   IdentifierShortDetails,
   IdentifierDetails,
@@ -55,3 +60,5 @@ export type {
   CreateIdentifierInputs,
   CreateIdentifierResult,
 };
+
+export { IdentifierType };

@@ -3,10 +3,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
+import { App, AppState } from "@capacitor/app";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
-import { login } from "../../../store/reducers/stateCache";
+import {
+  geFirstAppLaunch,
+  login,
+  setFirstAppLaunch,
+} from "../../../store/reducers/stateCache";
 import { Alert } from "../../components/Alert";
 import {
   ErrorMessage,
@@ -25,6 +30,7 @@ import {
   MaxLoginAttemptAlert,
   useLoginAttempt,
 } from "../../components/MaxLoginAttemptAlert";
+import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -34,7 +40,10 @@ const LockPage = () => {
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
+  const firstAppLaunch = useSelector(geFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
+
   const {
     isLock,
     lockDuration,
@@ -68,14 +77,16 @@ const LockPage = () => {
   }, [passcodeIncorrect]);
 
   useEffect(() => {
-    const runBiometrics = async () => {
-      if (biometricsCache.enabled) {
-        await handleBiometrics();
-      }
-    };
-    runBiometrics();
+    if (firstAppLaunch) {
+      handleUseBiometrics();
+    }
   }, []);
 
+  const handleUseBiometrics = async () => {
+    if (biometricsCache.enabled) {
+      await handleBiometrics();
+    }
+  };
   const handlePinChange = async (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
 
@@ -87,6 +98,7 @@ const LockPage = () => {
       if (verified) {
         await resetLoginAttempt();
         dispatch(login());
+        dispatch(setFirstAppLaunch(false));
         handleClearState();
       } else {
         await incrementLoginAttempt();
@@ -114,10 +126,13 @@ const LockPage = () => {
   };
 
   const handleBiometrics = async () => {
+    disablePrivacy();
     const isAuthenticated = await handleBiometricAuth();
     if (isAuthenticated === true) {
       dispatch(login());
+      dispatch(setFirstAppLaunch(false));
     }
+    enablePrivacy();
   };
 
   const resetPasscode = () => {
@@ -140,6 +155,19 @@ const LockPage = () => {
       Keyboard.hide();
       document.getElementById("passcode-button-1")?.focus();
     }
+  }, []);
+  useEffect(() => {
+    const handleAppStateChange = async (state: AppState) => {
+      if (state.isActive) {
+        await handleUseBiometrics();
+      }
+    };
+
+    App.addListener("appStateChange", handleAppStateChange);
+
+    return () => {
+      App.removeAllListeners();
+    };
   }, []);
 
   return (
@@ -177,7 +205,7 @@ const LockPage = () => {
             handlePinChange={handlePinChange}
             handleRemove={handleRemove}
             handleBiometricButtonClick={() => {
-              handleBiometrics();
+              handleUseBiometrics();
             }}
           />
         </>

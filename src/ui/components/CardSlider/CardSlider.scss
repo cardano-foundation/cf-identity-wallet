@@ -29,8 +29,18 @@
     transition: width 1s;
   }
 
-  .swiper-item {
-    padding: 0.25rem;
+  .swiper-slide {
+    width: 90%;
+  }
+
+  &.transition-start {
+    .not-picked {
+      visibility: hidden;
+    }
+
+    .picked-card {
+      transform: none !important;
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {

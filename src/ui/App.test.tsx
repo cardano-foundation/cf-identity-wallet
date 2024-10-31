@@ -61,6 +61,7 @@ jest.mock("../core/agent/agent", () => ({
         startNotification: jest.fn(),
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
+        onRemoveNotification: jest.fn(),
       },
       onKeriaStatusStateChanged: jest.fn(),
       peerConnectionMetadataStorage: {
@@ -262,9 +263,15 @@ describe("App", () => {
         connectedWallet: null,
         pendingConnection: null,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-        favouriteIndex: 0,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       biometricsCache: {
         enabled: false,

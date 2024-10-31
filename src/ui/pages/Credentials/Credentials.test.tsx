@@ -10,13 +10,13 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { pendingCredFixs } from "../../__fixtures__/credsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { formatShortDate } from "../../utils/formatters";
 import { Credentials } from "./Credentials";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import {
   setCurrentOperation,
   setCurrentRoute,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { OperationType } from "../../globals/types";
 
@@ -57,6 +57,7 @@ const initialStateEmpty = {
       passcodeIsSet: true,
     },
     isOnline: true,
+    showConnections: false,
   },
   seedPhraseCache: {},
   credsCache: {
@@ -70,6 +71,16 @@ const initialStateEmpty = {
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
+  },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
 };
 
@@ -104,6 +115,16 @@ const initialStateFull = {
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
+  },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
 };
 
@@ -144,9 +165,20 @@ const archivedAndRevokedState = {
   notificationsCache: {
     notifications: [],
   },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
+  },
 };
 
 let mockedStore: Store<unknown, AnyAction>;
+
 describe("Creds Tab", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
@@ -172,7 +204,7 @@ describe("Creds Tab", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.credentials.tab.favourites)
+      getByText(EN_TRANSLATIONS.tabs.credentials.tab.favourites)
     ).toBeInTheDocument();
   });
 
@@ -198,7 +230,7 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,
     };
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Credentials />
@@ -208,6 +240,9 @@ describe("Creds Tab", () => {
 
     expect(
       getByTestId("credentials-tab-cards-placeholder")
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.credentials.tab.placeholder)
     ).toBeInTheDocument();
   });
 
@@ -232,7 +267,7 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Credentials />
@@ -240,24 +275,12 @@ describe("Creds Tab", () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => {
-      expect(queryByTestId("connections-tab")).toBe(null);
-    });
-
     act(() => {
       fireEvent.click(getByTestId("connections-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("show");
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("tab-back-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connections-tab")).toBe(null);
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
   });
 
@@ -279,68 +302,10 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("connections-tab-cards-placeholder")
-      ).toBeInTheDocument();
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
   });
 
-  test("Show Connections list", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, queryByTestId, getByText, getAllByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connections-cards-placeholder")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
-    expect(
-      getByText(formatShortDate(`${connectionsFix[0].connectionDate}`))
-    ).toBeVisible();
-    expect(getAllByText(connectionsFix[0].status)[0]).toBeVisible();
-  });
-
-  test.skip("Show Add Connections modal", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateEmpty),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, queryByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("add-connection-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("add-connection-modal")).toHaveAttribute(
-        "is-open",
-        "true"
-      );
-    });
-  });
   test("Remove pending cred alert", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -365,8 +330,15 @@ describe("Creds Tab", () => {
       credsArchivedCache: {
         creds: [],
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -396,26 +368,28 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.title)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.title)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.description)
+        getByText(
+          EN_TRANSLATIONS.tabs.credentials.tab.detelepending.description
+        )
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.button)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.button)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.credentials.tab.detelepending.secondchecktitle
+          EN_TRANSLATIONS.tabs.credentials.tab.detelepending.secondchecktitle
         )
       ).toBeVisible();
     });
@@ -454,28 +428,6 @@ describe("Creds Tab", () => {
     expect(getByTestId("cred-archived-revoked-button")).toBeVisible();
   });
 
-  test("Create cred", () => {
-    const storeMocked = {
-      ...mockStore(archivedAndRevokedState),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("add-credential-button"));
-    });
-
-    expect(dispatchMock).toBeCalledWith(
-      setCurrentOperation(OperationType.SCAN_CONNECTION)
-    );
-  });
-
   test("Open cred detail", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
@@ -496,7 +448,7 @@ describe("Creds Tab", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentRoute({
-          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[2].id}`,
+          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[0].id}`,
         })
       );
 
@@ -506,36 +458,6 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("favourite-container-element").getAttribute("style")
-      ).toBe(null);
-    });
-  });
-
-  test("Open cred detail", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("keri-card-template-favs-index-0"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentRoute({
-          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[0].id}`,
-        })
-      );
-
       expect(
         getByTestId("favourite-container-element").getAttribute("style")
       ).toBe(null);

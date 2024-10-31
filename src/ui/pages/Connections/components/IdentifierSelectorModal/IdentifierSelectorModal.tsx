@@ -1,7 +1,6 @@
 import { IonCheckbox, IonContent, IonModal } from "@ionic/react";
 import { useState } from "react";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
-import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
@@ -11,6 +10,7 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
 import "./IdentifierSelectorModal.scss";
 import { IdentifierSelectorProps } from "./IdentifierSelectorModal.types";
+import { i18n } from "../../../../../i18n";
 
 const IdentifierSelectorModal = ({
   open,
@@ -59,10 +59,10 @@ const IdentifierSelectorModal = ({
         activeStatus={open}
         header={
           <PageHeader
-            title={`${i18n.t("connections.tab.indentifierselector.title")}`}
+            title={`${i18n.t("connections.page.indentifierselector.title")}`}
             closeButton
             closeButtonLabel={`${i18n.t(
-              "connections.tab.indentifierselector.button.cancel"
+              "connections.page.indentifierselector.button.cancel"
             )}`}
             closeButtonAction={handleClose}
             hardwareBackButtonConfig={{
@@ -72,7 +72,7 @@ const IdentifierSelectorModal = ({
         }
       >
         <h2 className="title">
-          {i18n.t("connections.tab.indentifierselector.message")}
+          {i18n.t("connections.page.indentifierselector.message")}
         </h2>
         <IonContent className="identifier-list">
           <CardList
@@ -98,7 +98,7 @@ const IdentifierSelectorModal = ({
         </IonContent>
         <PageFooter
           primaryButtonText={`${i18n.t(
-            "connections.tab.indentifierselector.button.confirm"
+            "connections.page.indentifierselector.button.confirm"
           )}`}
           primaryButtonAction={handleConnectWallet}
           primaryButtonDisabled={!selectedIdentifier}

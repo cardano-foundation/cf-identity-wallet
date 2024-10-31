@@ -1,5 +1,7 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
+import { informationCircleOutline } from "ionicons/icons";
 import { useSelector } from "react-redux";
+import { IonIcon } from "@ionic/react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
@@ -12,14 +14,16 @@ import {
 } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
-import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
+import { errorMessages, passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { Alert as AlertCancel, Alert as AlertExisting } from "../Alert";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { PageFooter } from "../PageFooter";
-import { PasswordValidation } from "../PasswordValidation";
 import "./PasswordModule.scss";
 import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
+import { PasswordMeter } from "./components/PasswordMeter";
+import { combineClassNames } from "../../utils/style";
+import { SymbolModal } from "./components/SymbolModal";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
   ({ title, isOnboarding, description, testId, onCreateSuccess }, ref) => {
@@ -33,6 +37,8 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
     const [hintValue, setHintValue] = useState("");
     const [alertCancelIsOpen, setAlertCancelIsOpen] = useState(false);
     const [alertExistingIsOpen, setAlertExistingIsOpen] = useState(false);
+    const [isOpenSymbol, setIsOpenSymbol] = useState(false);
+
     const createPasswordValueMatching =
       createPasswordValue.length > 0 &&
       confirmPasswordValue.length > 0 &&
@@ -45,6 +51,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
       passwordStrengthChecker.validatePassword(createPasswordValue) &&
       createPasswordValueMatching &&
       hintValue !== createPasswordValue;
+      
 
     const handlePasswordInput = (password: string) => {
       setCreatePasswordValue(password);
@@ -151,6 +158,11 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
       handleClearState();
     };
 
+    const showPasswordMeter = createPasswordValue.length === 0 || createPasswordFocus || !passwordStrengthChecker.validatePassword(createPasswordValue);
+    const isInvalidPassword = !createPasswordFocus && !!createPasswordValue.length && (!passwordStrengthChecker.validatePassword(createPasswordValue) ||!passwordStrengthChecker.isValidCharacters(createPasswordValue));
+
+    const openSymbolModal = () => setIsOpenSymbol(true);
+
     return (
       <>
         <div className="password-module">
@@ -165,6 +177,12 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               </p>
             )}
             <CustomInput
+              labelAction={
+                <div className="open-symbol-modal" data-testid="open-symbol-modal" onClick={openSymbolModal}>
+                  {i18n.t("createpassword.input.first.symbolguide")}
+                  <IonIcon icon={informationCircleOutline}/>
+                </div>
+              }
               dataTestId="create-password-input"
               title={`${i18n.t("createpassword.input.first.title")}`}
               placeholder={`${i18n.t(
@@ -176,20 +194,21 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               }
               onChangeFocus={setCreatePasswordFocus}
               value={createPasswordValue}
-              error={
-                !createPasswordFocus &&
-                !!createPasswordValue.length &&
-                (!passwordStrengthChecker.validatePassword(
-                  createPasswordValue
-                ) ||
-                  !passwordStrengthChecker.isValidCharacters(
-                    createPasswordValue
-                  ))
-              }
+              error={isInvalidPassword}
+              className={combineClassNames("create-password-input", {
+                "normal": !isInvalidPassword && !showPasswordMeter
+              })}
             />
-            {createPasswordValue && (
-              <PasswordValidation password={createPasswordValue} />
+            {isInvalidPassword && (
+              <ErrorMessage
+                message={passwordStrengthChecker.getErrorByPriority(createPasswordValue)}
+                action={passwordStrengthChecker.getErrorByPriority(createPasswordValue) === errorMessages.hasNoSymbol
+                  && <span className="learn-more" onClick={openSymbolModal}>
+                    Learn More
+                  </span>}
+              />
             )}
+            {showPasswordMeter && <PasswordMeter password={createPasswordValue}/>}
             <CustomInput
               dataTestId="confirm-password-input"
               title={`${i18n.t("createpassword.input.second.title")}`}
@@ -257,13 +276,14 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
           setIsOpen={setAlertExistingIsOpen}
           dataTestId="manage-password-alert-existing"
           headerText={`${i18n.t(
-            "settings.sections.security.managepassword.page.alert.existingpassword"
+            "tabs.menu.tab.settings.sections.security.managepassword.page.alert.existingpassword"
           )}`}
           confirmButtonText={`${i18n.t(
-            "settings.sections.security.managepassword.page.alert.ok"
+            "tabs.menu.tab.settings.sections.security.managepassword.page.alert.ok"
           )}`}
           actionConfirm={() => handleClearExisting()}
         />
+        <SymbolModal isOpen={isOpenSymbol} setOpen={setIsOpenSymbol}/>
       </>
     );
   }

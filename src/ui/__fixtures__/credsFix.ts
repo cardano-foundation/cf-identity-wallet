@@ -1,3 +1,4 @@
+import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multSigFixtures";
 import {
   ConnectionDetails,
   ConnectionStatus,
@@ -6,12 +7,16 @@ import {
   ACDCDetails,
   CredentialStatus,
 } from "../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../core/agent/services/identifier.types";
 
 const connectionDetailsFix: ConnectionDetails = {
   id: "test_id",
   label: "test_label",
   connectionDate: "2010-01-01T19:23:24Z",
   status: ConnectionStatus.CONFIRMED,
+  serviceEndpoints: [],
+  notes: [],
+  historyItems: [],
 };
 
 const credsFixAcdc: ACDCDetails[] = [
@@ -36,6 +41,8 @@ const credsFixAcdc: ACDCDetails[] = [
       dt: "2024-01-22T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 
@@ -61,6 +68,8 @@ const pendingCredFixs: ACDCDetails[] = [
       dt: "2024-08-07T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 
@@ -86,6 +95,8 @@ const revokedCredFixs: ACDCDetails[] = [
       dt: "2024-08-07T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 

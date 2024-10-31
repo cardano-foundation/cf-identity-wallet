@@ -4,9 +4,13 @@ import {
   IonLabel,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { addOutline, peopleOutline } from "ionicons/icons";
+import { peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -20,39 +24,31 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
-  setCurrentOperation,
   setCurrentRoute,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
+import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
-import { Connections } from "../Connections";
+import { ListHeader } from "../../components/ListHeader";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { CardList as CredentialCardList, SwitchCardView } from "../../components/SwitchCardView";
+import { CardType, ToastMsgType } from "../../globals/types";
+import { useOnlineStatusEffect } from "../../hooks";
+import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
-import { ListHeader } from "../../components/ListHeader";
-import { CardList as CredentialCardList } from "../../components/SwitchCardView";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-} from "../../../core/agent/services/credentialService.types";
-import { RemovePendingAlert } from "../../components/RemovePendingAlert";
-import { showError } from "../../utils/error";
 
 const CLEAR_STATE_DELAY = 1000;
 
-interface AdditionalButtonsProps {
-  handleCreateCred: () => void;
-  handleConnections: () => void;
-}
-
 const AdditionalButtons = ({
-  handleCreateCred,
   handleConnections,
-}: AdditionalButtonsProps) => {
+}: {
+  handleConnections: () => void;
+}) => {
   return (
     <>
       <IonButton
@@ -64,18 +60,6 @@ const AdditionalButtons = ({
         <IonIcon
           slot="icon-only"
           icon={peopleOutline}
-          color="primary"
-        />
-      </IonButton>
-      <IonButton
-        shape="round"
-        className="add-credential-button"
-        data-testid="add-credential-button"
-        onClick={handleCreateCred}
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={addOutline}
           color="primary"
         />
       </IonButton>
@@ -95,10 +79,6 @@ const Credentials = () => {
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const { showConnections, setShowConnections } = useToggleConnections(
-    TabsRoutePath.CREDENTIALS
-  );
-
   const [deletedPendingItem, setDeletePendingItem] =
     useState<CredentialShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
@@ -129,12 +109,12 @@ const Credentials = () => {
 
   useEffect(() => {
     setShowPlaceholder(confirmedCreds.length + pendingCreds.length === 0);
-  }, [credsCache]);
+  }, [confirmedCreds.length, credsCache, pendingCreds.length]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 
-  const handleCreateCred = () => {
-    dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
+  const handleConnections = () => {
+    dispatch(showConnections(true));
   };
 
   useIonViewWillEnter(() => {
@@ -161,10 +141,6 @@ const Credentials = () => {
     return timeA - timeB;
   });
 
-  const allCreds = confirmedCreds.filter(
-    (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
-  );
-
   const handleShowNavAnimation = (source: StartAnimationSource) => {
     if (favouriteContainerElement.current && source !== "favourite") {
       favouriteContainerElement.current.style.height =
@@ -181,13 +157,10 @@ const Credentials = () => {
     }, CLEAR_STATE_DELAY);
   };
 
-  const tabClasses = `credential-tab ${
-    navAnimation === "cards"
-      ? "cards-credential-nav"
-      : navAnimation === "favourite"
-        ? "favorite-credential-nav"
-        : ""
-  }`;
+  const tabClasses = combineClassNames("credential-tab", {
+    "cards-credential-nav": navAnimation === "cards",
+    "favorite-credential-nav": navAnimation === "favourite"
+  });
 
   const handleArchivedCredentialsDisplayChange = (value: boolean) => {
     if (value === archivedCredentialsIsOpen) return;
@@ -211,7 +184,7 @@ const Credentials = () => {
           onClick={() => setArchivedCredentialsIsOpen(true)}
         >
           <IonLabel color="secondary">
-            {i18n.t("credentials.tab.viewarchived")}
+            {i18n.t("tabs.credentials.tab.viewarchived")}
           </IonLabel>
         </IonButton>
       </div>
@@ -220,9 +193,9 @@ const Credentials = () => {
 
   const deletePendingCheck = useMemo(
     () => ({
-      title: i18n.t("credentials.tab.detelepending.title"),
-      description: i18n.t("credentials.tab.detelepending.description"),
-      button: i18n.t("credentials.tab.detelepending.button"),
+      title: i18n.t("tabs.credentials.tab.detelepending.title"),
+      description: i18n.t("tabs.credentials.tab.detelepending.description"),
+      button: i18n.t("tabs.credentials.tab.detelepending.button"),
     }),
     []
   );
@@ -251,29 +224,20 @@ const Credentials = () => {
 
   return (
     <>
-      <Connections
-        showConnections={showConnections}
-        setShowConnections={setShowConnections}
-        selfPaginated={true}
-      />
       <TabLayout
         pageId={pageId}
         header={true}
         customClass={tabClasses}
-        title={`${i18n.t("credentials.tab.title")}`}
+        title={`${i18n.t("tabs.credentials.tab.title")}`}
         additionalButtons={
-          <AdditionalButtons
-            handleConnections={() => setShowConnections(true)}
-            handleCreateCred={handleCreateCred}
-          />
+          <AdditionalButtons handleConnections={handleConnections} />
         }
         placeholder={
           showPlaceholder && (
-            <CardsPlaceholder
-              buttonLabel={i18n.t("credentials.tab.create")}
-              buttonAction={handleCreateCred}
-              testId={pageId}
-            >
+            <CardsPlaceholder testId={pageId}>
+              <p>
+                <i>{i18n.t("tabs.credentials.tab.placeholder")}</i>
+              </p>
               <ArchivedCredentialsButton />
             </CardsPlaceholder>
           )
@@ -287,34 +251,29 @@ const Credentials = () => {
                 className="credentials-tab-content-block credential-favourite-cards"
                 data-testid="favourite-container-element"
               >
-                {!!allCreds.length && (
-                  <h3>{i18n.t("credentials.tab.favourites")}</h3>
-                )}
-                <CardsStack
+                <CardSlider
+                  title={`${i18n.t("tabs.credentials.tab.favourites")}`}
                   name="favs"
-                  cardsType={CardType.CREDENTIALS}
+                  cardType={CardType.CREDENTIALS}
                   cardsData={sortedFavCreds}
                   onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
-            {!!allCreds.length && (
-              <div className="credentials-tab-content-block credential-cards">
-                {!!favCreds.length && (
-                  <h3>{i18n.t("credentials.tab.allcreds")}</h3>
-                )}
-                <CardsStack
-                  name="allcreds"
-                  cardsType={CardType.CREDENTIALS}
-                  cardsData={allCreds}
-                  onShowCardDetails={() => handleShowNavAnimation("cards")}
-                />
-              </div>
+            {!!confirmedCreds.length && (
+              <SwitchCardView
+                className="credentials-tab-content-block credential-cards"
+                cardTypes={CardType.CREDENTIALS}
+                cardsData={confirmedCreds}
+                onShowCardDetails={() => handleShowNavAnimation("cards")}
+                title={`${i18n.t("tabs.credentials.tab.allcreds")}`}
+                name="allcreds"
+              />
             )}
             {!!pendingCreds.length && (
-              <div className="credetial-tab-content-block">
+              <div className="credetial-tab-content-block pending-container">
                 <ListHeader
-                  title={`${i18n.t("credentials.tab.pendingcred")}`}
+                  title={`${i18n.t("tabs.credentials.tab.pendingcred")}`}
                 />
                 <CredentialCardList
                   cardsData={pendingCreds}
@@ -337,7 +296,7 @@ const Credentials = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "credentials.tab.detelepending.secondchecktitle"
+          "tabs.credentials.tab.detelepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingCred}
       />

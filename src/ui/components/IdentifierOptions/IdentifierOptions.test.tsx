@@ -168,7 +168,7 @@ describe("Identifier Options function test", () => {
     });
 
     expect(
-      getAllByText(EN_TRANSLATIONS.identifiers.details.options.edit)[0]
+      getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.options.edit)[0]
     ).toBeVisible();
 
     act(() => {

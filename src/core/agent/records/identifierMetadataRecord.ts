@@ -14,7 +14,6 @@ interface IdentifierMetadataRecordProps {
   isDeleted?: boolean;
   isPending?: boolean;
   theme: number;
-  signifyOpName?: string;
   multisigManageAid?: string;
   groupMetadata?: groupMetadata;
 }
@@ -23,7 +22,6 @@ class IdentifierMetadataRecord extends BaseRecord {
   displayName!: string;
   isDeleted?: boolean;
   isPending?: boolean;
-  signifyOpName?: string;
   signifyName!: string;
   theme!: number;
   multisigManageAid?: string;
@@ -41,7 +39,6 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.signifyName = props.signifyName;
       this.isDeleted = props.isDeleted ?? false;
       this.isPending = props.isPending ?? false;
-      this.signifyOpName = props.signifyOpName;
       this.multisigManageAid = props.multisigManageAid;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;

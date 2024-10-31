@@ -6,7 +6,11 @@ import { ACDC_SCHEMAS } from "../utils/schemas";
 import { log } from "../log";
 import { SignifyApi } from "../modules/signify";
 
-async function issueAcdcCredential(req: Request, res: Response, next: NextFunction): Promise<void> {
+async function issueAcdcCredential(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
   if (!ACDC_SCHEMAS[schemaSaid]) {
     const response: ResponseData<string> = {
@@ -25,7 +29,11 @@ async function issueAcdcCredential(req: Request, res: Response, next: NextFuncti
   httpResponse(res, response);
 }
 
-async function requestDisclosure(req: Request, res: Response, next: NextFunction): Promise<void> {
+async function requestDisclosure(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   const { schemaSaid, aid, attributes } = req.body;
   await Agent.agent.requestDisclosure(schemaSaid, aid, attributes);
   const response: ResponseData<string> = {
@@ -39,7 +47,7 @@ async function requestDisclosure(req: Request, res: Response, next: NextFunction
 async function contactCredentials(req: Request, res: Response): Promise<void> {
   const { contactId } = req.query;
   const data = await Agent.agent.contactCredentials(contactId as string);
-  
+
   let response: ResponseData<any> = {
     statusCode: 200,
     success: true,
@@ -77,4 +85,9 @@ async function revokeCredential(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-export { issueAcdcCredential, requestDisclosure, revokeCredential, contactCredentials };
+export {
+  issueAcdcCredential,
+  requestDisclosure,
+  revokeCredential,
+  contactCredentials,
+};

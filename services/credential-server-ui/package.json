@@ -30,8 +30,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "prettier": "npx prettier . --write"
+    "build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [
@@ -53,7 +52,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/plugin-transform-private-property-in-object": "^7.23.4",
-    "prettier": "3.2.5"
+    "@babel/plugin-transform-private-property-in-object": "^7.23.4"
   }
 }

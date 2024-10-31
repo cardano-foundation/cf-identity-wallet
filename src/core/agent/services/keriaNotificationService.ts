@@ -15,7 +15,6 @@ import {
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
-  IpexMessageStorage,
   NotificationRecordStorageProps,
   NotificationStorage,
   OperationPendingStorage,
@@ -23,7 +22,6 @@ import {
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
-import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import {
@@ -31,9 +29,11 @@ import {
   EventTypes,
   OperationCompleteEvent,
   OperationAddedEvent,
+  NotificationRemovedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 import { CredentialService } from "./credentialService";
+import { ConnectionHistoryType } from "./connectionService.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -44,7 +44,6 @@ class KeriaNotificationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connectionStorage: ConnectionStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly basicStorage: BasicStorage;
   protected readonly multiSigs: MultiSigService;
@@ -63,7 +62,6 @@ class KeriaNotificationService extends AgentService {
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
     connectionStorage: ConnectionStorage,
-    ipexMessageStorage: IpexMessageStorage,
     credentialStorage: CredentialStorage,
     basicStorage: BasicStorage,
     multiSigs: MultiSigService,
@@ -78,7 +76,6 @@ class KeriaNotificationService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connectionStorage = connectionStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.credentialStorage = credentialStorage;
     this.basicStorage = basicStorage;
     this.multiSigs = multiSigs;
@@ -244,8 +241,6 @@ class KeriaNotificationService extends AgentService {
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
       shouldCreateRecord = await this.processExnIpexApplyNotification(notif);
-    } else if (notif.a.r === NotificationRoute.ExnIpexAgree) {
-      shouldCreateRecord = await this.processExnIpexAgreeNotification(notif);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
       shouldCreateRecord = await this.processExnIpexGrantNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
@@ -254,6 +249,9 @@ class KeriaNotificationService extends AgentService {
       shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(notif);
+    } else if (notif.a.r === NotificationRoute.ExnIpexOffer) {
+      // @TODO - DTIS-1381; message appearing as notification after being multi-sig sent
+      shouldCreateRecord = false;
     }
     if (!shouldCreateRecord) {
       return;
@@ -289,27 +287,11 @@ class KeriaNotificationService extends AgentService {
   private async processExnIpexApplyNotification(
     notif: Notification
   ): Promise<boolean> {
-    const existingLinkedIpexRecord = await this.ipexMessageStorage
-      .getIpexMessageMetadata(notif.a.d)
-      .catch((error) => {
-        if (
-          error.message ===
-          IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING
-        ) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
-    if (!existingLinkedIpexRecord) {
-      const exchange = await this.props.signifyClient
-        .exchanges()
-        .get(notif.a.d);
-      await this.ipexCommunications.createLinkedIpexMessageRecord(
-        exchange,
-        ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
-      );
-    }
+    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
+    await this.ipexCommunications.createLinkedIpexMessageRecord(
+      exchange,
+      ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
+    );
     return true;
   }
 
@@ -528,7 +510,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     case ExchangeRoute.IpexOffer: {
@@ -578,7 +559,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     case ExchangeRoute.IpexGrant: {
@@ -628,41 +608,12 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     default:
       await this.markNotification(notif.i);
       return false;
     }
-  }
-
-  private async processExnIpexAgreeNotification(
-    notif: Notification
-  ): Promise<boolean> {
-    const existingLinkedIpexRecord = await this.ipexMessageStorage
-      .getIpexMessageMetadata(notif.a.d)
-      .catch((error) => {
-        if (
-          error.message ===
-          IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING
-        ) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
-    if (!existingLinkedIpexRecord) {
-      const exchange = await this.props.signifyClient
-        .exchanges()
-        .get(notif.a.d);
-      await this.ipexCommunications.createLinkedIpexMessageRecord(
-        exchange,
-        ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
-      );
-    }
-
-    return true;
   }
 
   private async createNotificationRecord(
@@ -904,6 +855,20 @@ class KeriaNotificationService extends AgentService {
                   notification.id,
                     notification.a.r as NotificationRoute
                 );
+
+                this.props.eventEmitter.emit<NotificationRemovedEvent>({
+                  type: EventTypes.NotificationRemoved,
+                  payload: {
+                    keriaNotif: {
+                      id: notification.id,
+                      createdAt: notification.createdAt.toISOString(),
+                      a: notification.a,
+                      multisigId: notification.multisigId,
+                      connectionId: notification.connectionId,
+                      read: notification.read,
+                    },
+                  },
+                });
               }
             }
             await this.credentialService.markAcdc(
@@ -993,6 +958,20 @@ class KeriaNotificationService extends AgentService {
                 notification.id,
                   notification.a.r as NotificationRoute
               );
+
+              this.props.eventEmitter.emit<NotificationRemovedEvent>({
+                type: EventTypes.NotificationRemoved,
+                payload: {
+                  keriaNotif: {
+                    id: notification.id,
+                    createdAt: notification.createdAt.toISOString(),
+                    a: notification.a,
+                    multisigId: notification.multisigId,
+                    connectionId: notification.connectionId,
+                    read: notification.read,
+                  },
+                },
+              });
             }
           }
         }
@@ -1002,11 +981,11 @@ class KeriaNotificationService extends AgentService {
         const grantExchange = await this.props.signifyClient
           .exchanges()
           .get(operation.metadata?.said);
-        if (grantExchange.exn.r === ExchangeRoute.IpexAgree) {
+        if (grantExchange.exn.r === ExchangeRoute.IpexGrant) {
           const agreeExchange = await this.props.signifyClient
             .exchanges()
             .get(grantExchange.exn.p);
-          const credentialId = agreeExchange.exn.e.acdc.d;
+          const credentialId = grantExchange.exn.e.acdc.d;
           if (credentialId) {
             const holder = await this.identifierStorage.getIdentifierMetadata(
               grantExchange.exn.i
@@ -1026,6 +1005,10 @@ class KeriaNotificationService extends AgentService {
                 );
               }
             }
+            await this.ipexCommunications.createLinkedIpexMessageRecord(
+              grantExchange,
+              ConnectionHistoryType.CREDENTIAL_PRESENTED
+            );
           }
         }
         break;
@@ -1047,6 +1030,10 @@ class KeriaNotificationService extends AgentService {
 
   onLongOperationComplete(callback: (event: OperationCompleteEvent) => void) {
     this.props.eventEmitter.on(EventTypes.OperationComplete, callback);
+  }
+
+  onRemoveNotification(callback: (event: NotificationRemovedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.NotificationRemoved, callback);
   }
 }
 

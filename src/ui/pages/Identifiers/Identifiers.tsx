@@ -1,7 +1,6 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -19,6 +18,7 @@ import {
   setCurrentOperation,
   setCurrentRoute,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -30,8 +30,6 @@ import {
 } from "../../components/SwitchCardView";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import { useToggleConnections } from "../../hooks";
-import { Connections } from "../Connections";
 import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
@@ -78,7 +76,6 @@ const AdditionalButtons = ({
 };
 const Identifiers = () => {
   const pageId = "identifiers-tab";
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const multisigGroupCache = useAppSelector(getMultiSigGroupCache);
@@ -109,9 +106,6 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const { showConnections, setShowConnections } = useToggleConnections(
-    TabsRoutePath.IDENTIFIERS
-  );
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -121,33 +115,6 @@ const Identifiers = () => {
     setResumeMultiSig(identifier);
     setCreateIdentifierModalIsOpen(true);
   };
-
-  const openCreateModal = () => setCreateIdentifierModalIsOpen(true);
-
-  useEffect(() => {
-    if (
-      [
-        OperationType.CREATE_IDENTIFIER_CONNECT_WALLET,
-        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS,
-        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS,
-      ].includes(currentOperation) &&
-      history.location.pathname === TabsRoutePath.IDENTIFIERS
-    ) {
-      openCreateModal();
-    }
-
-    if (OperationType.RECEIVE_CONNECTION === currentOperation) {
-      dispatch(setCurrentOperation(OperationType.IDLE));
-      setShowConnections(true);
-    }
-  }, [
-    currentOperation,
-    dispatch,
-    history.location.pathname,
-    identifiersData,
-    multisigGroupCache,
-    setShowConnections,
-  ]);
 
   useEffect(() => {
     const multisigId =
@@ -186,6 +153,7 @@ const Identifiers = () => {
     for (const identifier of identifiersData) {
       if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
+        tmpAllIdentifiers.push(identifier);
         continue;
       }
       if (identifier.isPending) {
@@ -239,22 +207,6 @@ const Identifiers = () => {
         : ""
   }`;
   const handleCloseCreateIdentifier = () => {
-    switch (currentOperation) {
-    case OperationType.CREATE_IDENTIFIER_CONNECT_WALLET:
-      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
-      history.push(TabsRoutePath.MENU);
-      break;
-    case OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS:
-      dispatch(setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION));
-      break;
-    case OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS:
-      dispatch(setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION));
-      history.push(TabsRoutePath.CREDENTIALS);
-      break;
-    default:
-      dispatch(setCurrentOperation(OperationType.IDLE));
-      break;
-    }
     setCreateIdentifierModalIsOpen(false);
   };
 
@@ -283,40 +235,43 @@ const Identifiers = () => {
 
   const deletePendingCheck = useMemo(
     () => ({
-      title: i18n.t("identifiers.detelepending.title"),
+      title: i18n.t("tabs.identifiers.detelepending.title"),
       description: i18n.t(
         deletedPendingItem?.groupMetadata?.groupId
-          ? "identifiers.detelepending.mutilsigdescription"
-          : "identifiers.detelepending.description"
+          ? "tabs.identifiers.detelepending.mutilsigdescription"
+          : "tabs.identifiers.detelepending.description"
       ),
-      button: i18n.t("identifiers.detelepending.button"),
+      button: i18n.t("tabs.identifiers.detelepending.button"),
     }),
     [deletedPendingItem]
   );
 
+  const handleConnections = () => {
+    dispatch(showConnections(true));
+  };
+
+  const handleCreateIdentifier = () => {
+    setCreateIdentifierModalIsOpen(true);
+  };
+
   return (
     <>
-      <Connections
-        showConnections={showConnections}
-        setShowConnections={setShowConnections}
-        selfPaginated={true}
-      />
       <TabLayout
         pageId={pageId}
         header={true}
         customClass={tabClasses}
-        title={`${i18n.t("identifiers.tab.title")}`}
+        title={`${i18n.t("tabs.identifiers.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
-            handleConnections={() => setShowConnections(true)}
-            handleCreateIdentifier={openCreateModal}
+            handleConnections={handleConnections}
+            handleCreateIdentifier={handleCreateIdentifier}
           />
         }
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
-              buttonLabel={i18n.t("identifiers.tab.create")}
-              buttonAction={openCreateModal}
+              buttonLabel={`${i18n.t("tabs.identifiers.tab.create")}`}
+              buttonAction={handleCreateIdentifier}
               testId={pageId}
             >
               <span className="placeholder-spacer" />
@@ -333,7 +288,7 @@ const Identifiers = () => {
                 data-testid="favourite-identifiers"
               >
                 <CardSlider
-                  title={`${i18n.t("identifiers.tab.favourites")}`}
+                  title={`${i18n.t("tabs.identifiers.tab.favourites")}`}
                   name="favs"
                   cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
@@ -347,13 +302,13 @@ const Identifiers = () => {
                 cardTypes={CardType.IDENTIFIERS}
                 cardsData={allIdentifiers}
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
-                title={`${i18n.t("identifiers.tab.allidentifiers")}`}
+                title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}
                 name="allidentifiers"
               />
             )}
             {!!multiSigIdentifiers.length && (
               <div className="identifiers-tab-content-block multisig-container">
-                <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
+                <h3>{i18n.t("tabs.identifiers.tab.multisigidentifiers")}</h3>
                 <IdentifierCardList
                   cardTypes={CardType.IDENTIFIERS}
                   cardsData={multiSigIdentifiers}
@@ -367,7 +322,7 @@ const Identifiers = () => {
             {!!pendingIdentifiers.length && (
               <div className="identifiers-tab-content-block pending-container">
                 <ListHeader
-                  title={`${i18n.t("identifiers.tab.pendingidentifiers")}`}
+                  title={`${i18n.t("tabs.identifiers.tab.pendingidentifiers")}`}
                 />
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
@@ -389,7 +344,7 @@ const Identifiers = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "identifiers.detelepending.secondchecktitle"
+          "tabs.identifiers.detelepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingIdentifier}
       />

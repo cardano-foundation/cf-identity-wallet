@@ -1,12 +1,56 @@
+import { Saider, Serder } from "signify-ts";
 import { IdentifierStorage } from "../records";
 import { CoreEventEmitter } from "../event";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { EventTypes } from "../event.types";
+import {
+  applyForPresentingExnMessage,
+  grantForIssuanceExnMessage,
+  credentialMetadataRecord,
+  QVISchema,
+  credentialRecordProps,
+  identifierMetadataRecord,
+  multisigExnOfferForPresenting,
+  multisigExnAdmitForIssuance,
+  credentialRecord,
+  multisigExnGrant,
+  offerForPresentingExnMessage,
+  agreeForPresentingExnMessage,
+  getCredentialResponse,
+  credentialProps,
+  ipexGrantSerder,
+  ipexGrantSig,
+  ipexGrantEnd,
+  ipexSubmitGrantSerder,
+  ipexSubmitGrantSig,
+  ipexSubmitGrantEnd,
+  multisigParticipantsProps,
+  ipexOfferSerder,
+  ipexOfferSig,
+  ipexSubmitOfferSerder,
+  ipexSubmitOfferSig,
+  ipexSubmitOfferEnd,
+  ipexAdmitEnd,
+  ipexAdmitSig,
+  ipexAdmitSerder,
+  ipexSubmitAdmitSerder,
+  ipexSubmitAdmitSig,
+  ipexSubmitAdmitEnd,
+} from "../../__fixtures__/agent/ipexCommunicationFixture";
+import { NotificationRoute } from "../agent.types";
+import {
+  gHab,
+  mHab,
+  memberIdentifierRecord,
+} from "../../__fixtures__/agent/multSigFixtures";
+import {
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -48,12 +92,6 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
-const ipexMessageRecordStorage = jest.mocked({
-  getIpexMessageMetadata: jest.fn(),
-  getIpexMessageMetadataByConnectionId: jest.fn(),
-  createIpexMessageRecord: jest.fn(),
-});
-
 const saveOperationPendingMock = jest.fn();
 const operationPendingStorage = jest.mocked({
   save: saveOperationPendingMock,
@@ -66,7 +104,6 @@ const operationPendingStorage = jest.mocked({
 });
 
 const multisigService = jest.mocked({
-  multisigAdmit: jest.fn().mockResolvedValue({ name: "opName", done: true }),
   offerPresentMultisigACDC: jest
     .fn()
     .mockResolvedValue({ name: "opName", done: true }),
@@ -77,11 +114,9 @@ let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
 const identifiersMemberMock = jest.fn();
-const identifiersGetMock = jest.fn();
+let identifiersGetMock = jest.fn();
 const getMemberMock = jest.fn();
 const createExchangeMessageMock = jest.fn();
-
-const now = new Date();
 
 let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   if (id == "saidForUuid") {
@@ -111,13 +146,17 @@ const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
 const ipexSubmitOfferMock = jest.fn();
+const ipexSubmitGrantMock = jest
+  .fn()
+  .mockResolvedValue({ name: "opName", done: true });
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
   done: true,
 });
 const markNotificationMock = jest.fn();
-
+const ipexAdmitMock = jest.fn();
+const updateContactMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -153,6 +192,7 @@ const signifyClient = jest.mocked({
   }),
   contacts: () => ({
     list: jest.fn(),
+    update: updateContactMock,
     get: jest.fn().mockImplementation((id: string) => {
       return {
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
@@ -167,12 +207,12 @@ const signifyClient = jest.mocked({
     mark: markNotificationMock,
   }),
   ipex: () => ({
-    admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
+    admit: ipexAdmitMock,
     submitAdmit: submitAdmitMock,
     offer: ipexOfferMock,
     submitOffer: ipexSubmitOfferMock,
     grant: ipexGrantMock,
-    submitGrant: jest.fn().mockResolvedValue({ name: "opName", done: true }),
+    submitGrant: ipexSubmitGrantMock,
   }),
   credentials: () => ({
     list: credentialListMock,
@@ -202,6 +242,19 @@ jest.mock("signify-ts", () => ({
   Serder: jest.fn().mockImplementation(() => {
     return {};
   }),
+  Saider: {
+    saidify: jest.fn().mockImplementation(() => {
+      return ["mockSaid", { d: "mockKed" }];
+    }),
+  },
+  Siger: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+  messagize: jest.fn().mockImplementation(() => {
+    return {};
+  }),
+  d: jest.fn().mockImplementation(() => "d"),
+  b: jest.fn().mockImplementation(() => "b"),
 }));
 
 const eventEmitter = new CoreEventEmitter();
@@ -221,9 +274,6 @@ jest.mock("../../../core/agent/agent", () => ({
       ipexCommunications: {
         acceptAcdcFromMultisigExn: jest.fn(),
       },
-      multiSigs: {
-        multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
-      },
     },
   },
 }));
@@ -237,98 +287,17 @@ const ipexCommunicationService = new IpexCommunicationService(
   identifierStorage as any,
   credentialStorage as any,
   notificationStorage as any,
-  ipexMessageRecordStorage as any,
   operationPendingStorage as any,
   multisigService as any,
   connections as any
 );
-
-const grantIpexMessageMock = {
-  exn: {
-    v: "KERI10JSON000516_",
-    t: "exn",
-    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
-    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-    p: "",
-    dt: "2024-07-30T04:19:55.801000+00:00",
-    r: "/ipex/grant",
-    q: {},
-    a: {
-      m: "",
-      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-    },
-    e: {
-      acdc: {
-        d: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-        a: {
-          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
-          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-          dt: "2024-07-30T04:19:55.348000+00:00",
-          attendeeName: "ccc",
-        },
-      },
-      iss: {
-        t: "iss",
-        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
-        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
-        s: "0",
-        dt: "2024-07-30T04:19:55.348000+00:00",
-      },
-      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
-    },
-  },
-  pathed: {
-    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
-    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
-    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
-  },
-};
-const credentialMetadataMock = {
-  type: "CredentialMetadataRecord",
-  id: "EJuFvMGiT3uhEXtd7UQlkAm4N_MymeHfhkgnOgPhK0cJ",
-  isArchived: false,
-  isDeleted: false,
-  createdAt: "2024-08-09T04:21:18.311Z",
-  issuanceDate: "2024-08-09T04:21:12.575Z",
-  credentialType: "Qualified vLEI Issuer Credential",
-  status: CredentialStatus.PENDING,
-  connectionId: "EP0fEaRWZDR7caQbdserTOWlC_4trvqB1tzbr2xVo3a4",
-  schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-  updatedAt: "2024-08-09T04:21:19.695Z",
-};
-
-const offerIpexMessageMock = {
-  exn: {
-    v: "KERI10JSON000198_",
-    t: "exn",
-    d: "EFbd-N8VoWbHzpwPUKm4hPF6ZKCRNHfnYiKKYDT7N0KS",
-    i: "EB7p1BiY_BJKHqnYbZCnBA7R7gx5LN5RSw5lvxugNkTE",
-    rp: "EFPQ7LAydMjiYYxPzvTcNs9rqzj5Khb8fNtAli9DraQK",
-    p: "",
-    dt: "2024-09-12T09:42:43.794000+00:00",
-    r: "/ipex/apply",
-    q: {},
-    a: {
-      i: "EFPQ7LAydMjiYYxPzvTcNs9rqzj5Khb8fNtAli9DraQK",
-      m: "",
-      s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
-      a: {
-        attendeeName: "4",
-      },
-    },
-    e: {},
-  },
-  pathed: {},
-};
 
 describe("Ipex communication service of agent", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
 
-  test("can accept ACDC", async () => {
+  test("Can accept ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
 
@@ -337,22 +306,23 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     });
 
-    getExchangeMock = jest.fn().mockReturnValue(grantIpexMessageMock);
+    getExchangeMock = jest.fn().mockReturnValue(grantForIssuanceExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
+      id: "identifierId",
     });
-    schemaGetMock.mockResolvedValue({ title: "title" });
+    schemaGetMock.mockResolvedValue(QVISchema);
 
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
@@ -363,25 +333,47 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
+    ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]);
+
+    const connectionNote = {
+      id: "note:id",
+      title: "title",
+      message: "message",
+    };
+
+    signifyClient.contacts().update = jest.fn().mockReturnValue(
+      Promise.resolve({
+        alias: "alias",
+        oobi: "oobi",
+        id: "id",
+        [`${KeriaContactKeyPrefix.CONNECTION_NOTE}:id`]:
+          JSON.stringify(connectionNote),
+      })
+    );
 
     await ipexCommunicationService.acceptAcdc(id);
 
-    const credentialMock = {
-      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-      credentialType: "title",
-      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-      isArchived: false,
-      issuanceDate: "2024-07-30T04:19:55.348Z",
-      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-      status: "pending",
-    };
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
-      credentialMock
+    expect(submitAdmitMock).toBeCalledWith(
+      "identifierId",
+      "admit",
+      "sigs",
+      "aend",
+      ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
     );
+
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      ...credentialRecordProps,
+      identifierId: "identifierId",
+      identifierType: "individual",
+    });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
       payload: {
-        credential: credentialMock,
+        credential: {
+          ...credentialRecordProps,
+          identifierId: "identifierId",
+          identifierType: "individual",
+        },
         status: CredentialStatus.PENDING,
       },
     });
@@ -398,15 +390,11 @@ describe("Ipex communication service of agent", () => {
         },
       },
     });
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
-      expect.objectContaining({
-        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-      })
-    );
+
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
-  test("cannot accept ACDC if the notification is missing in the DB", async () => {
+  test("Cannot accept ACDC if the notification is missing in the DB", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
@@ -416,7 +404,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   // This logic must change if we are accepting presentations later.
-  test("cannot accept ACDC if identifier is not locally stored", async () => {
+  test("Cannot accept ACDC if identifier is not locally stored", async () => {
     // @TODO - foconnor: Ensure syncing process resovles this edge case of identifier in cloud but not local prior to release.
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
@@ -444,7 +432,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
-  test("can offer Keri Acdc when received the ipex apply", async () => {
+  test("Can offer Keri Acdc when received the ipex apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
@@ -463,17 +451,17 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     });
 
-    getExchangeMock = jest.fn().mockReturnValue({
+    getExchangeMock = jest.fn().mockReturnValueOnce({
       exn: {
         a: {
           s: "schemaSaid",
@@ -487,7 +475,7 @@ describe("Ipex communication service of agent", () => {
       id: "abc123",
     });
     ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
-    ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true }),
+    ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true });
     await ipexCommunicationService.offerAcdcFromApply(noti.id, {});
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
@@ -499,7 +487,7 @@ describe("Ipex communication service of agent", () => {
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
-  test("can grant Keri Acdc when received the ipex agree", async () => {
+  test("Can grant Keri Acdc when received the ipex agree", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date().toISOString();
@@ -553,7 +541,7 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("can not grant Keri Acdc if aid is not existed", async () => {
+  test("Can not grant Keri Acdc if aid is not existed", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date().toISOString();
@@ -603,7 +591,7 @@ describe("Ipex communication service of agent", () => {
     );
   });
 
-  test("can not grant Keri Acdc if acdc is not existed", async () => {
+  test("Can not grant Keri Acdc if acdc is not existed", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date().toISOString();
@@ -641,7 +629,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
   });
 
-  test("can get matching credential for apply", async () => {
+  test("Can get matching credential for apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
     const mockExchange = {
@@ -659,7 +647,7 @@ describe("Ipex communication service of agent", () => {
         e: {},
       },
     };
-    getExchangeMock = jest.fn().mockResolvedValue(mockExchange);
+    getExchangeMock = jest.fn().mockResolvedValueOnce(mockExchange);
     const noti = {
       id: notiId,
       createdAt: new Date("2024-04-29T11:01:04.903Z").toISOString(),
@@ -669,10 +657,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       read: true,
     };
-    schemaGetMock.mockResolvedValue({
-      title: "Qualified vLEI Issuer Credential",
-      description: "Qualified vLEI Issuer Credential",
-    });
+    schemaGetMock.mockResolvedValue(QVISchema);
     credentialStorage.getCredentialMetadatasById.mockResolvedValue([
       {
         id: "d",
@@ -699,6 +684,7 @@ describe("Ipex communication service of agent", () => {
         fullName: "Mr. John Lucas Smith",
         licenseNumber: "SMITH01192OP",
       },
+      identifier: "uuid",
     });
     expect(credentialListMock).toBeCalledWith({
       filter: expect.objectContaining({
@@ -708,23 +694,25 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("can create linked ipex message record", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const schemaMock = { title: "title" };
-    schemaGetMock.mockResolvedValueOnce(schemaMock);
+  test("Can create linked ipex message record", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantIpexMessageMock,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantIpexMessageMock.exn.d,
-      credentialType: schemaMock.title,
-      content: grantIpexMessageMock,
-      connectionId: grantIpexMessageMock.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
+          credentialType: QVISchema.title,
+          connectionId: grantForIssuanceExnMessage.exn.i,
+          historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+        }),
     });
 
-    schemaGetMock.mockResolvedValueOnce(schemaMock);
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce({
       exn: {
         e: {
@@ -735,18 +723,126 @@ describe("Ipex communication service of agent", () => {
       },
     });
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantIpexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
+      grantForIssuanceExnMessage,
+      ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantIpexMessageMock.exn.d,
-      credentialType: schemaMock.title,
-      content: grantIpexMessageMock,
-      connectionId: grantIpexMessageMock.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
+          credentialType: QVISchema.title,
+          connectionId: grantForIssuanceExnMessage.exn.rp,
+          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
+        }),
     });
+
     expect(schemaGetMock).toBeCalledTimes(2);
     expect(connections.resolveOobi).toBeCalledTimes(2);
+  });
+
+  test("Can create linked ipex message record with message exchange route ipex/apply", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      applyForPresentingExnMessage,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+    expect(updateContactMock).toBeCalledWith(
+      applyForPresentingExnMessage.exn.i,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${applyForPresentingExnMessage.exn.d}`]:
+          JSON.stringify({
+            id: applyForPresentingExnMessage.exn.d,
+            dt: applyForPresentingExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: applyForPresentingExnMessage.exn.i,
+            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+          }),
+      }
+    );
+    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(connections.resolveOobi).toBeCalledTimes(1);
+  });
+
+  test("can link credential presentation history items to the correct connection", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantForIssuanceExnMessage,
+      ConnectionHistoryType.CREDENTIAL_PRESENTED
+    );
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
+          credentialType: QVISchema.title,
+          connectionId: grantForIssuanceExnMessage.exn.rp,
+          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
+        }),
+    });
+    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(connections.resolveOobi).toBeCalledTimes(1);
+  });
+
+  test("Can create linked ipex message record with message exchange route ipex/agree", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      agreeForPresentingExnMessage,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+
+    expect(updateContactMock).toBeCalledWith(
+      agreeForPresentingExnMessage.exn.i,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeForPresentingExnMessage.exn.d}`]:
+          JSON.stringify({
+            id: agreeForPresentingExnMessage.exn.d,
+            dt: agreeForPresentingExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: agreeForPresentingExnMessage.exn.i,
+            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+          }),
+      }
+    );
+    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(connections.resolveOobi).toBeCalledTimes(1);
+  });
+
+  test("Can create linked ipex message record with history type is credential revoked", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      agreeForPresentingExnMessage,
+      ConnectionHistoryType.CREDENTIAL_REVOKED
+    );
+
+    expect(updateContactMock).toBeCalledWith(
+      agreeForPresentingExnMessage.exn.i,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_REVOKE}${agreeForPresentingExnMessage.exn.e.acdc.d}`]:
+          JSON.stringify({
+            id: agreeForPresentingExnMessage.exn.d,
+            dt: agreeForPresentingExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: agreeForPresentingExnMessage.exn.i,
+            historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
+          }),
+      }
+    );
+    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(connections.resolveOobi).toBeCalledTimes(1);
+  });
+
+  test("Should throw error if history type invalid", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    await expect(
+      ipexCommunicationService.createLinkedIpexMessageRecord(
+        agreeForPresentingExnMessage,
+        "invalid" as any
+      )
+    ).rejects.toThrowError("Invalid history type");
   });
 
   test("Should throw error if schemas.get has an unexpected error", async () => {
@@ -754,16 +850,16 @@ describe("Ipex communication service of agent", () => {
     schemaGetMock.mockRejectedValueOnce(new Error("Unknown error"));
     await expect(
       ipexCommunicationService.createLinkedIpexMessageRecord(
-        grantIpexMessageMock,
+        grantForIssuanceExnMessage,
         ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
       )
     ).rejects.toThrowError(new Error("Unknown error"));
   });
 
-  test("cannot get matching credential for apply if cannot get the schema", async () => {
+  test("Cannot get matching credential for apply if Cannot get the schema", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
-    getExchangeMock = jest.fn().mockResolvedValue({
+    getExchangeMock = jest.fn().mockResolvedValueOnce({
       exn: {
         a: {
           i: "uuid",
@@ -813,6 +909,66 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
+  test("Cannot get ipex apply details if the schema cannot be located", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const mockNotification = {
+      a: {
+        d: "msgSaid",
+      },
+    } as any;
+
+    const mockMsg = {
+      exn: {
+        a: {
+          s: "schemaSaid",
+          a: {},
+        },
+        rp: "recipient",
+      },
+    };
+
+    getExchangeMock.mockResolvedValueOnce(mockMsg);
+    const error404 = new Error("Not Found - 404");
+    schemaGetMock.mockRejectedValueOnce(error404);
+
+    await expect(
+      ipexCommunicationService.getIpexApplyDetails(mockNotification)
+    ).rejects.toThrow(IpexCommunicationService.SCHEMA_NOT_FOUND);
+
+    expect(getExchangeMock).toHaveBeenCalledWith("msgSaid");
+    expect(schemaGetMock).toHaveBeenCalledWith("schemaSaid");
+  });
+
+  test("Should throw error for non-404 errors - getIpexApplyDetails", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const mockNotification = {
+      a: {
+        d: "msgSaid",
+      },
+    } as any;
+
+    const mockMsg = {
+      exn: {
+        a: {
+          s: "schemaSaid",
+          a: {},
+        },
+        rp: "recipient",
+      },
+    };
+
+    getExchangeMock.mockResolvedValueOnce(mockMsg);
+    const errorMessage = "Error - 500";
+    schemaGetMock.mockRejectedValueOnce(new Error(errorMessage));
+
+    await expect(
+      ipexCommunicationService.getIpexApplyDetails(mockNotification)
+    ).rejects.toThrow(new Error(errorMessage));
+
+    expect(getExchangeMock).toHaveBeenCalledWith("msgSaid");
+    expect(schemaGetMock).toHaveBeenCalledWith("schemaSaid");
+  });
+
   test("Cannot get linkedGroupRequest from ipex/grant if the notification is missing in the DB", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
@@ -834,7 +990,7 @@ describe("Ipex communication service of agent", () => {
     );
   });
 
-  test("Should return accepted and membersJoined when linkedGroupRequests contain valid data", async () => {
+  test("Should return accepted and membersJoined when linkedGroupRequests from ipex/grant contain valid data", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
     const notification = {
@@ -865,20 +1021,39 @@ describe("Ipex communication service of agent", () => {
 
     notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
     getExchangeMock.mockImplementationOnce(() => ({
-      exn: { e: { acdc: { d: "credentialSaid" } } },
+      exn: { e: { acdc: { d: "credentialSaid" } }, a: { i: "i" } },
     }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
       notification.id
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB"],
+      threshold: "2",
       accepted: true,
       membersJoined: ["memberA", "memberB"],
     });
   });
 
-  test("Should return accepted is False and membersJoined when linkedGroupRequests not available", async () => {
+  test("Should return accepted is False and membersJoined when linkedGroupRequests from ipex/grant not available", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
     const notification = {
@@ -896,22 +1071,274 @@ describe("Ipex communication service of agent", () => {
       a: { d: "d" },
     };
 
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
+
     notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
     getExchangeMock.mockImplementationOnce(() => ({
-      exn: { e: { acdc: { d: "credentialSaid" } } },
+      exn: { e: { acdc: { d: "credentialSaid" } }, a: { i: "i" } },
     }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
       notification.id
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB"],
+      threshold: "2",
       accepted: false,
       membersJoined: [],
     });
   });
 
-  test("can accept ACDC from multisig exn", async () => {
+  test("Cannot get linkedGroupRequest from ipex/apply if the notification is missing in the DB", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      ipexCommunicationService.getLinkedGroupFromIpexApply(notification.id)
+    ).rejects.toThrowError(
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("Should return accepted and membersJoined with each credential when linkedGroupRequests from ipex/apply contain valid data", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const applyNoteRecord = {
+      linkedGroupRequests: {
+        credentialSaid1: {
+          accepted: true,
+          saids: {
+            ipexOfferSaid1: [
+              ["memberA", "multisigExn1A"],
+              ["memberB", "multisigExn1B"],
+            ],
+            ipexOfferSaid2: [["memberA", "multisigExn2A"]],
+          },
+        },
+        credentialSaid2: {
+          accepted: true,
+          saids: {
+            ipexOfferSaid1: [["memberC", "multisigExn1C"]],
+            ipexOfferSaid2: [["memberD", "multisigExn2C"]],
+          },
+        },
+      },
+      a: { d: "d" },
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
+
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+        {
+          aid: "memberC",
+        },
+        {
+          aid: "memberD",
+        },
+      ],
+    });
+
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
+      notification.id
+    );
+
+    expect(result).toEqual({
+      members: ["memberA", "memberB", "memberC", "memberD"],
+      threshold: "2",
+      offer: {
+        credentialSaid1: {
+          accepted: true,
+          membersJoined: ["memberA", "memberB"],
+        },
+        credentialSaid2: {
+          accepted: true,
+          membersJoined: ["memberC", "memberD"],
+        },
+      },
+    });
+  });
+
+  test("Should return accepted is False and membersJoined with each credential when linkedGroupRequests from ipex/apply not available", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const applyNoteRecord = {
+      linkedGroupRequests: {
+        credentialSaid1: {
+          accepted: false,
+          saids: {},
+        },
+        credentialSaid2: {
+          accepted: false,
+          saids: {},
+        },
+      },
+      a: { d: "d" },
+    };
+
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+        {
+          aid: "memberC",
+        },
+        {
+          aid: "memberD",
+        },
+      ],
+    });
+
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
+      notification.id
+    );
+
+    expect(result).toEqual({
+      members: ["memberA", "memberB", "memberC", "memberD"],
+      threshold: "2",
+      offer: {
+        credentialSaid1: {
+          accepted: false,
+          membersJoined: [],
+        },
+        credentialSaid2: {
+          accepted: false,
+          membersJoined: [],
+        },
+      },
+    });
+  });
+
+  test("Should return empty object when linkedGroupRequests from ipex/apply is empty", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const applyNoteRecord = {
+      linkedGroupRequests: {},
+      a: { d: "d" },
+    };
+
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
+
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
+      notification.id
+    );
+
+    expect(result).toEqual({
+      members: ["memberA", "memberB"],
+      threshold: "2",
+      offer: {},
+    });
+  });
+
+  test("Can accept ACDC from multisig exn", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
 
@@ -920,10 +1347,10 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -936,57 +1363,14 @@ describe("Ipex communication service of agent", () => {
     });
 
     getExchangeMock
-      .mockReturnValueOnce({
-        exn: {
-          v: "KERI10JSON00032d_",
-          t: "exn",
-          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          p: "",
-          dt: "2024-08-28T06:39:55.501000+00:00",
-          r: "/multisig/exn",
-          q: {},
-          a: {
-            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          },
-          e: {
-            exn: {
-              v: "KERI10JSON000178_",
-              t: "exn",
-              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-              dt: "2024-08-28T06:39:51.416000+00:00",
-              r: "/ipex/admit",
-              q: {},
-              a: {
-                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-                m: "",
-              },
-              e: {},
-            },
-            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-          },
-        },
-        pathed: {},
-      })
-      .mockReturnValueOnce(grantIpexMessageMock);
+      .mockReturnValueOnce(multisigExnAdmitForIssuance)
+      .mockReturnValue(grantForIssuanceExnMessage);
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
 
-    schemaGetMock.mockResolvedValue({ title: "title" });
+    schemaGetMock.mockResolvedValue(QVISchema);
     credentialListMock.mockResolvedValue([
       {
         sad: {
@@ -995,9 +1379,54 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    multisigService.multisigAdmit = jest
+    multisigService.getMultisigParticipants.mockResolvedValue({
+      ourIdentifier: {
+        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+        displayName: "Identifier 2",
+        signifyName: "uuid-here",
+        createdAt: "2024-09-23T08:53:11.981Z",
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      },
+      multisigMembers: [
+        {
+          aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+          ends: [],
+        },
+        {
+          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+          ends: [],
+        },
+      ],
+    });
+    getMemberMock.mockResolvedValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    identifiersGetMock = jest
       .fn()
-      .mockResolvedValue({ op: { name: "opName", done: true } });
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    createExchangeMessageMock.mockResolvedValue([
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
+    ]);
+
+    (Saider.saidify as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue([{} as Saider, ipexGrantSerder.ked])
+    );
+
+    (Serder as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue({
+        ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
+      })
+    );
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -1005,10 +1434,10 @@ describe("Ipex communication service of agent", () => {
         id: id,
         createdAt: new Date(),
         a: {
-          r: "/exn/ipex/grant",
+          r: NotificationRoute.ExnIpexGrant,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
         },
-        route: "/exn/ipex/grant",
+        route: NotificationRoute.ExnIpexGrant,
         read: true,
         linkedGroupRequests: {
           "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
@@ -1026,7 +1455,16 @@ describe("Ipex communication service of agent", () => {
     });
 
     await ipexCommunicationService.acceptAcdc(id);
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1043,44 +1481,41 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("can accept ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
+  test("Can accept ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     notificationStorage.findById = jest.fn().mockResolvedValue({
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
-    getExchangeMock.mockReturnValueOnce(grantIpexMessageMock);
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    schemaGetMock.mockResolvedValue({ title: "title" });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
+    schemaGetMock.mockResolvedValue(QVISchema);
 
     credentialStorage.getCredentialMetadata = jest
       .fn()
-      .mockResolvedValue(credentialMetadataMock);
+      .mockResolvedValue(credentialMetadataRecord);
 
-    multisigService.multisigAdmit = jest.fn().mockResolvedValue({
-      op: { name: "opName", done: false },
-      exnSaid: "exnSaid",
-      ipexAdmitSaid: "ipexAdmitSaid",
-      member: "member1",
-    });
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+
+    ipexAdmitMock.mockResolvedValue([
+      ipexAdmitSerder,
+      ipexAdmitSig,
+      ipexAdmitEnd,
+    ]);
 
     eventEmitter.emit = jest.fn();
 
@@ -1090,44 +1525,55 @@ describe("Ipex communication service of agent", () => {
     });
 
     await ipexCommunicationService.acceptAcdc("id");
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: true,
           saids: {
-            ipexAdmitSaid: [["member1", "exnSaid"]],
+            "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru": [
+              [
+                "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+                "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
+              ],
+            ],
           },
         },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
 
-    const credentialMock = {
-      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-      credentialType: "title",
-      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-      isArchived: false,
-      issuanceDate: "2024-07-30T04:19:55.348Z",
-      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-      status: "pending",
-    };
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
-      credentialMock
-    );
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      ...credentialRecordProps,
+      identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      identifierType: "group",
+    });
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
       payload: {
-        credential: credentialMock,
+        credential: {
+          ...credentialRecordProps,
+          identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+          identifierType: "group",
+        },
         status: CredentialStatus.PENDING,
       },
     });
@@ -1147,16 +1593,16 @@ describe("Ipex communication service of agent", () => {
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
   });
 
-  test("can accept ACDC from multisig exn and update linkedGroupRequests when SECOND of multisig joins", async () => {
+  test("Can accept ACDC from multisig exn and update linkedGroupRequests when SECOND of multisig joins", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const notificationRecord = {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
@@ -1175,66 +1621,37 @@ describe("Ipex communication service of agent", () => {
       .mockResolvedValue(notificationRecord);
 
     getExchangeMock
-      .mockReturnValueOnce({
-        exn: {
-          v: "KERI10JSON00032d_",
-          t: "exn",
-          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          p: "",
-          dt: "2024-08-28T06:39:55.501000+00:00",
-          r: "/multisig/exn",
-          q: {},
-          a: {
-            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          },
-          e: {
-            exn: {
-              v: "KERI10JSON000178_",
-              t: "exn",
-              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-              dt: "2024-08-28T06:39:51.416000+00:00",
-              r: "/ipex/admit",
-              q: {},
-              a: {
-                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-                m: "",
-              },
-              e: {},
-            },
-            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-          },
-        },
-        pathed: {},
-      })
-      .mockReturnValueOnce(grantIpexMessageMock);
+      .mockReturnValueOnce(multisigExnAdmitForIssuance)
+      .mockReturnValueOnce(grantForIssuanceExnMessage);
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
 
     credentialStorage.getCredentialMetadata = jest
       .fn()
-      .mockResolvedValue(credentialMetadataMock);
+      .mockResolvedValue(credentialMetadataRecord);
 
     notificationStorage.findAllByQuery = jest
       .fn()
       .mockResolvedValue([notificationRecord]);
 
-    await ipexCommunicationService.acceptAcdc("id");
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
 
+    await ipexCommunicationService.acceptAcdc("id");
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1245,10 +1662,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
@@ -1264,71 +1681,26 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("can join offer ACDC from multisig exn", async () => {
+  test("Can join offer ACDC from multisig exn", async () => {
     eventEmitter.emit = jest.fn();
     const notificationRecord = {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     };
 
-    getExchangeMock.mockReturnValueOnce({
-      exn: {
-        v: "KERI10JSON00032d_",
-        t: "exn",
-        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-        p: "",
-        dt: "2024-08-28T06:39:55.501000+00:00",
-        r: "/multisig/exn",
-        q: {},
-        a: {
-          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        },
-        e: {
-          exn: {
-            v: "KERI10JSON000178_",
-            t: "exn",
-            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-            dt: "2024-08-28T06:39:51.416000+00:00",
-            r: "/ipex/offer",
-            q: {},
-            a: {
-              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              m: "",
-            },
-            e: {
-              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
-            },
-          },
-          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-        },
-      },
-      pathed: {},
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
 
     notificationStorage.findAllByQuery = jest
       .fn()
@@ -1369,10 +1741,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1383,71 +1755,26 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("can join grant ACDC from multisig exn", async () => {
+  test("Can join grant ACDC from multisig exn", async () => {
     eventEmitter.emit = jest.fn();
     const notificationRecord = {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/agree",
+        r: NotificationRoute.ExnIpexAgree,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/agree",
+      route: NotificationRoute.ExnIpexAgree,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     };
 
-    getExchangeMock.mockReturnValueOnce({
-      exn: {
-        v: "KERI10JSON00032d_",
-        t: "exn",
-        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-        p: "",
-        dt: "2024-08-28T06:39:55.501000+00:00",
-        r: "/multisig/exn",
-        q: {},
-        a: {
-          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        },
-        e: {
-          exn: {
-            v: "KERI10JSON000178_",
-            t: "exn",
-            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-            dt: "2024-08-28T06:39:51.416000+00:00",
-            r: "/ipex/grant",
-            q: {},
-            a: {
-              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              m: "",
-            },
-            e: {
-              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
-            },
-          },
-          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-        },
-      },
-      pathed: {},
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnGrant);
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
 
     notificationStorage.findAllByQuery = jest
       .fn()
@@ -1488,10 +1815,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/agree",
+        r: NotificationRoute.ExnIpexAgree,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/agree",
+      route: NotificationRoute.ExnIpexAgree,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1502,47 +1829,9 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("cannot join offer ACDC from multisig exn if identifier is not locally stored", async () => {
+  test("Cannot join offer ACDC from multisig exn if identifier is not locally stored", async () => {
     const id = "uuid";
-    getExchangeMock.mockReturnValueOnce({
-      exn: {
-        v: "KERI10JSON00032d_",
-        t: "exn",
-        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-        p: "",
-        dt: "2024-08-28T06:39:55.501000+00:00",
-        r: "/multisig/exn",
-        q: {},
-        a: {
-          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        },
-        e: {
-          exn: {
-            v: "KERI10JSON000178_",
-            t: "exn",
-            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-            dt: "2024-08-28T06:39:51.416000+00:00",
-            r: "/ipex/grant",
-            q: {},
-            a: {
-              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              m: "",
-            },
-            e: {
-              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
-            },
-          },
-          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-        },
-      },
-      pathed: {},
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnGrant);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1553,47 +1842,9 @@ describe("Ipex communication service of agent", () => {
     expect(deleteNotificationMock).not.toBeCalledWith(id);
   });
 
-  test("cannot join grant ACDC from multisig exn if identifier is not locally stored", async () => {
+  test("Cannot join grant ACDC from multisig exn if identifier is not locally stored", async () => {
     const id = "uuid";
-    getExchangeMock.mockReturnValueOnce({
-      exn: {
-        v: "KERI10JSON00032d_",
-        t: "exn",
-        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-        p: "",
-        dt: "2024-08-28T06:39:55.501000+00:00",
-        r: "/multisig/exn",
-        q: {},
-        a: {
-          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        },
-        e: {
-          exn: {
-            v: "KERI10JSON000178_",
-            t: "exn",
-            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-            dt: "2024-08-28T06:39:51.416000+00:00",
-            r: "/ipex/grant",
-            q: {},
-            a: {
-              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              m: "",
-            },
-            e: {
-              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
-            },
-          },
-          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-        },
-      },
-      pathed: {},
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnGrant);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1604,7 +1855,116 @@ describe("Ipex communication service of agent", () => {
     expect(deleteNotificationMock).not.toBeCalledWith(id);
   });
 
-  test("can offer ACDC from multisig exn", async () => {
+  test("Should join multisig offer if linkedGroupRequestDetails exists and is not accepted", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "id";
+    const applyNoteRecord = {
+      linkedGroupRequests: {
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+          accepted: false,
+          saids: {
+            ipexOfferSaid: [["member1", "exnSaid1"]],
+          },
+        },
+      },
+    };
+
+    const notificationRecord = {
+      type: "NotificationRecord",
+      id: "id",
+      a: {
+        r: NotificationRoute.ExnIpexApply,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: NotificationRoute.ExnIpexApply,
+      read: true,
+      linkedGroupRequests: {},
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+    };
+
+    eventEmitter.emit = jest.fn();
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(identifierMetadataRecord);
+
+    jest
+      .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
+      .mockResolvedValueOnce({
+        op: { name: "opName", done: true },
+        ipexOfferSaid: "ipexOfferSaid",
+        member: "member1",
+        exnSaid: "exnSaid",
+      });
+
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([notificationRecord]);
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
+    });
+
+    await ipexCommunicationService.offerAcdcFromApply(id, credentialRecord);
+
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
+    });
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeOfferCredential,
+        },
+      },
+    });
+
+    expect(notificationStorage.update).lastCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      a: {
+        r: NotificationRoute.ExnIpexApply,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: NotificationRoute.ExnIpexApply,
+      read: true,
+      linkedGroupRequests: {
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+          accepted: true,
+        },
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+    });
+  });
+
+  test("Should return early if linkedGroupRequestDetails is accepted", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "id";
+    const applyNoteRecord = {
+      linkedGroupRequests: {
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+          accepted: true,
+          saids: {
+            ipexOfferSaid: [["member1", "exnSaid1"]],
+          },
+        },
+      },
+    };
+
+    ipexCommunicationService.joinMultisigOffer = jest.fn();
+    notificationStorage.findById.mockResolvedValue(applyNoteRecord);
+
+    await ipexCommunicationService.offerAcdcFromApply(id, credentialRecord);
+
+    expect(ipexCommunicationService.joinMultisigOffer).not.toHaveBeenCalled();
+  });
+
+  test("Can offer ACDC from multisig exn", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
     eventEmitter.emit = jest.fn();
@@ -1614,80 +1974,21 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     });
 
-    const acdc = {
-      v: "ACDC10JSON00018d_",
-      d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT",
-      i: "EAzUd88Fcd1dHZg5LUEgz9zgHLX96V6y0cZoY6MkvnOP",
-      ri: "EGNm44ZxIYVO_ctkbIXoNTrkEdBhLi9k09doVKRdoixi",
-      s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
-      a: {
-        d: "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw",
-        i: "EOAjGXrNHM-PuSFEEJ_x38gv5S1HNZtHOHSaVR9eZ1s7",
-        attendeeName: "4",
-        dt: "2024-09-20T02:54:03.259000+00:00",
-      },
-    };
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
 
-    getExchangeMock
-      .mockReturnValueOnce({
-        exn: {
-          v: "KERI10JSON00032d_",
-          t: "exn",
-          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          p: "",
-          dt: "2024-08-28T06:39:55.501000+00:00",
-          r: "/multisig/exn",
-          q: {},
-          a: {
-            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          },
-          e: {
-            exn: {
-              v: "KERI10JSON000178_",
-              t: "exn",
-              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-              dt: "2024-08-28T06:39:51.416000+00:00",
-              r: "/ipex/offer",
-              q: {},
-              a: {
-                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-                m: "",
-              },
-              e: {},
-            },
-            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-          },
-        },
-        pathed: {},
-      })
-      .mockReturnValueOnce(offerIpexMessageMock);
-
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(identifierMetadataRecord);
 
     credentialListMock.mockResolvedValue([
       {
@@ -1706,10 +2007,10 @@ describe("Ipex communication service of agent", () => {
         id: id,
         createdAt: new Date(),
         a: {
-          r: "/exn/ipex/apply",
+          r: NotificationRoute.ExnIpexApply,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
         },
-        route: "/exn/ipex/apply",
+        route: NotificationRoute.ExnIpexApply,
         read: true,
         linkedGroupRequests: {
           "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
@@ -1719,30 +2020,9 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
 
-    multisigService.getMultisigParticipants.mockResolvedValueOnce({
-      ourIdentifier: {
-        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        createdAt: "2024-09-23T08:53:11.981Z",
-        theme: 0,
-        groupMetadata: {
-          groupId: "group-id",
-          groupInitiator: true,
-          groupCreated: true,
-        },
-      },
-      multisigMembers: [
-        {
-          aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
-          ends: [],
-        },
-        {
-          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
-          ends: [],
-        },
-      ],
-    });
+    multisigService.getMultisigParticipants.mockResolvedValueOnce(
+      multisigParticipantsProps
+    );
 
     jest
       .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
@@ -1758,7 +2038,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
-    await ipexCommunicationService.offerAcdcFromApply(id, acdc);
+    await ipexCommunicationService.offerAcdcFromApply(id, credentialRecord);
 
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
@@ -1776,7 +2056,7 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("can offer ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
+  test("Can offer ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     eventEmitter.emit = jest.fn();
 
@@ -1784,41 +2064,20 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
 
-    const acdc = {
-      v: "ACDC10JSON00018d_",
-      d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT",
-      i: "EAzUd88Fcd1dHZg5LUEgz9zgHLX96V6y0cZoY6MkvnOP",
-      ri: "EGNm44ZxIYVO_ctkbIXoNTrkEdBhLi9k09doVKRdoixi",
-      s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
-      a: {
-        d: "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw",
-        i: "EOAjGXrNHM-PuSFEEJ_x38gv5S1HNZtHOHSaVR9eZ1s7",
-        attendeeName: "4",
-        dt: "2024-09-20T02:54:03.259000+00:00",
-      },
-    };
+    getExchangeMock.mockReturnValueOnce(applyForPresentingExnMessage);
 
-    getExchangeMock.mockResolvedValueOnce(offerIpexMessageMock);
-
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
 
     multisigService.offerPresentMultisigACDC = jest.fn().mockResolvedValue({
       op: { name: "opName", done: false },
@@ -1839,16 +2098,16 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
-    await ipexCommunicationService.offerAcdcFromApply("id", acdc);
+    await ipexCommunicationService.offerAcdcFromApply("id", credentialRecord);
 
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1878,89 +2137,29 @@ describe("Ipex communication service of agent", () => {
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
   });
 
-  test("can offer ACDC from multisig exn and update linkedGroupRequests when SECOND of multisig joins", async () => {
+  test("Can offer ACDC from multisig exn and update linkedGroupRequests when SECOND of multisig joins", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const notificationRecord = {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-    };
-
-    const acdc = {
-      v: "ACDC10JSON00018d_",
-      d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT",
-      i: "EAzUd88Fcd1dHZg5LUEgz9zgHLX96V6y0cZoY6MkvnOP",
-      ri: "EGNm44ZxIYVO_ctkbIXoNTrkEdBhLi9k09doVKRdoixi",
-      s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
-      a: {
-        d: "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw",
-        i: "EOAjGXrNHM-PuSFEEJ_x38gv5S1HNZtHOHSaVR9eZ1s7",
-        attendeeName: "4",
-        dt: "2024-09-20T02:54:03.259000+00:00",
-      },
     };
 
     notificationStorage.findById = jest
       .fn()
       .mockResolvedValue(notificationRecord);
 
-    getExchangeMock
-      .mockReturnValueOnce({
-        exn: {
-          v: "KERI10JSON00032d_",
-          t: "exn",
-          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          p: "",
-          dt: "2024-08-28T06:39:55.501000+00:00",
-          r: "/multisig/exn",
-          q: {},
-          a: {
-            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          },
-          e: {
-            exn: {
-              v: "KERI10JSON000178_",
-              t: "exn",
-              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-              dt: "2024-08-28T06:39:51.416000+00:00",
-              r: "/ipex/offer",
-              q: {},
-              a: {
-                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-                m: "",
-              },
-              e: {},
-            },
-            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-          },
-        },
-        pathed: {},
-      })
-      .mockReturnValueOnce(grantIpexMessageMock);
-
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
 
     notificationStorage.findAllByQuery = jest
       .fn()
@@ -1980,7 +2179,7 @@ describe("Ipex communication service of agent", () => {
         exnSaid: "exnSaid",
       });
 
-    await ipexCommunicationService.offerAcdcFromApply("id", acdc);
+    await ipexCommunicationService.offerAcdcFromApply("id", credentialRecord);
 
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1991,10 +2190,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -2008,48 +2207,318 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("can accept ACDC from multisig exn when existing credential", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const id = "uuid";
-    getExchangeMock
-      .mockReturnValueOnce({
-        exn: {
-          v: "KERI10JSON00032d_",
-          t: "exn",
-          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          p: "",
-          dt: "2024-08-28T06:39:55.501000+00:00",
-          r: "/multisig/exn",
-          q: {},
-          a: {
-            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          },
-          e: {
-            exn: {
-              v: "KERI10JSON000178_",
-              t: "exn",
-              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-              dt: "2024-08-28T06:39:51.416000+00:00",
-              r: "/ipex/admit",
-              q: {},
-              a: {
-                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-                m: "",
-              },
-              e: {},
-            },
-            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+  test("Can initiate offering an ACDC from a multi-sig identifier", async () => {
+    const multisigId = "multisigId";
+    const discloseePrefix = "discloseePrefix";
+
+    multisigService.getMultisigParticipants.mockResolvedValueOnce(
+      multisigParticipantsProps
+    );
+
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    ipexOfferMock.mockResolvedValue([ipexOfferSerder, ipexOfferSig, ""]);
+    createExchangeMessageMock.mockResolvedValueOnce([
+      ipexSubmitOfferSerder,
+      ipexSubmitOfferSig,
+      ipexSubmitOfferEnd,
+    ]);
+
+    await ipexCommunicationService.multisigOfferAcdcFromApply(
+      multisigId,
+      "applySaid",
+      credentialProps,
+      discloseePrefix
+    );
+    expect(ipexOfferMock).toBeCalledTimes(1);
+    expect(createExchangeMessageMock).toBeCalledTimes(1);
+    expect(ipexSubmitOfferMock).toBeCalledTimes(1);
+  });
+
+  test("Can agree to offer an ACDC with a multi-sig identifier", async () => {
+    const multisigId = "multisigId";
+    const discloseePrefix = "discloseePrefix";
+    const offer = {
+      ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
+    };
+
+    multisigService.getMultisigParticipants.mockResolvedValueOnce(
+      multisigParticipantsProps
+    );
+
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+
+    (Saider.saidify as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue([{} as Saider, ipexOfferSerder.ked])
+    );
+
+    (Serder as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue({
+        ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
+      })
+    );
+
+    getMemberMock.mockResolvedValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    createExchangeMessageMock.mockResolvedValueOnce([
+      ipexSubmitOfferSerder,
+      ipexSubmitOfferSig,
+      ipexSubmitOfferEnd,
+    ]);
+
+    getMemberMock.mockImplementationOnce(() => {
+      return {
+        sign: jest.fn().mockResolvedValueOnce(["mockSign"]),
+      };
+    });
+
+    await ipexCommunicationService.multisigOfferAcdcFromApply(
+      multisigId,
+      "applySaid",
+      credentialProps,
+      discloseePrefix,
+      ipexOfferSerder
+    );
+
+    expect(ipexOfferMock).toBeCalledTimes(0);
+    expect(createExchangeMessageMock).toBeCalledWith(
+      mHab,
+      NotificationRoute.MultiSigExn,
+      {
+        gid: gHab["prefix"],
+      },
+      {
+        exn: [offer, "d"],
+      },
+      "discloseePrefix"
+    );
+
+    expect(ipexSubmitOfferMock).toBeCalledWith(
+      multisigId,
+      ipexSubmitOfferSerder,
+      ipexSubmitOfferSig,
+      ipexSubmitOfferEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
+  });
+
+  test("Should join multisig agree if linkedGroupRequestDetails exists and is not accepted", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "id";
+    const agreeNoteRecord = {
+      a: {
+        r: NotificationRoute.ExnIpexAgree,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      linkedGroupRequests: {
+        "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
+          accepted: false,
+          saids: {
+            ipexGrantSaid: [["member", "exnSaid"]],
           },
         },
-        pathed: {},
+      },
+    };
+
+    ipexCommunicationService.joinMultisigGrant = jest.fn();
+    notificationStorage.findById.mockResolvedValueOnce(agreeNoteRecord);
+    getExchangeMock
+      .mockReturnValueOnce(agreeForPresentingExnMessage)
+      .mockReturnValueOnce(offerForPresentingExnMessage);
+
+    await ipexCommunicationService.grantAcdcFromAgree(id);
+
+    expect(ipexCommunicationService.joinMultisigGrant).toHaveBeenCalledWith(
+      "exnSaid"
+    );
+    expect(notificationStorage.update).not.toHaveBeenCalled();
+  });
+
+  test("Can initiate granting an ACDC from a multi-sig identifier", async () => {
+    const multisigId = "multisigId";
+    const discloseePrefix = "discloseePrefix";
+
+    multisigService.getMultisigParticipants.mockResolvedValueOnce(
+      multisigParticipantsProps
+    );
+
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    ipexGrantMock.mockResolvedValue([
+      ipexGrantSerder,
+      ipexGrantSig,
+      ipexGrantEnd,
+    ]);
+    createExchangeMessageMock.mockResolvedValueOnce([
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+    ]);
+
+    await ipexCommunicationService.multisigGrantAcdcFromAgree(
+      multisigId,
+      discloseePrefix,
+      "agreeSaid",
+      credentialProps
+    );
+    expect(ipexGrantMock).toBeCalledTimes(1);
+    expect(createExchangeMessageMock).toBeCalledTimes(1);
+    expect(ipexSubmitGrantMock).toBeCalledTimes(1);
+  });
+
+  test("Can agree to grant an ACDC with a multi-sig identifier", async () => {
+    const multisigId = "multisigId";
+    const discloseePrefix = "discloseePrefix";
+    const grant = {
+      ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
+    };
+
+    const atc =
+      "dFABEFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD0AAAAAAAAAAAAAAAAAAAAAAAEMoyFLuJpu0B79yPM7QKFE_R_D4CTq7H7GLsKxIpukXX-AABABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB-LAg4AACA-e-acdc-IABEEGUqZhZh6xzLrSINDvIN7bRPpMWZ2U9_ZqOcHMlhgbg0AAAAAAAAAAAAAAAAAAAAAAAEMVYTf_mX61cKxVRbdWBHogVLNnb5vAfzXhKmNjEAIus-LAW5AACAA-e-iss-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEB9sUjT1dKIqXTw2UJRVnyOSR37jj_NX6JXYtOh8jlYD-LAa5AACAA-e-anc-AABAABiw1xpT74ifuhdys2komq-9ZCUznqZcfRYHU27320gTdtBT3ijTshz2csLTcK77nw-dEssXfc4VEru-0Loq6wK";
+
+    multisigService.getMultisigParticipants.mockResolvedValueOnce(
+      multisigParticipantsProps
+    );
+
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+
+    (Saider.saidify as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue([{} as Saider, ipexGrantSerder.ked])
+    );
+
+    (Serder as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue({
+        ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
       })
-      .mockReturnValueOnce(grantIpexMessageMock);
+    );
+
+    getMemberMock.mockResolvedValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    createExchangeMessageMock.mockResolvedValueOnce([
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+    ]);
+
+    getMemberMock.mockImplementationOnce(() => {
+      return {
+        sign: jest.fn().mockResolvedValueOnce(["mockSign"]),
+      };
+    });
+
+    await ipexCommunicationService.multisigGrantAcdcFromAgree(
+      multisigId,
+      discloseePrefix,
+      "agreeSaid",
+      credentialProps,
+      {
+        grantExn: ipexGrantSerder as any,
+        atc,
+      }
+    );
+
+    expect(ipexGrantMock).toBeCalledTimes(0);
+    expect(createExchangeMessageMock).toBeCalledWith(
+      mHab,
+      NotificationRoute.MultiSigExn,
+      {
+        gid: gHab["prefix"],
+      },
+      {
+        exn: [grant, atc],
+      },
+      "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF"
+    );
+
+    expect(ipexSubmitGrantMock).toBeCalledWith(
+      multisigId,
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
+  });
+
+  test("Can join grant present credential with multisig exn", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+
+    const id = "id";
+    const agreeNoteRecord = {
+      a: {
+        r: NotificationRoute.ExnIpexAgree,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      linkedGroupRequests: {},
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(agreeNoteRecord);
+    getExchangeMock
+      .mockReturnValueOnce(agreeForPresentingExnMessage)
+      .mockReturnValueOnce(offerForPresentingExnMessage);
+    credentialGetMock.mockReturnValue(getCredentialResponse);
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecord);
+
+    jest
+      .spyOn(ipexCommunicationService, "multisigGrantAcdcFromAgree")
+      .mockResolvedValueOnce({
+        op: { name: "opName", done: true },
+        ipexGrantSaid: "ipexGrantSaid",
+        member: "member",
+        exnSaid: "exnSaid",
+      });
+
+    await ipexCommunicationService.grantAcdcFromAgree(id);
+
+    expect(
+      ipexCommunicationService.multisigGrantAcdcFromAgree
+    ).toHaveBeenCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+      getCredentialResponse
+    );
+
+    expect(notificationStorage.update).toHaveBeenCalledWith({
+      ...agreeNoteRecord,
+      linkedGroupRequests: {
+        "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli": {
+          accepted: true,
+          saids: {
+            ipexGrantSaid: [["member", "exnSaid"]],
+          },
+        },
+      },
+    });
+  });
+
+  test("Can accept ACDC from multisig exn when existing credential", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const id = "uuid";
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
@@ -2059,10 +2528,10 @@ describe("Ipex communication service of agent", () => {
         id: id,
         createdAt: new Date(),
         a: {
-          r: "/exn/ipex/grant",
+          r: NotificationRoute.ExnIpexGrant,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
         },
-        route: "/exn/ipex/grant",
+        route: NotificationRoute.ExnIpexGrant,
         read: true,
         linkedGroupRequests: {
           "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
@@ -2076,7 +2545,7 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(0);
   });
 
-  test("cannot accept ACDC from multisig exn if the notification is missing in the DB", async () => {
+  test("Cannot accept ACDC from multisig exn if the notification is missing in the DB", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
     notificationStorage.findById.mockResolvedValueOnce(null);
@@ -2086,7 +2555,7 @@ describe("Ipex communication service of agent", () => {
     );
   });
 
-  test("cannot accept ACDC from multisig exn if identifier is not locally stored", async () => {
+  test("Cannot accept ACDC from multisig exn if identifier is not locally stored", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
 
@@ -2098,72 +2567,7 @@ describe("Ipex communication service of agent", () => {
       },
     });
 
-    signifyClient.exchanges = jest.fn().mockReturnValue({
-      get: jest
-        .fn()
-        .mockImplementationOnce(() =>
-          Promise.resolve({
-            exn: {
-              d: "ECWyfhUctyCCoxZG-PU7MFPWkw5H2--TMC9v_tbZjjBv",
-              i: "ECa8C3YyqT9khmn0MnLUJKQTCNmiB6tr74uNUX_Y-r2y",
-              p: "",
-              dt: "2024-07-31T02:45:28.535000+00:00",
-              r: "/multisig/exn",
-              a: {
-                gid: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
-              },
-              e: {
-                exn: {
-                  d: "EPcCdp9JRd5wgCVs7hmzB0JsbuqHhYU3ggShqR2QDpbH",
-                  i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
-                  p: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
-                  dt: "2024-07-31T02:45:25.998000+00:00",
-                  r: "/ipex/admit",
-                  a: {
-                    m: "",
-                  },
-                  e: {},
-                },
-                d: "EFHb7hpsDWdBdZyMVhQR6kJN6j9DddAAS-_pQQhq-yZ6",
-              },
-            },
-          })
-        )
-        .mockImplementationOnce(() =>
-          Promise.resolve({
-            exn: {
-              v: "KERI10JSON000514_",
-              t: "exn",
-              d: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
-              i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
-              p: "",
-              dt: "2024-07-31T02:45:17.288000+00:00",
-              r: "/ipex/grant",
-              q: {},
-              a: {
-                m: "",
-                i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
-              },
-              e: {
-                acdc: {
-                  v: "ACDC10JSON00018d_",
-                  d: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
-                  i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
-                  ri: "EDXcY9Jsg32LgZ8S5QuHNi3ZF5U01_kU3FakVUMCbGG3",
-                  s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-                  a: {
-                    d: "EKoEogKtVuRAkoFs43CLPTwSAUuo3TQsmnKI86ef2Usb",
-                    i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
-                    dt: "2024-07-31T02:45:16.860000+00:00",
-                    LEI: "New 310724",
-                  },
-                },
-                d: "EK3-ZPPv8JYVAIK8pq1SfQxvHlsKmwdpqxqO1kcP_ajv",
-              },
-            },
-          })
-        ),
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnAdmitForIssuance);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -2175,7 +2579,7 @@ describe("Ipex communication service of agent", () => {
     expect(notificationStorage.deleteById).not.toBeCalledWith(id);
   });
 
-  test("cannot offer ACDC from multisig exn if the notification is missing in the DB", async () => {
+  test("Cannot offer ACDC from multisig exn if the notification is missing in the DB", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
     notificationStorage.findById.mockResolvedValueOnce(null);
@@ -2187,18 +2591,25 @@ describe("Ipex communication service of agent", () => {
     );
   });
 
-  test("can get acdc detail", async () => {
-    signifyClient.exchanges = jest.fn().mockReturnValue({
-      get: jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve(grantIpexMessageMock)),
-    });
+  test("Cannot grant ACDC from multisig exn if the notification is missing in the DB", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "not-found-id";
+    notificationStorage.findById.mockResolvedValueOnce(null);
 
-    schemaGetMock.mockResolvedValue({
-      title: "Qualified vLEI Issuer Credential",
-      description: "Qualified vLEI Issuer Credential",
-      version: "1.0",
-    });
+    await expect(
+      ipexCommunicationService.grantAcdcFromAgree(id)
+    ).rejects.toThrowError(
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("Can get acdc detail", async () => {
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
+    schemaGetMock.mockResolvedValue(QVISchema);
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
 
     expect(
       await ipexCommunicationService.getAcdcFromIpexGrant(
@@ -2214,24 +2625,20 @@ describe("Ipex communication service of agent", () => {
         dt: "2024-07-30T04:19:55.348000+00:00",
         attendeeName: "ccc",
       },
-      s: {
-        title: "Qualified vLEI Issuer Credential",
-        description: "Qualified vLEI Issuer Credential",
-        version: "1.0",
-      },
+      s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
+      identifierId: memberIdentifierRecord.id,
     });
   });
 
-  test("can get acdc detail when the schema has not been resolved", async () => {
-    signifyClient.exchanges = jest.fn().mockReturnValue({
-      get: jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve(grantIpexMessageMock)),
-    });
+  test("Can get acdc detail when the schema has not been resolved", async () => {
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
     const error404 = new Error("Not Found - 404");
     schemaGetMock.mockRejectedValueOnce(error404);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
 
     resolveOobiMock.mockResolvedValueOnce({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
@@ -2258,13 +2665,22 @@ describe("Ipex communication service of agent", () => {
         dt: "2024-07-30T04:19:55.348000+00:00",
         attendeeName: "ccc",
       },
-      s: {
-        title: "Qualified vLEI Issuer Credential",
-        description: "Qualified vLEI Issuer Credential",
-        version: "1.0",
-      },
+      s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
+      identifierId: memberIdentifierRecord.id,
     });
+  });
+
+  test("Throws error if the schema has not been resolved and with a non-404 error - getAcdcFromIpexGrant", async () => {
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
+    const error = new Error("Some other error - 500");
+    schemaGetMock.mockRejectedValueOnce(error);
+
+    await expect(
+      ipexCommunicationService.getAcdcFromIpexGrant("said")
+    ).rejects.toThrow("Some other error - 500");
+    expect(schemaGetMock).toHaveBeenCalledTimes(1);
+    expect(resolveOobiMock).not.toHaveBeenCalled();
   });
 });

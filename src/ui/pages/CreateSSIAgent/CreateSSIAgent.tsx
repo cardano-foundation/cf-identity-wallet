@@ -36,7 +36,7 @@ import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { TermsModal } from "../../components/TermsModal";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { OperationType } from "../../globals/types";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
 import { isValidHttpUrl } from "../../utils/urlChecker";
 import "./CreateSSIAgent.scss";
@@ -46,6 +46,7 @@ import {
   RECOVERY_DOCUMENTATION_LINK,
   ONBOARDING_DOCUMENTATION_LINK,
 } from "../../globals/constants";
+import { showError } from "../../utils/error";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 const SEED_PHRASE_EMPTY = "Invalid seed phrase";
@@ -128,6 +129,26 @@ const CreateSSIAgent = () => {
     dispatch(clearSSIAgent());
   };
 
+  const handleError = (error: Error) => {
+    const errorMessage = error.message;
+
+    if (Agent.KERIA_BOOT_FAILED === errorMessage) {
+      setIsInvalidBootUrl(true);
+    }
+
+    if (Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT === errorMessage) {
+      setInvalidConnectUrl(true);
+    }
+
+    if (Agent.KERIA_NOT_BOOTED === errorMessage) {
+      setHasMismatchError(true);
+    }
+
+    if([Agent.KERIA_BOOT_FAILED_BAD_NETWORK, Agent.KERIA_CONNECT_FAILED_BAD_NETWORK].includes(errorMessage)) {
+      showError("Unable to boot or connect keria", error, dispatch, ToastMsgType.UNKNOWN_ERROR)
+    }
+  }
+
   const handleRecoveryWallet = async () => {
     setLoading(true);
     try {
@@ -172,12 +193,7 @@ const CreateSSIAgent = () => {
         return;
       }
 
-      if (Agent.KERIA_NOT_BOOTED === errorMessage) {
-        setHasMismatchError(true);
-        return;
-      }
-
-      setInvalidConnectUrl(true);
+      handleError(e as Error);
     } finally {
       setLoading(false);
     }
@@ -211,14 +227,7 @@ const CreateSSIAgent = () => {
       ionRouter.push(nextPath.pathname, "forward", "push");
       handleClearState();
     } catch (e) {
-      const errorMessage = (e as Error).message;
-      if (Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT === errorMessage) {
-        setHasMismatchError(true);
-      }
-
-      if (Agent.KERIA_BOOT_FAILED === errorMessage) {
-        setIsInvalidBootUrl(true);
-      }
+      handleError(e as Error);
     } finally {
       setLoading(false);
     }
@@ -377,7 +386,7 @@ const CreateSSIAgent = () => {
               }
               errorMessage={
                 hasMismatchError
-                  ? `${i18n.t("ssiagent.error.mismatchconnecturl")}`
+                  ? `${i18n.t(isRecoveryMode ? "ssiagent.error.recoverymismatchconnecturl" : "ssiagent.error.mismatchconnecturl")}`
                   : displayBootUrlError && !isInvalidConnectUrl
                     ? `${i18n.t("ssiagent.error.invalidurl")}`
                     : `${i18n.t("ssiagent.error.invalidconnecturl")}`

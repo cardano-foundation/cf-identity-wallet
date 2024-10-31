@@ -1,14 +1,13 @@
 import { useRef, useState } from "react";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  showGenericError,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { CreatePasscodeModule } from "../../components/CreatePasscodeModule";
 import { CreatePasscodeModuleRef } from "../../components/CreatePasscodeModule/CreatePasscodeModule.types";
@@ -17,7 +16,8 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { useAppIonRouter } from "../../hooks";
 import "./SetPasscode.scss";
 import { getBackRoute } from "../../../routes/backRoute";
-import { showError } from "../../utils/error";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -40,13 +40,18 @@ const SetPasscode = () => {
       data
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    await Agent.agent.basicStorage
+      .save({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+      .catch((e) => {
+        dispatch(showGenericError(true));
+        throw e;
+      });
     ionRouter.push(nextPath.pathname, "forward", "push");
-
-    PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
-      initialized: true,
-    }).catch((e) => {
-      showError("Unable to save app init state", e, dispatch);
-    });
   };
 
   const isOnReenterPasscodeStep =

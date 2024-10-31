@@ -17,7 +17,7 @@ import { MENU_ITEMS } from "../App";
 
 const NavBar: React.FC = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null,
+    null
   );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -86,7 +86,10 @@ const NavBar: React.FC = () => {
               }}
             >
               {MENU_ITEMS.map((item) => (
-                <MenuItem key={item.key} onClick={handleCloseNavMenu}>
+                <MenuItem
+                  key={item.key}
+                  onClick={handleCloseNavMenu}
+                >
                   <Typography
                     textAlign="center"
                     component={Link}

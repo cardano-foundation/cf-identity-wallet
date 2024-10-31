@@ -38,10 +38,10 @@ jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
+  IonModal: ({ children, isOpen, ...props }: any) => (
     <div
+      {...props}
       style={{ display: isOpen ? "block" : "none" }}
-      data-testid="add-connection-modal"
     >
       {children}
     </div>
@@ -126,7 +126,7 @@ describe("Wallet connect: empty history", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       ).toBeVisible();
     });
 
@@ -172,20 +172,20 @@ describe("Wallet connect: empty history", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet
             .disconnectbeforecreatealert.message
         )
       ).toBeVisible();
@@ -232,13 +232,13 @@ describe("Wallet connect: empty history", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       );
     });
 
@@ -279,7 +279,7 @@ describe("Wallet connect: empty history", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText } = render(
+    const { getByText, queryByText, getByTestId, unmount } = render(
       <MemoryRouter>
         <Provider store={storeMocked}>
           <ConnectWallet />
@@ -289,24 +289,39 @@ describe("Wallet connect: empty history", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
         )
       ).toBeVisible();
     });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-create-keri-cancel-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.message
+        )
+      ).toBe(null);
+    });
+
+    unmount();
   });
 
   test("Connect wallet modal: alert identifier missing when create new connect if we only have multi-sig or group identifiers", async () => {
@@ -356,7 +371,7 @@ describe("Wallet connect: empty history", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText } = render(
+    const { getByText, queryByText, getByTestId, unmount } = render(
       <MemoryRouter>
         <Provider store={storeMocked}>
           <ConnectWallet />
@@ -366,24 +381,39 @@ describe("Wallet connect: empty history", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectbtn)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
         )
       ).toBeVisible();
     });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-create-keri-cancel-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.message
+        )
+      ).toBe(null);
+    });
+
+    unmount();
   });
 });
 
@@ -398,7 +428,8 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+            .title
         )
       ).toBeVisible();
     });
@@ -425,7 +456,8 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+            .title
         )
       ).toBeVisible();
     });
@@ -452,7 +484,8 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+            .title
         )
       ).toBeVisible();
     });
@@ -466,7 +499,7 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .deletealert.message
         )
       ).toBeVisible();
@@ -475,7 +508,7 @@ describe("Wallet connect", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .deletealert.confirm
         )
       );
@@ -502,7 +535,7 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         queryByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .deletealert.message
         )
       ).not.toBeVisible();
@@ -520,6 +553,7 @@ describe("Wallet connect", () => {
           time: Date.now(),
           passcodeIsSet: true,
           passwordIsSet: false,
+          firstAppLaunch: true,
         },
         toastMsgs: [],
       },
@@ -549,7 +583,8 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+            .title
         )
       ).toBeVisible();
     });
@@ -563,7 +598,7 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .deletealert.message
         )
       ).toBeVisible();
@@ -600,7 +635,8 @@ describe("Wallet connect", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+          .title
       )
     ).toBeVisible();
 
@@ -619,7 +655,7 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet
             .disconnectbeforecreatealert.message
         )
       ).toBeVisible();
@@ -628,7 +664,7 @@ describe("Wallet connect", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet
             .disconnectbeforecreatealert.confirm
         )
       );
@@ -687,7 +723,7 @@ describe("Wallet connect", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, getAllByText } = render(
+    const { getByTestId, getByText } = render(
       <MemoryRouter>
         <Provider store={storeMocked}>
           <ConnectWallet />
@@ -709,26 +745,24 @@ describe("Wallet connect", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+        getByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
-        )[0]
+        )
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+        getByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.confirm
-        )[0]
+        )
       );
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
-      );
+      expect(getByTestId("create-identifier-modal")).toBeVisible();
     });
   });
 
@@ -741,6 +775,7 @@ describe("Wallet connect", () => {
           time: Date.now(),
           passcodeIsSet: true,
           passwordIsSet: true,
+          firstAppLaunch: true,
         },
         currentOperation: OperationType.OPEN_WALLET_CONNECTION_DETAIL,
         toastMsgs: [],
@@ -811,6 +846,7 @@ describe("Wallet connect", () => {
           time: Date.now(),
           passcodeIsSet: true,
           passwordIsSet: true,
+          firstAppLaunch: true,
         },
         currentOperation: OperationType.IDLE,
         toastMsg: ToastMsgType.CONNECT_WALLET_SUCCESS,

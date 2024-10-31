@@ -65,8 +65,7 @@ function RequestCredential() {
   const handleGetContacts = async () => {
     try {
       setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data
-          .data,
+        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
       );
     } catch (e) {
       console.log(e);
@@ -106,12 +105,23 @@ function RequestCredential() {
   };
   return (
     <Box>
-      <Typography component="h1" variant="h4" align="center">
+      <Typography
+        component="h1"
+        variant="h4"
+        align="center"
+      >
         Request Credential
       </Typography>
       <form onSubmit={handleSubmit(handleRequestCredential)}>
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={10}>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="center"
+        >
+          <Grid
+            item
+            xs={10}
+          >
             <FormControl fullWidth>
               <Controller
                 name="selectedContact"
@@ -122,23 +132,40 @@ function RequestCredential() {
                     {...register(`selectedContact`, {
                       required: true,
                     })}
-                    getOptionLabel={(option) => UUID_REGEX.test(option.alias) ? option.id : `${option.alias} (${option.id})` }
+                    getOptionLabel={(option) =>
+                      UUID_REGEX.test(option.alias)
+                        ? option.id
+                        : `${option.alias} (${option.id})`
+                    }
                     options={contacts || []}
-                    renderInput={(params) => <TextField {...params} label="Search by connection name or ID" />}
-                    onChange={(_event, data) => field.onChange(data?.id || null)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Search by connection name or ID"
+                      />
+                    )}
+                    onChange={(_event, data) =>
+                      field.onChange(data?.id || null)
+                    }
                   />
                 )}
               />
             </FormControl>
           </Grid>
-          <Grid item xs={1}>
+          <Grid
+            item
+            xs={1}
+          >
             <Button
               startIcon={<RefreshIcon />}
               onClick={handleGetContacts}
               style={{ height: "100%" }}
             ></Button>
           </Grid>
-          <Grid item xs={11}>
+          <Grid
+            item
+            xs={11}
+          >
             <FormControl fullWidth>
               <InputLabel id="credential_type">Credential Type</InputLabel>
               <Controller
@@ -155,7 +182,10 @@ function RequestCredential() {
                     })}
                   >
                     {credentialTypes.map((cred, index) => (
-                      <MenuItem key={index} value={cred}>
+                      <MenuItem
+                        key={index}
+                        value={cred}
+                      >
                         {cred}
                       </MenuItem>
                     ))}
@@ -164,7 +194,10 @@ function RequestCredential() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={11}>
+          <Grid
+            item
+            xs={11}
+          >
             <FormLabel>Attributes</FormLabel>
             {attributes.map((att, index) => (
               <Stack
@@ -208,7 +241,10 @@ function RequestCredential() {
               </Stack>
             ))}
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <Box sx={{ display: "flex", justifyContent: "right" }}>
               {errors.selectedContact && (
                 <Alert severity="error">
@@ -223,7 +259,11 @@ function RequestCredential() {
                   Request credential successfully sent
                 </Alert>
               )}
-              <Button variant="contained" color="primary" type="submit">
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
                 Request Credential
               </Button>
             </Box>

@@ -96,47 +96,49 @@ describe("Multisign error feedback", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.alerttext
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .alerttext
       )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.title
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.detailtext
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.stepone
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.steptwo
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
           .title
       )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
-          .detailtext
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
-          .stepone
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
-          .steptwo
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help.title
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help.detailtext.replace(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help.detailtext.replace(
           "<0>{{discordSupportChannel}}</0>",
           ""
         )
@@ -145,7 +147,7 @@ describe("Multisign error feedback", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
           .supportchannel
       )
     ).toBeVisible();
@@ -178,7 +180,7 @@ describe("Multisign error feedback", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
           .supportchannel
       )
     ).toBeVisible();
@@ -186,7 +188,7 @@ describe("Multisign error feedback", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+          EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
             .supportchannel
         )
       );

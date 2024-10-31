@@ -1,7 +1,7 @@
 import { SignifyClient } from "signify-ts";
 import { CoreEventEmitter } from "./event";
-import { ConnectionHistoryType } from "./services/connection.types";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./services/connectionService.types";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -26,9 +26,11 @@ enum MiscRecordId {
   APP_BIOMETRY = "app-biometry",
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
+  APP_CRED_VIEW_TYPE = "app-cred-view-type",
   KERIA_CONNECT_URL = "keria-connect-url",
   KERIA_BOOT_URL = "keria-boot-url",
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
+  APP_CRED_FAVOURITE_INDEX = "cred-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
   LOGIN_METADATA = "login-metadata",
@@ -72,19 +74,21 @@ type IpexMessage = {
     q: JSONValue;
     a: any;
     e: any;
+    rp: string;
   };
   pathed: {
-    acdc: string;
-    iss: string;
-    anc: string;
+    acdc?: string;
+    iss?: string;
+    anc?: string;
   };
 };
 
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  serviceEndpoints?: string[];
-  notes?: ConnectionNoteDetails[];
+  serviceEndpoints: string[];
+  notes: ConnectionNoteDetails[];
+  historyItems: ConnectionHistoryItem[];
 }
 interface NotificationRpy {
   a: {
@@ -163,6 +167,7 @@ enum NotificationRoute {
   MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+  ExnIpexOffer = "/exn/ipex/offer",
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
 }
