@@ -209,9 +209,16 @@ describe("Connection service of agent", () => {
   test("Should return connection type to trigger UI to create a new identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
-    const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
-    signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
-      return { name: url, response: { i: "id" } };
+    const connectionId = "connectionId";
+    const alias = "alias";
+    const oobi = `http://localhost/oobi/${connectionId}/agent/agentId?groupId=${groupId}&name=${alias}`;
+    const now = new Date().toISOString();
+    updateContactMock.mockResolvedValue({
+      alias,
+      oobi,
+      id: connectionId,
+      groupCreationId: groupId,
+      createdAt: now,
     });
 
     const result = await connectionService.connectByOobiUrl(oobi);
@@ -220,11 +227,11 @@ describe("Connection service of agent", () => {
       groupId,
       connection: {
         groupId,
-        id: oobi,
-        label: "uuid",
-        oobi: `${oobiPrefix}${failUuid}`,
+        id: connectionId,
+        label: alias,
+        oobi,
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: now,
+        createdAtUTC: now,
       },
     });
     expect(connectionStorage.save).toBeCalled();
@@ -233,9 +240,16 @@ describe("Connection service of agent", () => {
   test("Can create groupId connections for existing pending multi-sigs", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
-    const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
-    signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
-      return { alias: "alias", name: url, response: { i: "id" } };
+    const connectionId = "connectionId";
+    const alias = "alias";
+    const oobi = `http://localhost/oobi/${connectionId}/agent/agentId?groupId=${groupId}&name=${alias}`;
+    const now = new Date();
+    updateContactMock.mockResolvedValue({
+      alias,
+      oobi,
+      id: connectionId,
+      groupCreationId: groupId,
+      createdAtUTC: now,
     });
 
     await connectionService.connectByOobiUrl(oobi);
@@ -267,14 +281,14 @@ describe("Connection service of agent", () => {
         label: "keri",
         oobi: "oobi",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: expect.any(String),
+        createdAtUTC: expect.any(String),
       },
       {
         id: keriContacts[0].id,
         label: "keri",
         oobi: "oobi",
         status: ConnectionStatus.PENDING,
-        connectionDate: expect.any(String),
+        createdAtUTC: expect.any(String),
       },
     ]);
   });
@@ -294,7 +308,7 @@ describe("Connection service of agent", () => {
       {
         id: metadata.id,
         label: metadata.alias,
-        connectionDate: metadata.createdAt.toISOString(),
+        createdAtUTC: metadata.createdAt.toISOString(),
         status: ConnectionStatus.CONFIRMED,
         oobi: metadata.oobi,
         groupId: metadata.groupId,
@@ -386,11 +400,18 @@ describe("Connection service of agent", () => {
 
   test("can receive keri oobi", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    signifyClient.oobis().resolve.mockResolvedValue({
-      done: true,
+    const groupId = "123";
+    const connectionId = "connectionId";
+    const alias = "alias";
+    const oobi = `http://localhost/oobi/${connectionId}/agent/agentId?groupId=${groupId}&name=${alias}`;
+    const now = new Date();
+    updateContactMock.mockResolvedValue({
+      alias,
+      oobi,
+      id: connectionId,
+      groupCreationId: groupId,
+      createdAtUTC: now,
     });
-    const oobi =
-      "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
     await connectionService.connectByOobiUrl(oobi);
   });
 
@@ -434,7 +455,7 @@ describe("Connection service of agent", () => {
       await connectionService.getConnectionShortDetailById(keriContacts[0].id)
     ).toMatchObject({
       id: keriContacts[0].id,
-      connectionDate: nowISO,
+      createdAtUTC: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
     });
@@ -461,6 +482,8 @@ describe("Connection service of agent", () => {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
         oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR/agent/EP48HXCPvtzGu0c90gG9fkOYiSoi6U5Am-XaqcoNHTBl",
+        groupId: "group-id",
+        createdAt: new Date(),
         challenges: [],
         wellKnowns: [],
       },
@@ -468,6 +491,8 @@ describe("Connection service of agent", () => {
         id: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
         alias: "e6d37a7b-00e9-4f85-8cf9-2123d15fc094",
         oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W/agent/EJMV0RgikXM7jyvXB9oOyKSZzo_AsYrEgP15Ly0dwzEL",
+        groupId: "group-id",
+        createdAt: new Date(),
         challenges: [],
         wellKnowns: [],
       },
@@ -494,7 +519,7 @@ describe("Connection service of agent", () => {
       {
         id: metadata.id,
         label: metadata.alias,
-        connectionDate: metadata.createdAt.toISOString(),
+        createdAtUTC: metadata.createdAt.toISOString(),
         status: ConnectionStatus.CONFIRMED,
         oobi: metadata.oobi,
         groupId: metadata.groupId,
@@ -509,7 +534,6 @@ describe("Connection service of agent", () => {
     expect(op).toEqual({
       response: { i: url, dt: now },
       name: url,
-      alias: expect.any(String),
       done: true,
       metadata: {
         oobi: `${oobiPrefix}${failUuid}`,
@@ -520,6 +544,9 @@ describe("Connection service of agent", () => {
   test("can resolve oobi with a name parameter (URL decoded)", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
+    signifyClient.operations().get = jest
+      .fn()
+      .mockResolvedValue({ done: true });
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
       response: { i: url, dt: now },
@@ -527,7 +554,6 @@ describe("Connection service of agent", () => {
       metadata: {
         oobi: `${oobiPrefix}${failUuid}`,
       },
-      alias: "alias with spaces",
       done: true,
     });
   });
@@ -685,12 +711,13 @@ describe("Connection service of agent", () => {
         [`${KeriaContactKeyPrefix.HISTORY_REVOKE}:id`]: JSON.stringify(
           mockHistoryRevokeMessage
         ),
+        createdAt: nowISO,
       })
     );
 
     connectionStorage.findById = jest.fn().mockResolvedValue({
       id: keriContacts[0].id,
-      createdAt: now,
+      createdAtUTC: now,
       alias: "keri",
       oobi: "oobi",
       groupId: "group-id",
@@ -702,7 +729,7 @@ describe("Connection service of agent", () => {
       label: "alias",
       serviceEndpoints: ["oobi"],
       status: ConnectionStatus.CONFIRMED,
-      connectionDate: nowISO,
+      createdAtUTC: nowISO,
       notes: [connectionNote],
       historyItems: [mockHistoryIpexMessage, mockHistoryRevokeMessage].map(
         (item) => ({

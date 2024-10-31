@@ -174,7 +174,7 @@ export const EditConnectionsContainer = ({
           <ConnectionDetailsHeader
             logo={connectionDetails?.logo || KeriLogo}
             label={connectionDetails?.label}
-            date={connectionDetails?.connectionDate}
+            date={connectionDetails?.createdAtUTC}
           />
           <div className="connection-details-info-block">
             {updatedNotes.length ? (

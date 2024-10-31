@@ -238,7 +238,7 @@ describe("Oobi/endrole", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -633,7 +633,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -737,7 +737,7 @@ describe("Creation of multi-sig", () => {
         id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
       },
     ];
     await expect(
@@ -757,7 +757,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
       },
     ];
     await expect(
@@ -988,7 +988,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -1052,7 +1052,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -1076,7 +1076,7 @@ describe("Creation of multi-sig", () => {
             label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
             oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
             status: ConnectionStatus.CONFIRMED,
-            connectionDate: new Date().toISOString(),
+            createdAtUTC: new Date().toISOString(),
           },
         ],
         2

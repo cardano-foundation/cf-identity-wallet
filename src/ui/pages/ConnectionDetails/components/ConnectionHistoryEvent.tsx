@@ -99,8 +99,8 @@ const ConnectionHistoryEvent = ({
           className="connection-details-history-timestamp"
         >
           {` ${formatShortDate(
-            `${connectionDetails?.connectionDate}`
-          )} - ${formatTimeToSec(`${connectionDetails?.connectionDate}`)}`}
+            `${connectionDetails?.createdAtUTC}`
+          )} - ${formatTimeToSec(`${connectionDetails?.createdAtUTC}`)}`}
         </span>
       </p>
     </div>

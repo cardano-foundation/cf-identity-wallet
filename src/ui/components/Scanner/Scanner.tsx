@@ -323,7 +323,7 @@ const Scanner = forwardRef(
           id: pendingId,
           label: connectionName || pendingId,
           status: ConnectionStatus.PENDING,
-          connectionDate: new Date().toString(),
+          createdAtUTC: new Date().toString(),
         })
       );
 
