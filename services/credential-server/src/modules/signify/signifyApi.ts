@@ -10,7 +10,6 @@ import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../agent";
-import lmdb from "../../utils/lmdb";
 
 export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
@@ -417,12 +416,10 @@ export class SignifyApi {
     return op;
   }
 
-  async saidifySchema(schema: any, label?: string) {
+  async saidifySchema(schema: any, label?: string): Promise<any> {
     const customizableKeys: { [key: string]: any } = {};
-
     const removeCustomizables = (obj: any): any => {
       if (typeof obj !== "object" || obj === null) return obj;
-
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
           if (obj[key] && obj[key].customizable === true) {
@@ -435,34 +432,20 @@ export class SignifyApi {
       }
       return obj;
     };
-
     schema = removeCustomizables(schema);
-
     const saidifyDeepest = (obj: any): any => {
       if (typeof obj !== "object" || obj === null) return obj;
-
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
           obj[key] = saidifyDeepest(obj[key]);
         }
       }
-
       if (obj.hasOwnProperty(label)) {
         return Saider.saidify(obj, undefined, undefined, label)[1];
       }
-
       return obj;
     };
-
     const saidifiedSchema = saidifyDeepest(schema);
-    let schemas = lmdb.get("schemas");
-    if (schemas === undefined) {
-      schemas = {};
-    }
-    schemas[saidifiedSchema.$id] = {
-      schema: saidifiedSchema,
-      customizableKeys,
-    };
-    await lmdb.put("schemas", schemas);
+    return { saidifiedSchema, customizableKeys };
   }
 }

@@ -24,16 +24,16 @@ import {
   EDGES_BLOCK,
   RULES_BLOCK,
 } from "../utils/schemaBlueprint";
-import FieldSection from "../components/generateSchema/FieldSection";
-import { OptionalField } from "../constants/type";
+import CreateSchemaField from "../components/createSchema/CreateSchemaField";
+import { SchemaField } from "../constants/type";
 
-const GenerateSchemaPage: React.FC = () => {
+const CreateSchemaPage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [credentialType, setCredentialType] = useState("");
-  const [edges, setEdges] = useState<OptionalField[]>([]);
-  const [rules, setRules] = useState<OptionalField[]>([]);
-  const [attributes, setAttributes] = useState<OptionalField[]>([]);
+  const [edges, setEdges] = useState<SchemaField[]>([]);
+  const [rules, setRules] = useState<SchemaField[]>([]);
+  const [attributes, setAttributes] = useState<SchemaField[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedSchema, setGeneratedSchema] = useState<any>(null);
@@ -65,7 +65,7 @@ const GenerateSchemaPage: React.FC = () => {
     schema.credentialType = credentialType;
 
     const addFieldsToSchema = (
-      fields: OptionalField[],
+      fields: SchemaField[],
       schemaProperties: any,
       requiredFields: string[]
     ) => {
@@ -154,7 +154,7 @@ const GenerateSchemaPage: React.FC = () => {
   const saveSchema = async () => {
     try {
       const response = await axios.post(
-        `${config.endpoint}${config.path.generateSchema}`,
+        `${config.endpoint}${config.path.saveSchema}`,
         generatedSchema
       );
       console.log("Schema saved successfully:", response.data);
@@ -166,7 +166,7 @@ const GenerateSchemaPage: React.FC = () => {
   };
 
   const handleAddField = (section: string) => {
-    const newField: OptionalField = {
+    const newField: SchemaField = {
       name: "",
       description: "",
       type: "string",
@@ -190,10 +190,10 @@ const GenerateSchemaPage: React.FC = () => {
     field: "name" | "description" | "type" | "default" | "fields",
     value: any
   ) => {
-    const updateFields = (fields: OptionalField[]) => {
+    const updateFields = (fields: SchemaField[]) => {
       const newFields = [...fields];
       if (field === "fields") {
-        newFields[index].fields = value as OptionalField[];
+        newFields[index].fields = value as SchemaField[];
       } else {
         newFields[index][field] = value as any;
       }
@@ -214,7 +214,7 @@ const GenerateSchemaPage: React.FC = () => {
     index: number,
     value: boolean
   ) => {
-    const updateFields = (fields: OptionalField[]) => {
+    const updateFields = (fields: SchemaField[]) => {
       const newFields = [...fields];
       newFields[index].customizable = value;
       return newFields;
@@ -230,7 +230,7 @@ const GenerateSchemaPage: React.FC = () => {
   };
 
   const removeField = (section: string, index: number) => {
-    const updateFields = (fields: OptionalField[]) =>
+    const updateFields = (fields: SchemaField[]) =>
       fields.filter((_, i) => i !== index);
 
     if (section === "edges") {
@@ -331,7 +331,7 @@ const GenerateSchemaPage: React.FC = () => {
                       <AddIcon />
                     </IconButton>
                   </div>
-                  <FieldSection
+                  <CreateSchemaField
                     section="attributes"
                     fields={attributes}
                     handleFieldChange={handleFieldChange}
@@ -361,7 +361,7 @@ const GenerateSchemaPage: React.FC = () => {
                       <AddIcon />
                     </IconButton>
                   </div>
-                  <FieldSection
+                  <CreateSchemaField
                     section="edges"
                     fields={edges}
                     handleFieldChange={handleFieldChange}
@@ -391,7 +391,7 @@ const GenerateSchemaPage: React.FC = () => {
                       <AddIcon />
                     </IconButton>
                   </div>
-                  <FieldSection
+                  <CreateSchemaField
                     section="rules"
                     fields={rules}
                     handleFieldChange={handleFieldChange}
@@ -420,7 +420,7 @@ const GenerateSchemaPage: React.FC = () => {
                     severity="success"
                     sx={{ marginRight: 2 }}
                   >
-                    Schema generated successfully
+                    Schema create successfully
                   </Alert>
                 )}
                 <Button
@@ -428,7 +428,7 @@ const GenerateSchemaPage: React.FC = () => {
                   color="primary"
                   type="submit"
                 >
-                  Generate Schema
+                  Create Schema
                 </Button>
               </Box>
             </Grid>
@@ -440,7 +440,7 @@ const GenerateSchemaPage: React.FC = () => {
             xs={12}
           >
             <Box sx={{ marginTop: 4 }}>
-              <Typography variant="h6">Generated Schema</Typography>
+              <Typography variant="h6">Create Schema</Typography>
               <pre
                 style={{
                   backgroundColor: "#f5f5f5",
@@ -469,4 +469,4 @@ const GenerateSchemaPage: React.FC = () => {
   );
 };
 
-export { GenerateSchemaPage };
+export { CreateSchemaPage };

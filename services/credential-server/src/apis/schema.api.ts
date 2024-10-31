@@ -4,7 +4,7 @@ import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 import { Agent } from "../agent";
 import lmdb from "../utils/lmdb";
-import { SchemaShortDetails } from "../types/schema.type";
+import { SCHEMAS_KEY, SchemaShortDetails } from "../types/schema.type";
 
 async function schemaApi(req: Request, res: Response) {
   const { id } = req.params;
@@ -16,7 +16,7 @@ async function schemaApi(req: Request, res: Response) {
 }
 
 function schemaList(req: Request, res: Response) {
-  const schemas = lmdb.get("schemas");
+  const schemas = lmdb.get(SCHEMAS_KEY);
   if (!schemas) {
     return res.status(404).send("No schemas found");
   }
@@ -36,7 +36,7 @@ function schemaList(req: Request, res: Response) {
 
 async function schemaCustomFields(req: Request, res: Response) {
   const { id } = req.query;
-  const schemas = await lmdb.get("schemas");
+  const schemas = await lmdb.get(SCHEMAS_KEY);
   if (!schemas) {
     return res.status(404).send("No schemas found");
   }
@@ -49,7 +49,7 @@ async function schemaCustomFields(req: Request, res: Response) {
   return res.send({ customizableKeys: data.customizableKeys });
 }
 
-async function saidifySchema(req: Request, res: Response) {
+async function saveSchema(req: Request, res: Response) {
   try {
     await Agent.agent.saidifySchema(req.body, "$id");
     const response: ResponseData<string> = {
@@ -72,4 +72,4 @@ async function saidifySchema(req: Request, res: Response) {
   }
 }
 
-export { schemaApi, schemaList, schemaCustomFields, saidifySchema };
+export { schemaApi, schemaList, schemaCustomFields, saveSchema };

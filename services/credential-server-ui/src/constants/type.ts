@@ -15,11 +15,11 @@ export interface SchemaShortDetails {
   title: string;
 }
 
-export interface OptionalField {
+export interface SchemaField {
   name: string;
   description: string;
   type: string;
   customizable: boolean;
   default?: string | number;
-  fields?: OptionalField[];
+  fields?: SchemaField[];
 }

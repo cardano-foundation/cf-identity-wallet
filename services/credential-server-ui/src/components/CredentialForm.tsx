@@ -12,12 +12,11 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { config } from "../config";
 import { Contact } from "../types";
-import { Attributes, CredentialType, UUID_REGEX } from "../constants";
+import { CredentialType, UUID_REGEX } from "../constants";
 import {
   IAttributeObj,
   IAttributes,

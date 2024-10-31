@@ -25,7 +25,7 @@ const config = {
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
     deleteContact: "/deleteContact",
-    generateSchema: "/generateSchema",
+    saveSchema: "/saveSchema",
     schemaList: "/schemaList",
     schemaCustomFields: "/schemaCustomFields",
   },

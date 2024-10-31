@@ -9,11 +9,11 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { OptionalField } from "../../constants/type";
+import { SchemaField } from "../../constants/type";
 
 interface FieldSectionProps {
   section: string;
-  fields: OptionalField[];
+  fields: SchemaField[];
   handleFieldChange: (
     section: string,
     index: number,
@@ -29,7 +29,7 @@ interface FieldSectionProps {
   removeField: (section: string, index: number) => void;
 }
 
-const FieldSection: React.FC<FieldSectionProps> = ({
+const CreateSchemaField: React.FC<FieldSectionProps> = ({
   section,
   fields,
   handleFieldChange,
@@ -62,7 +62,7 @@ const FieldSection: React.FC<FieldSectionProps> = ({
   };
 
   const handleAddNestedField = (parentIndex: number) => {
-    const newField: OptionalField = {
+    const newField: SchemaField = {
       name: "",
       description: "",
       type: "string",
@@ -192,7 +192,7 @@ const FieldSection: React.FC<FieldSectionProps> = ({
           )}
           {field.fields && field.fields.length > 0 && (
             <div style={{ marginLeft: "20px" }}>
-              <FieldSection
+              <CreateSchemaField
                 section={section}
                 fields={field.fields}
                 handleFieldChange={(
@@ -248,4 +248,4 @@ const FieldSection: React.FC<FieldSectionProps> = ({
   );
 };
 
-export default FieldSection;
+export default CreateSchemaField;

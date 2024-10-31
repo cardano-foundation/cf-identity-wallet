@@ -10,7 +10,7 @@ import {
 } from "./apis/credential.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import {
-  saidifySchema,
+  saveSchema,
   schemaApi,
   schemaCustomFields,
   schemaList,
@@ -31,7 +31,7 @@ router.get(config.path.contactCredentials, contactCredentials);
 router.post(config.path.requestDisclosure, requestDisclosure);
 router.post(config.path.revokeCredential, revokeCredential);
 router.delete(config.path.deleteContact, deleteContact);
-router.post(config.path.generateSchema, saidifySchema);
+router.post(config.path.saveSchema, saveSchema);
 router.get(config.path.schemaList, schemaList);
 router.get(config.path.schemaCustomFields, schemaCustomFields);
 

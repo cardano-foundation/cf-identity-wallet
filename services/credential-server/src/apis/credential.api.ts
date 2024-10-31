@@ -5,6 +5,7 @@ import { httpResponse } from "../utils/response.util";
 import { log } from "../log";
 import { SignifyApi } from "../modules/signify";
 import lmdb from "../utils/lmdb";
+import { SCHEMAS_KEY } from "../types/schema.type";
 
 async function issueAcdcCredential(
   req: Request,
@@ -12,7 +13,7 @@ async function issueAcdcCredential(
   next: NextFunction
 ): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
-  if (!(await lmdb.get("schemas"))[schemaSaid]) {
+  if (!(await lmdb.get(SCHEMAS_KEY))[schemaSaid]) {
     const response: ResponseData<string> = {
       statusCode: 409,
       success: false,

@@ -3,4 +3,6 @@ interface SchemaShortDetails {
   title: string;
 }
 
-export type { SchemaShortDetails };
+const SCHEMAS_KEY = "schemas";
+
+export { SCHEMAS_KEY, SchemaShortDetails };

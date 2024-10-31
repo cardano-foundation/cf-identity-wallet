@@ -10,7 +10,7 @@ import { ConnectionPage } from "./pages/ConnectionPage";
 import { CredentialPage } from "./pages/CredentialPage";
 import { RequestCredential } from "./pages/RequestCredential";
 import { RevocationPage } from "./pages/RevocationPage";
-import { GenerateSchemaPage } from "./pages/GenerateSchemaPage";
+import { CreateSchemaPage } from "./pages/CreateSchemaPage";
 
 export const MENU_ITEMS = [
   {
@@ -38,10 +38,10 @@ export const MENU_ITEMS = [
     component: <RevocationPage />,
   },
   {
-    key: "generate-schema",
-    label: "Generate Schema",
-    path: "/generate-schema",
-    component: <GenerateSchemaPage />,
+    key: "create-schema",
+    label: "Create Schema",
+    path: "/create-schema",
+    component: <CreateSchemaPage />,
   },
 ];
 

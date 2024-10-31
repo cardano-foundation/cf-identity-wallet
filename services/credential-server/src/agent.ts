@@ -3,8 +3,10 @@ import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
 import { readFile, writeFile } from "fs/promises";
-import { existsSync, mkdir, mkdirSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import path from "path";
+import { SCHEMAS_KEY } from "./types/schema.type";
+import lmdb from "./utils/lmdb";
 
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
@@ -265,8 +267,18 @@ class Agent {
     await this.signifyApi.deleteNotification(grantNotification.i);
   }
 
-  async saidifySchema(schema: any, label?: string) {
-    await this.signifyApi.saidifySchema(schema, label);
+  async saidifySchema(schema: any, label?: string): Promise<void> {
+    const { saidifiedSchema, customizableKeys } =
+      await this.signifyApi.saidifySchema(schema, label);
+    let schemas = await lmdb.get(SCHEMAS_KEY);
+    if (schemas === undefined) {
+      schemas = {};
+    }
+    schemas[saidifiedSchema.$id] = {
+      schema: saidifiedSchema,
+      customizableKeys,
+    };
+    await lmdb.put(SCHEMAS_KEY, schemas);
   }
 }
 
