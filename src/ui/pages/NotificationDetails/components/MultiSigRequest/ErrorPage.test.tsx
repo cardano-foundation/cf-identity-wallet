@@ -28,7 +28,6 @@ jest.mock("../../../../../core/agent/agent", () => ({
         createIdentifier: jest.fn(() => ({
           identifier: "mock-id",
           isPending: true,
-          signifyName: "mock name",
         })),
       },
       connections: {

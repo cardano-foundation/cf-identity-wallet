@@ -10,9 +10,11 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
 const getIdentifiersMock = jest.fn();
+const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
+const operationMock = jest.fn()
 const mockSigner = {
   _code: "A",
   _size: -1,
@@ -46,6 +48,7 @@ const signifyClient = jest.mocked({
     interact: jest.fn(),
     rotate: rotateIdentifierMock,
     members: getIdentifierMembersMock,
+    update: updateIdentifierMock,
   }),
   operations: () => ({
     get: operationGetMock,
@@ -162,7 +165,6 @@ const groupMetadata = {
 const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
   groupMetadata,
@@ -344,7 +346,6 @@ describe("Single sig service of agent", () => {
       })
     ).toEqual({
       identifier: aid,
-      signifyName: expect.any(String),
       isPending: false,
     });
     expect(createIdentifierMock).toBeCalled();
@@ -387,7 +388,6 @@ describe("Single sig service of agent", () => {
       })
     ).toEqual({
       identifier: aid,
-      signifyName: expect.any(String),
       isPending: true,
     });
     expect(createIdentifierMock).toBeCalled();
@@ -420,6 +420,28 @@ describe("Single sig service of agent", () => {
         theme: 44,
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
+  });
+
+  test("should throw an error if identifier name already exists", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "newDisplayName";
+    const theme = 0;
+    const errorMessage = "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
+    createIdentifierMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: "i",
+        },
+      },
+      op: operationMock,
+    });
+    operationMock.mockRejectedValue(new Error(errorMessage));
+    await expect(
+      identifierService.createIdentifier({
+        displayName,
+        theme,
+      })
+    ).rejects.toThrowError(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${theme}:${displayName}`);
   });
 
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
@@ -480,6 +502,25 @@ describe("Single sig service of agent", () => {
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+      }
+    );
+  });
+
+  test("can update an identifier", async () => {
+    const newDisplayName = "newDisplayName";
+    const newTheme = 1;
+    await identifierService.updateIdentifier(keriMetadataRecord.id, {
+      displayName: newDisplayName,
+      theme: newTheme,
+    });
+    expect(updateIdentifierMock).toBeCalledWith(keriMetadataRecord.id, {
+      name: `${newTheme}:${newDisplayName}`,
+    });
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      keriMetadataRecord.id,
+      {
+        displayName: newDisplayName,
+        theme: newTheme,
       }
     );
   });

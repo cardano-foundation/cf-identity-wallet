@@ -29,7 +29,6 @@ import {
 } from "../event.types";
 import {
   ConnectionHistoryItem,
-  KeriaContact,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
 
