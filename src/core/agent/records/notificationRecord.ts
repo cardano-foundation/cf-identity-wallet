@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { Salter } from "signify-ts";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
 import { LinkedGroupRequestDetails } from "./notificationRecord.types";
@@ -28,7 +28,7 @@ class NotificationRecord extends BaseRecord {
   constructor(props: NotificationRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? uuidv4();
+      this.id = props.id ?? new Salter({}).qb64;
       this.createdAt = props.createdAt ?? new Date();
       this.a = props.a;
       this.route = props.route;

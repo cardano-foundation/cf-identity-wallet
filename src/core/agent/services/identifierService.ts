@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
-import { Signer } from "signify-ts";
+import { Salter, Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
   IdentifierDetails,
@@ -138,7 +137,7 @@ class IdentifierService extends AgentService {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
 
-    const signifyName = uuidv4();
+    const signifyName = new Salter({}).qb64;
     const operation = await this.props.signifyClient
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());

@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { Salter } from "signify-ts";
 import { Agent } from "../agent";
 import {
@@ -368,7 +367,7 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const alias = new URL(url).searchParams.get("name") ?? new Salter({}).qb64;
     let operation;
     if (waitForCompletion) {
       operation = await waitAndGetDoneOp(

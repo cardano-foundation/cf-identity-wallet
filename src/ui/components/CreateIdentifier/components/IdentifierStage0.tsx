@@ -3,7 +3,7 @@ import { Keyboard } from "@capacitor/keyboard";
 import { IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { Salter } from "signify-ts";
 import { Agent } from "../../../../core/agent/agent";
 import {
   CreateIdentifierInputs,
@@ -101,7 +101,7 @@ const IdentifierStage0 = ({
       };
     } else if (state.selectedAidType == 1) {
       groupMetadata = {
-        groupId: uuidv4(),
+        groupId: new Salter({}).qb64,
         groupInitiator: true,
         groupCreated: false,
       };

@@ -14,7 +14,7 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -317,7 +317,7 @@ const Scanner = forwardRef(
         return;
       }
 
-      const pendingId = uuidv4();
+      const pendingId = new Salter({}).qb64;
       dispatch(
         updateOrAddConnectionCache({
           id: pendingId,

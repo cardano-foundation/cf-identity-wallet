@@ -4,11 +4,11 @@ import {
   EventResult,
   HabState,
   messagize,
+  Salter,
   Serder,
   Siger,
   State,
 } from "signify-ts";
-import { v4 as uuidv4 } from "uuid";
 import {
   IdentifierResult,
   NotificationRoute,
@@ -21,7 +21,6 @@ import type {
   AuthorizationRequestExn,
 } from "../agent.types";
 import {
-  IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
   IdentifierStorage,
   NotificationStorage,
@@ -130,7 +129,7 @@ class MultiSigService extends AgentService {
         return { state: aid.response };
       })
     );
-    const signifyName = uuidv4();
+    const signifyName = new Salter({}).qb64;
     const result = await this.createAidMultisig(
       ourAid,
       otherAids,
@@ -491,7 +490,7 @@ class MultiSigService extends AgentService {
     const aid = await this.props.signifyClient
       .identifiers()
       .get(identifier?.id);
-    const signifyName = uuidv4();
+    const signifyName = new Salter({}).qb64;
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
     const op = res.op;
     const multisigId = op.name.split(".")[1];

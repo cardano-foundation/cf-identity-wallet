@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { Salter } from "signify-ts";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 
 interface BasicRecordStorageProps {
@@ -16,7 +16,7 @@ class BasicRecord extends BaseRecord {
   constructor(props: BasicRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? uuidv4();
+      this.id = props.id ?? new Salter({}).qb64;
       this.createdAt = props.createdAt ?? new Date();
       this.content = props.content;
       this._tags = props.tags ?? {};
