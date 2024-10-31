@@ -1,7 +1,12 @@
 import { CardListViewType } from "../../../ui/components/SwitchCardView";
 
-interface IdentifierViewTypeCacheProps {
+interface ViewType {
   viewType: CardListViewType | null;
   favouriteIndex: number;
 }
-export type { IdentifierViewTypeCacheProps };
+
+interface ViewTypeCacheProps {
+  identifier: ViewType;
+  credential: ViewType;
+}
+export type { ViewTypeCacheProps };

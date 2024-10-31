@@ -83,9 +83,15 @@ const initialStateFull = {
       passcodeIsSet: true,
     },
   },
-  identifierViewTypeCacheCache: {
-    viewType: null,
-    favouriteIndex: 0,
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
   seedPhraseCache: {},
   credsCache: {
@@ -308,8 +314,15 @@ describe("Connections page", () => {
       identifiersCache: {
         identifiers: [],
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: [],
@@ -374,8 +387,15 @@ describe("Connections page", () => {
       identifiersCache: {
         identifiers: [],
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -472,8 +492,15 @@ describe("Connections page from Credentials tab", () => {
       credsArchivedCache: {
         creds: [],
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: [],
@@ -560,8 +587,15 @@ describe("Connections page from Credentials tab", () => {
       identifiersCache: {
         identifiers: filteredIdentifierFix,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
