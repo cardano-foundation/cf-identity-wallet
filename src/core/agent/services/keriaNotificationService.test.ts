@@ -50,6 +50,12 @@ const operationsGetMock = jest.fn().mockImplementation((id: string) => {
   };
 });
 
+jest.mock("signify-ts", () => ({
+  Salter: jest.fn().mockImplementation(() => {
+    return { qb64: "" };
+  }),
+}));
+
 const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),

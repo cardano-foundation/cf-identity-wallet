@@ -35,6 +35,12 @@ const operationGetMock = jest.fn().mockImplementation((id: string) => {
   };
 });
 
+jest.mock("signify-ts", () => ({
+  Salter: jest.fn().mockImplementation(() => {
+    return { qb64: "" };
+  }),
+}));
+
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -344,7 +350,6 @@ describe("Single sig service of agent", () => {
       })
     ).toEqual({
       identifier: aid,
-      signifyName: expect.any(String),
       isPending: false,
     });
     expect(createIdentifierMock).toBeCalled();
@@ -387,7 +392,6 @@ describe("Single sig service of agent", () => {
       })
     ).toEqual({
       identifier: aid,
-      signifyName: expect.any(String),
       isPending: true,
     });
     expect(createIdentifierMock).toBeCalled();
