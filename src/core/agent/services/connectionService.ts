@@ -66,7 +66,15 @@ class ConnectionService extends AgentService {
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
-    this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
+    this.props.eventEmitter.on(
+      EventTypes.ConnectionStateChanged,
+      (event: ConnectionStateChangedEvent) => {
+        if (event.payload.url) {
+          this.resolveOobi(event.payload.url);
+        }
+        callback(event);
+      }
+    );
   }
 
   onConnectionRemoved() {
@@ -89,27 +97,28 @@ class ConnectionService extends AgentService {
         isMultiSigInvite: multiSigInvite,
         connectionId: undefined,
         status: ConnectionStatus.PENDING,
+        url,
       },
     });
 
-    const operation = await this.resolveOobi(url, multiSigInvite);
-    const connectionId =
-      operation.done && operation.response
-        ? operation.response.i
-        : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
+    const connectionId = new URL(url).pathname
+      .split("/oobi/")
+      .pop()!
+      .split("/")[0];
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     const connectionMetadata: any = {
-      alias: operation.alias,
+      alias,
       oobi: url,
-      pending: !operation.done,
+      pending: false,
     };
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
-    const connectionDate = operation.response?.dt ?? new Date();
+    const connectionDate = new Date().toISOString();
     const connection = {
       id: connectionId,
       connectionDate,
-      oobi: operation.metadata.oobi,
+      oobi: url,
       status: ConnectionStatus.CONFIRMED,
-      label: operation.alias,
+      label: alias,
       groupId,
     };
 

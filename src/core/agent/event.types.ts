@@ -50,6 +50,7 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
     isMultiSigInvite?: boolean;
     connectionId?: string;
     status: ConnectionStatus;
+    url?: string;
   };
 }
 
