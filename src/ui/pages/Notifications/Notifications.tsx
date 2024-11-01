@@ -18,24 +18,13 @@ import { CredentialDetailModal } from "../../components/CredentialDetailModule";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { showError } from "../../utils/error";
 import { timeDifference } from "../../utils/formatters";
-import { FilterChipProps, NotificationFilter } from "./Notification.types";
+import { NotificationFilter } from "./Notification.types";
 import { NotificationItem } from "./NotificationItem";
 import "./Notifications.scss";
 import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
-
-const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
-  <span>
-    <IonChip
-      className={isActive ? "selected" : ""}
-      onClick={() => onClick(filter)}
-      data-testid={`${filter}-filter-btn`}
-    >
-      {label}
-    </IonChip>
-  </span>
-);
+import { FilterChip } from "../../components/FilterChip/FilterChip";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
@@ -167,7 +156,7 @@ const Notifications = () => {
       >
         <div className="notifications-tab-chips">
           {filterOptions.map((option) => (
-            <Chip
+            <FilterChip
               key={option.filter}
               filter={option.filter}
               label={option.label}

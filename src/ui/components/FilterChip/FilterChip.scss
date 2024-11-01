@@ -1,0 +1,7 @@
+.filter-chip {
+  min-width: fit-content;
+
+  .selected {
+    background: var(--ion-color-primary-gradient);
+  }
+}

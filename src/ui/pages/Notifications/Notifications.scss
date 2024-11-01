@@ -30,17 +30,9 @@
     font-size: 1rem;
     font-weight: 400;
 
-    .selected {
-      background: var(--ion-color-primary-gradient);
-    }
-
     @media screen and (min-width: 250px) and (max-width: 370px) {
       padding-inline: 0.9rem;
       font-size: 0.8rem;
-    }
-
-    span {
-      min-width: fit-content;
     }
   }
 
