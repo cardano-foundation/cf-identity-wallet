@@ -546,8 +546,12 @@ describe("Signify notification service of agent", () => {
       exn: {
         r: NotificationRoute.MultiSigRpy,
         p: "p",
-        a: { i: "i" },
-        e: {},
+        a: { i: "i", gid: "gid" },
+        e: {
+          rpy: {
+            r: "/end/role/add",
+          },
+        },
       },
     });
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
@@ -560,29 +564,6 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue(identifierMetadataRecordProps);
 
     const notes = [notificationMultisigRpyProp];
-    const multisigNotificationExn = {
-      exn: {
-        a: {
-          gid: "uuid",
-        },
-        e: {
-          rpy: {
-            v: "KERI10JSON000111_",
-            t: "rpy",
-            d: "uuid",
-            dt: "2024-07-12T09:37:48.801000+00:00",
-            r: "/end/role/add",
-            a: {
-              cid: "uuid",
-              role: "agent",
-              eid: "new-uuid",
-            },
-          },
-          d: "uuid",
-        },
-      },
-    };
-    groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif);
     }
@@ -605,7 +586,7 @@ describe("Signify notification service of agent", () => {
     expect(
       ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
-      notificationIpexApplyProp,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
     );
   });
@@ -1506,14 +1487,19 @@ describe("Signify notification service of agent", () => {
       exn: {
         r: NotificationRoute.MultiSigRpy,
         p: "p",
-        a: { i: "i" },
-        e: {},
+        a: { i: "i", gid: "gid" },
+        e: {
+          rpy: {
+            r: "/end/role/add",
+          },
+        },
       },
     });
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
       new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    ).mockRejectedValueOnce(
+      new Error(errorMessage)
     );
-    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
     await expect(
       keriaNotificationService.processNotification(notificationMultisigRpyProp)
     ).rejects.toThrow(errorMessage);
@@ -1544,29 +1530,6 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should throw error if other error occurs with route multisig/rpy", async () => {
-    const errorMessage = "Error - 500";
-    exchangesGetMock.mockResolvedValueOnce({
-      exn: {
-        r: NotificationRoute.MultiSigRpy,
-        p: "p",
-        a: { i: "i" },
-        e: {},
-      },
-    });
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-    );
-    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(errorMessage)
-    );
-
-    await expect(
-      keriaNotificationService.processNotification(notificationMultisigRpyProp)
-    ).rejects.toThrow(errorMessage);
-  });
-
   test("Should return false if 404 error occurs with route multisig/icp", async () => {
     groupGetRequestMock.mockRejectedValueOnce(
       new Error("SomeErrorMessage - 404")
@@ -1588,25 +1551,6 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toHaveBeenCalledWith(
       notificationMultisigIcpProp.i
     );
-  });
-
-  test("Should throw error if other error occurs with route multisig/icp", async () => {
-    const errorMessage = "Error - 500";
-    exchangesGetMock.mockResolvedValueOnce({
-      exn: {
-        r: NotificationRoute.MultiSigIcp,
-        p: "p",
-        a: { i: "i" },
-        e: {},
-      },
-    });
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-    );
-    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
-    await expect(
-      keriaNotificationService.processNotification(notificationMultisigIcpProp)
-    ).rejects.toThrow(errorMessage);
   });
 
   test("Should skip if missing identifier metadata with route ipex/grant", async () => {

@@ -33,7 +33,7 @@ import {
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 import { CredentialService } from "./credentialService";
-import { ConnectionHistoryType } from "./connectionService.types";
+import { ConnectionHistoryType, IpexMessage } from "./connectionService.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -238,22 +238,22 @@ class KeriaNotificationService extends AgentService {
     ) {
       return;
     }
-    const exchange = await this.verifyNotification(notif);
+    const exchange = await this.verifyExternalNotification(notif);
     if (!exchange) {
       return;
     }
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
-      shouldCreateRecord = await this.processExnIpexApplyNotification(notif);
+      shouldCreateRecord = await this.processExnIpexApplyNotification(exchange);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
       shouldCreateRecord = await this.processExnIpexGrantNotification(
         notif,
         exchange
       );
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
-      shouldCreateRecord = await this.processMultiSigRpyNotification(notif);
+      shouldCreateRecord = await this.processMultiSigRpyNotification(notif, exchange);
     } else if (notif.a.r === NotificationRoute.MultiSigIcp) {
-      shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
+      shouldCreateRecord = await this.processMultiSigIcpNotification(notif, exchange);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(
         notif,
@@ -291,7 +291,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async verifyNotification(notif: Notification) {
+  private async verifyExternalNotification(notif: Notification): Promise<IpexMessage | undefined>  {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.i)
@@ -314,7 +314,7 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processExnIpexApplyNotification(
-    exchange: any
+    exchange: IpexMessage
   ): Promise<boolean> {
     await this.ipexCommunications.createLinkedIpexMessageRecord(
       exchange,
@@ -324,7 +324,8 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processExnIpexGrantNotification(
-    notif: Notification, exchange: any
+    notif: Notification,
+    exchange: IpexMessage
   ): Promise<boolean> {
     const existingCredential =
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
@@ -371,24 +372,10 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processMultiSigRpyNotification(
-    notif: Notification
+    notif: Notification,
+    exchange: IpexMessage
   ): Promise<boolean> {
-    const multisigNotification = await this.props.signifyClient
-      .groups()
-      .getRequest(notif.a.d)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return [];
-        } else {
-          throw error;
-        }
-      });
-    if (!multisigNotification || !multisigNotification.length) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const multisigId = multisigNotification[0]?.exn?.a?.gid;
+    const multisigId = exchange?.exn?.a?.gid;
     if (!multisigId) {
       await this.markNotification(notif.i);
       return false;
@@ -408,9 +395,9 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-    const rpyRoute = multisigNotification[0].exn.e.rpy.r;
+    const rpyRoute = exchange.exn.e.rpy.r;
     if (rpyRoute === "/end/role/add") {
-      await this.multiSigs.joinAuthorization(multisigNotification[0].exn);
+      await this.multiSigs.joinAuthorization(exchange.exn);
       await this.markNotification(notif.i);
       return false;
     }
@@ -418,24 +405,10 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processMultiSigIcpNotification(
-    notif: Notification
+    notif: Notification,
+    exchange: IpexMessage
   ): Promise<boolean> {
-    const multisigNotification = await this.props.signifyClient
-      .groups()
-      .getRequest(notif.a.d)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return [];
-        } else {
-          throw error;
-        }
-      });
-    if (!multisigNotification || !multisigNotification.length) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const multisigId = multisigNotification[0]?.exn?.a?.gid;
+    const multisigId = exchange.exn?.a?.gid;
     if (!multisigId) {
       await this.markNotification(notif.i);
       return false;
@@ -451,7 +424,8 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processMultiSigExnNotification(
-    notif: Notification, exchange: any
+    notif: Notification,
+    exchange: IpexMessage
   ): Promise<boolean> {
     switch (exchange.exn.e?.exn?.r) {
     case ExchangeRoute.IpexAdmit: {

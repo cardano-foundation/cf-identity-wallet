@@ -28,6 +28,7 @@ const grantForIssuanceExnMessage = {
     a: {
       m: "",
       i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+      gid: "gid"
     },
     e: {
       acdc: {
