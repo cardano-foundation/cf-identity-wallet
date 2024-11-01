@@ -35,6 +35,7 @@ enum MiscRecordId {
   APP_RECOVERY_WALLET = "recovery-wallet",
   LOGIN_METADATA = "login-metadata",
   CAMERA_DIRECTION = "camera-direction",
+  DISMISS_PROP_EXPLAIN = "dismiss-prop-explain"
 }
 
 interface ConnectionShortDetails {

@@ -39,6 +39,7 @@ import "../../components/CardDetails/CardDetails.scss";
 import { CloudError } from "../../components/CloudError";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ShareConnection } from "../../components/ShareConnection";
@@ -49,9 +50,9 @@ import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { IdentifierContent } from "./components/IdentifierContent";
-import { RotateKeyModal } from "./components/RotateKeyModal";
+import { IdentifierDetailModal } from "./components/IdetifierDetailModal/IdentifierDetailModal";
+import { DetailView } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
 import "./IdentifierDetails.scss";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -72,12 +73,15 @@ const IdentifierDetails = () => {
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentifierDetailsCore | undefined>();
-  const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
   const [cloudError, setCloudError] = useState(false);
   const [hidden, setHidden] = useState(false);
+
+  const [openDetailModal, setOpenDetailModal] = useState(false);
+  const [viewType, setViewType] = useState(DetailView.Id);
+
 
   const fetchOobi = useCallback(async () => {
     try {
@@ -269,7 +273,16 @@ const IdentifierDetails = () => {
   };
 
   const cancelDelete = () => dispatch(setCurrentOperation(OperationType.IDLE));
-  const openRotateModal = () => setOpenRotateKeyModal(true);
+
+  const openPropDetailModal = (view: DetailView) => {
+    setViewType(view);
+    setOpenDetailModal(true);
+  }
+
+  const openRotateModal = () => {
+    setViewType(DetailView.SigningKey);
+    setOpenDetailModal(true);
+  }
 
   const AdditionalButtons = () => {
     return (
@@ -356,7 +369,7 @@ const IdentifierDetails = () => {
             <PageHeader
               closeButton={true}
               closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
-              closeButtonAction={() => handleDone()}
+              closeButtonAction={handleDone}
               additionalButtons={<AdditionalButtons />}
             />
           }
@@ -376,7 +389,7 @@ const IdentifierDetails = () => {
               />
               <div className="card-details-content">
                 <IdentifierContent
-                  onOpenRotateKey={openRotateModal}
+                  openPropDetailModal={openPropDetailModal}
                   cardData={cardData as IdentifierDetailsCore}
                 />
                 <PageFooter
@@ -403,13 +416,6 @@ const IdentifierDetails = () => {
               />
             </>
           )}
-          <RotateKeyModal
-            identifierId={params.id}
-            onReloadData={getDetails}
-            signingKey={cardData?.k[0] || ""}
-            isOpen={openRotateKeyModal}
-            onClose={() => setOpenRotateKeyModal(false)}
-          />
         </ScrollablePageLayout>
       )}
       <Alert
@@ -438,6 +444,14 @@ const IdentifierDetails = () => {
         }}
         onVerify={handleDelete}
       />
+      {cardData && <IdentifierDetailModal
+        isOpen={openDetailModal} 
+        setOpen={setOpenDetailModal} 
+        view={viewType} 
+        setViewType={setViewType} 
+        data={cardData}
+        reloadData={getDetails}
+      />}
     </>
   );
 };

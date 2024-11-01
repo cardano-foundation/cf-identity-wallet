@@ -3,15 +3,111 @@
     margin-bottom: 0;
   }
 
-  .multi-sig-contact-list {
-    ion-grid,
-    ion-col {
-      padding: 0;
+  .card-block {
+    margin: 0.75rem 0 0 !important;
+  }
+
+  .creation-timestamp  {
+    .card-details-info-block-data {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ion-color-secondary);
+
+      .card-details-info-block-key {
+        display: block;
+        font-size: 1rem;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  .member:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+
+  .view-more-members {
+    --background: rgba(187, 187, 187, 0.5);
+    --border-radius: 0.5rem;
+    color: var(--ion-color-primary);
+    width: 100%;
+    display: block;
+    margin-top: 1.25rem;
+    --box-shadow: none;
+    --padding-top: 0.625rem;
+    --padding-bottom: 0.625rem;
+    font-size: 1rem;
+    --background-activated: rgba(187, 187, 187, 0.5);
+
+    &::part(native) {
+      border: none;
+    }
+  }
+
+  .identifier {
+    .card-details-info-content {
+      display: block;
+    }
+  }
+
+  .identifier-detail-section {
+      margin: 0 !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+
+      .card-block {
+          width: 49%;
+
+          .card-details-info-block-inner {
+            height: 100%;
+          }
+      }
+  }
+
+  .rotate-keys-button {
+    width: 100%;
+    --background: transparent;
+    --box-shadow: none;
+    margin: 0;
+    --background-activated: transparent;
+    min-height: auto;
+
+    p {
+      margin: 0 0.25rem 0 0;
+    }
+
+    p, ion-icon {
+      color: var(--ion-color-action-blue);
     }
   }
 
   .page-header {
     margin-top: 0.625rem;
+  }
+
+
+  @media screen and (min-width: 250px) and (max-width: 370px) { 
+    .identifier-detail-section {
+      flex-direction: column;
+
+      .card-block {
+        width: auto;
+      }
+    }
+
+    .creation-timestamp  {
+      .card-details-info-block-data {
+        font-size: 0.75rem;
+  
+        .card-details-info-block-key {
+          font-size: 0.8rem;
+        }
+      }
+    }
+
+    .view-more-members {
+      font-size: 0.8rem;
+    }
   }
 }
 

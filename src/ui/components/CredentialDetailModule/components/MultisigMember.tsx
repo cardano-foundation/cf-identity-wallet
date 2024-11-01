@@ -27,7 +27,7 @@ const MultisigMember = ({ name, status }: MemberProps) => {
   return (
     <IonItem
       lines="none"
-      className="member"
+      className="multisig-member"
     >
       <img
         className="member-avatar"

@@ -829,39 +829,47 @@
       },
       "details": {
         "done": "Done",
-        "groupmembers": {
-          "title": "Group members"
+        "identifierdetail": {
+          "title": "Identifier details",
+          "identifierid": {
+            "title": "Identifier ID"
+          },
+          "created": {
+            "title": "Created"
+          },
+          "signingkey": {
+            "title": "Signing key",
+            "rotate": "Rotate keys",
+            "multisigtitle": "Show {{singingKeys}} singing keys"
+          }
         },
-        "signingkeysthreshold": {
-          "title": "Keys signing threshold"
+        "keyrotation": {
+          "title": "Key rotation",
+          "rotatesigningkey": {
+            "title": "Rotation threshold",
+            "outof": "out of {{threshold}}"
+          },
+          "sequencenumber": {
+            "title": "Sequence number",
+            "lastrotate": "Last rotated"
+          },
+          "nextkeyslist": {
+            "title": "Rotation key digest",
+            "showkey": "Show {{rotationKeys}} rotation key digests"
+          }
         },
-        "information": {
-          "title": "Information"
-        },
-        "signingkeyslist": {
-          "title": "List of signing keys",
-          "rotate": "Rotate keys"
-        },
-        "nextkeyslist": {
-          "title": "List of next key digests"
-        },
-        "nextkeysthreshold": {
-          "title": "Next keys signing threshold"
-        },
-        "sequencenumber": {
-          "title": "Sequence number"
-        },
-        "rotationtimestamp": {
-          "title": "Last key rotation timestamp"
-        },
-        "backerslist": {
-          "title": "List of backers"
-        },
-        "delegator": {
-          "title": "Delegator identifier prefix"
-        },
-        "backeraddress": {
-          "title": "Backer address"
+        "group": {
+          "title": "Group information",
+          "groupmembers": {
+            "title": "Group members"
+          },
+          "signingkeysthreshold": {
+            "title": "Signing threshold",
+            "outof": "out of {{threshold}}"
+          },
+          "button": {
+            "viewmore": "View {{remainMembers}} more"
+          }
         },
         "delete": {
           "button": "Delete identifier",
@@ -887,11 +895,109 @@
             "color": "Choose card colour"
           }
         },
-        "rotatekeys": {
-          "done": "Done",
-          "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
-        },
-        "clouderror": "We couldn’t locate this identifier in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this identifier, tap “Delete identifier” to remove."
+        "clouderror": "We couldn’t locate this identifier in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this identifier, tap “Delete identifier” to remove.",
+        "detailmodal": {
+          "you": "You",
+          "button": {
+            "done": "Done",
+            "dismiss": "Dismiss"
+          },
+          "dismissalert": {
+            "text": "Would you like to always hide this description in the future for this and other identifiers?",
+            "accept": "Yes, always hide",
+            "cancel": "No, just dismiss"
+          },
+          "id": {
+            "title": "Identifier ID",
+            "propexplain": {
+              "title": "About identifier ID",
+              "content": "A unique Autonomic Identifier (AID) that represents your decentralised digital identity."
+            },
+            "proptitle": "Identifier ID"
+          },
+          "signingthreshold": {
+            "title": "Signing threshold",
+            "propexplain": {
+              "title": "About signing threshold",
+              "content": "Minimum number of signing keys required to approve a transaction or event within the identifier."
+            },
+            "threshold": {
+              "title": "Threshold",
+              "text": "{{threshold}} out of {{members}}"
+            },
+            "options": {
+              "title": "Options",
+              "viewmember": "View {{members}} group members",
+              "viewkey": "Show {{keys}} singing keys"
+            }
+          },
+          "created": {
+            "title": "Created",
+            "propexplain": {
+              "title": "About created timestamp",
+              "content": "The exact date and time when the identifier was first created in the KERI network."
+            },
+            "createdtimestamp": {
+              "title": "Created timestamp",
+              "text": "{{threshold}} out of {{members}}"
+            }
+          },
+          "sequencenumber": {
+            "title": "Sequence number",
+            "propexplain": {
+              "title": "About sequence number",
+              "content": "Tracks the order of key events, ensuring consistency and preventing replay attacks."
+            },
+            "sequencenumbersection": {
+              "title": "Sequence number"
+            },
+            "lastrotationtimestamp": {
+              "title": "Last rotation timestamp"
+            }
+          },
+          "rotationthreshold": {
+            "title": "Rotation threshold",
+            "propexplain": {
+              "title": "About rotation threshold",
+              "content": "The minimum number of new keys required to rotate and replace old signing keys."
+            },
+            "threshold": {
+              "title": "Rotation threshold",
+              "text": "{{threshold}} out of {{members}}"
+            },
+            "options": {
+              "title": "Options",
+              "viewmember": "View {{members}} group members",
+              "viewkey": "Show {{keys}} singing keys",
+              "viewrotationkey": "Show {{keys}} rotation key digests"
+            }
+          },
+          "groupmember": {
+            "title": "Group members",
+            "propexplain": {
+              "title": "About group members",
+              "content": "Displays the list of individuals or entities that jointly control this group identifier."
+            },
+            "bottomtext": "{{members}} group members"
+          },
+          "rotationkeydigests": {
+            "title": "Rotation key digests",
+            "propexplain": {
+              "title": "About rotation key digests",
+              "content": "Cryptographic hashes of the new signing keys prepared for future identifier rotations."
+            },
+            "bottomtext": "{{keys}} rotation key digests"
+          },
+          "signingkeys": {
+            "title": "Signing keys",
+            "propexplain": {
+              "title": "About signing keys",
+              "content": "Cryptographic keys used to authorise transactions or events linked to your identifier."
+            },
+            "bottomtext": "{{keys}} signing keys",
+            "rotate": "Rotate keys"
+          }
+        }
       }
     },
     "credentials": {

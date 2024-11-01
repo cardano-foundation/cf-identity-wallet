@@ -18,6 +18,7 @@ const CardDetailsItem = ({
   className,
   fullText = false,
   mask = true,
+  endSlot
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
 
@@ -83,6 +84,9 @@ const CardDetailsItem = ({
             <IonIcon icon={copyOutline} />
           </IonButton>
         )}
+        {
+          endSlot
+        }
       </div>
     </IonItem>
   );
