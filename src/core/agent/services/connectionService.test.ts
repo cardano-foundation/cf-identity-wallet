@@ -309,13 +309,12 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     const id = new Salter({}).qb64;
-    const now = new Date();
     await connectionService.createConnectionNote(connectionId, note);
     expect(updateContactMock).toBeCalledWith(connectionId, {
       [`note:${id}`]: JSON.stringify({
         ...note,
         id: `note:${id}`,
-        timestamp: now.toISOString(),
+        timestamp: new Date().toISOString(),
       }),
     });
   });
