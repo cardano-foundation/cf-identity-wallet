@@ -40,6 +40,18 @@
         --card-height: calc(4.8125rem * 200 / 350);
       }
     }
+
+    .identifiers-tab-chips {
+      margin-bottom: 0.875rem;
+      display: flex;
+      font-size: 1rem;
+      font-weight: 400;
+
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        margin-bottom: 0.7rem;
+        font-size: 0.8rem;
+      }
+    }
   }
 
   &.favorite-identifier-nav {

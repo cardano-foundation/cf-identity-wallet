@@ -31,10 +31,12 @@ import {
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import "./Identifiers.scss";
-import { StartAnimationSource } from "./Identifiers.type";
+import { IdentifiersFilters, StartAnimationSource } from "./Identifiers.types";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { Agent } from "../../../core/agent/agent";
 import { showError } from "../../utils/error";
+import { FilterChip } from "../../components/FilterChip/FilterChip";
+import { NotificationFilters } from "../Notifications/Notification.types";
 
 const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
@@ -106,6 +108,9 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
+  const [selectedFilter, setSelectedFilter] = useState<
+    NotificationFilters | IdentifiersFilters
+  >(IdentifiersFilters.All);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -254,6 +259,27 @@ const Identifiers = () => {
     setCreateIdentifierModalIsOpen(true);
   };
 
+  const filterOptions = [
+    {
+      filter: IdentifiersFilters.All,
+      label: i18n.t("tabs.notifications.tab.chips.all"),
+    },
+    {
+      filter: IdentifiersFilters.Individual,
+      label: i18n.t("tabs.notifications.tab.chips.identifiers"),
+    },
+    {
+      filter: IdentifiersFilters.Group,
+      label: i18n.t("tabs.notifications.tab.chips.credentials"),
+    },
+  ];
+
+  const handleSelectFilter = (
+    filter: NotificationFilters | IdentifiersFilters
+  ) => {
+    setSelectedFilter(filter);
+  };
+
   return (
     <>
       <TabLayout
@@ -304,6 +330,19 @@ const Identifiers = () => {
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}
                 name="allidentifiers"
+                filters={
+                  <div className="identifiers-tab-chips">
+                    {filterOptions.map((option) => (
+                      <FilterChip
+                        key={option.filter}
+                        filter={option.filter}
+                        label={option.label}
+                        isActive={option.filter === selectedFilter}
+                        onClick={handleSelectFilter}
+                      />
+                    ))}
+                  </div>
+                }
               />
             )}
             {!!multiSigIdentifiers.length && (

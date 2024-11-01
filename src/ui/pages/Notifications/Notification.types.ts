@@ -1,6 +1,6 @@
 import { KeriaNotification } from "../../../core/agent/agent.types";
 
-enum NotificationFilter {
+enum NotificationFilters {
   All = "all",
   Identifier = "identifiers",
   Credential = "credentials",
@@ -12,6 +12,6 @@ interface NotificationItemProps {
   onOptionButtonClick: (item: KeriaNotification) => void;
 }
 
-export { NotificationFilter };
+export { NotificationFilters };
 
 export type { NotificationItemProps };

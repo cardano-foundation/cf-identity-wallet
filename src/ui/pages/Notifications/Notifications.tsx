@@ -1,4 +1,4 @@
-import { IonChip, IonList, useIonViewWillEnter } from "@ionic/react";
+import { IonList, useIonViewWillEnter } from "@ionic/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
@@ -18,13 +18,14 @@ import { CredentialDetailModal } from "../../components/CredentialDetailModule";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { showError } from "../../utils/error";
 import { timeDifference } from "../../utils/formatters";
-import { NotificationFilter } from "./Notification.types";
+import { NotificationFilters } from "./Notification.types";
 import { NotificationItem } from "./NotificationItem";
 import "./Notifications.scss";
 import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
 import { FilterChip } from "../../components/FilterChip/FilterChip";
+import { IdentifiersFilters } from "../Identifiers/Identifiers.types";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
@@ -34,7 +35,9 @@ const Notifications = () => {
   const notifications = [...notificationsCache].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
-  const [selectedFilter, setSelectedFilter] = useState(NotificationFilter.All);
+  const [selectedFilter, setSelectedFilter] = useState<
+    NotificationFilters | IdentifiersFilters
+  >(NotificationFilters.All);
   const earlierNotificationRef = useRef<EarlierNotificationRef>(null);
   const [selectedItem, setSelectedItem] = useState<KeriaNotification | null>(
     null
@@ -43,11 +46,11 @@ const Notifications = () => {
   const [viewCred, setViewCred] = useState("");
 
   const filteredNotification = useMemo(() => {
-    if (selectedFilter === NotificationFilter.All) {
+    if (selectedFilter === NotificationFilters.All) {
       return notifications;
     }
 
-    if (selectedFilter === NotificationFilter.Identifier) {
+    if (selectedFilter === NotificationFilters.Identifier) {
       return notifications.filter(
         (notification) => notification.a.r === NotificationRoute.MultiSigIcp
       );
@@ -115,20 +118,22 @@ const Notifications = () => {
 
   const filterOptions = [
     {
-      filter: NotificationFilter.All,
+      filter: NotificationFilters.All,
       label: i18n.t("tabs.notifications.tab.chips.all"),
     },
     {
-      filter: NotificationFilter.Identifier,
+      filter: NotificationFilters.Identifier,
       label: i18n.t("tabs.notifications.tab.chips.identifiers"),
     },
     {
-      filter: NotificationFilter.Credential,
+      filter: NotificationFilters.Credential,
       label: i18n.t("tabs.notifications.tab.chips.credentials"),
     },
   ];
 
-  const handleSelectFilter = (filter: NotificationFilter) => {
+  const handleSelectFilter = (
+    filter: NotificationFilters | IdentifiersFilters
+  ) => {
     setSelectedFilter(filter);
     earlierNotificationRef.current?.reset();
   };

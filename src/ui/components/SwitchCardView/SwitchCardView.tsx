@@ -30,6 +30,7 @@ const SwitchCardView = ({
   hideHeader,
   className,
   onShowCardDetails,
+  filters,
 }: SwitchCardViewProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -37,21 +38,32 @@ const SwitchCardView = ({
   const identifierViewTypeCache = useAppSelector(getIdentifierViewTypeCache);
   const credViewTypeCache = useAppSelector(getCredentialViewTypeCache);
   const isIdentifier = cardTypes === CardType.IDENTIFIERS;
-  const viewTypeCache = isIdentifier ? identifierViewTypeCache : credViewTypeCache;
+  const viewTypeCache = isIdentifier
+    ? identifierViewTypeCache
+    : credViewTypeCache;
 
-  const setViewType = useCallback((viewType: CardListViewType) => {
-    setType(viewType);
-    Agent.agent.basicStorage
-      .createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: isIdentifier ? MiscRecordId.APP_IDENTIFIER_VIEW_TYPE :  MiscRecordId.APP_CRED_VIEW_TYPE,
-          content: { viewType },
-        })
-      )
-      .then(() => {
-        dispatch(isIdentifier ? setIdentifierViewTypeCache(viewType) : setCredentialViewTypeCache(viewType));
-      });
-  }, [dispatch, isIdentifier]);
+  const setViewType = useCallback(
+    (viewType: CardListViewType) => {
+      setType(viewType);
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: isIdentifier
+              ? MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
+              : MiscRecordId.APP_CRED_VIEW_TYPE,
+            content: { viewType },
+          })
+        )
+        .then(() => {
+          dispatch(
+            isIdentifier
+              ? setIdentifierViewTypeCache(viewType)
+              : setCredentialViewTypeCache(viewType)
+          );
+        });
+    },
+    [dispatch, isIdentifier]
+  );
 
   useEffect(() => {
     if (!viewTypeCache.viewType) {
@@ -94,6 +106,7 @@ const SwitchCardView = ({
           onSecondIconClick={() => setViewType(CardListViewType.List)}
         />
       )}
+      {filters}
       {type === CardListViewType.Stack ? (
         <CardsStack
           cardsData={cardsData}

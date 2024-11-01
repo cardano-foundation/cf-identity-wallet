@@ -34,12 +34,15 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { ListHeader } from "../../components/ListHeader";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
-import { CardList as CredentialCardList, SwitchCardView } from "../../components/SwitchCardView";
+import {
+  CardList as CredentialCardList,
+  SwitchCardView,
+} from "../../components/SwitchCardView";
 import { CardType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
-import { StartAnimationSource } from "../Identifiers/Identifiers.type";
+import { StartAnimationSource } from "../Identifiers/Identifiers.types";
 import "./Credentials.scss";
 
 const CLEAR_STATE_DELAY = 1000;
@@ -159,7 +162,7 @@ const Credentials = () => {
 
   const tabClasses = combineClassNames("credential-tab", {
     "cards-credential-nav": navAnimation === "cards",
-    "favorite-credential-nav": navAnimation === "favourite"
+    "favorite-credential-nav": navAnimation === "favourite",
   });
 
   const handleArchivedCredentialsDisplayChange = (value: boolean) => {

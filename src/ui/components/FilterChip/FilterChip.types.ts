@@ -1,10 +1,11 @@
-import { NotificationFilter } from "../../pages/Notifications/Notification.types";
+import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
+import { NotificationFilters } from "../../pages/Notifications/Notification.types";
 
 interface FilterChipProps {
-  filter: NotificationFilter;
+  filter: NotificationFilters | IdentifiersFilters;
   label: string;
   isActive: boolean;
-  onClick: (filter: NotificationFilter) => void;
+  onClick: (filter: NotificationFilters | IdentifiersFilters) => void;
 }
 
 export type { FilterChipProps };
