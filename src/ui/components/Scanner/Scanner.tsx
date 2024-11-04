@@ -14,7 +14,6 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -61,6 +60,7 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
+import { randomSalt } from "../../../core/agent/services/utils";
 
 const Scanner = forwardRef(
   (
@@ -317,7 +317,7 @@ const Scanner = forwardRef(
         return;
       }
 
-      const pendingId = uuidv4();
+      const pendingId = randomSalt();
       dispatch(
         updateOrAddConnectionCache({
           id: pendingId,

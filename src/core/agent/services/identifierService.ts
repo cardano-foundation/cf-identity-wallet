@@ -1,4 +1,4 @@
-import { Signer } from "signify-ts";
+import { Salter, Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
   IdentifierDetails,
