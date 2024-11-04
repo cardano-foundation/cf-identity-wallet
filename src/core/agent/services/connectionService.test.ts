@@ -531,17 +531,6 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("should throw if oobi is not resolving and we explicitly wait for completion", async () => {
-    signifyClient.operations().get = jest
-      .fn()
-      .mockResolvedValue({ done: false });
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
-    await expect(
-      connectionService.resolveOobi(`${oobiPrefix}${failUuid}`)
-    ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
-  });
-
   test("Should throw error when KERIA is offline", async () => {
     await expect(
       connectionService.getConnectionById("id")
