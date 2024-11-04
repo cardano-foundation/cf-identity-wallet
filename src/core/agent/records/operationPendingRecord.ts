@@ -1,6 +1,7 @@
 import { Salter } from "signify-ts";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { OperationPendingRecordType } from "./operationPendingRecord.type";
+import { randomSalt } from "../services/utils";
 
 interface OperationPendingRecordStorageProps {
   id?: string;
@@ -17,7 +18,7 @@ class OperationPendingRecord extends BaseRecord {
   constructor(props: OperationPendingRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? new Salter({}).qb64;
+      this.id = props.id ?? randomSalt();
       this.createdAt = props.createdAt ?? new Date();
       this.recordType = props.recordType;
       this._tags = props.tags ?? {};

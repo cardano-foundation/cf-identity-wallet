@@ -61,6 +61,7 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
+import { randomSalt } from "../../../core/agent/services/utils";
 
 const Scanner = forwardRef(
   (
@@ -317,7 +318,7 @@ const Scanner = forwardRef(
         return;
       }
 
-      const pendingId = new Salter({}).qb64;
+      const pendingId = randomSalt();
       dispatch(
         updateOrAddConnectionCache({
           id: pendingId,

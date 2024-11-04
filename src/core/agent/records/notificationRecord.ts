@@ -2,6 +2,7 @@ import { Salter } from "signify-ts";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
 import { LinkedGroupRequestDetails } from "./notificationRecord.types";
+import { randomSalt } from "../services/utils";
 
 interface NotificationRecordStorageProps {
   id?: string;
@@ -28,7 +29,7 @@ class NotificationRecord extends BaseRecord {
   constructor(props: NotificationRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? new Salter({}).qb64;
+      this.id = props.id ?? randomSalt();
       this.createdAt = props.createdAt ?? new Date();
       this.a = props.a;
       this.route = props.route;

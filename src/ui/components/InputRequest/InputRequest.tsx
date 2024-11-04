@@ -29,6 +29,7 @@ import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { PageFooter } from "../PageFooter";
 import "./InputRequest.scss";
+import { randomSalt } from "../../../core/agent/services/utils";
 
 const InputRequest = () => {
   const dispatch = useAppDispatch();
@@ -59,7 +60,7 @@ const InputRequest = () => {
     // This will be removed when the create connection process ends.
     const connectionName = new URL(content).searchParams.get("name");
 
-    const pendingId = new Salter({}).qb64;
+    const pendingId = randomSalt();
     dispatch(
       updateOrAddConnectionCache({
         id: pendingId,

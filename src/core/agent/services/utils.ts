@@ -1,4 +1,4 @@
-import { Operation, SignifyClient } from "signify-ts";
+import { Operation, Salter, SignifyClient } from "signify-ts";
 import { CredentialMetadataRecord, NotificationStorage } from "../records";
 import { CredentialShortDetails } from "./credentialService.types";
 import { Agent } from "../agent";
@@ -77,4 +77,9 @@ export const deleteNotificationRecordById = async (
   await notificationStorage.deleteById(id);
 };
 
-export { waitAndGetDoneOp, getCredentialShortDetails };
+function randomSalt(): string {
+  const salt = new Salter({}).qb64;
+  return salt;
+}
+
+export { waitAndGetDoneOp, getCredentialShortDetails, randomSalt };

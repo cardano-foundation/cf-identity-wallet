@@ -10,6 +10,7 @@ import {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
+import { randomSalt } from "./utils";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
@@ -213,7 +214,8 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
       return { name: url, response: { i: "id" } };
     });
-
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");  
     const result = await connectionService.connectByOobiUrl(oobi);
     expect(result).toStrictEqual({
       type: KeriConnectionType.MULTI_SIG_INITIATOR,
@@ -221,7 +223,7 @@ describe("Connection service of agent", () => {
       connection: {
         groupId,
         id: oobi,
-        label: "uuid",
+        label: "0ADQpus-mQmmO4mgWcT3ekDz",
         oobi: `${oobiPrefix}${failUuid}`,
         status: ConnectionStatus.CONFIRMED,
         connectionDate: now,
@@ -505,11 +507,15 @@ describe("Connection service of agent", () => {
   test("can resolve oobi with no name parameter", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid`;
+    
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
       response: { i: url, dt: now },
       name: url,
-      alias: expect.any(String),
+      alias: "0ADQpus-mQmmO4mgWcT3ekDz",
       done: true,
       metadata: {
         oobi: `${oobiPrefix}${failUuid}`,

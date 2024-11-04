@@ -1,5 +1,6 @@
 import { Salter } from "signify-ts";
 import { BaseRecord, Tags } from "../../storage/storage.types";
+import { randomSalt } from "../services/utils";
 
 interface BasicRecordStorageProps {
   id?: string;
@@ -16,7 +17,7 @@ class BasicRecord extends BaseRecord {
   constructor(props: BasicRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? new Salter({}).qb64;
+      this.id = props.id ?? randomSalt();
       this.createdAt = props.createdAt ?? new Date();
       this.content = props.content;
       this._tags = props.tags ?? {};
