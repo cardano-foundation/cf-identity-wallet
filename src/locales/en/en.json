@@ -722,7 +722,6 @@
       },
       "acceptcriteria": {
         "text": "Must be between <strong>8-64 characters</strong>, contain an <strong>lowercase</strong> and <strong>uppercase</strong> letter, a <strong>number</strong>, and a <strong>symbol</strong>."
-
       }
     },
     "symbolmodal": {
@@ -767,7 +766,7 @@
         "verticalbar": "Vertical bar",
         "rightbrace": "Right brace",
         "tilde": "Tilde"
-    }
+      }
     }
   },
   "ssiagent": {
@@ -814,6 +813,11 @@
         "create": "Add an identifier",
         "favourites": "Favourites",
         "allidentifiers": "All identifiers",
+        "filters": {
+          "all": "All",
+          "individual": "Individual",
+          "group": "Group"
+        },
         "pendingidentifiers": "Pending identifiers",
         "multisigidentifiers": "For groups"
       },
@@ -901,6 +905,11 @@
         "viewarchived": "Archived & Revoked",
         "favourites": "Favourites",
         "allcreds": "All credentials",
+        "filters": {
+          "all": "All",
+          "individual": "Individual",
+          "group": "Group"
+        },
         "pendingcred": "Pending credentials",
         "detelepending": {
           "title": "Credential options",

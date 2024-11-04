@@ -44,6 +44,10 @@ import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { StartAnimationSource } from "../Identifiers/Identifiers.types";
 import "./Credentials.scss";
+import { IdentifierType } from "../../../core/agent/services/identifier.types";
+import { CredentialsFilters } from "./Credentials.types";
+import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
+import { FilterChip } from "../../components/FilterChip/FilterChip";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -75,7 +79,7 @@ const Credentials = () => {
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
-  const favCredsCache = useAppSelector(getFavouritesCredsCache);
+  const favouriteCredentialsCache = useAppSelector(getFavouritesCredsCache);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -85,6 +89,15 @@ const Credentials = () => {
   const [deletedPendingItem, setDeletePendingItem] =
     useState<CredentialShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
+  const [individualCredentials, setIndividualCredentials] = useState<
+    CredentialShortDetails[]
+  >([]);
+  const [groupCredentials, setGroupCredentials] = useState<
+    CredentialShortDetails[]
+  >([]);
+  const [selectedFilter, setSelectedFilter] = useState<CredentialsFilters>(
+    CredentialsFilters.All
+  );
 
   const revokedCreds = useMemo(
     () => credsCache.filter((item) => item.status === CredentialStatus.REVOKED),
@@ -110,9 +123,39 @@ const Credentials = () => {
     }
   }, [dispatch]);
 
+  const findTimeById = (id: string) => {
+    const found = favouriteCredentialsCache.find((item) => item.id === id);
+    return found ? found.time : null;
+  };
+
+  const favouriteCredentials = credsCache.filter((cred) =>
+    favouriteCredentialsCache?.some((fav) => fav.id === cred.id)
+  );
+
+  const sortedFavouriteCredentials = favouriteCredentials.sort((a, b) => {
+    const timeA = findTimeById(a.id);
+    const timeB = findTimeById(b.id);
+
+    if (timeA === null && timeB === null) return 0;
+    if (timeA === null) return 1;
+    if (timeB === null) return -1;
+
+    return timeA - timeB;
+  });
+
   useEffect(() => {
     setShowPlaceholder(confirmedCreds.length + pendingCreds.length === 0);
-  }, [confirmedCreds.length, credsCache, pendingCreds.length]);
+    setIndividualCredentials(
+      confirmedCreds.filter(
+        (cred) => cred.identifierType !== IdentifierType.Group
+      )
+    );
+    setGroupCredentials(
+      confirmedCreds.filter(
+        (cred) => cred.identifierType !== IdentifierType.Individual
+      )
+    );
+  }, [confirmedCreds, credsCache, pendingCreds]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 
@@ -122,26 +165,6 @@ const Credentials = () => {
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDENTIALS }));
-  });
-
-  const findTimeById = (id: string) => {
-    const found = favCredsCache.find((item) => item.id === id);
-    return found ? found.time : null;
-  };
-
-  const favCreds = credsCache.filter((cred) =>
-    favCredsCache?.some((fav) => fav.id === cred.id)
-  );
-
-  const sortedFavCreds = favCreds.sort((a, b) => {
-    const timeA = findTimeById(a.id);
-    const timeB = findTimeById(b.id);
-
-    if (timeA === null && timeB === null) return 0;
-    if (timeA === null) return 1;
-    if (timeB === null) return -1;
-
-    return timeA - timeB;
   });
 
   const handleShowNavAnimation = (source: StartAnimationSource) => {
@@ -225,6 +248,25 @@ const Credentials = () => {
     }
   };
 
+  const filterOptions = [
+    {
+      filter: CredentialsFilters.All,
+      label: i18n.t("tabs.credentials.tab.filters.all"),
+    },
+    {
+      filter: CredentialsFilters.Individual,
+      label: i18n.t("tabs.credentials.tab.filters.individual"),
+    },
+    {
+      filter: CredentialsFilters.Group,
+      label: i18n.t("tabs.credentials.tab.filters.group"),
+    },
+  ];
+
+  const handleSelectFilter = (filter: AllowedChipFilter) => {
+    setSelectedFilter(filter as CredentialsFilters);
+  };
+
   return (
     <>
       <TabLayout
@@ -248,7 +290,7 @@ const Credentials = () => {
       >
         {!showPlaceholder && (
           <>
-            {favCreds.length > 0 && (
+            {favouriteCredentials.length > 0 && (
               <div
                 ref={favouriteContainerElement}
                 className="credentials-tab-content-block credential-favourite-cards"
@@ -258,7 +300,7 @@ const Credentials = () => {
                   title={`${i18n.t("tabs.credentials.tab.favourites")}`}
                   name="favs"
                   cardType={CardType.CREDENTIALS}
-                  cardsData={sortedFavCreds}
+                  cardsData={sortedFavouriteCredentials}
                   onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
@@ -267,10 +309,29 @@ const Credentials = () => {
               <SwitchCardView
                 className="credentials-tab-content-block credential-cards"
                 cardTypes={CardType.CREDENTIALS}
-                cardsData={confirmedCreds}
+                cardsData={
+                  selectedFilter === CredentialsFilters.All
+                    ? confirmedCreds
+                    : selectedFilter === CredentialsFilters.Individual
+                      ? individualCredentials
+                      : groupCredentials
+                }
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("tabs.credentials.tab.allcreds")}`}
                 name="allcreds"
+                filters={
+                  <div className="credentials-tab-chips">
+                    {filterOptions.map((option) => (
+                      <FilterChip
+                        key={option.filter}
+                        filter={option.filter}
+                        label={option.label}
+                        isActive={option.filter === selectedFilter}
+                        onClick={handleSelectFilter}
+                      />
+                    ))}
+                  </div>
+                }
               />
             )}
             {!!pendingCreds.length && (

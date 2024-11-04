@@ -26,6 +26,7 @@ import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
 import { FilterChip } from "../../components/FilterChip/FilterChip";
 import { IdentifiersFilters } from "../Identifiers/Identifiers.types";
+import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
@@ -131,10 +132,8 @@ const Notifications = () => {
     },
   ];
 
-  const handleSelectFilter = (
-    filter: NotificationFilters | IdentifiersFilters
-  ) => {
-    setSelectedFilter(filter);
+  const handleSelectFilter = (filter: AllowedChipFilter) => {
+    setSelectedFilter(filter as NotificationFilters);
     earlierNotificationRef.current?.reset();
   };
 

@@ -37,6 +37,7 @@ import { Agent } from "../../../core/agent/agent";
 import { showError } from "../../utils/error";
 import { FilterChip } from "../../components/FilterChip/FilterChip";
 import { NotificationFilters } from "../Notifications/Notification.types";
+import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
 
 const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
@@ -81,7 +82,7 @@ const Identifiers = () => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const multisigGroupCache = useAppSelector(getMultiSigGroupCache);
-  const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
+  const favouriteIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const openMultiSigId = useAppSelector(getOpenMultiSig);
 
@@ -95,6 +96,12 @@ const Identifiers = () => {
     IdentifierShortDetails[]
   >([]);
   const [multiSigIdentifiers, setMultiSigIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [individualIdentifiers, setIndividualIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [groupIdentifiers, setGroupIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
@@ -155,8 +162,10 @@ const Identifiers = () => {
     const tmpMultisigIdentifiers = [];
     const tmpFavIdentifiers = [];
     const tmpAllIdentifiers = [];
+    const tmpIndividualIdentifiers = [];
+    const tmpGroupIdentifiers = [];
     for (const identifier of identifiersData) {
-      if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
+      if (favouriteIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
         tmpAllIdentifiers.push(identifier);
         continue;
@@ -169,16 +178,23 @@ const Identifiers = () => {
         tmpMultisigIdentifiers.push(identifier);
         continue;
       }
+      if (identifier.multisigManageAid?.length) {
+        tmpGroupIdentifiers.push(identifier);
+      } else {
+        tmpIndividualIdentifiers.push(identifier);
+      }
       tmpAllIdentifiers.push(identifier);
     }
     setAllIdentifiers(tmpAllIdentifiers);
     setFavIdentifiers(tmpFavIdentifiers);
     setPendingIdentifiers(tmpPendingIdentifiers);
     setMultiSigIdentifiers(tmpMultisigIdentifiers);
-  }, [favouritesIdentifiers, identifiersData]);
+    setIndividualIdentifiers(tmpIndividualIdentifiers);
+    setGroupIdentifiers(tmpGroupIdentifiers);
+  }, [favouriteIdentifiers, identifiersData]);
 
   const findTimeById = (id: string) => {
-    const found = favouritesIdentifiers?.find((item) => item.id === id);
+    const found = favouriteIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
   };
 
@@ -262,22 +278,20 @@ const Identifiers = () => {
   const filterOptions = [
     {
       filter: IdentifiersFilters.All,
-      label: i18n.t("tabs.notifications.tab.chips.all"),
+      label: i18n.t("tabs.identifiers.tab.filters.all"),
     },
     {
       filter: IdentifiersFilters.Individual,
-      label: i18n.t("tabs.notifications.tab.chips.identifiers"),
+      label: i18n.t("tabs.identifiers.tab.filters.individual"),
     },
     {
       filter: IdentifiersFilters.Group,
-      label: i18n.t("tabs.notifications.tab.chips.credentials"),
+      label: i18n.t("tabs.identifiers.tab.filters.group"),
     },
   ];
 
-  const handleSelectFilter = (
-    filter: NotificationFilters | IdentifiersFilters
-  ) => {
-    setSelectedFilter(filter);
+  const handleSelectFilter = (filter: AllowedChipFilter) => {
+    setSelectedFilter(filter as IdentifiersFilters);
   };
 
   return (
@@ -314,7 +328,7 @@ const Identifiers = () => {
                 data-testid="favourite-identifiers"
               >
                 <CardSlider
-                  title={`${i18n.t("tabs.identifiers.tab.favourites")}`}
+                  title={`${i18n.t("tabs.identifiers.tab.favourite")}`}
                   name="favs"
                   cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
@@ -326,7 +340,13 @@ const Identifiers = () => {
               <SwitchCardView
                 className="identifiers-tab-content-block identifier-cards"
                 cardTypes={CardType.IDENTIFIERS}
-                cardsData={allIdentifiers}
+                cardsData={
+                  selectedFilter === IdentifiersFilters.All
+                    ? allIdentifiers
+                    : selectedFilter === IdentifiersFilters.Individual
+                      ? individualIdentifiers
+                      : groupIdentifiers
+                }
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}
                 name="allidentifiers"
