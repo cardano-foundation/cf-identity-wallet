@@ -125,7 +125,6 @@ const agentServicesProps = {
 const identifierMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: new Date(),
   theme: 0,
 };
@@ -331,7 +330,7 @@ describe("Signify notification service of agent", () => {
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       )
       .mockResolvedValue({
-        signifyName: "signifyName",
+        id: "id",
       });
     notificationStorage.save = jest
       .fn()
@@ -607,7 +606,7 @@ describe("Signify notification service of agent", () => {
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       )
       .mockResolvedValue({
-        signifyName: "signifyName",
+        id: "id",
       });
     submitAdmitMock.mockResolvedValueOnce({
       name: "name",
@@ -1495,11 +1494,11 @@ describe("Signify notification service of agent", () => {
         },
       },
     });
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-    ).mockRejectedValueOnce(
-      new Error(errorMessage)
-    );
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(new Error(errorMessage));
     await expect(
       keriaNotificationService.processNotification(notificationMultisigRpyProp)
     ).rejects.toThrow(errorMessage);
@@ -1905,7 +1904,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -1952,7 +1950,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -1997,7 +1994,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -2061,7 +2057,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
       updatedAt: new Date(),
@@ -2146,7 +2141,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -2227,7 +2221,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),

@@ -44,7 +44,6 @@ const getMultiSignMock = jest.fn().mockResolvedValue(multisigIcpDetails);
 const joinMultisignMock = jest.fn((...params: unknown[]) =>
   Promise.resolve({
     identifier: "identifier-id",
-    signifyName: params,
   })
 );
 
