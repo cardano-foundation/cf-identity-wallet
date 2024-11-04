@@ -1,4 +1,3 @@
-import { Salter } from "signify-ts";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { randomSalt } from "../services/utils";
 

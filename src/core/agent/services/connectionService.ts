@@ -1,4 +1,4 @@
-import { Contact, Salter } from "signify-ts";
+import { Contact } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,

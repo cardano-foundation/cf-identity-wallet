@@ -14,7 +14,6 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,

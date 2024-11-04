@@ -1,4 +1,3 @@
-import { Salter } from "signify-ts";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
 import { LinkedGroupRequestDetails } from "./notificationRecord.types";

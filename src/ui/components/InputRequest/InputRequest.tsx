@@ -1,6 +1,5 @@
 import { IonModal, isPlatform } from "@ionic/react";
 import { useMemo, useState } from "react";
-import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
