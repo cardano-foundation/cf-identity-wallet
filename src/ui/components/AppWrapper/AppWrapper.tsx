@@ -207,7 +207,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
-    const removePendingDeletion = async () => {
+    const removeConnectionsPendingDeletion = async () => {
       const pendingDeletions =
         await Agent.agent.connections.getConnectionsPendingDeletion();
 
@@ -217,19 +217,21 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     };
 
-    const reconnectPendingConnection = async () => {
+    const resolvePendingConnections = async () => {
       const pendingDeletions =
         await Agent.agent.connections.getConnectionsPending();
 
-      for (const id of pendingDeletions) {
-        await Agent.agent.connections.reconnectPendingConnectionById(id);
+      for (const pendingDeletion of pendingDeletions) {
+        await Agent.agent.connections.resolvePendingConnection(
+          pendingDeletion
+        );
       }
     };
 
     if (isOnline) {
       syncWithKeria();
-      removePendingDeletion();
-      reconnectPendingConnection();
+      removeConnectionsPendingDeletion();
+      resolvePendingConnections();
     }
   }, [isOnline, dispatch]);
 
@@ -338,7 +340,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
       if (indentifierViewType) {
         dispatch(
-          setIdentifierViewTypeCache(indentifierViewType.content.viewType as CardListViewType)
+          setIdentifierViewTypeCache(
+            indentifierViewType.content.viewType as CardListViewType
+          )
         );
       }
 
@@ -348,7 +352,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (credViewType) {
         dispatch(
-          setCredentialViewTypeCache(credViewType.content.viewType as CardListViewType)
+          setCredentialViewTypeCache(
+            credViewType.content.viewType as CardListViewType
+          )
         );
       }
 
@@ -374,7 +380,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (identifierFavouriteIndex) {
         dispatch(
-          setIdentifierFavouriteIndex(Number(identifierFavouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(
+            Number(identifierFavouriteIndex.content.favouriteIndex)
+          )
         );
       }
 
@@ -384,7 +392,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (credFavouriteIndex) {
         dispatch(
-          setIdentifierFavouriteIndex(Number(credFavouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(
+            Number(credFavouriteIndex.content.favouriteIndex)
+          )
         );
       }
 
@@ -466,6 +476,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       notificatiStateChanged(event, dispatch);
     });
     Agent.agent.connections.onConnectionRemoved();
+    Agent.agent.connections.onResolveOobi();
   };
 
   const initApp = async () => {

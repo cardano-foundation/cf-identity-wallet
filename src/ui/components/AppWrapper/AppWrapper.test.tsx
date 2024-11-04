@@ -29,7 +29,7 @@ import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   setQueueIncomingRequest,
-  setToastMsg
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -85,8 +85,10 @@ jest.mock("../../../core/agent/agent", () => ({
         getUnhandledConnections: jest.fn(),
         syncKeriaContacts: jest.fn(),
         onConnectionRemoved: jest.fn(),
-        getConnectionsPendingDeletion: () => getConnectionsPendingDeletionMock(),
-        deleteConnectionById: jest.fn()
+        getConnectionsPendingDeletion: () =>
+          getConnectionsPendingDeletionMock(),
+        deleteConnectionById: jest.fn(),
+        onResolveOobi: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -136,7 +138,9 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 
 describe("App Wrapper", () => {
   beforeAll(() => {
-    getConnectionsPendingDeletionMock.mockImplementation(() => Promise.resolve([connectionShortDetailsMock]))
+    getConnectionsPendingDeletionMock.mockImplementation(() =>
+      Promise.resolve([connectionShortDetailsMock])
+    );
   });
 
   test("renders children components", async () => {

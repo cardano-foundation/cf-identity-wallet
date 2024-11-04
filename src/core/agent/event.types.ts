@@ -20,6 +20,7 @@ enum EventTypes {
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
+  OobiResolved = "OobiResolved",
 }
 
 interface NotificationAddedEvent extends BaseEventEmitter {
@@ -51,6 +52,13 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
     connectionId?: string;
     status: ConnectionStatus;
     url?: string;
+  };
+}
+
+interface OobiResolvedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.OobiResolved;
+  payload: {
+    url: string;
   };
 }
 
@@ -93,5 +101,6 @@ export type {
   OperationAddedEvent,
   NotificationRemovedEvent,
   ConnectionRemovedEvent,
+  OobiResolvedEvent,
 };
 export { EventTypes };

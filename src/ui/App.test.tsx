@@ -39,6 +39,7 @@ jest.mock("../core/agent/agent", () => ({
         syncKeriaContacts: jest.fn(),
         onConnectionRemoved: jest.fn(),
         getConnectionsPendingDeletion: jest.fn(),
+        onResolveOobi: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -273,7 +274,7 @@ describe("App", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,

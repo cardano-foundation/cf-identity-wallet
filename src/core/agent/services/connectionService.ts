@@ -27,6 +27,7 @@ import {
   ConnectionStateChangedEvent,
   EventTypes,
   OperationAddedEvent,
+  OobiResolvedEvent,
 } from "../event.types";
 import {
   ConnectionHistoryItem,
@@ -65,13 +66,14 @@ class ConnectionService extends AgentService {
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
+    this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
+  }
+
+  onResolveOobi() {
     this.props.eventEmitter.on(
-      EventTypes.ConnectionStateChanged,
-      (event: ConnectionStateChangedEvent) => {
-        if (event.payload.url) {
-          this.resolveOobi(event.payload.url);
-        }
-        callback(event);
+      EventTypes.OobiResolved,
+      (event: OobiResolvedEvent) => {
+        this.resolveOobi(event.payload.url);
       }
     );
   }
@@ -100,11 +102,19 @@ class ConnectionService extends AgentService {
       },
     });
 
+    this.props.eventEmitter.emit<OobiResolvedEvent>({
+      type: EventTypes.OobiResolved,
+      payload: {
+        url,
+      },
+    });
+
     const connectionId = new URL(url).pathname
       .split("/oobi/")
       .pop()!
       .split("/")[0];
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const alias = new URL(url).searchParams.get("name") ?? new Salter({}).qb64;
+
     const connectionMetadata: any = {
       alias,
       oobi: url,
@@ -309,26 +319,16 @@ class ConnectionService extends AgentService {
       groupId: undefined,
     });
 
-    return connections.map((connection) => connection.id);
+    return connections;
   }
 
   @OnlineOnly
-  async reconnectPendingConnectionById(id: string) {
-    const connection = await this.props.signifyClient
-      .contacts()
-      .get(id)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`);
-        } else {
-          throw error;
-        }
-      });
-
+  async resolvePendingConnection(connection: ConnectionRecord) {
     const operation = await this.resolveOobi(connection.oobi, true);
     if (operation.done) {
-      const connectionProps = await this.connectionStorage.findById(id);
+      const connectionProps = await this.connectionStorage.findById(
+        connection.id
+      );
       if (!connectionProps) return;
       connectionProps.pending = false;
 
@@ -337,7 +337,7 @@ class ConnectionService extends AgentService {
       this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
         type: EventTypes.ConnectionStateChanged,
         payload: {
-          connectionId: id,
+          connectionId: connection.id,
           status: ConnectionStatus.CONFIRMED,
         },
       });
@@ -455,7 +455,6 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
-
     const startTime = Date.now();
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     let operation;
