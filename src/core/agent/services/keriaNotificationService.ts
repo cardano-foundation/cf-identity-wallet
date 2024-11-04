@@ -33,7 +33,7 @@ import {
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 import { CredentialService } from "./credentialService";
-import { ConnectionHistoryType, IpexMessage } from "./connectionService.types";
+import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -291,7 +291,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async verifyExternalNotification(notif: Notification): Promise<IpexMessage | undefined>  {
+  private async verifyExternalNotification(notif: Notification): Promise<ExnMessage | undefined>  {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.i)
@@ -314,7 +314,7 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processExnIpexApplyNotification(
-    exchange: IpexMessage
+    exchange: ExnMessage
   ): Promise<boolean> {
     await this.ipexCommunications.createLinkedIpexMessageRecord(
       exchange,
@@ -325,7 +325,7 @@ class KeriaNotificationService extends AgentService {
 
   private async processExnIpexGrantNotification(
     notif: Notification,
-    exchange: IpexMessage
+    exchange: ExnMessage
   ): Promise<boolean> {
     const existingCredential =
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
@@ -373,7 +373,7 @@ class KeriaNotificationService extends AgentService {
 
   private async processMultiSigRpyNotification(
     notif: Notification,
-    exchange: IpexMessage
+    exchange: ExnMessage
   ): Promise<boolean> {
     const multisigId = exchange?.exn?.a?.gid;
     if (!multisigId) {
@@ -406,7 +406,7 @@ class KeriaNotificationService extends AgentService {
 
   private async processMultiSigIcpNotification(
     notif: Notification,
-    exchange: IpexMessage
+    exchange: ExnMessage
   ): Promise<boolean> {
     const multisigId = exchange.exn?.a?.gid;
     if (!multisigId) {
@@ -425,7 +425,7 @@ class KeriaNotificationService extends AgentService {
 
   private async processMultiSigExnNotification(
     notif: Notification,
-    exchange: IpexMessage
+    exchange: ExnMessage
   ): Promise<boolean> {
     switch (exchange.exn.e?.exn?.r) {
     case ExchangeRoute.IpexAdmit: {

@@ -1,4 +1,4 @@
-import { IpexMessage } from "../agent.types";
+import { ExnMessage } from "../agent.types";
 
 enum KeriaContactKeyPrefix {
   CONNECTION_NOTE = "note:",
@@ -18,9 +18,9 @@ enum ConnectionHistoryType {
   CREDENTIAL_ISSUANCE,
   CREDENTIAL_REQUEST_PRESENT,
   CREDENTIAL_REVOKED,
-  CREDENTIAL_PRESENTED
+  CREDENTIAL_PRESENTED,
 }
 
 export { ConnectionHistoryType, KeriaContactKeyPrefix };
 
-export type { ConnectionHistoryItem, IpexMessage };
+export type { ConnectionHistoryItem, ExnMessage };
