@@ -820,6 +820,8 @@ class KeriaNotificationService extends AgentService {
           connectionRecord.createdAt = (operation.response as any).dt;
           await this.connectionStorage.update(connectionRecord);
         }
+        const alias = new URL(operation.metadata?.oobi).searchParams.get("name") ?? uuidv4();
+        await this.props.signifyClient.contacts().update((operation.response as any).i, { alias });
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
           payload: {
