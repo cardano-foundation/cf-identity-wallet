@@ -1,4 +1,4 @@
-import { Salter } from "signify-ts";
+import { Contact, Salter } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -28,7 +28,6 @@ import {
 } from "../event.types";
 import {
   ConnectionHistoryItem,
-  KeriaContact,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
 
@@ -218,12 +217,12 @@ class ConnectionService extends AgentService {
         key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
         connection[key]
       ) {
-        notes.push(JSON.parse(connection[key]));
+        notes.push(JSON.parse(connection[key] as string));
       } else if (
         key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
         key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
       ) {
-        historyItems.push(JSON.parse(connection[key]));
+        historyItems.push(JSON.parse(connection[key] as string));
       }
     });
 
@@ -350,7 +349,7 @@ class ConnectionService extends AgentService {
     const signifyContacts = await this.props.signifyClient.contacts().list();
     const storageContacts = await this.connectionStorage.getAll();
     const unSyncedData = signifyContacts.filter(
-      (contact: KeriaContact) =>
+      (contact: Contact) =>
         !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {

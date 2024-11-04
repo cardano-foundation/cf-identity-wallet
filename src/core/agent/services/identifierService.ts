@@ -35,6 +35,8 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
+  static readonly IDENTIFIER_NAME_TAKEN =
+    "Identifier name has already been used on KERIA";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
   protected readonly identifierStorage: IdentifierStorage;
@@ -126,10 +128,7 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async createIdentifier(
-    metadata: Omit<
-      IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "signifyName"
-    >
+    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
   ): Promise<CreateIdentifierResult> {
     const startTime = Date.now();
 
@@ -137,11 +136,18 @@ class IdentifierService extends AgentService {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
 
-    const signifyName = new Salter({}).qb64;
-    const operation = await this.props.signifyClient
-      .identifiers()
-      .create(signifyName); //, this.getCreateAidOptions());
-    let op = await operation.op();
+    let name = `${metadata.theme}:${metadata.displayName}`;
+    if (metadata.groupMetadata) {
+      name = `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`;
+    }
+    const operation = await this.props.signifyClient.identifiers().create(name);
+    let op = await operation.op().catch((error) => {
+      const err = error.message.split(" - ");
+      if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
+        throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
+      }
+      throw error;
+    });
     const identifier = operation.serder.ked.i;
 
     const addRoleOperation = await this.props.signifyClient
@@ -171,9 +177,8 @@ class IdentifierService extends AgentService {
       id: identifier,
       ...metadata,
       isPending: !op.done,
-      signifyName: signifyName,
     });
-    return { identifier, signifyName, isPending: !op.done };
+    return { identifier, isPending: !op.done };
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
@@ -243,6 +248,9 @@ class IdentifierService extends AgentService {
       "theme" | "displayName" | "groupMetadata"
     >
   ): Promise<void> {
+    await this.props.signifyClient.identifiers().update(identifier, {
+      name: `${data.theme}:${data.displayName}`,
+    });
     return this.identifierStorage.updateIdentifierMetadata(identifier, {
       theme: data.theme,
       displayName: data.displayName,
@@ -279,7 +287,6 @@ class IdentifierService extends AgentService {
           id: identifier.prefix,
           displayName: identifier.prefix, //same as the id at the moment
           theme: 0,
-          signifyName: identifier.name,
         });
       }
     }

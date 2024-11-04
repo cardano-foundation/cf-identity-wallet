@@ -1,4 +1,4 @@
-import { HabState, State } from "signify-ts";
+import { State } from "signify-ts";
 
 interface CommonExn {
   v: string;

@@ -9,7 +9,6 @@ const now = new Date();
 const memberMetadataRecordProps: IdentifierMetadataRecordProps = {
   id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
   groupMetadata: {
@@ -27,7 +26,6 @@ const multisigMetadataRecord = {
   type: "IdentifierMetadataRecord",
   id: "EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
   displayName: "identifier",
-  signifyName: "d8055a29-de5e-49c0-b986-b9e9f1fb6c2e",
   isDeleted: false,
   isPending: false,
   multisigManageAid: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
@@ -98,7 +96,6 @@ const getMultisigIdentifierResponse = {
 
 const memberIdentifierRecord = {
   _tags: {
-    signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
     groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
     isDeleted: false,
     isPending: false,
@@ -107,7 +104,6 @@ const memberIdentifierRecord = {
   type: "IdentifierMetadataRecord",
   id: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
   displayName: "multi-sig",
-  signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
   isDeleted: false,
   isPending: false,
   createdAt: new Date("2024-06-28T03:54:03.514Z"),
