@@ -1,9 +1,6 @@
 import { Agent } from "../agent";
 import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
-import {
-  IdentifierStorage,
-  NotificationStorage,
-} from "../records";
+import { IdentifierStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { CredentialStatus } from "./credentialService.types";
 import { CoreEventEmitter } from "../event";
@@ -21,7 +18,6 @@ import {
   notificationMultisigExnProp,
   notificationMultisigIcpProp,
   notificationIpexGrantProp,
-  notificationIpexAgreeProp,
   notificationIpexApplyProp,
   grantForIssuanceExnMessage,
   applyForPresentingExnMessage,
@@ -128,7 +124,6 @@ const agentServicesProps = {
 const identifierMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: new Date(),
   theme: 0,
 };
@@ -325,7 +320,7 @@ describe("Signify notification service of agent", () => {
     );
     getCredentialMock.mockResolvedValue(getCredentialResponse);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "signifyName",
+      id: "id",
     });
     notificationStorage.save = jest
       .fn()
@@ -503,35 +498,6 @@ describe("Signify notification service of agent", () => {
     expect(multiSigs.joinAuthorization).toBeCalledTimes(1);
   });
 
-  test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
-    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
-    notificationStorage.save = jest
-      .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
- 
-    notificationStorage.save = jest.fn().mockResolvedValue({
-      id: "string",
-      a: { r: NotificationRoute.ExnIpexAgree, d: "string", m: "" },
-      read: false,
-      route: NotificationRoute.ExnIpexAgree,
-      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-      createdAt: new Date(),
-    });
-
-    await keriaNotificationService.processNotification(
-      notificationIpexAgreeProp
-    );
-    expect(
-      ipexCommunications.createLinkedIpexMessageRecord
-    ).toHaveBeenCalledWith(
-      grantForIssuanceExnMessage,
-      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
-    );
-    expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
-      notificationIpexAgreeProp.i
-    );
-  });
-
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     notificationStorage.save = jest
@@ -560,7 +526,7 @@ describe("Signify notification service of agent", () => {
     admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
     getCredentialMock.mockResolvedValue(getCredentialResponse);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "signifyName",
+      id: "id",
     });
     submitAdmitMock.mockResolvedValueOnce({
       name: "name",
@@ -1737,7 +1703,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -1784,7 +1749,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -1796,25 +1760,27 @@ describe("Long running operation tracker", () => {
 
   test("Should handle long operations with type exchange.presentcredential", async () => {
     const credentialIdMock = "credentialId";
-    signifyClient
-      .exchanges()
-      .get.mockResolvedValueOnce({
-        exn: {
-          r: ExchangeRoute.IpexAgree,
-          p: "p",
-        },
-      })
-      .mockResolvedValueOnce({
-        exn: {
-          r: ExchangeRoute.IpexGrant,
-          d: "d",
-          e: {
-            acdc: {
-              d: credentialIdMock,
-            },
+    const grantExchangeMock = {
+      exn: {
+        r: ExchangeRoute.IpexGrant,
+        d: "d",
+        e: {
+          acdc: {
+            d: credentialIdMock,
           },
         },
-      });
+      },
+    };
+    const agreeExchange = {
+      exn: {
+        r: ExchangeRoute.IpexAgree,
+        p: "p",
+      },
+    };
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce(grantExchangeMock)
+      .mockResolvedValueOnce(agreeExchange);
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.presentcredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
@@ -1827,12 +1793,15 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
     await keriaNotificationService.processOperation(operationRecord);
+    expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
+      grantExchangeMock,
+      ConnectionHistoryType.CREDENTIAL_PRESENTED
+    );
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
@@ -1887,7 +1856,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
       updatedAt: new Date(),
@@ -1972,7 +1940,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -2053,7 +2020,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),

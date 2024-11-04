@@ -44,6 +44,12 @@ const VerifySeedPhrase = () => {
     );
   }, [originalSeedPhrase]);
 
+  const sortCurrentSeedPhrase = useCallback(() => {
+    setSeedPhraseRemaining((originalSeedPhrase) => 
+      [...originalSeedPhrase].sort((a, b) => a.localeCompare(b))
+    );
+  }, []);
+
   useEffect(() => {
     sortSeedPhrase();
   }, []);
@@ -83,7 +89,7 @@ const VerifySeedPhrase = () => {
     }
     setSeedPhraseRemaining(seedPhraseRemaining.concat(words));
     setSeedPhraseSelected(newMatch);
-    sortSeedPhrase();
+    sortCurrentSeedPhrase();
   };
 
   const storeIdentitySeedPhrase = async () => {

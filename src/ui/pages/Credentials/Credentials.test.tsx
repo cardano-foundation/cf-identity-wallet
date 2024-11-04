@@ -72,6 +72,16 @@ const initialStateEmpty = {
   identifiersCache: {
     identifiers: filteredIdentifierFix,
   },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
+  },
 };
 
 const initialStateFull = {
@@ -105,6 +115,16 @@ const initialStateFull = {
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
+  },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
 };
 
@@ -145,10 +165,19 @@ const archivedAndRevokedState = {
   notificationsCache: {
     notifications: [],
   },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
+  },
 };
 
 let mockedStore: Store<unknown, AnyAction>;
-const dispatch = jest.fn();
 
 describe("Creds Tab", () => {
   const mockStore = configureStore();
@@ -301,8 +330,15 @@ describe("Creds Tab", () => {
       credsArchivedCache: {
         creds: [],
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -422,36 +458,6 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("favourite-container-element").getAttribute("style")
-      ).toBe(null);
-    });
-  });
-
-  test("Open cred detail", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("keri-card-template-favs-index-0"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentRoute({
-          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[0].id}`,
-        })
-      );
-
       expect(
         getByTestId("favourite-container-element").getAttribute("style")
       ).toBe(null);

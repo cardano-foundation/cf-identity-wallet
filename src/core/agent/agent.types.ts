@@ -26,9 +26,11 @@ enum MiscRecordId {
   APP_BIOMETRY = "app-biometry",
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
+  APP_CRED_VIEW_TYPE = "app-cred-view-type",
   KERIA_CONNECT_URL = "keria-connect-url",
   KERIA_BOOT_URL = "keria-boot-url",
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
+  APP_CRED_FAVOURITE_INDEX = "cred-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
   LOGIN_METADATA = "login-metadata",
@@ -72,6 +74,7 @@ type IpexMessage = {
     q: JSONValue;
     a: any;
     e: any;
+    rp: string;
   };
   pathed: {
     acdc?: string;
@@ -138,7 +141,6 @@ interface AgentServicesProps {
 }
 
 interface CreateIdentifierResult {
-  signifyName: string;
   identifier: string;
   multisigManageAid?: string;
   isPending?: boolean;

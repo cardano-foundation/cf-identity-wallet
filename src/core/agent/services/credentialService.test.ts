@@ -458,7 +458,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {
@@ -480,7 +480,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {
@@ -514,7 +514,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {

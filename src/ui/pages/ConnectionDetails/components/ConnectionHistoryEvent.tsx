@@ -51,12 +51,13 @@ const ConnectionHistoryEvent = ({
             })}
           {historyItem.type ===
             ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT &&
-            i18next.t("connections.details.present", {
+            i18next.t("connections.details.requestpresent", {
               issuer: connectionDetails?.label,
             })}
-          {historyItem.type ===
-            ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE &&
-            i18n.t("connections.details.agree")}
+          {historyItem.type === ConnectionHistoryType.CREDENTIAL_PRESENTED &&
+            i18n.t("connections.details.presented", {
+              credentialType: historyItem.credentialType,
+            })}
           {historyItem.type === ConnectionHistoryType.CREDENTIAL_REVOKED &&
             i18next.t("connections.details.update", {
               credential: historyItem.credentialType

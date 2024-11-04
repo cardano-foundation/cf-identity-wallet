@@ -31,7 +31,6 @@ describe("Identifier Stage 3", () => {
       createdAtUTC: "",
       theme: 0,
       isPending: false,
-      signifyName: "",
       groupMetadata: undefined,
     },
     color: IdentifierColor.Green,

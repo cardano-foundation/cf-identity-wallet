@@ -680,6 +680,7 @@
     "description": "Set your operations password so you can access additional wallet features.",
     "input": {
       "first": {
+        "symbolguide": "Symbol guide",
         "title": "Create password",
         "placeholder": "Type password"
       },
@@ -704,15 +705,69 @@
       }
     },
     "error": {
-      "hasSpecialChar": "Please enter a valid character",
-      "isTooShort": "Must be more than 8 characters long",
-      "isTooLong": "Must be less than 64 characters long",
+      "hasSpecialChar": "Use only lowercase/uppercase letters, numbers & symbols for your password.",
+      "passwordlength": "Must contain between 8-64 characters",
       "hasNoUppercase": "Must contain an uppercase letter",
       "hasNoLowercase": "Must contain a lowercase letter",
       "hasNoNumber": "Must contain a number",
-      "hasNoSymbol": "Must contain a valid symbol",
+      "hasNoSymbol": "Must contain a valid symbol.",
       "hasNoMatch": "Passwords do not match",
       "hintSameAsPassword": "Your hint cannot be your password"
+    },
+    "meter": {
+      "strengthlevel": {
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong"
+      },
+      "acceptcriteria": {
+        "text": "Must be between <strong>8-64 characters</strong>, contain an <strong>lowercase</strong> and <strong>uppercase</strong> letter, a <strong>number</strong>, and a <strong>symbol</strong>."
+
+      }
+    },
+    "symbolmodal": {
+      "title": "Symbol guide",
+      "done": "Done",
+      "text": "Please ensure the symbols you’re using in your password align with the standard US and UK keyboards listed below:",
+      "note": "Various operating systems and applications may apply limitations to this set.",
+      "symbolcolumn": "Symbol",
+      "name": "Name",
+      "listsymbol": {
+        "space": "Space",
+        "doublequote": "Double quote",
+        "numbersign": "Number sign (hash)",
+        "dollarsign": "Dollar sign",
+        "sterlingsign": "Sterling sign (pound)",
+        "eurosign": "Euro sign",
+        "percent": "Percent",
+        "ampersand": "Ampersand",
+        "singlequote": "Single quote",
+        "leftparenthesis": "Left parenthesis",
+        "rightparenthesis": "Right parenthesis",
+        "asterisk": "Asterisk",
+        "plus": "Plus",
+        "comma": "Comma",
+        "minus": "Minus",
+        "fullstop": "Full stop",
+        "slash": "Slash",
+        "colon": "Colon",
+        "semicolon": "Semicolon",
+        "lessthan": "Less than",
+        "equal": "Equal",
+        "greaterthan": "Greater than",
+        "questionmark": "Question mark",
+        "atsign": "At sign",
+        "leftbracket": "Left bracket",
+        "backslash": "Back slash",
+        "rightbracket": "Right bracket",
+        "caret": "Caret",
+        "underscore": "Uderscore",
+        "graveaccent": "Grave accent (backtick)",
+        "leftbrace": "Left brace",
+        "verticalbar": "Vertical bar",
+        "rightbrace": "Right brace",
+        "tilde": "Tilde"
+    }
     }
   },
   "ssiagent": {
@@ -1305,9 +1360,9 @@
       "history": "Connection History",
       "connectedwith": "Connected with “{{ issuer }}“",
       "issuance": "Received a “{{ credential }}“",
-      "present": "“{{ issuer }}“ has requested a credential presentation",
-      "agree": "Presentation offer agreed",
+      "requestpresent": "“{{ issuer }}“ has requested a credential presentation",
       "update": "“{{ credential }}“ has been revoked",
+      "presented": "Presented “{{ credentialType }}“ credential",
       "notavailable": "N/A",
       "details": "Details",
       "notes": "Notes",

@@ -319,7 +319,6 @@ describe("Ipex communication service of agent", () => {
     getExchangeMock = jest.fn().mockReturnValue(grantForIssuanceExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
       id: "identifierId",
     });
     schemaGetMock.mockResolvedValue(QVISchema);
@@ -724,16 +723,16 @@ describe("Ipex communication service of agent", () => {
     });
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
-      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
+      ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
-    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
           dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
-          connectionId: grantForIssuanceExnMessage.exn.i,
-          historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+          connectionId: grantForIssuanceExnMessage.exn.rp,
+          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
         }),
     });
 
@@ -747,7 +746,6 @@ describe("Ipex communication service of agent", () => {
       applyForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
-
     expect(updateContactMock).toBeCalledWith(
       applyForPresentingExnMessage.exn.i,
       {
@@ -761,6 +759,26 @@ describe("Ipex communication service of agent", () => {
           }),
       }
     );
+    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(connections.resolveOobi).toBeCalledTimes(1);
+  });
+
+  test("can link credential presentation history items to the correct connection", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantForIssuanceExnMessage,
+      ConnectionHistoryType.CREDENTIAL_PRESENTED
+    );
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
+          credentialType: QVISchema.title,
+          connectionId: grantForIssuanceExnMessage.exn.rp,
+          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
+        }),
+    });
     expect(schemaGetMock).toBeCalledTimes(1);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
@@ -1364,7 +1382,6 @@ describe("Ipex communication service of agent", () => {
       ourIdentifier: {
         id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
         displayName: "Identifier 2",
-        signifyName: "uuid-here",
         createdAt: "2024-09-23T08:53:11.981Z",
         theme: 0,
         groupMetadata: {

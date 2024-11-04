@@ -7,7 +7,6 @@ const mockData: IdentifierMetadataRecordProps = {
   id: "z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
   displayName: "New AID",
   theme: 0,
-  signifyName: "Test",
 };
 
 describe("Identifier Record", () => {
@@ -31,7 +30,6 @@ describe("Identifier Record", () => {
       id: mockData.id,
       displayName: mockData.displayName,
       theme: 0,
-      signifyName: "Test",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()

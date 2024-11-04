@@ -36,9 +36,10 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
-  setFavouriteIndex,
-  setViewTypeCache,
-} from "../../../store/reducers/identifierViewTypeCache";
+  setCredentialViewTypeCache,
+  setIdentifierFavouriteIndex,
+  setIdentifierViewTypeCache,
+} from "../../../store/reducers/viewTypeCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   getAuthentication,
@@ -332,14 +333,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
           )
         );
       }
-      const viewType = await Agent.agent.basicStorage.findById(
+      const indentifierViewType = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
       );
-      if (viewType) {
+      if (indentifierViewType) {
         dispatch(
-          setViewTypeCache(viewType.content.viewType as CardListViewType)
+          setIdentifierViewTypeCache(indentifierViewType.content.viewType as CardListViewType)
         );
       }
+
+      const credViewType = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_VIEW_TYPE
+      );
+
+      if (credViewType) {
+        dispatch(
+          setCredentialViewTypeCache(credViewType.content.viewType as CardListViewType)
+        );
+      }
+
       const appBiometrics = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_BIOMETRY
       );
@@ -356,13 +368,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
         userName = appUserNameRecord.content as { userName: string };
       }
 
-      const favouriteIndex = await Agent.agent.basicStorage.findById(
+      const identifierFavouriteIndex = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
       );
 
-      if (favouriteIndex) {
+      if (identifierFavouriteIndex) {
         dispatch(
-          setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(Number(identifierFavouriteIndex.content.favouriteIndex))
+        );
+      }
+
+      const credFavouriteIndex = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_FAVOURITE_INDEX
+      );
+
+      if (credFavouriteIndex) {
+        dispatch(
+          setIdentifierFavouriteIndex(Number(credFavouriteIndex.content.favouriteIndex))
         );
       }
 
@@ -450,11 +472,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     await new ConfigurationService().start();
     await Agent.agent.initDatabaseConnection();
 
-    // This will skip the onboarding screen with dev mode.
-    if (process.env.DEV_SKIP_ONBOARDING === "true") {
-      await Agent.agent.devPreload();
-    }
-
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     const initState = await Agent.agent.basicStorage.findById(
@@ -465,6 +482,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
+
+    // This will skip the onboarding screen with dev mode.
+    if (process.env.DEV_SKIP_ONBOARDING === "true") {
+      await Agent.agent.devPreload();
+    }
+
     await loadDatabase();
     const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
 

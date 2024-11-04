@@ -5,7 +5,7 @@ import { identifiersCacheSlice } from "./reducers/identifiersCache";
 import { credsCacheSlice } from "./reducers/credsCache";
 import { connectionsCacheSlice } from "./reducers/connectionsCache";
 import { walletConnectionsCacheSlice } from "./reducers/walletConnectionsCache";
-import { identifierViewTypeCacheSlice } from "./reducers/identifierViewTypeCache";
+import { viewTypeCacheSlice } from "./reducers/viewTypeCache";
 import { biometricsCacheSlice } from "./reducers/biometricsCache";
 import { credsArchivedCacheSlice } from "./reducers/credsArchivedCache";
 import { ssiAgentSlice } from "./reducers/ssiAgent";
@@ -20,7 +20,7 @@ const store = configureStore({
     credsArchivedCache: credsArchivedCacheSlice.reducer,
     connectionsCache: connectionsCacheSlice.reducer,
     walletConnectionsCache: walletConnectionsCacheSlice.reducer,
-    identifierViewTypeCacheCache: identifierViewTypeCacheSlice.reducer,
+    viewTypeCache: viewTypeCacheSlice.reducer,
     biometricsCache: biometricsCacheSlice.reducer,
     ssiAgentCache: ssiAgentSlice.reducer,
     notificationsCache: notificationsCacheSlice.reducer,

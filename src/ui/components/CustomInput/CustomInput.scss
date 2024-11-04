@@ -5,8 +5,28 @@ ion-item.custom-input {
   --padding-start: 0;
   --inner-padding-end: 0;
 
+  &.has-action {
+    .input-label {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.625rem;
+    }
+
+    ion-label[position="stacked"] {
+      margin-bottom: 0;
+    }
+  }
+
   ion-label[position="stacked"] {
     margin-bottom: 0.625rem;
+    font-size: 1rem;
+    font-weight: 500;
+
+    &.label-stacked.sc-ion-label-md-h {
+      transform: none;
+    }
 
     .custom-input-optional {
       margin-left: 0.25rem;

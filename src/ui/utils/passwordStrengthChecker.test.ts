@@ -31,9 +31,9 @@ describe("passwordStrengthChecker", () => {
     expect(passwordStrengthChecker.isLengthValid(password)).toBe(false);
   });
   it("should return false if has invalid character", () => {
-    const password = "Abc@12344,";
+    const password = "Abc@12344,∞";
     expect(passwordStrengthChecker.getErrorByPriority(password)).toBe(
-      "Please enter a valid character"
+      "Use only lowercase/uppercase letters, numbers & symbols for your password."
     );
   });
 });

@@ -7,6 +7,10 @@ import {
 import { peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -25,21 +29,18 @@ import {
   showConnections,
 } from "../../../store/reducers/stateCache";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
+import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
 import { TabLayout } from "../../components/layout/TabLayout";
+import { ListHeader } from "../../components/ListHeader";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { CardList as CredentialCardList, SwitchCardView } from "../../components/SwitchCardView";
 import { CardType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
+import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
-import { ListHeader } from "../../components/ListHeader";
-import { CardList as CredentialCardList } from "../../components/SwitchCardView";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-} from "../../../core/agent/services/credentialService.types";
-import { RemovePendingAlert } from "../../components/RemovePendingAlert";
-import { showError } from "../../utils/error";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -108,7 +109,7 @@ const Credentials = () => {
 
   useEffect(() => {
     setShowPlaceholder(confirmedCreds.length + pendingCreds.length === 0);
-  }, [credsCache]);
+  }, [confirmedCreds.length, credsCache, pendingCreds.length]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 
@@ -156,13 +157,10 @@ const Credentials = () => {
     }, CLEAR_STATE_DELAY);
   };
 
-  const tabClasses = `credential-tab ${
-    navAnimation === "cards"
-      ? "cards-credential-nav"
-      : navAnimation === "favourite"
-      ? "favorite-credential-nav"
-      : ""
-  }`;
+  const tabClasses = combineClassNames("credential-tab", {
+    "cards-credential-nav": navAnimation === "cards",
+    "favorite-credential-nav": navAnimation === "favourite"
+  });
 
   const handleArchivedCredentialsDisplayChange = (value: boolean) => {
     if (value === archivedCredentialsIsOpen) return;
@@ -253,32 +251,27 @@ const Credentials = () => {
                 className="credentials-tab-content-block credential-favourite-cards"
                 data-testid="favourite-container-element"
               >
-                {!!confirmedCreds.length && (
-                  <h3>{i18n.t("tabs.credentials.tab.favourites")}</h3>
-                )}
-                <CardsStack
+                <CardSlider
+                  title={`${i18n.t("tabs.credentials.tab.favourites")}`}
                   name="favs"
-                  cardsType={CardType.CREDENTIALS}
+                  cardType={CardType.CREDENTIALS}
                   cardsData={sortedFavCreds}
                   onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
             {!!confirmedCreds.length && (
-              <div className="credentials-tab-content-block credential-cards">
-                {!!favCreds.length && (
-                  <h3>{i18n.t("tabs.credentials.tab.allcreds")}</h3>
-                )}
-                <CardsStack
-                  name="allcreds"
-                  cardsType={CardType.CREDENTIALS}
-                  cardsData={confirmedCreds}
-                  onShowCardDetails={() => handleShowNavAnimation("cards")}
-                />
-              </div>
+              <SwitchCardView
+                className="credentials-tab-content-block credential-cards"
+                cardTypes={CardType.CREDENTIALS}
+                cardsData={confirmedCreds}
+                onShowCardDetails={() => handleShowNavAnimation("cards")}
+                title={`${i18n.t("tabs.credentials.tab.allcreds")}`}
+                name="allcreds"
+              />
             )}
             {!!pendingCreds.length && (
-              <div className="credetial-tab-content-block">
+              <div className="credetial-tab-content-block pending-container">
                 <ListHeader
                   title={`${i18n.t("tabs.credentials.tab.pendingcred")}`}
                 />

@@ -1,29 +1,16 @@
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import {
-  acdcChangeHandler,
-  AppWrapper,
-  connectionStateChangedHandler,
-  peerConnectRequestSignChangeHandler,
-  peerConnectedChangeHandler,
-  peerConnectionBrokenChangeHandler,
-  peerDisconnectedChangeHandler,
-} from "./AppWrapper";
-import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
-import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
-import {
-  setCurrentOperation,
-  setQueueIncomingRequest,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { OperationType, ToastMsgType } from "../../globals/types";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../../../core/agent/agent.types";
-import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
+import {
+  AcdcStateChangedEvent,
+  ConnectionStateChangedEvent,
+  EventTypes,
+} from "../../../core/agent/event.types";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -35,20 +22,32 @@ import {
   PeerConnectionEventTypes,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
+import { store } from "../../../store";
+import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
+import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
+import { updateIsPending } from "../../../store/reducers/identifiersCache";
+import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
+import {
+  setQueueIncomingRequest,
+  setToastMsg
+} from "../../../store/reducers/stateCache";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
   ConnectionData,
   setConnectedWallet,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
-import { updateIsPending } from "../../../store/reducers/identifiersCache";
-import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
-import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
-import { signifyOperationStateChangeHandler } from "./coreEventListeners";
+import { ToastMsgType } from "../../globals/types";
 import {
-  AcdcStateChangedEvent,
-  ConnectionStateChangedEvent,
-  EventTypes,
-} from "../../../core/agent/event.types";
+  AppWrapper,
+  acdcChangeHandler,
+  connectionStateChangedHandler,
+  peerConnectRequestSignChangeHandler,
+  peerConnectedChangeHandler,
+  peerConnectionBrokenChangeHandler,
+  peerDisconnectedChangeHandler,
+} from "./AppWrapper";
+import { signifyOperationStateChangeHandler } from "./coreEventListeners";
 
 const getConnectionsPendingDeletionMock = jest.fn();
 
