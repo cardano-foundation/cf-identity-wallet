@@ -379,6 +379,14 @@ class ConnectionService extends AgentService {
         await this.props.signifyClient.oobis().resolve(url, alias),
         5000
       )) as Operation & { response: State };
+      if (!operation.done) {
+        throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+      }
+      const connectionId =
+        operation.done && operation.response
+          ? operation.response.i
+          : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
+      await this.props.signifyClient.contacts().update(connectionId, { alias });
     }
     else {
       operation = await this.props.signifyClient.oobis().resolve(url, alias);
