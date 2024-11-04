@@ -214,8 +214,7 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
       return { name: url, response: { i: "id" } };
     });
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");  
+
     const result = await connectionService.connectByOobiUrl(oobi);
     expect(result).toStrictEqual({
       type: KeriConnectionType.MULTI_SIG_INITIATOR,
@@ -223,7 +222,7 @@ describe("Connection service of agent", () => {
       connection: {
         groupId,
         id: oobi,
-        label: "0ADQpus-mQmmO4mgWcT3ekDz",
+        label: "alias",
         oobi: `${oobiPrefix}${failUuid}`,
         status: ConnectionStatus.CONFIRMED,
         connectionDate: now,
