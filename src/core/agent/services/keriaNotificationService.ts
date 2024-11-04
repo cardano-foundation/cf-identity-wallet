@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
@@ -32,7 +31,7 @@ import {
   OperationAddedEvent,
   NotificationRemovedEvent,
 } from "../event.types";
-import { deleteNotificationRecordById } from "./utils";
+import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType } from "./connectionService.types";
 
@@ -912,7 +911,7 @@ class KeriaNotificationService extends AgentService {
               ConnectionHistoryType.CREDENTIAL_REVOKED
             );
             const metadata: any = {
-              id: uuidv4(),
+              id: randomSalt(),
               a: {
                 r: NotificationRoute.LocalAcdcRevoked,
                 credentialId,

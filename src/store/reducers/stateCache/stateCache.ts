@@ -1,6 +1,6 @@
 import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
+import { Salter } from "signify-ts";
 import { LoginAttempts } from "../../../core/agent/services/auth.types";
 import { RoutePath } from "../../../routes";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
@@ -101,7 +101,7 @@ const stateCacheSlice = createSlice({
     setToastMsg: (state, action: PayloadAction<ToastMsgType>) => {
       state.toastMsgs = [
         {
-          id: uuidv4(),
+          id: new Salter({}).qb64,
           message: action.payload,
         },
         ...(state.toastMsgs || []),

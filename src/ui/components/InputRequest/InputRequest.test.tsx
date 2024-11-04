@@ -69,6 +69,12 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children }: { children: any }) => children,
 }));
 
+jest.mock("signify-ts", () => ({
+  Salter: jest.fn().mockImplementation(() => {
+    return { qb64: "" };
+  }),
+}));
+
 describe("SetUserName component", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();

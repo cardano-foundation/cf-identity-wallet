@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
-import { Operation, Salter, State, Contact } from "signify-ts";
+import { Operation, State, Contact } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -20,7 +19,7 @@ import {
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
   ConnectionStateChangedEvent,
@@ -271,7 +270,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    const id = new Salter({}).qb64;
+    const id = randomSalt();
     await this.props.signifyClient.contacts().update(connectionId, {
       [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
@@ -370,8 +369,8 @@ class ConnectionService extends AgentService {
     url: string,
     waitForCompletion = true
   ): Promise<Operation & { response: State } & { alias: string }> {
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-
+    const startTime = Date.now();
+    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     let operation;
     if(waitForCompletion){
       operation = (await waitAndGetDoneOp(
@@ -385,7 +384,7 @@ class ConnectionService extends AgentService {
       const connectionId =
         operation.done && operation.response
           ? operation.response.i
-          : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
+          : new URL(url).pathname.split("/oobi/").pop()!.split("/")[0];
       await this.props.signifyClient.contacts().update(connectionId, { alias });
     }
     else {

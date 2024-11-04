@@ -1,6 +1,5 @@
 import { IonModal, isPlatform } from "@ionic/react";
 import { useMemo, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -29,6 +28,7 @@ import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { PageFooter } from "../PageFooter";
 import "./InputRequest.scss";
+import { randomSalt } from "../../../core/agent/services/utils";
 
 const InputRequest = () => {
   const dispatch = useAppDispatch();
@@ -59,7 +59,7 @@ const InputRequest = () => {
     // This will be removed when the create connection process ends.
     const connectionName = new URL(content).searchParams.get("name");
 
-    const pendingId = uuidv4();
+    const pendingId = randomSalt();
     dispatch(
       updateOrAddConnectionCache({
         id: pendingId,
