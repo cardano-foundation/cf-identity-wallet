@@ -50,6 +50,12 @@ const operationsGetMock = jest.fn().mockImplementation((id: string) => {
   };
 });
 
+jest.mock("signify-ts", () => ({
+  Salter: jest.fn().mockImplementation(() => {
+    return { qb64: "" };
+  }),
+}));
+
 const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -80,6 +86,7 @@ const signifyClient = jest.mocked({
       };
     }),
     delete: jest.fn(),
+    update: jest.fn()
   }),
   notifications: () => ({
     list: listNotificationsMock,
@@ -1633,6 +1640,7 @@ describe("Long running operation tracker", () => {
     const operationMock = {
       metadata: {
         said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance"
       },
       done: true,
       response: {

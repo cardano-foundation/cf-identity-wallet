@@ -10,6 +10,7 @@ import {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
+import { randomSalt } from "./utils";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
@@ -228,8 +229,8 @@ describe("Connection service of agent", () => {
       connection: {
         groupId,
         id: connectionId,
-        label: alias,
-        oobi,
+        label: "alias",
+        oobi: oobi,
         status: ConnectionStatus.CONFIRMED,
         createdAtUTC: now,
       },
@@ -323,7 +324,7 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     const id = new Salter({}).qb64;
-    const now = new Date();
+    const now =  new Date();
     await connectionService.createConnectionNote(connectionId, note);
     expect(updateContactMock).toBeCalledWith(connectionId, {
       [`note:${id}`]: JSON.stringify({
@@ -530,14 +531,22 @@ describe("Connection service of agent", () => {
   test("can resolve oobi with no name parameter", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid`;
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
-      response: { i: url, dt: now },
-      name: url,
-      done: true,
-      metadata: {
-        oobi: `${oobiPrefix}${failUuid}`,
+      op: {
+        response: { i: url, dt: now },
+        name: url,
+        done: true,
+        metadata: {
+          oobi: `${oobiPrefix}${failUuid}`,
+        }
       },
+      alias: "0ADQpus-mQmmO4mgWcT3ekDz",
+      connection: undefined,
     });
   });
 
@@ -549,12 +558,16 @@ describe("Connection service of agent", () => {
       .mockResolvedValue({ done: true });
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
-      response: { i: url, dt: now },
-      name: url,
-      metadata: {
-        oobi: `${oobiPrefix}${failUuid}`,
+      op: {
+        response: { i: url, dt: now },
+        name: url,
+        metadata: {
+          oobi: `${oobiPrefix}${failUuid}`,
+        },
+        done: true,
       },
-      done: true,
+      alias: "alias with spaces",
+      connection: undefined,
     });
   });
 
@@ -565,7 +578,7 @@ describe("Connection service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
     await expect(
-      connectionService.resolveOobi(`${oobiPrefix}${failUuid}`)
+      connectionService.resolveOobi(`${oobiPrefix}${failUuid}`, true)
     ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
   });
 

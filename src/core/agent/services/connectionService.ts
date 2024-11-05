@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
-import { Contact, Operation, Salter, State } from "signify-ts";
+import { Operation, State, Contact } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -20,7 +19,7 @@ import {
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
   ConnectionStateChangedEvent,
@@ -82,23 +81,23 @@ class ConnectionService extends AgentService {
       },
     });
 
-    const operation = await this.resolveOobi(url, multiSigInvite);
+    const oobi = (await this.resolveOobi(url, multiSigInvite)) as {op: Operation, connection: Contact, alias: string};
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
 
-    const connectionId = operation.id;
+    const connectionId = oobi.connection.id;
 
     const connectionMetadata: Record<string, unknown> = {
-      alias: operation.alias,
+      alias: oobi.alias,
       oobi: url,
       pending: false,
     };
 
     const connection = {
       id: connectionId,
-      createdAtUTC: operation.createdAt as string,
-      oobi: operation.oobi,
+      createdAtUTC: oobi.connection.createdAt as string,
+      oobi: oobi.connection.oobi,
       status: ConnectionStatus.CONFIRMED,
-      label: operation.alias,
+      label: oobi.alias,
       groupId,
     };
 
@@ -268,7 +267,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    const id = new Salter({}).qb64;
+    const id = randomSalt();
     await this.props.signifyClient.contacts().update(connectionId, {
       [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
@@ -368,42 +367,36 @@ class ConnectionService extends AgentService {
   async resolveOobi(
     url: string,
     waitForCompletion = true
-  ): Promise<Operation & { response: State } & Contact> {
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    const groupId = new URL(url).searchParams.get("groupId") ?? "";
-    const operation = (await waitAndGetDoneOp(
-      this.props.signifyClient,
-      await this.props.signifyClient.oobis().resolve(url, alias),
-      5000
-    )) as Operation & { response: State };
-
-    if (!operation.done && !waitForCompletion) {
+  ): Promise<{op: Operation, connection?: Contact, alias: string}> {
+    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
+    let connection;
+    let operation: Operation & { response: State };
+    if(waitForCompletion){
+      operation = (await waitAndGetDoneOp(
+        this.props.signifyClient,
+        await this.props.signifyClient.oobis().resolve(url, alias),
+        5000
+      )) as Operation & { response: State };
+      if (!operation.done) {
+        throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+      }
+      if(operation.response && operation.response.i){
+        const connectionId = operation.response.i
+        connection = await this.props.signifyClient.contacts().update(connectionId, { alias });
+      }
+    }
+    else {
+      operation = await this.props.signifyClient.oobis().resolve(url, alias);
       const pendingOperation = await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-
       this.props.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
-    } else if (!operation.done) {
-      throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
-
-    const connectionId =
-      operation.done && operation.response
-        ? operation.response.i
-        : new URL(url).pathname.split("/oobi/").pop()!.split("/")[0];
-
-    const keriaConnection = await this.props.signifyClient
-      .contacts()
-      .update(connectionId, {
-        alias,
-        groupCreationId: groupId,
-        createdAt: new Date().toISOString(),
-      });
-    const oobi = { ...operation, ...keriaConnection };
+    const oobi = { op: operation, connection, alias };
     return oobi;
   }
 }

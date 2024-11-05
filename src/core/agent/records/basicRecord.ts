@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
+import { randomSalt } from "../services/utils";
 
 interface BasicRecordStorageProps {
   id?: string;
@@ -16,7 +16,7 @@ class BasicRecord extends BaseRecord {
   constructor(props: BasicRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? uuidv4();
+      this.id = props.id ?? randomSalt();
       this.createdAt = props.createdAt ?? new Date();
       this.content = props.content;
       this._tags = props.tags ?? {};
