@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { Contact, Salter } from "signify-ts";
 import { Agent } from "../agent";
 import {
@@ -20,7 +19,7 @@ import {
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
   ConnectionRemovedEvent,
@@ -113,6 +112,7 @@ class ConnectionService extends AgentService {
       .split("/oobi/")
       .pop()!
       .split("/")[0];
+
     const alias = new URL(url).searchParams.get("name") ?? new Salter({}).qb64;
 
     const connectionMetadata: any = {
@@ -170,6 +170,7 @@ class ConnectionService extends AgentService {
         },
       });
     }
+    
     return { type: KeriConnectionType.NORMAL, connection };
   }
 
@@ -359,7 +360,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    const id = new Salter({}).qb64;
+    const id = randomSalt();
     await this.props.signifyClient.contacts().update(connectionId, {
       [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
@@ -456,7 +457,7 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     let operation;
     if (waitForCompletion) {
       operation = await waitAndGetDoneOp(

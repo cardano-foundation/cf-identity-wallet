@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { Salter } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -911,7 +911,7 @@ class KeriaNotificationService extends AgentService {
               ConnectionHistoryType.CREDENTIAL_REVOKED
             );
             const metadata: any = {
-              id: uuidv4(),
+              id: new Salter({}).qb64,
               a: {
                 r: NotificationRoute.LocalAcdcRevoked,
                 credentialId,

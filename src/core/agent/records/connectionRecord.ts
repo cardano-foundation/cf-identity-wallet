@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
+import { randomSalt } from "../services/utils";
 
 interface ConnectionRecordStorageProps {
   id?: string;
@@ -24,7 +24,7 @@ class ConnectionRecord extends BaseRecord {
   constructor(props: ConnectionRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? uuidv4();
+      this.id = props.id ?? randomSalt();
       this.createdAt = props.createdAt ?? new Date();
       this.alias = props.alias;
       this.oobi = props.oobi;

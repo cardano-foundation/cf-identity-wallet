@@ -222,8 +222,7 @@ describe("Connection service of agent", () => {
   test("Should return connection type to trigger UI to create a new identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
-    const alias = "alias";
-    const oobi = `http://localhost/oobi=3423?groupId=${groupId}&name=${alias}`;
+    const oobi = `http://localhost/oobi/id?groupId=${groupId}&name=alias`;
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
       return { name: url, response: { i: "id" } };
     });
@@ -235,8 +234,8 @@ describe("Connection service of agent", () => {
       groupId,
       connection: {
         groupId,
-        id: "",
-        label: alias,
+        id: "id",
+        label: "alias",
         oobi,
         status: ConnectionStatus.CONFIRMED,
         connectionDate: now,
@@ -486,11 +485,15 @@ describe("Connection service of agent", () => {
   test("can resolve oobi with no name parameter", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid`;
+    
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
       response: { i: url, dt: now },
       name: url,
-      alias: expect.any(String),
+      alias: "0ADQpus-mQmmO4mgWcT3ekDz",
       done: true,
       metadata: {
         oobi: `${oobiPrefix}${failUuid}`,
