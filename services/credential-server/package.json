@@ -22,7 +22,7 @@
         "net": "^1.0.2",
         "node-cache": "^5.1.2",
         "qrcode-terminal": "^0.12.0",
-        "signify-ts": "github:WebOfTrust/signify-ts#1212b54bfeaf085ad2217278e1e0fcaf4181621a",
+        "signify-ts": "github:WebOfTrust/signify-ts#07abd3189e1172e08abcd7cf8c2c77b98b791d02",
         "uuid": "^9.0.1",
         "ws": "^8.13.0"
     },
