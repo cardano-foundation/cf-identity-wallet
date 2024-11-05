@@ -84,11 +84,10 @@ export class SignifyApi {
     if (!operation.done) {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
-    const connectionId =
-      operation.done && operation.response
-        ? operation.response.i
-        : new URL(url).pathname.split("/oobi/").pop()!.split("/")[0];
-    await this.signifyClient.contacts().update(connectionId, { alias });
+    if (operation.response && operation.response.i) {
+      const connectionId = operation.response.i;
+      await this.signifyClient.contacts().update(connectionId, { alias });
+    }
     return operation;
   }
 
