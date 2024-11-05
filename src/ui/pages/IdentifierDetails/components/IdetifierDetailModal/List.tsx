@@ -1,27 +1,16 @@
-import { IonButton, IonIcon } from "@ionic/react";
-import { star, refreshOutline } from "ionicons/icons";
-import { CardBlock, CardDetailsItem, FlatBorderType } from "../../../../components/CardDetails";
-import { ListProps } from "./IdentifierDetailModal.types";
+import { IonIcon } from "@ionic/react";
+import { star } from "ionicons/icons";
 import { i18n } from "../../../../../i18n";
+import { CardBlock, CardDetailsItem } from "../../../../components/CardDetails";
 import { ListHeader } from "../../../../components/ListHeader";
+import { ListProps } from "./IdentifierDetailModal.types";
 
-const List = ({ data, title, bottomText, fullText, mask, rotateAction }: ListProps) => {
+const List = ({ data, title, bottomText, fullText, mask }: ListProps) => {
   
   return (
     <>
       <ListHeader title={title} />
-      {rotateAction && <CardBlock flatBorder={FlatBorderType.BOT} >
-        <IonButton
-          shape="round"
-          className="rotate-keys-button"
-          data-testid="rotate-key-button"
-          onClick={rotateAction}
-        >
-          <p>{i18n.t("tabs.identifiers.details.identifierdetail.signingkey.rotate")}</p>
-          <IonIcon icon={refreshOutline} />
-        </IonButton>
-      </CardBlock>}
-      <CardBlock flatBorder={rotateAction && FlatBorderType.TOP} className="list-item">
+      <CardBlock className="list-item">
         {data.map((item) => {
           return (
             <CardDetailsItem

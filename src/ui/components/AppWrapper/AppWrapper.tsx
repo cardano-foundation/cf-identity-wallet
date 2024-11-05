@@ -30,7 +30,6 @@ import {
   updateOrAddCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
-  setDismissIdentifierPropExplain,
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
@@ -299,16 +298,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
         dispatch(
           setFavouritesIdentifiersCache(
             identifiersFavourites.content.favourites as FavouriteIdentifier[]
-          )
-        );
-
-      const dismissPropExplain = await Agent.agent.basicStorage.findById(
-        MiscRecordId.DISMISS_PROP_EXPLAIN
-      );
-      if (dismissPropExplain)
-        dispatch(
-          setDismissIdentifierPropExplain(
-            dismissPropExplain.content.value as string[]
           )
         );
 

@@ -12,6 +12,7 @@
       font-size: 0.875rem;
       font-weight: 500;
       color: var(--ion-color-secondary);
+      white-space: nowrap;
 
       .card-details-info-block-key {
         display: block;
@@ -21,12 +22,16 @@
     }
   }
 
+  .list-header {
+    margin: 1.5rem 0 0 !important;
+  }
+
   .member:not(:last-child) {
     margin-bottom: 0.75rem;
   }
 
   .view-more-members {
-    --background: rgba(187, 187, 187, 0.5);
+    --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
     --border-radius: 0.5rem;
     color: var(--ion-color-primary);
     width: 100%;
@@ -36,7 +41,7 @@
     --padding-top: 0.625rem;
     --padding-bottom: 0.625rem;
     font-size: 1rem;
-    --background-activated: rgba(187, 187, 187, 0.5);
+    --background-activated: rgba(var(--ion-color-dark-grey-rgb), 0.5);
 
     &::part(native) {
       border: none;
@@ -114,6 +119,7 @@
 .open-animation {
   .card-details-content {
     animation: expand 0.7s ease-in-out;
+    margin-top: 0 !important;
 
     @keyframes expand {
       from {
@@ -135,6 +141,7 @@
   .card-details-content {
     animation: collapse 0.2s ease-in-out;
     animation-fill-mode: forwards;
+    margin-top: 0 !important;
   }
 
   @keyframes collapse {

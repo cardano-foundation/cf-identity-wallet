@@ -20,6 +20,7 @@ interface CardBlockProps {
   testId?: string;
   flatBorder?: FlatBorderType;
   className?: string;
+  copyContent?: string;
 }
 
 export type { CardDetailsBlockProps, CardBlockProps };

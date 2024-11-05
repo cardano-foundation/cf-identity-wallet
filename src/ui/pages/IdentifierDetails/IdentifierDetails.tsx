@@ -50,8 +50,7 @@ import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { IdentifierContent } from "./components/IdentifierContent";
-import { IdentifierDetailModal } from "./components/IdetifierDetailModal/IdentifierDetailModal";
-import { DetailView } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
+import { RotateKeyModal } from "./components/RotateKeyModal";
 import "./IdentifierDetails.scss";
 
 const NAVIGATION_DELAY = 250;
@@ -71,6 +70,7 @@ const IdentifierDetails = () => {
   const [identifierOptionsIsOpen, setIdentifierOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
+  const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentifierDetailsCore | undefined>();
   const [navAnimation, setNavAnimation] = useState(false);
@@ -78,10 +78,6 @@ const IdentifierDetails = () => {
   const [oobi, setOobi] = useState("");
   const [cloudError, setCloudError] = useState(false);
   const [hidden, setHidden] = useState(false);
-
-  const [openDetailModal, setOpenDetailModal] = useState(false);
-  const [viewType, setViewType] = useState(DetailView.Id);
-
 
   const fetchOobi = useCallback(async () => {
     try {
@@ -274,14 +270,8 @@ const IdentifierDetails = () => {
 
   const cancelDelete = () => dispatch(setCurrentOperation(OperationType.IDLE));
 
-  const openPropDetailModal = (view: DetailView) => {
-    setViewType(view);
-    setOpenDetailModal(true);
-  }
-
   const openRotateModal = () => {
-    setViewType(DetailView.SigningKey);
-    setOpenDetailModal(true);
+    setOpenRotateKeyModal(true);
   }
 
   const AdditionalButtons = () => {
@@ -389,7 +379,7 @@ const IdentifierDetails = () => {
               />
               <div className="card-details-content">
                 <IdentifierContent
-                  openPropDetailModal={openPropDetailModal}
+                  onRotateKey={openRotateModal}
                   cardData={cardData as IdentifierDetailsCore}
                 />
                 <PageFooter
@@ -433,6 +423,13 @@ const IdentifierDetails = () => {
         actionCancel={cancelDelete}
         actionDismiss={cancelDelete}
       />
+      <RotateKeyModal 
+        identifierId={params.id}
+        onReloadData={getDetails}
+        signingKey={cardData?.k[0] || ""}
+        isOpen={openRotateKeyModal}
+        onClose={() => setOpenRotateKeyModal(false)}
+      />
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={(value, isCancel) => {
@@ -444,14 +441,6 @@ const IdentifierDetails = () => {
         }}
         onVerify={handleDelete}
       />
-      {cardData && <IdentifierDetailModal
-        isOpen={openDetailModal} 
-        setOpen={setOpenDetailModal} 
-        view={viewType} 
-        setViewType={setViewType} 
-        data={cardData}
-        reloadData={getDetails}
-      />}
     </>
   );
 };

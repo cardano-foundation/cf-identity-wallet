@@ -5,7 +5,7 @@ import { CardDetailsItem } from "../CardDetailsItem";
 import { CardDetailsBlock } from "./CardDetailsBlock";
 import { CardBlockProps, FlatBorderType } from "./CardDetailsBlock.types";
 
-const CardBlock = ({ children, title, onClick, testId, flatBorder, className }: CardBlockProps) => {
+const CardBlock = ({ children, title, onClick, testId, flatBorder, className, copyContent }: CardBlockProps) => {
   const classes = combineClassNames("card-block", className, {
     "flat-border-bot": flatBorder === FlatBorderType.BOT,
     "flat-border-top": flatBorder === FlatBorderType.TOP,
@@ -13,8 +13,8 @@ const CardBlock = ({ children, title, onClick, testId, flatBorder, className }: 
   })
 
   return (
-    <CardDetailsBlock onClick={onClick} className={classes}>
-      {title && <CardDetailsItem className="card-header" info={title} endSlot={
+    <CardDetailsBlock onClick={!copyContent ? onClick : undefined} className={classes}>
+      {title && <CardDetailsItem testId={testId} className="card-header" copyContent={copyContent} info={title} copyButton={!!copyContent} endSlot={(!copyContent && onClick)&&
         <IonButton
           slot="end"
           shape="round"

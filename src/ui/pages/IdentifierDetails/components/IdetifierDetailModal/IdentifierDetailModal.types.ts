@@ -3,12 +3,13 @@ import { IdentifierDetails } from "../../../../../core/agent/services/identifier
 enum DetailView {
     GroupMember = "groupmember",
     SigningThreshold = "signingthreshold",
-    Id = "id",
-    Created = "created",
-    SigningKey="signingkeys",
     RotationThreshold="rotationthreshold",
-    SequenceNumber="sequencenumber",
-    RotationKeyDigests = "rotationkeydigests",
+    AdvancedDetail="advanceddetail"
+}
+
+const AccordionKey = {
+  SIGNINGKEY: "signingkey",
+  ROTATIONKEY: "rotationkey"
 }
 
 interface IdentifierDetailModalProps {
@@ -17,7 +18,6 @@ interface IdentifierDetailModalProps {
     data: IdentifierDetails;
     view: DetailView;
     setViewType: (view: DetailView) => void;
-    reloadData: () => Promise<void>
 }
 
 interface IdentifierIDDetailProps {
@@ -37,6 +37,11 @@ interface SenquenceNumberProps {
     data: IdentifierDetails;
 }
 
+interface AdvancedProps {
+    data: IdentifierDetails;
+    currentUserIndex: number;
+}
+
 interface ListItem {
     image?: string;
     title: string;
@@ -49,9 +54,8 @@ interface ListProps {
     bottomText: string;
     fullText?: boolean;
     mask?: boolean;
-    rotateAction?: () => void;
 }
 
-export type { IdentifierDetailModalProps, IdentifierIDDetailProps, SigningThresholdProps, CreatedTimestampProps, SenquenceNumberProps, ListProps, ListItem }
+export type { IdentifierDetailModalProps, IdentifierIDDetailProps, SigningThresholdProps, CreatedTimestampProps, SenquenceNumberProps, ListProps, ListItem, AdvancedProps }
 
-export { DetailView };
+export { DetailView, AccordionKey };

@@ -14,6 +14,7 @@ const CardDetailsItem = ({
   icon,
   customIcon,
   keyValue,
+  copyContent,
   testId,
   className,
   fullText = false,
@@ -36,7 +37,7 @@ const CardDetailsItem = ({
   });
 
   const copy = () => {
-    writeToClipboard(info);
+    writeToClipboard(copyContent || info);
     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
   };
 

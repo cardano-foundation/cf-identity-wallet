@@ -73,9 +73,6 @@ const identifiersCacheSlice = createSlice({
     setScanGroupId: (state, action: PayloadAction<string | undefined>) => {
       state.scanGroupId = action.payload;
     },
-    setDismissIdentifierPropExplain: (state, action: PayloadAction<string[]>) => {
-      state.dismissIdentifierPropExplain = [...action.payload, ...(state.dismissIdentifierPropExplain || [])];
-    },
   },
 });
 
@@ -91,7 +88,6 @@ export const {
   setMultiSigGroupCache,
   setOpenMultiSigId,
   setScanGroupId,
-  setDismissIdentifierPropExplain
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
@@ -109,11 +105,7 @@ const getOpenMultiSig = (state: RootState) =>
 const getScanGroupId = (state: RootState) =>
   state.identifiersCache?.scanGroupId;
 
-const getDismissIdentifierPropExplain = (state: RootState) =>
-  state.identifiersCache?.dismissIdentifierPropExplain;
-
 export {
-  getDismissIdentifierPropExplain,
   getFavouritesIdentifiersCache, getIdentifiersCache, getMultiSigGroupCache,
   getOpenMultiSig,
   getScanGroupId

@@ -4,7 +4,7 @@ import {
   keyOutline,
   refreshOutline
 } from "ionicons/icons";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { useAppSelector } from "../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
@@ -18,17 +18,28 @@ import { ListHeader } from "../../../components/ListHeader";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
 import { DetailView } from "./IdetifierDetailModal/IdentifierDetailModal.types";
+import { IdentifierDetailModal } from "./IdetifierDetailModal/IdentifierDetailModal";
 
 const DISPLAY_MEMBERS = 3;
 
 const IdentifierContent = ({
   cardData,
-  openPropDetailModal,
+  onRotateKey
 }: IdentifierContentProps) => {
   const identifiersData = useAppSelector(getIdentifiersCache);
   const userName = useAppSelector(getAuthentication)?.userName;
   const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
   const memberCount = cardData.members?.length || 0;
+
+  const [openDetailModal, setOpenDetailModal] = useState(false);
+  const [viewType, setViewType] = useState(DetailView.AdvancedDetail);
+
+
+  const openPropDetailModal = (view: DetailView) => {
+    setViewType(view);
+    setOpenDetailModal(true);
+  }
+
   
   const isMultiSig = useMemo(() => {
     const identifier = identifiersData.find((data) => data.id === cardData.id);
@@ -50,10 +61,6 @@ const IdentifierContent = ({
     }).slice(0, DISPLAY_MEMBERS);
   }, [cardData.members, multisignConnectionsCache, userName]);
 
-
-  const openSigningKeyDetail = () => openPropDetailModal(DetailView.SigningKey);
-  const openRotationKeyDigests = () => openPropDetailModal(DetailView.RotationKeyDigests);
-  const openSigningKey = () => openPropDetailModal(DetailView.SigningKey);
   const openGroupMember = () => openPropDetailModal(DetailView.GroupMember);
 
   return (
@@ -96,7 +103,7 @@ const IdentifierContent = ({
       )}
       <ListHeader title={i18n.t("tabs.identifiers.details.identifierdetail.title")}/>
       <div className="identifier-detail-section">
-        <CardBlock title={i18n.t("tabs.identifiers.details.identifierdetail.identifierid.title")} onClick={() => openPropDetailModal(DetailView.Id)}>
+        <CardBlock copyContent={cardData.id} title={i18n.t("tabs.identifiers.details.identifierdetail.identifierid.title")}>
           <CardDetailsItem
             info={cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
             icon={keyOutline}
@@ -105,7 +112,7 @@ const IdentifierContent = ({
             mask={false}
           />
         </CardBlock>
-        <CardBlock title={i18n.t("tabs.identifiers.details.identifierdetail.created.title")}  onClick={() => openPropDetailModal(DetailView.Created)}>
+        <CardBlock title={i18n.t("tabs.identifiers.details.identifierdetail.created.title")}>
           <CardDetailsItem
             keyValue={formatShortDate(cardData.createdAtUTC)}
             info={formatTimeToSec(cardData.createdAtUTC)}
@@ -119,7 +126,7 @@ const IdentifierContent = ({
       </div>
       {!isMultiSig && cardData.k.length && (
         <>
-          <CardBlock onClick={openSigningKey} flatBorder={FlatBorderType.BOT} title={i18n.t("tabs.identifiers.details.identifierdetail.signingkey.title")} >
+          <CardBlock copyContent={cardData.k[0]} flatBorder={FlatBorderType.BOT} title={i18n.t("tabs.identifiers.details.identifierdetail.signingkey.title")} >
             {cardData.k.map((item, index) => {
               return (
                 <CardDetailsItem
@@ -138,7 +145,7 @@ const IdentifierContent = ({
               shape="round"
               className="rotate-keys-button"
               data-testid="rotate-keys-button"
-              onClick={openSigningKey}
+              onClick={onRotateKey}
             >
               <p>{i18n.t("tabs.identifiers.details.identifierdetail.signingkey.rotate")}</p>
               <IonIcon icon={refreshOutline} />
@@ -146,50 +153,26 @@ const IdentifierContent = ({
           </CardBlock>
         </>
       )}
-      {isMultiSig && cardData.k.length && (
-        <CardBlock title={i18n.t("tabs.identifiers.details.identifierdetail.signingkey.multisigtitle", { singingKeys: cardData.k.length })} onClick={openSigningKeyDetail}/>
-      )}
-      <ListHeader title={i18n.t("tabs.identifiers.details.keyrotation.title")}/>
+      <CardBlock title={i18n.t("tabs.identifiers.details.identifierdetail.showadvanced")} onClick={() => openPropDetailModal(DetailView.AdvancedDetail)} />
       {isMultiSig && cardData.kt && (
-        <CardBlock title={i18n.t("tabs.identifiers.details.keyrotation.rotatesigningkey.title")} onClick={() => openPropDetailModal(DetailView.RotationThreshold)}>
-          <CardDetailsContent 
-            testId="rotate-signing-key"
-            mainContent={`${cardData.kt}`}
-            subContent={`${i18n.t("tabs.identifiers.details.keyrotation.rotatesigningkey.outof", { threshold: memberCount })}`}
-          />
-        </CardBlock>
+        <>
+          <ListHeader title={i18n.t("tabs.identifiers.details.keyrotation.title")}/>
+          <CardBlock title={i18n.t("tabs.identifiers.details.keyrotation.rotatesigningkey.title")} onClick={() => openPropDetailModal(DetailView.RotationThreshold)}>
+            <CardDetailsContent 
+              testId="rotate-signing-key"
+              mainContent={`${cardData.kt}`}
+              subContent={`${i18n.t("tabs.identifiers.details.keyrotation.rotatesigningkey.outof", { threshold: memberCount })}`}
+            />
+          </CardBlock>
+        </>
       )}
-      {cardData.s && (
-        <CardBlock title={i18n.t("tabs.identifiers.details.keyrotation.sequencenumber.title")} onClick={() => openPropDetailModal(DetailView.SequenceNumber)}>
-          <CardDetailsContent 
-            testId="sequence-number"
-            mainContent={cardData.s}
-            subContent={`${i18n.t("tabs.identifiers.details.keyrotation.sequencenumber.lastrotate")}: ${formatShortDate(cardData.dt) + " - " + formatTimeToSec(cardData.dt)}`}
-          />
-        </CardBlock>
-      )}
-      {!isMultiSig && cardData.n.length && (
-        <CardBlock
-          onClick={openRotationKeyDigests}
-          title={i18n.t("tabs.identifiers.details.keyrotation.nextkeyslist.title")}
-        >
-          {cardData.n.map((item, index) => {
-            return (
-              <CardDetailsItem
-                key={item}
-                info={item.substring(0, 5) + "..." + item.slice(-5)}
-                icon={keyOutline}
-                testId={`next-key-${index}`}
-                mask={false}
-                fullText={false}
-              />
-            );
-          })}
-        </CardBlock>
-      )}
-      {isMultiSig && cardData.n.length && (
-        <CardBlock title={i18n.t("tabs.identifiers.details.keyrotation.nextkeyslist.showkey", { rotationKeys: cardData.n.length })} onClick={openRotationKeyDigests}/>
-      )}
+      <IdentifierDetailModal
+        isOpen={openDetailModal} 
+        setOpen={setOpenDetailModal} 
+        view={viewType} 
+        setViewType={setViewType} 
+        data={cardData}
+      />
     </>
   );
 };

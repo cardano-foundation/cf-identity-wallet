@@ -831,6 +831,7 @@
         "done": "Done",
         "identifierdetail": {
           "title": "Identifier details",
+          "showadvanced": "Show advanced details",
           "identifierid": {
             "title": "Identifier ID"
           },
@@ -879,6 +880,11 @@
             "cancel": "Cancel"
           }
         },
+        "rotatekeys": {
+          "signingkey": "List of signing keys",
+          "description": "Rotating your signing keys boosts security by reducing the risk of key compromise.",
+          "done": "Done"
+        },
         "options": {
           "title": "Identifier options",
           "cancel": "Cancel",
@@ -899,21 +905,19 @@
         "detailmodal": {
           "you": "You",
           "button": {
-            "done": "Done",
-            "dismiss": "Dismiss"
+            "done": "Done"
           },
-          "dismissalert": {
-            "text": "Would you like to always hide this description in the future for this and other identifiers?",
-            "accept": "Yes, always hide",
-            "cancel": "No, just dismiss"
-          },
-          "id": {
-            "title": "Identifier ID",
+          "advanceddetail": {
+            "title": "Advanced",
             "propexplain": {
-              "title": "About identifier ID",
-              "content": "A unique Autonomic Identifier (AID) that represents your decentralised digital identity."
+              "title": "About advanced details",
+              "content": "Provides additional details on this identifier for users interested in more technical insights."
             },
-            "proptitle": "Identifier ID"
+            "proptitle": "Advanced details",
+            "viewkey": "Show {{keys}} singing keys",
+            "hidekey": "Hide {{keys}} singing keys",
+            "viewrotationkey": "Show {{keys}} rotation key digests",
+            "hiderotationkey": "Hide {{keys}} rotation key digests"
           },
           "signingthreshold": {
             "title": "Signing threshold",
@@ -924,35 +928,6 @@
             "threshold": {
               "title": "Threshold",
               "text": "{{threshold}} out of {{members}}"
-            },
-            "options": {
-              "title": "Options",
-              "viewmember": "View {{members}} group members",
-              "viewkey": "Show {{keys}} singing keys"
-            }
-          },
-          "created": {
-            "title": "Created",
-            "propexplain": {
-              "title": "About created timestamp",
-              "content": "The exact date and time when the identifier was first created in the KERI network."
-            },
-            "createdtimestamp": {
-              "title": "Created timestamp",
-              "text": "{{threshold}} out of {{members}}"
-            }
-          },
-          "sequencenumber": {
-            "title": "Sequence number",
-            "propexplain": {
-              "title": "About sequence number",
-              "content": "Tracks the order of key events, ensuring consistency and preventing replay attacks."
-            },
-            "sequencenumbersection": {
-              "title": "Sequence number"
-            },
-            "lastrotationtimestamp": {
-              "title": "Last rotation timestamp"
             }
           },
           "rotationthreshold": {
@@ -964,12 +939,6 @@
             "threshold": {
               "title": "Rotation threshold",
               "text": "{{threshold}} out of {{members}}"
-            },
-            "options": {
-              "title": "Options",
-              "viewmember": "View {{members}} group members",
-              "viewkey": "Show {{keys}} singing keys",
-              "viewrotationkey": "Show {{keys}} rotation key digests"
             }
           },
           "groupmember": {
@@ -979,23 +948,6 @@
               "content": "Displays the list of individuals or entities that jointly control this group identifier."
             },
             "bottomtext": "{{members}} group members"
-          },
-          "rotationkeydigests": {
-            "title": "Rotation key digests",
-            "propexplain": {
-              "title": "About rotation key digests",
-              "content": "Cryptographic hashes of the new signing keys prepared for future identifier rotations."
-            },
-            "bottomtext": "{{keys}} rotation key digests"
-          },
-          "signingkeys": {
-            "title": "Signing keys",
-            "propexplain": {
-              "title": "About signing keys",
-              "content": "Cryptographic keys used to authorise transactions or events linked to your identifier."
-            },
-            "bottomtext": "{{keys}} signing keys",
-            "rotate": "Rotate keys"
           }
         }
       }

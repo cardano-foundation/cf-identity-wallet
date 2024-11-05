@@ -1,12 +1,12 @@
+import { Clipboard } from "@capacitor/clipboard";
 import { IonReactMemoryRouter } from "@ionic/react-router";
-import { waitForIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import {
   fireEvent,
   getDefaultNormalizer,
   render,
   waitFor,
 } from "@testing-library/react";
-import { Clipboard } from "@capacitor/clipboard";
 import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -18,17 +18,16 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
-  setDismissIdentifierPropExplain,
 } from "../../../store/reducers/identifiersCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IdentifierDetails } from "./IdentifierDetails";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
-import { DetailView } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
+import { AccordionKey } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 const getIndentifier = jest.fn(() => identifierFix[0]);
@@ -171,158 +170,47 @@ describe("Individual Identifier details page", () => {
     ).toBeInTheDocument();
     expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
     expect(getByText(identifierFix[0].k[0].substring(0, 5) + "..." + identifierFix[0].k[0].slice(-5))).toBeInTheDocument();
-    // Render List of next key digests
-    expect(
-      getByTestId("next-key-0")
-    ).toBeInTheDocument();
-    expect(getByText(identifierFix[0].n[0].substring(0, 5) + "..." + identifierFix[0].n[0].slice(-5))).toBeInTheDocument();
+  });
+
+  test("Render advanced modal", async () => {
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+    // Render card template
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument()
+    );
+   
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
+
     // Render Sequence number
-    expect(getByTestId("sequence-number")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByTestId("sequence-number")).toBeInTheDocument();
+    })
+
     expect(getByText(identifierFix[0].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
       getByText(
         `Last rotated: ${formatShortDate(identifierFix[0].dt) +
-          " - " +
-          formatTimeToSec(identifierFix[0].dt)}`
+              " - " +
+              formatTimeToSec(identifierFix[0].dt)}`
       )
     ).toBeInTheDocument();
-  });
-
-  test("Open identifier id modal", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-    // Render card template
-    await waitFor(() =>
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument()
-    );
-
-    fireEvent.click(getByTestId("identifier"));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.id.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.id.propexplain.content)).toBeVisible();
-    })
-  });
-
-
-  test("Dismiss prop explain", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-    // Render card template
-    await waitFor(() =>
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument()
-    );
-
-    fireEvent.click(getByTestId("identifier"));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.id.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.id.propexplain.content)).toBeVisible();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.button.dismiss));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.dismissalert.text)).toBeVisible();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.dismissalert.accept));
-
-    await waitFor(() => {
-      expect(createOrUpdateMock).toBeCalled();
-      expect(dispatchMock).toBeCalledWith(setDismissIdentifierPropExplain([DetailView.Id]));
-    });
-  });
-
-  test("Open create timestamp modal", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-    // Render card template
-    await waitFor(() =>
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument()
-    );
-
-    fireEvent.click(getByTestId("creation-timestamp"));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.created.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.created.propexplain.content)).toBeVisible();
-    })
-  });
-
-
-  test("Open create senquence number modal", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-    // Render card template
-    await waitFor(() =>
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument()
-    );
-
-    fireEvent.click(getByTestId("sequence-number"));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.sequencenumber.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.sequencenumber.propexplain.content)).toBeVisible();
-    })
-  });
+  })
 
   test("It opens the sharing modal", async () => {
     const { getByTestId, queryByTestId, queryAllByTestId } = render(
@@ -388,7 +276,7 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It shows the button to access the editor", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -624,14 +512,6 @@ describe("Individual Identifier details page", () => {
       fireEvent.click(getByTestId("rotate-keys-button"));
     });
 
-    await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingkeys.propexplain.content
-        )
-      ).toBeVisible();
-    });
-
     act(() => {
       fireEvent.click(getByTestId("rotate-key-button"));
     });
@@ -851,14 +731,6 @@ describe("Group Identifier details page", () => {
     expect(getByTestId("identifier-text-value").innerHTML).toBe(
       identifierFix[2].id.substring(0, 5) + "..." + identifierFix[2].id.slice(-5)
     );
-    expect(getByTestId("creation-timestamp")).toBeVisible();
-    // Render List of signing keys
-    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.signingkey.multisigtitle.replace("{{singingKeys}}", "1"))).toBeInTheDocument();
-    // Render List of next key digests
-    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.keyrotation.nextkeyslist.showkey.replace("{{rotationKeys}}", "1"))).toBeInTheDocument();
-    // Render senquence number
-    expect(getByTestId("sequence-number")).toBeInTheDocument();
-    expect(getByText(identifierFix[2].s)).toBeInTheDocument();
   });
 
   test("Open group member", async () => {
@@ -926,7 +798,7 @@ describe("Group Identifier details page", () => {
     })
   });
 
-  test("Open group member signing threshold", async () => {
+  test("Open advanced detail", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
@@ -941,66 +813,54 @@ describe("Group Identifier details page", () => {
       </Provider>
     );
 
-    // Render card template
     await waitFor(() => {
       expect(
         getByTestId("identifier-card-template-default-index-0")
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.title));
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
 
+    // Render Sequence number
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.content)).toBeVisible();
+      expect(getByTestId("sequence-number")).toBeInTheDocument();
     })
 
+    expect(getByText(identifierFix[0].s)).toBeInTheDocument();
+    // Render Last key rotation timestamp
+    expect(
+      getByText(
+        `Last rotated: ${formatShortDate(identifierFix[0].dt) +
+              " - " +
+              formatTimeToSec(identifierFix[0].dt)}`
+      )
+    ).toBeInTheDocument();
 
-    fireEvent.click(getByTestId("groupmember-nav-button"));
+    expect(getByText(identifierFix[2].s)).toBeInTheDocument();
+    // Render Last key rotation timestamp
+    expect(
+      getByText(
+        `Last rotated: ${formatShortDate(identifierFix[2].dt) +
+              " - " +
+              formatTimeToSec(identifierFix[2].dt)}`
+      )
+    ).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.content)).toBeVisible();
-    });
-  });
 
+    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewkey.replace("{{keys}}", "1"))).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewrotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
 
-  test("Open signing keys signing threshold", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-
-    // Render card template
-    await waitFor(() => {
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.title));
+    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.SIGNINGKEY] as any);
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.content)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hidekey.replace("{{keys}}", "1"))).toBeInTheDocument();
     })
 
-
-    fireEvent.click(getByTestId("signingkeys-nav-button"));
+    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.ROTATIONKEY] as any);
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingkeys.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingkeys.propexplain.content)).toBeVisible();
-    });
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hiderotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
+    })
   });
 
   test("Open rotation threshold", async () => {
@@ -1061,118 +921,6 @@ describe("Group Identifier details page", () => {
       expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
       expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
     });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.options.viewmember.replace("{{members}}", "4")));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.content)).toBeVisible();
-    });
-  });
-
-  test("Open signing keys from rotation threshold", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-
-    // Render card template
-    await waitFor(() => {
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("signingkeys-nav-button"));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingkeys.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingkeys.propexplain.content)).toBeVisible();
-    });
-  });
-
-
-  test("Open rotation disgests from rotation threshold", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-
-    // Render card template
-    await waitFor(() => {
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("rotationkeydigests-nav-button"));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationkeydigests.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationkeydigests.propexplain.content)).toBeVisible();
-    });
-  });
-
-  test("Open rotation key disgest modal", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-
-    // Render card template
-    await waitFor(() => {
-      expect(
-        getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.keyrotation.nextkeyslist.showkey.replace("{{rotationKeys}}", "1")));
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationkeydigests.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationkeydigests.propexplain.content)).toBeVisible();
-    })
   });
 
   test("Cannot rotate key", async () => {
