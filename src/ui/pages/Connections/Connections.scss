@@ -27,12 +27,45 @@
   }
 
   .back-button {
-    width: 2.5rem;
-    height: 2.5rem;
     border-radius: 1.5rem;
     background: var(--ion-color-light-grey);
     flex-direction: row;
     justify-content: center;
+  }
+
+  ion-button,
+  ion-button.md {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: 0;
+
+    &::part(native) {
+      padding: 0;
+    }
+  }
+
+  ion-icon {
+    width: 1.475rem;
+    height: 1.475rem;
+    margin: 0;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-button,
+    ion-button.md {
+      width: 2.25rem;
+      height: 2.25rem;
+
+      &::part(native) {
+        padding: 0.35rem;
+      }
+    }
+
+    ion-icon {
+      width: 1.18rem;
+      height: 1.18rem;
+      margin: 0;
+    }
   }
 
   > ion-content {

@@ -43,8 +43,8 @@
       }
 
       &.button-has-icon-only {
-        width: 2.81rem;
-        height: 2.81rem;
+        width: 2.75rem;
+        height: 2.75rem;
         border-radius: 1.5rem;
         background: var(--ion-color-light-grey);
       }
@@ -75,10 +75,6 @@
         color: var(--ion-color-dark-grey) !important;
         opacity: 1;
       }
-
-      ion-icon {
-        font-size: 1.85em !important;
-      }
     }
 
     .progress-bar-container {
@@ -103,8 +99,8 @@
     ion-toolbar {
       ion-buttons ion-button {
         &.button-has-icon-only {
-          width: 2.3rem !important;
-          height: 2.3rem !important;
+          width: 2.25rem;
+          height: 2.25rem;
 
           &::part(native) {
             padding: 0.35rem;

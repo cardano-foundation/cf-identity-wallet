@@ -355,7 +355,7 @@ const Identifiers = () => {
                 data-testid="favourite-identifiers"
               >
                 <CardSlider
-                  title={`${i18n.t("tabs.identifiers.tab.favourite")}`}
+                  title={`${i18n.t("tabs.identifiers.tab.favourites")}`}
                   name="favs"
                   cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}

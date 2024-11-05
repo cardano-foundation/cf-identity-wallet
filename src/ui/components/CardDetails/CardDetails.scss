@@ -38,8 +38,8 @@
 
     ion-button:not(.close-button-label),
     ion-button.md:not(.close-button-label) {
-      width: 2.8125rem;
-      height: 2.8125rem;
+      width: 2.75rem;
+      height: 2.75rem;
       border-radius: 1.5rem;
       background: var(--ion-color-light);
 
@@ -114,8 +114,8 @@
     ion-header ion-toolbar {
       ion-button:not(.close-button-label),
       ion-button.md:not(.close-button-label) {
-        width: 2rem;
-        height: 2rem;
+        width: 2.25rem;
+        height: 2.25rem;
         border-radius: 1.275rem;
       }
     }
