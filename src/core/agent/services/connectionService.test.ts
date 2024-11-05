@@ -220,6 +220,11 @@ describe("Connection service of agent", () => {
   });
 
   test("Should return connection type to trigger UI to create a new identifier", async () => {
+    const fixedDate = "2024-01-01T00:00:00.000Z";
+    const fixedTimestamp = 1704067200000;
+    jest.spyOn(Date, "now").mockReturnValue(fixedTimestamp);
+    jest.spyOn(global.Date.prototype, "toISOString").mockReturnValue(fixedDate);
+
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
     const oobi = `http://localhost/oobi/id?groupId=${groupId}&name=alias`;
@@ -228,7 +233,6 @@ describe("Connection service of agent", () => {
     });
 
     const result = await connectionService.connectByOobiUrl(oobi);
-    const connectionDate = new Date().toISOString();
     expect(result).toStrictEqual({
       type: KeriConnectionType.MULTI_SIG_INITIATOR,
       groupId,
@@ -238,10 +242,11 @@ describe("Connection service of agent", () => {
         label: "alias",
         oobi,
         status: ConnectionStatus.CONFIRMED,
-        connectionDate,
+        connectionDate: fixedDate,
       },
     });
     expect(connectionStorage.save).toBeCalled();
+    jest.restoreAllMocks();
   });
 
   test("Can create groupId connections for existing pending multi-sigs", async () => {
