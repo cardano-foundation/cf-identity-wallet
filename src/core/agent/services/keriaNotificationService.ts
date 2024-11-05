@@ -2,6 +2,7 @@ import { Salter } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
+  ConnectionStatus,
   ExchangeRoute,
   KeriaNotification,
   KeriaNotificationMarker,
@@ -30,6 +31,7 @@ import {
   OperationCompleteEvent,
   OperationAddedEvent,
   NotificationRemovedEvent,
+  ConnectionStateChangedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 import { CredentialService } from "./credentialService";
@@ -819,6 +821,14 @@ class KeriaNotificationService extends AgentService {
           connectionRecord.pending = false;
           connectionRecord.createdAt = (operation.response as any).dt;
           await this.connectionStorage.update(connectionRecord);
+
+          this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+            type: EventTypes.ConnectionStateChanged,
+            payload: {
+              connectionId: connectionRecord.id,
+              status: ConnectionStatus.CONFIRMED,
+            },
+          });
         }
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,

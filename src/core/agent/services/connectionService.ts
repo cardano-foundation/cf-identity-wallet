@@ -26,7 +26,6 @@ import {
   ConnectionStateChangedEvent,
   EventTypes,
   OperationAddedEvent,
-  OobiResolvedEvent,
 } from "../event.types";
 import {
   ConnectionHistoryItem,
@@ -70,9 +69,11 @@ class ConnectionService extends AgentService {
 
   onResolveOobi() {
     this.props.eventEmitter.on(
-      EventTypes.OobiResolved,
-      (event: OobiResolvedEvent) => {
-        this.resolveOobi(event.payload.url);
+      EventTypes.ConnectionStateChanged,
+      (event: ConnectionStateChangedEvent) => {
+        if (event.payload.url) {
+          this.resolveOobi(event.payload.url);
+        }
       }
     );
   }
@@ -88,27 +89,7 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async connectByOobiUrl(url: string): Promise<OobiScan> {
     const multiSigInvite = url.includes("groupId");
-
-    // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
-    // To fix once we handle errors for the scanner in general.
-    this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-      type: EventTypes.ConnectionStateChanged,
-      payload: {
-        isMultiSigInvite: multiSigInvite,
-        connectionId: undefined,
-        status: ConnectionStatus.PENDING,
-        url,
-      },
-    });
-
-    this.props.eventEmitter.emit<OobiResolvedEvent>({
-      type: EventTypes.OobiResolved,
-      payload: {
-        url,
-      },
-    });
-
-    const connectionId = new URL(url).pathname
+    let connectionId = new URL(url).pathname
       .split("/oobi/")
       .pop()!
       .split("/")[0];
@@ -132,6 +113,14 @@ class ConnectionService extends AgentService {
     };
 
     if (multiSigInvite) {
+      const operation = await this.resolveOobi(url, multiSigInvite);
+
+      if (operation.done && operation.response) {
+        connectionId = operation.response.i;
+        connectionMetadata.pending = !operation.done;
+      }
+      connectionMetadata.alias = operation.alias;
+
       connectionMetadata.groupId = groupId;
       const identifierWithGroupId =
         await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
@@ -158,10 +147,21 @@ class ConnectionService extends AgentService {
           connection,
         };
       }
-    }
-    await this.createConnectionMetadata(connectionId, connectionMetadata);
+      await this.createConnectionMetadata(connectionId, connectionMetadata);
+    } else {
+      // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
+      // To fix once we handle errors for the scanner in general.
+      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+        type: EventTypes.ConnectionStateChanged,
+        payload: {
+          isMultiSigInvite: multiSigInvite,
+          connectionId: undefined,
+          status: ConnectionStatus.PENDING,
+          url,
+        },
+      });
 
-    if (!multiSigInvite) {
+      await this.createConnectionMetadata(connectionId, connectionMetadata);
       this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
         type: EventTypes.ConnectionStateChanged,
         payload: {
@@ -170,7 +170,6 @@ class ConnectionService extends AgentService {
         },
       });
     }
-    
     return { type: KeriConnectionType.NORMAL, connection };
   }
 
@@ -323,27 +322,28 @@ class ConnectionService extends AgentService {
     return connections;
   }
 
-  @OnlineOnly
-  async resolvePendingConnection(connection: ConnectionRecord) {
-    const operation = await this.resolveOobi(connection.oobi, true);
-    if (operation.done) {
-      const connectionProps = await this.connectionStorage.findById(
-        connection.id
-      );
-      if (!connectionProps) return;
-      connectionProps.pending = false;
+  // @TODO - Remove after clear logic resolve pending connect when start-up
+  // @OnlineOnly
+  // async resolvePendingConnection(connection: ConnectionRecord) {
+  //   const operation = await this.resolveOobi(connection.oobi, true);
+  //   if (operation.done) {
+  //     const connectionProps = await this.connectionStorage.findById(
+  //       connection.id
+  //     );
+  //     if (!connectionProps) return;
+  //     connectionProps.pending = false;
 
-      await this.connectionStorage.update(connectionProps);
+  //     await this.connectionStorage.update(connectionProps);
 
-      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-        type: EventTypes.ConnectionStateChanged,
-        payload: {
-          connectionId: connection.id,
-          status: ConnectionStatus.CONFIRMED,
-        },
-      });
-    }
-  }
+  //     this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+  //       type: EventTypes.ConnectionStateChanged,
+  //       payload: {
+  //         connectionId: connection.id,
+  //         status: ConnectionStatus.CONFIRMED,
+  //       },
+  //     });
+  //   }
+  // }
 
   async deleteStaleLocalConnectionById(id: string): Promise<void> {
     await this.connectionStorage.deleteById(id);

@@ -218,12 +218,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     };
 
     const resolvePendingConnections = async () => {
-      const pendingDeletions =
+      const pendingConnections =
         await Agent.agent.connections.getConnectionsPending();
 
-      for (const pendingDeletion of pendingDeletions) {
-        await Agent.agent.connections.resolvePendingConnection(
-          pendingDeletion
+      for (const pendingConnection of pendingConnections) {
+        await Agent.agent.connections.resolveOobi(
+          pendingConnection.oobi
         );
       }
     };

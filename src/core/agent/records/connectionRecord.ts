@@ -9,7 +9,6 @@ interface ConnectionRecordStorageProps {
   oobi: string;
   groupId?: string;
   pending: boolean;
-  pendingDeletion?: boolean;
 }
 
 class ConnectionRecord extends BaseRecord {
@@ -17,7 +16,7 @@ class ConnectionRecord extends BaseRecord {
   oobi!: string;
   groupId?: string;
   pending!: boolean;
-  pendingDeletion!: boolean;
+  pendingDeletion = false;
   static readonly type = "ConnectionRecord";
   readonly type = ConnectionRecord.type;
 
