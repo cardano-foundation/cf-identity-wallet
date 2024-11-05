@@ -19,8 +19,10 @@ import {
   setCredsArchivedCache,
 } from "../../../store/reducers/credsArchivedCache";
 import {
+  getCredentialsFilters,
   getCredsCache,
   getFavouritesCredsCache,
+  setCredentialsFilters,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
@@ -48,6 +50,8 @@ import { IdentifierType } from "../../../core/agent/services/identifier.types";
 import { CredentialsFilters } from "./Credentials.types";
 import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
 import { FilterChip } from "../../components/FilterChip/FilterChip";
+import { BasicRecord } from "../../../core/agent/records";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -79,6 +83,7 @@ const Credentials = () => {
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
+  const credentialsFiltersCache = useAppSelector(getCredentialsFilters);
   const favouriteCredentialsCache = useAppSelector(getFavouritesCredsCache);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
@@ -263,9 +268,33 @@ const Credentials = () => {
     },
   ];
 
+  const setFilters = (filter: CredentialsFilters) => {
+    Agent.agent.basicStorage
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_CRED_SELECTED_FILTER,
+          content: {
+            filter: filter,
+          },
+        })
+      )
+      .then(() => {
+        dispatch(setCredentialsFilters(filter));
+      });
+  };
+
   const handleSelectFilter = (filter: AllowedChipFilter) => {
     setSelectedFilter(filter as CredentialsFilters);
+    setFilters(filter as CredentialsFilters);
   };
+
+  useEffect(() => {
+    if (!credentialsFiltersCache) {
+      setSelectedFilter(CredentialsFilters.All);
+    } else {
+      setSelectedFilter(credentialsFiltersCache as CredentialsFilters);
+    }
+  }, [credentialsFiltersCache]);
 
   return (
     <>

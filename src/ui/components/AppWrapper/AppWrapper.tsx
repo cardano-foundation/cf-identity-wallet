@@ -25,6 +25,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import {
+  setCredentialsFilters,
   setCredsCache,
   setFavouritesCredsCache,
   updateOrAddCredsCache,
@@ -76,6 +77,7 @@ import {
   ConnectionStateChangedEvent,
 } from "../../../core/agent/event.types";
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
+import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -283,6 +285,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       let userName: { userName: string } = { userName: "" };
       let identifiersSelectedFilter: IdentifiersFilters =
         IdentifiersFilters.All;
+      let credentialsSelectedFilter: CredentialsFilters =
+        CredentialsFilters.All;
       const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
       const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
@@ -347,6 +351,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
             credViewType.content.viewType as CardListViewType
           )
         );
+      }
+
+      const credentialsFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_SELECTED_FILTER
+      );
+      if (credentialsFilters) {
+        credentialsSelectedFilter = credentialsFilters.content
+          .filter as CredentialsFilters;
+      }
+      if (credentialsSelectedFilter) {
+        dispatch(setCredentialsFilters(credentialsSelectedFilter));
       }
 
       const appBiometrics = await Agent.agent.basicStorage.findById(

@@ -10,6 +10,7 @@ import {
   setReadedNotification,
 } from "./notificationsCache";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
+import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
 
 const notification = {
   id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
@@ -139,7 +140,11 @@ describe("Notifications cache", () => {
         },
         filters: IdentifiersFilters.All,
       },
-      credsCache: { creds: [], favourites: [] },
+      credsCache: {
+        creds: [],
+        favourites: [],
+        filters: CredentialsFilters.All,
+      },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: {},

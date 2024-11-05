@@ -16,15 +16,14 @@ import {
 } from "../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
-import {
-  memberIdentifierRecord,
-  multisigMetadataRecord,
-} from "../../../core/__fixtures__/agent/multSigFixtures";
+import { multisigMetadataRecord } from "../../../core/__fixtures__/agent/multSigFixtures";
+import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {
     creds: [],
     favourites: [],
+    filters: CredentialsFilters.All,
   };
   it("should return the initial state", () => {
     expect(credsCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
@@ -94,7 +93,11 @@ describe("credsCacheSlice", () => {
       status: CredentialStatus.CONFIRMED,
     };
     const newState = credsCacheSlice.reducer(
-      { creds: [cred1, cred2], favourites: [] },
+      {
+        creds: [cred1, cred2],
+        favourites: [],
+        filters: CredentialsFilters.All,
+      },
       updateOrAddCredsCache(updateCred)
     );
     expect(newState.creds).toEqual([cred2, updateCred]);
@@ -135,6 +138,7 @@ describe("credsCacheSlice", () => {
           time: 1,
         },
       ],
+      filters: CredentialsFilters.All,
     };
     const newState = credsCacheSlice.reducer(
       state,

@@ -38,7 +38,6 @@ import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { Agent } from "../../../core/agent/agent";
 import { showError } from "../../utils/error";
 import { FilterChip } from "../../components/FilterChip/FilterChip";
-import { NotificationFilters } from "../Notifications/Notification.types";
 import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
 import { BasicRecord } from "../../../core/agent/records/basicRecord";
 import { MiscRecordId } from "../../../core/agent/agent.types";
@@ -81,6 +80,7 @@ const AdditionalButtons = ({
     </>
   );
 };
+
 const Identifiers = () => {
   const pageId = "identifiers-tab";
   const dispatch = useAppDispatch();
