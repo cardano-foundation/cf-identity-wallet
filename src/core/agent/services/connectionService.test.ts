@@ -228,7 +228,7 @@ describe("Connection service of agent", () => {
     });
 
     const result = await connectionService.connectByOobiUrl(oobi);
-    const now = new Date().toISOString();
+    const connectionDate = new Date().toISOString();
     expect(result).toStrictEqual({
       type: KeriConnectionType.MULTI_SIG_INITIATOR,
       groupId,
@@ -238,7 +238,7 @@ describe("Connection service of agent", () => {
         label: "alias",
         oobi,
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: now,
+        connectionDate,
       },
     });
     expect(connectionStorage.save).toBeCalled();
