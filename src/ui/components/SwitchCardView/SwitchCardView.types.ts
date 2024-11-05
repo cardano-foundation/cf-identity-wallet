@@ -17,6 +17,7 @@ interface SwitchCardViewProps {
   onShowCardDetails?: () => void;
   className?: string;
   filters?: ReactNode;
+  placeholder?: ReactNode;
 }
 
 interface CardListProps {

@@ -1,6 +1,7 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { t } from "i18next";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -41,6 +42,7 @@ import { FilterChip } from "../../components/FilterChip/FilterChip";
 import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
 import { BasicRecord } from "../../../core/agent/records/basicRecord";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { FilteredItemsPlaceholder } from "../../components/FilteredItemsPlaceholder";
 
 const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
@@ -389,6 +391,19 @@ const Identifiers = () => {
                       />
                     ))}
                   </div>
+                }
+                placeholder={
+                  <FilteredItemsPlaceholder
+                    placeholderText={t(
+                      "tabs.identifiers.tab.filters.placeholder",
+                      {
+                        type: selectedFilter,
+                      }
+                    )}
+                    testId={pageId}
+                    buttonLabel={`${i18n.t("tabs.identifiers.tab.create")}`}
+                    buttonAction={handleCreateIdentifier}
+                  />
                 }
               />
             )}

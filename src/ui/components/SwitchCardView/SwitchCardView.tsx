@@ -31,6 +31,7 @@ const SwitchCardView = ({
   className,
   onShowCardDetails,
   filters,
+  placeholder,
 }: SwitchCardViewProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -107,7 +108,9 @@ const SwitchCardView = ({
         />
       )}
       {filters}
-      {type === CardListViewType.Stack ? (
+      {cardsData.length === 0 ? (
+        placeholder
+      ) : type === CardListViewType.Stack ? (
         <CardsStack
           cardsData={cardsData}
           cardsType={cardTypes}

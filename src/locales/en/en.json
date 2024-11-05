@@ -816,7 +816,8 @@
         "filters": {
           "all": "All",
           "individual": "Individual",
-          "group": "Group"
+          "group": "Group",
+          "placeholder": "You haven’t created any {{ type }} identifiers yet."
         },
         "pendingidentifiers": "Pending identifiers",
         "multisigidentifiers": "For groups"
