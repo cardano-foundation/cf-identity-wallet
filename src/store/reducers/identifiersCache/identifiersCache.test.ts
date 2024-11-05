@@ -20,6 +20,7 @@ import { RootState } from "../../index";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
+import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 
 describe("identifiersCacheSlice", () => {
   const initialState = {
@@ -27,6 +28,7 @@ describe("identifiersCacheSlice", () => {
     favourites: [],
     multiSigGroup: undefined,
     openMultiSigId: undefined,
+    filters: IdentifiersFilters.All,
   };
   it("should return the initial state", () => {
     expect(
@@ -104,6 +106,7 @@ describe("identifiersCacheSlice", () => {
         },
       ],
       multiSigGroup: undefined,
+      filters: IdentifiersFilters.All,
     };
     const newState = identifiersCacheSlice.reducer(
       initialState,

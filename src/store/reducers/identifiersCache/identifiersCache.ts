@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { RootState } from "../../index";
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
+import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 
 const initialState: {
   identifiers: IdentifierShortDetails[];
   favourites: FavouriteIdentifier[];
+  filters: IdentifiersFilters;
   multiSigGroup: MultiSigGroup | undefined;
   openMultiSigId?: string;
   scanGroupId?: string;
@@ -14,6 +16,7 @@ const initialState: {
   favourites: [],
   multiSigGroup: undefined,
   openMultiSigId: undefined,
+  filters: IdentifiersFilters.All,
 };
 const identifiersCacheSlice = createSlice({
   name: "identifiersCache",
@@ -79,6 +82,12 @@ const identifiersCacheSlice = createSlice({
     setScanGroupId: (state, action: PayloadAction<string | undefined>) => {
       state.scanGroupId = action.payload;
     },
+    setIdentifiersFilters: (
+      state,
+      action: PayloadAction<IdentifiersFilters>
+    ) => {
+      state.filters = action.payload;
+    },
   },
 });
 
@@ -94,6 +103,7 @@ export const {
   setMultiSigGroupCache,
   setOpenMultiSigId,
   setScanGroupId,
+  setIdentifiersFilters,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
@@ -111,10 +121,14 @@ const getOpenMultiSig = (state: RootState) =>
 const getScanGroupId = (state: RootState) =>
   state.identifiersCache?.scanGroupId;
 
+const getIdentifiersFilters = (state: RootState) =>
+  state.identifiersCache.filters;
+
 export {
   getIdentifiersCache,
   getFavouritesIdentifiersCache,
   getMultiSigGroupCache,
   getOpenMultiSig,
   getScanGroupId,
+  getIdentifiersFilters,
 };

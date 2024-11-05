@@ -9,6 +9,7 @@ import {
   setNotificationsCache,
   setReadedNotification,
 } from "./notificationsCache";
+import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 
 const notification = {
   id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
@@ -136,6 +137,7 @@ describe("Notifications cache", () => {
           groupId: "",
           connections: [],
         },
+        filters: IdentifiersFilters.All,
       },
       credsCache: { creds: [], favourites: [] },
       credsArchivedCache: { creds: [] },
@@ -156,7 +158,7 @@ describe("Notifications cache", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,

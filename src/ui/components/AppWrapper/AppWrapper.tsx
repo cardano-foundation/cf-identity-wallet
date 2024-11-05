@@ -32,6 +32,7 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  setIdentifiersFilters,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -74,6 +75,7 @@ import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
 } from "../../../core/agent/event.types";
+import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -279,6 +281,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadCacheBasicStorage = async () => {
     try {
       let userName: { userName: string } = { userName: "" };
+      let identifiersSelectedFilter: IdentifiersFilters =
+        IdentifiersFilters.All;
       const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
       const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
@@ -316,8 +320,21 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
       if (indentifierViewType) {
         dispatch(
-          setIdentifierViewTypeCache(indentifierViewType.content.viewType as CardListViewType)
+          setIdentifierViewTypeCache(
+            indentifierViewType.content.viewType as CardListViewType
+          )
         );
+      }
+
+      const indentifiersFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_SELECTED_FILTER
+      );
+      if (indentifiersFilters) {
+        identifiersSelectedFilter = indentifiersFilters.content
+          .filter as IdentifiersFilters;
+      }
+      if (identifiersSelectedFilter) {
+        dispatch(setIdentifiersFilters(identifiersSelectedFilter));
       }
 
       const credViewType = await Agent.agent.basicStorage.findById(
@@ -326,7 +343,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (credViewType) {
         dispatch(
-          setCredentialViewTypeCache(credViewType.content.viewType as CardListViewType)
+          setCredentialViewTypeCache(
+            credViewType.content.viewType as CardListViewType
+          )
         );
       }
 
@@ -352,7 +371,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (identifierFavouriteIndex) {
         dispatch(
-          setIdentifierFavouriteIndex(Number(identifierFavouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(
+            Number(identifierFavouriteIndex.content.favouriteIndex)
+          )
         );
       }
 
@@ -362,7 +383,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (credFavouriteIndex) {
         dispatch(
-          setIdentifierFavouriteIndex(Number(credFavouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(
+            Number(credFavouriteIndex.content.favouriteIndex)
+          )
         );
       }
 

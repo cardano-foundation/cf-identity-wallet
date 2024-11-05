@@ -8,9 +8,11 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
+  getIdentifiersFilters,
   getMultiSigGroupCache,
   getOpenMultiSig,
   setIdentifiersCache,
+  setIdentifiersFilters,
   setOpenMultiSigId,
 } from "../../../store/reducers/identifiersCache";
 import {
@@ -38,6 +40,8 @@ import { showError } from "../../utils/error";
 import { FilterChip } from "../../components/FilterChip/FilterChip";
 import { NotificationFilters } from "../Notifications/Notification.types";
 import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
+import { BasicRecord } from "../../../core/agent/records/basicRecord";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
@@ -85,6 +89,7 @@ const Identifiers = () => {
   const favouriteIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const openMultiSigId = useAppSelector(getOpenMultiSig);
+  const identifiersFiltersCache = useAppSelector(getIdentifiersFilters);
 
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
@@ -115,9 +120,7 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const [selectedFilter, setSelectedFilter] = useState<
-    NotificationFilters | IdentifiersFilters
-  >(IdentifiersFilters.All);
+  const [selectedFilter, setSelectedFilter] = useState<IdentifiersFilters>();
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -290,9 +293,33 @@ const Identifiers = () => {
     },
   ];
 
+  const setFilters = (filter: IdentifiersFilters) => {
+    Agent.agent.basicStorage
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_IDENTIFIER_SELECTED_FILTER,
+          content: {
+            filter: filter,
+          },
+        })
+      )
+      .then(() => {
+        dispatch(setIdentifiersFilters(filter));
+      });
+  };
+
   const handleSelectFilter = (filter: AllowedChipFilter) => {
     setSelectedFilter(filter as IdentifiersFilters);
+    setFilters(filter as IdentifiersFilters);
   };
+
+  useEffect(() => {
+    if (!identifiersFiltersCache) {
+      setSelectedFilter(IdentifiersFilters.All);
+    } else {
+      setSelectedFilter(identifiersFiltersCache as IdentifiersFilters);
+    }
+  }, [identifiersFiltersCache]);
 
   return (
     <>

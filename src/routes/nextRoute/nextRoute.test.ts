@@ -12,6 +12,7 @@ import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { DataProps } from "./nextRoute.types";
 import { OperationType } from "../../ui/globals/types";
+import { IdentifiersFilters } from "../../ui/pages/Identifiers/Identifiers.types";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -61,6 +62,7 @@ describe("NextRoute", () => {
           groupId: "",
           connections: [],
         },
+        filters: IdentifiersFilters.All,
       },
       credsCache: { creds: [], favourites: [] },
       credsArchivedCache: { creds: [] },
@@ -81,7 +83,7 @@ describe("NextRoute", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -316,6 +318,7 @@ describe("getNextRoute", () => {
         groupId: "",
         connections: [],
       },
+      filters: IdentifiersFilters.All,
     },
     credsCache: { creds: [], favourites: [] },
     credsArchivedCache: { creds: [] },
@@ -336,7 +339,7 @@ describe("getNextRoute", () => {
       credential: {
         viewType: null,
         favouriteIndex: 0,
-      }
+      },
     },
     biometricsCache: {
       enabled: false,
