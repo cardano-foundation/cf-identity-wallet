@@ -381,7 +381,7 @@ class ConnectionService extends AgentService {
       if (!operation.done) {
         throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
       }
-      if(operation.response.i){
+      if(operation.response && operation.response.i){
         const connectionId = operation.response.i
         await this.props.signifyClient.contacts().update(connectionId, { alias });
       }
