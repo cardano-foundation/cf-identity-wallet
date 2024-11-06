@@ -227,6 +227,8 @@ class Agent {
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
       await this.connectSignifyClient();
+      this.connectionService.onConnectionRemoved();
+      this.connectionService.onConnectionAdded();
       this.markAgentStatus(true);
     }
   }

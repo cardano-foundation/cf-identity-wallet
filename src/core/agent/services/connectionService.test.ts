@@ -220,11 +220,6 @@ describe("Connection service of agent", () => {
   });
 
   test("Should return connection type to trigger UI to create a new identifier", async () => {
-    const fixedDate = "2024-01-01T00:00:00.000Z";
-    const fixedTimestamp = 1704067200000;
-    jest.spyOn(Date, "now").mockReturnValue(fixedTimestamp);
-    jest.spyOn(global.Date.prototype, "toISOString").mockReturnValue(fixedDate);
-
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
     const oobi = `http://localhost/oobi/id?groupId=${groupId}&name=alias`;
@@ -242,7 +237,9 @@ describe("Connection service of agent", () => {
         label: "alias",
         oobi,
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: fixedDate,
+        connectionDate: expect.stringMatching(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+        ),
       },
     });
     expect(connectionStorage.save).toBeCalled();
@@ -270,6 +267,7 @@ describe("Connection service of agent", () => {
         oobi: "oobi",
         getTag: jest.fn(),
         pending: false,
+        pendingDeletion: false,
       },
       {
         id: keriContacts[0].id,
@@ -278,8 +276,10 @@ describe("Connection service of agent", () => {
         oobi: "oobi",
         getTag: jest.fn(),
         pending: true,
+        pendingDeletion: false,
       },
     ]);
+
     expect(await connectionService.getConnections()).toEqual([
       {
         id: keriContacts[0].id,
@@ -296,6 +296,10 @@ describe("Connection service of agent", () => {
         connectionDate: expect.any(String),
       },
     ]);
+    expect(connectionStorage.findAllByQuery).toHaveBeenCalledWith({
+      groupId: undefined,
+      pendingDeletion: false,
+    });
   });
 
   test("can get all multisig connections", async () => {
@@ -307,6 +311,7 @@ describe("Connection service of agent", () => {
       groupId,
       createdAt: new Date(),
       getTag: jest.fn().mockReturnValue(groupId),
+      pendingDeletion: false,
     };
     connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([metadata]);
     expect(await connectionService.getMultisigConnections()).toEqual([
@@ -319,6 +324,12 @@ describe("Connection service of agent", () => {
         groupId: metadata.groupId,
       },
     ]);
+    expect(connectionStorage.findAllByQuery).toHaveBeenCalledWith({
+      $not: {
+        groupId: undefined,
+      },
+      pendingDeletion: false,
+    });
   });
 
   test("can save connection note with generic records", async () => {
@@ -471,6 +482,7 @@ describe("Connection service of agent", () => {
       groupId,
       createdAt: new Date(),
       getTag: jest.fn().mockReturnValue(groupId),
+      pendingDeletion: false,
     };
     connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([metadata]);
     expect(
@@ -485,6 +497,10 @@ describe("Connection service of agent", () => {
         groupId: metadata.groupId,
       },
     ]);
+    expect(connectionStorage.findAllByQuery).toHaveBeenCalledWith({
+      groupId,
+      pendingDeletion: false,
+    });
   });
 
   test("can resolve oobi with no name parameter", async () => {

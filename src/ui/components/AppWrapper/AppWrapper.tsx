@@ -165,6 +165,27 @@ const peerConnectionBrokenChangeHandler = async (
   dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
 };
 
+const removeConnectionsPendingDeletion = async (
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const pendingDeletions =
+    await Agent.agent.connections.getConnectionsPendingDeletion();
+
+  for (const id of pendingDeletions) {
+    await Agent.agent.connections.deleteConnectionById(id);
+    dispatch(removeConnectionCache(id));
+  }
+};
+
+const resolvePendingConnections = async () => {
+  const pendingConnections =
+    await Agent.agent.connections.getConnectionsPending();
+
+  for (const pendingConnection of pendingConnections) {
+    await Agent.agent.connections.resolveOobi(pendingConnection.oobi);
+  }
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const isOnline = useAppSelector(getIsOnline);
   const dispatch = useAppDispatch();
@@ -207,30 +228,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
-    const removeConnectionsPendingDeletion = async () => {
-      const pendingDeletions =
-        await Agent.agent.connections.getConnectionsPendingDeletion();
-
-      for (const id of pendingDeletions) {
-        await Agent.agent.connections.deleteConnectionById(id);
-        dispatch(removeConnectionCache(id));
-      }
-    };
-
-    const resolvePendingConnections = async () => {
-      const pendingConnections =
-        await Agent.agent.connections.getConnectionsPending();
-
-      for (const pendingConnection of pendingConnections) {
-        await Agent.agent.connections.resolveOobi(
-          pendingConnection.oobi
-        );
-      }
-    };
 
     if (isOnline) {
       syncWithKeria();
-      removeConnectionsPendingDeletion();
+      removeConnectionsPendingDeletion(dispatch);
       resolvePendingConnections();
     }
   }, [isOnline, dispatch]);
@@ -475,8 +476,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
     });
-    Agent.agent.connections.onConnectionRemoved();
-    Agent.agent.connections.onResolveOobi();
   };
 
   const initApp = async () => {
@@ -556,4 +555,6 @@ export {
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
+  removeConnectionsPendingDeletion,
+  resolvePendingConnections,
 };

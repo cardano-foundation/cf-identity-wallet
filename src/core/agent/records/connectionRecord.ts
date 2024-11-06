@@ -29,7 +29,6 @@ class ConnectionRecord extends BaseRecord {
       this.oobi = props.oobi;
       this.groupId = props.groupId;
       this.pending = props.pending;
-      this.pendingDeletion = false;
       this._tags = props.tags ?? {};
     }
   }
