@@ -819,7 +819,7 @@ class KeriaNotificationService extends AgentService {
           connectionRecord.pending = false;
           connectionRecord.createdAt = new Date((operation.response as State ).dt);
           await this.connectionStorage.update(connectionRecord);
-          const alias = new URL(operation.metadata?.oobi).searchParams.get("name") ?? randomSalt();
+          const alias = connectionRecord.alias;
           await this.props.signifyClient.contacts().update((operation.response as State).i, { alias });
         }
         this.props.eventEmitter.emit<OperationCompleteEvent>({
