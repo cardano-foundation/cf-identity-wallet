@@ -55,7 +55,7 @@ jest.mock("signify-ts", () => ({
     return { qb64: "" };
   }),
 }));
-
+const contactsUpdateMock = jest.fn();
 const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -86,7 +86,7 @@ const signifyClient = jest.mocked({
       };
     }),
     delete: jest.fn(),
-    update: jest.fn()
+    update: contactsUpdateMock,
   }),
   notifications: () => ({
     list: listNotificationsMock,
@@ -1668,6 +1668,12 @@ describe("Long running operation tracker", () => {
       pending: false,
       createdAt: operationMock.response.dt,
     });
+    expect(contactsUpdateMock).toBeCalledWith(
+      connectionMock.id,
+      {
+        alias: "CF Credential Issuance"
+      }
+    );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
