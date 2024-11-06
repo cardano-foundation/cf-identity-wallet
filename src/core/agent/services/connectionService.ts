@@ -388,12 +388,6 @@ class ConnectionService extends AgentService {
       if (!operation.done) {
         throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
       }
-      if (operation.response && operation.response.i) {
-        const connectionId = operation.response.i;
-        connection = await this.props.signifyClient
-          .contacts()
-          .update(connectionId, { alias });
-      }
     } else {
       operation = await this.props.signifyClient.oobis().resolve(url, alias);
       const pendingOperation = await this.operationPendingStorage.save({
@@ -405,6 +399,14 @@ class ConnectionService extends AgentService {
         payload: { operation: pendingOperation },
       });
     }
+
+    if (operation.response && operation.response.i) {
+      const connectionId = operation.response.i;
+      connection = await this.props.signifyClient
+        .contacts()
+        .update(connectionId, { alias });
+    }
+
     return { op: operation, connection, alias };
   }
 }
