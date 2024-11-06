@@ -35,8 +35,15 @@
 
             &.accordion-header {
                 font-weight: 500;
-                --ripple-color: transparent;
                 --padding-start: 1.25rem;
+                // remove ripple effect
+                --ripple-color: transparent;
+                --background-activated: transparent;
+                --background-activated-opacity:transparent;
+                --background-focused: transparent;
+                --background-focused-opacity:transparent;
+                --background-hover  : transparent;
+                --background-hover-opacity  :transparent;
     
                 ion-icon {
                     margin: 0 0 0 1rem;
