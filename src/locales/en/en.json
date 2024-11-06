@@ -840,7 +840,7 @@
           },
           "signingkey": {
             "title": "Signing key",
-            "rotate": "Rotate keys",
+            "rotate": "Rotate key",
             "multisigtitle": "Show {{singingKeys}} singing keys"
           }
         },
