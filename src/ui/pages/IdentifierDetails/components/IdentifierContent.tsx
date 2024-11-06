@@ -140,7 +140,7 @@ const IdentifierContent = ({
               );
             })}
           </CardBlock>
-          <CardBlock flatBorder={FlatBorderType.TOP} >
+          <CardBlock className="rotate-button-container" flatBorder={FlatBorderType.TOP} >
             <IonButton
               shape="round"
               className="rotate-keys-button"

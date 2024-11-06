@@ -3,8 +3,12 @@
     margin-bottom: 0;
   }
 
-  .card-block {
-    margin: 0.75rem 0 0 !important;
+  .card-details-content .card-block {
+    margin: 0.75rem 0 0;
+
+    &.rotate-button-container {
+      margin-top: 0.25rem;
+    }
   }
 
   .creation-timestamp  {
