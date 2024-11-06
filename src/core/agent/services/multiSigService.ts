@@ -124,8 +124,10 @@ class MultiSigService extends AgentService {
       .get(ourMetadata.id as string);
     const otherAids = await Promise.all(
       otherIdentifierContacts.map(async (contact) => {
-        const aid = await this.connections.resolveOobi(contact.oobi as string);
-        return { state: aid.response };
+        const { op } = await this.connections.resolveOobi(
+          contact.oobi as string
+        );
+        return { state: op.response };
       })
     );
     const name = `${ourMetadata.theme}:${ourMetadata.displayName}`;

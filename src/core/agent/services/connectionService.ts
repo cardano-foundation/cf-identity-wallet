@@ -81,23 +81,27 @@ class ConnectionService extends AgentService {
       },
     });
 
-    const oobi = (await this.resolveOobi(url, multiSigInvite)) as {op: Operation, connection: Contact, alias: string};
+    const oobiResult = (await this.resolveOobi(url, multiSigInvite)) as {
+      op: Operation;
+      connection: Contact;
+      alias: string;
+    };
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
 
-    const connectionId = oobi.connection.id;
+    const connectionId = oobiResult.connection.id;
 
     const connectionMetadata: Record<string, unknown> = {
-      alias: oobi.alias,
+      alias: oobiResult.alias,
       oobi: url,
       pending: false,
     };
 
     const connection = {
       id: connectionId,
-      createdAtUTC: oobi.connection.createdAt as string,
-      oobi: oobi.connection.oobi,
+      createdAtUTC: oobiResult.connection.createdAt as string,
+      oobi: oobiResult.connection.oobi,
       status: ConnectionStatus.CONFIRMED,
-      label: oobi.alias,
+      label: oobiResult.alias,
       groupId,
     };
 
@@ -209,7 +213,7 @@ class ConnectionService extends AgentService {
         } else {
           throw error;
         }
-      });      
+      });
     const notes: Array<ConnectionNoteDetails> = [];
     const historyItems: Array<ConnectionHistoryItem> = [];
     Object.keys(connection).forEach((key) => {
@@ -367,11 +371,15 @@ class ConnectionService extends AgentService {
   async resolveOobi(
     url: string,
     waitForCompletion = true
-  ): Promise<{op: Operation, connection?: Contact, alias: string}> {
+  ): Promise<{
+    op: Operation & { response: State };
+    connection?: Contact;
+    alias: string;
+  }> {
     const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     let connection;
     let operation: Operation & { response: State };
-    if(waitForCompletion){
+    if (waitForCompletion) {
       operation = (await waitAndGetDoneOp(
         this.props.signifyClient,
         await this.props.signifyClient.oobis().resolve(url, alias),
@@ -380,12 +388,13 @@ class ConnectionService extends AgentService {
       if (!operation.done) {
         throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
       }
-      if(operation.response && operation.response.i){
-        const connectionId = operation.response.i
-        connection = await this.props.signifyClient.contacts().update(connectionId, { alias });
+      if (operation.response && operation.response.i) {
+        const connectionId = operation.response.i;
+        connection = await this.props.signifyClient
+          .contacts()
+          .update(connectionId, { alias });
       }
-    }
-    else {
+    } else {
       operation = await this.props.signifyClient.oobis().resolve(url, alias);
       const pendingOperation = await this.operationPendingStorage.save({
         id: operation.name,
@@ -396,8 +405,7 @@ class ConnectionService extends AgentService {
         payload: { operation: pendingOperation },
       });
     }
-    const oobi = { op: operation, connection, alias };
-    return oobi;
+    return { op: operation, connection, alias };
   }
 }
 
