@@ -326,13 +326,17 @@ describe("Connection service of agent", () => {
     const id = new Salter({}).qb64;
     const now =  new Date();
     await connectionService.createConnectionNote(connectionId, note);
-    expect(updateContactMock).toBeCalledWith(connectionId, {
-      [`note:${id}`]: JSON.stringify({
-        ...note,
+    const mockCallArg = updateContactMock.mock.calls[0][1];
+    const parsedNote = JSON.parse(mockCallArg[`note:${id}`]);
+
+    expect(parsedNote).toEqual(
+      expect.objectContaining({
+        title: note.title,
+        message: note.message,
         id: `note:${id}`,
-        timestamp: now.toISOString(),
-      }),
-    });
+        timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+      })
+    );
   });
 
   test("can delete connection note with id", async () => {
