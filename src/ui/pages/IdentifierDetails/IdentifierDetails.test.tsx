@@ -205,7 +205,7 @@ describe("Individual Identifier details page", () => {
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last rotated: ${formatShortDate(identifierFix[0].dt) +
+        `Last key event: ${formatShortDate(identifierFix[0].dt) +
               " - " +
               formatTimeToSec(identifierFix[0].dt)}`
       )
@@ -830,7 +830,7 @@ describe("Group Identifier details page", () => {
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last rotated: ${formatShortDate(identifierFix[0].dt) +
+        `Last key event: ${formatShortDate(identifierFix[0].dt) +
               " - " +
               formatTimeToSec(identifierFix[0].dt)}`
       )
@@ -840,7 +840,7 @@ describe("Group Identifier details page", () => {
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last rotated: ${formatShortDate(identifierFix[2].dt) +
+        `Last key event: ${formatShortDate(identifierFix[2].dt) +
               " - " +
               formatTimeToSec(identifierFix[2].dt)}`
       )
