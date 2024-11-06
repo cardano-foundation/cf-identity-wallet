@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface CardDetailsItemProps {
   info: string;
   copyButton?: boolean;
@@ -9,4 +11,6 @@ export interface CardDetailsItemProps {
   className?: string;
   mask?: boolean;
   fullText?: boolean;
+  endSlot?: ReactNode;
+  copyContent?: string;
 }

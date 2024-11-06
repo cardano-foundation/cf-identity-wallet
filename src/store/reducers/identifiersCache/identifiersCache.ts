@@ -1,15 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { RootState } from "../../index";
-import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
+import { FavouriteIdentifier, IdentifierCacheState, MultiSigGroup } from "./identifiersCache.types";
 
-const initialState: {
-  identifiers: IdentifierShortDetails[];
-  favourites: FavouriteIdentifier[];
-  multiSigGroup: MultiSigGroup | undefined;
-  openMultiSigId?: string;
-  scanGroupId?: string;
-} = {
+const initialState: IdentifierCacheState = {
   identifiers: [],
   favourites: [],
   multiSigGroup: undefined,
@@ -82,7 +76,7 @@ const identifiersCacheSlice = createSlice({
   },
 });
 
-export { initialState, identifiersCacheSlice };
+export { identifiersCacheSlice, initialState };
 
 export const {
   setIdentifiersCache,
@@ -112,9 +106,8 @@ const getScanGroupId = (state: RootState) =>
   state.identifiersCache?.scanGroupId;
 
 export {
-  getIdentifiersCache,
-  getFavouritesIdentifiersCache,
-  getMultiSigGroupCache,
+  getFavouritesIdentifiersCache, getIdentifiersCache, getMultiSigGroupCache,
   getOpenMultiSig,
-  getScanGroupId,
+  getScanGroupId
 };
+
