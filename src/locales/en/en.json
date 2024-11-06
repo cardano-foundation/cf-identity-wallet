@@ -852,7 +852,7 @@
           },
           "sequencenumber": {
             "title": "Sequence number",
-            "lastrotate": "Last rotated"
+            "lastrotate": "Last key event"
           },
           "nextkeyslist": {
             "title": "Rotation key digest",
@@ -908,7 +908,7 @@
             "done": "Done"
           },
           "advanceddetail": {
-            "title": "Advanced",
+            "title": "Advanced details",
             "propexplain": {
               "title": "About advanced details",
               "content": "Provides additional details on this identifier for users interested in more technical insights."
