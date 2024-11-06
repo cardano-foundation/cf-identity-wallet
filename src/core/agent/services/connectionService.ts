@@ -404,7 +404,7 @@ class ConnectionService extends AgentService {
       const connectionId = operation.response.i;
       connection = await this.props.signifyClient
         .contacts()
-        .update(connectionId, { alias });
+        .update(connectionId, { alias, createdAt: new Date().toISOString() });
     }
 
     return { op: operation, connection, alias };
