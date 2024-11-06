@@ -170,6 +170,11 @@ const Identifiers = () => {
     const tmpIndividualIdentifiers = [];
     const tmpGroupIdentifiers = [];
     for (const identifier of identifiersData) {
+      if (identifier.multisigManageAid?.length) {
+        tmpGroupIdentifiers.push(identifier);
+      } else {
+        tmpIndividualIdentifiers.push(identifier);
+      }
       if (favouriteIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
         tmpAllIdentifiers.push(identifier);
@@ -182,11 +187,6 @@ const Identifiers = () => {
       if (identifier.groupMetadata?.groupId) {
         tmpMultisigIdentifiers.push(identifier);
         continue;
-      }
-      if (identifier.multisigManageAid?.length) {
-        tmpGroupIdentifiers.push(identifier);
-      } else {
-        tmpIndividualIdentifiers.push(identifier);
       }
       tmpAllIdentifiers.push(identifier);
     }

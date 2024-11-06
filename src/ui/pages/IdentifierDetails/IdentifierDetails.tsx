@@ -343,7 +343,7 @@ const IdentifierDetails = () => {
           <PageFooter
             pageId={pageId}
             deleteButtonText={`${i18n.t(
-              "tabs.tabs.identifiers.details.delete.button"
+              "tabs.identifiers.details.delete.button"
             )}`}
             deleteButtonAction={deleteButtonAction}
           />

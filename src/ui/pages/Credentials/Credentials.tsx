@@ -52,6 +52,8 @@ import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types"
 import { FilterChip } from "../../components/FilterChip/FilterChip";
 import { BasicRecord } from "../../../core/agent/records";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { FilteredItemsPlaceholder } from "../../components/FilteredItemsPlaceholder";
+import { t } from "i18next";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -360,6 +362,17 @@ const Credentials = () => {
                       />
                     ))}
                   </div>
+                }
+                placeholder={
+                  <FilteredItemsPlaceholder
+                    placeholderText={t(
+                      "tabs.credentials.tab.filters.placeholder",
+                      {
+                        type: selectedFilter,
+                      }
+                    )}
+                    testId={pageId}
+                  />
                 }
               />
             )}

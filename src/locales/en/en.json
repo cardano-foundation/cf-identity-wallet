@@ -909,7 +909,8 @@
         "filters": {
           "all": "All",
           "individual": "Individual",
-          "group": "Group"
+          "group": "Group",
+          "placeholder": "You currently have no {{ type }} credentials."
         },
         "pendingcred": "Pending credentials",
         "detelepending": {

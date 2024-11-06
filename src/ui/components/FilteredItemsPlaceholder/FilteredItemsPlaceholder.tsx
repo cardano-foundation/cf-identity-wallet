@@ -1,6 +1,7 @@
 import { addOutline } from "ionicons/icons";
 import { PageFooter } from "../PageFooter";
 import { FilteredItemsPlaceholderProps } from "./FilteredItemsPlaceholder.types";
+import "./FilteredItemsPlaceholder.scss";
 
 const FilteredItemsPlaceholder = ({
   placeholderText,
@@ -10,10 +11,10 @@ const FilteredItemsPlaceholder = ({
 }: FilteredItemsPlaceholderProps) => {
   return (
     <div
-      className="filters-placeholder-container"
-      data-testid={`${testId}-filters-placeholder`}
+      className="filtered-items-placeholder-container"
+      data-testid={`${testId}-filtered-items-placeholder`}
     >
-      <p className="filters-placeholder-text">
+      <p>
         <i>{placeholderText}</i>
       </p>
       {buttonLabel && buttonAction && (
