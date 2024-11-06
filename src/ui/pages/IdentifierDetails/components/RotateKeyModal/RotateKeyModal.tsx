@@ -67,7 +67,7 @@ const RotateKeyModal = ({
           {i18n.t("tabs.identifiers.details.rotatekeys.description")}
         </p>
         <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.signingkey")}
+          title={i18n.t("tabs.identifiers.details.rotatekeys.signingkey")}
         >
           <CardDetailsItem
             info={signingKey}
