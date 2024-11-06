@@ -170,10 +170,10 @@ const Identifiers = () => {
     const tmpIndividualIdentifiers = [];
     const tmpGroupIdentifiers = [];
     for (const identifier of identifiersData) {
-      if (identifier.multisigManageAid?.length) {
-        tmpGroupIdentifiers.push(identifier);
-      } else {
-        tmpIndividualIdentifiers.push(identifier);
+      if (!identifier.groupMetadata) {
+        identifier.multisigManageAid
+          ? tmpGroupIdentifiers.push(identifier)
+          : tmpIndividualIdentifiers.push(identifier);
       }
       if (favouriteIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
