@@ -1690,7 +1690,7 @@
     "peeriderror": "Peer ID not recognised",
     "peeridnotrecognised": "Peer ID not recognised",
     "setupbiometricsuccess": "Biometrics setup successfully",
-    "rotatekeysuccess": "Keys rotated successfully",
+    "rotatekeysuccess": "Individual keys rotated successfully",
     "rotatekeyerror": "Unable to rotate keys",
     "newmultisignmember": "New member added to group",
     "multisignidentifiercreated": "Identifier added to “For groups“",
