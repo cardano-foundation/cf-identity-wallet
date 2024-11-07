@@ -1658,7 +1658,7 @@ describe("Long running operation tracker", () => {
       recordType: "oobi",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    
+
     contactGetMock.mockResolvedValueOnce(null);
 
     await keriaNotificationService.processOperation(operationRecord);
@@ -1670,6 +1670,7 @@ describe("Long running operation tracker", () => {
     });
     expect(contactsUpdateMock).toBeCalledWith(connectionMock.id, {
       alias: "CF Credential Issuance",
+      createdAt: operationMock.response.dt,
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
