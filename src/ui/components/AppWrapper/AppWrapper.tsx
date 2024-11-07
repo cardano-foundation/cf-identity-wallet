@@ -165,27 +165,6 @@ const peerConnectionBrokenChangeHandler = async (
   dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
 };
 
-const removeConnectionsPendingDeletion = async (
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  const pendingDeletions =
-    await Agent.agent.connections.getConnectionsPendingDeletion();
-
-  for (const id of pendingDeletions) {
-    await Agent.agent.connections.deleteConnectionById(id);
-    dispatch(removeConnectionCache(id));
-  }
-};
-
-const resolvePendingConnections = async () => {
-  const pendingConnections =
-    await Agent.agent.connections.getConnectionsPending();
-
-  for (const pendingConnection of pendingConnections) {
-    await Agent.agent.connections.resolveOobi(pendingConnection.oobi);
-  }
-};
-
 const AppWrapper = (props: { children: ReactNode }) => {
   const isOnline = useAppSelector(getIsOnline);
   const dispatch = useAppDispatch();
@@ -228,10 +207,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
+    const removeConnectionsPendingDeletion = async () => {
+      const pendingDeletions =
+        await Agent.agent.connections.removeConnectionsPendingDeletion();
+      pendingDeletions.forEach((id) => dispatch(removeConnectionCache(id)));
+    };
+
+    const resolvePendingConnections = async () => {
+      await Agent.agent.connections.resolvePendingConnections();
+    };
 
     if (isOnline) {
       syncWithKeria();
-      removeConnectionsPendingDeletion(dispatch);
+      removeConnectionsPendingDeletion();
       resolvePendingConnections();
     }
   }, [isOnline, dispatch]);
@@ -555,6 +543,4 @@ export {
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
-  removeConnectionsPendingDeletion,
-  resolvePendingConnections,
 };

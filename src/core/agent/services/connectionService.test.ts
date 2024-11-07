@@ -198,17 +198,6 @@ const keriContacts = [
   },
 ];
 
-const connectionRecordProps: ConnectionRecordStorageProps = {
-  id: "EKwzermyJ6VhunFWpo7fscyCILxFG7zZIM9JwSSABbZ5",
-  createdAt: now,
-  alias: "keri",
-  oobi: "http://oobi",
-  tags: {},
-  pending: false,
-};
-
-const connectionRecord = new ConnectionRecord(connectionRecordProps);
-
 const oobiPrefix = "http://oobi.com/oobi/";
 
 describe("Connection service of agent", () => {
@@ -236,7 +225,7 @@ describe("Connection service of agent", () => {
         id: "id",
         label: "alias",
         oobi,
-        status: ConnectionStatus.CONFIRMED,
+        status: ConnectionStatus.PENDING,
         connectionDate: expect.stringMatching(
           /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
         ),
@@ -819,5 +808,49 @@ describe("Connection service of agent", () => {
         pending: true,
       }),
     ]);
+  });
+
+  test("Should retrieve pending deletions and delete each by ID", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    connectionService.deleteConnectionById = jest
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    connectionService.getConnectionsPendingDeletion = jest
+      .fn()
+      .mockResolvedValueOnce(["id1", "id2"]);
+    const result = await connectionService.removeConnectionsPendingDeletion();
+
+    expect(connectionService.deleteConnectionById).toHaveBeenCalledWith("id1");
+    expect(connectionService.deleteConnectionById).toHaveBeenCalledWith("id2");
+    expect(result).toEqual(["id1", "id2"]);
+  });
+
+  test("Should retrieve pending connections and resolve each OOBI", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const resolveOobiResultMock = {
+      response: { i: "url", dt: now },
+      name: "url",
+      alias: "0ADQpus-mQmmO4mgWcT3ekDz",
+      done: true,
+      metadata: {
+        oobi: `${oobiPrefix}${failUuid}`,
+      },
+    };
+
+    connectionService.getConnectionsPending = jest
+      .fn()
+      .mockResolvedValue([{ oobi: "oobi1" }, { oobi: "oobi2" }]);
+
+    connectionService.resolveOobi = jest
+      .fn()
+      .mockResolvedValue(resolveOobiResultMock)
+      .mockResolvedValue(resolveOobiResultMock);
+
+    await connectionService.resolvePendingConnections();
+
+    expect(connectionService.resolveOobi).toBeCalledWith("oobi1");
+    expect(connectionService.resolveOobi).toBeCalledWith("oobi2");
   });
 });

@@ -23,10 +23,7 @@ import {
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { store } from "../../../store";
-import {
-  removeConnectionCache,
-  updateOrAddConnectionCache,
-} from "../../../store/reducers/connectionsCache";
+import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
@@ -49,8 +46,6 @@ import {
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
-  removeConnectionsPendingDeletion,
-  resolvePendingConnections,
 } from "./AppWrapper";
 import { signifyOperationStateChangeHandler } from "./coreEventListeners";
 
@@ -367,55 +362,6 @@ describe("AppWrapper handler", () => {
       expect(dispatch).toBeCalledWith(
         setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
       );
-    });
-  });
-
-  describe("Remove connections pending deletion handler", () => {
-    test("Should delete each pending connection and dispatch removeConnectionCache", async () => {
-      const mockPendingDeletions = ["id1", "id2"];
-      getConnectionsPendingDeletionMock.mockResolvedValue(mockPendingDeletions);
-      Agent.agent.connections.deleteConnectionById = jest
-        .fn()
-        .mockResolvedValue(undefined);
-      const dispatchMock = jest.fn();
-
-      await removeConnectionsPendingDeletion(dispatchMock);
-
-      expect(getConnectionsPendingDeletionMock).toHaveBeenCalled();
-      expect(
-        Agent.agent.connections.deleteConnectionById
-      ).toHaveBeenCalledTimes(mockPendingDeletions.length);
-      mockPendingDeletions.forEach((id) => {
-        expect(
-          Agent.agent.connections.deleteConnectionById
-        ).toHaveBeenCalledWith(id);
-        expect(dispatchMock).toHaveBeenCalledWith(removeConnectionCache(id));
-      });
-    });
-  });
-
-  describe("Resolve pending connections handler", () => {
-    test("Should resolve each pending connection's OOBI", async () => {
-      const mockPendingConnections = [
-        { oobi: "https://oobi/url1" },
-        { oobi: "https://oobi/url2" },
-      ];
-      getConnectionsPendingMock.mockResolvedValue(mockPendingConnections);
-      Agent.agent.connections.resolveOobi = jest
-        .fn()
-        .mockResolvedValue(undefined);
-
-      await resolvePendingConnections();
-
-      expect(getConnectionsPendingMock).toHaveBeenCalled();
-      expect(Agent.agent.connections.resolveOobi).toHaveBeenCalledTimes(
-        mockPendingConnections.length
-      );
-      mockPendingConnections.forEach((pendingConnection) => {
-        expect(Agent.agent.connections.resolveOobi).toHaveBeenCalledWith(
-          pendingConnection.oobi
-        );
-      });
     });
   });
 });

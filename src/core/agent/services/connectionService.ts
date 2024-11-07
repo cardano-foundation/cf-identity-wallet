@@ -1,4 +1,4 @@
-import { Contact, Salter } from "signify-ts";
+import { Contact, Operation, Salter, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -72,7 +72,7 @@ class ConnectionService extends AgentService {
       EventTypes.ConnectionStateChanged,
       (event: ConnectionStateChangedEvent) => {
         if (event.payload.url) {
-          this.resolveOobi(event.payload.url);
+          this.resolveOobi(event.payload.url, event.payload.isMultiSigInvite);
         }
       }
     );
@@ -99,7 +99,7 @@ class ConnectionService extends AgentService {
     const connectionMetadata: any = {
       alias,
       oobi: url,
-      pending: false,
+      pending: true,
     };
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
     const connectionDate = new Date().toISOString();
@@ -107,7 +107,7 @@ class ConnectionService extends AgentService {
       id: connectionId,
       connectionDate,
       oobi: url,
-      status: ConnectionStatus.CONFIRMED,
+      status: ConnectionStatus.PENDING,
       label: alias,
       groupId,
     };
@@ -116,6 +116,8 @@ class ConnectionService extends AgentService {
       const operation = await this.resolveOobi(url, multiSigInvite);
       connectionMetadata.alias = operation.alias;
       connectionMetadata.groupId = groupId;
+      connectionMetadata.pending = false;
+
       const identifierWithGroupId =
         await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
 
@@ -146,6 +148,7 @@ class ConnectionService extends AgentService {
       this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
         type: EventTypes.ConnectionStateChanged,
         payload: {
+          isMultiSigInvite: false,
           connectionId,
           status: ConnectionStatus.PENDING,
           url,
@@ -153,13 +156,6 @@ class ConnectionService extends AgentService {
       });
 
       await this.createConnectionMetadata(connectionId, connectionMetadata);
-      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-        type: EventTypes.ConnectionStateChanged,
-        payload: {
-          connectionId,
-          status: ConnectionStatus.CONFIRMED,
-        },
-      });
     }
     return { type: KeriConnectionType.NORMAL, connection };
   }
@@ -426,38 +422,57 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
+  async resolveOobi(
+    url: string,
+    waitForCompletion = true
+  ): Promise<Operation & { response: State } & { alias: string }> {
     const startTime = Date.now();
     const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     let operation;
     if (waitForCompletion) {
-      operation = await waitAndGetDoneOp(
+      operation = (await waitAndGetDoneOp(
         this.props.signifyClient,
         await this.props.signifyClient.oobis().resolve(url, alias),
         5000
-      );
+      )) as Operation & { response: State };
+      if (!operation.done) {
+        throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+      }
+      if (operation.response && operation.response.i) {
+        const connectionId = operation.response.i;
+        await this.props.signifyClient
+          .contacts()
+          .update(connectionId, { alias });
+      }
     } else {
-      operation = await waitAndGetDoneOp(
-        this.props.signifyClient,
-        await this.props.signifyClient.oobis().resolve(url, alias),
-        2000 - (Date.now() - startTime)
-      );
-    }
-    if (!operation.done && !waitForCompletion) {
+      operation = await this.props.signifyClient.oobis().resolve(url, alias);
       const pendingOperation = await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-
       this.props.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
-    } else if (!operation.done) {
-      throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
     const oobi = { ...operation, alias };
     return oobi;
+  }
+
+  async removeConnectionsPendingDeletion() {
+    const pendingDeletions = await this.getConnectionsPendingDeletion();
+    for (const id of pendingDeletions) {
+      await this.deleteConnectionById(id);
+    }
+
+    return pendingDeletions;
+  }
+
+  async resolvePendingConnections() {
+    const pendingConnections = await this.getConnectionsPending();
+    for (const pendingConnection of pendingConnections) {
+      await this.resolveOobi(pendingConnection.oobi);
+    }
   }
 }
 

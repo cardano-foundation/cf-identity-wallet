@@ -221,14 +221,14 @@ class Agent {
   }
 
   async start(keriaConnectUrl: string): Promise<void> {
+    this.connectionService.onConnectionRemoved();
+    this.connectionService.onConnectionAdded();
     if (!Agent.isOnline) {
       await signifyReady();
       const bran = await this.getBran();
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
       await this.connectSignifyClient();
-      this.connectionService.onConnectionRemoved();
-      this.connectionService.onConnectionAdded();
       this.markAgentStatus(true);
     }
   }
