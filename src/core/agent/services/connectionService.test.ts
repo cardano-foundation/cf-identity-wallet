@@ -10,7 +10,6 @@ import {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
-import { randomSalt } from "./utils";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
@@ -65,7 +64,7 @@ const signifyClient = jest.mocked({
       return {
         done: true,
         response: {
-          i: name,
+          i: "id",
           dt: now,
         },
         metadata: {
@@ -210,16 +209,15 @@ describe("Connection service of agent", () => {
   test("Should return connection type to trigger UI to create a new identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
-    const connectionId = "connectionId";
+    const connectionId = "id";
     const alias = "alias";
     const oobi = `http://localhost/oobi/${connectionId}/agent/agentId?groupId=${groupId}&name=${alias}`;
-    const now = new Date().toISOString();
     updateContactMock.mockResolvedValue({
       alias,
       oobi,
       id: connectionId,
       groupCreationId: groupId,
-      createdAt: now,
+      createdAt: now.toISOString()
     });
 
     const result = await connectionService.connectByOobiUrl(oobi);
@@ -228,8 +226,8 @@ describe("Connection service of agent", () => {
       groupId,
       connection: {
         groupId,
-        id: connectionId,
-        label: "alias",
+        id: "id",
+        label: alias,
         oobi: oobi,
         status: ConnectionStatus.CONFIRMED,
         createdAtUTC: now,
@@ -238,7 +236,7 @@ describe("Connection service of agent", () => {
     expect(connectionStorage.save).toBeCalledWith({
       alias,
       oobi,
-      id: connectionId,
+      id: "id",
       createdAt: new Date(now),
       groupId,
       pending: false,
@@ -550,7 +548,7 @@ describe("Connection service of agent", () => {
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
       op: {
-        response: { i: url, dt: now },
+        response: { i: "id", dt: now },
         name: url,
         done: true,
         metadata: {
@@ -558,7 +556,6 @@ describe("Connection service of agent", () => {
         },
       },
       alias: "0ADQpus-mQmmO4mgWcT3ekDz",
-      connection: undefined,
     });
   });
 
@@ -571,7 +568,7 @@ describe("Connection service of agent", () => {
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
       op: {
-        response: { i: url, dt: now },
+        response: { i: "id", dt: now },
         name: url,
         metadata: {
           oobi: `${oobiPrefix}${failUuid}`,
@@ -579,7 +576,6 @@ describe("Connection service of agent", () => {
         done: true,
       },
       alias: "alias with spaces",
-      connection: undefined,
     });
   });
 
