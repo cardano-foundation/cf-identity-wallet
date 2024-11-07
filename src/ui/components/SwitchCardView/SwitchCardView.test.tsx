@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { CardType } from "../../globals/types";
 import { SwitchCardView } from "./SwitchCardView";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
@@ -47,7 +46,7 @@ const initialState = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
 };
 let mockedStore: Store<unknown, AnyAction>;

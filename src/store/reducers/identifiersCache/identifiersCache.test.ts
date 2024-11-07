@@ -15,6 +15,8 @@ import {
   getOpenMultiSig,
   getScanGroupId,
   setScanGroupId,
+  getIdentifiersFilters,
+  setIdentifiersFilters,
 } from "./identifiersCache";
 import { RootState } from "../../index";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
@@ -113,6 +115,15 @@ describe("identifiersCacheSlice", () => {
       removeFavouriteIdentifierCache("abcd")
     );
     expect(newState.favourites).toEqual([]);
+  });
+
+  it("should handle setIdentifiersFilters", () => {
+    const filter: IdentifiersFilters = IdentifiersFilters.Individual;
+    const newState = identifiersCacheSlice.reducer(
+      initialState,
+      setIdentifiersFilters(filter)
+    );
+    expect(newState.filters).toEqual(filter);
   });
 
   it("should handle updateOrAddIdentifiersCache", () => {
@@ -226,6 +237,15 @@ describe("get identifier Cache", () => {
     } as RootState;
     const favouriteCache = getFavouritesIdentifiersCache(state);
     expect(favouriteCache).toEqual(state.identifiersCache.favourites);
+  });
+  it("should return the Identifiers Filters from RootState", () => {
+    const state = {
+      identifiersCache: {
+        filters: IdentifiersFilters.All,
+      },
+    } as RootState;
+    const filtersCache = getIdentifiersFilters(state);
+    expect(filtersCache).toEqual(state.identifiersCache.filters);
   });
   it("should return the multiSigGroupCache from RootState", () => {
     const state = {

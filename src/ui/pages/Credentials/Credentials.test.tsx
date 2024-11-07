@@ -14,11 +14,10 @@ import { Credentials } from "./Credentials";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import {
-  setCurrentOperation,
   setCurrentRoute,
   showConnections,
 } from "../../../store/reducers/stateCache";
-import { OperationType } from "../../globals/types";
+import { CredentialsFilters } from "./Credentials.types";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
@@ -30,6 +29,11 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(),
         deleteCredential: () => deleteIdentifierMock(),
         archiveCredential: () => archiveIdentifierMock(),
+      },
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+        createOrUpdateBasicRecord: () => Promise.resolve(),
       },
     },
   },
@@ -80,7 +84,7 @@ const initialStateEmpty = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
 };
 
@@ -124,7 +128,7 @@ const initialStateFull = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
 };
 
@@ -173,7 +177,7 @@ const archivedAndRevokedState = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
 };
 
@@ -262,6 +266,141 @@ describe("Creds Tab", () => {
     expect(getByTestId("keri-card-template-favs-index-0")).toBeInTheDocument();
   });
 
+  test("Renders Creds Filters", () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const allFilterBtn = getByTestId("all-filter-btn");
+    const individualFilterBtn = getByTestId("individual-filter-btn");
+    const groupFilterBtn = getByTestId("group-filter-btn");
+
+    expect(allFilterBtn).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.credentials.tab.filters.all
+    );
+    expect(individualFilterBtn).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.credentials.tab.filters.individual
+    );
+    expect(groupFilterBtn).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.credentials.tab.filters.group
+    );
+  });
+
+  test("Toggle Creds Filters show Individual", async () => {
+    const initialState = {
+      ...initialStateEmpty,
+      credsCache: {
+        creds: [filteredCredsFix[0]],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+    };
+    const { getByTestId, getByText, queryByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const allFilterBtn = getByTestId("all-filter-btn");
+    const individualFilterBtn = getByTestId("individual-filter-btn");
+    const groupFilterBtn = getByTestId("group-filter-btn");
+
+    expect(allFilterBtn).toHaveClass("selected");
+
+    await waitFor(() => {
+      expect(getByText(filteredCredsFix[0].credentialType)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(individualFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(getByText(filteredCredsFix[0].credentialType)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(groupFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(queryByText(filteredCredsFix[0].credentialType)).toBeNull();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.credentials.tab.filters.placeholder.replace(
+            "{{ type }}",
+            CredentialsFilters.Group
+          )
+        )
+      ).toBeVisible();
+    });
+  });
+
+  test("Toggle Creds Filters show Group", async () => {
+    const initialState = {
+      ...initialStateEmpty,
+      credsCache: {
+        creds: [filteredCredsFix[3]],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+    };
+    const { getByTestId, getByText, queryByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const allFilterBtn = getByTestId("all-filter-btn");
+    const individualFilterBtn = getByTestId("individual-filter-btn");
+    const groupFilterBtn = getByTestId("group-filter-btn");
+
+    expect(allFilterBtn).toHaveClass("selected");
+
+    await waitFor(() => {
+      expect(getByText(filteredCredsFix[3].credentialType)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(individualFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(queryByText(filteredCredsFix[3].credentialType)).toBeNull();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.credentials.tab.filters.placeholder.replace(
+            "{{ type }}",
+            CredentialsFilters.Individual
+          )
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(groupFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(getByText(filteredCredsFix[3].credentialType)).toBeVisible();
+    });
+  });
+
   test("Toggle Connections view", async () => {
     const storeMocked = {
       ...mockStore(initialStateEmpty),
@@ -338,7 +477,7 @@ describe("Creds Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,

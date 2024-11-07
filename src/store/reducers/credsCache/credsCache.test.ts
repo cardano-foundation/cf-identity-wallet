@@ -2,9 +2,11 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import {
   addFavouritesCredsCache,
   credsCacheSlice,
+  getCredentialsFilters,
   getCredsCache,
   getFavouritesCredsCache,
   removeFavouritesCredsCache,
+  setCredentialsFilters,
   setCredsCache,
   setFavouritesCredsCache,
   updateOrAddCredsCache,
@@ -148,6 +150,20 @@ describe("credsCacheSlice", () => {
   });
 });
 
+it("should handle setCredentialsFilters", () => {
+  const initialState = {
+    creds: [],
+    favourites: [],
+    filters: CredentialsFilters.All,
+  };
+  const filter: CredentialsFilters = CredentialsFilters.Individual;
+  const newState = credsCacheSlice.reducer(
+    initialState,
+    setCredentialsFilters(filter)
+  );
+  expect(newState.filters).toEqual(filter);
+});
+
 describe("get methods for CredsCache", () => {
   it("should return the creds cache from RootState", () => {
     const state = {
@@ -189,5 +205,14 @@ describe("get methods for CredsCache", () => {
     } as RootState;
     const favouritesCredsCache = getFavouritesCredsCache(state);
     expect(favouritesCredsCache).toEqual(state.credsCache.favourites);
+  });
+  it("should return the Credentials Filters from RootState", () => {
+    const state = {
+      credsCache: {
+        filters: CredentialsFilters.Individual,
+      },
+    } as RootState;
+    const filtersCache = getCredentialsFilters(state);
+    expect(filtersCache).toEqual(state.credsCache.filters);
   });
 });
