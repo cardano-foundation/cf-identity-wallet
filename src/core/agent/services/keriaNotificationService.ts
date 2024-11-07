@@ -1,4 +1,4 @@
-import { Salter } from "signify-ts";
+import { State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -31,7 +31,7 @@ import {
   OperationAddedEvent,
   NotificationRemovedEvent,
 } from "../event.types";
-import { deleteNotificationRecordById } from "./utils";
+import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType } from "./connectionService.types";
 
@@ -813,12 +813,14 @@ class KeriaNotificationService extends AgentService {
       }
       case OperationPendingRecordType.Oobi: {
         const connectionRecord = await this.connectionStorage.findById(
-          (operation.response as any).i
+          (operation.response as State).i
         );
         if (connectionRecord) {
           connectionRecord.pending = false;
-          connectionRecord.createdAt = (operation.response as any).dt;
+          connectionRecord.createdAt = new Date((operation.response as State ).dt);
           await this.connectionStorage.update(connectionRecord);
+          const alias = connectionRecord.alias;
+          await this.props.signifyClient.contacts().update((operation.response as State).i, { alias });
         }
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
@@ -911,7 +913,7 @@ class KeriaNotificationService extends AgentService {
               ConnectionHistoryType.CREDENTIAL_REVOKED
             );
             const metadata: any = {
-              id: new Salter({}).qb64,
+              id: randomSalt(),
               a: {
                 r: NotificationRoute.LocalAcdcRevoked,
                 credentialId,

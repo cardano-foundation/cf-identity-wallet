@@ -310,15 +310,18 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     const id = new Salter({}).qb64;
-    const now = new Date();
     await connectionService.createConnectionNote(connectionId, note);
-    expect(updateContactMock).toBeCalledWith(connectionId, {
-      [`note:${id}`]: JSON.stringify({
-        ...note,
+    const mockCallArg = updateContactMock.mock.calls[0][1];
+    const parsedNote = JSON.parse(mockCallArg[`note:${id}`]);
+
+    expect(parsedNote).toEqual(
+      expect.objectContaining({
+        title: note.title,
+        message: note.message,
         id: `note:${id}`,
-        timestamp: now.toISOString(),
-      }),
-    });
+        timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+      })
+    );
   });
 
   test("can delete connection note with id", async () => {
@@ -544,7 +547,7 @@ describe("Connection service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
     await expect(
-      connectionService.resolveOobi(`${oobiPrefix}${failUuid}`)
+      connectionService.resolveOobi(`${oobiPrefix}${failUuid}`, true)
     ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
   });
 

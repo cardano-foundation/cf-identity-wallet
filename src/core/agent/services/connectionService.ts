@@ -1,4 +1,4 @@
-import { Contact } from "signify-ts";
+import { Operation, State, Contact } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -85,7 +85,7 @@ class ConnectionService extends AgentService {
     const connectionId =
       operation.done && operation.response
         ? operation.response.i
-        : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
+        : new URL(url).pathname.split("/oobi/").pop()!.split("/")[0];
     const connectionMetadata: any = {
       alias: operation.alias,
       oobi: url,
@@ -96,7 +96,7 @@ class ConnectionService extends AgentService {
     const connection = {
       id: connectionId,
       connectionDate,
-      oobi: operation.metadata.oobi,
+      oobi: operation.metadata!.oobi,
       status: ConnectionStatus.CONFIRMED,
       label: operation.alias,
       groupId,
@@ -130,6 +130,7 @@ class ConnectionService extends AgentService {
         };
       }
     }
+
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
     if (!multiSigInvite) {
@@ -141,7 +142,6 @@ class ConnectionService extends AgentService {
         },
       });
     }
-    
     return { type: KeriConnectionType.NORMAL, connection };
   }
 
@@ -365,35 +365,37 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
+  async resolveOobi(
+    url: string,
+    waitForCompletion = true
+  ): Promise<Operation & { response: State } & { alias: string }> {
     const startTime = Date.now();
     const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     let operation;
-    if (waitForCompletion) {
-      operation = await waitAndGetDoneOp(
+    if(waitForCompletion){
+      operation = (await waitAndGetDoneOp(
         this.props.signifyClient,
         await this.props.signifyClient.oobis().resolve(url, alias),
         5000
-      );
-    } else {
-      operation = await waitAndGetDoneOp(
-        this.props.signifyClient,
-        await this.props.signifyClient.oobis().resolve(url, alias),
-        2000 - (Date.now() - startTime)
-      );
+      )) as Operation & { response: State };
+      if (!operation.done) {
+        throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+      }
+      if(operation.response && operation.response.i){
+        const connectionId = operation.response.i
+        await this.props.signifyClient.contacts().update(connectionId, { alias });
+      }
     }
-    if (!operation.done && !waitForCompletion) {
+    else {
+      operation = await this.props.signifyClient.oobis().resolve(url, alias);
       const pendingOperation = await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-
       this.props.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
-    } else if (!operation.done) {
-      throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
     const oobi = { ...operation, alias };
     return oobi;
