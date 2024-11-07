@@ -228,7 +228,7 @@ describe("App", () => {
   });
 
   test("Should not force status bar style is dark mode on android or browser", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
+    getPlatformsMock.mockImplementation(() => ["android", "mobileweb"]);
 
     render(
       <Provider store={store}>
@@ -242,7 +242,7 @@ describe("App", () => {
   });
 
   test("Should lock screen orientation to portrait mode", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["android"]);
+    getPlatformsMock.mockImplementation(() => ["android"]);
 
     render(
       <Provider store={store}>
