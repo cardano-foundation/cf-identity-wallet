@@ -1076,7 +1076,8 @@
     "scan": {
       "tab": {
         "title": "Align the QR code within the frame to scan",
-        "permissionalert": "Enable the camera in your device settings to start scanning"
+        "permissionalert": "Enable the camera in your device settings to start scanning",
+        "cameraunavailable": "We're unable to access your camera."
       },
       "pastemeerkatid": "Paste Meerkat ID"
     },

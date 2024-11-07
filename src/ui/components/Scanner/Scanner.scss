@@ -9,11 +9,11 @@ ion-grid.qr-code-scanner {
     display: none;
   }
 
-  &.scan-unavaible {
+  &.scan-unavailable {
     background: var(--ion-color-secondary);
   }
 
-  &.no-permission {
+  &.no-permission,&.scan-unavailable {
     background: var(--ion-color-secondary);
 
     .qr-code-scanner-text {
