@@ -22,6 +22,7 @@ import {
   grantForIssuanceExnMessage,
   applyForPresentingExnMessage,
   agreeForPresentingExnMessage,
+  credentialState,
 } from "../../__fixtures__/agent/keriaNotificationFixture";
 import { ConnectionHistoryType } from "./connectionService.types";
 
@@ -38,6 +39,7 @@ const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 const markNotificationMock = jest.fn();
 const getCredentialMock = jest.fn();
+const credentialStateMock = jest.fn();
 const admitMock = jest.fn();
 const submitAdmitMock = jest.fn();
 const listNotificationsMock = jest.fn();
@@ -98,6 +100,7 @@ const signifyClient = jest.mocked({
   credentials: () => ({
     get: getCredentialMock,
     list: jest.fn(),
+    state: credentialStateMock,
   }),
   exchanges: () => ({
     get: exchangesGetMock,
@@ -260,6 +263,8 @@ describe("Signify notification service of agent", () => {
 
   test("emit new event for new notification", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    credentialStateMock.mockResolvedValueOnce(credentialState);
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
@@ -318,6 +323,8 @@ describe("Signify notification service of agent", () => {
 
   test("Should admit if there is an existing credential", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    credentialStateMock.mockResolvedValueOnce(credentialState);
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [notificationIpexGrantProp];
@@ -523,6 +530,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REVOKED", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
+    credentialStateMock.mockResolvedValueOnce(credentialState);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -550,6 +558,38 @@ describe("Signify notification service of agent", () => {
       notificationIpexGrantProp
     );
     expect(pendingOperations.length).toBe(1);
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should call createLinkedIpexMessageRecord with TEL status is revoke and credential exist in cloud", async () => {
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    credentialStateMock.mockResolvedValueOnce({
+      ...credentialState,
+      et: "rev",
+    });
+    const credentialIdMock = "credentialId";
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    credentialStorage.getCredentialMetadata.mockResolvedValue(
+      credentialMetadataMock
+    );
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
+
+    await keriaNotificationService.processNotification(
+      notificationIpexGrantProp
+    );
+    expect(credentialService.markAcdc).toBeCalledWith(
+      grantForIssuanceExnMessage.exn.e.acdc.d,
+      CredentialStatus.REVOKED
+    );
+    expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
+      grantForIssuanceExnMessage,
+      ConnectionHistoryType.CREDENTIAL_REVOKED
+    );
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
@@ -1416,6 +1456,8 @@ describe("Signify notification service of agent", () => {
         e: { acdc: { d: "d" } },
       },
     });
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    credentialStateMock.mockResolvedValueOnce(credentialState);
     credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
       credentialMetadataMock
     );
@@ -1440,6 +1482,8 @@ describe("Signify notification service of agent", () => {
         e: { acdc: { d: "d" } },
       },
     });
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    credentialStateMock.mockResolvedValueOnce(credentialState);
     credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
       credentialMetadataMock
     );

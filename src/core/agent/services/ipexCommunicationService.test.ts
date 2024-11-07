@@ -40,6 +40,7 @@ import {
   ipexSubmitAdmitSerder,
   ipexSubmitAdmitSig,
   ipexSubmitAdmitEnd,
+  credentialState,
 } from "../../__fixtures__/agent/ipexCommunicationFixture";
 import { NotificationRoute } from "../agent.types";
 import {
@@ -112,6 +113,7 @@ const multisigService = jest.mocked({
 
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
+const credentialStateMock = jest.fn();
 const identifierListMock = jest.fn();
 const identifiersMemberMock = jest.fn();
 let identifiersGetMock = jest.fn();
@@ -217,6 +219,7 @@ const signifyClient = jest.mocked({
   credentials: () => ({
     list: credentialListMock,
     get: credentialGetMock,
+    state: credentialStateMock,
   }),
   exchanges: () => ({
     get: getExchangeMock,
@@ -725,16 +728,19 @@ describe("Ipex communication service of agent", () => {
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
-    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
-      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
-        JSON.stringify({
-          id: grantForIssuanceExnMessage.exn.d,
-          dt: grantForIssuanceExnMessage.exn.dt,
-          credentialType: QVISchema.title,
-          connectionId: grantForIssuanceExnMessage.exn.rp,
-          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-        }),
-    });
+    expect(updateContactMock).toBeCalledWith(
+      grantForIssuanceExnMessage.exn.rp,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+          JSON.stringify({
+            id: grantForIssuanceExnMessage.exn.d,
+            dt: grantForIssuanceExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: grantForIssuanceExnMessage.exn.rp,
+            historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
+          }),
+      }
+    );
 
     expect(schemaGetMock).toBeCalledTimes(2);
     expect(connections.resolveOobi).toBeCalledTimes(2);
@@ -769,16 +775,19 @@ describe("Ipex communication service of agent", () => {
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
-    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
-      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
-        JSON.stringify({
-          id: grantForIssuanceExnMessage.exn.d,
-          dt: grantForIssuanceExnMessage.exn.dt,
-          credentialType: QVISchema.title,
-          connectionId: grantForIssuanceExnMessage.exn.rp,
-          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-        }),
-    });
+    expect(updateContactMock).toBeCalledWith(
+      grantForIssuanceExnMessage.exn.rp,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+          JSON.stringify({
+            id: grantForIssuanceExnMessage.exn.d,
+            dt: grantForIssuanceExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: grantForIssuanceExnMessage.exn.rp,
+            historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
+          }),
+      }
+    );
     expect(schemaGetMock).toBeCalledTimes(1);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
@@ -2604,6 +2613,7 @@ describe("Ipex communication service of agent", () => {
   test("Can get acdc detail", async () => {
     getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
     schemaGetMock.mockResolvedValue(QVISchema);
+    credentialStateMock.mockResolvedValueOnce(credentialState);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -2624,7 +2634,7 @@ describe("Ipex communication service of agent", () => {
         attendeeName: "ccc",
       },
       s: QVISchema,
-      lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+      lastStatus: { s: "1", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
     });
@@ -2632,6 +2642,7 @@ describe("Ipex communication service of agent", () => {
 
   test("Can get acdc detail when the schema has not been resolved", async () => {
     getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
+    credentialStateMock.mockResolvedValueOnce(credentialState);
     const error404 = new Error("Not Found - 404");
     schemaGetMock.mockRejectedValueOnce(error404);
     identifierStorage.getIdentifierMetadata = jest
@@ -2664,7 +2675,7 @@ describe("Ipex communication service of agent", () => {
         attendeeName: "ccc",
       },
       s: QVISchema,
-      lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+      lastStatus: { s: "1", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
     });

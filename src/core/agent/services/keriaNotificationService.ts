@@ -299,6 +299,14 @@ class KeriaNotificationService extends AgentService {
     notif: Notification
   ): Promise<boolean> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
+    const signifyCredential = await this.props.signifyClient
+      .credentials()
+      .get(exchange.exn.e.acdc.d)
+      .catch(() => undefined);
+    const credentialState = await this.props.signifyClient
+      .credentials()
+      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
+    const telStatus = credentialState.et;
     const existingCredential =
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
     const ourIdentifier = await this.identifierStorage
@@ -317,6 +325,19 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
+    if (signifyCredential && telStatus === "rev") {
+      await this.credentialService.markAcdc(
+        exchange.exn.e.acdc.d,
+        CredentialStatus.REVOKED
+      );
+      await this.ipexCommunications.createLinkedIpexMessageRecord(
+        exchange,
+        ConnectionHistoryType.CREDENTIAL_REVOKED
+      );
+      await this.markNotification(notif.i);
+      return false;
+    }
+
     if (
       existingCredential &&
       existingCredential.status !== CredentialStatus.REVOKED
