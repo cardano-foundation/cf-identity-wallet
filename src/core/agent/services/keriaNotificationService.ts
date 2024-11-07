@@ -817,7 +817,7 @@ class KeriaNotificationService extends AgentService {
         );
         const existingConnection = await this.props.signifyClient
           .contacts()
-          .get((operation.response as State).i);
+          .get((operation.response as State).i).catch(() => undefined);
         if (connectionRecord && !existingConnection) {
           connectionRecord.pending = false;
           connectionRecord.createdAt = new Date(
