@@ -251,9 +251,9 @@ class KeriaNotificationService extends AgentService {
         exchange
       );
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
-      shouldCreateRecord = await this.processMultiSigRpyNotification(notif, exchange);
+      shouldCreateRecord = await this.processMultiSigRpyNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigIcp) {
-      shouldCreateRecord = await this.processMultiSigIcpNotification(notif, exchange);
+      shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(
         notif,
@@ -373,9 +373,23 @@ class KeriaNotificationService extends AgentService {
 
   private async processMultiSigRpyNotification(
     notif: Notification,
-    exchange: ExnMessage
   ): Promise<boolean> {
-    const multisigId = exchange?.exn?.a?.gid;
+    const multisigNotification = await this.props.signifyClient
+      .groups()
+      .getRequest(notif.a.d)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
+    if (!multisigNotification || !multisigNotification.length) {
+      await this.markNotification(notif.i);
+      return false;
+    }
+    const multisigId = multisigNotification[0]?.exn?.a?.gid;
     if (!multisigId) {
       await this.markNotification(notif.i);
       return false;
@@ -395,9 +409,10 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-    const rpyRoute = exchange.exn.e.rpy.r;
+
+    const rpyRoute = multisigNotification[0].exn.e.rpy.r;
     if (rpyRoute === "/end/role/add") {
-      await this.multiSigs.joinAuthorization(exchange.exn);
+      await this.multiSigs.joinAuthorization(multisigNotification[0].exn);
       await this.markNotification(notif.i);
       return false;
     }
@@ -405,10 +420,24 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processMultiSigIcpNotification(
-    notif: Notification,
-    exchange: ExnMessage
+    notif: Notification
   ): Promise<boolean> {
-    const multisigId = exchange.exn?.a?.gid;
+    const multisigNotification = await this.props.signifyClient
+      .groups()
+      .getRequest(notif.a.d)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
+    if (!multisigNotification || !multisigNotification.length) {
+      await this.markNotification(notif.i);
+      return false;
+    }
+    const multisigId = multisigNotification[0]?.exn?.a?.gid;
     if (!multisigId) {
       await this.markNotification(notif.i);
       return false;

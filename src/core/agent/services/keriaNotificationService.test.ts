@@ -553,6 +553,30 @@ describe("Signify notification service of agent", () => {
         },
       },
     });
+
+    const multisigNotificationExn = {
+      exn: {
+        a: {
+          gid: "uuid",
+        },
+        e: {
+          rpy: {
+            v: "KERI10JSON000111_",
+            t: "rpy",
+            d: "uuid",
+            dt: "2024-07-12T09:37:48.801000+00:00",
+            r: "/end/role/add",
+            a: {
+              cid: "uuid",
+              role: "agent",
+              eid: "new-uuid",
+            },
+          },
+          d: "uuid",
+        },
+      },
+    };
+
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
@@ -561,6 +585,7 @@ describe("Signify notification service of agent", () => {
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       )
       .mockResolvedValue(identifierMetadataRecordProps);
+    groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
 
     const notes = [notificationMultisigRpyProp];
     for (const notif of notes) {
@@ -1499,8 +1524,31 @@ describe("Signify notification service of agent", () => {
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       )
       .mockRejectedValueOnce(new Error(errorMessage));
+    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
     await expect(
       keriaNotificationService.processNotification(notificationMultisigRpyProp)
+    ).rejects.toThrow(errorMessage);
+  });
+
+  test("Should throw error if other error occurs with route multisig/icp", async () => {
+    const errorMessage = "Error - 500";
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigIcp,
+        p: "p",
+        a: { i: "i" },
+        e: {},
+      },
+    });
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(new Error(errorMessage));
+
+    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
+    await expect(
+      keriaNotificationService.processNotification(notificationMultisigIcpProp)
     ).rejects.toThrow(errorMessage);
   });
 
