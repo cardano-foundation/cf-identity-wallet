@@ -42,7 +42,8 @@
         --ripple-color: transparent;
       }
 
-      &.button-has-icon-only {
+      &.button-has-icon-only,
+      &.back-button {
         width: 2.75rem;
         height: 2.75rem;
         border-radius: 1.5rem;
@@ -57,6 +58,12 @@
         &.md {
           font-size: 0.8rem;
         }
+      }
+
+      ion-icon {
+        width: 1.475rem;
+        height: 1.475rem;
+        margin: 0;
       }
 
       &.close-button-label {
@@ -96,15 +103,23 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    ion-toolbar {
+    ion-toolbar,
+    ion-toolbar.md {
       ion-buttons ion-button {
-        &.button-has-icon-only {
+        &.button-has-icon-only,
+        &.back-button {
           width: 2.25rem;
           height: 2.25rem;
 
           &::part(native) {
             padding: 0.35rem;
           }
+        }
+
+        ion-icon {
+          width: 1.18rem;
+          height: 1.18rem;
+          margin: 0;
         }
       }
 
