@@ -1,19 +1,22 @@
+import { Style, StyleOptions } from "@capacitor/status-bar";
 import { render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { Style, StyleOptions } from "@capacitor/status-bar";
-import { App } from "./App";
+import configureStore from "redux-mock-store";
 import { TabsRoutePath } from "../routes/paths";
 import { store } from "../store";
-import { Identifiers } from "./pages/Identifiers";
+import { showGenericError } from "../store/reducers/stateCache";
+import { App } from "./App";
 import { OperationType } from "./globals/types";
+import { Identifiers } from "./pages/Identifiers";
+
+const mockInitDatabase = jest.fn();
 
 jest.mock("../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: jest.fn(),
+      initDatabaseConnection: () => mockInitDatabase(),
       getBranAndMnemonic: jest.fn(() =>
         Promise.resolve({
           bran: "",
@@ -131,13 +134,56 @@ const initialState = {
       },
     },
     toastMsgs: [],
+    showConnections: false,
+    currentOperation: OperationType.IDLE,
+    queueIncomingRequest: {
+      isProcessing: false,
+      queues: [],
+      isPaused: false,
+    },
   },
-  connectionsCache: {
-    connections: [],
+  seedPhraseCache: {
+    seedPhrase: "",
+    bran: "",
   },
   identifiersCache: {
     identifiers: [],
     favourites: [],
+    multiSigGroup: {
+      groupId: "",
+      connections: [],
+    },
+  },
+  credsCache: { creds: [], favourites: [] },
+  credsArchivedCache: { creds: [] },
+  connectionsCache: {
+    connections: {},
+    multisigConnections: {},
+  },
+  walletConnectionsCache: {
+    walletConnections: [],
+    connectedWallet: null,
+    pendingConnection: null,
+  },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
+  },
+  biometricsCache: {
+    enabled: false,
+  },
+  ssiAgentCache: {
+    bootUrl: "",
+    connectUrl: "",
+  },
+  notificationsCache: {
+    notifications: [],
   },
 };
 
@@ -147,6 +193,10 @@ const storeMocked = {
 };
 
 describe("App", () => {
+  beforeEach(() => {
+    mockInitDatabase.mockClear();
+  })
+
   test("Mobile header hidden when app not in preview mode", async () => {
     const { queryByTestId } = render(
       <Provider store={store}>
@@ -295,6 +345,52 @@ describe("App", () => {
     await waitFor(() => {
       expect(getByTestId("offline-page")).toBeVisible();
     });
+  });
+
+  test("Show error when unhandledrejection event fired", async () => {
+    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
+      if(type === "unhandledrejection") {
+        listener({
+          preventDefault: jest.fn(),
+          promise: Promise.reject(new Error("Failed"))
+        })
+      }
+    })
+
+    render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showGenericError(true));
+    });
+
+    spy.mockClear();
+  });
+
+  test("Show error when error fired", async () => {
+    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
+      if(type === "error") {
+        listener({
+          preventDefault: jest.fn(),
+          error: new Error("Failed")
+        })
+      }
+    })
+
+    render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showGenericError(true));
+    });
+
+    spy.mockClear();
   });
 
   test.skip("It renders SetUserName modal", async () => {
