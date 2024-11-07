@@ -1,14 +1,14 @@
 import { Style, StyleOptions } from "@capacitor/status-bar";
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
 import { store } from "../store";
 import { showGenericError } from "../store/reducers/stateCache";
 import { App } from "./App";
 import { OperationType } from "./globals/types";
-import { Identifiers } from "./pages/Identifiers";
 
 const mockInitDatabase = jest.fn();
 
@@ -195,6 +195,7 @@ const storeMocked = {
 describe("App", () => {
   beforeEach(() => {
     mockInitDatabase.mockClear();
+    getPlatformsMock.mockImplementation(() => ["android"]);
   })
 
   test("Mobile header hidden when app not in preview mode", async () => {
@@ -210,8 +211,8 @@ describe("App", () => {
     });
   });
 
-  test.skip("Force status bar style is dark mode on ios", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["ios"]);
+  test("Force status bar style is dark mode on ios", async () => {
+    getPlatformsMock.mockImplementation(() => ["ios"]);
 
     render(
       <Provider store={store}>
@@ -227,7 +228,7 @@ describe("App", () => {
   });
 
   test("Should not force status bar style is dark mode on android or browser", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
+    getPlatformsMock.mockImplementation(() => ["android", "mobileweb"]);
 
     render(
       <Provider store={store}>
@@ -241,7 +242,7 @@ describe("App", () => {
   });
 
   test("Should lock screen orientation to portrait mode", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["android"]);
+    getPlatformsMock.mockImplementation(() => ["android"]);
 
     render(
       <Provider store={store}>
@@ -270,7 +271,7 @@ describe("App", () => {
       stateCache: {
         isOnline: false,
         initialized: true,
-        routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
+        routes: [{ path: "/" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
           seedPhraseIsSet: false,
@@ -392,20 +393,92 @@ describe("App", () => {
 
     spy.mockClear();
   });
+  test("It renders SetUserName modal", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [{ path: TabsRoutePath.ROOT }],
+        authentication: {
+          loggedIn: true,
+          userName: "",
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        toastMsgs: [],
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+      },
+    };
 
-  test.skip("It renders SetUserName modal", async () => {
-    const { queryByTestId } = render(
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-          <Route
-            path={TabsRoutePath.IDENTIFIERS}
-            component={Identifiers}
-          />
+          <App />
         </MemoryRouter>
       </Provider>
     );
+
     await waitFor(() => {
-      expect(queryByTestId("set-user-name")).toBeInTheDocument();
+      expect(getByText(Eng_Trans.inputrequest.title.username)).toBeInTheDocument();
     });
   });
 });
