@@ -1653,6 +1653,7 @@ describe("Long running operation tracker", () => {
       id: "id",
       pending: true,
       createdAt: new Date(),
+      alias: "CF Credential Issuance",
     };
     connectionStorage.findById.mockResolvedValueOnce(connectionMock);
     const operationRecord = {
@@ -1667,6 +1668,7 @@ describe("Long running operation tracker", () => {
       id: connectionMock.id,
       pending: false,
       createdAt: operationMock.response.dt,
+      alias: connectionMock.alias
     });
     expect(contactsUpdateMock).toBeCalledWith(
       connectionMock.id,
