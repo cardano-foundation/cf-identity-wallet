@@ -513,7 +513,7 @@ describe("Individual Identifier details page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("rotate-key-button"));
+      fireEvent.click(getByTestId("primary-button-rotate-key"));
     });
 
     await waitFor(() => {
