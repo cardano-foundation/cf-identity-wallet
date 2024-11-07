@@ -235,7 +235,14 @@ describe("Connection service of agent", () => {
         createdAtUTC: now,
       },
     });
-    expect(connectionStorage.save).toBeCalled();
+    expect(connectionStorage.save).toBeCalledWith({
+      alias,
+      oobi,
+      id: connectionId,
+      createdAt: new Date(now),
+      groupId,
+      pending: false,
+    });
   });
 
   test("Can create groupId connections for existing pending multi-sigs", async () => {
@@ -324,7 +331,6 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     const id = new Salter({}).qb64;
-    const now =  new Date();
     await connectionService.createConnectionNote(connectionId, note);
     const mockCallArg = updateContactMock.mock.calls[0][1];
     const parsedNote = JSON.parse(mockCallArg[`note:${id}`]);
@@ -334,7 +340,9 @@ describe("Connection service of agent", () => {
         title: note.title,
         message: note.message,
         id: `note:${id}`,
-        timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+        timestamp: expect.stringMatching(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+        ),
       })
     );
   });
@@ -547,7 +555,7 @@ describe("Connection service of agent", () => {
         done: true,
         metadata: {
           oobi: `${oobiPrefix}${failUuid}`,
-        }
+        },
       },
       alias: "0ADQpus-mQmmO4mgWcT3ekDz",
       connection: undefined,

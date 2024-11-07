@@ -94,6 +94,7 @@ class ConnectionService extends AgentService {
       alias: oobiResult.alias,
       oobi: url,
       pending: false,
+      createdAtUTC: oobiResult.connection.createdAt as string,
     };
 
     const connection = {
@@ -332,6 +333,7 @@ class ConnectionService extends AgentService {
       oobi: metadata.oobi as string,
       groupId: metadata.groupId as string,
       pending: !!metadata.pending,
+      createdAt: new Date(metadata.createdAtUTC as string),
     });
   }
 
@@ -404,7 +406,11 @@ class ConnectionService extends AgentService {
       const connectionId = operation.response.i;
       connection = await this.props.signifyClient
         .contacts()
-        .update(connectionId, { alias, createdAt: new Date().toISOString() });
+        .update(connectionId, {
+          alias,
+          groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
+          createdAt: new Date().toISOString(),
+        });
     }
 
     return { op: operation, connection, alias };
