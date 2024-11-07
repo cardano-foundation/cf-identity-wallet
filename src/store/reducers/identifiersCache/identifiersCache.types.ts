@@ -1,4 +1,5 @@
 import { ConnectionShortDetails } from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 interface FavouriteIdentifier {
   id: string;
@@ -10,4 +11,12 @@ interface MultiSigGroup {
   connections: ConnectionShortDetails[];
 }
 
-export type { FavouriteIdentifier, MultiSigGroup };
+interface IdentifierCacheState {
+  identifiers: IdentifierShortDetails[];
+  favourites: FavouriteIdentifier[];
+  multiSigGroup: MultiSigGroup | undefined;
+  openMultiSigId?: string;
+  scanGroupId?: string;
+}
+
+export type { FavouriteIdentifier, MultiSigGroup, IdentifierCacheState };

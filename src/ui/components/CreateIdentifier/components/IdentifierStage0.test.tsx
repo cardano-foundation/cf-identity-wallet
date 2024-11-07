@@ -47,7 +47,6 @@ const mockGetMultisigConnection = jest.fn((args: unknown) =>
 const createIdentifierMock = jest.fn((args: unknown) => ({
   identifier: "mock-id",
   isPending: true,
-  signifyName: "mock name",
 }));
 
 jest.mock("../../../../core/agent/agent", () => ({
@@ -124,7 +123,6 @@ describe("Identifier Stage 0", () => {
       createdAtUTC: "",
       theme: 0,
       isPending: false,
-      signifyName: "",
       groupMetadata: undefined,
     },
     color: IdentifierColor.Green,

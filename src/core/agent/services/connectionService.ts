@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
-import { Salter } from "signify-ts";
+import { Contact } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -20,7 +19,7 @@ import {
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
   ConnectionStateChangedEvent,
@@ -29,7 +28,6 @@ import {
 } from "../event.types";
 import {
   ConnectionHistoryItem,
-  KeriaContact,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
 
@@ -143,6 +141,7 @@ class ConnectionService extends AgentService {
         },
       });
     }
+    
     return { type: KeriConnectionType.NORMAL, connection };
   }
 
@@ -219,12 +218,12 @@ class ConnectionService extends AgentService {
         key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
         connection[key]
       ) {
-        notes.push(JSON.parse(connection[key]));
+        notes.push(JSON.parse(connection[key] as string));
       } else if (
         key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
         key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
       ) {
-        historyItems.push(JSON.parse(connection[key]));
+        historyItems.push(JSON.parse(connection[key] as string));
       }
     });
 
@@ -271,7 +270,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    const id = new Salter({}).qb64;
+    const id = randomSalt();
     await this.props.signifyClient.contacts().update(connectionId, {
       [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
@@ -351,7 +350,7 @@ class ConnectionService extends AgentService {
     const signifyContacts = await this.props.signifyClient.contacts().list();
     const storageContacts = await this.connectionStorage.getAll();
     const unSyncedData = signifyContacts.filter(
-      (contact: KeriaContact) =>
+      (contact: Contact) =>
         !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {
@@ -368,7 +367,7 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     let operation;
     if (waitForCompletion) {
       operation = await waitAndGetDoneOp(
