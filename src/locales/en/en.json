@@ -881,6 +881,7 @@
           }
         },
         "rotatekeys": {
+          "message": "After rotating your keys, you may experience some delays when using this identifier for a short period.",
           "signingkey": "List of signing keys",
           "description": "Rotating your signing keys boosts security by reducing the risk of key compromise.",
           "done": "Done"
@@ -1689,7 +1690,7 @@
     "peeriderror": "Peer ID not recognised",
     "peeridnotrecognised": "Peer ID not recognised",
     "setupbiometricsuccess": "Biometrics setup successfully",
-    "rotatekeysuccess": "Keys rotated successfully",
+    "rotatekeysuccess": "Individual keys rotated successfully",
     "rotatekeyerror": "Unable to rotate keys",
     "newmultisignmember": "New member added to group",
     "multisignidentifiercreated": "Identifier added to “For groups“",
