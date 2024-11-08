@@ -23,6 +23,14 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     isPending: true,
     multisigManageAid: "123",
   },
+  {
+    displayName: "GID 1",
+    id: "EIRdVIgcPYj6LbN4DdxzJFnsvELV-7eWDBQ4a-VsRDQb",
+    createdAtUTC: "2024-10-21T11:15:58.673Z",
+    theme: 0,
+    isPending: false,
+    multisigManageAid: "EHzi_GBx0jIgd3G0Qqcjg3ZaLJ6d84wp6q0qUvC_iOQ4",
+  },
 ];
 
 const multisignIdentifierFix: IdentifierShortDetails[] = [

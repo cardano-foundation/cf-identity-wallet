@@ -512,8 +512,15 @@ describe("Individual Identifier details page", () => {
       fireEvent.click(getByTestId("rotate-keys-button"));
     });
 
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.message)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.signingkey)).toBeVisible();
+      expect(getByTestId("rotate-keys-title").innerHTML).toBe(EN_TRANSLATIONS.tabs.identifiers.details.options.rotatekeys);
+    })
+
     act(() => {
-      fireEvent.click(getByTestId("rotate-key-button"));
+      fireEvent.click(getByTestId("primary-button-rotate-key"));
     });
 
     await waitFor(() => {

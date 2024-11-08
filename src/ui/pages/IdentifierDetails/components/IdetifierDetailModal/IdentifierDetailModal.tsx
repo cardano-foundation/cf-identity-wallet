@@ -1,10 +1,10 @@
-import { IonCard, IonIcon, IonModal } from "@ionic/react";
-import { informationCircleOutline } from "ionicons/icons";
+import { IonModal } from "@ionic/react";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { InfoCard } from "../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
 import { Advanced } from "./Advanced";
@@ -78,15 +78,7 @@ const IdentifierDetailModal = ({ isOpen, setOpen, view, data, setViewType }: Ide
           <div className="prop-explain">
             <h3>{i18n.t(`tabs.identifiers.details.detailmodal.${view}.propexplain.title`)}</h3>
           </div>
-          <IonCard className="prop-explain-content">
-            <p>{i18n.t(`tabs.identifiers.details.detailmodal.${view}.propexplain.content`)}</p>
-            <div className="alert-icon">
-              <IonIcon
-                icon={informationCircleOutline}
-                slot="icon-only"
-              />
-            </div>
-          </IonCard>
+          <InfoCard className="prop-explain-content" content={i18n.t(`tabs.identifiers.details.detailmodal.${view}.propexplain.content`)}/>
           {renderContent()}
         </ScrollablePageLayout>
       </IonModal>
