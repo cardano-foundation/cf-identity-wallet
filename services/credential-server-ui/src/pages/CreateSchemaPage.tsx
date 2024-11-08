@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Button,
   TextField,
@@ -6,17 +7,19 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Typography,
-  Grid,
-  Box,
-  Alert,
   Tooltip,
   IconButton,
+  Paper,
+  Input,
+  Alert,
+  Typography,
+  Box,
+  Grid,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import AddIcon from "@mui/icons-material/Add";
-import axios from "axios";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { config } from "../config";
 import {
   GENERATE_SCHEMA_BLUEPRINT,
@@ -25,9 +28,10 @@ import {
   RULES_BLOCK,
 } from "../utils/schemaBlueprint";
 import CreateSchemaField from "../components/createSchema/CreateSchemaField";
-import { SchemaField } from "../constants/type";
+import { SchemaField, SchemaShortDetails } from "../constants/type";
+import { DeleteOutline } from "@mui/icons-material";
 
-const CreateSchemaPage: React.FC = () => {
+const CreateSchemaPage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [credentialType, setCredentialType] = useState("");
@@ -37,6 +41,25 @@ const CreateSchemaPage: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedSchema, setGeneratedSchema] = useState<any>(null);
+  const [allSchemas, setAllSchemas] = useState<SchemaShortDetails[]>([]);
+  const [schemas, setSchemas] = useState<SchemaShortDetails[]>([]);
+  const [schemasFilter, setSchemasFilter] = useState<string>("");
+
+  useEffect(() => {
+    handleGetSchemas();
+  }, []);
+
+  useEffect(() => {
+    if (allSchemas) {
+      const regex = new RegExp(schemasFilter, "gi");
+      setSchemas(
+        allSchemas.filter(
+          (schema: { $id: string; title: string }) =>
+            regex.test(schema.$id) || regex.test(schema.title)
+        )
+      );
+    }
+  }, [schemasFilter, allSchemas]);
 
   const handleGenerateSchema = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -165,7 +188,7 @@ const CreateSchemaPage: React.FC = () => {
     }
   };
 
-  const handleAddField = (section: string) => {
+  const addField = (section: string) => {
     const newField: SchemaField = {
       name: "",
       description: "",
@@ -176,7 +199,6 @@ const CreateSchemaPage: React.FC = () => {
 
     if (section === "edges") {
       setEdges((prevEdges) => [...prevEdges, newField]);
-      console.log("Edges:", edges);
     } else if (section === "rules") {
       setRules((prevRules) => [...prevRules, newField]);
     } else if (section === "attributes") {
@@ -240,6 +262,21 @@ const CreateSchemaPage: React.FC = () => {
     } else if (section === "attributes") {
       setAttributes(updateFields(attributes));
     }
+  };
+
+  const handleGetSchemas = async () => {
+    const schemasList = (
+      await axios.get(`${config.endpoint}${config.path.schemaList}`)
+    ).data;
+    setSchemas(schemasList);
+    setAllSchemas(schemasList);
+  };
+
+  const handleDeleteSchema = async (id: string) => {
+    await axios.delete(
+      `${config.endpoint}${config.path.deleteSchema}?id=${id}`
+    );
+    await handleGetSchemas();
   };
 
   return (
@@ -325,7 +362,7 @@ const CreateSchemaPage: React.FC = () => {
                       </Tooltip>
                     </div>
                     <IconButton
-                      onClick={() => handleAddField("attributes")}
+                      onClick={() => addField("attributes")}
                       color="primary"
                     >
                       <AddIcon />
@@ -336,7 +373,7 @@ const CreateSchemaPage: React.FC = () => {
                     fields={attributes}
                     handleFieldChange={handleFieldChange}
                     handleCustomizableChange={handleCustomizableChange}
-                    handleAddField={handleAddField}
+                    handleAddField={addField}
                     removeField={removeField}
                   />
                   <div
@@ -355,7 +392,7 @@ const CreateSchemaPage: React.FC = () => {
                       </Tooltip>
                     </div>
                     <IconButton
-                      onClick={() => handleAddField("edges")}
+                      onClick={() => addField("edges")}
                       color="primary"
                     >
                       <AddIcon />
@@ -366,7 +403,7 @@ const CreateSchemaPage: React.FC = () => {
                     fields={edges}
                     handleFieldChange={handleFieldChange}
                     handleCustomizableChange={handleCustomizableChange}
-                    handleAddField={handleAddField}
+                    handleAddField={addField}
                     removeField={removeField}
                   />
                   <div
@@ -385,7 +422,7 @@ const CreateSchemaPage: React.FC = () => {
                       </Tooltip>
                     </div>
                     <IconButton
-                      onClick={() => handleAddField("rules")}
+                      onClick={() => addField("rules")}
                       color="primary"
                     >
                       <AddIcon />
@@ -396,7 +433,7 @@ const CreateSchemaPage: React.FC = () => {
                     fields={rules}
                     handleFieldChange={handleFieldChange}
                     handleCustomizableChange={handleCustomizableChange}
-                    handleAddField={handleAddField}
+                    handleAddField={addField}
                     removeField={removeField}
                   />
                 </AccordionDetails>
@@ -413,14 +450,6 @@ const CreateSchemaPage: React.FC = () => {
                     sx={{ marginRight: 2 }}
                   >
                     {error}
-                  </Alert>
-                )}
-                {isSuccess && (
-                  <Alert
-                    severity="success"
-                    sx={{ marginRight: 2 }}
-                  >
-                    Schema create successfully
                   </Alert>
                 )}
                 <Button
@@ -453,6 +482,14 @@ const CreateSchemaPage: React.FC = () => {
               <Box
                 sx={{ display: "flex", justifyContent: "right", marginTop: 2 }}
               >
+                {isSuccess && (
+                  <Alert
+                    severity="success"
+                    sx={{ marginRight: 2 }}
+                  >
+                    Schema saved successfully
+                  </Alert>
+                )}
                 <Button
                   variant="contained"
                   color="primary"
@@ -465,6 +502,75 @@ const CreateSchemaPage: React.FC = () => {
           </Grid>
         )}
       </Box>
+      <Divider style={{ margin: "20px 0" }} />
+      <Paper
+        variant="outlined"
+        sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
+      >
+        <Typography
+          component="h1"
+          variant="h4"
+          align="center"
+        >
+          Manage schemas
+          <Button
+            startIcon={<RefreshIcon />}
+            onClick={handleGetSchemas}
+          ></Button>
+        </Typography>
+        <Divider />
+
+        <Grid
+          container
+          justifyContent={"center"}
+        >
+          <Grid
+            item
+            xs={10}
+            sx={{ display: "flex", justifyContent: "left", my: { md: 1 } }}
+          >
+            <Input
+              fullWidth
+              onChange={(event) => setSchemasFilter(event.target.value)}
+              placeholder="Search for schemas"
+            />
+            <br></br>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          justifyContent="center"
+        >
+          {schemas &&
+            schemas.map((schema, index) => (
+              <Grid
+                container
+                item
+                xs={10}
+                sx={{ my: { md: 1 } }}
+                key={schema.$id || index}
+              >
+                <Grid
+                  item
+                  xs={10}
+                  textAlign={"left"}
+                >
+                  {schema.title} ({schema.$id})
+                </Grid>
+                <Grid
+                  item
+                  xs={2}
+                >
+                  <Button
+                    startIcon={<DeleteOutline />}
+                    onClick={() => handleDeleteSchema(schema.$id)}
+                    style={{ height: "100%" }}
+                  ></Button>
+                </Grid>
+              </Grid>
+            ))}
+        </Grid>
+      </Paper>
     </>
   );
 };

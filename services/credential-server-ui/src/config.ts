@@ -39,6 +39,7 @@ const config = {
     saveSchema: "/saveSchema",
     schemaList: "/schemaList",
     schemaCustomFields: "/schemaCustomFields",
+    deleteSchema: "/deleteSchema",
   },
 };
 

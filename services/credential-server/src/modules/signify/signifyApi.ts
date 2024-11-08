@@ -10,6 +10,8 @@ import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../agent";
+import lmdb from "../../utils/lmdb";
+import { SCHEMAS_KEY } from "../../types/schema.type";
 
 export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
@@ -105,28 +107,49 @@ export class SignifyApi {
     registryId: string,
     schemaId: string,
     recipient: string,
-    attribute: { [key: string]: string }
+    attribute: { [key: string]: any }
   ) {
     await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
 
     let vcdata = {};
-    if (
-      schemaId === Agent.RARE_EVO_DEMO_SCHEMA_SAID ||
-      schemaId === Agent.QVI_SCHEMA_SAID
-    ) {
+    const schema = await lmdb.get(SCHEMAS_KEY)[schemaId];
+    if (schema) {
       vcdata = attribute;
     } else {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
 
-    const result = await this.signifyClient.credentials().issue(issuerName, {
+    let test = {
       ri: registryId,
       s: schemaId,
       a: {
         i: recipient,
-        ...vcdata,
       },
-    });
+    };
+
+    for (const [key, value] of Object.entries(vcdata)) {
+      const keys = key.split(".");
+      let current = test;
+      for (let i = 0; i < keys.length; i++) {
+        if (i === keys.length - 1) {
+          current[keys[i]] = value;
+        } else {
+          current = current[keys[i]] = current[keys[i]] || {};
+        }
+      }
+    }
+
+    if (test["e"]) {
+      test["e"]["d"] = "";
+    }
+    if (test["r"]) {
+      test["r"]["d"] = "";
+    }
+
+    const result = await this.signifyClient
+      .credentials()
+      .issue(issuerName, test);
+
     await waitAndGetDoneOp(
       this.signifyClient,
       result.op,
@@ -418,15 +441,20 @@ export class SignifyApi {
 
   async saidifySchema(schema: any, label?: string): Promise<any> {
     const customizableKeys: { [key: string]: any } = {};
-    const removeCustomizables = (obj: any): any => {
+    const removeCustomizables = (obj: any, path: string[] = []): any => {
       if (typeof obj !== "object" || obj === null) return obj;
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
+          const currentPath = [...path, key];
           if (obj[key] && obj[key].customizable === true) {
-            customizableKeys[key] = obj[key];
+            let keyPath = currentPath.slice(1).join(".");
+            keyPath = keyPath.replace(/oneOf\.\d+\.properties\./g, "");
+            keyPath = keyPath.replace(/\.properties\./g, ".");
+            customizableKeys[keyPath] = { ...obj[key] };
+            customizableKeys[keyPath].name = key;
             delete obj[key].customizable;
           } else {
-            obj[key] = removeCustomizables(obj[key]);
+            obj[key] = removeCustomizables(obj[key], currentPath);
           }
         }
       }

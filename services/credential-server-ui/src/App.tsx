@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
@@ -11,6 +11,9 @@ import { CredentialPage } from "./pages/CredentialPage";
 import { RequestCredential } from "./pages/RequestCredential";
 import { RevocationPage } from "./pages/RevocationPage";
 import { CreateSchemaPage } from "./pages/CreateSchemaPage";
+import { ACDC_SCHEMAS } from "./utils/schemas";
+import { config } from "./config";
+import axios from "axios";
 
 export const MENU_ITEMS = [
   {
@@ -46,6 +49,27 @@ export const MENU_ITEMS = [
 ];
 
 function App() {
+  useEffect(() => {
+    const saveDefaultSchemas = async () => {
+      try {
+        for (const schemaKey of Object.keys(ACDC_SCHEMAS)) {
+          try {
+            await axios.post(
+              `${config.endpoint}${config.path.saveSchema}`,
+              ACDC_SCHEMAS[schemaKey as keyof typeof ACDC_SCHEMAS]
+            );
+          } catch (error) {
+            console.error(`Error saving schema ${schemaKey}:`, error);
+          }
+        }
+      } catch (error) {
+        console.error("Error saving schemas:", error);
+      }
+    };
+
+    saveDefaultSchemas();
+  }, []);
+
   return (
     <div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>

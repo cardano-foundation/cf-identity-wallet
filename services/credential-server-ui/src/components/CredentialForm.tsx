@@ -112,7 +112,7 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
         const value = customizableKeys[key];
         return {
           key,
-          label: `${key} - ${value.description}`,
+          label: `${value.name} - ${value.description}`,
           type: value.type || "string", // Default to 'string' if type is not provided
           defaultValue: value.default || "", // Add default value if provided
         };
@@ -270,6 +270,9 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
                             label={att.label}
                             type="number"
                             variant="outlined"
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
                           />
                         );
                       case "string":

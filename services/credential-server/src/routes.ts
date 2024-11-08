@@ -14,6 +14,7 @@ import {
   schemaApi,
   schemaCustomFields,
   schemaList,
+  deleteSchema,
 } from "./apis/schema.api";
 import { contactList, deleteContact } from "./apis/contact.api";
 import { resolveOobi } from "./apis/oobi.api";
@@ -34,5 +35,6 @@ router.delete(config.path.deleteContact, deleteContact);
 router.post(config.path.saveSchema, saveSchema);
 router.get(config.path.schemaList, schemaList);
 router.get(config.path.schemaCustomFields, schemaCustomFields);
+router.delete(config.path.deleteSchema, deleteSchema);
 
 export default router;

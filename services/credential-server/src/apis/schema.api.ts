@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { ACDC_SCHEMAS } from "../utils/schemas";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 import { Agent } from "../agent";
@@ -8,10 +7,21 @@ import { SCHEMAS_KEY, SchemaShortDetails } from "../types/schema.type";
 
 async function schemaApi(req: Request, res: Response) {
   const { id } = req.params;
-  const data = ACDC_SCHEMAS[id];
-  if (!data) {
+  const schemas = await lmdb.get(SCHEMAS_KEY);
+  if (!schemas) {
+    return res.status(404).send("No schemas found");
+  }
+
+  const schema = schemas[id];
+  if (!schema) {
     return res.status(404).send("Schema for given SAID not found");
   }
+
+  const data = schema.schema;
+  if (!data) {
+    return res.status(404).send("Schema data not found");
+  }
+
   return res.send(data);
 }
 
@@ -72,4 +82,17 @@ async function saveSchema(req: Request, res: Response) {
   }
 }
 
-export { schemaApi, schemaList, schemaCustomFields, saveSchema };
+async function deleteSchema(req: Request, res: Response) {
+  const { id } = req.query;
+  const schemas = await lmdb.get(SCHEMAS_KEY);
+  if (!schemas) {
+    return res.status(404).send("No schemas found");
+  }
+
+  delete schemas[id as string];
+  await lmdb.put(SCHEMAS_KEY, schemas);
+
+  return res.send("Schema deleted successfully");
+}
+
+export { schemaApi, schemaList, schemaCustomFields, saveSchema, deleteSchema };
