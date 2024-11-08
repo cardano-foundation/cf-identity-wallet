@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { CardType } from "../../globals/types";
@@ -15,6 +16,8 @@ interface SwitchCardViewProps {
   name: string;
   onShowCardDetails?: () => void;
   className?: string;
+  filters?: ReactNode;
+  placeholder?: ReactNode;
 }
 
 interface CardListProps {

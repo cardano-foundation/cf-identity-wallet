@@ -1,5 +1,7 @@
 import { RootState } from "../../store";
 import { OperationType } from "../../ui/globals/types";
+import { CredentialsFilters } from "../../ui/pages/Credentials/Credentials.types";
+import { IdentifiersFilters } from "../../ui/pages/Identifiers/Identifiers.types";
 import { DataProps } from "../nextRoute/nextRoute.types";
 import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
 
@@ -62,8 +64,13 @@ describe("getBackRoute", () => {
           groupId: "",
           connections: [],
         },
+        filters: IdentifiersFilters.All,
       },
-      credsCache: { creds: [], favourites: [] },
+      credsCache: {
+        creds: [],
+        favourites: [],
+        filters: CredentialsFilters.All,
+      },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: {},
@@ -82,7 +89,7 @@ describe("getBackRoute", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -209,8 +216,13 @@ describe("getPreviousRoute", () => {
           groupId: "",
           connections: [],
         },
+        filters: IdentifiersFilters.All,
       },
-      credsCache: { creds: [], favourites: [] },
+      credsCache: {
+        creds: [],
+        favourites: [],
+        filters: CredentialsFilters.All,
+      },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: {},
@@ -229,7 +241,7 @@ describe("getPreviousRoute", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,
