@@ -122,7 +122,7 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const [selectedFilter, setSelectedFilter] = useState<IdentifiersFilters>();
+  const selectedFilter = identifiersFiltersCache ?? IdentifiersFilters.All;
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -295,7 +295,7 @@ const Identifiers = () => {
     },
   ];
 
-  const setFilters = (filter: IdentifiersFilters) => {
+  const handleSelectFilter = (filter: AllowedChipFilter) => {
     Agent.agent.basicStorage
       .createOrUpdateBasicRecord(
         new BasicRecord({
@@ -306,22 +306,9 @@ const Identifiers = () => {
         })
       )
       .then(() => {
-        dispatch(setIdentifiersFilters(filter));
+        dispatch(setIdentifiersFilters(filter as IdentifiersFilters));
       });
   };
-
-  const handleSelectFilter = (filter: AllowedChipFilter) => {
-    setSelectedFilter(filter as IdentifiersFilters);
-    setFilters(filter as IdentifiersFilters);
-  };
-
-  useEffect(() => {
-    if (!identifiersFiltersCache) {
-      setSelectedFilter(IdentifiersFilters.All);
-    } else {
-      setSelectedFilter(identifiersFiltersCache as IdentifiersFilters);
-    }
-  }, [identifiersFiltersCache]);
 
   return (
     <>

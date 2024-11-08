@@ -6,6 +6,7 @@ import {
 } from "@ionic/react";
 import { peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { t } from "i18next";
 import { Agent } from "../../../core/agent/agent";
 import {
   CredentialShortDetails,
@@ -53,7 +54,6 @@ import { FilterChip } from "../../components/FilterChip/FilterChip";
 import { BasicRecord } from "../../../core/agent/records";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { FilteredItemsPlaceholder } from "../../components/FilteredItemsPlaceholder";
-import { t } from "i18next";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -102,9 +102,7 @@ const Credentials = () => {
   const [groupCredentials, setGroupCredentials] = useState<
     CredentialShortDetails[]
   >([]);
-  const [selectedFilter, setSelectedFilter] = useState<CredentialsFilters>(
-    CredentialsFilters.All
-  );
+  const selectedFilter = credentialsFiltersCache ?? CredentialsFilters.All;
 
   const revokedCreds = useMemo(
     () => credsCache.filter((item) => item.status === CredentialStatus.REVOKED),
@@ -270,7 +268,7 @@ const Credentials = () => {
     },
   ];
 
-  const setFilters = (filter: CredentialsFilters) => {
+  const handleSelectFilter = (filter: AllowedChipFilter) => {
     Agent.agent.basicStorage
       .createOrUpdateBasicRecord(
         new BasicRecord({
@@ -281,22 +279,9 @@ const Credentials = () => {
         })
       )
       .then(() => {
-        dispatch(setCredentialsFilters(filter));
+        dispatch(setCredentialsFilters(filter as CredentialsFilters));
       });
   };
-
-  const handleSelectFilter = (filter: AllowedChipFilter) => {
-    setSelectedFilter(filter as CredentialsFilters);
-    setFilters(filter as CredentialsFilters);
-  };
-
-  useEffect(() => {
-    if (!credentialsFiltersCache) {
-      setSelectedFilter(CredentialsFilters.All);
-    } else {
-      setSelectedFilter(credentialsFiltersCache as CredentialsFilters);
-    }
-  }, [credentialsFiltersCache]);
 
   return (
     <>
