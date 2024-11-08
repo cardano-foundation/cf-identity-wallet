@@ -119,7 +119,7 @@ export class SignifyApi {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
 
-    let test = {
+    let credentialData = {
       ri: registryId,
       s: schemaId,
       a: {
@@ -148,7 +148,7 @@ export class SignifyApi {
 
     const result = await this.signifyClient
       .credentials()
-      .issue(issuerName, test);
+      .issue(issuerName, credentialData);
 
     await waitAndGetDoneOp(
       this.signifyClient,

@@ -61,7 +61,7 @@ async function schemaCustomFields(req: Request, res: Response) {
 
 async function saveSchema(req: Request, res: Response) {
   try {
-    await Agent.agent.saidifySchema(req.body, "$id");
+    await Agent.agent.saveSchema(req.body, "$id");
     const response: ResponseData<string> = {
       statusCode: 200,
       success: true,

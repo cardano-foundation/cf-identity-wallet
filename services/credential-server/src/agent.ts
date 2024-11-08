@@ -267,7 +267,7 @@ class Agent {
     await this.signifyApi.deleteNotification(grantNotification.i);
   }
 
-  async saidifySchema(schema: any, label?: string): Promise<void> {
+  async saveSchema(schema: any, label?: string): Promise<void> {
     const { saidifiedSchema, customizableKeys } =
       await this.signifyApi.saidifySchema(schema, label);
     let schemas = await lmdb.get(SCHEMAS_KEY);
