@@ -14,10 +14,12 @@ const CardDetailsItem = ({
   icon,
   customIcon,
   keyValue,
+  copyContent,
   testId,
   className,
   fullText = false,
   mask = true,
+  endSlot
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
 
@@ -35,7 +37,7 @@ const CardDetailsItem = ({
   });
 
   const copy = () => {
-    writeToClipboard(info);
+    writeToClipboard(copyContent || info);
     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
   };
 
@@ -83,6 +85,9 @@ const CardDetailsItem = ({
             <IonIcon icon={copyOutline} />
           </IonButton>
         )}
+        {
+          endSlot
+        }
       </div>
     </IonItem>
   );

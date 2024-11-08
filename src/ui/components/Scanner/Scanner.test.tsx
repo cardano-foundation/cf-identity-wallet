@@ -84,7 +84,7 @@ const checkPermisson = jest.fn(() =>
 );
 
 const requestPermission = jest.fn();
-
+const startScan = jest.fn();
 jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
     ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
@@ -95,7 +95,7 @@ jest.mock("@capacitor-mlkit/barcode-scanning", () => {
         eventName: string,
         listenerFunc: (result: BarcodeScannedEvent) => void
       ) => addListener(eventName, listenerFunc),
-      startScan: jest.fn(),
+      startScan: () => startScan(),
       stopScan: jest.fn(),
     },
   };
@@ -1077,6 +1077,46 @@ describe("Scanner", () => {
 
     await waitFor(() => {
       expect(requestPermission).toBeCalled();
+    });
+  });
+
+  test("Unable to access camera", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+    startScan.mockImplementationOnce(() => Promise.reject("Error"));
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByText(EN_Translation.tabs.scan.tab.cameraunavailable)).toBeVisible();
     });
   });
 });

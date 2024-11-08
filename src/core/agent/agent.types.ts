@@ -62,7 +62,7 @@ interface JSONArray extends Array<JSONValue> {}
 
 type JSONValue = string | number | boolean | JSONObject | JSONArray;
 
-type IpexMessage = {
+type ExnMessage = {
   exn: {
     v: string;
     t: string;
@@ -214,7 +214,7 @@ export type {
   IdentifierResult,
   AgentUrls,
   BranAndMnemonic,
-  IpexMessage,
+  ExnMessage,
   NotificationRpy,
   AuthorizationRequestExn,
   OperationCallback,

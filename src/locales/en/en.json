@@ -829,39 +829,48 @@
       },
       "details": {
         "done": "Done",
-        "groupmembers": {
-          "title": "Group members"
+        "identifierdetail": {
+          "title": "Identifier details",
+          "showadvanced": "Show advanced details",
+          "identifierid": {
+            "title": "Identifier ID"
+          },
+          "created": {
+            "title": "Created"
+          },
+          "signingkey": {
+            "title": "Signing key",
+            "rotate": "Rotate key",
+            "multisigtitle": "Show {{singingKeys}} singing keys"
+          }
         },
-        "signingkeysthreshold": {
-          "title": "Keys signing threshold"
+        "keyrotation": {
+          "title": "Key rotation",
+          "rotatesigningkey": {
+            "title": "Rotation threshold",
+            "outof": "out of {{threshold}}"
+          },
+          "sequencenumber": {
+            "title": "Sequence number",
+            "lastrotate": "Last key event"
+          },
+          "nextkeyslist": {
+            "title": "Rotation key digest",
+            "showkey": "Show {{rotationKeys}} rotation key digests"
+          }
         },
-        "information": {
-          "title": "Information"
-        },
-        "signingkeyslist": {
-          "title": "List of signing keys",
-          "rotate": "Rotate keys"
-        },
-        "nextkeyslist": {
-          "title": "List of next key digests"
-        },
-        "nextkeysthreshold": {
-          "title": "Next keys signing threshold"
-        },
-        "sequencenumber": {
-          "title": "Sequence number"
-        },
-        "rotationtimestamp": {
-          "title": "Last key rotation timestamp"
-        },
-        "backerslist": {
-          "title": "List of backers"
-        },
-        "delegator": {
-          "title": "Delegator identifier prefix"
-        },
-        "backeraddress": {
-          "title": "Backer address"
+        "group": {
+          "title": "Group information",
+          "groupmembers": {
+            "title": "Group members"
+          },
+          "signingkeysthreshold": {
+            "title": "Signing threshold",
+            "outof": "out of {{threshold}}"
+          },
+          "button": {
+            "viewmore": "View {{remainMembers}} more"
+          }
         },
         "delete": {
           "button": "Delete identifier",
@@ -870,6 +879,11 @@
             "confirm": "Yes, I'm sure",
             "cancel": "Cancel"
           }
+        },
+        "rotatekeys": {
+          "signingkey": "List of signing keys",
+          "description": "Rotating your signing keys boosts security by reducing the risk of key compromise.",
+          "done": "Done"
         },
         "options": {
           "title": "Identifier options",
@@ -887,11 +901,55 @@
             "color": "Choose card colour"
           }
         },
-        "rotatekeys": {
-          "done": "Done",
-          "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
-        },
-        "clouderror": "We couldn’t locate this identifier in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this identifier, tap “Delete identifier” to remove."
+        "clouderror": "We couldn’t locate this identifier in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this identifier, tap “Delete identifier” to remove.",
+        "detailmodal": {
+          "you": "You",
+          "button": {
+            "done": "Done"
+          },
+          "advanceddetail": {
+            "title": "Advanced details",
+            "propexplain": {
+              "title": "About advanced details",
+              "content": "Provides additional details on this identifier for users interested in more technical insights."
+            },
+            "proptitle": "Advanced details",
+            "viewkey": "Show {{keys}} singing keys",
+            "hidekey": "Hide {{keys}} singing keys",
+            "viewrotationkey": "Show {{keys}} rotation key digests",
+            "hiderotationkey": "Hide {{keys}} rotation key digests"
+          },
+          "signingthreshold": {
+            "title": "Signing threshold",
+            "propexplain": {
+              "title": "About signing threshold",
+              "content": "Minimum number of signing keys required to approve a transaction or event within the identifier."
+            },
+            "threshold": {
+              "title": "Threshold",
+              "text": "{{threshold}} out of {{members}}"
+            }
+          },
+          "rotationthreshold": {
+            "title": "Rotation threshold",
+            "propexplain": {
+              "title": "About rotation threshold",
+              "content": "The minimum number of new keys required to rotate and replace old signing keys."
+            },
+            "threshold": {
+              "title": "Rotation threshold",
+              "text": "{{threshold}} out of {{members}}"
+            }
+          },
+          "groupmember": {
+            "title": "Group members",
+            "propexplain": {
+              "title": "About group members",
+              "content": "Displays the list of individuals or entities that jointly control this group identifier."
+            },
+            "bottomtext": "{{members}} group members"
+          }
+        }
       }
     },
     "credentials": {
@@ -1018,7 +1076,8 @@
     "scan": {
       "tab": {
         "title": "Align the QR code within the frame to scan",
-        "permissionalert": "Enable the camera in your device settings to start scanning"
+        "permissionalert": "Enable the camera in your device settings to start scanning",
+        "cameraunavailable": "We're unable to access your camera."
       },
       "pastemeerkatid": "Paste Meerkat ID"
     },
