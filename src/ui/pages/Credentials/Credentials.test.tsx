@@ -18,6 +18,11 @@ import {
   showConnections,
 } from "../../../store/reducers/stateCache";
 import { CredentialsFilters } from "./Credentials.types";
+import { store } from "../../../store";
+import {
+  setCredentialsFilters,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
@@ -294,19 +299,11 @@ describe("Creds Tab", () => {
   });
 
   test("Toggle Creds Filters show Individual", async () => {
-    const initialState = {
-      ...initialStateEmpty,
-      credsCache: {
-        creds: [filteredCredsFix[0]],
-      },
-    };
+    store.dispatch(setCredsCache([filteredCredsFix[0]]));
 
-    const storeMocked = {
-      ...mockStore(initialState),
-    };
     const { getByTestId, getByText, queryByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
+        <Provider store={store}>
           <Credentials />
         </Provider>
       </MemoryRouter>
@@ -345,22 +342,25 @@ describe("Creds Tab", () => {
         )
       ).toBeVisible();
     });
+
+    store.dispatch(setCredsCache([]));
+
+    act(() => {
+      fireEvent.click(allFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(allFilterBtn).toHaveClass("selected");
+    });
   });
 
   test("Toggle Creds Filters show Group", async () => {
-    const initialState = {
-      ...initialStateEmpty,
-      credsCache: {
-        creds: [filteredCredsFix[3]],
-      },
-    };
+    store.dispatch(setCredsCache([filteredCredsFix[3]]));
+    store.dispatch(setCredentialsFilters(CredentialsFilters.All));
 
-    const storeMocked = {
-      ...mockStore(initialState),
-    };
     const { getByTestId, getByText, queryByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
+        <Provider store={store}>
           <Credentials />
         </Provider>
       </MemoryRouter>
@@ -398,6 +398,16 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(getByText(filteredCredsFix[3].credentialType)).toBeVisible();
+    });
+
+    store.dispatch(setCredsCache([]));
+
+    act(() => {
+      fireEvent.click(allFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(allFilterBtn).toHaveClass("selected");
     });
   });
 

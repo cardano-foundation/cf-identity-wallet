@@ -27,8 +27,13 @@ import {
 import { OperationType } from "../../globals/types";
 import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
-import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import {
+  setIdentifiersCache,
+  setIdentifiersFilters,
+  setMultiSigGroupCache,
+} from "../../../store/reducers/identifiersCache";
 import { IdentifiersFilters } from "./Identifiers.types";
+import { store } from "../../../store";
 
 const deleteIdentifierMock = jest.fn();
 
@@ -184,21 +189,11 @@ describe("Identifiers Tab", () => {
   });
 
   test("Toggle Identifiers Filters show Individual", async () => {
-    const mockStore = configureStore();
-    const state = {
-      ...initialState,
-      identifiersCache: {
-        identifiers: [filteredIdentifierFix[0]],
-        favourites: [],
-      },
-    };
+    store.dispatch(setIdentifiersCache([filteredIdentifierFix[0]]));
 
-    const storeMocked = {
-      ...mockStore(state),
-    };
     const { getByTestId, getByText, queryByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
+        <Provider store={store}>
           <Identifiers />
         </Provider>
       </MemoryRouter>
@@ -237,24 +232,25 @@ describe("Identifiers Tab", () => {
         )
       ).toBeVisible();
     });
+
+    store.dispatch(setIdentifiersCache([]));
+
+    act(() => {
+      fireEvent.click(allFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(allFilterBtn).toHaveClass("selected");
+    });
   });
 
   test("Toggle Identifiers Filters show Group", async () => {
-    const mockStore = configureStore();
-    const state = {
-      ...initialState,
-      identifiersCache: {
-        identifiers: [filteredIdentifierFix[3]],
-        favourites: [],
-      },
-    };
+    store.dispatch(setIdentifiersCache([filteredIdentifierFix[3]]));
+    store.dispatch(setIdentifiersFilters(IdentifiersFilters.All));
 
-    const storeMocked = {
-      ...mockStore(state),
-    };
     const { getByTestId, getByText, queryByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
+        <Provider store={store}>
           <Identifiers />
         </Provider>
       </MemoryRouter>
@@ -292,6 +288,16 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(getByText(filteredIdentifierFix[3].displayName)).toBeVisible();
+    });
+
+    store.dispatch(setIdentifiersCache([]));
+
+    act(() => {
+      fireEvent.click(allFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(allFilterBtn).toHaveClass("selected");
     });
   });
 
