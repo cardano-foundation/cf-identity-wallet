@@ -1,7 +1,7 @@
 .info-card {
     box-shadow: none;
     border-radius: 0.5rem;
-    background: rgba(187, 187, 187, 0.5);
+    background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
     display: flex;
     color: var(--ion-color-secondary);
     padding: 1rem 1.25rem;
