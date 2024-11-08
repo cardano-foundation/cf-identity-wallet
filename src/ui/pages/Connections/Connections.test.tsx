@@ -262,7 +262,7 @@ describe("Connections page", () => {
     expect(title).toBeInTheDocument();
     expect(getByText(connectionsFix[0].label)).toBeInTheDocument();
     expect(
-      getByText(formatShortDate(connectionsFix[0].connectionDate))
+      getByText(formatShortDate(connectionsFix[0].createdAtUTC))
     ).toBeInTheDocument();
     expect(getAllByText(connectionsFix[0].status)[0]).toBeInTheDocument();
   });

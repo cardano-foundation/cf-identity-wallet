@@ -62,7 +62,7 @@ describe("identifiersCacheSlice", () => {
         {
           id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
           label: "Cambridge University",
-          connectionDate: "2017-08-13T19:23:24Z",
+          createdAtUTC: "2017-08-13T19:23:24Z",
           logo: "logo.png",
           status: ConnectionStatus.CONFIRMED,
         },
@@ -256,7 +256,7 @@ describe("get identifier Cache", () => {
             {
               id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
               label: "Cambridge University",
-              connectionDate: "2017-08-13T19:23:24Z",
+              createdAtUTC: "2017-08-13T19:23:24Z",
               logo: "logo.png",
               status: ConnectionStatus.CONFIRMED,
             },

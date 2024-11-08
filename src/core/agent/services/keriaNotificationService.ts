@@ -291,7 +291,9 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async verifyExternalNotification(notif: Notification): Promise<ExnMessage | undefined>  {
+  private async verifyExternalNotification(
+    notif: Notification
+  ): Promise<ExnMessage | undefined> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.i)
@@ -372,7 +374,7 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processMultiSigRpyNotification(
-    notif: Notification,
+    notif: Notification
   ): Promise<boolean> {
     const multisigNotification = await this.props.signifyClient
       .groups()
@@ -843,12 +845,27 @@ class KeriaNotificationService extends AgentService {
         const connectionRecord = await this.connectionStorage.findById(
           (operation.response as State).i
         );
+        // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
+        // Also unskip tests for this
+
+        // const existingConnection = await this.props.signifyClient
+        //   .contacts()
+        //   .get((operation.response as State).i)
+        //   .catch(() => undefined);
+        //if (connectionRecord && !existingConnection) {
         if (connectionRecord) {
           connectionRecord.pending = false;
-          connectionRecord.createdAt = new Date((operation.response as State ).dt);
+          connectionRecord.createdAt = new Date(
+            (operation.response as State).dt
+          );
           await this.connectionStorage.update(connectionRecord);
           const alias = connectionRecord.alias;
-          await this.props.signifyClient.contacts().update((operation.response as State).i, { alias });
+          await this.props.signifyClient
+            .contacts()
+            .update((operation.response as State).i, {
+              alias,
+              createdAt: new Date((operation.response as State).dt),
+            });
         }
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,

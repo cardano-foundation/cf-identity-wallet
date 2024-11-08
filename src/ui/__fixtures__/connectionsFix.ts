@@ -8,7 +8,7 @@ const connectionsFix: ConnectionDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec20",
     label: "Cambridge University",
-    connectionDate: "2017-01-14T19:23:24Z",
+    createdAtUTC: "2017-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
     serviceEndpoints: [
@@ -32,7 +32,7 @@ const connectionsFix: ConnectionDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec21",
     label: "Passport Office",
-    connectionDate: "2017-01-16T08:21:54Z",
+    createdAtUTC: "2017-01-16T08:21:54Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
     serviceEndpoints: [],
@@ -42,7 +42,7 @@ const connectionsFix: ConnectionDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
     label: "Cardano Foundation",
-    connectionDate: "2017-01-13T10:15:11Z",
+    createdAtUTC: "2017-01-13T10:15:11Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
     serviceEndpoints: [],
@@ -52,7 +52,7 @@ const connectionsFix: ConnectionDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec23",
     label: "John Smith",
-    connectionDate: "2024-02-13T11:39:20Z",
+    createdAtUTC: "2024-02-13T11:39:20Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
     serviceEndpoints: [],
@@ -62,7 +62,7 @@ const connectionsFix: ConnectionDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec24",
     label: "Starling Bank",
-    connectionDate: "2016-01-10T19:23:24Z",
+    createdAtUTC: "2016-01-10T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
     serviceEndpoints: [],
@@ -72,7 +72,7 @@ const connectionsFix: ConnectionDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec25",
     label: "Friends' Bank",
-    connectionDate: "2018-01-14T19:23:24Z",
+    createdAtUTC: "2018-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.ACCEPTED,
     serviceEndpoints: [],
@@ -83,7 +83,7 @@ const connectionsFix: ConnectionDetails[] = [
     label: "The Pentagon",
     id: "EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU",
     status: ConnectionStatus.CONFIRMED,
-    connectionDate: "2024-08-07T15:30:42.952Z",
+    createdAtUTC: "2024-08-07T15:30:42.952Z",
     serviceEndpoints: [],
     notes: [],
     historyItems: [],

@@ -42,7 +42,7 @@ enum MiscRecordId {
 interface ConnectionShortDetails {
   id: string;
   label: string;
-  connectionDate: string;
+  createdAtUTC: string;
   logo?: string;
   status: ConnectionStatus;
   oobi?: string;
