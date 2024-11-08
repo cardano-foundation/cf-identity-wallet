@@ -819,6 +819,8 @@ class KeriaNotificationService extends AgentService {
           .contacts()
           .get((operation.response as State).i)
           .catch(() => undefined);
+          
+        // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
         if (connectionRecord && !existingConnection) {
           connectionRecord.pending = false;
           connectionRecord.createdAt = new Date(
