@@ -176,9 +176,9 @@ class ConnectionService extends AgentService {
     const associatedContacts = await this.connectionStorage.findAllByQuery({
       groupId,
     });
-    associatedContacts.forEach(async (connection) => {
-      connectionsDetails.push(this.getConnectionShortDetails(connection));
-    });
+    for (const connection of associatedContacts) {
+      connectionsDetails.push(await this.getConnectionShortDetails(connection));
+    }
     return connectionsDetails;
   }
 
