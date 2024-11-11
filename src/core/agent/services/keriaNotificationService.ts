@@ -866,6 +866,10 @@ class KeriaNotificationService extends AgentService {
               alias,
               createdAt: new Date((operation.response as State).dt),
             });
+        } else {
+          await this.props.signifyClient
+            .contacts()
+            .delete((operation.response as State).i);
         }
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
