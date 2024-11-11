@@ -101,7 +101,7 @@ describe("ConnectionDetails Page", () => {
         Promise.resolve({
           id: "ebfeb1ebc6f1c276ef71212ec20",
           label: "Cambridge University",
-          connectionDate: "2017-08-14T19:23:24Z",
+          createdAtUTC: "2017-08-14T19:23:24Z",
           logo: ".png",
           status: ConnectionStatus.ACCEPTED,
           notes: [
@@ -401,7 +401,7 @@ describe("ConnectionDetails Page", () => {
 interface MockConnectionDetails {
   id: string;
   label: string;
-  connectionDate: string;
+  createdAtUTC: string;
   logo: string;
   status: ConnectionStatus;
   notes: ConnectionNoteDetails[];
@@ -416,7 +416,7 @@ describe("Checking the Connection Details Page when no notes are available", () 
         Promise.resolve({
           id: "ebfeb1ebc6f1c276ef71212ec20",
           label: "Cambridge University",
-          connectionDate: "2017-08-14T19:23:24Z",
+          createdAtUTC: "2017-08-14T19:23:24Z",
           logo: ".png",
           status: "pending" as ConnectionStatus,
           notes: [],
@@ -470,7 +470,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         Promise.resolve({
           id: "ebfeb1ebc6f1c276ef71212ec20",
           label: "Cambridge University",
-          connectionDate: "2017-08-14T19:23:24Z",
+          createdAtUTC: "2017-08-14T19:23:24Z",
           logo: ".png",
           status: "pending" as ConnectionStatus,
           notes: [
@@ -593,8 +593,8 @@ describe("Checking the Connection Details Page when notes are available", () => 
       expect(
         getByText(
           `${formatShortDate(
-            connectionDetails.connectionDate
-          )} - ${formatTimeToSec(connectionDetails.connectionDate)}`
+            connectionDetails.createdAtUTC
+          )} - ${formatTimeToSec(connectionDetails.createdAtUTC)}`
         )
       ).toBeVisible();
     });

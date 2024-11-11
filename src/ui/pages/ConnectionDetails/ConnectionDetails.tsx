@@ -154,7 +154,7 @@ const ConnectionDetails = ({
     },
     {
       title: i18n.t("connections.details.date"),
-      value: formatShortDate(`${connectionDetails?.connectionDate}`),
+      value: formatShortDate(`${connectionDetails?.createdAtUTC}`),
     },
     {
       title: i18n.t("connections.details.endpoints"),
@@ -232,7 +232,7 @@ const ConnectionDetails = ({
             <ConnectionDetailsHeader
               logo={connectionDetails?.logo || KeriLogo}
               label={connectionDetails?.label}
-              date={connectionDetails?.connectionDate}
+              date={connectionDetails?.createdAtUTC}
             />
             <IonSegment
               data-testid="connection-details-segment"

@@ -1,0 +1,23 @@
+.filter-chip {
+  min-width: fit-content;
+  min-height: 2rem;
+
+  &:first-of-type ion-chip {
+    margin-left: 0;
+  }
+
+  ion-chip {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .selected {
+    background: var(--ion-color-primary-gradient);
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-chip {
+      min-height: 1.6rem;
+    }
+  }
+}

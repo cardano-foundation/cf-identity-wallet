@@ -28,6 +28,7 @@ import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
+  setCurrentOperation,
   setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -37,7 +38,7 @@ import {
   setConnectedWallet,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
-import { ToastMsgType } from "../../globals/types";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import {
   AppWrapper,
   acdcChangeHandler,
@@ -225,17 +226,14 @@ describe("AppWrapper handler", () => {
       );
     });
 
-    test.skip("handles connection state pending", async () => {
-      // await connectionStateChangedHandler(
-      //   connectionStateChangedEventMock,
-      //   dispatch
-      // );
-      // expect(dispatch).toBeCalledWith(
-      //   setCurrentOperation(OperationType.IDLE)
-      // );
-      // expect(dispatch).toBeCalledWith(
-      //   setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
-      // );
+    test("handles connection state pending", async () => {
+      await connectionStateChangedHandler(
+        connectionStateChangedEventMock,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
+      );
     });
 
     test("handles connection state succuss", async () => {

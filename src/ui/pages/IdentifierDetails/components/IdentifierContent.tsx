@@ -1,44 +1,52 @@
+import { IonButton, IonIcon } from "@ionic/react";
 import {
   calendarNumberOutline,
   keyOutline,
-  personCircleOutline,
-  refreshOutline,
+  refreshOutline
 } from "ionicons/icons";
-import { useEffect, useMemo, useState } from "react";
-import { IonButton, IonIcon } from "@ionic/react";
+import { useMemo, useState } from "react";
+import { i18n } from "../../../../i18n";
+import { useAppSelector } from "../../../../store/hooks";
+import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
+import { getAuthentication } from "../../../../store/reducers/stateCache";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { CardDetailsContent } from "../../../components/CardDetails";
+import { CardBlock, FlatBorderType } from "../../../components/CardDetails/CardDetailsBlock";
+import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
+import { ListHeader } from "../../../components/ListHeader";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
-import { i18n } from "../../../../i18n";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { ConfigurationService } from "../../../../core/configuration";
-import { CardDetailsBlock } from "../../../components/CardDetails/CardDetailsBlock";
-import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
-import { BackingMode } from "../../../../core/configuration/configurationService.types";
-import { useAppSelector } from "../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
-import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
-import { getAuthentication } from "../../../../store/reducers/stateCache";
+import { DetailView } from "./IdetifierDetailModal/IdentifierDetailModal.types";
+import { IdentifierDetailModal } from "./IdetifierDetailModal/IdentifierDetailModal";
+
+const DISPLAY_MEMBERS = 3;
 
 const IdentifierContent = ({
   cardData,
-  onOpenRotateKey,
+  onRotateKey
 }: IdentifierContentProps) => {
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const [isMultiSig, setIsMultiSig] = useState(false);
   const userName = useAppSelector(getAuthentication)?.userName;
   const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
+  const memberCount = cardData.members?.length || 0;
 
-  useEffect(() => {
-    if (cardData.multisigManageAid) {
-      setIsMultiSig(true);
-      return;
-    }
+  const [openDetailModal, setOpenDetailModal] = useState(false);
+  const [viewType, setViewType] = useState(DetailView.AdvancedDetail);
 
+
+  const openPropDetailModal = (view: DetailView) => {
+    setViewType(view);
+    setOpenDetailModal(true);
+  }
+
+  
+  const isMultiSig = useMemo(() => {
     const identifier = identifiersData.find((data) => data.id === cardData.id);
-    if (identifier && identifier.multisigManageAid) {
-      setIsMultiSig(true);
-    }
-  }, [identifiersData, cardData.id, cardData.multisigManageAid]);
+
+    return cardData.multisigManageAid || (identifier && identifier.multisigManageAid);
+  }, [cardData.id, cardData.multisigManageAid, identifiersData])
+
 
   const members = useMemo(() => {
     return cardData.members?.map((member) => {
@@ -50,30 +58,19 @@ const IdentifierContent = ({
       }
 
       return name;
-    });
+    }).slice(0, DISPLAY_MEMBERS);
   }, [cardData.members, multisignConnectionsCache, userName]);
 
-  const RotateActionButton = () => {
-    return (
-      <IonButton
-        slot="end"
-        shape="round"
-        className="rotate-keys-button"
-        data-testid={"rotate-keys-button"}
-        onClick={onOpenRotateKey}
-      >
-        <h4>{i18n.t("tabs.identifiers.details.signingkeyslist.rotate")}</h4>
-        <IonIcon icon={refreshOutline} />
-      </IonButton>
-    );
-  };
+  const openGroupMember = () => openPropDetailModal(DetailView.GroupMember);
 
   return (
     <>
       {isMultiSig && members && (
         <>
-          <CardDetailsBlock
-            title={i18n.t("tabs.identifiers.details.groupmembers.title")}
+          <ListHeader title={i18n.t("tabs.identifiers.details.group.title")}/>
+          <CardBlock
+            onClick={openGroupMember}
+            title={i18n.t("tabs.identifiers.details.group.groupmembers.title")}
           >
             {members.map((item, index) => {
               return (
@@ -81,158 +78,101 @@ const IdentifierContent = ({
                   key={index}
                   info={item}
                   customIcon={KeriLogo}
+                  className="member"
                   testId={`group-member-${index}`}
                 />
               );
             })}
-          </CardDetailsBlock>
+            {
+              members.length < memberCount && <IonButton className="view-more-members" onClick={() => openPropDetailModal(DetailView.GroupMember)} data-testid="view-member">{
+                i18n.t("tabs.identifiers.details.group.button.viewmore", {
+                  remainMembers: memberCount - DISPLAY_MEMBERS
+                })
+              }</IonButton>
+            }
+          </CardBlock>
           {cardData.kt && (
-            <CardDetailsBlock
-              title={i18n.t(
-                "tabs.identifiers.details.signingkeysthreshold.title"
-              )}
-            >
-              <CardDetailsItem
-                info={`${cardData.kt}`}
-                testId="signing-keys-threshold"
+            <CardBlock title={i18n.t("tabs.identifiers.details.group.signingkeysthreshold.title")} onClick={() => openPropDetailModal(DetailView.SigningThreshold)}>
+              <CardDetailsContent 
+                mainContent={`${cardData.kt}`}
+                subContent={`${i18n.t("tabs.identifiers.details.group.signingkeysthreshold.outof", { threshold: memberCount })}`}
               />
-            </CardDetailsBlock>
+            </CardBlock>
           )}
         </>
       )}
-      <CardDetailsBlock
-        title={i18n.t("tabs.identifiers.details.information.title")}
-      >
-        <CardDetailsItem
-          info={cardData.id}
-          copyButton={true}
-          icon={keyOutline}
-          testId="identifier"
-        />
-        <CardDetailsItem
-          info={
-            formatShortDate(cardData.createdAtUTC) +
-            " - " +
-            formatTimeToSec(cardData.createdAtUTC)
-          }
-          icon={calendarNumberOutline}
-          testId="creation-timestamp"
-        />
-      </CardDetailsBlock>
-      {cardData.k.length && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.signingkeyslist.title")}
-          action={isMultiSig ? undefined : <RotateActionButton />}
-        >
-          {cardData.k.map((item, index) => {
-            return (
-              <CardDetailsItem
-                key={index}
-                info={item}
-                copyButton={true}
-                testId={`signing-key-${index}`}
-              />
-            );
-          })}
-        </CardDetailsBlock>
-      )}
-      {cardData.n.length && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.nextkeyslist.title")}
-        >
-          {cardData.n.map((item, index) => {
-            return (
-              <CardDetailsItem
-                key={index}
-                info={item}
-                copyButton={true}
-                testId={`next-key-${index}`}
-              />
-            );
-          })}
-        </CardDetailsBlock>
-      )}
-      {isMultiSig && cardData.nt && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.nextkeysthreshold.title")}
-        >
+      <ListHeader title={i18n.t("tabs.identifiers.details.identifierdetail.title")}/>
+      <div className="identifier-detail-section">
+        <CardBlock copyContent={cardData.id} title={i18n.t("tabs.identifiers.details.identifierdetail.identifierid.title")}>
           <CardDetailsItem
-            info={`${cardData.nt}`}
-            testId="next-keys-threshold"
+            info={cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
+            icon={keyOutline}
+            testId="identifier"
+            className="identifier"
+            mask={false}
           />
-        </CardDetailsBlock>
-      )}
-      {cardData.s && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.sequencenumber.title")}
-        >
+        </CardBlock>
+        <CardBlock title={i18n.t("tabs.identifiers.details.identifierdetail.created.title")}>
           <CardDetailsItem
-            info={`${cardData.s}`}
-            testId="sequence-number"
+            keyValue={formatShortDate(cardData.createdAtUTC)}
+            info={formatTimeToSec(cardData.createdAtUTC)}
+            icon={calendarNumberOutline}
+            testId="creation-timestamp"
+            className="creation-timestamp"
+            mask={false}
+            fullText
           />
-        </CardDetailsBlock>
+        </CardBlock>
+      </div>
+      {!isMultiSig && cardData.k.length && (
+        <>
+          <CardBlock copyContent={cardData.k[0]} flatBorder={FlatBorderType.BOT} title={i18n.t("tabs.identifiers.details.identifierdetail.signingkey.title")} >
+            {cardData.k.map((item, index) => {
+              return (
+                <CardDetailsItem
+                  key={item}
+                  info={item.substring(0, 5) + "..." + item.slice(-5)}
+                  testId={`signing-key-${index}`}
+                  icon={keyOutline}
+                  mask={false}
+                  fullText={false}
+                />
+              );
+            })}
+          </CardBlock>
+          <CardBlock className="rotate-button-container" flatBorder={FlatBorderType.TOP} >
+            <IonButton
+              shape="round"
+              className="rotate-keys-button"
+              data-testid="rotate-keys-button"
+              onClick={onRotateKey}
+            >
+              <p>{i18n.t("tabs.identifiers.details.identifierdetail.signingkey.rotate")}</p>
+              <IonIcon icon={refreshOutline} />
+            </IonButton>
+          </CardBlock>
+        </>
       )}
-      {cardData.dt && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.rotationtimestamp.title")}
-        >
-          <CardDetailsItem
-            info={
-              formatShortDate(cardData.dt) +
-              " - " +
-              formatTimeToSec(cardData.dt)
-            }
-            testId="rotation-timestamp"
-          />
-        </CardDetailsBlock>
+      <CardBlock title={i18n.t("tabs.identifiers.details.identifierdetail.showadvanced")} onClick={() => openPropDetailModal(DetailView.AdvancedDetail)} />
+      {isMultiSig && cardData.kt && (
+        <>
+          <ListHeader title={i18n.t("tabs.identifiers.details.keyrotation.title")}/>
+          <CardBlock title={i18n.t("tabs.identifiers.details.keyrotation.rotatesigningkey.title")} onClick={() => openPropDetailModal(DetailView.RotationThreshold)}>
+            <CardDetailsContent 
+              testId="rotate-signing-key"
+              mainContent={`${cardData.kt}`}
+              subContent={`${i18n.t("tabs.identifiers.details.keyrotation.rotatesigningkey.outof", { threshold: memberCount })}`}
+            />
+          </CardBlock>
+        </>
       )}
-
-      {/* @TODO - sdisalvo: START: The following 3 sections will need to be removed/refactored */}
-
-      {cardData.b.length > 0 && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.backerslist.title")}
-        >
-          {cardData.b.map((item, index) => {
-            return (
-              <CardDetailsItem
-                key={index}
-                info={item}
-                copyButton={true}
-                testId={`backer-${index}`}
-              />
-            );
-          })}
-        </CardDetailsBlock>
-      )}
-
-      {/* @TODO - foconnor: We should verify the particular identifier is ledger based, not that our config is. */}
-      {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.backeraddress.title")}
-        >
-          <CardDetailsItem
-            info={ConfigurationService.env.keri.backing.ledger.address}
-            copyButton={true}
-            icon={personCircleOutline}
-            // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
-            testId="backer-address"
-          />
-        </CardDetailsBlock>
-      )}
-
-      {cardData.di !== "" && cardData.di && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.delegator.title")}
-        >
-          <CardDetailsItem
-            info={cardData.di}
-            copyButton={true}
-            testId="delegator"
-          />
-        </CardDetailsBlock>
-      )}
-      {/* @TODO - sdisalvo: END: The above 3 sections will need to be removed/refactored */}
+      <IdentifierDetailModal
+        isOpen={openDetailModal} 
+        setOpen={setOpenDetailModal} 
+        view={viewType} 
+        setViewType={setViewType} 
+        data={cardData}
+      />
     </>
   );
 };

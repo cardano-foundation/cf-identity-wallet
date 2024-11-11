@@ -39,6 +39,7 @@ import "../../components/CardDetails/CardDetails.scss";
 import { CloudError } from "../../components/CloudError";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ShareConnection } from "../../components/ShareConnection";
@@ -51,7 +52,6 @@ import { combineClassNames } from "../../utils/style";
 import { IdentifierContent } from "./components/IdentifierContent";
 import { RotateKeyModal } from "./components/RotateKeyModal";
 import "./IdentifierDetails.scss";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -70,9 +70,9 @@ const IdentifierDetails = () => {
   const [identifierOptionsIsOpen, setIdentifierOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
+  const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentifierDetailsCore | undefined>();
-  const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
@@ -269,7 +269,10 @@ const IdentifierDetails = () => {
   };
 
   const cancelDelete = () => dispatch(setCurrentOperation(OperationType.IDLE));
-  const openRotateModal = () => setOpenRotateKeyModal(true);
+
+  const openRotateModal = () => {
+    setOpenRotateKeyModal(true);
+  }
 
   const AdditionalButtons = () => {
     return (
@@ -343,7 +346,7 @@ const IdentifierDetails = () => {
           <PageFooter
             pageId={pageId}
             deleteButtonText={`${i18n.t(
-              "tabs.tabs.identifiers.details.delete.button"
+              "tabs.identifiers.details.delete.button"
             )}`}
             deleteButtonAction={deleteButtonAction}
           />
@@ -356,7 +359,7 @@ const IdentifierDetails = () => {
             <PageHeader
               closeButton={true}
               closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
-              closeButtonAction={() => handleDone()}
+              closeButtonAction={handleDone}
               additionalButtons={<AdditionalButtons />}
             />
           }
@@ -376,7 +379,7 @@ const IdentifierDetails = () => {
               />
               <div className="card-details-content">
                 <IdentifierContent
-                  onOpenRotateKey={openRotateModal}
+                  onRotateKey={openRotateModal}
                   cardData={cardData as IdentifierDetailsCore}
                 />
                 <PageFooter
@@ -403,13 +406,6 @@ const IdentifierDetails = () => {
               />
             </>
           )}
-          <RotateKeyModal
-            identifierId={params.id}
-            onReloadData={getDetails}
-            signingKey={cardData?.k[0] || ""}
-            isOpen={openRotateKeyModal}
-            onClose={() => setOpenRotateKeyModal(false)}
-          />
         </ScrollablePageLayout>
       )}
       <Alert
@@ -426,6 +422,13 @@ const IdentifierDetails = () => {
         actionConfirm={handleAuthentication}
         actionCancel={cancelDelete}
         actionDismiss={cancelDelete}
+      />
+      <RotateKeyModal 
+        identifierId={params.id}
+        onReloadData={getDetails}
+        signingKey={cardData?.k[0] || ""}
+        isOpen={openRotateKeyModal}
+        onClose={() => setOpenRotateKeyModal(false)}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}

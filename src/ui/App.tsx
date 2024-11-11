@@ -10,7 +10,7 @@ import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
 import { RoutePath, Routes } from "../routes";
 import { PublicRoutes } from "../routes/paths";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getAuthentication,
   getCurrentOperation,
@@ -31,6 +31,7 @@ import { LockPage } from "./pages/LockPage/LockPage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
+import { showError } from "./utils/error";
 
 setupIonicReact();
 
@@ -41,6 +42,29 @@ const App = () => {
   const currentRoute = useAppSelector(getCurrentRoute);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const handleUnknownPromiseError = (event: PromiseRejectionEvent) => {
+      // prevent log error to console.
+      event.preventDefault();
+      event.promise.catch((e) => showError("Unhandled error", e, dispatch));
+    }
+
+    window.addEventListener("unhandledrejection", handleUnknownPromiseError);
+
+    const handleUnknownError = (event: ErrorEvent) => {
+      event.preventDefault();
+      showError("Unhandled error", event.error, dispatch);
+    }
+
+    window.addEventListener("error", handleUnknownError)
+
+    return () => {
+      window.removeEventListener("unhandledrejection", handleUnknownPromiseError);
+      window.removeEventListener("error", handleUnknownError);
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     setShowScan(

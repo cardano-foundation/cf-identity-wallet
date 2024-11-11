@@ -1,12 +1,12 @@
+import { Clipboard } from "@capacitor/clipboard";
 import { IonReactMemoryRouter } from "@ionic/react-router";
-import { waitForIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import {
   fireEvent,
   getDefaultNormalizer,
   render,
   waitFor,
 } from "@testing-library/react";
-import { Clipboard } from "@capacitor/clipboard";
 import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -24,9 +24,10 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IdentifierDetails } from "./IdentifierDetails";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import { AccordionKey } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 const getIndentifier = jest.fn(() => identifierFix[0]);
@@ -63,6 +64,7 @@ jest.mock("@ionic/react", () => ({
 
 const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve(id));
 const deleteIdentifier = jest.fn(() => Promise.resolve());
+const createOrUpdateMock = jest.fn().mockResolvedValue(undefined);
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -82,7 +84,7 @@ jest.mock("../../../core/agent/agent", () => ({
       basicStorage: {
         findById: jest.fn(),
         save: jest.fn(),
-        createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
+        createOrUpdateBasicRecord: () => createOrUpdateMock(),
       },
     },
   },
@@ -157,61 +159,58 @@ describe("Individual Identifier details page", () => {
       ).toBeInTheDocument()
     );
     // Render Information
-    expect(getByTestId("card-block-title-information")).toBeInTheDocument();
+    expect(getByTestId("identifier")).toBeInTheDocument();
     expect(getByTestId("identifier-text-value").innerHTML).toBe(
-      filteredIdentifierFix[0].id
+      identifierFix[0].id.substring(0, 5) + "..." + identifierFix[0].id.slice(-5)
     );
-    fireEvent.click(getByTestId("identifier-copy-button"));
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[0].id,
-      });
-    });
-    expect(
-      getByText(
-        formatShortDate(identifierFix[0].createdAtUTC) +
-          " - " +
-          formatTimeToSec(identifierFix[0].createdAtUTC)
-      )
-    ).toBeInTheDocument();
+    expect(getByTestId("creation-timestamp")).toBeVisible();
     // Render List of signing keys
     expect(
-      getByTestId("card-block-title-listofsigningkeys")
+      getByTestId("signing-key-0")
     ).toBeInTheDocument();
     expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
-    expect(getByText(identifierFix[0].k[0])).toBeInTheDocument();
-    fireEvent.click(getByTestId("signing-key-0-copy-button"));
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[0].id,
-      });
-    });
-    // Render List of next key digests
-    expect(
-      getByTestId("card-block-title-listofnextkeydigests")
-    ).toBeInTheDocument();
-    expect(getByText(identifierFix[0].n[0])).toBeInTheDocument();
-    fireEvent.click(getByTestId("next-key-0-copy-button"));
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[0].id,
-      });
-    });
+    expect(getByText(identifierFix[0].k[0].substring(0, 5) + "..." + identifierFix[0].k[0].slice(-5))).toBeInTheDocument();
+  });
+
+  test("Render advanced modal", async () => {
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+    // Render card template
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument()
+    );
+   
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
+
     // Render Sequence number
-    expect(getByTestId("card-block-title-sequencenumber")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByTestId("sequence-number")).toBeInTheDocument();
+    })
+
     expect(getByText(identifierFix[0].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
-      getByTestId("card-block-title-lastkeyrotationtimestamp")
-    ).toBeInTheDocument();
-    expect(
       getByText(
-        formatShortDate(identifierFix[0].dt) +
-          " - " +
-          formatTimeToSec(identifierFix[0].dt)
+        `Last key event: ${formatShortDate(identifierFix[0].dt) +
+              " - " +
+              formatTimeToSec(identifierFix[0].dt)}`
       )
     ).toBeInTheDocument();
-  });
+  })
 
   test("It opens the sharing modal", async () => {
     const { getByTestId, queryByTestId, queryAllByTestId } = render(
@@ -263,11 +262,7 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() =>
       expect(
-        getByText(
-          filteredIdentifierFix[0].id.substring(0, 5) +
-            "..." +
-            filteredIdentifierFix[0].id.slice(-5)
-        )
+        getByTestId("identifier")
       ).toBeInTheDocument()
     );
 
@@ -281,7 +276,7 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It shows the button to access the editor", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -297,13 +292,10 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() =>
       expect(
-        getByText(
-          filteredIdentifierFix[0].id.substring(0, 5) +
-            "..." +
-            filteredIdentifierFix[0].id.slice(-5)
-        )
+        getByTestId("identifier")
       ).toBeInTheDocument()
     );
+
     act(() => {
       fireEvent.click(getByTestId("identifier-options-button"));
     });
@@ -330,13 +322,10 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() =>
       expect(
-        getByText(
-          filteredIdentifierFix[0].id.substring(0, 5) +
-            "..." +
-            filteredIdentifierFix[0].id.slice(-5)
-        )
+        getByTestId("identifier")
       ).toBeInTheDocument()
     );
+
     act(() => {
       fireEvent.click(getByTestId("identifier-options-button"));
     });
@@ -389,11 +378,7 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() =>
       expect(
-        getByText(
-          filteredIdentifierFix[0].id.substring(0, 5) +
-            "..." +
-            filteredIdentifierFix[0].id.slice(-5)
-        )
+        getByTestId("identifier")
       ).toBeInTheDocument()
     );
 
@@ -528,15 +513,14 @@ describe("Individual Identifier details page", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description
-        )
-      ).toBeVisible();
-    });
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.message)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.signingkey)).toBeVisible();
+      expect(getByTestId("rotate-keys-title").innerHTML).toBe(EN_TRANSLATIONS.tabs.identifiers.details.options.rotatekeys);
+    })
 
     act(() => {
-      fireEvent.click(getByTestId("rotate-key-button"));
+      fireEvent.click(getByTestId("primary-button-rotate-key"));
     });
 
     await waitFor(() => {
@@ -589,12 +573,77 @@ describe("Individual Identifier details page", () => {
 });
 
 describe("Group Identifier details page", () => {
+
+  const initialStateKeri = {
+    stateCache: {
+      routes: [TabsRoutePath.IDENTIFIERS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+      },
+      isOnline: true,
+    },
+    seedPhraseCache: {
+      seedPhrase: "",
+      bran: "bran",
+    },
+    identifiersCache: {
+      identifiers: [
+        {
+          displayName: "GG",
+          id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
+          createdAtUTC: "2024-10-14T13:11:52.963Z",
+          theme: 20,
+          isPending: false,
+          multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
+        },
+      ],
+      favourites: [],
+    },
+    connectionsCache: {
+      multisigConnections: {
+        "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu": {
+          id: "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+          label: "Member 0",
+          connectionDate: "2024-10-14T13:11:44.501Z",
+          status: "confirmed",
+          oobi: "http://keria:3902/oobi/EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu/agent/EMrn5s4fG1bzxdlrtyRusPQ23fohlGuH6LkZBSRiDtKy?name=Brave&groupId=9a12f939-1412-4450-aa61-a9a8a697ceca",
+          groupId: "9a12f939-1412-4450-aa61-a9a8a697ceca",
+        },
+        "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB2": {
+          id: "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+          label: "Member 1",
+          connectionDate: "2024-10-14T13:11:44.501Z",
+          status: "confirmed",
+          oobi: "http://keria:3902/oobi/EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu/agent/EMrn5s4fG1bzxdlrtyRusPQ23fohlGuH6LkZBSRiDtKy?name=Brave&groupId=9a12f939-1412-4450-aa61-a9a8a697ceca",
+          groupId: "9a12f939-1412-4450-aa61-a9a8a697ceca",
+        },
+      },
+    },
+  };
+
+  const storeMockedAidKeri = {
+    ...mockStore(initialStateKeri),
+    dispatch: dispatchMock,
+  };
+
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
-    getIndentifier.mockReturnValue(identifierFix[2]);
+    getIndentifier.mockReturnValue({
+      ...identifierFix[2],
+      members: [
+        "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+        "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB2",
+        "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB3",
+        "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB4",
+      ],
+    });
   });
+  
 
   test("It renders Identifier Details", async () => {
     Clipboard.write = jest.fn();
@@ -654,6 +703,44 @@ describe("Group Identifier details page", () => {
       dispatch: dispatchMock,
     };
 
+    const { getByText, getByTestId, getAllByText } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    // Render card template
+    await waitFor(() => {
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument();
+    });
+
+    // Render Group members
+    expect(getByTestId("group-member-0-text-value").innerHTML).toBe("Member 0");
+    expect(getByTestId("group-member-1-text-value").innerHTML).toBe("Member 1");
+    expect(getByTestId("view-member")).toBeVisible();
+
+    // Render Keys signing threshold
+    expect(getByTestId("rotate-signing-key")).toBeVisible();
+    expect(getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.outof.replace("{{threshold}}", "4"))[0]).toBeVisible();
+    
+    // Render Information
+    expect(getByTestId("identifier")).toBeInTheDocument();
+    expect(getByTestId("identifier-text-value").innerHTML).toBe(
+      identifierFix[2].id.substring(0, 5) + "..." + identifierFix[2].id.slice(-5)
+    );
+  });
+
+  test("Open group member", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
@@ -673,79 +760,174 @@ describe("Group Identifier details page", () => {
       expect(
         getByTestId("identifier-card-template-default-index-0")
       ).toBeInTheDocument();
-
-      expect(getByTestId("card-block-title-groupmembers")).toBeInTheDocument();
     });
 
     // Render Group members
     expect(getByTestId("group-member-0-text-value").innerHTML).toBe("Member 0");
     expect(getByTestId("group-member-1-text-value").innerHTML).toBe("Member 1");
-    // Render Keys signing threshold
-    expect(
-      getByTestId("card-block-title-keyssigningthreshold")
-    ).toBeInTheDocument();
-    expect(getByTestId("signing-keys-threshold-text-value").innerHTML).toBe(
-      identifierFix[2].kt
-    );
-    // Render Information
-    expect(getByTestId("card-block-title-information")).toBeInTheDocument();
-    expect(getByTestId("identifier-text-value").innerHTML).toBe(
-      filteredIdentifierFix[2].id
-    );
-    fireEvent.click(getByTestId("identifier-copy-button"));
+    expect(getByTestId("view-member")).toBeVisible();
+
+    fireEvent.click(getByTestId("view-member"));
+
     await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[2].id,
-      });
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.title)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.content)).toBeVisible();
+    })
+  });
+
+  test("Open signing threshold", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    // Render card template
+    await waitFor(() => {
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument();
     });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.title));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.title)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.content)).toBeVisible();
+    })
+  });
+
+  test("Open advanced detail", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
+
+    // Render Sequence number
+    await waitFor(() => {
+      expect(getByTestId("sequence-number")).toBeInTheDocument();
+    })
+
+    expect(getByText(identifierFix[0].s)).toBeInTheDocument();
+    // Render Last key rotation timestamp
     expect(
       getByText(
-        formatShortDate(identifierFix[2].createdAtUTC) +
-          " - " +
-          formatTimeToSec(identifierFix[2].createdAtUTC)
+        `Last key event: ${formatShortDate(identifierFix[0].dt) +
+              " - " +
+              formatTimeToSec(identifierFix[0].dt)}`
       )
     ).toBeInTheDocument();
-    // Render List of signing keys
-    expect(
-      getByTestId("card-block-title-listofsigningkeys")
-    ).toBeInTheDocument();
-    expect(getByText(identifierFix[2].k[0])).toBeInTheDocument();
-    fireEvent.click(getByTestId("signing-key-0-copy-button"));
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[2].id,
-      });
-    });
-    // Render List of next key digests
-    expect(
-      getByTestId("card-block-title-listofnextkeydigests")
-    ).toBeInTheDocument();
-    expect(getByText(identifierFix[2].n[0])).toBeInTheDocument();
-    fireEvent.click(getByTestId("next-key-0-copy-button"));
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[2].id,
-      });
-    });
-    // Render Next keys signing threshold
-    expect(
-      getByTestId("card-block-title-nextkeyssigningthreshold")
-    ).toBeInTheDocument();
-    expect(getByText(identifierFix[2].nt[0])).toBeInTheDocument();
-    // Render Sequence number
-    expect(getByTestId("card-block-title-sequencenumber")).toBeInTheDocument();
+
     expect(getByText(identifierFix[2].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
-      getByTestId("card-block-title-lastkeyrotationtimestamp")
-    ).toBeInTheDocument();
-    expect(
       getByText(
-        formatShortDate(identifierFix[2].dt) +
-          " - " +
-          formatTimeToSec(identifierFix[2].dt)
+        `Last key event: ${formatShortDate(identifierFix[2].dt) +
+              " - " +
+              formatTimeToSec(identifierFix[2].dt)}`
       )
     ).toBeInTheDocument();
+
+
+    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewkey.replace("{{keys}}", "1"))).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewrotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
+
+    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.SIGNINGKEY] as any);
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hidekey.replace("{{keys}}", "1"))).toBeInTheDocument();
+    })
+
+    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.ROTATIONKEY] as any);
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hiderotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
+    })
+  });
+
+  test("Open rotation threshold", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    // Render card template
+    await waitFor(() => {
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
+    })
+  });
+
+  test("Open group member from rotation threshold", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    // Render card template
+    await waitFor(() => {
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
+    });
   });
 
   test("Cannot rotate key", async () => {

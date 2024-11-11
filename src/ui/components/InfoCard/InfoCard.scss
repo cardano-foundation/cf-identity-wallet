@@ -1,0 +1,18 @@
+.info-card {
+    box-shadow: none;
+    border-radius: 0.5rem;
+    background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    display: flex;
+    color: var(--ion-color-secondary);
+    padding: 1rem 1.25rem;
+
+    p {
+        margin: 0;
+    }
+
+    ion-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-left: 0.25rem;
+    }
+}

@@ -323,7 +323,7 @@ const Scanner = forwardRef(
           id: pendingId,
           label: connectionName || pendingId,
           status: ConnectionStatus.PENDING,
-          connectionDate: new Date().toString(),
+          createdAtUTC: new Date().toString(),
         })
       );
 
@@ -411,7 +411,7 @@ const Scanner = forwardRef(
               lensFacing: cameraDirection,
             });
           } catch (error) {
-            showError("Error starting barcode scan:", error, dispatch);
+            showError("Error starting barcode scan:", error);
             setScanUnavailable(true);
             stopScan();
           }
@@ -533,7 +533,7 @@ const Scanner = forwardRef(
 
     const containerClass = combineClassNames("qr-code-scanner", {
       "no-permission": !permission || mobileweb,
-      "scan-unavaible": scanUnavailable,
+      "scan-unavailable": scanUnavailable,
     });
 
     return (
@@ -558,7 +558,7 @@ const Scanner = forwardRef(
                   className="qr-code-scanner-icon"
                 />
                 <span className="qr-code-scanner-permission-text">
-                  {i18n.t("tabs.scan.tab.permissionalert")}
+                  {scanUnavailable ? i18n.t("tabs.scan.tab.cameraunavailable") : i18n.t("tabs.scan.tab.permissionalert")}
                 </span>
               </IonRow>
               <RenderPageFooter />

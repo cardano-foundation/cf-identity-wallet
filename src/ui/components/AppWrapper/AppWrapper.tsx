@@ -26,6 +26,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import {
+  setCredentialsFilters,
   setCredsCache,
   setFavouritesCredsCache,
   updateOrAddCredsCache,
@@ -33,6 +34,7 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  setIdentifiersFilters,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -75,6 +77,8 @@ import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
 } from "../../../core/agent/event.types";
+import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
+import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -292,6 +296,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadCacheBasicStorage = async () => {
     try {
       let userName: { userName: string } = { userName: "" };
+      let identifiersSelectedFilter: IdentifiersFilters =
+        IdentifiersFilters.All;
+      let credentialsSelectedFilter: CredentialsFilters =
+        CredentialsFilters.All;
       const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
       const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
@@ -335,6 +343,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
         );
       }
 
+      const indentifiersFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_SELECTED_FILTER
+      );
+      if (indentifiersFilters) {
+        identifiersSelectedFilter = indentifiersFilters.content
+          .filter as IdentifiersFilters;
+      }
+      if (identifiersSelectedFilter) {
+        dispatch(setIdentifiersFilters(identifiersSelectedFilter));
+      }
+
       const credViewType = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_CRED_VIEW_TYPE
       );
@@ -345,6 +364,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
             credViewType.content.viewType as CardListViewType
           )
         );
+      }
+
+      const credentialsFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_SELECTED_FILTER
+      );
+      if (credentialsFilters) {
+        credentialsSelectedFilter = credentialsFilters.content
+          .filter as CredentialsFilters;
+      }
+      if (credentialsSelectedFilter) {
+        dispatch(setCredentialsFilters(credentialsSelectedFilter));
       }
 
       const appBiometrics = await Agent.agent.basicStorage.findById(
