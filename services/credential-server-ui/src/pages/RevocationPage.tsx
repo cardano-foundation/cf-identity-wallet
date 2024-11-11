@@ -18,6 +18,7 @@ import { Controller, useForm } from "react-hook-form";
 import { config } from "../config";
 import { UUID_REGEX } from "../constants";
 import axios from "axios";
+import Toast from "../components/Toast";
 
 const RevocationPage: React.FC = () => {
   const {
@@ -33,6 +34,12 @@ const RevocationPage: React.FC = () => {
   const [isRevokeCredentialSuccess, setIsRevokeCredentialSuccess] =
     useState(false);
 
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastSeverity, setToastSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("error");
+
   useEffect(() => {
     handleGetContacts();
   }, []);
@@ -42,24 +49,33 @@ const RevocationPage: React.FC = () => {
   }, [selectedContact]);
 
   const handleGetContacts = async () => {
-    setContacts(
-      (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
-    );
+    try {
+      const response = await axios.get(
+        `${config.endpoint}${config.path.contacts}`
+      );
+      setContacts(response.data.data);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      setToastMessage("Error fetching contacts");
+      setToastSeverity("error");
+      setToastVisible(true);
+    }
   };
 
   const handleGetContactCredentials = async (contactId?: string) => {
     if (!contactId) {
       return setCredentials([]);
     }
-    const credentialsData = (
-      await axios.get(`${config.endpoint}${config.path.contactCredentials}`, {
-        params: { contactId },
-      })
-    ).data.data;
-    if (credentialsData.length) {
-      setCredentials(credentialsData);
-    } else {
-      setCredentials([]);
+    try {
+      const response = await axios.get(
+        `${config.endpoint}${config.path.credentials}?contactId=${contactId}`
+      );
+      setCredentials(response.data.data);
+    } catch (error) {
+      console.error("Error fetching credentials:", error);
+      setToastMessage("Error fetching credentials");
+      setToastSeverity("error");
+      setToastVisible(true);
     }
   };
 
@@ -76,6 +92,10 @@ const RevocationPage: React.FC = () => {
       setIsRevokeCredentialSuccess(true);
     }
     await handleGetContactCredentials(values.selectedContact);
+  };
+
+  const handleCloseToast = () => {
+    setToastVisible(false);
   };
 
   return (
@@ -212,6 +232,12 @@ const RevocationPage: React.FC = () => {
           </Grid>
         </form>
       </div>
+      <Toast
+        message={toastMessage}
+        severity={toastSeverity}
+        visible={toastVisible}
+        onClose={handleCloseToast}
+      />
     </>
   );
 };

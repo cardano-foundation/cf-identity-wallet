@@ -30,6 +30,7 @@ import {
 import CreateSchemaField from "../components/createSchema/CreateSchemaField";
 import { SchemaField, SchemaShortDetails } from "../constants/type";
 import { DeleteOutline } from "@mui/icons-material";
+import Toast from "../components/Toast";
 
 const CreateSchemaPage = () => {
   const [title, setTitle] = useState("");
@@ -44,6 +45,12 @@ const CreateSchemaPage = () => {
   const [allSchemas, setAllSchemas] = useState<SchemaShortDetails[]>([]);
   const [schemas, setSchemas] = useState<SchemaShortDetails[]>([]);
   const [schemasFilter, setSchemasFilter] = useState<string>("");
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastSeverity, setToastSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("error");
 
   useEffect(() => {
     handleGetSchemas();
@@ -68,6 +75,9 @@ const CreateSchemaPage = () => {
 
     if (!title || !description || !credentialType) {
       setError("Title, Description, and Type fields must be filled.");
+      setToastMessage("Title, Description, and Type fields must be filled.");
+      setToastSeverity("error");
+      setToastVisible(true);
       return;
     }
 
@@ -78,6 +88,9 @@ const CreateSchemaPage = () => {
 
     if (allFieldNames.length !== uniqueFieldNames.size) {
       setError("All extra field names must be unique.");
+      setToastMessage("All extra field names must be unique.");
+      setToastSeverity("error");
+      setToastVisible(true);
       return;
     }
 
@@ -182,9 +195,15 @@ const CreateSchemaPage = () => {
       );
       console.log("Schema saved successfully:", response.data);
       setIsSuccess(true);
+      setToastMessage("Schema saved successfully");
+      setToastSeverity("success");
+      setToastVisible(true);
     } catch (error) {
       console.error("Error saving schema:", error);
       setError("Error saving schema");
+      setToastMessage("Error saving schema");
+      setToastSeverity("error");
+      setToastVisible(true);
     }
   };
 
@@ -265,18 +284,36 @@ const CreateSchemaPage = () => {
   };
 
   const handleGetSchemas = async () => {
-    const schemasList = (
-      await axios.get(`${config.endpoint}${config.path.schemaList}`)
-    ).data;
-    setSchemas(schemasList);
-    setAllSchemas(schemasList);
+    try {
+      const schemasList = (
+        await axios.get(`${config.endpoint}${config.path.schemaList}`)
+      ).data;
+      setSchemas(schemasList);
+      setAllSchemas(schemasList);
+    } catch (error) {
+      console.error("Error fetching schemas:", error);
+      setToastMessage("Error fetching schemas");
+      setToastSeverity("error");
+      setToastVisible(true);
+    }
   };
 
   const handleDeleteSchema = async (id: string) => {
-    await axios.delete(
-      `${config.endpoint}${config.path.deleteSchema}?id=${id}`
-    );
-    await handleGetSchemas();
+    try {
+      await axios.delete(
+        `${config.endpoint}${config.path.deleteSchema}?id=${id}`
+      );
+      await handleGetSchemas();
+    } catch (error) {
+      console.error("Error deleting schema:", error);
+      setToastMessage("Error deleting schema");
+      setToastSeverity("error");
+      setToastVisible(true);
+    }
+  };
+
+  const handleCloseToast = () => {
+    setToastVisible(false);
   };
 
   return (
@@ -571,6 +608,12 @@ const CreateSchemaPage = () => {
             ))}
         </Grid>
       </Paper>
+      <Toast
+        message={toastMessage}
+        severity={toastSeverity}
+        visible={toastVisible}
+        onClose={handleCloseToast}
+      />
     </>
   );
 };
