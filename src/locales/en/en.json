@@ -1763,6 +1763,12 @@
       "usernameError": "Unable to set name. Please try again."
     }
   },
+  "nameerror": {
+    "onlyspace": "Must contain at least 1 (non-space) character",
+    "maxlength": "You have reached the 32 character limit",
+    "hasSpecialChar": "Only use letters (a-z), numbers (0-9), underscores (_) and hyphens (-)",
+    "duplicatename": "Must not be a name already in use"
+  },
   "biometry": {
     "reason": "Please authenticate",
     "canceltitle": "Cancel",

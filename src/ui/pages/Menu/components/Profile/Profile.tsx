@@ -16,6 +16,8 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { PROFILE_LINK } from "../../../../globals/constants";
 import { showError } from "../../../../utils/error";
+import { nameChecker } from "../../../../utils/nameChecker";
+import { ErrorMessage } from "../../../../components/ErrorMessage";
 
 const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
   ({ isEditing }, ref) => {
@@ -23,11 +25,15 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
     const authentication = useAppSelector(getAuthentication);
     const [userName, setUserName] = useState(authentication.userName);
 
+    const errorMessage = nameChecker.getError(userName);
+
     useEffect(() => {
       setUserName(authentication.userName);
     }, [authentication.userName]);
 
     const saveChanges = () => {
+      if(errorMessage) return;
+
       userName.length &&
         userName !== authentication.userName &&
         Agent.agent.basicStorage
@@ -58,14 +64,18 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
     return (
       <>
         {isEditing ? (
-          <CustomInput
-            dataTestId="profile-item-edit-name"
-            title={`${i18n.t("tabs.menu.tab.items.profile.name")}`}
-            placeholder={userName}
-            hiddenInput={false}
-            onChangeInput={setUserName}
-            value={userName}
-          />
+          <div className="edit-name-container">
+            <CustomInput
+              dataTestId="profile-item-edit-name"
+              title={`${i18n.t("tabs.menu.tab.items.profile.name")}`}
+              placeholder={userName}
+              hiddenInput={false}
+              onChangeInput={setUserName}
+              value={userName}
+              error={!!errorMessage}
+            />
+            <ErrorMessage message={errorMessage}/>
+          </div>
         ) : (
           <>
             <div className="profile-item-title-placeholder" />

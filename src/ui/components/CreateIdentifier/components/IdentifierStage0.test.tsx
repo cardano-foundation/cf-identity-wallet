@@ -17,6 +17,7 @@ import { OperationType, ToastMsgType } from "../../../globals/types";
 import { CustomInputProps } from "../../CustomInput/CustomInput.types";
 import { IdentifierColor } from "./IdentifierColorSelector";
 import { IdentifierStage0 } from "./IdentifierStage0";
+import { IdentifierService } from "../../../../core/agent/services";
 
 setupIonicReact();
 mockIonicReact();
@@ -145,6 +146,14 @@ describe("Identifier Stage 0", () => {
   const setBlur = jest.fn();
   const resetModal = jest.fn();
 
+  beforeEach(() => {
+    createIdentifierMock.mockImplementation(() => ({
+      identifier: "mock-id",
+      isPending: true,
+    }));
+    
+  })
+
   test("IdentifierStage0 renders default content", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
@@ -183,7 +192,7 @@ describe("Identifier Stage 0", () => {
     );
     const displayNameInput = getByTestId("display-name-input");
     act(() => {
-      fireEvent.change(displayNameInput, { target: { value: "Test" } });
+      ionFireEvent.ionInput(displayNameInput, "Test");
     });
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
@@ -240,6 +249,11 @@ describe("Identifier Stage 0", () => {
       expect(setState).toBeCalledTimes(2);
     });
 
+    const displayNameInput = getByTestId("display-name-input");
+    act(() => {
+      ionFireEvent.ionInput(displayNameInput, "Test");
+    });
+
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
@@ -253,7 +267,7 @@ describe("Identifier Stage 0", () => {
           connections: [connectionsFix[3]],
         })
       );
-      expect(setState).toBeCalledTimes(3);
+      expect(setState).toBeCalledTimes(4);
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(OperationType.IDLE)
       );
@@ -280,6 +294,11 @@ describe("Identifier Stage 0", () => {
       expect(setState).toBeCalledTimes(2);
     });
 
+    const displayNameInput = getByTestId("display-name-input");
+    act(() => {
+      ionFireEvent.ionInput(displayNameInput, "Test");
+    });
+
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
@@ -290,12 +309,16 @@ describe("Identifier Stage 0", () => {
         theme: 10,
         groupMetadata: undefined,
       });
-      expect(setState).toBeCalledTimes(2);
+      expect(setState).toBeCalledTimes(3);
     });
   });
 
   test("Display error when display name invalid", async () => {
-    const { getByTestId, getByText } = render(
+    createIdentifierMock.mockImplementation(() => {
+      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN)
+    })
+
+    const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <IdentifierStage0
           state={stage0State}
@@ -312,25 +335,63 @@ describe("Identifier Stage 0", () => {
     );
 
     act(() => {
-      ionFireEvent.ionInput(
-        getByTestId("display-name-input"),
-        "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa praesentium a sed impedit ex consectetur dolorem molestiae laudantium enim neque, quos fugit itaque, vitae autem nihil adipisci pariatur eum? Repellendus, dicta minima. hmmm"
-      );
+      ionFireEvent.ionInput(getByTestId("display-name-input"), "");
     });
 
     await waitFor(() => {
-      expect(getByTestId("error-message")).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.createidentifier.back));
+      ionFireEvent.ionInput(getByTestId("display-name-input"), "   ");
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.IDLE)
-      );
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
     });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.maxlength)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke@@");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.hasSpecialChar)
+      ).toBeVisible();
+    });
+    
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke");
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("error-message")).toBe(null);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.duplicatename)
+      ).toBeVisible();
+    });
+    
   });
 
   test("Show AID type infomation modal", async () => {

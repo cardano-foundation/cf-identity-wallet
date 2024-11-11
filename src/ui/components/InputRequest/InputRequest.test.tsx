@@ -174,7 +174,7 @@ describe("SetUserName component", () => {
     });
   });
 
-  test("Display error message", async () => {
+  test("Display toast error message", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <InputRequest />
@@ -205,6 +205,55 @@ describe("SetUserName component", () => {
       expect(dispatchMock).toHaveBeenCalledWith(
         setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR)
       );
+    });
+  });
+
+
+  test("Display validate error message", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <InputRequest />
+      </Provider>
+    );
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("input-request-input"), "");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("input-request-input"), "   ");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("input-request-input"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.maxlength)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("input-request-input"), "Duke@@");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.hasSpecialChar)
+      ).toBeVisible();
     });
   });
 });
