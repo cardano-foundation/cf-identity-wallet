@@ -12,7 +12,7 @@ import { IdentifierType } from "../../core/agent/services/identifier.types";
 const connectionDetailsFix: ConnectionDetails = {
   id: "test_id",
   label: "test_label",
-  connectionDate: "2010-01-01T19:23:24Z",
+  createdAtUTC: "2010-01-01T19:23:24Z",
   status: ConnectionStatus.CONFIRMED,
   serviceEndpoints: [],
   notes: [],

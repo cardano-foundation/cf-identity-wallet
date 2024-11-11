@@ -2,7 +2,7 @@ import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
-  IpexMessage,
+  ExnMessage,
   NotificationRoute,
   type AgentServicesProps,
   type KeriaNotification,
@@ -520,7 +520,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   async createLinkedIpexMessageRecord(
-    message: IpexMessage,
+    message: ExnMessage,
     historyType: ConnectionHistoryType
   ): Promise<void> {
     let schemaSaid;

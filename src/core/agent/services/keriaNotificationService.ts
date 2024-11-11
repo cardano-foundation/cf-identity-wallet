@@ -1,4 +1,4 @@
-import { Salter } from "signify-ts";
+import { State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -31,9 +31,9 @@ import {
   OperationAddedEvent,
   NotificationRemovedEvent,
 } from "../event.types";
-import { deleteNotificationRecordById } from "./utils";
+import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
-import { ConnectionHistoryType } from "./connectionService.types";
+import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -238,20 +238,28 @@ class KeriaNotificationService extends AgentService {
     ) {
       return;
     }
+    const exchange = await this.verifyExternalNotification(notif);
+
+    if (!exchange) {
+      return;
+    }
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
-      shouldCreateRecord = await this.processExnIpexApplyNotification(notif);
+      shouldCreateRecord = await this.processExnIpexApplyNotification(exchange);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
-      shouldCreateRecord = await this.processExnIpexGrantNotification(notif);
+      shouldCreateRecord = await this.processExnIpexGrantNotification(
+        notif,
+        exchange
+      );
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
       shouldCreateRecord = await this.processMultiSigRpyNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigIcp) {
       shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
-      shouldCreateRecord = await this.processMultiSigExnNotification(notif);
-    } else if (notif.a.r === NotificationRoute.ExnIpexOffer) {
-      // @TODO - DTIS-1381; message appearing as notification after being multi-sig sent
-      shouldCreateRecord = false;
+      shouldCreateRecord = await this.processMultiSigExnNotification(
+        notif,
+        exchange
+      );
     }
     if (!shouldCreateRecord) {
       return;
@@ -284,10 +292,34 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async processExnIpexApplyNotification(
+  private async verifyExternalNotification(
     notif: Notification
-  ): Promise<boolean> {
+  ): Promise<ExnMessage | undefined> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
+
+    const ourIdentifier = await this.identifierStorage
+      .getIdentifierMetadata(exchange.exn.i)
+      .catch((error) => {
+        if (
+          (error as Error).message ===
+          IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+        ) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
+    if (ourIdentifier) {
+      await this.markNotification(notif.i);
+      return undefined;
+    }
+    return exchange;
+  }
+
+  private async processExnIpexApplyNotification(
+    exchange: ExnMessage
+  ): Promise<boolean> {
     await this.ipexCommunications.createLinkedIpexMessageRecord(
       exchange,
       ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
@@ -296,13 +328,14 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processExnIpexGrantNotification(
-    notif: Notification
+    notif: Notification,
+    exchange: ExnMessage
   ): Promise<boolean> {
-    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     const signifyCredential = await this.props.signifyClient
       .credentials()
       .get(exchange.exn.e.acdc.d)
       .catch(() => undefined);
+
     const credentialState = await this.props.signifyClient
       .credentials()
       .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
@@ -402,6 +435,7 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
+
     const rpyRoute = multisigNotification[0].exn.e.rpy.r;
     if (rpyRoute === "/end/role/add") {
       await this.multiSigs.joinAuthorization(multisigNotification[0].exn);
@@ -445,10 +479,9 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async processMultiSigExnNotification(
-    notif: Notification
+    notif: Notification,
+    exchange: ExnMessage
   ): Promise<boolean> {
-    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
-
     switch (exchange.exn.e?.exn?.r) {
     case ExchangeRoute.IpexAdmit: {
       const admitSaid = exchange.exn.e.exn.d;
@@ -834,12 +867,29 @@ class KeriaNotificationService extends AgentService {
       }
       case OperationPendingRecordType.Oobi: {
         const connectionRecord = await this.connectionStorage.findById(
-          (operation.response as any).i
+          (operation.response as State).i
         );
+          // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
+          // Also unskip tests for this
+
+        // const existingConnection = await this.props.signifyClient
+        //   .contacts()
+        //   .get((operation.response as State).i)
+        //   .catch(() => undefined);
+        //if (connectionRecord && !existingConnection) {
         if (connectionRecord) {
           connectionRecord.pending = false;
-          connectionRecord.createdAt = (operation.response as any).dt;
+          connectionRecord.createdAt = new Date(
+            (operation.response as State).dt
+          );
           await this.connectionStorage.update(connectionRecord);
+          const alias = connectionRecord.alias;
+          await this.props.signifyClient
+            .contacts()
+            .update((operation.response as State).i, {
+              alias,
+              createdAt: new Date((operation.response as State).dt),
+            });
         }
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
@@ -932,7 +982,7 @@ class KeriaNotificationService extends AgentService {
               ConnectionHistoryType.CREDENTIAL_REVOKED
             );
             const metadata: any = {
-              id: new Salter({}).qb64,
+              id: randomSalt(),
               a: {
                 r: NotificationRoute.LocalAcdcRevoked,
                 credentialId,

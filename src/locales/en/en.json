@@ -722,7 +722,6 @@
       },
       "acceptcriteria": {
         "text": "Must be between <strong>8-64 characters</strong>, contain an <strong>lowercase</strong> and <strong>uppercase</strong> letter, a <strong>number</strong>, and a <strong>symbol</strong>."
-
       }
     },
     "symbolmodal": {
@@ -767,7 +766,7 @@
         "verticalbar": "Vertical bar",
         "rightbrace": "Right brace",
         "tilde": "Tilde"
-    }
+      }
     }
   },
   "ssiagent": {
@@ -814,6 +813,12 @@
         "create": "Add an identifier",
         "favourites": "Favourites",
         "allidentifiers": "All identifiers",
+        "filters": {
+          "all": "All",
+          "individual": "Individual",
+          "group": "Group",
+          "placeholder": "You haven’t created any {{ type }} identifiers yet."
+        },
         "pendingidentifiers": "Pending identifiers",
         "multisigidentifiers": "For groups"
       },
@@ -881,6 +886,7 @@
           }
         },
         "rotatekeys": {
+          "message": "After rotating your keys, you may experience some delays when using this identifier for a short period.",
           "signingkey": "List of signing keys",
           "description": "Rotating your signing keys boosts security by reducing the risk of key compromise.",
           "done": "Done"
@@ -959,6 +965,12 @@
         "viewarchived": "Archived & Revoked",
         "favourites": "Favourites",
         "allcreds": "All credentials",
+        "filters": {
+          "all": "All",
+          "individual": "Individual",
+          "group": "Group",
+          "placeholder": "You currently have no {{ type }} credentials."
+        },
         "pendingcred": "Pending credentials",
         "detelepending": {
           "title": "Credential options",
@@ -1689,7 +1701,7 @@
     "peeriderror": "Peer ID not recognised",
     "peeridnotrecognised": "Peer ID not recognised",
     "setupbiometricsuccess": "Biometrics setup successfully",
-    "rotatekeysuccess": "Keys rotated successfully",
+    "rotatekeysuccess": "Individual keys rotated successfully",
     "rotatekeyerror": "Unable to rotate keys",
     "newmultisignmember": "New member added to group",
     "multisignidentifiercreated": "Identifier added to “For groups“",

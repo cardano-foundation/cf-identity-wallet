@@ -21,7 +21,7 @@ const AlphabeticList = ({
     return items.map((connection) => ({
       id: connection.id,
       title: connection.label as string,
-      subtitle: formatShortDate(`${connection?.connectionDate}`),
+      subtitle: formatShortDate(`${connection?.createdAtUTC}`),
       image: connection.logo || KeriLogo,
       data: connection,
     }));

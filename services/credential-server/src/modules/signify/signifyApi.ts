@@ -5,6 +5,7 @@ import {
   Operation,
   Saider,
   Serder,
+  State,
 } from "signify-ts";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
@@ -74,14 +75,18 @@ export class SignifyApi {
 
   async resolveOobi(url: string): Promise<any> {
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    const operation = await waitAndGetDoneOp(
+    const operation = (await waitAndGetDoneOp(
       this.signifyClient,
       await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
       this.opRetryInterval
-    );
+    )) as Operation & { response: State };
     if (!operation.done) {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
+    }
+    if (operation.response && operation.response.i) {
+      const connectionId = operation.response.i;
+      await this.signifyClient.contacts().update(connectionId, { alias });
     }
     return operation;
   }

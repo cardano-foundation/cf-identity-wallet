@@ -3,11 +3,12 @@
 
   ion-header ion-toolbar {
     --background: var(--ion-color-light-grey);
+    margin-top: 0.625rem;
 
     ion-button:not(.close-button-label),
     ion-button.md:not(.close-button-label) {
-      width: 2.8125rem;
-      height: 2.8125rem;
+      width: 2.75rem;
+      height: 2.75rem;
       border-radius: 1.5rem;
       background: var(--ion-color-light);
 
@@ -17,6 +18,24 @@
 
       &::part(native) {
         padding: 0.5rem;
+      }
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      ion-button:not(.close-button-label),
+      ion-button.md:not(.close-button-label) {
+        width: 2.25rem;
+        height: 2.25rem;
+
+        &::part(native) {
+          padding: 0.35rem;
+        }
+      }
+
+      ion-icon {
+        width: 1.18rem;
+        height: 1.18rem;
+        margin: 0;
       }
     }
   }

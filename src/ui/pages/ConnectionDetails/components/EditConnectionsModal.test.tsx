@@ -125,7 +125,7 @@ describe("Edit Connection Modal", () => {
       );
     });
     expect(getByTestId("data-connection-time").innerHTML).toBe(
-      formatShortDate(connectionsFix[0].connectionDate)
+      formatShortDate(connectionsFix[0].createdAtUTC)
     );
     expect(getByTestId("action-button")).toBeVisible();
     expect(getByTestId("close-button")).toBeVisible();

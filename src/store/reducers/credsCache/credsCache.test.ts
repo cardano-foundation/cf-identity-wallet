@@ -2,9 +2,11 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import {
   addFavouritesCredsCache,
   credsCacheSlice,
+  getCredentialsFilters,
   getCredsCache,
   getFavouritesCredsCache,
   removeFavouritesCredsCache,
+  setCredentialsFilters,
   setCredsCache,
   setFavouritesCredsCache,
   updateOrAddCredsCache,
@@ -16,15 +18,14 @@ import {
 } from "../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
-import {
-  memberIdentifierRecord,
-  multisigMetadataRecord,
-} from "../../../core/__fixtures__/agent/multSigFixtures";
+import { multisigMetadataRecord } from "../../../core/__fixtures__/agent/multSigFixtures";
+import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {
     creds: [],
     favourites: [],
+    filters: CredentialsFilters.All,
   };
   it("should return the initial state", () => {
     expect(credsCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
@@ -94,7 +95,11 @@ describe("credsCacheSlice", () => {
       status: CredentialStatus.CONFIRMED,
     };
     const newState = credsCacheSlice.reducer(
-      { creds: [cred1, cred2], favourites: [] },
+      {
+        creds: [cred1, cred2],
+        favourites: [],
+        filters: CredentialsFilters.All,
+      },
       updateOrAddCredsCache(updateCred)
     );
     expect(newState.creds).toEqual([cred2, updateCred]);
@@ -135,6 +140,7 @@ describe("credsCacheSlice", () => {
           time: 1,
         },
       ],
+      filters: CredentialsFilters.All,
     };
     const newState = credsCacheSlice.reducer(
       state,
@@ -142,6 +148,20 @@ describe("credsCacheSlice", () => {
     );
     expect(newState.favourites).toEqual([]);
   });
+});
+
+it("should handle setCredentialsFilters", () => {
+  const initialState = {
+    creds: [],
+    favourites: [],
+    filters: CredentialsFilters.All,
+  };
+  const filter: CredentialsFilters = CredentialsFilters.Individual;
+  const newState = credsCacheSlice.reducer(
+    initialState,
+    setCredentialsFilters(filter)
+  );
+  expect(newState.filters).toEqual(filter);
 });
 
 describe("get methods for CredsCache", () => {
@@ -185,5 +205,14 @@ describe("get methods for CredsCache", () => {
     } as RootState;
     const favouritesCredsCache = getFavouritesCredsCache(state);
     expect(favouritesCredsCache).toEqual(state.credsCache.favourites);
+  });
+  it("should return the Credentials Filters from RootState", () => {
+    const state = {
+      credsCache: {
+        filters: CredentialsFilters.Individual,
+      },
+    } as RootState;
+    const filtersCache = getCredentialsFilters(state);
+    expect(filtersCache).toEqual(state.credsCache.filters);
   });
 });

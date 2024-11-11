@@ -1,0 +1,20 @@
+.filtered-items-placeholder-container {
+  p {
+    text-align: center;
+    margin: 0 0 1.5rem;
+  }
+
+  ion-button {
+    margin: 0;
+  }
+
+  ion-icon {
+    margin-right: 0.62rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-icon {
+      margin-right: 0.496rem;
+    }
+  }
+}
