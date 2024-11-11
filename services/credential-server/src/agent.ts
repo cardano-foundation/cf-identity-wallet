@@ -13,8 +13,6 @@ class Agent {
   static readonly HOLDER_AID_NAME = "holder";
   static readonly QVI_SCHEMA_SAID =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  static readonly RARE_EVO_DEMO_SCHEMA_SAID =
-    "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
   static readonly LE_SCHEMA_SAID =
     "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
 
