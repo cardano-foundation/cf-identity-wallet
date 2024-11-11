@@ -162,13 +162,15 @@ const connectionService = new ConnectionService(
   connectionStorage as any,
   credentialStorage as any,
   operationPendingStorage as any,
-  identifiers as any
+  identifiers as any,
+  Agent.agent.markAgentStatus
 );
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getKeriaOnlineStatus: jest.fn(),
+      markAgentStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
     },
   },
@@ -865,6 +867,7 @@ describe("Connection service of agent", () => {
       .mockResolvedValueOnce(["id1", "id2"]);
     const result = await connectionService.removeConnectionsPendingDeletion();
 
+    expect(Agent.agent.markAgentStatus).toHaveBeenCalledWith(true);
     expect(connectionService.deleteConnectionById).toHaveBeenCalledWith("id1");
     expect(connectionService.deleteConnectionById).toHaveBeenCalledWith("id2");
     expect(result).toEqual(["id1", "id2"]);

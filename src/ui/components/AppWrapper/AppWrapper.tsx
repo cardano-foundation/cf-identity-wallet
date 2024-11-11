@@ -212,9 +212,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // ]);
     };
     const removeConnectionsPendingDeletion = async () => {
-      const pendingDeletions =
-        await Agent.agent.connections.removeConnectionsPendingDeletion();
-      pendingDeletions.forEach((id) => dispatch(removeConnectionCache(id)));
+      await Agent.agent.connections.removeConnectionsPendingDeletion();
     };
 
     const resolvePendingConnections = async () => {

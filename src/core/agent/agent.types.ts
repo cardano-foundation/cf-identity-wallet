@@ -7,6 +7,7 @@ enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
   ACCEPTED = "accepted",
+  DELETED = "deleted",
 }
 
 interface ConnectionHistoryItem {

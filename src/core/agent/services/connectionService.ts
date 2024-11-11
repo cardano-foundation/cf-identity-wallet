@@ -37,19 +37,22 @@ class ConnectionService extends AgentService {
   protected readonly credentialStorage: CredentialStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly identifierStorage: IdentifierStorage;
+  protected readonly markAgentStatus: (online: boolean) => void;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
     credentialStorage: CredentialStorage,
     operationPendingStorage: OperationPendingStorage,
-    identifierStorage: IdentifierStorage
+    identifierStorage: IdentifierStorage,
+    markAgentStatus: (online: boolean) => void
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.credentialStorage = credentialStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.identifierStorage = identifierStorage;
+    this.markAgentStatus = markAgentStatus;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -71,7 +74,10 @@ class ConnectionService extends AgentService {
     this.props.eventEmitter.on(
       EventTypes.ConnectionStateChanged,
       (event: ConnectionStateChangedEvent) => {
-        if (event.payload.url) {
+        if (
+          event.payload.url &&
+          event.payload.status === ConnectionStatus.PENDING
+        ) {
           this.resolveOobi(event.payload.url, event.payload.isMultiSigInvite);
         }
       }
@@ -94,7 +100,7 @@ class ConnectionService extends AgentService {
       .pop()!
       .split("/")[0];
 
-    const alias = new URL(url).searchParams.get("name") ?? new Salter({}).qb64;
+    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     const connectionDate = new Date().toISOString();
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
 
@@ -103,9 +109,9 @@ class ConnectionService extends AgentService {
       oobi: url,
       pending: true,
       createdAtUTC: connectionDate,
-      groupId
+      groupId,
     };
-    
+
     const connection = {
       id: connectionId,
       createdAtUTC: connectionDate,
@@ -122,9 +128,9 @@ class ConnectionService extends AgentService {
         alias: string;
       };
       connection.id = oobiResult.op.response.i;
-      connectionMetadata.alias = oobiResult.alias;
       connectionMetadata.pending = false;
       connectionMetadata.createdAtUTC = oobiResult.op.response.dt;
+      connectionMetadata.status = ConnectionStatus.CONFIRMED;
 
       const identifierWithGroupId =
         await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
@@ -475,6 +481,14 @@ class ConnectionService extends AgentService {
     const pendingDeletions = await this.getConnectionsPendingDeletion();
     for (const id of pendingDeletions) {
       await this.deleteConnectionById(id);
+      this.markAgentStatus(true);
+      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+        type: EventTypes.ConnectionStateChanged,
+        payload: {
+          connectionId: id,
+          status: ConnectionStatus.DELETED,
+        },
+      });
     }
 
     return pendingDeletions;
