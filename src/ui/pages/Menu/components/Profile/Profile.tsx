@@ -61,6 +61,7 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
     useImperativeHandle(ref, () => ({
       saveChanges,
     }));
+
     return (
       <>
         {isEditing ? (
@@ -90,23 +91,23 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
                 </div>
               </IonItem>
             </IonCard>
+            <IonCard>
+              <IonItem onClick={() => Browser.open({ url: PROFILE_LINK })}>
+                <div
+                  className="profile-item"
+                  data-testid="profile-item-profile-link"
+                >
+                  <span>{i18n.t("tabs.menu.tab.items.profile.watchvideo")}</span>
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={chevronForward}
+                    slot="end"
+                  />
+                </div>
+              </IonItem>
+            </IonCard>
           </>
         )}
-        <IonCard>
-          <IonItem onClick={() => Browser.open({ url: PROFILE_LINK })}>
-            <div
-              className="profile-item"
-              data-testid="profile-item-profile-link"
-            >
-              <span>{i18n.t("tabs.menu.tab.items.profile.watchvideo")}</span>
-              <IonIcon
-                aria-hidden="true"
-                icon={chevronForward}
-                slot="end"
-              />
-            </div>
-          </IonItem>
-        </IonCard>
       </>
     );
   }
