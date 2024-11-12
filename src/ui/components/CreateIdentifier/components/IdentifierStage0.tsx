@@ -38,6 +38,8 @@ import { createThemeValue } from "../../../utils/theme";
 import { IADTypeInfoModal } from "./AIDTypeInfoModal";
 import { showError } from "../../../utils/error";
 import { combineClassNames } from "../../../utils/style";
+import { nameChecker } from "../../../utils/nameChecker";
+import { IdentifierService } from "../../../../core/agent/services";
 
 const IdentifierStage0 = ({
   state,
@@ -57,8 +59,10 @@ const IdentifierStage0 = ({
     state.displayNameValue
   );
   const [selectedTheme, setSelectedTheme] = useState(state.selectedTheme);
-  const displayNameValueIsValid =
-    displayNameValue.length > 0 && displayNameValue.length <= 32;
+
+  const [duplicateName, setDuplicateName] = useState(false);
+  const [inputChange, setInputChange] = useState(false);
+  const localValidateMessage = inputChange ? nameChecker.getError(displayNameValue) : undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -143,15 +147,7 @@ const IdentifierStage0 = ({
           multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
         }
       }
-    } catch (e) {
-      showError("Unable to create identifier", e, dispatch);
-    }
-  };
 
-  const handleContinue = async () => {
-    setBlur && setBlur(true);
-    setTimeout(async () => {
-      await handleCreateIdentifier();
       if (state.selectedAidType !== 0 || multiSigGroup) {
         setBlur && setBlur(false);
       } else {
@@ -166,6 +162,22 @@ const IdentifierStage0 = ({
               : ToastMsgType.IDENTIFIER_CREATED
         )
       );
+    } catch (e) {
+      if((e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
+        setDuplicateName(true);
+        return;
+      }
+
+      showError("Unable to create identifier", e, dispatch);
+    } finally {
+      setBlur && setBlur(false);
+    }
+  };
+
+  const handleContinue = async () => {
+    setBlur && setBlur(true);
+    setTimeout(async () => {
+      await handleCreateIdentifier();
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
 
@@ -177,6 +189,15 @@ const IdentifierStage0 = ({
   const openAIDTypeInfoModal = () => {
     setOpenAIDInfo(true);
   };
+
+  const handleChangeName = (value: string) => {
+    setDisplayNameValue(value);
+    setInputChange(true);
+    setDuplicateName(false);
+  }
+
+  const hasError = localValidateMessage || duplicateName;
+  const errorMessage = localValidateMessage || `${i18n.t("nameerror.duplicatename")}`;
 
   return (
     <>
@@ -206,7 +227,7 @@ const IdentifierStage0 = ({
       >
         <div
           className={`identifier-name${
-            state.displayNameValue.length !== 0 && !displayNameValueIsValid
+            hasError
               ? " identifier-name-error"
               : ""
           }`}
@@ -218,14 +239,13 @@ const IdentifierStage0 = ({
               "createidentifier.displayname.placeholder"
             )}`}
             hiddenInput={false}
-            onChangeInput={setDisplayNameValue}
+            onChangeInput={handleChangeName}
             value={displayNameValue}
           />
           <div className="error-message-container">
-            {displayNameValue.length !== 0 && !displayNameValueIsValid && (
+            {hasError && (
               <ErrorMessage
-                message={`${i18n.t("createidentifier.error.maxlength")}`}
-                timeout={true}
+                message={errorMessage}
               />
             )}
           </div>
@@ -334,7 +354,7 @@ const IdentifierStage0 = ({
             : "createidentifier.add.confirmbutton"
         )}`}
         primaryButtonAction={handleContinue}
-        primaryButtonDisabled={!displayNameValueIsValid}
+        primaryButtonDisabled={displayNameValue.length === 0 || !!localValidateMessage}
       />
       <IADTypeInfoModal
         isOpen={openAIDInfo}

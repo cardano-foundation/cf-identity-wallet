@@ -1,5 +1,5 @@
 import { setupIonicReact } from "@ionic/react";
-import { mockIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -34,7 +34,14 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       connections: {
         getMultisigLinkedContacts: (args: any) =>
-          mockGetMultisigConnection(args),
+          mockGetMultisigConnection(args)
+      },
+      identifiers: {
+        getIdentifiersCache: jest.fn(),
+        createIdentifier: jest.fn((args: unknown) => ({
+          identifier: "mock-id",
+          isPending: true,
+        }))
       },
     },
   },
@@ -146,8 +153,9 @@ describe("Create Identifier modal", () => {
     );
     const displayNameInput = getByTestId("display-name-input");
     act(() => {
-      fireEvent.change(displayNameInput, { target: { value: "Test" } });
+      ionFireEvent.ionInput(displayNameInput, "Test");
     });
+
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });

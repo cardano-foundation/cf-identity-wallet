@@ -62,6 +62,8 @@ import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
 import { randomSalt } from "../../../core/agent/services/utils";
 
+const OPEN_CONNECTION_TIME = 250;
+
 const Scanner = forwardRef(
   (
     {
@@ -313,7 +315,9 @@ const Scanner = forwardRef(
       // This will be removed when the create connection process ends.
       const connectionName = new URL(content).searchParams.get("name");
       if (!connectionName) {
-        dispatch(setMissingAliasUrl(content));
+        setTimeout(() => {
+          dispatch(setMissingAliasUrl(content));
+        }, OPEN_CONNECTION_TIME);
         return;
       }
 

@@ -25,14 +25,28 @@ ion-modal#input-request {
 
     ion-item.custom-input {
       --background: white;
-      margin: 1.563rem 0;
+      margin-top: 1.563rem;
 
       ion-label {
         font-size: 1rem;
       }
     }
 
+    .error-message {
+      margin-top: 0.25rem;
+      text-align: start;
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .error-message-placeholder {
+      display: none;
+    }
+
     ion-toolbar.page-footer {
+      margin-top: 1.5rem;
       padding: 0;
     }
   }
