@@ -40,7 +40,7 @@ import {
   ipexSubmitAdmitSerder,
   ipexSubmitAdmitSig,
   ipexSubmitAdmitEnd,
-  credentialState,
+  credentialStateIssued,
 } from "../../__fixtures__/agent/ipexCommunicationFixture";
 import { NotificationRoute } from "../agent.types";
 import {
@@ -258,6 +258,9 @@ jest.mock("signify-ts", () => ({
   }),
   d: jest.fn().mockImplementation(() => "d"),
   b: jest.fn().mockImplementation(() => "b"),
+  Ilks: {
+    iss: "iss"
+  }
 }));
 
 const eventEmitter = new CoreEventEmitter();
@@ -2613,7 +2616,7 @@ describe("Ipex communication service of agent", () => {
   test("Can get acdc detail", async () => {
     getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
     schemaGetMock.mockResolvedValue(QVISchema);
-    credentialStateMock.mockResolvedValueOnce(credentialState);
+    credentialStateMock.mockResolvedValueOnce(credentialStateIssued);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -2642,7 +2645,7 @@ describe("Ipex communication service of agent", () => {
 
   test("Can get acdc detail when the schema has not been resolved", async () => {
     getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
-    credentialStateMock.mockResolvedValueOnce(credentialState);
+    credentialStateMock.mockResolvedValueOnce(credentialStateIssued);
     const error404 = new Error("Not Found - 404");
     schemaGetMock.mockRejectedValueOnce(error404);
     identifierStorage.getIdentifierMetadata = jest

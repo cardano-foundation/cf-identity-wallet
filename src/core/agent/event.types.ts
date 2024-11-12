@@ -1,4 +1,5 @@
 import { ConnectionStatus, KeriaNotification } from "./agent.types";
+import { NotificationRecord } from "./records";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import {
@@ -19,6 +20,7 @@ enum EventTypes {
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
+  CredentialRevoked = "CredentialRevoked",
 }
 
 interface NotificationAddedEvent extends BaseEventEmitter {
@@ -74,6 +76,13 @@ interface NotificationRemovedEvent extends BaseEventEmitter {
   };
 }
 
+interface CredentialRevokedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.CredentialRevoked;
+  payload: {
+    keriaNotif: KeriaNotification;
+  };
+}
+
 export type {
   NotificationAddedEvent,
   OperationCompleteEvent,
@@ -83,5 +92,6 @@ export type {
   KeriaStatusChangedEvent,
   OperationAddedEvent,
   NotificationRemovedEvent,
+  CredentialRevokedEvent,
 };
 export { EventTypes };

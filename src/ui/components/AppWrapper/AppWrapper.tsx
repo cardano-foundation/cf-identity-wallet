@@ -41,7 +41,10 @@ import {
   setIdentifierFavouriteIndex,
   setIdentifierViewTypeCache,
 } from "../../../store/reducers/viewTypeCache";
-import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
+import {
+  addNotification,
+  setNotificationsCache,
+} from "../../../store/reducers/notificationsCache";
 import {
   getAuthentication,
   getIsInitialized,
@@ -480,6 +483,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
+    });
+
+    Agent.agent.keriaNotifications.onCredentialRevoked((event) => {
+      dispatch(addNotification(event.payload.keriaNotif));
     });
   };
 

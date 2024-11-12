@@ -30,7 +30,7 @@ import { setNotificationsCache } from "../../../store/reducers/notificationsCach
 import {
   setCurrentOperation,
   setQueueIncomingRequest,
-  setToastMsg
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -106,6 +106,7 @@ jest.mock("../../../core/agent/agent", () => ({
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
         onRemoveNotification: jest.fn(),
+        onCredentialRevoked: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
@@ -376,28 +377,5 @@ describe("Signify operation state changed handler", () => {
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
     );
-  });
-
-  test("handles completed admit on revoked credential operation", async () => {
-    const notifications = [
-      {
-        id: "id",
-        createdAt: new Date().toISOString(),
-        a: {},
-        connectionId: "connection",
-        read: false,
-      },
-    ];
-    Agent.agent.keriaNotifications.getAllNotifications = jest
-      .fn()
-      .mockResolvedValue(notifications);
-    await signifyOperationStateChangeHandler(
-      {
-        opType: OperationPendingRecordType.ExchangeRevokeCredential,
-        oid: "id",
-      },
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(setNotificationsCache(notifications));
   });
 });

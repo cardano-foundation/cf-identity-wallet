@@ -1,4 +1,4 @@
-import { State } from "signify-ts";
+import { Ilks, State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -30,6 +30,7 @@ import {
   OperationCompleteEvent,
   OperationAddedEvent,
   NotificationRemovedEvent,
+  CredentialRevokedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
@@ -90,6 +91,12 @@ class KeriaNotificationService extends AgentService {
         this.pendingOperations.push(event.payload.operation);
       }
     );
+  }
+
+  onCredentialRevoked(
+    callback: (event: CredentialRevokedEvent) => void
+  ) {
+    this.props.eventEmitter.on(EventTypes.CredentialRevoked, callback);
   }
 
   async pollNotifications() {
@@ -331,11 +338,6 @@ class KeriaNotificationService extends AgentService {
     notif: Notification,
     exchange: ExnMessage
   ): Promise<boolean> {
-    const signifyCredential = await this.props.signifyClient
-      .credentials()
-      .get(exchange.exn.e.acdc.d)
-      .catch(() => undefined);
-
     const credentialState = await this.props.signifyClient
       .credentials()
       .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
@@ -358,7 +360,17 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-    if (signifyCredential && telStatus === "rev") {
+
+    console.log("telStatus: ", telStatus);
+    console.log("existingCredential: ", existingCredential);
+    console.log("existingCredential status: ", existingCredential?.status);
+    
+
+    if (
+      telStatus === Ilks.rev &&
+      existingCredential &&
+      existingCredential.status !== CredentialStatus.REVOKED
+    ) {
       await this.credentialService.markAcdc(
         exchange.exn.e.acdc.d,
         CredentialStatus.REVOKED
@@ -367,14 +379,7 @@ class KeriaNotificationService extends AgentService {
         exchange,
         ConnectionHistoryType.CREDENTIAL_REVOKED
       );
-      await this.markNotification(notif.i);
-      return false;
-    }
 
-    if (
-      existingCredential &&
-      existingCredential.status !== CredentialStatus.REVOKED
-    ) {
       const dt = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
         senderName: ourIdentifier.id,
@@ -383,14 +388,39 @@ class KeriaNotificationService extends AgentService {
         datetime: dt,
         recipient: exchange.exn.i,
       });
-      const op = await this.props.signifyClient
+      await this.props.signifyClient
         .ipex()
         .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.ExchangeRevokeCredential,
+
+      const metadata: any = {
+        id: randomSalt(),
+        a: {
+          r: NotificationRoute.LocalAcdcRevoked,
+          credentialId: existingCredential.id,
+          credentialTitle: existingCredential.credentialType,
+        },
+        read: false,
+        route: NotificationRoute.LocalAcdcRevoked,
+      };
+      const notificationRecord = await this.notificationStorage.save(metadata);
+
+      this.props.eventEmitter.emit<CredentialRevokedEvent>({
+        type: EventTypes.CredentialRevoked,
+        payload: {
+          keriaNotif: {
+            id: notificationRecord.id,
+            createdAt: new Date().toISOString(),
+            a: {
+              r: NotificationRoute.LocalAcdcRevoked,
+              credentialId: existingCredential.id,
+              credentialTitle: existingCredential.credentialType,
+            },
+            read: false,
+            connectionId: exchange.exn.i,
+          },
+        },
       });
-      this.pendingOperations.push(pendingOperation);
+
       await this.markNotification(notif.i);
       return false;
     }
@@ -946,59 +976,6 @@ class KeriaNotificationService extends AgentService {
               credentialId,
               CredentialStatus.CONFIRMED
             );
-          }
-        }
-        break;
-      }
-      case OperationPendingRecordType.ExchangeRevokeCredential: {
-        const admitExchange = await this.props.signifyClient
-          .exchanges()
-          .get(operation.metadata?.said);
-        if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
-          const grantExchange = await this.props.signifyClient
-            .exchanges()
-            .get(admitExchange.exn.p);
-          const credentialId = grantExchange?.exn?.e?.acdc?.d;
-          const credentialMetadata =
-              await this.credentialStorage.getCredentialMetadata(credentialId);
-          const credential = await this.props.signifyClient
-            .credentials()
-            .get(credentialId);
-          if (credential.status.s === "0") {
-            // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
-            return;
-          }
-          if (
-            credential &&
-              credential.status.s === "1" &&
-              credentialMetadata?.status !== CredentialStatus.REVOKED
-          ) {
-            await this.credentialService.markAcdc(
-              credentialId,
-              CredentialStatus.REVOKED
-            );
-            await this.ipexCommunications.createLinkedIpexMessageRecord(
-              grantExchange,
-              ConnectionHistoryType.CREDENTIAL_REVOKED
-            );
-            const metadata: any = {
-              id: randomSalt(),
-              a: {
-                r: NotificationRoute.LocalAcdcRevoked,
-                credentialId,
-                credentialTitle: credential.schema.title,
-              },
-              read: false,
-              route: NotificationRoute.LocalAcdcRevoked,
-            };
-            await this.notificationStorage.save(metadata);
-            this.props.eventEmitter.emit<OperationCompleteEvent>({
-              type: EventTypes.OperationComplete,
-              payload: {
-                opType: operationRecord.recordType,
-                oid: recordId,
-              },
-            });
           }
         }
         break;

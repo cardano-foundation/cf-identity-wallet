@@ -681,7 +681,7 @@ const ipexSubmitAdmitSig = [
 const ipexSubmitAdmitEnd =
   "-LA35AACAA-e-exn-FABEB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac0AAAAAAAAAAAAAAAAAAAAAAAEB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac-AABABDwPi6ZSD6AMwz-1VDbgGtVWMLUZKmbD6GHXqgYRdgklSO8x_qEwheY16XQvDz9uwpukMg2LyL9FBa64qu65xgE";
 
-const credentialState = {
+const credentialStateIssued = {
   vn: [1, 0],
   i: "EJd6GsxIhMXj1M8Ie0mq7oLgCcoEqp2p0YJIoh6wGa6M",
   s: "0",
@@ -729,5 +729,5 @@ export {
   ipexSubmitAdmitSerder,
   ipexSubmitAdmitSig,
   ipexSubmitAdmitEnd,
-  credentialState,
+  credentialStateIssued,
 };

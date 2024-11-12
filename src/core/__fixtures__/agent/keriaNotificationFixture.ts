@@ -337,7 +337,7 @@ const notificationIpexApplyProp = {
   },
 };
 
-const credentialState = {
+const credentialStateIssued = {
   vn: [1, 0],
   i: "EJd6GsxIhMXj1M8Ie0mq7oLgCcoEqp2p0YJIoh6wGa6M",
   s: "0",
@@ -379,6 +379,6 @@ export {
   notificationIpexGrantProp,
   notificationIpexAgreeProp,
   notificationIpexApplyProp,
-  credentialState,
+  credentialStateIssued,
   notificationIpexOfferProp,
 };

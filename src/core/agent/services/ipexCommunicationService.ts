@@ -1,4 +1,13 @@
-import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
+import {
+  b,
+  d,
+  Ilks,
+  messagize,
+  Operation,
+  Saider,
+  Serder,
+  Siger,
+} from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
@@ -1003,7 +1012,7 @@ class IpexCommunicationService extends AgentService {
         version: schema.version,
       },
       lastStatus: {
-        s: credentialState.et === "iss" ? "1" : "0",
+        s: credentialState.et === Ilks.iss ? "1" : "0",
         dt: new Date(credentialState.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,
