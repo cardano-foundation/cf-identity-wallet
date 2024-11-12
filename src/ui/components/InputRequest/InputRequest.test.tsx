@@ -252,7 +252,7 @@ describe("SetUserName component", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.nameerror.hasSpecialChar)
+        getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
       ).toBeVisible();
     });
   });

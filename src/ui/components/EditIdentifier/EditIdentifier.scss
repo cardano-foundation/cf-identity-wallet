@@ -31,6 +31,9 @@
       .indentifier-input {
         margin-bottom: 2.375rem;
         &.has-error {
+          ion-item.custom-input .input-line {
+            border-color: var(--ion-color-danger);
+          }
           margin-bottom: 0;
         }
 

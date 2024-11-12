@@ -370,7 +370,7 @@ describe("Identifier Stage 0", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.nameerror.hasSpecialChar)
+        getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
       ).toBeVisible();
     });
     
@@ -391,7 +391,6 @@ describe("Identifier Stage 0", () => {
         getByText(EN_TRANSLATIONS.nameerror.duplicatename)
       ).toBeVisible();
     });
-    
   });
 
   test("Show AID type infomation modal", async () => {

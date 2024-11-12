@@ -7,7 +7,7 @@ const nameRequirements = {
 };
 
 const nameErrorMessages = {
-  invalidCharacter: i18n.t("nameerror.hasSpecialChar"),
+  invalidCharacter: i18n.t("nameerror.hasspecialchar"),
   invalidMaxLength: i18n.t("nameerror.maxlength"),
   invalidMinLength: i18n.t("nameerror.onlyspace"),
   invalidSpaceCharacter: i18n.t("nameerror.onlyspace"),
