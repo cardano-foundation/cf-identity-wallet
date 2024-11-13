@@ -1761,6 +1761,45 @@ describe("Signify notification service of agent", () => {
     );
   });
 
+  test("Should throw error if other error occurs with get existing credential with admit multisig exn", async () => {
+    exchangesGetMock
+      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
+      .mockResolvedValueOnce(grantForIssuanceExnMessage);
+
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        type: "NotificationRecord",
+        id: "id",
+        createdAt: new Date(),
+        a: {
+          r: NotificationRoute.ExnIpexGrant,
+          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+        },
+        route: NotificationRoute.ExnIpexGrant,
+        read: true,
+        linkedGroupRequests: {},
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        updatedAt: new Date(),
+      },
+    ]);
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({
+        id: "id",
+      });
+
+    const errorMessage = new Error("Error - 500");
+    getCredentialMock.mockRejectedValueOnce(errorMessage);
+
+    await expect(
+      keriaNotificationService.processNotification(notificationMultisigExnProp)
+    ).rejects.toThrow(errorMessage);
+  });
+
   test("Should mark notification when exist identifier of the sender of the inception event", async () => {
     exchangesGetMock.mockResolvedValueOnce({
       exn: {
@@ -1967,7 +2006,7 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
-  })
+  });
 
   test.skip("Cannot create connection if the connection is already created", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
@@ -2004,10 +2043,10 @@ describe("Long running operation tracker", () => {
       oobi: "oobi",
       id: "id",
       createdAt: new Date(),
-    })
+    });
     await keriaNotificationService.processOperation(operationRecord);
-    expect(connectionStorage.update).toBeCalledTimes(0)
-    expect(contactsUpdateMock).toBeCalledTimes(0)
+    expect(connectionStorage.update).toBeCalledTimes(0);
+    expect(contactsUpdateMock).toBeCalledTimes(0);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
@@ -2016,7 +2055,7 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
-  })
+  });
 
   test("Should handle long operations with type exchange.receivecredential", async () => {
     const credentialIdMock = "credentialId";

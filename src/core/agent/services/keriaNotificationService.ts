@@ -494,7 +494,14 @@ class KeriaNotificationService extends AgentService {
       const existingCredential = await this.props.signifyClient
         .credentials()
         .get(credentialId)
-        .catch(() => undefined);
+        .catch((error) => {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
 
       // @TODO - foconnor: If multi-sig it may not complete now
       if (existingCredential) {
@@ -940,18 +947,27 @@ class KeriaNotificationService extends AgentService {
             .get(admitExchange.exn.p);
           const credentialId = grantExchange?.exn?.e?.acdc?.d;
           const credentialMetadata =
-              await this.credentialStorage.getCredentialMetadata(credentialId);
+            await this.credentialStorage.getCredentialMetadata(credentialId);
           const credential = await this.props.signifyClient
             .credentials()
-            .get(credentialId);
+            .get(credentialId)
+            .catch((error) => {
+              const status = error.message.split(" - ")[1];
+              if (/404/gi.test(status)) {
+                return undefined;
+              } else {
+                throw error;
+              }
+            });
+
           if (credential.status.s === "0") {
             // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
             return;
           }
           if (
             credential &&
-              credential.status.s === "1" &&
-              credentialMetadata?.status !== CredentialStatus.REVOKED
+            credential.status.s === "1" &&
+            credentialMetadata?.status !== CredentialStatus.REVOKED
           ) {
             await this.credentialService.markAcdc(
               credentialId,
