@@ -361,11 +361,6 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
 
-    console.log("telStatus: ", telStatus);
-    console.log("existingCredential: ", existingCredential);
-    console.log("existingCredential status: ", existingCredential?.status);
-    
-
     if (
       telStatus === Ilks.rev &&
       existingCredential &&
