@@ -63,4 +63,6 @@
   justify-content: center;
   align-items: center;
   z-index: 101;
+  background: rgba(var(--ion-background-rgb), 0.2);
+  backdrop-filter: blur(0.25rem);
 }
