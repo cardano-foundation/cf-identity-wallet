@@ -8,6 +8,7 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
+import { Capacitor } from "@capacitor/core";
 import { RoutePath, Routes } from "../routes";
 import { PublicRoutes } from "../routes/paths";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
@@ -81,7 +82,7 @@ const App = () => {
 
   useEffect(() => {
     const platforms = getPlatforms();
-    if (!platforms.includes("mobileweb")) {
+    if (Capacitor.isNativePlatform()) {
       ScreenOrientation.lock({ orientation: "portrait" });
       if (platforms.includes("ios")) {
         StatusBar.setStyle({
