@@ -171,6 +171,14 @@ describe("Scan Tab", () => {
         currentOperation: OperationType.IDLE,
         toastMsgs: [],
       },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
     };
 
     const storeMocked = {

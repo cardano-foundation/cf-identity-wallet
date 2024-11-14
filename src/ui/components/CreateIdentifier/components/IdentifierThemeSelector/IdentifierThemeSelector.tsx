@@ -1,11 +1,8 @@
 import { IonCard, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { checkmark } from "ionicons/icons";
-import {
-  IdentifierThemeSelectorProps,
-  ThemeItemProps,
-} from "../CreateIdentifier.types";
 import "./IdentifierThemeSelector.scss";
-import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
+import { IDENTIFIER_BG_MAPPING } from "../../../../globals/types";
+import { IdentifierThemeSelectorProps, ThemeItemProps } from "./IdentifierThemeSelector.types";
 
 const IdentifierThemeSelector = ({
   color,

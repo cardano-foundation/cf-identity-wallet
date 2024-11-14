@@ -1,21 +1,21 @@
+import { Browser } from "@capacitor/browser";
 import { IonIcon, IonText } from "@ionic/react";
 import { alertCircleOutline } from "ionicons/icons";
 import { useState } from "react";
 import { Trans } from "react-i18next";
-import { Browser } from "@capacitor/browser";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
-import { CreateIdentifier } from "../../../../components/CreateIdentifier";
+import { CreateGroupIdentifier } from "../../../../components/CreateGroupIdentifier";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
+import { DISCORD_LINK } from "../../../../globals/constants";
 import "./ErrorPage.scss";
 import { ErrorPageProps } from "./ErrorPage.types";
-import { DISCORD_LINK } from "../../../../globals/constants";
 
 const ErrorPage = ({
   pageId,
@@ -148,7 +148,7 @@ const ErrorPage = ({
           </IonText>
         </div>
       </ScrollablePageLayout>
-      <CreateIdentifier
+      <CreateGroupIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
         setModalIsOpen={handleCloseCreateIdentifier}
         resumeMultiSig={resumeMultiSig}
