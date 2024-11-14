@@ -350,7 +350,7 @@ const Scanner = forwardRef(
           return;
         }
 
-        throw e;
+        showError("Scanner Error:", e, dispatch);
       } finally {
         dispatch(removeConnectionCache(pendingId));
       }
@@ -464,8 +464,7 @@ const Scanner = forwardRef(
               OperationType.MULTI_SIG_INITIATOR_SCAN,
               OperationType.MULTI_SIG_RECEIVER_SCAN,
             ].includes(currentOperation) &&
-              !isDuplicateConnectionToast)) &&
-          !showConnectionPage && !createIdentifierModalIsOpen
+              !isDuplicateConnectionToast))
         ) {
           await initScan();
         } else {
@@ -473,7 +472,7 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsgs, routePath, cameraDirection, showConnectionPage, createIdentifierModalIsOpen]);
+    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
 
     useEffect(() => {
       return () => {
