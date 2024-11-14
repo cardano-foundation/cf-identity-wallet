@@ -19,6 +19,8 @@ import {
   ConnectionStatus,
   KeriConnectionType,
 } from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { randomSalt } from "../../../core/agent/services/utils";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -53,6 +55,7 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { isValidConnectionUrl, isValidHttpUrl } from "../../utils/urlChecker";
+import { CreateGroupIdentifier } from "../CreateGroupIdentifier";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -60,7 +63,6 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
-import { randomSalt } from "../../../core/agent/services/utils";
 
 const OPEN_CONNECTION_TIME = 250;
 
@@ -92,6 +94,10 @@ const Scanner = forwardRef(
     const [permission, setPermisson] = useState(false);
     const [mobileweb, setMobileweb] = useState(false);
     const [scanUnavailable, setScanUnavailable] = useState(false);
+    const [groupIdentifierOpen, setGroupIdentifierOpen] =
+      useState(false);
+    const [resumeMultiSig, setResumeMultiSig] =
+        useState<IdentifierShortDetails | null>(null);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -256,7 +262,6 @@ const Scanner = forwardRef(
         );
 
         if (invitation.type === KeriConnectionType.NORMAL) {
-          handleReset && handleReset();
           setIsValueCaptured && setIsValueCaptured(true);
 
           const scanMultiSigByTab = routePath === TabsRoutePath.SCAN;
@@ -273,6 +278,8 @@ const Scanner = forwardRef(
 
             if (scanMultiSigByTab) {
               handleAfterScanMultisig();
+            } else {
+              handleReset?.();
             }
           }
         }
@@ -484,6 +491,13 @@ const Scanner = forwardRef(
       setPastedValue("");
     };
 
+    const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
+      if(identifier?.groupMetadata || identifier?.multisigManageAid) {
+        setResumeMultiSig(identifier);
+        setGroupIdentifierOpen(true);
+      }
+    };
+
     const openPasteModal = () => setPasteModalIsOpen(true);
 
     const RenderPageFooter = () => {
@@ -579,7 +593,14 @@ const Scanner = forwardRef(
         <CreateIdentifier
           modalIsOpen={createIdentifierModalIsOpen}
           setModalIsOpen={setCreateIdentifierModalIsOpen}
+          onClose={handleCloseCreateIdentifier}
           groupId={groupId}
+        />
+        <CreateGroupIdentifier 
+          modalIsOpen={groupIdentifierOpen} 
+          setModalIsOpen={setGroupIdentifierOpen} 
+          setResumeMultiSig={setResumeMultiSig} 
+          resumeMultiSig={resumeMultiSig}
         />
         <OptionModal
           modalIsOpen={pasteModalIsOpen}
