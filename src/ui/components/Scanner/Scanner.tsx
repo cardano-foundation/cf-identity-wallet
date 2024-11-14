@@ -349,6 +349,8 @@ const Scanner = forwardRef(
           await handleDuplicateConnectionError(e as Error, content, false);
           return;
         }
+
+        throw e;
       } finally {
         dispatch(removeConnectionCache(pendingId));
       }
