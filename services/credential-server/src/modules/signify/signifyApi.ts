@@ -129,7 +129,7 @@ export class SignifyApi {
 
     for (const [key, value] of Object.entries(vcdata)) {
       const keys = key.split(".");
-      let current = test;
+      let current = credentialData;
       for (let i = 0; i < keys.length; i++) {
         if (i === keys.length - 1) {
           current[keys[i]] = value;
@@ -139,11 +139,11 @@ export class SignifyApi {
       }
     }
 
-    if (test["e"]) {
-      test["e"]["d"] = "";
+    if (credentialData["e"]) {
+      credentialData["e"]["d"] = "";
     }
-    if (test["r"]) {
-      test["r"]["d"] = "";
+    if (credentialData["r"]) {
+      credentialData["r"]["d"] = "";
     }
 
     const result = await this.signifyClient
