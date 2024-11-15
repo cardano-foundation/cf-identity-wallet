@@ -2,7 +2,7 @@ import { i18n } from "../../i18n";
 
 const nameRequirements = {
   validCharactersPattern: /^[a-zA-Z0-9-_\s]+$/,
-  lengthPattern: /^.{3,50}$/,
+  lengthPattern: /^.{1,32}$/,
   onlySpacePattern: /^\s+$/
 };
 
@@ -18,7 +18,7 @@ const nameChecker = {
   isValidLength(name: string) { return nameRequirements.lengthPattern.test(name); },
   hasNonSpaceCharacter(name: string) { return !nameRequirements.onlySpacePattern.test(name); },
   getError(name: string) {
-    if (name.length > 50) {
+    if (name.length > 32) {
       return nameErrorMessages.invalidMaxLength;
     }
 
