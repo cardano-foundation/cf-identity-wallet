@@ -81,9 +81,10 @@ const App = () => {
   }, [currentOperation]);
 
   useEffect(() => {
-    const platforms = getPlatforms();
     if (Capacitor.isNativePlatform()) {
       ScreenOrientation.lock({ orientation: "portrait" });
+
+      const platforms = getPlatforms();
       if (platforms.includes("ios")) {
         StatusBar.setStyle({
           style: Style.Light,
