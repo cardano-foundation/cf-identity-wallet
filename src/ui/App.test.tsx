@@ -128,6 +128,22 @@ jest.mock("@capacitor/core", () => {
   };
 });
 
+const addKeyboardEventMock = jest.fn();
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: (...params: any[]) => addKeyboardEventMock(...params),
+    hide: jest.fn()
+  },
+}));
+
+jest.mock("@capacitor-community/privacy-screen", () => ({
+  PrivacyScreen: {
+    enable: jest.fn(),
+    disable: jest.fn(),
+  },
+}));
+
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialState = {
