@@ -125,7 +125,7 @@ const ConnectionDetails = ({
             connectionShortDetails.id
           );
         } else {
-          await Agent.agent.connections.deleteConnectionById(
+          await Agent.agent.connections.markConnectionPendingDelete(
             connectionShortDetails.id
           );
         }
@@ -153,7 +153,7 @@ const ConnectionDetails = ({
     },
     {
       title: i18n.t("connections.details.date"),
-      value: formatShortDate(`${connectionDetails?.connectionDate}`),
+      value: formatShortDate(`${connectionDetails?.createdAtUTC}`),
     },
     {
       title: i18n.t("connections.details.endpoints"),
@@ -231,7 +231,7 @@ const ConnectionDetails = ({
             <ConnectionDetailsHeader
               logo={connectionDetails?.logo || KeriLogo}
               label={connectionDetails?.label}
-              date={connectionDetails?.connectionDate}
+              date={connectionDetails?.createdAtUTC}
             />
             <IonSegment
               data-testid="connection-details-segment"

@@ -2,7 +2,7 @@ import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
-  IpexMessage,
+  ExnMessage,
   NotificationRoute,
   type AgentServicesProps,
   type KeriaNotification,
@@ -325,7 +325,16 @@ class IpexCommunicationService extends AgentService {
     //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
-      .get(acdcSaid);
+      .get(acdcSaid)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
     if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
@@ -520,7 +529,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   async createLinkedIpexMessageRecord(
-    message: IpexMessage,
+    message: ExnMessage,
     historyType: ConnectionHistoryType
   ): Promise<void> {
     let schemaSaid;

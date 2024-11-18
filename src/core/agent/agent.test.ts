@@ -29,6 +29,11 @@ const getKeyStoreSpy = jest
 const mockBasicStorageService = {
   save: jest.fn(),
 };
+
+const mockConnectionService = {
+  removeConnectionsPendingDeletion: jest.fn(),
+  resolvePendingConnections: jest.fn(),
+};
 const mockEntropy = "00000000000000000000000000000000";
 
 describe("test cases of bootAndConnect function", () => {
@@ -45,6 +50,7 @@ describe("test cases of bootAndConnect function", () => {
     agent = Agent.agent;
     (agent as any).basicStorageService = mockBasicStorageService;
     (agent as any).agentServicesProps = mockAgentServicesProps;
+    (agent as any).connectionService = mockConnectionService;
 
     mockAgentUrls = {
       url: "http://127.0.0.1:3901",
@@ -138,6 +144,12 @@ describe("test cases of bootAndConnect function", () => {
     mockSignifyClient.boot.mockResolvedValueOnce({ ok: true });
     mockSignifyClient.connect.mockResolvedValueOnce(true);
     SecureStorage.get = jest.fn().mockResolvedValueOnce(mockGetBranValue);
+    mockConnectionService.removeConnectionsPendingDeletion = jest
+      .fn()
+      .mockReturnValue(["id1", "id2"]);
+    mockConnectionService.resolvePendingConnections = jest
+      .fn()
+      .mockReturnValue(undefined);
     await agent.bootAndConnect(mockAgentUrls);
 
     expect(signifyReady).toHaveBeenCalled();
@@ -216,6 +228,8 @@ describe("test cases of recoverKeriaAgent function", () => {
     agent = Agent.agent;
     (agent as any).basicStorageService = mockBasicStorageService;
     (agent as any).agentServicesProps = mockAgentServicesProps;
+    (agent as any).connectionService = mockConnectionService;
+
     mockSeedPhrase = [
       "abandon",
       "abandon",
@@ -246,6 +260,9 @@ describe("test cases of recoverKeriaAgent function", () => {
     );
     const expectedBran = branBuffer.toString("utf-8");
     (mnemonicToEntropy as jest.Mock).mockReturnValueOnce(mockEntropy);
+    mockConnectionService.removeConnectionsPendingDeletion = jest
+      .fn()
+      .mockReturnValue(["id1", "id2"]);
 
     await agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl);
 

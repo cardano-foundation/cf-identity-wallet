@@ -1,6 +1,10 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
+import { t } from "i18next";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records/basicRecord";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -8,9 +12,11 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
+  getIdentifiersFilters,
   getMultiSigGroupCache,
   getOpenMultiSig,
   setIdentifiersCache,
+  setIdentifiersFilters,
   setOpenMultiSigId,
 } from "../../../store/reducers/identifiersCache";
 import {
@@ -22,19 +28,22 @@ import {
 } from "../../../store/reducers/stateCache";
 import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { CreateGroupIdentifier } from "../../components/CreateGroupIdentifier";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
+import { FilterChip } from "../../components/FilterChip/FilterChip";
+import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
+import { FilteredItemsPlaceholder } from "../../components/FilteredItemsPlaceholder";
 import { ListHeader } from "../../components/ListHeader";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import {
   CardList as IdentifierCardList,
   SwitchCardView,
 } from "../../components/SwitchCardView";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import "./Identifiers.scss";
-import { StartAnimationSource } from "./Identifiers.type";
-import { RemovePendingAlert } from "../../components/RemovePendingAlert";
-import { Agent } from "../../../core/agent/agent";
 import { showError } from "../../utils/error";
+import "./Identifiers.scss";
+import { IdentifiersFilters, StartAnimationSource } from "./Identifiers.types";
 
 const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
@@ -74,14 +83,16 @@ const AdditionalButtons = ({
     </>
   );
 };
+
 const Identifiers = () => {
   const pageId = "identifiers-tab";
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const multisigGroupCache = useAppSelector(getMultiSigGroupCache);
-  const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
+  const favouriteIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const openMultiSigId = useAppSelector(getOpenMultiSig);
+  const identifiersFiltersCache = useAppSelector(getIdentifiersFilters);
 
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
@@ -95,7 +106,15 @@ const Identifiers = () => {
   const [multiSigIdentifiers, setMultiSigIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
+  const [individualIdentifiers, setIndividualIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [groupIdentifiers, setGroupIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
+    useState(false);
+  const [groupIdentifierOpen, setGroupIdentifierOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [resumeMultiSig, setResumeMultiSig] =
@@ -106,6 +125,7 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
+  const selectedFilter = identifiersFiltersCache ?? IdentifiersFilters.All;
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -113,7 +133,7 @@ const Identifiers = () => {
 
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
-    setCreateIdentifierModalIsOpen(true);
+    setGroupIdentifierOpen(true);
   };
 
   useEffect(() => {
@@ -150,8 +170,15 @@ const Identifiers = () => {
     const tmpMultisigIdentifiers = [];
     const tmpFavIdentifiers = [];
     const tmpAllIdentifiers = [];
+    const tmpIndividualIdentifiers = [];
+    const tmpGroupIdentifiers = [];
     for (const identifier of identifiersData) {
-      if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
+      if (!identifier.groupMetadata) {
+        identifier.multisigManageAid
+          ? tmpGroupIdentifiers.push(identifier)
+          : tmpIndividualIdentifiers.push(identifier);
+      }
+      if (favouriteIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
         tmpAllIdentifiers.push(identifier);
         continue;
@@ -170,10 +197,12 @@ const Identifiers = () => {
     setFavIdentifiers(tmpFavIdentifiers);
     setPendingIdentifiers(tmpPendingIdentifiers);
     setMultiSigIdentifiers(tmpMultisigIdentifiers);
-  }, [favouritesIdentifiers, identifiersData]);
+    setIndividualIdentifiers(tmpIndividualIdentifiers);
+    setGroupIdentifiers(tmpGroupIdentifiers);
+  }, [favouriteIdentifiers, identifiersData]);
 
   const findTimeById = (id: string) => {
-    const found = favouritesIdentifiers?.find((item) => item.id === id);
+    const found = favouriteIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
   };
 
@@ -206,8 +235,10 @@ const Identifiers = () => {
         ? "favorite-identifier-nav"
         : ""
   }`;
-  const handleCloseCreateIdentifier = () => {
-    setCreateIdentifierModalIsOpen(false);
+  const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
+    if(identifier?.groupMetadata || identifier?.multisigManageAid) {
+      handleMultiSigClick(identifier);
+    }
   };
 
   const deletePendingIdentifier = async () => {
@@ -252,6 +283,36 @@ const Identifiers = () => {
 
   const handleCreateIdentifier = () => {
     setCreateIdentifierModalIsOpen(true);
+  };
+
+  const filterOptions = [
+    {
+      filter: IdentifiersFilters.All,
+      label: i18n.t("tabs.identifiers.tab.filters.all"),
+    },
+    {
+      filter: IdentifiersFilters.Individual,
+      label: i18n.t("tabs.identifiers.tab.filters.individual"),
+    },
+    {
+      filter: IdentifiersFilters.Group,
+      label: i18n.t("tabs.identifiers.tab.filters.group"),
+    },
+  ];
+
+  const handleSelectFilter = (filter: AllowedChipFilter) => {
+    Agent.agent.basicStorage
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_IDENTIFIER_SELECTED_FILTER,
+          content: {
+            filter: filter,
+          },
+        })
+      )
+      .then(() => {
+        dispatch(setIdentifiersFilters(filter as IdentifiersFilters));
+      });
   };
 
   return (
@@ -300,10 +361,42 @@ const Identifiers = () => {
               <SwitchCardView
                 className="identifiers-tab-content-block identifier-cards"
                 cardTypes={CardType.IDENTIFIERS}
-                cardsData={allIdentifiers}
+                cardsData={
+                  selectedFilter === IdentifiersFilters.All
+                    ? allIdentifiers
+                    : selectedFilter === IdentifiersFilters.Individual
+                      ? individualIdentifiers
+                      : groupIdentifiers
+                }
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}
                 name="allidentifiers"
+                filters={
+                  <div className="identifiers-tab-chips">
+                    {filterOptions.map((option) => (
+                      <FilterChip
+                        key={option.filter}
+                        filter={option.filter}
+                        label={option.label}
+                        isActive={option.filter === selectedFilter}
+                        onClick={handleSelectFilter}
+                      />
+                    ))}
+                  </div>
+                }
+                placeholder={
+                  <FilteredItemsPlaceholder
+                    placeholderText={t(
+                      "tabs.identifiers.tab.filters.placeholder",
+                      {
+                        type: selectedFilter,
+                      }
+                    )}
+                    testId={pageId}
+                    buttonLabel={`${i18n.t("tabs.identifiers.tab.create")}`}
+                    buttonAction={handleCreateIdentifier}
+                  />
+                }
               />
             )}
             {!!multiSigIdentifiers.length && (
@@ -350,9 +443,14 @@ const Identifiers = () => {
       />
       <CreateIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
-        setModalIsOpen={handleCloseCreateIdentifier}
+        setModalIsOpen={setCreateIdentifierModalIsOpen}
+        onClose={handleCloseCreateIdentifier}
+      />
+      <CreateGroupIdentifier 
+        modalIsOpen={groupIdentifierOpen} 
+        setModalIsOpen={setGroupIdentifierOpen} 
+        setResumeMultiSig={setResumeMultiSig} 
         resumeMultiSig={resumeMultiSig}
-        setResumeMultiSig={setResumeMultiSig}
       />
     </>
   );

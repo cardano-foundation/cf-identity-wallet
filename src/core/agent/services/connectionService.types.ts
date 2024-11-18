@@ -1,4 +1,4 @@
-import { IpexMessage } from "../agent.types";
+import { ExnMessage } from "../agent.types";
 
 enum KeriaContactKeyPrefix {
   CONNECTION_NOTE = "note:",
@@ -14,21 +14,13 @@ interface ConnectionHistoryItem {
   connectionId: string;
 }
 
-interface KeriaContact {
-  alias: string;
-  id: string;
-  oobi: string;
-  challenges: string[];
-  wellKnowns: string[];
-}
-
 enum ConnectionHistoryType {
   CREDENTIAL_ISSUANCE,
   CREDENTIAL_REQUEST_PRESENT,
   CREDENTIAL_REVOKED,
-  CREDENTIAL_PRESENTED
+  CREDENTIAL_PRESENTED,
 }
 
 export { ConnectionHistoryType, KeriaContactKeyPrefix };
 
-export type { KeriaContact, ConnectionHistoryItem, IpexMessage };
+export type { ConnectionHistoryItem, ExnMessage };

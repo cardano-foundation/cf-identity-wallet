@@ -1,19 +1,22 @@
-import { render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { MemoryRouter, Route } from "react-router-dom";
 import { Style, StyleOptions } from "@capacitor/status-bar";
-import { App } from "./App";
+import { render, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
+import configureStore from "redux-mock-store";
+import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
 import { store } from "../store";
-import { Identifiers } from "./pages/Identifiers";
+import { showGenericError } from "../store/reducers/stateCache";
+import { App } from "./App";
 import { OperationType } from "./globals/types";
+
+const mockInitDatabase = jest.fn();
 
 jest.mock("../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: jest.fn(),
+      setupLocalDependencies: () => mockInitDatabase(),
       getBranAndMnemonic: jest.fn(() =>
         Promise.resolve({
           bran: "",
@@ -115,6 +118,32 @@ jest.mock("@ionic/react", () => ({
   getPlatforms: () => getPlatformsMock(),
 }));
 
+const isNativeMock = jest.fn(() => false);
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => isNativeMock(),
+    },
+  };
+});
+
+const addKeyboardEventMock = jest.fn();
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: (...params: any[]) => addKeyboardEventMock(...params),
+    hide: jest.fn()
+  },
+}));
+
+jest.mock("@capacitor-community/privacy-screen", () => ({
+  PrivacyScreen: {
+    enable: jest.fn(),
+    disable: jest.fn(),
+  },
+}));
+
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialState = {
@@ -131,13 +160,56 @@ const initialState = {
       },
     },
     toastMsgs: [],
+    showConnections: false,
+    currentOperation: OperationType.IDLE,
+    queueIncomingRequest: {
+      isProcessing: false,
+      queues: [],
+      isPaused: false,
+    },
   },
-  connectionsCache: {
-    connections: [],
+  seedPhraseCache: {
+    seedPhrase: "",
+    bran: "",
   },
   identifiersCache: {
     identifiers: [],
     favourites: [],
+    multiSigGroup: {
+      groupId: "",
+      connections: [],
+    },
+  },
+  credsCache: { creds: [], favourites: [] },
+  credsArchivedCache: { creds: [] },
+  connectionsCache: {
+    connections: {},
+    multisigConnections: {},
+  },
+  walletConnectionsCache: {
+    walletConnections: [],
+    connectedWallet: null,
+    pendingConnection: null,
+  },
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
+  },
+  biometricsCache: {
+    enabled: false,
+  },
+  ssiAgentCache: {
+    bootUrl: "",
+    connectUrl: "",
+  },
+  notificationsCache: {
+    notifications: [],
   },
 };
 
@@ -147,6 +219,12 @@ const storeMocked = {
 };
 
 describe("App", () => {
+  beforeEach(() => {
+    isNativeMock.mockImplementation(() => false);
+    mockInitDatabase.mockClear();
+    getPlatformsMock.mockImplementation(() => ["android"]);
+  })
+
   test("Mobile header hidden when app not in preview mode", async () => {
     const { queryByTestId } = render(
       <Provider store={store}>
@@ -160,8 +238,9 @@ describe("App", () => {
     });
   });
 
-  test.skip("Force status bar style is dark mode on ios", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["ios"]);
+  test("Force status bar style is dark mode on ios", async () => {
+    getPlatformsMock.mockImplementation(() => ["ios"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -177,7 +256,8 @@ describe("App", () => {
   });
 
   test("Should not force status bar style is dark mode on android or browser", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
+    getPlatformsMock.mockImplementation(() => ["android", "mobileweb"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -191,7 +271,8 @@ describe("App", () => {
   });
 
   test("Should lock screen orientation to portrait mode", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["android"]);
+    getPlatformsMock.mockImplementation(() => ["android"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -220,7 +301,7 @@ describe("App", () => {
       stateCache: {
         isOnline: false,
         initialized: true,
-        routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
+        routes: [{ path: "/" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
           seedPhraseIsSet: false,
@@ -271,7 +352,7 @@ describe("App", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -297,19 +378,137 @@ describe("App", () => {
     });
   });
 
-  test.skip("It renders SetUserName modal", async () => {
-    const { queryByTestId } = render(
+  test("Show error when unhandledrejection event fired", async () => {
+    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
+      if(type === "unhandledrejection") {
+        listener({
+          preventDefault: jest.fn(),
+          promise: Promise.reject(new Error("Failed"))
+        })
+      }
+    })
+
+    render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showGenericError(true));
+    });
+
+    spy.mockClear();
+  });
+
+  test("Show error when error fired", async () => {
+    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
+      if(type === "error") {
+        listener({
+          preventDefault: jest.fn(),
+          error: new Error("Failed")
+        })
+      }
+    })
+
+    render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showGenericError(true));
+    });
+
+    spy.mockClear();
+  });
+  test("It renders SetUserName modal", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [{ path: TabsRoutePath.ROOT }],
+        authentication: {
+          loggedIn: true,
+          userName: "",
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        toastMsgs: [],
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-          <Route
-            path={TabsRoutePath.IDENTIFIERS}
-            component={Identifiers}
-          />
+          <App />
         </MemoryRouter>
       </Provider>
     );
+
     await waitFor(() => {
-      expect(queryByTestId("set-user-name")).toBeInTheDocument();
+      expect(getByText(Eng_Trans.inputrequest.title.username)).toBeInTheDocument();
     });
   });
 });

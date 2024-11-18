@@ -7,6 +7,7 @@ enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
   ACCEPTED = "accepted",
+  DELETED = "deleted",
 }
 
 interface ConnectionHistoryItem {
@@ -27,6 +28,8 @@ enum MiscRecordId {
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
   APP_CRED_VIEW_TYPE = "app-cred-view-type",
+  APP_IDENTIFIER_SELECTED_FILTER = "app-identifier-selected-filter",
+  APP_CRED_SELECTED_FILTER = "app-cred-selected-filter",
   KERIA_CONNECT_URL = "keria-connect-url",
   KERIA_BOOT_URL = "keria-boot-url",
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
@@ -40,7 +43,7 @@ enum MiscRecordId {
 interface ConnectionShortDetails {
   id: string;
   label: string;
-  connectionDate: string;
+  createdAtUTC: string;
   logo?: string;
   status: ConnectionStatus;
   oobi?: string;
@@ -62,7 +65,7 @@ interface JSONArray extends Array<JSONValue> {}
 
 type JSONValue = string | number | boolean | JSONObject | JSONArray;
 
-type IpexMessage = {
+type ExnMessage = {
   exn: {
     v: string;
     t: string;
@@ -141,7 +144,6 @@ interface AgentServicesProps {
 }
 
 interface CreateIdentifierResult {
-  signifyName: string;
   identifier: string;
   multisigManageAid?: string;
   isPending?: boolean;
@@ -215,7 +217,7 @@ export type {
   IdentifierResult,
   AgentUrls,
   BranAndMnemonic,
-  IpexMessage,
+  ExnMessage,
   NotificationRpy,
   AuthorizationRequestExn,
   OperationCallback,

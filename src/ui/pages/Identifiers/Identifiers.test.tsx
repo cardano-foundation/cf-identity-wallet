@@ -13,10 +13,7 @@ import { createMemoryHistory } from "history";
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
-import {
-  setCurrentOperation,
-  showConnections,
-} from "../../../store/reducers/stateCache";
+import { showConnections } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import {
   filteredIdentifierFix,
@@ -30,7 +27,13 @@ import {
 import { OperationType } from "../../globals/types";
 import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
-import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import {
+  setIdentifiersCache,
+  setIdentifiersFilters,
+  setMultiSigGroupCache,
+} from "../../../store/reducers/identifiersCache";
+import { IdentifiersFilters } from "./Identifiers.types";
+import { store } from "../../../store";
 
 const deleteIdentifierMock = jest.fn();
 
@@ -50,6 +53,9 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       basicStorage: {
         deleteById: jest.fn(() => Promise.resolve()),
+        findById: jest.fn(),
+        save: jest.fn(),
+        createOrUpdateBasicRecord: () => Promise.resolve(),
       },
     },
   },
@@ -80,7 +86,7 @@ const initialState = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
   seedPhraseCache: {
     seedPhrase:
@@ -158,6 +164,143 @@ describe("Identifiers Tab", () => {
     ).toBeInTheDocument();
   });
 
+  test("Renders Identifiers Filters", () => {
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const allFilterBtn = getByTestId("all-filter-btn");
+    const individualFilterBtn = getByTestId("individual-filter-btn");
+    const groupFilterBtn = getByTestId("group-filter-btn");
+
+    expect(allFilterBtn).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.identifiers.tab.filters.all
+    );
+    expect(individualFilterBtn).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.identifiers.tab.filters.individual
+    );
+    expect(groupFilterBtn).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.identifiers.tab.filters.group
+    );
+  });
+
+  test("Toggle Identifiers Filters show Individual", async () => {
+    store.dispatch(setIdentifiersCache([filteredIdentifierFix[0]]));
+
+    const { getByTestId, getByText, queryByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={store}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const allFilterBtn = getByTestId("all-filter-btn");
+    const individualFilterBtn = getByTestId("individual-filter-btn");
+    const groupFilterBtn = getByTestId("group-filter-btn");
+
+    expect(allFilterBtn).toHaveClass("selected");
+
+    await waitFor(() => {
+      expect(getByText(filteredIdentifierFix[0].displayName)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(individualFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(getByText(filteredIdentifierFix[0].displayName)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(groupFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(queryByText(filteredIdentifierFix[0].displayName)).toBeNull();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.tab.filters.placeholder.replace(
+            "{{ type }}",
+            IdentifiersFilters.Group
+          )
+        )
+      ).toBeVisible();
+    });
+
+    store.dispatch(setIdentifiersCache([]));
+
+    act(() => {
+      fireEvent.click(allFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(allFilterBtn).toHaveClass("selected");
+    });
+  });
+
+  test("Toggle Identifiers Filters show Group", async () => {
+    store.dispatch(setIdentifiersCache([filteredIdentifierFix[3]]));
+    store.dispatch(setIdentifiersFilters(IdentifiersFilters.All));
+
+    const { getByTestId, getByText, queryByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={store}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const allFilterBtn = getByTestId("all-filter-btn");
+    const individualFilterBtn = getByTestId("individual-filter-btn");
+    const groupFilterBtn = getByTestId("group-filter-btn");
+
+    expect(allFilterBtn).toHaveClass("selected");
+
+    await waitFor(() => {
+      expect(getByText(filteredIdentifierFix[3].displayName)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(individualFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(queryByText(filteredIdentifierFix[3].displayName)).toBeNull();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.tab.filters.placeholder.replace(
+            "{{ type }}",
+            IdentifiersFilters.Individual
+          )
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(groupFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(getByText(filteredIdentifierFix[3].displayName)).toBeVisible();
+    });
+
+    store.dispatch(setIdentifiersCache([]));
+
+    act(() => {
+      fireEvent.click(allFilterBtn);
+    });
+
+    await waitFor(() => {
+      expect(allFilterBtn).toHaveClass("selected");
+    });
+  });
+
   test("Navigate from Identifiers Tab to Card Details and back", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -182,7 +325,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -269,7 +412,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -281,15 +424,19 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
+
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+
     const { getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter history={history} initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
             component={Identifiers}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     await waitFor(() => {
@@ -325,7 +472,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -379,7 +526,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -435,7 +582,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -535,7 +682,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -602,7 +749,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -678,7 +825,7 @@ describe("Identifiers Tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -690,15 +837,18 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+  
     const { getByText, getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter history={history} initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
             component={Identifiers}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     act(() => {

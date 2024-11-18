@@ -25,6 +25,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import {
+  setCredentialsFilters,
   setCredsCache,
   setFavouritesCredsCache,
   updateOrAddCredsCache,
@@ -32,6 +33,7 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  setIdentifiersFilters,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -74,6 +76,8 @@ import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
 } from "../../../core/agent/event.types";
+import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
+import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -279,6 +283,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadCacheBasicStorage = async () => {
     try {
       let userName: { userName: string } = { userName: "" };
+      let identifiersSelectedFilter: IdentifiersFilters =
+        IdentifiersFilters.All;
+      let credentialsSelectedFilter: CredentialsFilters =
+        CredentialsFilters.All;
       const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
       const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
@@ -316,8 +324,21 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
       if (indentifierViewType) {
         dispatch(
-          setIdentifierViewTypeCache(indentifierViewType.content.viewType as CardListViewType)
+          setIdentifierViewTypeCache(
+            indentifierViewType.content.viewType as CardListViewType
+          )
         );
+      }
+
+      const indentifiersFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_SELECTED_FILTER
+      );
+      if (indentifiersFilters) {
+        identifiersSelectedFilter = indentifiersFilters.content
+          .filter as IdentifiersFilters;
+      }
+      if (identifiersSelectedFilter) {
+        dispatch(setIdentifiersFilters(identifiersSelectedFilter));
       }
 
       const credViewType = await Agent.agent.basicStorage.findById(
@@ -326,8 +347,21 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (credViewType) {
         dispatch(
-          setCredentialViewTypeCache(credViewType.content.viewType as CardListViewType)
+          setCredentialViewTypeCache(
+            credViewType.content.viewType as CardListViewType
+          )
         );
+      }
+
+      const credentialsFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_SELECTED_FILTER
+      );
+      if (credentialsFilters) {
+        credentialsSelectedFilter = credentialsFilters.content
+          .filter as CredentialsFilters;
+      }
+      if (credentialsSelectedFilter) {
+        dispatch(setCredentialsFilters(credentialsSelectedFilter));
       }
 
       const appBiometrics = await Agent.agent.basicStorage.findById(
@@ -352,7 +386,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (identifierFavouriteIndex) {
         dispatch(
-          setIdentifierFavouriteIndex(Number(identifierFavouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(
+            Number(identifierFavouriteIndex.content.favouriteIndex)
+          )
         );
       }
 
@@ -362,7 +398,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       if (credFavouriteIndex) {
         dispatch(
-          setIdentifierFavouriteIndex(Number(credFavouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(
+            Number(credFavouriteIndex.content.favouriteIndex)
+          )
         );
       }
 
@@ -447,7 +485,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   const initApp = async () => {
     await new ConfigurationService().start();
-    await Agent.agent.initDatabaseConnection();
+    await Agent.agent.setupLocalDependencies();
 
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.

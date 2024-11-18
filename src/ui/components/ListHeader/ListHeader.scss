@@ -51,5 +51,15 @@
       font-size: 1rem;
       line-height: 1.25rem;
     }
+
+    .list-header-actions .header-action {
+      width: 1.6rem;
+      height: 1.6rem;
+
+      ion-icon {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
   }
 }

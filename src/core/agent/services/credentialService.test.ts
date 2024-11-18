@@ -441,9 +441,27 @@ describe("Credential service of agent", () => {
       .fn()
       .mockResolvedValue(credentialMetadataRecordA);
     credentialListMock = jest.fn().mockResolvedValue([]);
+    const error404 = new Error("Not Found - 404");
+    getCredentialMock.mockRejectedValueOnce(error404);
+
     await expect(
       credentialService.getCredentialDetailsById(id)
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
+  });
+
+  test("Should throw error if other error occurs with get credential in cloud", async () => {
+    const id = "not-found-id";
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(credentialMetadataRecordA);
+    credentialListMock = jest.fn().mockResolvedValue([]);
+    const errorMessage = new Error("Error - 500");
+    getCredentialMock.mockRejectedValueOnce(errorMessage);
+
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrow(errorMessage);
   });
 
   test("Can delete stale local credential", async () => {
@@ -458,7 +476,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {
@@ -480,7 +498,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {
@@ -514,7 +532,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {

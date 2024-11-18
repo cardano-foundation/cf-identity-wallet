@@ -9,7 +9,6 @@ const now = new Date();
 const memberMetadataRecordProps: IdentifierMetadataRecordProps = {
   id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
   groupMetadata: {
@@ -27,7 +26,6 @@ const multisigMetadataRecord = {
   type: "IdentifierMetadataRecord",
   id: "EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
   displayName: "identifier",
-  signifyName: "d8055a29-de5e-49c0-b986-b9e9f1fb6c2e",
   isDeleted: false,
   isPending: false,
   multisigManageAid: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
@@ -98,7 +96,6 @@ const getMultisigIdentifierResponse = {
 
 const memberIdentifierRecord = {
   _tags: {
-    signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
     groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
     isDeleted: false,
     isPending: false,
@@ -107,7 +104,6 @@ const memberIdentifierRecord = {
   type: "IdentifierMetadataRecord",
   id: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
   displayName: "multi-sig",
-  signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
   isDeleted: false,
   isPending: false,
   createdAt: new Date("2024-06-28T03:54:03.514Z"),
@@ -444,40 +440,44 @@ const multisigExnIpexGrantEnd =
   "-LA35AACAA-e-exn-FABEPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC0AAAAAAAAAAAAAAAAAAAAAAAEPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC-AABAABTAefC5IBObzL5ZteOa6me6iLQXV1v1rTcsBOrJDfk6uwRfR1nxm2DKWxehRMHEdq6YlqxysCdWfVBIvd4t3gH";
 
 const resolvedOobiOpResponse = {
-  name: "oobi.ABi0yV6LhFudjaGT4wkCNpVChyHOSFii_idAIAEhyfot",
-  metadata: {
-    oobi: "http://keria:3902/oobi/EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7/agent/EFv5qAoixFv0WwsekWSqS5ypXQUl2f_N4j8GGURs3QUT",
-  },
-  done: true,
-  error: null,
-  response: {
-    vn: [1, 0],
-    i: "EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7",
-    s: "0",
-    p: "",
-    d: "EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7",
-    f: "0",
-    dt: "2024-08-09T11:04:09.343208+00:00",
-    et: "icp",
-    kt: "1",
-    k: ["DLt2-jru3tSgE9Ui2dSRCYy5BJjWsyGXsX7klF_ecylO"],
-    nt: "1",
-    n: ["EIxuzxaSiS6HHdff1M8vzkRlJSFK4YwpD813PPmnBZSe"],
-    bt: "3",
-    b: [
-      "BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha",
-      "BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM",
-      "BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX",
-    ],
-    c: [],
-    ee: {
-      s: "0",
-      d: "EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7",
-      br: [],
-      ba: [],
+  op: {
+    name: "oobi.ABi0yV6LhFudjaGT4wkCNpVChyHOSFii_idAIAEhyfot",
+    metadata: {
+      oobi: "http://keria:3902/oobi/EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7/agent/EFv5qAoixFv0WwsekWSqS5ypXQUl2f_N4j8GGURs3QUT",
     },
-    di: "",
+    done: true,
+    error: null,
+    response: {
+      vn: [1, 0],
+      i: "EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7",
+      s: "0",
+      p: "",
+      d: "EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7",
+      f: "0",
+      dt: "2024-08-09T11:04:09.343208+00:00",
+      et: "icp",
+      kt: "1",
+      k: ["DLt2-jru3tSgE9Ui2dSRCYy5BJjWsyGXsX7klF_ecylO"],
+      nt: "1",
+      n: ["EIxuzxaSiS6HHdff1M8vzkRlJSFK4YwpD813PPmnBZSe"],
+      bt: "3",
+      b: [
+        "BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha",
+        "BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM",
+        "BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX",
+      ],
+      c: [],
+      ee: {
+        s: "0",
+        d: "EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7",
+        br: [],
+        ba: [],
+      },
+      di: "",
+    },
   },
+  alias: "alias",
+  connection: {},
 };
 
 const initiatorConnectionShortDetails = {
@@ -485,7 +485,7 @@ const initiatorConnectionShortDetails = {
   label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
   oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
   status: ConnectionStatus.CONFIRMED,
-  connectionDate: new Date().toISOString(),
+  createdAtUTC: new Date().toISOString(),
 };
 
 const notificationMultisigExnRotation = {

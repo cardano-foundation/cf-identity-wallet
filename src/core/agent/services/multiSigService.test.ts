@@ -1,4 +1,3 @@
-import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { CoreEventEmitter } from "../event";
@@ -14,10 +13,7 @@ import {
   resolvedOobiOpResponse,
   memberIdentifierRecord,
   getMultisigMembersResponse,
-  memberKeyStateIcp,
-  memberKeyStateRot,
   getRequestMultisigIcp,
-  notificationMultisigExnRotation,
   memberMetadataRecordProps,
 } from "../../__fixtures__/agent/multSigFixtures";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -36,14 +32,13 @@ const notificationStorage = jest.mocked({
 
 const identifiersListMock = jest.fn();
 let identifiersGetMock = jest.fn();
-let identifiersCreateMock = jest.fn();
+const identifiersCreateMock = jest.fn();
 let identifiersMemberMock = jest.fn();
 const identifiersInteractMock = jest.fn();
 const identifiersRotateMock = jest.fn();
 
 const oobiResolveMock = jest.fn();
 let groupGetRequestMock = jest.fn();
-let queryKeyStateMock = jest.fn();
 let queryKeyStateGetMock = jest.fn();
 const addEndRoleMock = jest.fn();
 const sendExchangesMock = jest.fn();
@@ -119,7 +114,7 @@ const signifyClient = jest.mocked({
     pre: "pre",
   },
   keyStates: () => ({
-    query: queryKeyStateMock,
+    query: jest.fn(),
     get: queryKeyStateGetMock,
   }),
 
@@ -238,7 +233,7 @@ describe("Oobi/endrole", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -318,231 +313,12 @@ describe("Oobi/endrole", () => {
   });
 });
 
-describe("Rotation of multi-sig", () => {
-  test("Cannot rotate an identifier that is not multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: true,
-      signifyName: "",
-      theme: 0,
-    } as IdentifierMetadataRecord;
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(metadata);
-    expect(multiSigService.rotateMultisig(metadata.id)).rejects.toThrowError(
-      MultiSigService.AID_IS_NOT_MULTI_SIG
-    );
-  });
-
-  test("Cannot rotate a multisig if we cannot retrieve updated member identifier states", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const signifyName = "newUuidHere";
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValue(getMemberIdentifierResponse);
-    identifiersCreateMock = jest.fn().mockResolvedValue({
-      identifier: multisigIdentifier,
-      signifyName,
-    });
-
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(multisigMetadataRecord);
-    queryKeyStateMock = jest.fn().mockResolvedValue({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: false,
-      error: null,
-      response: {
-        i: "id",
-      },
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
-    });
-    identifierStorage.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([multisigMetadataRecord]);
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
-    expect(
-      multiSigService.rotateMultisig(multisigMetadataRecord.id)
-    ).rejects.toThrowError(MultiSigService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
-  });
-
-  test("Can rotate a keri multisig with KERI contacts", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const signifyName = "newUuidHere";
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValue(getMemberIdentifierResponse);
-    identifiersCreateMock = jest.fn().mockResolvedValue({
-      identifier: multisigIdentifier,
-      signifyName,
-    });
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
-    queryKeyStateMock = jest.fn().mockResolvedValue({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: true,
-      error: null,
-      response: {
-        i: "id",
-      },
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
-    });
-
-    identifiersRotateMock.mockImplementation((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}`, done: false };
-        },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
-    });
-
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(multisigMetadataRecord);
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
-    expect(
-      await multiSigService.rotateMultisig(multisigMetadataRecord.id)
-    ).toBe(multisigIdentifier);
-  });
-
-  test("Cannot join a multisig rotation if the rotation exn cannot be found on KERIA", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest.fn().mockResolvedValue([]);
-    expect(
-      multiSigService.joinMultisigRotation(notificationMultisigExnRotation)
-    ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
-  });
-
-  test("Cannot rotate local member with AID is not multisig and throw error", async () => {
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...multisigMetadataRecord,
-      multisigManageAid: undefined,
-    });
-
-    expect(multiSigService.rotateLocalMember("123456")).rejects.toThrowError(
-      MultiSigService.AID_IS_NOT_MULTI_SIG
-    );
-  });
-
-  test("Can rotate local member of multisig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(multisigMetadataRecord);
-    identifiers.rotateIdentifier = identifiersRotateMock;
-    await multiSigService.rotateLocalMember(multisigMetadataRecord.id);
-
-    expect(identifiersRotateMock).toHaveBeenCalledWith(
-      multisigMetadataRecord.multisigManageAid
-    );
-  });
-
-  test("Cannot try to rotate member identifier relating to non multisig identifier", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...multisigMetadataRecord,
-      multisigManageAid: undefined,
-    });
-    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
-
-    expect(
-      multiSigService.joinMultisigRotation(notificationMultisigExnRotation)
-    ).rejects.toThrowError(MultiSigService.AID_IS_NOT_MULTI_SIG);
-  });
-
-  test("Cannot join multisig rotation if we do not control any member of the identifier", async () => {
-    identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(undefined);
-    identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
-    addEndRoleMock.mockResolvedValue({
-      op: jest.fn(),
-      serder: { size: 1 },
-      sigs: [],
-    });
-    await expect(
-      multiSigService.endRoleAuthorization("prefix")
-    ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
-  });
-
-  test("Cannot get key state of member identifier while checking if ready to rotate", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigIdentifierResponse);
-
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
-
-    queryKeyStateMock.mockImplementation(() => {
-      return {
-        name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-        metadata: {
-          sn: "1",
-        },
-        done: false,
-        error: null,
-        response: null,
-      };
-    });
-
-    expect(
-      multiSigService.membersReadyToRotate("multiSigId")
-    ).rejects.toThrowError(MultiSigService.CANNOT_GET_KEYSTATE_OF_IDENTIFIER);
-  });
-
-  test("Should return member identifiers that have rotated ahead of multisig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigIdentifierResponse);
-
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
-
-    const rotatedMemberAid = "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL";
-    queryKeyStateMock.mockImplementation((id: string) => {
-      if (id === "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF") {
-        return memberKeyStateIcp;
-      }
-      return memberKeyStateRot;
-    });
-
-    expect(
-      await multiSigService.membersReadyToRotate("multiSigId")
-    ).toMatchObject([rotatedMemberAid]);
-  });
-});
-
 describe("Usage of multi-sig", () => {
   test("Should return true if there is a multisig with the provided multisigId", async () => {
     const multisigId = "multisig-id";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       id: multisigId,
       displayName: "Multisig",
-      signifyName: "uuid-here",
       multisigManageAid: "aid",
       createdAt: now,
       theme: 0,
@@ -633,7 +409,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -652,7 +428,6 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: multisigIdentifier,
       isPending: true,
-      signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
@@ -691,7 +466,6 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: `${multisigIdentifier}1`,
       isPending: true,
-      signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
@@ -723,7 +497,6 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: `${multisigIdentifier}2`,
       isPending: true,
-      signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
@@ -737,7 +510,7 @@ describe("Creation of multi-sig", () => {
         id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
       },
     ];
     await expect(
@@ -757,7 +530,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
       },
     ];
     await expect(
@@ -819,7 +592,7 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: multisigIdentifier,
       isPending: true,
-      signifyName: expect.any(String),
+
       multisigManageAid: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
     });
 
@@ -988,7 +761,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -1052,7 +825,7 @@ describe("Creation of multi-sig", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
+        createdAtUTC: new Date().toISOString(),
         groupId: "group-id",
       },
     ];
@@ -1076,17 +849,11 @@ describe("Creation of multi-sig", () => {
             label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
             oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
             status: ConnectionStatus.CONFIRMED,
-            connectionDate: new Date().toISOString(),
+            createdAtUTC: new Date().toISOString(),
           },
         ],
         2
       )
-    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(multiSigService.rotateMultisig("id")).rejects.toThrowError(
-      Agent.KERIA_CONNECTION_BROKEN
-    );
-    await expect(
-      multiSigService.joinMultisigRotation(notificationMultisigExnRotation)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
       multiSigService.getMultisigIcpDetails("d")

@@ -16,6 +16,7 @@ enum EventTypes {
   OperationComplete = "OperationComplete",
   OperationAdded = "OperationAdded",
   ConnectionStateChanged = "ConnectionStateChanged",
+  ConnectionRemoved = "ConnectionRemoved",
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
@@ -49,6 +50,14 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
     isMultiSigInvite?: boolean;
     connectionId?: string;
     status: ConnectionStatus;
+    url?: string;
+  };
+}
+
+interface ConnectionRemovedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.ConnectionRemoved;
+  payload: {
+    connectionId: string;
   };
 }
 
@@ -83,5 +92,6 @@ export type {
   KeriaStatusChangedEvent,
   OperationAddedEvent,
   NotificationRemovedEvent,
+  ConnectionRemovedEvent,
 };
 export { EventTypes };

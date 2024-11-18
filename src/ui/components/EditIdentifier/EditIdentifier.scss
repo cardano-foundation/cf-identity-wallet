@@ -32,6 +32,9 @@
         margin-bottom: 2.375rem;
         &.has-error {
           margin-bottom: 0;
+          ion-item.custom-input .input-line {
+            border-color: var(--ion-color-danger);
+          }
         }
 
         .label-stacked {

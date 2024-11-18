@@ -14,12 +14,13 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
   KeriConnectionType,
 } from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { randomSalt } from "../../../core/agent/services/utils";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -54,6 +55,7 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { isValidConnectionUrl, isValidHttpUrl } from "../../utils/urlChecker";
+import { CreateGroupIdentifier } from "../CreateGroupIdentifier";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -61,6 +63,8 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
+
+const OPEN_CONNECTION_TIME = 250;
 
 const Scanner = forwardRef(
   (
@@ -90,6 +94,10 @@ const Scanner = forwardRef(
     const [permission, setPermisson] = useState(false);
     const [mobileweb, setMobileweb] = useState(false);
     const [scanUnavailable, setScanUnavailable] = useState(false);
+    const [groupIdentifierOpen, setGroupIdentifierOpen] =
+      useState(false);
+    const [resumeMultiSig, setResumeMultiSig] =
+        useState<IdentifierShortDetails | null>(null);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -254,7 +262,6 @@ const Scanner = forwardRef(
         );
 
         if (invitation.type === KeriConnectionType.NORMAL) {
-          handleReset && handleReset();
           setIsValueCaptured && setIsValueCaptured(true);
 
           const scanMultiSigByTab = routePath === TabsRoutePath.SCAN;
@@ -271,6 +278,8 @@ const Scanner = forwardRef(
 
             if (scanMultiSigByTab) {
               handleAfterScanMultisig();
+            } else {
+              handleReset?.();
             }
           }
         }
@@ -313,17 +322,19 @@ const Scanner = forwardRef(
       // This will be removed when the create connection process ends.
       const connectionName = new URL(content).searchParams.get("name");
       if (!connectionName) {
-        dispatch(setMissingAliasUrl(content));
+        setTimeout(() => {
+          dispatch(setMissingAliasUrl(content));
+        }, OPEN_CONNECTION_TIME);
         return;
       }
 
-      const pendingId = uuidv4();
+      const pendingId = randomSalt();
       dispatch(
         updateOrAddConnectionCache({
           id: pendingId,
           label: connectionName || pendingId,
           status: ConnectionStatus.PENDING,
-          connectionDate: new Date().toString(),
+          createdAtUTC: new Date().toString(),
         })
       );
 
@@ -338,6 +349,8 @@ const Scanner = forwardRef(
           await handleDuplicateConnectionError(e as Error, content, false);
           return;
         }
+
+        showError("Scanner Error:", e, dispatch);
       } finally {
         dispatch(removeConnectionCache(pendingId));
       }
@@ -411,7 +424,7 @@ const Scanner = forwardRef(
               lensFacing: cameraDirection,
             });
           } catch (error) {
-            showError("Error starting barcode scan:", error, dispatch);
+            showError("Error starting barcode scan:", error);
             setScanUnavailable(true);
             stopScan();
           }
@@ -451,8 +464,7 @@ const Scanner = forwardRef(
               OperationType.MULTI_SIG_INITIATOR_SCAN,
               OperationType.MULTI_SIG_RECEIVER_SCAN,
             ].includes(currentOperation) &&
-              !isDuplicateConnectionToast)) &&
-          !showConnectionPage && !createIdentifierModalIsOpen
+              !isDuplicateConnectionToast))
         ) {
           await initScan();
         } else {
@@ -460,7 +472,7 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsgs, routePath, cameraDirection, showConnectionPage, createIdentifierModalIsOpen]);
+    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
 
     useEffect(() => {
       return () => {
@@ -478,6 +490,13 @@ const Scanner = forwardRef(
       setPasteModalIsOpen(false);
       processValue(pastedValue);
       setPastedValue("");
+    };
+
+    const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
+      if(identifier?.groupMetadata || identifier?.multisigManageAid) {
+        setResumeMultiSig(identifier);
+        setGroupIdentifierOpen(true);
+      }
     };
 
     const openPasteModal = () => setPasteModalIsOpen(true);
@@ -533,7 +552,7 @@ const Scanner = forwardRef(
 
     const containerClass = combineClassNames("qr-code-scanner", {
       "no-permission": !permission || mobileweb,
-      "scan-unavaible": scanUnavailable,
+      "scan-unavailable": scanUnavailable,
     });
 
     return (
@@ -558,7 +577,7 @@ const Scanner = forwardRef(
                   className="qr-code-scanner-icon"
                 />
                 <span className="qr-code-scanner-permission-text">
-                  {i18n.t("tabs.scan.tab.permissionalert")}
+                  {scanUnavailable ? i18n.t("tabs.scan.tab.cameraunavailable") : i18n.t("tabs.scan.tab.permissionalert")}
                 </span>
               </IonRow>
               <RenderPageFooter />
@@ -575,7 +594,14 @@ const Scanner = forwardRef(
         <CreateIdentifier
           modalIsOpen={createIdentifierModalIsOpen}
           setModalIsOpen={setCreateIdentifierModalIsOpen}
+          onClose={handleCloseCreateIdentifier}
           groupId={groupId}
+        />
+        <CreateGroupIdentifier 
+          modalIsOpen={groupIdentifierOpen} 
+          setModalIsOpen={setGroupIdentifierOpen} 
+          setResumeMultiSig={setResumeMultiSig} 
+          resumeMultiSig={resumeMultiSig}
         />
         <OptionModal
           modalIsOpen={pasteModalIsOpen}

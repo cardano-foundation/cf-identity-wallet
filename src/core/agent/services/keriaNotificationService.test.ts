@@ -1,5 +1,5 @@
 import { Agent } from "../agent";
-import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
+import { ConnectionStatus, ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
 import { IdentifierStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { CredentialStatus } from "./credentialService.types";
@@ -22,6 +22,7 @@ import {
   grantForIssuanceExnMessage,
   applyForPresentingExnMessage,
   agreeForPresentingExnMessage,
+  notificationIpexOfferProp,
 } from "../../__fixtures__/agent/keriaNotificationFixture";
 import { ConnectionHistoryType } from "./connectionService.types";
 
@@ -50,6 +51,14 @@ const operationsGetMock = jest.fn().mockImplementation((id: string) => {
   };
 });
 
+jest.mock("signify-ts", () => ({
+  Salter: jest.fn().mockImplementation(() => {
+    return { qb64: "" };
+  }),
+}));
+const contactsUpdateMock = jest.fn();
+const contactGetMock = jest.fn();
+const contactDeleteMock = jest.fn();
 const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -72,14 +81,9 @@ const signifyClient = jest.mocked({
   }),
   contacts: () => ({
     list: jest.fn(),
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
-        oobi: "oobi",
-        id,
-      };
-    }),
-    delete: jest.fn(),
+    get: contactGetMock,
+    delete: contactDeleteMock,
+    update: contactsUpdateMock,
   }),
   notifications: () => ({
     list: listNotificationsMock,
@@ -124,7 +128,6 @@ const agentServicesProps = {
 const identifierMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: new Date(),
   theme: 0,
 };
@@ -272,7 +275,11 @@ describe("Signify notification service of agent", () => {
       },
     ];
     credentialStorage.getCredentialMetadata.mockResolvedValueOnce(null);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({});
     notificationStorage.save = jest.fn().mockReturnValue({
       id: "0AC0W27tnnd2WyHWUh-368EI",
       createdAt: new Date("2024-09-20T02:51:24.930Z"),
@@ -290,8 +297,8 @@ describe("Signify notification service of agent", () => {
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif);
     }
-    expect(notificationStorage.save).toBeCalledTimes(2);
-    expect(eventEmitter.emit).toBeCalledTimes(2);
+    expect(notificationStorage.save).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.NotificationAdded,
       payload: {
@@ -320,9 +327,14 @@ describe("Signify notification service of agent", () => {
       credentialMetadataMock
     );
     getCredentialMock.mockResolvedValue(getCredentialResponse);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "signifyName",
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({
+        id: "id",
+      });
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -402,6 +414,30 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is no valid multi-sig notification", async () => {
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          r: NotificationRoute.MultiSigIcp,
+          p: "p",
+          a: { i: "i" },
+          e: {},
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: NotificationRoute.MultiSigRpy,
+          p: "p",
+          a: { i: "i" },
+          e: {},
+        },
+      });
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
     groupGetRequestMock.mockResolvedValue([]);
     const notes = [notificationMultisigIcpProp, notificationMultisigRpyProp];
     for (const notif of notes) {
@@ -411,6 +447,17 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is a existed multi-sig", async () => {
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigIcp,
+        p: "p",
+        a: { i: "i" },
+        e: {},
+      },
+    });
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    );
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
@@ -422,6 +469,30 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is a missing gid multi-sig notification", async () => {
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          r: NotificationRoute.MultiSigIcp,
+          p: "p",
+          a: { i: "i" },
+          e: {},
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: NotificationRoute.MultiSigRpy,
+          p: "p",
+          a: { i: "i" },
+          e: {},
+        },
+      });
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
@@ -451,6 +522,17 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is a missing multi-sig identifier", async () => {
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigRpy,
+        p: "p",
+        a: { i: "i" },
+        e: {},
+      },
+    });
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    );
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
@@ -462,13 +544,19 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if notification route is /multisig/rpy", async () => {
-    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(identifierMetadataRecordProps);
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigRpy,
+        p: "p",
+        a: { i: "i", gid: "gid" },
+        e: {
+          rpy: {
+            r: "/end/role/add",
+          },
+        },
+      },
+    });
 
-    const notes = [notificationMultisigRpyProp];
     const multisigNotificationExn = {
       exn: {
         a: {
@@ -491,7 +579,18 @@ describe("Signify notification service of agent", () => {
         },
       },
     };
+
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue(identifierMetadataRecordProps);
     groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
+
+    const notes = [notificationMultisigRpyProp];
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif);
     }
@@ -501,6 +600,9 @@ describe("Signify notification service of agent", () => {
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    );
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -526,9 +628,14 @@ describe("Signify notification service of agent", () => {
     );
     admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
     getCredentialMock.mockResolvedValue(getCredentialResponse);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "signifyName",
-    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({
+        id: "id",
+      });
     submitAdmitMock.mockResolvedValueOnce({
       name: "name",
       done: true,
@@ -556,6 +663,14 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnApplyForPresenting)
       .mockResolvedValueOnce({ exn: { d: "d" } });
+
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
 
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif);
@@ -595,6 +710,10 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValueOnce(multisigExnApplyForPresenting)
       .mockResolvedValueOnce({ exn: { d: "d" } });
 
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    );
+
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif);
     }
@@ -609,6 +728,10 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnAdmitForIssuance)
       .mockResolvedValueOnce(grantForIssuanceExnMessage);
+
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    );
 
     getCredentialMock.mockResolvedValue(undefined);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
@@ -670,6 +793,10 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnAdmitForIssuance)
       .mockResolvedValueOnce(grantForIssuanceExnMessage);
+
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    );
 
     getCredentialMock.mockResolvedValue(undefined);
     const dt = new Date().toISOString();
@@ -748,6 +875,9 @@ describe("Signify notification service of agent", () => {
   test("Links /multisig/exn admit message to grant but does not join if admit by SAID already joined, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
       .mockResolvedValue(identifierMetadataRecordProps);
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnAdmitForIssuance)
@@ -831,6 +961,9 @@ describe("Signify notification service of agent", () => {
   test("Original apply is linked to first received /multisig/exn offer message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
@@ -891,6 +1024,9 @@ describe("Signify notification service of agent", () => {
   test("Auto-joins /multisig/exn offer message and links to apply if we have joined a previous but different offer message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
@@ -973,6 +1109,9 @@ describe("Signify notification service of agent", () => {
   test("Links /multisig/exn offer message to apply but does not join if offer by SAID already joined, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
       .mockResolvedValue(identifierMetadataRecordProps);
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnOfferForPresenting)
@@ -1055,6 +1194,9 @@ describe("Signify notification service of agent", () => {
   test("Original agree is linked to first received /multisig/exn grant message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
@@ -1115,6 +1257,9 @@ describe("Signify notification service of agent", () => {
   test("Auto-joins /multisig/exn grant message and links to agree if we have joined a previous but different grant message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
@@ -1197,6 +1342,9 @@ describe("Signify notification service of agent", () => {
   test("Links /multisig/exn grant message to agree but does not join if grant by SAID already joined, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
@@ -1341,24 +1489,14 @@ describe("Signify notification service of agent", () => {
     groupGetRequestMock.mockRejectedValueOnce(
       new Error("SomeErrorMessage - 404")
     );
-    await keriaNotificationService.processNotification(
-      notificationMultisigRpyProp
-    );
-    expect(markNotificationMock).toHaveBeenCalledWith(
-      notificationMultisigRpyProp.i
-    );
-  });
-
-  test("Should throw error if other error occurs with route multisig/rpy", async () => {
-    const errorMessage = "Error - 500";
-    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
-    await expect(
-      keriaNotificationService.processNotification(notificationMultisigRpyProp)
-    ).rejects.toThrow(errorMessage);
-  });
-
-  test("Should skip if missing identifier metadata with route multisig/rpy", async () => {
-    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigRpy,
+        p: "p",
+        a: { i: "i" },
+        e: {},
+      },
+    });
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
       new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
     );
@@ -1372,19 +1510,90 @@ describe("Signify notification service of agent", () => {
 
   test("Should throw error if other error occurs with route multisig/rpy", async () => {
     const errorMessage = "Error - 500";
-    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(errorMessage)
-    );
-
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigRpy,
+        p: "p",
+        a: { i: "i", gid: "gid" },
+        e: {
+          rpy: {
+            r: "/end/role/add",
+          },
+        },
+      },
+    });
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(new Error(errorMessage));
+    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
     await expect(
       keriaNotificationService.processNotification(notificationMultisigRpyProp)
     ).rejects.toThrow(errorMessage);
   });
 
+  test("Should throw error if other error occurs with route multisig/icp", async () => {
+    const errorMessage = "Error - 500";
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigIcp,
+        p: "p",
+        a: { i: "i" },
+        e: {},
+      },
+    });
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(new Error(errorMessage));
+
+    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
+    await expect(
+      keriaNotificationService.processNotification(notificationMultisigIcpProp)
+    ).rejects.toThrow(errorMessage);
+  });
+
+  test("Should skip if missing identifier metadata with route multisig/rpy", async () => {
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigRpy,
+        p: "p",
+        a: { i: "i" },
+        e: {},
+      },
+    });
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    await keriaNotificationService.processNotification(
+      notificationMultisigRpyProp
+    );
+    expect(markNotificationMock).toHaveBeenCalledWith(
+      notificationMultisigRpyProp.i
+    );
+  });
+
   test("Should return false if 404 error occurs with route multisig/icp", async () => {
     groupGetRequestMock.mockRejectedValueOnce(
       new Error("SomeErrorMessage - 404")
+    );
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: NotificationRoute.MultiSigIcp,
+        p: "p",
+        a: { i: "i" },
+        e: {},
+      },
+    });
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
     );
     await keriaNotificationService.processNotification(
       notificationMultisigIcpProp
@@ -1392,14 +1601,6 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toHaveBeenCalledWith(
       notificationMultisigIcpProp.i
     );
-  });
-
-  test("Should throw error if other error occurs with route multisig/icp", async () => {
-    const errorMessage = "Error - 500";
-    groupGetRequestMock.mockRejectedValueOnce(new Error(errorMessage));
-    await expect(
-      keriaNotificationService.processNotification(notificationMultisigIcpProp)
-    ).rejects.toThrow(errorMessage);
   });
 
   test("Should skip if missing identifier metadata with route ipex/grant", async () => {
@@ -1414,9 +1615,14 @@ describe("Signify notification service of agent", () => {
     credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
       credentialMetadataMock
     );
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-    );
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
@@ -1469,9 +1675,13 @@ describe("Signify notification service of agent", () => {
       },
     ]);
 
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-    );
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
 
     await keriaNotificationService.processNotification(
       notificationMultisigExnProp
@@ -1549,6 +1759,47 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toHaveBeenCalledWith(
       notificationIpexGrantProp.i
     );
+  });
+
+  test("Should mark notification when exist identifier of the sender of the inception event", async () => {
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexOffer,
+        p: "p",
+        a: { i: "i" },
+        e: { acdc: { d: "d" } },
+      },
+    });
+
+    identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
+      id: "id",
+    });
+
+    await keriaNotificationService.processNotification(
+      notificationIpexOfferProp
+    );
+    expect(markNotificationMock).toHaveBeenCalledWith(
+      notificationIpexOfferProp.i
+    );
+  });
+
+  test("Should throw error if other error occurs when call verify notification", async () => {
+    const errorMessage = "Error - 500";
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexOffer,
+        p: "p",
+        a: { i: "i" },
+        e: { acdc: { d: "d" } },
+      },
+    });
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(errorMessage)
+    );
+
+    await expect(
+      keriaNotificationService.processNotification(notificationIpexOfferProp)
+    ).rejects.toThrow(errorMessage);
   });
 });
 
@@ -1634,6 +1885,7 @@ describe("Long running operation tracker", () => {
     const operationMock = {
       metadata: {
         said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
       },
       done: true,
       response: {
@@ -1646,6 +1898,7 @@ describe("Long running operation tracker", () => {
       id: "id",
       pending: true,
       createdAt: new Date(),
+      alias: "CF Credential Issuance",
     };
     connectionStorage.findById.mockResolvedValueOnce(connectionMock);
     const operationRecord = {
@@ -1655,12 +1908,113 @@ describe("Long running operation tracker", () => {
       recordType: "oobi",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
+
+    contactGetMock.mockResolvedValueOnce(null);
+
     await keriaNotificationService.processOperation(operationRecord);
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
       pending: false,
       createdAt: operationMock.response.dt,
+      alias: connectionMock.alias,
     });
+    expect(contactsUpdateMock).toBeCalledWith(connectionMock.id, {
+      alias: "CF Credential Issuance",
+      createdAt: operationMock.response.dt,
+    });
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
+      type: EventTypes.ConnectionStateChanged,
+      payload: {
+        connectionId: "id",
+        status: ConnectionStatus.CONFIRMED,
+      },
+    })
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, {
+      type: EventTypes.OperationComplete,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should delete Keria connection if local connection metadata record does not exist", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    connectionStorage.findById.mockResolvedValueOnce(null);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    contactGetMock.mockResolvedValueOnce(null);
+
+    await keriaNotificationService.processOperation(operationRecord);
+    expect(contactDeleteMock).toBeCalledWith("id");
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationComplete,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test.skip("Cannot create connection if the connection is already created", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    operationsGetMock.mockResolvedValue(operationMock);
+    const connectionMock = {
+      id: "id",
+      pending: true,
+      createdAt: new Date(),
+      alias: "CF Credential Issuance",
+    };
+    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    contactGetMock.mockResolvedValueOnce({
+      alias: "alias",
+      oobi: "oobi",
+      id: "id",
+      createdAt: new Date(),
+    });
+    await keriaNotificationService.processOperation(operationRecord);
+    expect(connectionStorage.update).toBeCalledTimes(0);
+    expect(contactsUpdateMock).toBeCalledTimes(0);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
@@ -1704,7 +2058,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -1751,7 +2104,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -1796,7 +2148,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -1860,7 +2211,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
       updatedAt: new Date(),
@@ -1945,7 +2295,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -2026,7 +2375,6 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),

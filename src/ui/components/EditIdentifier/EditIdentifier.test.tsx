@@ -1,13 +1,17 @@
-import { waitForIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { IonInput, IonLabel } from "@ionic/react";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { EditIdentifier } from "./EditIdentifier";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { CustomInputProps } from "../CustomInput/CustomInput.types";
+import { IdentifierService } from "../../../core/agent/services";
 
 const updateMock = jest.fn();
 
@@ -48,11 +52,36 @@ jest.mock("@capacitor/keyboard", () => {
   };
 });
 
+jest.mock("../CustomInput", () => ({
+  CustomInput: (props: CustomInputProps) => {
+    return (
+      <>
+        <IonLabel
+          position="stacked"
+          data-testid={`${props.title?.toLowerCase().replace(" ", "-")}-title`}
+        >
+          {props.title}
+          {props.optional && (
+            <span className="custom-input-optional">(optional)</span>
+          )}
+        </IonLabel>
+        <IonInput
+          data-testid={props.dataTestId}
+          onIonInput={(e) => {
+            props.onChangeInput(e.detail.value as string);
+          }}
+        />
+      </>
+    );
+  },
+}));
+
 describe("Edit identifier", () => {
   const dispatchMock = jest.fn();
   let mockedStore: Store<unknown, AnyAction>;
   beforeEach(() => {
     isNativeMock.mockImplementation(() => false);
+    updateMock.mockImplementation(() => Promise.resolve(true));
   });
   beforeAll(() => {
     const mockStore = configureStore();
@@ -138,6 +167,82 @@ describe("Edit identifier", () => {
 
     await waitFor(() => {
       expect(updateMock).toBeCalledTimes(1);
+    });
+  });
+
+
+  test("Display error when display name invalid", async () => {
+    updateMock.mockImplementation(() => {
+      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN)
+    })
+
+    const { getByTestId, getByText, queryByTestId } = render(
+      <Provider store={mockedStore}>
+        <EditIdentifier
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+          setCardData={jest.fn()}
+          cardData={identifierFix[0]}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("edit-name-input"), "");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("edit-name-input"), "   ");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("edit-name-input"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.maxlength)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("edit-name-input"), "Duke@@");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
+      ).toBeVisible();
+    });
+    
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("edit-name-input"), "Duke");
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("error-message")).toBe(null);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-edit-identifier"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.duplicatename)
+      ).toBeVisible();
     });
   });
 });

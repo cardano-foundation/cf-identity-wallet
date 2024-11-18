@@ -8,6 +8,7 @@ const CardDetailsBlock = ({
   action,
   children,
   className,
+  onClick,
 }: CardDetailsBlockProps) => {
   const classes = combineClassNames("card-details-info-block", className);
 
@@ -26,7 +27,7 @@ const CardDetailsBlock = ({
         )}
         {action && action}
       </div>
-      <IonCard className="card-details-info-block-inner">{children}</IonCard>
+      <IonCard onClick={onClick} className="card-details-info-block-inner">{children}</IonCard>
     </div>
   );
 };

@@ -29,7 +29,7 @@ import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   setQueueIncomingRequest,
-  setToastMsg
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -53,7 +53,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: jest.fn(),
+      setupLocalDependencies: jest.fn(),
       auth: {
         getLoginAttempts: jest.fn(() =>
           Promise.resolve({
@@ -210,17 +210,14 @@ describe("AppWrapper handler", () => {
       );
     });
 
-    test.skip("handles connection state pending", async () => {
-      // await connectionStateChangedHandler(
-      //   connectionStateChangedEventMock,
-      //   dispatch
-      // );
-      // expect(dispatch).toBeCalledWith(
-      //   setCurrentOperation(OperationType.IDLE)
-      // );
-      // expect(dispatch).toBeCalledWith(
-      //   setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
-      // );
+    test("handles connection state pending", async () => {
+      await connectionStateChangedHandler(
+        connectionStateChangedEventMock,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
+      );
     });
 
     test("handles connection state succuss", async () => {

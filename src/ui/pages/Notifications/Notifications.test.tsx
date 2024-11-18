@@ -11,7 +11,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsForNotifications } from "../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
-import { NotificationFilter } from "./Notification.types";
+import { NotificationFilters } from "./Notification.types";
 import { Notifications } from "./Notifications";
 
 mockIonicReact();
@@ -152,7 +152,7 @@ describe("Notifications Tab", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`${NotificationFilter.Credential}-filter-btn`)
+        getByTestId(`${NotificationFilters.Credential}-filter-btn`)
       );
     });
 
@@ -167,7 +167,7 @@ describe("Notifications Tab", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`${NotificationFilter.Identifier}-filter-btn`)
+        getByTestId(`${NotificationFilters.Identifier}-filter-btn`)
       );
     });
 

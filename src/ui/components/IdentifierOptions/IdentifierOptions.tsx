@@ -6,10 +6,8 @@ import {
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { i18n } from "../../../i18n";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppSelector } from "../../../store/hooks";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { OperationType } from "../../globals/types";
 import { EditIdentifier } from "../EditIdentifier";
 import { OptionItem, OptionModal } from "../OptionsModal";
 import { ShareConnection } from "../ShareConnection";
@@ -25,7 +23,6 @@ const IdentifierOptions = ({
   handleRotateKey,
   oobi,
 }: IdentifierOptionsProps) => {
-  const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [isMultiSig, setIsMultiSig] = useState(false);

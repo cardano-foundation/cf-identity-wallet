@@ -1,6 +1,5 @@
 import { IonModal, isPlatform } from "@ionic/react";
-import { useMemo, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -29,6 +28,9 @@ import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { PageFooter } from "../PageFooter";
 import "./InputRequest.scss";
+import { randomSalt } from "../../../core/agent/services/utils";
+import { nameChecker } from "../../utils/nameChecker";
+import { ErrorMessage } from "../ErrorMessage";
 
 const InputRequest = () => {
   const dispatch = useAppDispatch();
@@ -37,7 +39,10 @@ const InputRequest = () => {
   const currentRoute = useAppSelector(getCurrentRoute);
 
   const componentId = "input-request";
+  const [inputChange, setInputChange] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  const errorMessage = inputChange ? nameChecker.getError(inputValue) : undefined;
 
   const showModal = useMemo(() => {
     return (
@@ -54,18 +59,24 @@ const InputRequest = () => {
     missingAliasUrl,
   ]);
 
+  useEffect(() => {
+    if(!showModal) {
+      setInputChange(false);
+    }
+  }, [showModal])
+
   const resolveConnectionOobi = async (content: string) => {
     // Adding a pending connection item to the UI.
     // This will be removed when the create connection process ends.
     const connectionName = new URL(content).searchParams.get("name");
 
-    const pendingId = uuidv4();
+    const pendingId = randomSalt();
     dispatch(
       updateOrAddConnectionCache({
         id: pendingId,
         label: connectionName || pendingId,
         status: ConnectionStatus.PENDING,
-        connectionDate: new Date().toString(),
+        createdAtUTC: new Date().toString(),
       })
     );
 
@@ -165,9 +176,14 @@ const InputRequest = () => {
           title={`${i18n.t("inputrequest.input.title")}`}
           hiddenInput={false}
           autofocus={true}
-          onChangeInput={setInputValue}
+          onChangeInput={(value) => {
+            setInputValue(value); 
+            setInputChange(true);
+          }}
           value={inputValue}
+          error={!!errorMessage && inputChange}
         />
+        <ErrorMessage message={errorMessage}/>
         <PageFooter
           pageId={componentId}
           primaryButtonDisabled={inputValue.length === 0}
