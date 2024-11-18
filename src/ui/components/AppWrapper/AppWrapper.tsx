@@ -19,7 +19,6 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
 import {
-  removeConnectionCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
   updateOrAddConnectionCache,

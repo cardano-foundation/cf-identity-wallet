@@ -27,7 +27,6 @@ import {
   ConnectionShortDetails,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
-  ConnectionStatus,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";

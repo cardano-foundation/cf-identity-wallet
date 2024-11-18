@@ -28,7 +28,6 @@ import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
-  setCurrentOperation,
   setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -38,7 +37,7 @@ import {
   setConnectedWallet,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
-import { OperationType, ToastMsgType } from "../../globals/types";
+import { ToastMsgType } from "../../globals/types";
 import {
   AppWrapper,
   acdcChangeHandler,
@@ -49,9 +48,6 @@ import {
   peerDisconnectedChangeHandler,
 } from "./AppWrapper";
 import { signifyOperationStateChangeHandler } from "./coreEventListeners";
-
-const getConnectionsPendingDeletionMock = jest.fn();
-const getConnectionsPendingMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -86,12 +82,6 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
         syncKeriaContacts: jest.fn(),
-        onConnectionRemoved: jest.fn(),
-        getConnectionsPendingDeletion: () =>
-          getConnectionsPendingDeletionMock(),
-        getConnectionsPending: () => getConnectionsPendingMock(),
-        deleteConnectionById: jest.fn(),
-        onConnectionAdded: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -140,12 +130,6 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 }));
 
 describe("App Wrapper", () => {
-  beforeAll(() => {
-    getConnectionsPendingDeletionMock.mockImplementation(() =>
-      Promise.resolve([connectionShortDetailsMock])
-    );
-  });
-
   test("renders children components", async () => {
     const { getByText } = render(
       <Provider store={store}>
