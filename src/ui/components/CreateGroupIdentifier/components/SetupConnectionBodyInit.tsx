@@ -8,9 +8,9 @@ import { ToastMsgType } from "../../../globals/types";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { PageHeader } from "../../PageHeader";
 import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
-import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
+import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
 
-const IdentifierStage1BodyInit = ({
+const SetupConnectionBodyInit = ({
   componentId,
   handleDone,
   oobi,
@@ -106,4 +106,4 @@ const IdentifierStage1BodyInit = ({
   );
 };
 
-export { IdentifierStage1BodyInit };
+export { SetupConnectionBodyInit };

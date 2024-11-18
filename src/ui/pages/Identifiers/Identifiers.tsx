@@ -1,7 +1,10 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
+import { t } from "i18next";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { t } from "i18next";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records/basicRecord";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -25,24 +28,22 @@ import {
 } from "../../../store/reducers/stateCache";
 import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { CreateGroupIdentifier } from "../../components/CreateGroupIdentifier";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
+import { FilterChip } from "../../components/FilterChip/FilterChip";
+import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
+import { FilteredItemsPlaceholder } from "../../components/FilteredItemsPlaceholder";
 import { ListHeader } from "../../components/ListHeader";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import {
   CardList as IdentifierCardList,
   SwitchCardView,
 } from "../../components/SwitchCardView";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
+import { showError } from "../../utils/error";
 import "./Identifiers.scss";
 import { IdentifiersFilters, StartAnimationSource } from "./Identifiers.types";
-import { RemovePendingAlert } from "../../components/RemovePendingAlert";
-import { Agent } from "../../../core/agent/agent";
-import { showError } from "../../utils/error";
-import { FilterChip } from "../../components/FilterChip/FilterChip";
-import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
-import { BasicRecord } from "../../../core/agent/records/basicRecord";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { FilteredItemsPlaceholder } from "../../components/FilteredItemsPlaceholder";
 
 const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
@@ -113,6 +114,8 @@ const Identifiers = () => {
   >([]);
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);
+  const [groupIdentifierOpen, setGroupIdentifierOpen] =
+    useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [resumeMultiSig, setResumeMultiSig] =
     useState<IdentifierShortDetails | null>(null);
@@ -130,7 +133,7 @@ const Identifiers = () => {
 
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
-    setCreateIdentifierModalIsOpen(true);
+    setGroupIdentifierOpen(true);
   };
 
   useEffect(() => {
@@ -232,8 +235,10 @@ const Identifiers = () => {
         ? "favorite-identifier-nav"
         : ""
   }`;
-  const handleCloseCreateIdentifier = () => {
-    setCreateIdentifierModalIsOpen(false);
+  const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
+    if(identifier?.groupMetadata || identifier?.multisigManageAid) {
+      handleMultiSigClick(identifier);
+    }
   };
 
   const deletePendingIdentifier = async () => {
@@ -438,9 +443,14 @@ const Identifiers = () => {
       />
       <CreateIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
-        setModalIsOpen={handleCloseCreateIdentifier}
+        setModalIsOpen={setCreateIdentifierModalIsOpen}
+        onClose={handleCloseCreateIdentifier}
+      />
+      <CreateGroupIdentifier 
+        modalIsOpen={groupIdentifierOpen} 
+        setModalIsOpen={setGroupIdentifierOpen} 
+        setResumeMultiSig={setResumeMultiSig} 
         resumeMultiSig={resumeMultiSig}
-        setResumeMultiSig={setResumeMultiSig}
       />
     </>
   );

@@ -9,13 +9,14 @@ import { store } from "../../../../store";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { ToastMsgType } from "../../../globals/types";
-import { IdentifierStage4 } from "./IdentifierStage4";
-import { IdentifierColor } from "./IdentifierColorSelector";
+import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
+import { Summary } from "./Summary";
+import { Stage } from "../CreateGroupIdentifier.types";
 
 setupIonicReact();
 mockIonicReact();
 
-const createMultiSignMock = jest.fn((...arg: any) => ({
+const createMultiSignMock = jest.fn((...args: any) => ({
   identifier: "mock-id",
   isPending: true,
 }));
@@ -30,7 +31,7 @@ jest.mock("../../../../core/agent/agent", () => ({
   },
 }));
 
-describe("Identifier Stage 4", () => {
+describe("Create group identifier - Summary", () => {
   const mockStore = configureStore();
 
   const stage4State = {
@@ -73,7 +74,7 @@ describe("Identifier Stage 4", () => {
   test("Renders default content", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage4
+        <Summary
           state={stage4State}
           setState={setState}
           componentId={"create-identifier-modal"}
@@ -103,7 +104,7 @@ describe("Identifier Stage 4", () => {
   test("Continue button click", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage4
+        <Summary
           state={stage4State}
           setState={setState}
           componentId={"create-identifier-modal"}
@@ -154,7 +155,7 @@ describe("Identifier Stage 4", () => {
 
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage4
+        <Summary
           state={stage4State}
           setState={setState}
           componentId={"create-identifier-modal"}
@@ -178,7 +179,7 @@ describe("Identifier Stage 4", () => {
   test("Cancel button click", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage4
+        <Summary
           state={stage4State}
           setState={setState}
           componentId={"create-identifier-modal"}
@@ -202,7 +203,7 @@ describe("Identifier Stage 4", () => {
   test("Back to stage 2", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage4
+        <Summary
           state={stage4State}
           setState={setState}
           componentId={"create-identifier-modal"}
@@ -218,7 +219,7 @@ describe("Identifier Stage 4", () => {
 
     await waitFor(() => {
       expect(innerSetState).toBeCalledWith({
-        identifierCreationStage: 2,
+        identifierCreationStage: Stage.Members,
       });
     });
   });
@@ -226,7 +227,7 @@ describe("Identifier Stage 4", () => {
   test("Back to stage 3", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage4
+        <Summary
           state={stage4State}
           setState={setState}
           componentId={"create-identifier-modal"}
@@ -242,7 +243,7 @@ describe("Identifier Stage 4", () => {
 
     await waitFor(() => {
       expect(innerSetState).toBeCalledWith({
-        identifierCreationStage: 3,
+        identifierCreationStage: Stage.SetupThreshold,
       });
     });
   });
@@ -250,7 +251,7 @@ describe("Identifier Stage 4", () => {
   test("Back button click", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage4
+        <Summary
           state={stage4State}
           setState={setState}
           componentId={"create-identifier-modal"}
@@ -266,7 +267,7 @@ describe("Identifier Stage 4", () => {
 
     await waitFor(() => {
       expect(innerSetState).toBeCalledWith({
-        identifierCreationStage: 3,
+        identifierCreationStage: Stage.SetupThreshold,
       });
     });
   });

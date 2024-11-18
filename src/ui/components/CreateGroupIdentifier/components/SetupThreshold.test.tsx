@@ -1,5 +1,5 @@
 import { setupIonicReact } from "@ionic/react";
-import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
+import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -7,23 +7,24 @@ import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { store } from "../../../../store";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
-import { IdentifierStage2 } from "./IdentifierStage2";
-import { IdentifierColor } from "./IdentifierColorSelector";
+import { SetupThreshold } from "./SetupThreshold";
+import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
+import { Stage } from "../CreateGroupIdentifier.types";
 
 setupIonicReact();
 mockIonicReact();
 
-describe("Identifier Stage 2", () => {
+describe("Create group identifier - Setup Threshold", () => {
   const mockStore = configureStore();
 
-  const stage2State = {
-    identifierCreationStage: 0,
+  const stage3State = {
+    identifierCreationStage: Stage.SetupThreshold,
     displayNameValue: "",
     selectedAidType: 0,
     selectedTheme: 0,
     threshold: 1,
-    scannedConections: [connectionsFix[0]],
-    selectedConnections: [],
+    scannedConections: [],
+    selectedConnections: [connectionsFix[0]],
     ourIdentifier: "",
     newIdentifier: {
       id: "",
@@ -54,36 +55,10 @@ describe("Identifier Stage 2", () => {
   const resetModal = jest.fn();
 
   test("Renders default content", async () => {
-    const { getByText } = render(
-      <Provider store={storeMocked}>
-        <IdentifierStage2
-          state={stage2State}
-          setState={setState}
-          componentId={"create-identifier-modal"}
-          setBlur={setBlur}
-          resetModal={resetModal}
-        />
-      </Provider>
-    );
-    expect(
-      getByText(EN_TRANSLATIONS.createidentifier.connections.title)
-    ).toBeVisible();
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.createidentifier.connections.continue)
-    ).toBeVisible();
-    expect(
-      getByText(
-        EN_TRANSLATIONS.createidentifier.connections.continue
-      ).getAttribute("disabled")
-    ).toBe("false");
-  });
-
-  test("Continue button disable status when select or unselect all connection", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage2
-          state={stage2State}
+        <SetupThreshold
+          state={stage3State}
           setState={setState}
           componentId={"create-identifier-modal"}
           setBlur={setBlur}
@@ -91,37 +66,27 @@ describe("Identifier Stage 2", () => {
         />
       </Provider>
     );
-
-    act(() => {
-      ionFireEvent.ionChange(getByTestId("connection-checkbox-0"), "false");
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.createidentifier.connections.continue
-        ).getAttribute("disabled")
-      ).toBe("true");
-    });
-
-    act(() => {
-      ionFireEvent.ionChange(getByTestId("connection-checkbox-0"), "false");
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.createidentifier.connections.continue
-        ).getAttribute("disabled")
-      ).toBe("false");
-    });
+    expect(
+      getByText(EN_TRANSLATIONS.createidentifier.threshold.title)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.createidentifier.threshold.subtitle)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.createidentifier.threshold.label)
+    ).toBeVisible();
+    expect(getByTestId("decrease-threshold-button")).toBeVisible();
+    expect(getByTestId("increase-threshold-button")).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.createidentifier.threshold.continue)
+    ).toBeVisible();
   });
 
   test("Continue button click", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage2
-          state={stage2State}
+        <SetupThreshold
+          state={stage3State}
           setState={setState}
           componentId={"create-identifier-modal"}
           setBlur={setBlur}
@@ -132,23 +97,52 @@ describe("Identifier Stage 2", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.createidentifier.connections.continue)
+        getByText(EN_TRANSLATIONS.createidentifier.threshold.continue)
       );
     });
 
     await waitFor(() => {
       expect(innerSetState).toBeCalledWith({
-        identifierCreationStage: 3,
-        selectedConnections: [connectionsFix[0]],
+        identifierCreationStage: Stage.Summary,
       });
     });
+  });
+
+  test("Increase/decrease threshold", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <SetupThreshold
+          state={stage3State}
+          setState={setState}
+          componentId={"create-identifier-modal"}
+          setBlur={setBlur}
+          resetModal={resetModal}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("increase-threshold-button"));
+    });
+
+    await waitFor(() => {
+      expect(innerSetState).toBeCalledWith({
+        threshold: 2,
+      });
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("decrease-threshold-button"));
+    });
+
+    expect(innerSetState).not.toHaveBeenNthCalledWith(2);
   });
 
   test("Back button click", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage2
-          state={stage2State}
+        <SetupThreshold
+          state={stage3State}
           setState={setState}
           componentId={"create-identifier-modal"}
           setBlur={setBlur}
@@ -163,8 +157,8 @@ describe("Identifier Stage 2", () => {
 
     await waitFor(() => {
       expect(innerSetState).toBeCalledWith({
-        identifierCreationStage: 1,
-        selectedConnections: [],
+        identifierCreationStage: Stage.Members,
+        threshold: 1,
       });
     });
   });

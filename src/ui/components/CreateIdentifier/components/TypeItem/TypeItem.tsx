@@ -1,5 +1,6 @@
 import { IonCard } from "@ionic/react";
-import { TypeItemProps } from "../CreateIdentifier.types";
+import { TypeItemProps } from "./TypeItem.types";
+import "./TypeItem.scss";
 
 const TypeItem = ({
   dataTestId,
@@ -12,7 +13,7 @@ const TypeItem = ({
   return (
     <IonCard
       data-testid={dataTestId}
-      onClick={clickEvent}
+      onClick={() => clickEvent(index)}
       className={`type-input ${selectedType === index ? "selected-type" : ""}`}
       disabled={disabled}
     >
