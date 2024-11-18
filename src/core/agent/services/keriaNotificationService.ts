@@ -862,13 +862,6 @@ class KeriaNotificationService extends AgentService {
           );
           await this.connectionStorage.update(connectionRecord);
 
-          this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-            type: EventTypes.ConnectionStateChanged,
-            payload: {
-              connectionId: connectionRecord.id,
-              status: ConnectionStatus.CONFIRMED,
-            },
-          });
           const alias = connectionRecord.alias;
           await this.props.signifyClient
             .contacts()
@@ -876,6 +869,14 @@ class KeriaNotificationService extends AgentService {
               alias,
               createdAt: new Date((operation.response as State).dt),
             });
+          
+          this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+            type: EventTypes.ConnectionStateChanged,
+            payload: {
+              connectionId: connectionRecord.id,
+              status: ConnectionStatus.CONFIRMED,
+            },
+          });
         } else {
           await this.props.signifyClient
             .contacts()
