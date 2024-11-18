@@ -163,14 +163,12 @@ const connectionService = new ConnectionService(
   credentialStorage as any,
   operationPendingStorage as any,
   identifiers as any,
-  Agent.agent.markAgentStatus
 );
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getKeriaOnlineStatus: jest.fn(),
-      markAgentStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
     },
   },
