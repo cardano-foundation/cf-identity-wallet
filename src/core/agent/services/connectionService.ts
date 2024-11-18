@@ -106,7 +106,6 @@ class ConnectionService extends AgentService {
       oobi: url,
       pending: true,
       createdAtUTC: connectionDate,
-      groupId,
     };
 
     const connection = {
@@ -128,6 +127,7 @@ class ConnectionService extends AgentService {
       connectionMetadata.pending = false;
       connectionMetadata.createdAtUTC = oobiResult.op.response.dt;
       connectionMetadata.status = ConnectionStatus.CONFIRMED;
+      connectionMetadata.groupId = groupId;
 
       const identifierWithGroupId =
         await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
