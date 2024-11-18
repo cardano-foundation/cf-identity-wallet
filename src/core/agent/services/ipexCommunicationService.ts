@@ -325,7 +325,16 @@ class IpexCommunicationService extends AgentService {
     //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
-      .get(acdcSaid);
+      .get(acdcSaid)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
     if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }

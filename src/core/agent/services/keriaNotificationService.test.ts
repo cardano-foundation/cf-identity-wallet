@@ -1967,7 +1967,7 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
-  })
+  });
 
   test.skip("Cannot create connection if the connection is already created", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
@@ -2004,10 +2004,10 @@ describe("Long running operation tracker", () => {
       oobi: "oobi",
       id: "id",
       createdAt: new Date(),
-    })
+    });
     await keriaNotificationService.processOperation(operationRecord);
-    expect(connectionStorage.update).toBeCalledTimes(0)
-    expect(contactsUpdateMock).toBeCalledTimes(0)
+    expect(connectionStorage.update).toBeCalledTimes(0);
+    expect(contactsUpdateMock).toBeCalledTimes(0);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
@@ -2016,7 +2016,7 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
-  })
+  });
 
   test("Should handle long operations with type exchange.receivecredential", async () => {
     const credentialIdMock = "credentialId";
