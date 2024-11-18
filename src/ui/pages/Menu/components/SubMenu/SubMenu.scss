@@ -1,6 +1,9 @@
 .sub-menu {
   display: flex !important;
-  background: var(--ion-color-light-grey);
+
+  &:not(.edit-profile) {
+    background: var(--ion-color-light-grey);
+  }
 
   &.show {
     transform: translate3d(0, 0, 0);

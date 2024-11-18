@@ -6,7 +6,6 @@ import {
   messagize,
   Serder,
   Siger,
-  State,
 } from "signify-ts";
 import {
   IdentifierResult,
@@ -15,7 +14,6 @@ import {
   AgentServicesProps,
 } from "../agent.types";
 import type {
-  KeriaNotification,
   ConnectionShortDetails,
   AuthorizationRequestExn,
 } from "../agent.types";
@@ -29,7 +27,6 @@ import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
 import {
   MultiSigRoute,
-  RotationMultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
   InceptMultiSigExnMessage,
@@ -37,7 +34,6 @@ import {
 import {
   deleteNotificationRecordById,
   OnlineOnly,
-  waitAndGetDoneOp,
 } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationAddedEvent, EventTypes } from "../event.types";
@@ -56,8 +52,6 @@ class MultiSigService extends AgentService {
     "There's no multi sig identifier for the given SAID";
   static readonly AID_IS_NOT_MULTI_SIG =
     "This AID is not a multi sig identifier";
-  static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
-    "Cannot find all members of multisig or one of the members does not rotate its AID";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
   static readonly MISSING_GROUP_METADATA =
@@ -226,124 +220,6 @@ class MultiSigService extends AgentService {
       icpResult: icp,
       prefix,
     };
-  }
-
-  @OnlineOnly
-  async rotateMultisig(ourIdentifier: string): Promise<string> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      ourIdentifier
-    );
-    if (!metadata.multisigManageAid) {
-      throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
-    }
-
-    const multiSig = await this.props.signifyClient
-      .identifiers()
-      .get(metadata.id)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
-    if (!multiSig) {
-      throw new Error(MultiSigService.MULTI_SIG_NOT_FOUND);
-    }
-    const nextSequence = (Number(multiSig.state.s) + 1).toString();
-
-    const members = await this.props.signifyClient
-      .identifiers()
-      .members(metadata.id);
-    const smids = members?.signing;
-    const rmids = members?.rotation;
-
-    const states: State[] = [];
-    const rstates: State[] = [];
-
-    await Promise.allSettled(
-      smids.map(async (signing: any) => {
-        const aid = await this.props.signifyClient
-          .keyStates()
-          .query(signing.aid, nextSequence);
-        if (aid.done) {
-          states.push(aid.response);
-        }
-      })
-    );
-
-    await Promise.allSettled(
-      rmids.map(async (rotation: any) => {
-        const aid = await this.props.signifyClient
-          .keyStates()
-          .query(rotation.aid, nextSequence);
-        if (aid.done) {
-          rstates.push(aid.response);
-        }
-      })
-    );
-
-    if (smids.length !== states.length) {
-      throw new Error(MultiSigService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
-    }
-    const aid = await this.props.signifyClient
-      .identifiers()
-      .get(metadata.multisigManageAid);
-
-    const result = await this.rotateMultisigAid(
-      aid,
-      smids,
-      rmids,
-      states,
-      rstates,
-      metadata.id
-    );
-    const multisigId = result.op.name.split(".")[1];
-    return multisigId;
-  }
-
-  @OnlineOnly
-  async joinMultisigRotation(notification: KeriaNotification): Promise<string> {
-    const msgSaid = notification.a.d as string;
-    const notifications: RotationMultiSigExnMessage[] =
-      await this.props.signifyClient
-        .groups()
-        .getRequest(msgSaid)
-        .catch((error) => {
-          const status = error.message.split(" - ")[1];
-          if (/404/gi.test(status)) {
-            return [];
-          } else {
-            throw error;
-          }
-        });
-    if (!notifications.length) {
-      throw new Error(MultiSigService.EXN_MESSAGE_NOT_FOUND);
-    }
-    const exn = notifications[0].exn;
-    const multisigId = exn.a.gid;
-    const multiSig = await this.identifierStorage.getIdentifierMetadata(
-      multisigId
-    );
-    if (!multiSig) {
-      throw new Error(MultiSigService.MULTI_SIG_NOT_FOUND);
-    }
-    if (!multiSig.multisigManageAid) {
-      throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
-    }
-
-    const aid = await this.props.signifyClient
-      .identifiers()
-      .get(multiSig.multisigManageAid);
-    const res = await this.joinMultisigRotationKeri(exn, aid, multiSig.id);
-    await deleteNotificationRecordById(
-      this.props.signifyClient,
-      this.notificationStorage,
-      notification.id,
-      notification.a.r as NotificationRoute
-    );
-    return res.op.name.split(".")[1];
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
@@ -530,167 +406,6 @@ class MultiSigService extends AgentService {
       identifier: multisigId,
       multisigManageAid: identifier.id,
       isPending,
-    };
-  }
-
-  async rotateLocalMember(multisigId: string) {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      multisigId
-    );
-    if (!metadata.multisigManageAid) {
-      throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
-    }
-    await this.identifiers.rotateIdentifier(metadata.multisigManageAid);
-  }
-
-  private async rotateMultisigAid(
-    aid: HabState,
-    smids: any[],
-    rmids: any[],
-    states: State[],
-    rstates: State[],
-    prefix: string
-  ): Promise<{
-    op: any;
-    icpResult: EventResult;
-  }> {
-    const icp = await this.props.signifyClient
-      .identifiers()
-      .rotate(prefix, { states, rstates });
-
-    const op = await icp.op();
-    const serder = icp.serder;
-
-    const sigs = icp.sigs;
-    const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
-
-    const ims = d(messagize(serder, sigers));
-    const atc = ims.substring(serder.size);
-    const embeds = {
-      rot: [serder, atc],
-    };
-
-    const recp = [
-      ...new Set([
-        ...smids.map((item) => item.aid),
-        ...rmids.map((item) => item.aid),
-      ]),
-    ];
-
-    await this.sendMultisigExn(
-      aid["prefix"],
-      aid,
-      MultiSigRoute.ROT,
-      embeds,
-      recp,
-      {
-        gid: serder.pre,
-        smids: smids,
-        rmids: rmids,
-        name: prefix,
-      }
-    );
-    return {
-      op: op,
-      icpResult: icp,
-    };
-  }
-
-  async membersReadyToRotate(identifierId: string): Promise<string[]> {
-    const multiSig = await this.props.signifyClient
-      .identifiers()
-      .get(identifierId);
-
-    const members = await this.props.signifyClient
-      .identifiers()
-      .members(identifierId);
-
-    const nextSequence = (Number(multiSig.state.s) + 1).toString();
-    const smids = members.signing;
-
-    const states: State[] = [];
-    await Promise.all(
-      smids.map(async (signing: any) => {
-        const op = await this.props.signifyClient
-          .keyStates()
-          .query(signing.aid, nextSequence);
-        await waitAndGetDoneOp(this.props.signifyClient, op);
-
-        if (op.done) {
-          states.push(op.response);
-        } else {
-          throw new Error(MultiSigService.CANNOT_GET_KEYSTATE_OF_IDENTIFIER);
-        }
-      })
-    );
-
-    const rotated: string[] = [];
-    for (const state of states) {
-      if (!multiSig.state.k.includes(state.k[0])) {
-        rotated.push(state.i);
-      }
-    }
-
-    return rotated;
-  }
-
-  private async joinMultisigRotationKeri(
-    exn: RotationMultiSigExnMessage["exn"],
-    aid: HabState,
-    prefix: string
-  ): Promise<{
-    op: any;
-    icpResult: EventResult;
-    prefix: string;
-  }> {
-    const rstates = await Promise.all(
-      exn.a.rmids.map(async (member) => {
-        const result = await this.props.signifyClient.keyStates().get(member);
-        if (result.length === 0) {
-          throw new Error(
-            MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
-          );
-        }
-        return result[0];
-      })
-    );
-    const icpResult = await this.props.signifyClient
-      .identifiers()
-      .rotate(prefix, { states: rstates, rstates: rstates });
-    const op = await icpResult.op();
-    const serder = icpResult.serder;
-    const sigs = icpResult.sigs;
-    const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
-
-    const ims = d(messagize(serder, sigers));
-    const atc = ims.substring(serder.size);
-    const embeds = {
-      rot: [serder, atc],
-    };
-
-    const smids = exn.a.smids;
-    const rmids = exn.a.rmids;
-    const recp = rstates
-      .filter((r) => r.i !== aid.state.i)
-      .map((state) => state["i"]);
-    await this.sendMultisigExn(
-      aid["prefix"],
-      aid,
-      MultiSigRoute.IXN,
-      embeds,
-      recp,
-      {
-        gid: serder.pre,
-        smids: smids,
-        rmids: rmids,
-        rstates,
-        name: prefix,
-      }
-    );
-    return {
-      op: op,
-      icpResult: icpResult,
-      prefix,
     };
   }
 

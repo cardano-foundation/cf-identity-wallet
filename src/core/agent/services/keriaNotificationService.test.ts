@@ -58,6 +58,7 @@ jest.mock("signify-ts", () => ({
 }));
 const contactsUpdateMock = jest.fn();
 const contactGetMock = jest.fn();
+const contactDeleteMock = jest.fn();
 const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -81,7 +82,7 @@ const signifyClient = jest.mocked({
   contacts: () => ({
     list: jest.fn(),
     get: contactGetMock,
-    delete: jest.fn(),
+    delete: contactDeleteMock,
     update: contactsUpdateMock,
   }),
   notifications: () => ({
@@ -1930,6 +1931,43 @@ describe("Long running operation tracker", () => {
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
+
+  test("Should delete Keria connection if local connection metadata record does not exist", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    connectionStorage.findById.mockResolvedValueOnce(null);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    contactGetMock.mockResolvedValueOnce(null);
+
+    await keriaNotificationService.processOperation(operationRecord);
+    expect(contactDeleteMock).toBeCalledWith("id");
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationComplete,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  })
 
   test.skip("Cannot create connection if the connection is already created", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);

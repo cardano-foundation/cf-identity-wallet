@@ -19,9 +19,8 @@ import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  setCurrentOperation,
   setCurrentRoute,
-  showConnections,
+  showConnections
 } from "../../../store/reducers/stateCache";
 import {
   getShowConnectWallet,
@@ -29,7 +28,6 @@ import {
 } from "../../../store/reducers/walletConnectionsCache";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
-import { OperationType } from "../../globals/types";
 import MenuItem from "./components/MenuItem";
 import { SubMenu } from "./components/SubMenu";
 import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";

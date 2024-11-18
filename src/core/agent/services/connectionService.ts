@@ -205,9 +205,9 @@ class ConnectionService extends AgentService {
       groupId,
       pendingDeletion: false,
     });
-    associatedContacts.forEach(async (connection) => {
-      connectionsDetails.push(this.getConnectionShortDetails(connection));
-    });
+    for (const connection of associatedContacts) {
+      connectionsDetails.push(await this.getConnectionShortDetails(connection));
+    }
     return connectionsDetails;
   }
 

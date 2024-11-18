@@ -12,9 +12,10 @@ import {
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
-import { IdentifierColor } from "./IdentifierColorSelector";
-import { IdentifierStage1 } from "./IdentifierStage1";
+import { SetupConnections } from "./SetupConnections";
 import { passcodeFiller } from "../../../utils/passcodeFiller";
+import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
+import { Stage } from "../CreateGroupIdentifier.types";
 
 setupIonicReact();
 mockIonicReact();
@@ -64,7 +65,7 @@ jest.mock("../../../../core/storage", () => ({
   },
 }));
 
-describe("Identifier Stage 1", () => {
+describe("Create group identifier - Setup Connection", () => {
   const mockStore = configureStore();
 
   const initialState = {
@@ -138,7 +139,7 @@ describe("Identifier Stage 1", () => {
   test("Render and initial multisig", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage1
+        <SetupConnections
           state={stage1State}
           setState={setState}
           componentId={"create-identifier"}
@@ -173,7 +174,7 @@ describe("Identifier Stage 1", () => {
       scannedConections: [connectionsFix[3]],
       displayNameValue: stage1State.displayNameValue,
       ourIdentifier: stage1State.ourIdentifier,
-      identifierCreationStage: 2,
+      identifierCreationStage: Stage.Members,
       selectedTheme: 0,
     });
   });
@@ -218,7 +219,7 @@ describe("Identifier Stage 1", () => {
     test("Renders Initial Multi Sig", async () => {
       const { getByTestId, getByText, getAllByText } = render(
         <Provider store={storeMocked}>
-          <IdentifierStage1
+          <SetupConnections
             state={stage1State}
             setState={setState}
             componentId={"create-identifier-modal"}
@@ -299,7 +300,7 @@ describe("Identifier Stage 1", () => {
     test("Renders Initial Multi Sig: groupInitiator is false", async () => {
       const { getByTestId, getByText } = render(
         <Provider store={storeMocked}>
-          <IdentifierStage1
+          <SetupConnections
             state={{
               ...stage1State,
               newIdentifier: {
@@ -403,7 +404,7 @@ describe("Identifier Stage 1", () => {
     test("Renders Resume Multi Sig content", async () => {
       const { getByTestId, getByText } = render(
         <Provider store={storeMocked}>
-          <IdentifierStage1
+          <SetupConnections
             state={stage1State}
             setState={setState}
             componentId={"create-identifier"}
@@ -486,7 +487,7 @@ describe("Identifier Stage 1", () => {
     test("Renders Resume Multi Sig with groupInitiator is false", async () => {
       const { getByText } = render(
         <Provider store={storeMocked}>
-          <IdentifierStage1
+          <SetupConnections
             state={stage1State}
             setState={setState}
             componentId={"create-identifier"}

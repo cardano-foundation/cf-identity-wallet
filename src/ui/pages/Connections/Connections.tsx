@@ -66,7 +66,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     >(undefined);
     const availableIdentifiers = identifierCache.filter(
       (item) => !item.isPending
-    );
+    ).filter((item) => !item.groupMetadata?.groupId);
     const [mappedConnections, setMappedConnections] = useState<
       MappedConnections[]
     >([]);

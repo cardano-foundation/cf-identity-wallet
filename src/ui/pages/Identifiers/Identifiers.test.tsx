@@ -424,15 +424,19 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
+
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+
     const { getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter history={history} initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
             component={Identifiers}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     await waitFor(() => {
@@ -833,15 +837,18 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+  
     const { getByText, getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter history={history} initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
             component={Identifiers}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     act(() => {

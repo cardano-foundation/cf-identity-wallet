@@ -4,7 +4,7 @@ import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
-import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
+import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
 import { writeToClipboard } from "../../../utils/clipboard";
@@ -12,7 +12,7 @@ import { useAppDispatch } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 
-const IdentifierStage1BodyResume = ({
+const SetupConnectionBodyResume = ({
   componentId,
   handleDone,
   handleInitiateMultiSig,
@@ -171,4 +171,4 @@ const IdentifierStage1BodyResume = ({
   );
 };
 
-export { IdentifierStage1BodyResume };
+export { SetupConnectionBodyResume };
