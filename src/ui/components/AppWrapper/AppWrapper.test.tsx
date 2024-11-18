@@ -53,7 +53,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: jest.fn(),
+      setupLocalDependencies: jest.fn(),
       auth: {
         getLoginAttempts: jest.fn(() =>
           Promise.resolve({

@@ -16,7 +16,7 @@ jest.mock("../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: () => mockInitDatabase(),
+      setupLocalDependencies: () => mockInitDatabase(),
       getBranAndMnemonic: jest.fn(() =>
         Promise.resolve({
           bran: "",

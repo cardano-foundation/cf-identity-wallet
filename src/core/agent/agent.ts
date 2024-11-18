@@ -221,8 +221,6 @@ class Agent {
   }
 
   async start(keriaConnectUrl: string): Promise<void> {
-    this.connectionService.onConnectionRemoved();
-    this.connectionService.onConnectionAdded();
     if (!Agent.isOnline) {
       await signifyReady();
       const bran = await this.getBran();
@@ -402,7 +400,7 @@ class Agent {
     }
   }
 
-  async initDatabaseConnection(): Promise<void> {
+  async setupLocalDependencies(): Promise<void> {
     await this.storageSession.open(walletId);
     this.basicStorageService = new BasicStorage(
       this.getStorageService<BasicRecord>(this.storageSession)
@@ -429,6 +427,8 @@ class Agent {
       signifyClient: this.signifyClient,
       eventEmitter: new CoreEventEmitter(),
     };
+    this.connections.onConnectionRemoved();
+    this.connections.onConnectionAdded();
   }
 
   async connect(retryInterval = 1000) {
