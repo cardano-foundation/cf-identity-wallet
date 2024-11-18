@@ -1761,45 +1761,6 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should throw error if other error occurs with get existing credential with admit multisig exn", async () => {
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
-      .mockResolvedValueOnce(grantForIssuanceExnMessage);
-
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: "id",
-        createdAt: new Date(),
-        a: {
-          r: NotificationRoute.ExnIpexGrant,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexGrant,
-        read: true,
-        linkedGroupRequests: {},
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: new Date(),
-      },
-    ]);
-
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue({
-        id: "id",
-      });
-
-    const errorMessage = new Error("Error - 500");
-    getCredentialMock.mockRejectedValueOnce(errorMessage);
-
-    await expect(
-      keriaNotificationService.processNotification(notificationMultisigExnProp)
-    ).rejects.toThrow(errorMessage);
-  });
-
   test("Should mark notification when exist identifier of the sender of the inception event", async () => {
     exchangesGetMock.mockResolvedValueOnce({
       exn: {
