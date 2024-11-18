@@ -828,10 +828,35 @@ class KeriaNotificationService extends AgentService {
         });
         break;
       }
+      case OperationPendingRecordType.Individual: {
+        const newRecordId = recordId.split(".")[1]
+        await this.identifierStorage.updateIdentifierMetadata(newRecordId, {
+          isPending: false,
+        });
+
+        const individualIdentifier =
+          await this.identifierStorage.getIdentifierMetadata(newRecordId);
+        await this.props.signifyClient.identifiers()
+          .addEndRole(individualIdentifier.id, "agent", this.props.signifyClient.agent!.pre);
+
+        this.props.eventEmitter.emit<OperationCompleteEvent>({
+          type: EventTypes.OperationComplete,
+          payload: {
+            opType: operationRecord.recordType,
+            oid: newRecordId,
+          },
+        });
+        break;
+      }
       case OperationPendingRecordType.Witness: {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           isPending: false,
         });
+
+        const individualIdentifier =
+          await this.identifierStorage.getIdentifierMetadata(recordId);
+        await this.props.signifyClient.identifiers()
+          .addEndRole(individualIdentifier.id, "agent", this.props.signifyClient.agent!.pre);
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
           payload: {

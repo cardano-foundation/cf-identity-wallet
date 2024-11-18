@@ -126,6 +126,21 @@ class IdentifierService extends AgentService {
     };
   }
 
+  async resolvePendingIdentifier() {
+    const pendingIdentifers =
+      await this.identifierStorage.getIdentifierPendingCreation();
+
+    for (const identifier of pendingIdentifers) {
+      await this.props.signifyClient
+        .identifiers()
+        .addEndRole(
+          identifier.id,
+          "agent",
+          this.props.signifyClient.agent!.pre
+        );
+    }
+  }
+
   @OnlineOnly
   async createIdentifier(
     metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
@@ -136,10 +151,10 @@ class IdentifierService extends AgentService {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
 
-    let name = `${metadata.theme}:${metadata.displayName}`;
-    if (metadata.groupMetadata) {
-      name = `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`;
-    }
+    const name = metadata.groupMetadata
+      ? `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`
+      : `${metadata.theme}:${metadata.displayName}`;
+
     const operation = await this.props.signifyClient.identifiers().create(name);
     let op = await operation.op().catch((error) => {
       const err = error.message.split(" - ");
@@ -149,36 +164,42 @@ class IdentifierService extends AgentService {
       throw error;
     });
     const identifier = operation.serder.ked.i;
+    const isPending = true;
 
-    const addRoleOperation = await this.props.signifyClient
-      .identifiers()
-      .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
-    await addRoleOperation.op();
-
-    const isPending = !op.done;
-    if (isPending) {
-      op = await waitAndGetDoneOp(
-        this.props.signifyClient,
-        op,
-        2000 - (Date.now() - startTime)
-      );
-      if (!op.done) {
-        const pendingOperation = await this.operationPendingStorage.save({
-          id: op.name,
-          recordType: OperationPendingRecordType.Witness,
-        });
-        this.props.eventEmitter.emit<OperationAddedEvent>({
-          type: EventTypes.OperationAdded,
-          payload: { operation: pendingOperation },
-        });
-      }
+    if (metadata.groupMetadata?.groupId) {
+      const addRoleOperation = await this.props.signifyClient
+        .identifiers()
+        .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
+      await addRoleOperation.op();
     }
+
+    op = await waitAndGetDoneOp(
+      this.props.signifyClient,
+      op,
+      2000 - (Date.now() - startTime)
+    );
+
+    const recordType = op.done
+      ? OperationPendingRecordType.Individual
+      : OperationPendingRecordType.Witness;
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType,
+    });
+
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
+      payload: { operation: pendingOperation },
+    });
+
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
-      isPending: !op.done,
+      isPending,
     });
-    return { identifier, isPending: !op.done };
+
+    return { identifier, isPending };
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {

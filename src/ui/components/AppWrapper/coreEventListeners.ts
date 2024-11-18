@@ -41,6 +41,10 @@ const signifyOperationStateChangeHandler = async (
     dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
+  case OperationPendingRecordType.Individual:
+    dispatch(updateIsPending({ id: oid, isPending: false }));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    break;
   case OperationPendingRecordType.ExchangeRevokeCredential: {
     // @TODO: Inject with `addNotification` instead of fetching all notifications
     const notifications =

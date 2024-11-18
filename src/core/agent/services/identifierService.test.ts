@@ -14,7 +14,7 @@ const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
-const operationMock = jest.fn()
+const operationMock = jest.fn();
 const mockSigner = {
   _code: "A",
   _size: -1,
@@ -113,6 +113,7 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
   getIdentifierMetadataByGroupId: jest.fn(),
   deleteIdentifierMetadata: jest.fn(),
+  getIdentifierPendingCreation: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -352,7 +353,7 @@ describe("Single sig service of agent", () => {
       })
     ).toEqual({
       identifier: aid,
-      isPending: false,
+      isPending: true,
     });
     expect(createIdentifierMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
@@ -432,7 +433,8 @@ describe("Single sig service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const displayName = "newDisplayName";
     const theme = 0;
-    const errorMessage = "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
+    const errorMessage =
+      "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
     createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
@@ -447,7 +449,9 @@ describe("Single sig service of agent", () => {
         displayName,
         theme,
       })
-    ).rejects.toThrowError(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${theme}:${displayName}`);
+    ).rejects.toThrowError(
+      `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${theme}:${displayName}`
+    );
   });
 
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
@@ -668,6 +672,39 @@ describe("Single sig service of agent", () => {
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledTimes(1);
     expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
       identifierId
+    );
+  });
+
+  test("Should not call addEndRole when no pending identifiers", async () => {
+    identifierStorage.getIdentifierPendingCreation = jest
+      .fn()
+      .mockResolvedValueOnce([]);
+
+    await identifierService.resolvePendingIdentifier();
+    expect(signifyClient.identifiers().addEndRole).not.toHaveBeenCalled();
+  });
+
+  test("Can resolve identifier pending", async () => {
+    identifierStorage.getIdentifierPendingCreation = jest
+      .fn()
+      .mockResolvedValueOnce([{ id: "identifier1" }, { id: "identifier2" }]);
+    const mockAddEndRole = jest.fn().mockResolvedValue(undefined);
+    signifyClient.identifiers = jest.fn().mockReturnValue({
+      addEndRole: mockAddEndRole,
+    });
+
+    await identifierService.resolvePendingIdentifier();
+
+    expect(mockAddEndRole).toHaveBeenCalledTimes(2);
+    expect(mockAddEndRole).toHaveBeenCalledWith(
+      "identifier1",
+      "agent",
+      signifyClient.agent!.pre
+    );
+    expect(mockAddEndRole).toHaveBeenCalledWith(
+      "identifier2",
+      "agent",
+      signifyClient.agent!.pre
     );
   });
 });
