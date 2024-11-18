@@ -211,14 +211,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
-
-    const resolvePendingConnections = async () => {
-      await Agent.agent.connections.resolvePendingConnections();
-    };
-
     if (isOnline) {
       syncWithKeria();
-      resolvePendingConnections();
     }
   }, [isOnline, dispatch]);
 

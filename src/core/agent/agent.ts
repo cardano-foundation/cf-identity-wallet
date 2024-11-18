@@ -322,6 +322,7 @@ class Agent {
   markAgentStatus(online: boolean) {
     Agent.isOnline = true;
     this.connectionService.removeConnectionsPendingDeletion();
+    this.connectionService.resolvePendingConnections();
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
       type: EventTypes.KeriaStatusChanged,
       payload: {

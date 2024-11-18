@@ -32,6 +32,7 @@ const mockBasicStorageService = {
 
 const mockConnectionService = {
   removeConnectionsPendingDeletion: jest.fn(),
+  resolvePendingConnections: jest.fn(),
 };
 const mockEntropy = "00000000000000000000000000000000";
 
@@ -146,6 +147,9 @@ describe("test cases of bootAndConnect function", () => {
     mockConnectionService.removeConnectionsPendingDeletion = jest
       .fn()
       .mockReturnValue(["id1", "id2"]);
+    mockConnectionService.resolvePendingConnections = jest
+      .fn()
+      .mockReturnValue(undefined);
     await agent.bootAndConnect(mockAgentUrls);
 
     expect(signifyReady).toHaveBeenCalled();
@@ -176,9 +180,6 @@ describe("test cases of bootAndConnect function", () => {
     });
     mockSignifyClient.connect.mockResolvedValueOnce(true);
     SecureStorage.get = jest.fn().mockResolvedValueOnce(mockGetBranValue);
-    mockConnectionService.removeConnectionsPendingDeletion = jest
-      .fn()
-      .mockReturnValue(["id1", "id2"]);
     await agent.bootAndConnect(mockAgentUrls);
 
     expect(signifyReady).toHaveBeenCalled();
