@@ -211,9 +211,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
-    const removeConnectionsPendingDeletion = async () => {
-      await Agent.agent.connections.removeConnectionsPendingDeletion();
-    };
 
     const resolvePendingConnections = async () => {
       await Agent.agent.connections.resolvePendingConnections();
@@ -221,7 +218,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     if (isOnline) {
       syncWithKeria();
-      removeConnectionsPendingDeletion();
       resolvePendingConnections();
     }
   }, [isOnline, dispatch]);

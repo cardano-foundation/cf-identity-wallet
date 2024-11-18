@@ -131,6 +131,7 @@ class ConnectionService extends AgentService {
       connectionMetadata.pending = false;
       connectionMetadata.createdAtUTC = oobiResult.op.response.dt;
       connectionMetadata.status = ConnectionStatus.CONFIRMED;
+      connectionMetadata.alias = alias
 
       const identifierWithGroupId =
         await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
@@ -481,14 +482,6 @@ class ConnectionService extends AgentService {
     const pendingDeletions = await this.getConnectionsPendingDeletion();
     for (const id of pendingDeletions) {
       await this.deleteConnectionById(id);
-      this.markAgentStatus(true);
-      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-        type: EventTypes.ConnectionStateChanged,
-        payload: {
-          connectionId: id,
-          status: ConnectionStatus.DELETED,
-        },
-      });
     }
 
     return pendingDeletions;

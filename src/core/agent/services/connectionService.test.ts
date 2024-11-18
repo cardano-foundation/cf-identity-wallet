@@ -867,7 +867,6 @@ describe("Connection service of agent", () => {
       .mockResolvedValueOnce(["id1", "id2"]);
     const result = await connectionService.removeConnectionsPendingDeletion();
 
-    expect(Agent.agent.markAgentStatus).toHaveBeenCalledWith(true);
     expect(connectionService.deleteConnectionById).toHaveBeenCalledWith("id1");
     expect(connectionService.deleteConnectionById).toHaveBeenCalledWith("id2");
     expect(result).toEqual(["id1", "id2"]);
