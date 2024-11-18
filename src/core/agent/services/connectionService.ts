@@ -37,7 +37,6 @@ class ConnectionService extends AgentService {
   protected readonly credentialStorage: CredentialStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly identifierStorage: IdentifierStorage;
-  protected readonly markAgentStatus: (online: boolean) => void;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -45,14 +44,12 @@ class ConnectionService extends AgentService {
     credentialStorage: CredentialStorage,
     operationPendingStorage: OperationPendingStorage,
     identifierStorage: IdentifierStorage,
-    markAgentStatus: (online: boolean) => void
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.credentialStorage = credentialStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.identifierStorage = identifierStorage;
-    this.markAgentStatus = markAgentStatus;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -131,7 +128,6 @@ class ConnectionService extends AgentService {
       connectionMetadata.pending = false;
       connectionMetadata.createdAtUTC = oobiResult.op.response.dt;
       connectionMetadata.status = ConnectionStatus.CONFIRMED;
-      connectionMetadata.alias = alias
 
       const identifierWithGroupId =
         await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
