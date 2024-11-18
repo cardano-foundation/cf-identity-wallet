@@ -125,7 +125,7 @@ const ConnectionDetails = ({
             connectionShortDetails.id
           );
         } else {
-          await Agent.agent.connections.deleteConnectionById(
+          await Agent.agent.connections.markConnectionPendingDelete(
             connectionShortDetails.id
           );
         }

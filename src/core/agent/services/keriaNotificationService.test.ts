@@ -1,5 +1,5 @@
 import { Agent } from "../agent";
-import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
+import { ConnectionStatus, ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
 import { IdentifierStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { CredentialStatus } from "./credentialService.types";
@@ -1922,7 +1922,14 @@ describe("Long running operation tracker", () => {
       alias: "CF Credential Issuance",
       createdAt: operationMock.response.dt,
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
+      type: EventTypes.ConnectionStateChanged,
+      payload: {
+        connectionId: "id",
+        status: ConnectionStatus.CONFIRMED,
+      },
+    })
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, {
       type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,
