@@ -41,10 +41,7 @@ import {
   setIdentifierFavouriteIndex,
   setIdentifierViewTypeCache,
 } from "../../../store/reducers/viewTypeCache";
-import {
-  addNotification,
-  setNotificationsCache,
-} from "../../../store/reducers/notificationsCache";
+import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   getAuthentication,
   getIsInitialized,
