@@ -41,6 +41,7 @@ import {
   ipexSubmitAdmitSig,
   ipexSubmitAdmitEnd,
   credentialStateIssued,
+  credentialStateRevoked,
 } from "../../__fixtures__/agent/ipexCommunicationFixture";
 import { NotificationRoute } from "../agent.types";
 import {
@@ -259,8 +260,8 @@ jest.mock("signify-ts", () => ({
   d: jest.fn().mockImplementation(() => "d"),
   b: jest.fn().mockImplementation(() => "b"),
   Ilks: {
-    iss: "iss"
-  }
+    iss: "iss",
+  },
 }));
 
 const eventEmitter = new CoreEventEmitter();
@@ -2694,7 +2695,7 @@ describe("Ipex communication service of agent", () => {
         attendeeName: "ccc",
       },
       s: QVISchema,
-      lastStatus: { s: "1", dt: "2024-11-07T08:32:34.943Z" },
+      lastStatus: { s: "0", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
     });
@@ -2735,7 +2736,7 @@ describe("Ipex communication service of agent", () => {
         attendeeName: "ccc",
       },
       s: QVISchema,
-      lastStatus: { s: "1", dt: "2024-11-07T08:32:34.943Z" },
+      lastStatus: { s: "0", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
     });
@@ -2751,5 +2752,46 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrow("Some other error - 500");
     expect(schemaGetMock).toHaveBeenCalledTimes(1);
     expect(resolveOobiMock).not.toHaveBeenCalled();
+  });
+
+  test("Should return last status is revoked when getting credential state from cloud", async () => {
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
+    schemaGetMock.mockResolvedValue(QVISchema);
+    credentialStateMock.mockResolvedValueOnce(credentialStateRevoked);
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
+
+    resolveOobiMock.mockResolvedValueOnce({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    expect(
+      await ipexCommunicationService.getAcdcFromIpexGrant(
+        "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
+      )
+    ).toEqual({
+      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      a: {
+        d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+        i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+        attendeeName: "ccc",
+      },
+      s: QVISchema,
+      lastStatus: { s: "1", dt: "2024-11-07T08:32:34.943Z" },
+      status: "pending",
+      identifierId: memberIdentifierRecord.id,
+    });
   });
 });

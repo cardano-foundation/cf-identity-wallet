@@ -31,7 +31,6 @@ import {
   OperationCompleteEvent,
   OperationAddedEvent,
   NotificationRemovedEvent,
-  CredentialRevokedEvent,
   ConnectionStateChangedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById, randomSalt } from "./utils";
@@ -93,12 +92,6 @@ class KeriaNotificationService extends AgentService {
         this.pendingOperations.push(event.payload.operation);
       }
     );
-  }
-
-  onCredentialRevoked(
-    callback: (event: CredentialRevokedEvent) => void
-  ) {
-    this.props.eventEmitter.on(EventTypes.CredentialRevoked, callback);
   }
 
   async pollNotifications() {
@@ -389,20 +382,21 @@ class KeriaNotificationService extends AgentService {
         .ipex()
         .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
 
-      const metadata: any = {
+      const metadata: NotificationRecordStorageProps = {
         id: randomSalt(),
         a: {
           r: NotificationRoute.LocalAcdcRevoked,
           credentialId: existingCredential.id,
           credentialTitle: existingCredential.credentialType,
         },
+        connectionId:existingCredential.connectionId,
         read: false,
         route: NotificationRoute.LocalAcdcRevoked,
       };
       const notificationRecord = await this.notificationStorage.save(metadata);
 
-      this.props.eventEmitter.emit<CredentialRevokedEvent>({
-        type: EventTypes.CredentialRevoked,
+      this.props.eventEmitter.emit<NotificationAddedEvent>({
+        type: EventTypes.NotificationAdded,
         payload: {
           keriaNotif: {
             id: notificationRecord.id,

@@ -1021,7 +1021,7 @@ class IpexCommunicationService extends AgentService {
         version: schema.version,
       },
       lastStatus: {
-        s: credentialState.et === Ilks.iss ? "1" : "0",
+        s: credentialState.et === Ilks.iss ? "0" : "1",
         dt: new Date(credentialState.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,

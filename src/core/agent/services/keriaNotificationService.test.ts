@@ -1,5 +1,10 @@
 import { Agent } from "../agent";
-import { ConnectionStatus, ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
+import {
+  ConnectionStatus,
+  ExchangeRoute,
+  MiscRecordId,
+  NotificationRoute,
+} from "../agent.types";
 import { IdentifierStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { CredentialStatus } from "./credentialService.types";
@@ -710,11 +715,13 @@ describe("Signify notification service of agent", () => {
     );
     expect(markNotificationMock).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.CredentialRevoked,
+      type: EventTypes.NotificationAdded,
       payload: {
         keriaNotif: {
           id: "id",
-          createdAt: expect.any(String),
+          createdAt: expect.stringMatching(
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+          ),
           a: {
             r: NotificationRoute.LocalAcdcRevoked,
             credentialId: credentialMetadataMock.id,
@@ -2004,7 +2011,7 @@ describe("Long running operation tracker", () => {
         connectionId: "id",
         status: ConnectionStatus.CONFIRMED,
       },
-    })
+    });
     expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, {
       type: EventTypes.OperationComplete,
       payload: {

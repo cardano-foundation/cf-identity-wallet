@@ -484,10 +484,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
     });
-
-    Agent.agent.keriaNotifications.onCredentialRevoked((event) => {
-      dispatch(addNotification(event.payload.keriaNotif));
-    });
   };
 
   const initApp = async () => {
