@@ -141,7 +141,7 @@ class Agent {
         this.connectionStorage,
         this.credentialStorage,
         this.operationPendingStorage,
-        this.identifierStorage
+        this.identifierStorage,
       );
     }
     return this.connectionService;
@@ -317,7 +317,13 @@ class Agent {
   }
 
   markAgentStatus(online: boolean) {
-    Agent.isOnline = true;
+    Agent.isOnline = online;
+
+    if (online) {
+      this.connections.removeConnectionsPendingDeletion();
+      this.connections.resolvePendingConnections();
+    }
+    
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
       type: EventTypes.KeriaStatusChanged,
       payload: {
@@ -398,7 +404,7 @@ class Agent {
     }
   }
 
-  async initDatabaseConnection(): Promise<void> {
+  async setupLocalDependencies(): Promise<void> {
     await this.storageSession.open(walletId);
     this.basicStorageService = new BasicStorage(
       this.getStorageService<BasicRecord>(this.storageSession)
@@ -425,6 +431,8 @@ class Agent {
       signifyClient: this.signifyClient,
       eventEmitter: new CoreEventEmitter(),
     };
+    this.connections.onConnectionRemoved();
+    this.connections.onConnectionAdded();
   }
 
   async connect(retryInterval = 1000) {

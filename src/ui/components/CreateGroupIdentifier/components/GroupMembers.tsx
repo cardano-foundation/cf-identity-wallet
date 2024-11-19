@@ -4,11 +4,11 @@ import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
-import { IdentifierStageProps } from "../CreateIdentifier.types";
+import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
-const IdentifierStage2 = ({
+const GroupMembers = ({
   state,
   setState,
   componentId,
@@ -28,9 +28,9 @@ const IdentifierStage2 = ({
   };
 
   const handleContinue = () => {
-    setState((prevState: IdentifierStageProps) => ({
+    setState((prevState) => ({
       ...prevState,
-      identifierCreationStage: 3,
+      identifierCreationStage: Stage.SetupThreshold,
       selectedConnections: selectedConnections,
     }));
   };
@@ -43,9 +43,9 @@ const IdentifierStage2 = ({
           <PageHeader
             closeButton={true}
             closeButtonAction={() => {
-              setState((prevState: IdentifierStageProps) => ({
+              setState((prevState) => ({
                 ...prevState,
-                identifierCreationStage: 1,
+                identifierCreationStage: Stage.SetupConnection,
                 selectedConnections: [],
               }));
             }}
@@ -98,4 +98,4 @@ const IdentifierStage2 = ({
   );
 };
 
-export { IdentifierStage2 };
+export { GroupMembers };

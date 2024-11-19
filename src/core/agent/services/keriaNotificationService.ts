@@ -2,6 +2,7 @@ import { Ilks, State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
+  ConnectionStatus,
   ExchangeRoute,
   KeriaNotification,
   KeriaNotificationMarker,
@@ -31,6 +32,7 @@ import {
   OperationAddedEvent,
   NotificationRemovedEvent,
   CredentialRevokedEvent,
+  ConnectionStateChangedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
@@ -543,7 +545,14 @@ class KeriaNotificationService extends AgentService {
       const existingCredential = await this.props.signifyClient
         .credentials()
         .get(credentialId)
-        .catch(() => undefined);
+        .catch((error) => {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
 
       // @TODO - foconnor: If multi-sig it may not complete now
       if (existingCredential) {
@@ -908,6 +917,7 @@ class KeriaNotificationService extends AgentService {
             (operation.response as State).dt
           );
           await this.connectionStorage.update(connectionRecord);
+
           const alias = connectionRecord.alias;
           await this.props.signifyClient
             .contacts()
@@ -915,6 +925,18 @@ class KeriaNotificationService extends AgentService {
               alias,
               createdAt: new Date((operation.response as State).dt),
             });
+          
+          this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+            type: EventTypes.ConnectionStateChanged,
+            payload: {
+              connectionId: connectionRecord.id,
+              status: ConnectionStatus.CONFIRMED,
+            },
+          });
+        } else {
+          await this.props.signifyClient
+            .contacts()
+            .delete((operation.response as State).i);
         }
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,

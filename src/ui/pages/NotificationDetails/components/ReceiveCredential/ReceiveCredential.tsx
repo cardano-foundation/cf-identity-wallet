@@ -46,7 +46,7 @@ import "./ReceiveCredential.scss";
 import { MultiSigMembersStatus } from "./ReceiveCredential.types";
 import { getAuthentication } from "../../../../../store/reducers/stateCache";
 
-const ANIMATION_DELAY = 2200;
+const ANIMATION_DELAY = 2600;
 
 const ReceiveCredential = ({
   pageId,

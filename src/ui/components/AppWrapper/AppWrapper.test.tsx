@@ -28,7 +28,6 @@ import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
-  setCurrentOperation,
   setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -38,7 +37,7 @@ import {
   setConnectedWallet,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
-import { OperationType, ToastMsgType } from "../../globals/types";
+import { ToastMsgType } from "../../globals/types";
 import {
   AppWrapper,
   acdcChangeHandler,
@@ -54,7 +53,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: jest.fn(),
+      setupLocalDependencies: jest.fn(),
       auth: {
         getLoginAttempts: jest.fn(() =>
           Promise.resolve({

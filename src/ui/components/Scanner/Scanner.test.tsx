@@ -144,6 +144,14 @@ describe("Scanner", () => {
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
       toastMsgs: [],
     },
+    identifiersCache: {
+      identifiers: [],
+      favourites: [],
+      multiSigGroup: {
+        groupId: "",
+        connections: [],
+      },
+    },
   };
 
   const dispatchMock = jest.fn();

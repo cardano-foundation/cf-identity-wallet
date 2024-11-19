@@ -208,6 +208,90 @@ describe("Profile page", () => {
     });
   });
 
+  test("Validate user name", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
+    ).toBeInTheDocument();
+    const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
+
+    act(() => {
+      fireEvent.click(profileButton);
+    });
+
+    await waitForIonicReact();
+
+    const actionButton = getByTestId("action-button");
+
+    expect(getByTestId("profile-title")).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
+    );
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit)
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.name)
+    ).toBeInTheDocument();
+    expect(actionButton).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit
+    );
+    expect(getByTestId("profile-item-view-name")).toHaveTextContent(
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.name + "Frank"
+    );
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit));
+
+    await waitFor(() => {
+      expect(getByTestId("profile-item-edit-name")).toBeVisible();
+    })
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("profile-item-edit-name"), "");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("profile-item-edit-name"), "   ");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("profile-item-edit-name"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.maxlength)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("profile-item-edit-name"), "Duke@@");
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
+      ).toBeVisible();
+    });
+  });
+
   test("Open Profile link", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>

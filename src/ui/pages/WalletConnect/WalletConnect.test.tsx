@@ -250,16 +250,13 @@ describe("Wallet Connect Stage One", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
-            .missingidentifieralert.confirm
-        )
+        getByTestId("missing-identifier-alert-confirm-button")
       );
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.createidentifier.displayname.title)
+        getByText(EN_TRANSLATIONS.createidentifier.add.title)
       ).toBeVisible();
     });
   });

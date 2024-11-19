@@ -23,6 +23,8 @@ import { PageHeader } from "../PageHeader";
 import "./EditIdentifier.scss";
 import { EditIdentifierProps } from "./EditIdentifier.types";
 import { showError } from "../../utils/error";
+import { IdentifierService } from "../../../core/agent/services";
+import { nameChecker } from "../../utils/nameChecker";
 
 const EditIdentifier = ({
   modalIsOpen,
@@ -38,6 +40,10 @@ const EditIdentifier = ({
   const [newSelectedTheme, setNewSelectedTheme] = useState(0);
   const [newSelectedColor, setNewSelectedColor] = useState(0);
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
+
+  const [duplicateName, setDuplicateName] = useState(false);
+  const [inputChange, setInputChange] = useState(false);
+  const localValidateMessage = inputChange ? nameChecker.getError(newDisplayName) : undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform() && modalIsOpen) {
@@ -101,6 +107,11 @@ const EditIdentifier = ({
       dispatch(setIdentifiersCache(updatedIdentifiers));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     } catch (e) {
+      if((e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
+        setDuplicateName(true);
+        return;
+      }
+
       showError(
         "Unable to edit identifier",
         e,
@@ -111,6 +122,15 @@ const EditIdentifier = ({
       setLoading(false);
     }
   };
+
+  const handleChangeName = (value: string) => {
+    setNewDisplayName(value);
+    setInputChange(true);
+    setDuplicateName(false);
+  }
+
+  const hasError = localValidateMessage || duplicateName;
+  const errorMessage = localValidateMessage || `${i18n.t("nameerror.duplicatename")}`;
 
   return (
     <IonModal
@@ -144,7 +164,7 @@ const EditIdentifier = ({
       >
         <div
           className={`indentifier-input${
-            newDisplayName.length > DISPLAY_NAME_LENGTH ? " has-error" : ""
+            hasError ? " has-error" : ""
           }`}
         >
           <CustomInput
@@ -152,14 +172,12 @@ const EditIdentifier = ({
             title={`${i18n.t("tabs.identifiers.details.options.inner.label")}`}
             hiddenInput={false}
             autofocus={true}
-            onChangeInput={setNewDisplayName}
+            onChangeInput={handleChangeName}
             value={newDisplayName}
           />
-          {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
+          {hasError ? (
             <ErrorMessage
-              message={`${i18n.t(
-                "tabs.identifiers.details.options.inner.error"
-              )}`}
+              message={errorMessage}
               timeout={false}
             />
           ) : null}

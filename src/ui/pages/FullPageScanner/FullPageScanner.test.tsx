@@ -72,6 +72,15 @@ jest.mock("@ionic/react", () => ({
   isPlatform: () => true,
 }));
 
+
+const addKeyboardEventMock = jest.fn();
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: (...params: any[]) => addKeyboardEventMock(...params),
+  },
+}));
+
 const connectByOobiUrlMock = jest.fn();
 const getMultisigLinkedContactsMock = jest.fn();
 const createOrUpdateBasicRecordMock = jest.fn(() => Promise.resolve());
@@ -132,6 +141,14 @@ describe("Full page scanner", () => {
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
       toastMsgs: [],
     },
+    identifiersCache: {
+      identifiers: [],
+      favourites: [],
+      multiSigGroup: {
+        groupId: "",
+        connections: [],
+      },
+    },
   };
 
   const dispatchMock = jest.fn();
@@ -174,6 +191,14 @@ describe("Full page scanner", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
         toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
       },
     };
 
@@ -218,6 +243,14 @@ describe("Full page scanner", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
         toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
       },
     };
 
@@ -285,6 +318,14 @@ describe("Full page scanner", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
         toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
       },
     };
 

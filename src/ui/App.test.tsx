@@ -16,7 +16,7 @@ jest.mock("../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: () => mockInitDatabase(),
+      setupLocalDependencies: () => mockInitDatabase(),
       getBranAndMnemonic: jest.fn(() =>
         Promise.resolve({
           bran: "",
@@ -119,6 +119,32 @@ jest.mock("@ionic/react", () => ({
   getPlatforms: () => getPlatformsMock(),
 }));
 
+const isNativeMock = jest.fn(() => false);
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => isNativeMock(),
+    },
+  };
+});
+
+const addKeyboardEventMock = jest.fn();
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: (...params: any[]) => addKeyboardEventMock(...params),
+    hide: jest.fn()
+  },
+}));
+
+jest.mock("@capacitor-community/privacy-screen", () => ({
+  PrivacyScreen: {
+    enable: jest.fn(),
+    disable: jest.fn(),
+  },
+}));
+
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialState = {
@@ -195,6 +221,7 @@ const storeMocked = {
 
 describe("App", () => {
   beforeEach(() => {
+    isNativeMock.mockImplementation(() => false);
     mockInitDatabase.mockClear();
     getPlatformsMock.mockImplementation(() => ["android"]);
   });
@@ -214,6 +241,7 @@ describe("App", () => {
 
   test("Force status bar style is dark mode on ios", async () => {
     getPlatformsMock.mockImplementation(() => ["ios"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -230,6 +258,7 @@ describe("App", () => {
 
   test("Should not force status bar style is dark mode on android or browser", async () => {
     getPlatformsMock.mockImplementation(() => ["android", "mobileweb"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -244,6 +273,7 @@ describe("App", () => {
 
   test("Should lock screen orientation to portrait mode", async () => {
     getPlatformsMock.mockImplementation(() => ["android"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>

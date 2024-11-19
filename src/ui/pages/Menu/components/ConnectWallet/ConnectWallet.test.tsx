@@ -752,10 +752,7 @@ describe("Wallet connect", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
-            .missingidentifieralert.confirm
-        )
+        getByTestId("alert-create-keri-confirm-button")
       );
     });
 

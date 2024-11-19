@@ -20,14 +20,14 @@ import { useOnlineStatusEffect } from "../../../hooks";
 import { getTheme } from "../../../utils/theme";
 import { Alert } from "../../Alert";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
-import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
-import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
+import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
+import { SetupConnectionBodyInit } from "./SetupConnectionBodyInit";
+import { SetupConnectionBodyResume } from "./SetupConnectionBodyResume";
 import { showError } from "../../../utils/error";
 import { Verification } from "../../Verification";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
-const IdentifierStage1 = ({
+const SetupConnections = ({
   state,
   setState,
   componentId,
@@ -126,12 +126,12 @@ const IdentifierStage1 = ({
     const theme = getTheme(resumeMultiSig?.theme || 0);
 
     dispatch(setCurrentOperation(OperationType.IDLE));
-    setState((prevState: IdentifierStageProps) => ({
+    setState((prevState) => ({
       ...prevState,
       scannedConections,
-      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName,
-      ourIdentifier: state.ourIdentifier || resumeMultiSig?.id,
-      identifierCreationStage: 2,
+      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName || "",
+      ourIdentifier: state.ourIdentifier || resumeMultiSig?.id || "",
+      identifierCreationStage: Stage.Members,
       color: theme.color,
       selectedTheme: theme.layout,
     }));
@@ -173,7 +173,7 @@ const IdentifierStage1 = ({
   return (
     <>
       {resumeMultiSig || initiated || scannedConections?.length ? (
-        <IdentifierStage1BodyResume
+        <SetupConnectionBodyResume
           componentId={componentId}
           handleDone={handleDone}
           handleInitiateMultiSig={handleInitiateMultiSig}
@@ -184,7 +184,7 @@ const IdentifierStage1 = ({
           handleDelete={openDeleteConfirm}
         />
       ) : (
-        <IdentifierStage1BodyInit
+        <SetupConnectionBodyInit
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
@@ -233,4 +233,4 @@ const IdentifierStage1 = ({
   );
 };
 
-export { IdentifierStage1 };
+export { SetupConnections };

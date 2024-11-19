@@ -3,10 +3,10 @@ import { addOutline, removeOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
-import { IdentifierStageProps } from "../CreateIdentifier.types";
+import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 
-const IdentifierStage3 = ({
+const SetupThreshold = ({
   state,
   setState,
   componentId,
@@ -21,16 +21,16 @@ const IdentifierStage3 = ({
       return;
     }
 
-    setState((prevState: IdentifierStageProps) => ({
+    setState((prevState) => ({
       ...prevState,
       threshold: newThreshold,
     }));
   };
 
   const handleContinue = () => {
-    setState((prevState: IdentifierStageProps) => ({
+    setState((prevState) => ({
       ...prevState,
-      identifierCreationStage: 4,
+      identifierCreationStage: Stage.Summary,
     }));
   };
 
@@ -43,10 +43,10 @@ const IdentifierStage3 = ({
             closeButton={true}
             closeButtonLabel={`${i18n.t("createidentifier.back")}`}
             closeButtonAction={() => {
-              setState((prevState: IdentifierStageProps) => ({
+              setState((prevState) => ({
                 ...prevState,
                 threshold: 1,
-                identifierCreationStage: 2,
+                identifierCreationStage: Stage.Members,
               }));
             }}
             title={`${i18n.t("createidentifier.threshold.title")}`}
@@ -100,4 +100,4 @@ const IdentifierStage3 = ({
   );
 };
 
-export { IdentifierStage3 };
+export { SetupThreshold };

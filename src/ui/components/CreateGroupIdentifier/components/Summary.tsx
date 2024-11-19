@@ -5,7 +5,7 @@ import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
-import { IdentifierStageProps } from "../CreateIdentifier.types";
+import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { Alert } from "../../Alert";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
@@ -21,7 +21,7 @@ import { createThemeValue } from "../../../utils/theme";
 import { showError } from "../../../utils/error";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
-const IdentifierStage4 = ({
+const Summary = ({
   state,
   setState,
   componentId,
@@ -101,6 +101,8 @@ const IdentifierStage4 = ({
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
 
+  const closeAlert = () => setAlertIsOpen(false);
+
   return (
     <>
       <ScrollablePageLayout
@@ -109,9 +111,9 @@ const IdentifierStage4 = ({
           <PageHeader
             closeButton={true}
             closeButtonAction={() =>
-              setState((prevState: IdentifierStageProps) => ({
+              setState((prevState) => ({
                 ...prevState,
-                identifierCreationStage: 3,
+                identifierCreationStage: Stage.SetupThreshold,
               }))
             }
             closeButtonLabel={`${i18n.t("createidentifier.back")}`}
@@ -157,9 +159,9 @@ const IdentifierStage4 = ({
                       icon={pencilOutline}
                       slot="end"
                       onClick={() =>
-                        setState((prevState: IdentifierStageProps) => ({
+                        setState((prevState) => ({
                           ...prevState,
-                          identifierCreationStage: 2,
+                          identifierCreationStage: Stage.Members,
                         }))
                       }
                     />
@@ -184,9 +186,9 @@ const IdentifierStage4 = ({
                 icon={pencilOutline}
                 slot="end"
                 onClick={() =>
-                  setState((prevState: IdentifierStageProps) => ({
+                  setState((prevState) => ({
                     ...prevState,
-                    identifierCreationStage: 3,
+                    identifierCreationStage: Stage.SetupThreshold,
                   }))
                 }
               />
@@ -213,11 +215,11 @@ const IdentifierStage4 = ({
           setAlertIsOpen(false);
           resetModal();
         }}
-        actionCancel={() => setAlertIsOpen(false)}
-        actionDismiss={() => setAlertIsOpen(false)}
+        actionCancel={closeAlert}
+        actionDismiss={closeAlert}
       />
     </>
   );
 };
 
-export { IdentifierStage4 };
+export { Summary };

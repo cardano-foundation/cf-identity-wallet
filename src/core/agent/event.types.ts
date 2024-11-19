@@ -1,5 +1,4 @@
 import { ConnectionStatus, KeriaNotification } from "./agent.types";
-import { NotificationRecord } from "./records";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import {
@@ -17,6 +16,7 @@ enum EventTypes {
   OperationComplete = "OperationComplete",
   OperationAdded = "OperationAdded",
   ConnectionStateChanged = "ConnectionStateChanged",
+  ConnectionRemoved = "ConnectionRemoved",
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
@@ -51,6 +51,14 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
     isMultiSigInvite?: boolean;
     connectionId?: string;
     status: ConnectionStatus;
+    url?: string;
+  };
+}
+
+interface ConnectionRemovedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.ConnectionRemoved;
+  payload: {
+    connectionId: string;
   };
 }
 
@@ -93,5 +101,6 @@ export type {
   OperationAddedEvent,
   NotificationRemovedEvent,
   CredentialRevokedEvent,
+  ConnectionRemovedEvent,
 };
 export { EventTypes };
