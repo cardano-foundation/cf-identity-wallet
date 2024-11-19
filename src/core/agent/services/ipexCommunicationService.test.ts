@@ -40,6 +40,8 @@ import {
   ipexSubmitAdmitSerder,
   ipexSubmitAdmitSig,
   ipexSubmitAdmitEnd,
+  credentialStateIssued,
+  credentialStateRevoked,
 } from "../../__fixtures__/agent/ipexCommunicationFixture";
 import { NotificationRoute } from "../agent.types";
 import {
@@ -112,6 +114,7 @@ const multisigService = jest.mocked({
 
 let credentialListMock = jest.fn();
 const credentialGetMock = jest.fn();
+const credentialStateMock = jest.fn();
 const identifierListMock = jest.fn();
 const identifiersMemberMock = jest.fn();
 let identifiersGetMock = jest.fn();
@@ -217,6 +220,7 @@ const signifyClient = jest.mocked({
   credentials: () => ({
     list: credentialListMock,
     get: credentialGetMock,
+    state: credentialStateMock,
   }),
   exchanges: () => ({
     get: getExchangeMock,
@@ -255,6 +259,9 @@ jest.mock("signify-ts", () => ({
   }),
   d: jest.fn().mockImplementation(() => "d"),
   b: jest.fn().mockImplementation(() => "b"),
+  Ilks: {
+    iss: "iss",
+  },
 }));
 
 const eventEmitter = new CoreEventEmitter();
@@ -2667,6 +2674,7 @@ describe("Ipex communication service of agent", () => {
   test("Can get acdc detail", async () => {
     getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
     schemaGetMock.mockResolvedValue(QVISchema);
+    credentialStateMock.mockResolvedValueOnce(credentialStateIssued);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -2687,7 +2695,7 @@ describe("Ipex communication service of agent", () => {
         attendeeName: "ccc",
       },
       s: QVISchema,
-      lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+      lastStatus: { s: "0", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
     });
@@ -2695,6 +2703,7 @@ describe("Ipex communication service of agent", () => {
 
   test("Can get acdc detail when the schema has not been resolved", async () => {
     getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
+    credentialStateMock.mockResolvedValueOnce(credentialStateIssued);
     const error404 = new Error("Not Found - 404");
     schemaGetMock.mockRejectedValueOnce(error404);
     identifierStorage.getIdentifierMetadata = jest
@@ -2727,7 +2736,7 @@ describe("Ipex communication service of agent", () => {
         attendeeName: "ccc",
       },
       s: QVISchema,
-      lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+      lastStatus: { s: "0", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
     });
@@ -2743,5 +2752,46 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrow("Some other error - 500");
     expect(schemaGetMock).toHaveBeenCalledTimes(1);
     expect(resolveOobiMock).not.toHaveBeenCalled();
+  });
+
+  test("Should return last status is revoked when getting credential state from cloud", async () => {
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
+    schemaGetMock.mockResolvedValue(QVISchema);
+    credentialStateMock.mockResolvedValueOnce(credentialStateRevoked);
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
+
+    resolveOobiMock.mockResolvedValueOnce({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    expect(
+      await ipexCommunicationService.getAcdcFromIpexGrant(
+        "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
+      )
+    ).toEqual({
+      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      a: {
+        d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+        i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+        attendeeName: "ccc",
+      },
+      s: QVISchema,
+      lastStatus: { s: "1", dt: "2024-11-07T08:32:34.943Z" },
+      status: "pending",
+      identifierId: memberIdentifierRecord.id,
+    });
   });
 });

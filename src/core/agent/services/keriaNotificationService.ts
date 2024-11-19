@@ -1,4 +1,4 @@
-import { State } from "signify-ts";
+import { Ilks, State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -241,6 +241,7 @@ class KeriaNotificationService extends AgentService {
       return;
     }
     const exchange = await this.verifyExternalNotification(notif);
+
     if (!exchange) {
       return;
     }
@@ -297,6 +298,7 @@ class KeriaNotificationService extends AgentService {
     notif: Notification
   ): Promise<ExnMessage | undefined> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
+
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.i)
       .catch((error) => {
@@ -331,6 +333,10 @@ class KeriaNotificationService extends AgentService {
     notif: Notification,
     exchange: ExnMessage
   ): Promise<boolean> {
+    const credentialState = await this.props.signifyClient
+      .credentials()
+      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
+    const telStatus = credentialState.et;
     const existingCredential =
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
     const ourIdentifier = await this.identifierStorage
@@ -349,10 +355,21 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
+
     if (
+      telStatus === Ilks.rev &&
       existingCredential &&
       existingCredential.status !== CredentialStatus.REVOKED
     ) {
+      await this.credentialService.markAcdc(
+        exchange.exn.e.acdc.d,
+        CredentialStatus.REVOKED
+      );
+      await this.ipexCommunications.createLinkedIpexMessageRecord(
+        exchange,
+        ConnectionHistoryType.CREDENTIAL_REVOKED
+      );
+
       const dt = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
         senderName: ourIdentifier.id,
@@ -361,14 +378,40 @@ class KeriaNotificationService extends AgentService {
         datetime: dt,
         recipient: exchange.exn.i,
       });
-      const op = await this.props.signifyClient
+      await this.props.signifyClient
         .ipex()
         .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.ExchangeRevokeCredential,
+
+      const metadata: NotificationRecordStorageProps = {
+        id: randomSalt(),
+        a: {
+          r: NotificationRoute.LocalAcdcRevoked,
+          credentialId: existingCredential.id,
+          credentialTitle: existingCredential.credentialType,
+        },
+        connectionId:existingCredential.connectionId,
+        read: false,
+        route: NotificationRoute.LocalAcdcRevoked,
+      };
+      const notificationRecord = await this.notificationStorage.save(metadata);
+
+      this.props.eventEmitter.emit<NotificationAddedEvent>({
+        type: EventTypes.NotificationAdded,
+        payload: {
+          keriaNotif: {
+            id: notificationRecord.id,
+            createdAt: new Date().toISOString(),
+            a: {
+              r: NotificationRoute.LocalAcdcRevoked,
+              credentialId: existingCredential.id,
+              credentialTitle: existingCredential.credentialType,
+            },
+            read: false,
+            connectionId: exchange.exn.i,
+          },
+        },
       });
-      this.pendingOperations.push(pendingOperation);
+
       await this.markNotification(notif.i);
       return false;
     }
@@ -854,8 +897,8 @@ class KeriaNotificationService extends AgentService {
         const connectionRecord = await this.connectionStorage.findById(
           (operation.response as State).i
         );
-        // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
-        // Also unskip tests for this
+          // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
+          // Also unskip tests for this
 
         // const existingConnection = await this.props.signifyClient
         //   .contacts()
@@ -944,60 +987,6 @@ class KeriaNotificationService extends AgentService {
               credentialId,
               CredentialStatus.CONFIRMED
             );
-          }
-        }
-        break;
-      }
-      case OperationPendingRecordType.ExchangeRevokeCredential: {
-        const admitExchange = await this.props.signifyClient
-          .exchanges()
-          .get(operation.metadata?.said);
-        if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
-          const grantExchange = await this.props.signifyClient
-            .exchanges()
-            .get(admitExchange.exn.p);
-          const credentialId = grantExchange?.exn?.e?.acdc?.d;
-          const credentialMetadata =
-            await this.credentialStorage.getCredentialMetadata(credentialId);
-          const credential = await this.props.signifyClient
-            .credentials()
-            .get(credentialId)
-
-          if (credential.status.s === "0") {
-            // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
-            return;
-          }
-          if (
-            credential &&
-            credential.status.s === "1" &&
-            credentialMetadata?.status !== CredentialStatus.REVOKED
-          ) {
-            await this.credentialService.markAcdc(
-              credentialId,
-              CredentialStatus.REVOKED
-            );
-            await this.ipexCommunications.createLinkedIpexMessageRecord(
-              grantExchange,
-              ConnectionHistoryType.CREDENTIAL_REVOKED
-            );
-            const metadata: any = {
-              id: randomSalt(),
-              a: {
-                r: NotificationRoute.LocalAcdcRevoked,
-                credentialId,
-                credentialTitle: credential.schema.title,
-              },
-              read: false,
-              route: NotificationRoute.LocalAcdcRevoked,
-            };
-            await this.notificationStorage.save(metadata);
-            this.props.eventEmitter.emit<OperationCompleteEvent>({
-              type: EventTypes.OperationComplete,
-              payload: {
-                opType: operationRecord.recordType,
-                oid: recordId,
-              },
-            });
           }
         }
         break;

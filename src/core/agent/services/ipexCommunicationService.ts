@@ -1,4 +1,13 @@
-import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
+import {
+  b,
+  d,
+  Ilks,
+  messagize,
+  Operation,
+  Saider,
+  Serder,
+  Siger,
+} from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
@@ -533,7 +542,10 @@ class IpexCommunicationService extends AgentService {
     historyType: ConnectionHistoryType
   ): Promise<void> {
     let schemaSaid;
-    const connectionId = historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ? message.exn.rp : message.exn.i;
+    const connectionId =
+      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED
+        ? message.exn.rp
+        : message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
@@ -980,6 +992,9 @@ class IpexCommunicationService extends AgentService {
     said: string
   ): Promise<Omit<ACDCDetails, "identifierType">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
+    const credentialState = await this.props.signifyClient
+      .credentials()
+      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient
       .schemas()
@@ -1006,8 +1021,8 @@ class IpexCommunicationService extends AgentService {
         version: schema.version,
       },
       lastStatus: {
-        s: exchange.exn.e.iss.s,
-        dt: new Date(exchange.exn.e.iss.dt).toISOString(),
+        s: credentialState.et === Ilks.iss ? "0" : "1",
+        dt: new Date(credentialState.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,
       identifierId: exchange.exn.a.i,

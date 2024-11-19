@@ -28,7 +28,7 @@ const grantForIssuanceExnMessage = {
     a: {
       m: "",
       i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-      gid: "gid"
+      gid: "gid",
     },
     e: {
       acdc: {
@@ -337,6 +337,21 @@ const notificationIpexApplyProp = {
   },
 };
 
+const credentialStateIssued = {
+  vn: [1, 0],
+  i: "EJd6GsxIhMXj1M8Ie0mq7oLgCcoEqp2p0YJIoh6wGa6M",
+  s: "0",
+  d: "EEFWKiBAQWh4RK2l_M8SxMZcPPsTaCG1-hIgl5Ve7Vy0",
+  ri: "EEewa3h_r6kU-VW9RC-CvP6-ZBXhXQzzBQIMnI1_-_GX",
+  ra: {},
+  a: {
+    s: 18,
+    d: "EHQp2tuAj4RygtixT0QsYUtP6YW5L_yzPThBMwmaARlC",
+  },
+  dt: "2024-11-07T08:32:34.943000+00:00",
+  et: "iss",
+};
+
 const notificationIpexOfferProp = {
   i: "string",
   dt: "string",
@@ -364,5 +379,6 @@ export {
   notificationIpexGrantProp,
   notificationIpexAgreeProp,
   notificationIpexApplyProp,
+  credentialStateIssued,
   notificationIpexOfferProp,
 };
