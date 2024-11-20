@@ -87,7 +87,7 @@
     }
   }
 
-  &.flat-border-bot{
+  &.flat-border-bot {
     .card-details-info-block-inner {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
@@ -117,7 +117,7 @@
     }
   }
 
-  @media screen and (min-width: 250px) and (max-width: 370px) { 
+  @media screen and (min-width: 250px) and (max-width: 370px) {
     &.has-content {
       .card-header {
         margin-bottom: 0.8rem;

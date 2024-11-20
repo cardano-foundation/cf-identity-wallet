@@ -1,0 +1,16 @@
+.read-more {
+  display: flex;
+  flex-direction: column;
+
+  span {
+    margin-bottom: 1.25rem;
+  }
+
+  ion-button {
+    margin: 0;
+    border-radius: 0.5rem;
+    --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    --background-activated: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    color: var(--ion-color-primary);
+  }
+}

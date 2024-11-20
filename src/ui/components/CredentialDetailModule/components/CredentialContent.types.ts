@@ -6,9 +6,15 @@ interface MemberInfo {
   joinedCred?: string;
 }
 
+enum DetailView {
+  Attributes = "attributes",
+}
+
 interface CredentialContentProps {
   cardData: ACDCDetails;
   joinedCredRequestMembers?: MemberInfo[];
 }
 
 export type { CredentialContentProps };
+
+export { DetailView };

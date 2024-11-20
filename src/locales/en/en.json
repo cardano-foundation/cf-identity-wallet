@@ -987,7 +987,7 @@
         "restore": "Restore",
         "delete": "Delete",
         "type": "Type",
-        "title": "Title",
+        "about": "About",
         "description": "Description",
         "revoked": "Revoked",
         "id": "Credential ID",

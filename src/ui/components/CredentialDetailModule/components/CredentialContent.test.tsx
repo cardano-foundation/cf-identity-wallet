@@ -15,12 +15,9 @@ describe("Creds content", () => {
     );
     expect(getByTestId("card-details-credential-type")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.title)
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.about)
     ).toBeVisible();
     expect(getByText("Qualified vLEI Issuer Credential")).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.description)
-    ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.tabs.credentials.details.id)
     ).toBeVisible();
