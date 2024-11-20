@@ -13,7 +13,7 @@ import { CredentialContentProps, DetailView } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
 import { ListHeader } from "../../ListHeader";
-import { ReadMore } from "../../ReadMore/ReadMore";
+import { ReadMore } from "../../ReadMore";
 
 const CredentialContent = ({
   cardData,
@@ -46,10 +46,7 @@ const CredentialContent = ({
         className={"credential-details-read-more-block"}
         flatBorder={FlatBorderType.TOP}
       >
-        <ReadMore
-          content={cardData.s.description}
-          maxWords={10}
-        />
+        <ReadMore content={cardData.s.description} />
       </CardBlock>
       {joinedCredRequestMembers && joinedCredRequestMembers.length > 0 && (
         <CardDetailsBlock

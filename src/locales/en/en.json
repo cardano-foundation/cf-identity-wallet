@@ -1778,5 +1778,9 @@
   "genericerror": {
     "text": "Something went wrong. Please try again.",
     "button": "OK"
+  },
+  "readmore": {
+    "more": "Read more",
+    "less": "Read less"
   }
 }

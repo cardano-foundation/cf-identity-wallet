@@ -1,44 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./ReadMore.scss";
 import { IonButton } from "@ionic/react";
+import { i18n } from "../../../i18n";
 
-const ReadMore = ({
-  content,
-  maxWords,
-}: {
-  content: string;
-  maxWords: number;
-}) => {
-  const [text, setText] = useState("");
+const ReadMore = ({ content }: { content: string }) => {
   const [isReadMore, setIsReadMore] = useState(false);
-
-  const readLess = () => {
-    const words = content.split(" ");
-    if (words.length > maxWords) {
-      const shortenedText = words.slice(0, maxWords).join(" ") + "...";
-      setText(shortenedText);
-    } else {
-      setText(content);
-    }
-  };
-  useEffect(() => {
-    readLess();
-  }, []);
 
   const toggleReadMore = () => {
     setIsReadMore(!isReadMore);
-    if (isReadMore) {
-      readLess();
-    } else {
-      setText(content);
-    }
   };
 
   return (
     <div className="read-more">
-      <span>{text}</span>
+      <span className={isReadMore ? "" : "clamp"}>{content}</span>
       <IonButton onClick={toggleReadMore}>
-        {isReadMore ? "Read Less" : "Read More"}
+        {isReadMore ? i18n.t("readmore.less") : i18n.t("readmore.more")}
       </IonButton>
     </div>
   );
