@@ -905,12 +905,7 @@ class KeriaNotificationService extends AgentService {
         //   .get((operation.response as State).i)
         //   .catch(() => undefined);
         //if (connectionRecord && !existingConnection) {
-        if (connectionRecord) {
-          if (connectionRecord.pendingDeletion) {
-            await this.props.signifyClient
-              .contacts()
-              .delete((operation.response as State).i);
-          }
+        if (connectionRecord && !connectionRecord.pendingDeletion) {
           connectionRecord.pending = false;
           connectionRecord.createdAt = new Date(
             (operation.response as State).dt
