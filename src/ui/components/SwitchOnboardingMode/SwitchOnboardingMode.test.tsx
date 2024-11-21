@@ -94,7 +94,7 @@ describe("Switch onboarding mode", () => {
       getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
         "disabled"
       )
-    ).toBe("true");
+    ).toBe("");
 
     act(() => {
       ionFireEvent.ionChange(getByTestId("confirm-checkbox"), "true");
@@ -155,7 +155,7 @@ describe("Switch onboarding mode", () => {
       getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
         "disabled"
       )
-    ).toBe("true");
+    ).toBe("");
 
     act(() => {
       ionFireEvent.ionChange(getByTestId("confirm-checkbox"), "true");

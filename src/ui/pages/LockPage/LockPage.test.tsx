@@ -17,7 +17,7 @@ import { KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
-import { passcodeFiller, passcodeFillerWithAct } from "../../utils/passcodeFiller";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
 
@@ -249,7 +249,7 @@ describe("Lock Page", () => {
       </Provider>
     );
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(getMock).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
@@ -393,7 +393,7 @@ describe("Lock Page: Max login attempt", () => {
     expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
 
-    passcodeFillerWithAct(getByText, getByTestId, "2", 6);
+    passcodeFiller(getByText, getByTestId, "2", 6);
 
     await waitFor(() => {
       expect(getByText("3 attempt remaining")).toBeInTheDocument();
@@ -439,7 +439,7 @@ describe("Lock Page: Max login attempt", () => {
     expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(resetLoginAttemptsMock).toBeCalled();

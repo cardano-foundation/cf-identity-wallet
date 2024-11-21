@@ -14,7 +14,7 @@ import { setPendingConnection } from "../../../../../store/reducers/walletConnec
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { OperationType, ToastMsgType } from "../../../../globals/types";
-import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { ConnectWallet } from "./ConnectWallet";
 
 jest.mock("../../../../../core/agent/agent", () => ({
@@ -162,7 +162,7 @@ describe("Wallet connect: empty history", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText, unmount } = render(
+    const { getByText, unmount, queryByText, getByTestId } = render(
       <MemoryRouter>
         <Provider store={storeMocked}>
           <ConnectWallet />
@@ -189,6 +189,22 @@ describe("Wallet connect: empty history", () => {
             .disconnectbeforecreatealert.message
         )
       ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-disconnect-wallet-cancel-button")
+      );
+    });
+
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.message
+        )
+      ).toBeNull();
     });
 
     unmount();
@@ -519,7 +535,7 @@ describe("Wallet connect", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
@@ -594,7 +610,7 @@ describe("Wallet connect", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
@@ -607,7 +623,7 @@ describe("Wallet connect", () => {
   });
 
   test("Connect wallet", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ConnectWallet />
       </Provider>
@@ -648,6 +664,15 @@ describe("Wallet connect", () => {
             .disconnectbeforecreatealert.confirm
         )
       );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.message
+        )
+      ).toBeNull();
     });
 
     await waitFor(() => {

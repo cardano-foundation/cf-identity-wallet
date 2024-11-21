@@ -1,3 +1,4 @@
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
@@ -57,6 +58,20 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
     },
   },
+}));
+
+jest.mock("../../../../hooks/useBiometricsHook", () => ({
+  useBiometricAuth: jest.fn(() => ({
+    biometricsIsEnabled: false,
+    biometricInfo: {
+      isAvailable: true,
+      hasCredentials: false,
+      biometryType: BiometryType.fingerprintAuthentication,
+      strongBiometryIsAvailable: true,
+    },
+    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+    setBiometricsIsEnabled: jest.fn(),
+  })),
 }));
 
 const mockStore = configureStore();
@@ -335,7 +350,7 @@ describe("Credential request: Multisig", () => {
       })
     );
 
-    const { getByText, unmount, getByTestId, queryByTestId } = render(
+    const { getByText, unmount, queryByTestId } = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
           pageId="creadential-request"
@@ -383,10 +398,10 @@ describe("Credential request: Multisig", () => {
       })
     );
 
-    const { queryByTestId, unmount, findByText, queryByText } = render(
+    const { queryByTestId, unmount, findByText, queryByText, getByText } = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
-          pageId="creadential-request"
+          pageId="creadential-request-1"
           activeStatus
           handleBack={backMock}
           notificationDetails={notificationsFix[0]}
@@ -394,17 +409,27 @@ describe("Credential request: Multisig", () => {
       </Provider>
     );
 
-    await waitFor(() => {
-      expect(queryByTestId("primary-button-creadential-request")).toBe(null);
-      expect(queryByTestId("secondary-button-creadential-request")).toBe(null);
-    });
+    expect(queryByTestId("primary-button-creadential-request")).toBe(null);
+    expect(queryByTestId("secondary-button-creadential-request")).toBe(null);
 
     const memberName = queryByText("Member 1");
     expect(memberName).toBeNull();
 
     await waitFor(() => {
+      expect(getLinkedGroupFromIpexGrantMock).toBeCalled();
+    })
+
+    await waitFor(() => {
       expect(queryByTestId("spinner")).toBeNull();
     });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.receive.members
+        )
+      ).toBeVisible();
+    })
 
     const memberName1 = await findByText("Member 1");
     const memberName2 = await findByText("Member 2");

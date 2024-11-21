@@ -290,11 +290,9 @@ describe("Password Module", () => {
 
     const alertTitle = await findByText(TRANSLATIONS.createpassword.alert.text);
 
-    await act(async () => {
-      await waitFor(() => {
-        expect(alertTitle).toBeVisible();
-      });
-    })
+    await waitFor(() => {
+      expect(alertTitle).toBeVisible();
+    });
     
     const mockDate = new Date(1466424490000);
     const spy = jest
@@ -428,11 +426,9 @@ describe("Password Module", () => {
     const alertTitle = await findByText(TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
       .page.alert.existingpassword)
 
-    await act(async () => {
-      await waitFor(() => {
-        expect(alertTitle).toBeVisible();
-      });
-    })
+    await waitFor(() => {
+      expect(alertTitle).toBeVisible();
+    });
 
     fireEvent.click(
       getByTestId("manage-password-alert-existing-confirm-button")

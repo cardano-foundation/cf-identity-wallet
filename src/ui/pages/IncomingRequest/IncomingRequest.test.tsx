@@ -11,7 +11,7 @@ import {
   signObjectFix,
   signTransactionFix,
 } from "../../__fixtures__/signTransactionFix";
-import { passcodeFillerWithAct } from "../../utils/passcodeFiller";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IncomingRequest } from "./IncomingRequest";
 mockIonicReact();
 
@@ -195,7 +195,7 @@ describe("Sign request", () => {
       expect(getByTestId("passcode-button-1")).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);

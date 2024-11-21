@@ -11,11 +11,10 @@ import {
 } from "../../../../store/reducers/stateCache";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { OperationType, ToastMsgType } from "../../../globals/types";
-import { TabsRoutePath } from "../../navigation/TabsMenu";
-import { SetupConnections } from "./SetupConnections";
-import { passcodeFiller } from "../../../utils/passcodeFiller";
 import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
+import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { Stage } from "../CreateGroupIdentifier.types";
+import { SetupConnections } from "./SetupConnections";
 
 setupIonicReact();
 mockIonicReact();
@@ -293,7 +292,7 @@ describe("Create group identifier - Setup Connection", () => {
           getByTestId("primary-button-initiate-multi-sig").getAttribute(
             "disabled"
           )
-        ).toBe("true");
+        ).toBe("");
       });
     });
 

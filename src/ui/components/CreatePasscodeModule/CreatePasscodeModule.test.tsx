@@ -5,25 +5,33 @@ import {
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { IonRouterOutlet } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import {
-  RenderResult,
   act,
+  cleanup,
   fireEvent,
   render,
-  waitFor,
+  waitFor
 } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
-import { CreatePasscodeModule } from "./CreatePasscodeModule";
 import { passcodeFiller } from "../../utils/passcodeFiller";
+import { CreatePasscodeModule } from "./CreatePasscodeModule";
 
-const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
+const setMock = jest.fn();
+
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    get: jest.fn(),
+    set: (...arg: unknown[]) => setMock(...arg)
+  },
+}));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -83,6 +91,9 @@ const storeMocked = {
 };
 
 describe("SetPasscode Page", () => {
+  afterEach(() => {
+    cleanup();
+  })
   beforeEach(() => {
     jest.resetModules();
     jest.doMock("@ionic/react", () => {
@@ -148,14 +159,15 @@ describe("SetPasscode Page", () => {
         />
       </Provider>
     );
-    await waitForIonicReact();
 
-    passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "2", 6);
 
-    const labelElement = getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
-    expect(labelElement).toBeInTheDocument();
+    await waitFor(() => {
+      const labelElement = getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
+      expect(labelElement).toBeInTheDocument();
+    })
 
-    passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "3", 6);
 
     await waitFor(
       () =>
@@ -176,9 +188,8 @@ describe("SetPasscode Page", () => {
         />
       </Provider>
     );
-    await waitForIonicReact();
 
-    passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "2", 6);
 
     await waitFor(
       () =>
@@ -195,7 +206,6 @@ describe("SetPasscode Page", () => {
         getPlatforms: () => ["android"],
       };
     });
-    require("@ionic/react");
 
     const { getByText, queryByText, getByTestId } = render(
       <IonReactRouter>
@@ -212,11 +222,11 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
-
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
+
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -224,7 +234,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -232,11 +242,9 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-setup-android-biometry-confirm-button")
-      );
-    });
+    fireEvent.click(
+      getByTestId("alert-setup-android-biometry-confirm-button")
+    );
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -250,7 +258,7 @@ describe("SetPasscode Page", () => {
     });
 
     await waitFor(() => {
-      expect(setKeyStoreSpy).toBeCalledWith(
+      expect(setMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
         "111111"
       );
@@ -379,7 +387,7 @@ describe("SetPasscode Page", () => {
     });
 
     await waitFor(() =>
-      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
+      expect(setMock).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
     );
   });
 

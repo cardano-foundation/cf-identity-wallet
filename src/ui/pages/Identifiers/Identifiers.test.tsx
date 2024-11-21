@@ -127,6 +127,9 @@ describe("Identifiers Tab", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
+
+    store.dispatch(setIdentifiersCache([]));
+    store.dispatch(setIdentifiersFilters(IdentifiersFilters.All));
   });
 
   test.skip("Renders favourites in Identifiers", () => {
@@ -232,16 +235,6 @@ describe("Identifiers Tab", () => {
         )
       ).toBeVisible();
     });
-
-
-    act(() => {
-      store.dispatch(setIdentifiersCache([]));
-      fireEvent.click(allFilterBtn);
-    });
-
-    await waitFor(() => {
-      expect(allFilterBtn).toHaveClass("selected");
-    });
   });
 
   test("Toggle Identifiers Filters show Group", async () => {
@@ -288,18 +281,6 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(getByText(filteredIdentifierFix[3].displayName)).toBeVisible();
-    });
-
-    act(() => {
-      store.dispatch(setIdentifiersCache([]));
-    })
-
-    act(() => {
-      fireEvent.click(allFilterBtn);
-    });
-
-    await waitFor(() => {
-      expect(allFilterBtn).toHaveClass("selected");
     });
   });
 

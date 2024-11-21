@@ -16,7 +16,7 @@ import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { CustomInputProps } from "../../../../../../components/CustomInput/CustomInput.types";
 import { OperationType } from "../../../../../../globals/types";
-import { passcodeFillerWithAct } from "../../../../../../utils/passcodeFiller";
+import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { ManagePassword } from "./ManagePassword";
 
 const deletePasswordMock = jest.fn();
@@ -188,7 +188,7 @@ describe("Manage password", () => {
       );
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(getByTestId("create-password-modal")).toBeVisible();

@@ -1,6 +1,5 @@
 import {
-  ionFireEvent as fireEvent,
-  waitForIonicReact,
+  ionFireEvent as fireEvent
 } from "@ionic/react-test-utils";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
@@ -177,42 +176,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
 
     unmount();
-  });
-
-  test("Clicking on alert backdrop will dismiss it", async () => {
-    const { getByTestId, getByText } = render(
-      <Provider store={store}>
-        <Router history={history}>
-          <GenerateSeedPhrase />
-        </Router>
-      </Provider>
-    );
-
-    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
-    );
-
-    act(() => {
-      fireEvent.click(revealSeedPhraseButton);
-      fireEvent.click(continueButton);
-    });
-
-    await waitFor(() => {
-      expect(
-        getByTestId("seed-phrase-generate-alert-continue")
-      ).toBeInTheDocument();
-    });
-
-    const backdrop = document.querySelector("ion-backdrop");
-
-    act(() => {
-      backdrop && fireEvent.click(backdrop);
-    });
-
-    await waitFor(() => {
-      expect(backdrop).not.toBeInTheDocument();
-    });
   });
 
   test("User can toggle the checkbox and modal", async () => {

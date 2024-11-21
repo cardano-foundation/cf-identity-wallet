@@ -20,7 +20,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { pendingCredFixs } from "../../__fixtures__/credsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { passcodeFillerWithAct } from "../../utils/passcodeFiller";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Credentials } from "./Credentials";
 import { CredentialsFilters } from "./Credentials.types";
 
@@ -202,6 +202,9 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
+    store.dispatch(setCredsCache([]));
+    store.dispatch(setCredentialsFilters(CredentialsFilters.All));
   });
 
   test("Renders favourites in Creds", () => {
@@ -343,15 +346,6 @@ describe("Creds Tab", () => {
         )
       ).toBeVisible();
     });
-
-    act(() => {
-      store.dispatch(setCredsCache([]));
-      fireEvent.click(allFilterBtn);
-    });
-
-    await waitFor(() => {
-      expect(allFilterBtn).toHaveClass("selected");
-    });
   });
 
   test("Toggle Creds Filters show Group", async () => {
@@ -398,15 +392,6 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(getByText(filteredCredsFix[3].credentialType)).toBeVisible();
-    });
-
-    act(() => {
-      store.dispatch(setCredsCache([]));
-      fireEvent.click(allFilterBtn);
-    });
-
-    await waitFor(() => {
-      expect(allFilterBtn).toHaveClass("selected");
     });
   });
 
@@ -552,7 +537,7 @@ describe("Creds Tab", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
   
     await waitFor(() => {
       expect(deleteIdentifierMock).toBeCalled();

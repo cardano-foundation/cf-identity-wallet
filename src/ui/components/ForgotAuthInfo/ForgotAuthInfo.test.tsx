@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
-import { passcodeFillerWithAct } from "../../utils/passcodeFiller";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ForgotAuthInfo } from "./ForgotAuthInfo";
 import { ForgotType } from "./ForgotAuthInfo.types";
 
@@ -181,7 +181,7 @@ describe("Forgot Passcode Page", () => {
       ).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(getByTestId("secondary-button-forgot-auth-info-modal")).toBeVisible();
@@ -193,7 +193,7 @@ describe("Forgot Passcode Page", () => {
       expect(text).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(onCloseMock).toBeCalled();

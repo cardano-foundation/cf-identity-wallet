@@ -153,14 +153,14 @@ describe("SetPasscode Page", () => {
     );
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
+
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() =>
       expect(text).toBeInTheDocument()
     );
 
-
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(

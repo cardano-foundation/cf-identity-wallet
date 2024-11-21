@@ -7,7 +7,7 @@ import { KeyStoreKeys } from "../../../../../../../core/storage";
 import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { OperationType } from "../../../../../../globals/types";
-import { passcodeFillerWithAct } from "../../../../../../utils/passcodeFiller";
+import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { RecoverySeedPhrase } from "./RecoverySeedPhrase";
 
 jest.mock("../../../../../../../core/storage", () => ({
@@ -175,7 +175,7 @@ describe("Recovery Phrase", () => {
       expect(getByText(TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(queryByText(TRANSLATIONS.verifypasscode.title)).toBeNull();

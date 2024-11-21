@@ -88,6 +88,9 @@ const fullState = {
   notificationsCache: {
     notifications: notificationsFix,
   },
+  credsCache: {
+    creds: []
+  }
 };
 
 const filterTestData = {

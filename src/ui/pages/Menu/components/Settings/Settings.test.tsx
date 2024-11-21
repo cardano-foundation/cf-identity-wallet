@@ -15,7 +15,7 @@ import {
   DISCORD_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
-import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { SubMenuKey } from "../../Menu.types";
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
@@ -196,7 +196,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode-content-page")).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -447,7 +447,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(

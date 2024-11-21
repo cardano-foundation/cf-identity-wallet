@@ -19,7 +19,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
-import { passcodeFillerWithAct } from "../../utils/passcodeFiller";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ConnectionDetails } from "./ConnectionDetails";
 
 jest.mock("@ionic/react", () => ({
@@ -215,7 +215,7 @@ describe("ConnectionDetails Page", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteConnection).toBeCalled();
@@ -689,7 +689,7 @@ describe("Checking the Connection Details Page when connection is missing from t
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteStaleLocalConnectionByIdMock).toBeCalled();

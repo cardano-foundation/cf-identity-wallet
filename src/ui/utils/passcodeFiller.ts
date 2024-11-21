@@ -1,4 +1,5 @@
-import { act, fireEvent, RenderResult, waitFor } from "@testing-library/react";
+import { fireEvent, RenderResult, waitFor } from "@testing-library/react";
+import { act } from "react";
 
 const passcodeFiller = async (
   getByText: RenderResult["getByText"],
@@ -7,7 +8,9 @@ const passcodeFiller = async (
   times: number
 ) => {
   for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
+    act(() => {
+      fireEvent.click(getByText(buttonLabel));
+    })
 
     await waitFor(() => {
       expect(
@@ -40,4 +43,4 @@ const passcodeFillerWithAct = async (
   });
 };
 
-export { passcodeFiller, passcodeFillerWithAct };
+export { passcodeFiller, passcodeFillerWithAct};

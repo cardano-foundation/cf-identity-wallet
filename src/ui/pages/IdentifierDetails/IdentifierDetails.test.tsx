@@ -25,7 +25,7 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
-import { passcodeFillerWithAct } from "../../utils/passcodeFiller";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IdentifierDetails } from "./IdentifierDetails";
 import { AccordionKey } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
 
@@ -1095,7 +1095,7 @@ describe("Checking the Identifier Details Page when information is missing from 
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
     
     await waitFor(() => {
       expect(deleteStaleLocalIdentifierMock).toBeCalled();
@@ -1376,7 +1376,7 @@ describe("Favourite identifier", () => {
       expect(getByTestId("verify-passcode")).toBeInTheDocument();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteIdentifier).toBeCalled();

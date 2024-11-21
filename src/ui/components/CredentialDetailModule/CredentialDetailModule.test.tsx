@@ -13,7 +13,7 @@ import { setToastMsg } from "../../../store/reducers/stateCache";
 import { credsFixAcdc, revokedCredFixs } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { ToastMsgType } from "../../globals/types";
-import { passcodeFillerWithAct } from "../../utils/passcodeFiller";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialDetailModule } from "./CredentialDetailModule";
 
@@ -482,7 +482,7 @@ describe("Cred Detail Module - current not archived credential", () => {
       expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title)).toBe(null);
     });
 
-    passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(archiveCredential).toBeCalled();
@@ -623,7 +623,7 @@ describe("Cred Detail Module - archived", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteCredential).toBeCalled();
@@ -815,7 +815,7 @@ describe("Cred detail - revoked", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(archiveCredential).toBeCalled();
