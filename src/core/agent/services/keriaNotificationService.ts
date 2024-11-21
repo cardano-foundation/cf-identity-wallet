@@ -389,7 +389,7 @@ class KeriaNotificationService extends AgentService {
           credentialId: existingCredential.id,
           credentialTitle: existingCredential.credentialType,
         },
-        connectionId:existingCredential.connectionId,
+        connectionId: existingCredential.connectionId,
         read: false,
         route: NotificationRoute.LocalAcdcRevoked,
       };
@@ -906,6 +906,11 @@ class KeriaNotificationService extends AgentService {
         //   .catch(() => undefined);
         //if (connectionRecord && !existingConnection) {
         if (connectionRecord) {
+          if (connectionRecord.pendingDeletion) {
+            await this.props.signifyClient
+              .contacts()
+              .delete((operation.response as State).i);
+          }
           connectionRecord.pending = false;
           connectionRecord.createdAt = new Date(
             (operation.response as State).dt

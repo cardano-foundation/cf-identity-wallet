@@ -2022,6 +2022,50 @@ describe("Long running operation tracker", () => {
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
+  test("Should delele Keria connection if the connection metadata record exists but pendingDeletion is true", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    const connectionMock = {
+      id: "id",
+      pending: true,
+      pendingDeletion: true,
+      createdAt: new Date(),
+      alias: "CF Credential Issuance",
+    };
+    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    contactGetMock.mockResolvedValueOnce(null);
+
+    await keriaNotificationService.processOperation(operationRecord);
+    expect(contactDeleteMock).toBeCalledWith("id");
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationComplete,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
   test("Should delete Keria connection if local connection metadata record does not exist", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const operationMock = {
