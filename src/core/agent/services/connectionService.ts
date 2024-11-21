@@ -203,7 +203,7 @@ class ConnectionService extends AgentService {
       pendingDeletion: false,
     });
     for (const connection of associatedContacts) {
-      connectionsDetails.push(await this.getConnectionShortDetails(connection));
+      connectionsDetails.push(this.getConnectionShortDetails(connection));
     }
     return connectionsDetails;
   }
