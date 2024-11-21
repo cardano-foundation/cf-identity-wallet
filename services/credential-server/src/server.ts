@@ -5,7 +5,7 @@ import { config } from "./config";
 import { Agent } from "./agent";
 import router from "./routes";
 import { log } from "./log";
-import { initilizeDB } from "./utils/initializedb";
+import { initilizeDB } from "./utils/initializeDB";
 
 async function startServer() {
   const app = express();
