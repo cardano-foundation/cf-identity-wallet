@@ -991,8 +991,13 @@
         "description": "Description",
         "revoked": "Revoked",
         "id": "Credential ID",
+        "modal": {
+          "about": "About {{ type }}"
+        },
         "attributes": {
           "label": "Attributes",
+          "description": "Essential details shared by the issuer, which verify and describe key information in this credential.",
+          "details": "Attribute details",
           "issuee": "Issuee",
           "issuancedate": "Issuance Date",
           "lei": "LEI"

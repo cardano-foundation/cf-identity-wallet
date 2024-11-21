@@ -9,23 +9,18 @@ import {
   CardDetailsItem,
   FlatBorderType,
 } from "../../CardDetails";
-import { CredentialContentProps, DetailView } from "./CredentialContent.types";
+import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
 import { ListHeader } from "../../ListHeader";
 import { ReadMore } from "../../ReadMore";
+import { CredentialAttributeDetailModal } from "./CredentialAttributeDetailModal";
 
 const CredentialContent = ({
   cardData,
   joinedCredRequestMembers,
 }: CredentialContentProps) => {
   const [openDetailModal, setOpenDetailModal] = useState(false);
-  const [viewType, setViewType] = useState(DetailView.Attributes);
-
-  const openPropDetailModal = (view: DetailView) => {
-    setViewType(view);
-    setOpenDetailModal(true);
-  };
 
   return (
     <>
@@ -63,7 +58,7 @@ const CredentialContent = ({
       )}
       <CardBlock
         title={i18n.t("tabs.credentials.details.attributes.label")}
-        onClick={() => openPropDetailModal(DetailView.Attributes)}
+        onClick={() => setOpenDetailModal(true)}
       />
 
       <CardDetailsBlock title={i18n.t("tabs.credentials.details.id")}>
@@ -74,14 +69,6 @@ const CredentialContent = ({
           testId="card-details-id"
         />
       </CardDetailsBlock>
-      {cardData.a && (
-        <CardDetailsBlock
-          className="card-attribute-block"
-          title={i18n.t("tabs.credentials.details.attributes.label")}
-        >
-          <CardDetailsAttributes data={cardData.a as JSONObject} />
-        </CardDetailsBlock>
-      )}
       <CardDetailsBlock
         title={i18n.t("tabs.credentials.details.schemaversion")}
       >
@@ -108,6 +95,23 @@ const CredentialContent = ({
           customType="status"
         />
       </CardDetailsBlock>
+      {cardData.a && (
+        <CredentialAttributeDetailModal
+          isOpen={openDetailModal}
+          setOpen={setOpenDetailModal}
+          title={`${i18n.t("tabs.credentials.details.attributes.label")}`}
+          description={`${i18n.t(
+            "tabs.credentials.details.attributes.description"
+          )}`}
+        >
+          <ListHeader
+            title={i18n.t("tabs.credentials.details.attributes.details")}
+          />
+          <CardBlock>
+            <CardDetailsAttributes data={cardData.a as JSONObject} />
+          </CardBlock>
+        </CredentialAttributeDetailModal>
+      )}
     </>
   );
 };

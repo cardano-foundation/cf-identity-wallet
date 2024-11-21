@@ -20,8 +20,8 @@ import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem
 import { ListHeader } from "../../../components/ListHeader";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
-import { DetailView } from "./IdetifierDetailModal/IdentifierDetailModal.types";
-import { IdentifierDetailModal } from "./IdetifierDetailModal/IdentifierDetailModal";
+import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
+import { IdentifierAttributeDetailModal } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal";
 
 const DISPLAY_MEMBERS = 3;
 
@@ -218,7 +218,7 @@ const IdentifierContent = ({
           </CardBlock>
         </>
       )}
-      <IdentifierDetailModal
+      <IdentifierAttributeDetailModal
         isOpen={openDetailModal}
         setOpen={setOpenDetailModal}
         view={viewType}
