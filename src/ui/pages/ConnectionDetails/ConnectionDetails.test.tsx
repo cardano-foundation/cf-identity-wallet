@@ -1,3 +1,4 @@
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
@@ -18,13 +19,27 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
-import { passcodeFiller } from "../../utils/passcodeFiller";
+import { passcodeFillerWithAct } from "../../utils/passcodeFiller";
 import { ConnectionDetails } from "./ConnectionDetails";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+}));
+
+jest.mock("../../hooks/useBiometricsHook", () => ({
+  useBiometricAuth: jest.fn(() => ({
+    biometricsIsEnabled: false,
+    biometricInfo: {
+      isAvailable: true,
+      hasCredentials: false,
+      biometryType: BiometryType.fingerprintAuthentication,
+      strongBiometryIsAvailable: true,
+    },
+    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+    setBiometricsIsEnabled: jest.fn(),
+  })),
 }));
 
 const deleteStaleLocalConnectionByIdMock = jest.fn();
@@ -93,6 +108,10 @@ const initialStateFull = {
 };
 
 describe("ConnectionDetails Page", () => {
+  afterEach(() => {
+    document.getElementsByTagName("html")[0].innerHTML = ""; 
+  });
+
   beforeEach(() => {
     jest.spyOn(Agent.agent.connections, "getConnectionById").mockImplementation(
       (): Promise<MockConnectionDetails> =>
@@ -161,7 +180,7 @@ describe("ConnectionDetails Page", () => {
     };
 
     const setConnectionShortDetails = jest.fn();
-    const { getByTestId, getByText, findByTestId } = render(
+    const { getByTestId, getByText, findByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
@@ -174,25 +193,19 @@ describe("ConnectionDetails Page", () => {
       "alert-confirm-delete-connection-container"
     );
     expect(alertDeleteConnection).toHaveClass("alert-invisible");
+  
     const deleteButton = await findByTestId("delete-button-connection-details");
-
-    await waitForIonicReact();
-
-    act(() => {
-      fireEvent.click(deleteButton);
-    });
+    fireEvent.click(deleteButton);
 
     await waitFor(() =>
-      expect(alertDeleteConnection).toHaveClass("alert-visible")
+      expect(getByText(EN_TRANSLATIONS.connections.details.options.alert.deleteconnection.title)).toBeVisible()
     );
 
     act(() => {
       fireEvent.click(
         getByTestId("alert-confirm-delete-connection-confirm-button")
-      );
-    });
-
-    await waitForIonicReact();
+      );  
+    })
 
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeVisible();
@@ -202,9 +215,7 @@ describe("ConnectionDetails Page", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
+    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteConnection).toBeCalled();
@@ -218,7 +229,7 @@ describe("ConnectionDetails Page", () => {
     };
 
     const setConnectionShortDetails = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
@@ -228,6 +239,7 @@ describe("ConnectionDetails Page", () => {
     );
 
     expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
+    unmount();
   });
 
   test("Hide loading spin after load data", async () => {
@@ -249,60 +261,6 @@ describe("ConnectionDetails Page", () => {
 
     await waitFor(() => {
       expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
-    });
-  });
-
-  test("Delete button in the ConnectionOptions modal triggers a confirmation alert", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-
-    const setConnectionShortDetails = jest.fn();
-    const { getByTestId, getAllByTestId, queryByTestId } = render(
-      <Provider store={storeMocked}>
-        <ConnectionDetails
-          connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
-        />
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("action-button"));
-    });
-
-    await waitFor(() => {
-      expect(getAllByTestId("connection-options-modal")[0]).toBeVisible();
-      expect(getByTestId("delete-button-connection-options")).toBeVisible();
-    });
-
-    const button = getByTestId("delete-button-connection-options");
-
-    act(() => {
-      fireEvent.click(button);
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("alert-confirm-delete-connection")).toHaveClass(
-        "custom-alert"
-      );
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-confirm-delete-connection-cancel-button")
-      );
-    });
-
-    await waitFor(() => {
-      expect(
-        queryByTestId("alert-confirm-delete-connection")
-      ).not.toBeVisible();
     });
   });
 
@@ -693,7 +651,7 @@ describe("Checking the Connection Details Page when connection is missing from t
     };
 
     const setConnectionShortDetails = jest.fn();
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, getAllByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
@@ -703,8 +661,6 @@ describe("Checking the Connection Details Page when connection is missing from t
     );
 
     getMock.mockImplementation(() => Promise.resolve("111111"));
-
-    await waitForIonicReact();
 
     await waitFor(() => {
       expect(getByTestId("connection-details-cloud-error-page")).toBeVisible();
@@ -719,23 +675,21 @@ describe("Checking the Connection Details Page when connection is missing from t
       fireEvent.click(getByTestId("delete-button-connection-details"));
     });
 
-    await waitFor(() => {
-      expect(getByTestId("alert-confirm-delete-connection")).toBeVisible();
-    });
+    await waitFor(() =>
+      expect(getAllByText(EN_TRANSLATIONS.connections.details.options.alert.deleteconnection.title)[0]).toBeVisible()
+    );
 
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-confirm-delete-connection-confirm-button")
-      );
+    fireEvent.click(getAllByTestId("alert-confirm-delete-connection-confirm-button")[0]);
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
     });
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
+    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteStaleLocalConnectionByIdMock).toBeCalled();

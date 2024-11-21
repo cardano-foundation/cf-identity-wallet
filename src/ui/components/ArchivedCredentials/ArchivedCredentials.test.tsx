@@ -9,7 +9,7 @@ import {
   revokedCredsFix,
 } from "../../__fixtures__/filteredCredsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
-import { passcodeFiller } from "../../utils/passcodeFiller";
+import { passcodeFiller, passcodeFillerWithAct } from "../../utils/passcodeFiller";
 import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
 
 const deleteCredentialsMock = jest.fn((id: string) => Promise.resolve(true));
@@ -250,9 +250,7 @@ describe("Archived and revoked credentials", () => {
         expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
       });
 
-      act(() => {
-        passcodeFiller(getByText, getByTestId, "1", 6);
-      });
+      await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
         expect(deleteCredentialsMock).toBeCalled();
@@ -349,9 +347,7 @@ describe("Archived and revoked credentials", () => {
         expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
       });
 
-      act(() => {
-        passcodeFiller(getByText, getByTestId, "1", 6);
-      });
+      await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
         expect(deleteCredentialsMock).toBeCalled();

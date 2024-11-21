@@ -186,6 +186,7 @@ const VerifyPassword = ({
               expand="block"
               fill="outline"
               className="secondary-button"
+              data-testid="reset-password"
               onClick={handleRecoveryPassword}
             >
               {i18n.t("verifypassword.alert.button.resetmypassword")}

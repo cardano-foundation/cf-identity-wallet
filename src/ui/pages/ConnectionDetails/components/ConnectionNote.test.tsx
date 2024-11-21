@@ -1,4 +1,3 @@
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { ConnectionNote } from "./ConnectionNote";
@@ -6,21 +5,27 @@ import { ConnectionNote } from "./ConnectionNote";
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonInput: (props: any) => {
+    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
+    const testId = componentProps["data-testid"];
+
     return (
       <input
-        {...props}
-        data-testid={props["data-testid"]}
-        onBlur={(e) => props.onIonBlur(e)}
-        onFocus={(e) => props.onIonFocus(e)}
-        onChange={(e) => props.onIonInput?.(e)}
+        value={value}
+        data-testid={testId}
+        onBlur={(e) => onIonBlur?.(e)}
+        onFocus={(e) => onIonFocus?.(e)}
+        onChange={(e) => onIonInput?.(e)}
       />
     );
   },
   IonTextarea: (props: any) => {
+    const { value, ...componentProps } = props;
+    const testId = componentProps["data-testid"];
+
     return (
       <textarea
-        {...props}
-        data-testid={props["data-testid"]}
+        value={value}
+        data-testid={testId}
         onBlur={(e) => props.onIonBlur(e)}
         onFocus={(e) => props.onIonFocus(e)}
         onChange={(e) => props.onIonInput?.(e)}
@@ -46,8 +51,6 @@ describe("Connection Note", () => {
       />
     );
 
-    await waitForIonicReact();
-
     const titleInput = getByTestId("edit-connections-modal-note-title-1");
     const messageInput = getByTestId("edit-connections-modal-note-message-1");
 
@@ -71,8 +74,6 @@ describe("Connection Note", () => {
       />
     );
 
-    await waitForIonicReact();
-
     const deleteButton = getByTestId("note-delete-button-1");
 
     fireEvent.click(deleteButton);
@@ -95,8 +96,6 @@ describe("Connection Note", () => {
         onNoteDataChange={handleUpdate}
       />
     );
-
-    await waitForIonicReact();
 
     const noteInput = getByTestId("edit-connections-modal-note-title-1");
 

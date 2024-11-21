@@ -11,10 +11,10 @@ const List = ({ data, title, bottomText, fullText, mask }: ListProps) => {
     <>
       <ListHeader title={title} />
       <CardBlock className="list-item">
-        {data.map((item) => {
+        {data.map((item, index) => {
           return (
             <CardDetailsItem
-              key={item.title}
+              key={index}
               info={item.title}
               customIcon={item.image}
               className="member"

@@ -226,7 +226,7 @@ const ReceiveCredential = ({
   };
 
   if (isLoading) {
-    return <Spinner show={isLoading} />;
+    return <Spinner data-testid="spinner" show={isLoading} />;
   }
 
   return (

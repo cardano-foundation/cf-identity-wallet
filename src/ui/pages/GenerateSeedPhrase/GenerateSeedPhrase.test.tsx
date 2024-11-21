@@ -4,7 +4,7 @@ import {
 } from "@ionic/react-test-utils";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -60,7 +60,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
   });
 
   test("User can see Title and Security Overlay", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, unmount } = render(
       <Provider store={store}>
         <Router history={history}>
           <GenerateSeedPhrase />
@@ -75,6 +75,8 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     expect(title).toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
+
+    unmount();
   });
 
   test("User can dismiss the Security Overlay", async () => {
@@ -100,7 +102,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
   });
 
   test("User is prompted to save the seed phrase", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, findByText } = render(
       <Provider store={store}>
         <Router history={history}>
           <GenerateSeedPhrase />
@@ -131,19 +133,16 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       fireEvent.click(continueButton);
     });
 
-    await waitForIonicReact();
-
-    await waitFor(() => expect(alertWrapper).toHaveClass("alert-visible"));
-
-    const alertTitle = getByText(
+    const alertTitle = await findByText(
       EN_TRANSLATIONS.generateseedphrase.alert.confirm.text
     );
 
     await waitFor(() => expect(alertTitle).toBeVisible());
+    await waitFor(() => expect(alertWrapper).toHaveClass("alert-visible"));
   });
 
   test("Clicking on second alert button will dismiss it", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, findByText, queryByText, unmount } = render(
       <Provider store={store}>
         <Router history={history}>
           <GenerateSeedPhrase />
@@ -155,25 +154,29 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
-    const alertWrapper = getByTestId(
-      "seed-phrase-generate-alert-continue-container"
-    );
+
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);
-      fireEvent.click(continueButton);
-    });
-    await waitForIonicReact();
-
-    act(() => {
-      fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.cancel
-        )
-      );
+      fireEvent.change(termsCheckbox, { target: { checked: true } });
     });
 
-    await waitFor(() => expect(alertWrapper).toHaveClass("alert-invisible"));
+    await waitFor(() => expect(continueButton).not.toBeDisabled);
+
+    fireEvent.click(continueButton);
+
+    const alertTitle = await findByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.text);
+
+    await waitFor(() => expect(alertTitle).toBeVisible());
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.cancel));
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.text)).toBeNull();
+    });
+
+    unmount();
   });
 
   test("Clicking on alert backdrop will dismiss it", async () => {
@@ -213,7 +216,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
   });
 
   test("User can toggle the checkbox and modal", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={store}>
         <Router history={history}>
           <GenerateSeedPhrase />
@@ -226,6 +229,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     expect(termsCheckbox.hasAttribute("[checked=\"true\""));
     fireEvent.ionChange(termsCheckbox, "[checked=\"false\"");
     expect(termsCheckbox.hasAttribute("[checked=\"false\""));
+    unmount();
   });
   test("Display seed number on seed phrase segment", async () => {
     const initialState = {

@@ -122,7 +122,7 @@ const storeMocked = {
 
 describe("Profile page", () => {
   test("Change username", async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, findByText } = render(
       <Provider store={storeMocked}>
         <Menu />
       </Provider>
@@ -138,7 +138,11 @@ describe("Profile page", () => {
       fireEvent.click(profileButton);
     });
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByTestId("profile-title")).toHaveTextContent(
+        EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
+      );
+    })
 
     const actionButton = getByTestId("action-button");
 
@@ -162,8 +166,6 @@ describe("Profile page", () => {
       fireEvent.click(actionButton);
     });
 
-    await waitForIonicReact();
-
     await waitFor(() => {
       expect(getByTestId("edit-profile-title")).toHaveTextContent(
         EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabedit
@@ -183,8 +185,6 @@ describe("Profile page", () => {
     act(() => {
       fireEvent.click(actionButton);
     });
-
-    await waitForIonicReact();
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
@@ -225,13 +225,13 @@ describe("Profile page", () => {
       fireEvent.click(profileButton);
     });
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByTestId("profile-title")).toHaveTextContent(
+        EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
+      );
+    })
 
     const actionButton = getByTestId("action-button");
-
-    expect(getByTestId("profile-title")).toHaveTextContent(
-      EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
-    );
     expect(
       getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit)
     ).toBeInTheDocument();

@@ -1,7 +1,7 @@
 import { setupIonicReact } from "@ionic/react";
 import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";

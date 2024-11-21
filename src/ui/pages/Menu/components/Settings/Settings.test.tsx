@@ -15,10 +15,10 @@ import {
   DISCORD_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
+import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
+import { SubMenuKey } from "../../Menu.types";
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
-import { SubMenuKey } from "../../Menu.types";
-import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -196,41 +196,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode-content-page")).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
-    });
+    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -481,7 +447,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(
