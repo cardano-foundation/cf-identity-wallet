@@ -1884,6 +1884,92 @@ describe("Signify notification service of agent", () => {
       keriaNotificationService.processNotification(notificationIpexOfferProp)
     ).rejects.toThrow(errorMessage);
   });
+
+  test("Should create a new failed notification to basic record if processNotification throws any error", async () => {
+    jest
+      .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
+      .mockReturnValue(true);
+    jest.spyOn(console, "error").mockReturnValueOnce();
+    basicStorage.findById.mockResolvedValueOnce({
+      id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+      content: {
+        nextIndex: 0,
+        lastNotificationId: "",
+      },
+    });
+    let firstTry = true;
+    const notifications = [
+      {
+        i: "string",
+        dt: "string",
+        r: true,
+        a: {
+          r: NotificationRoute.ExnIpexApply,
+          d: "string",
+          m: "",
+        },
+      },
+      {
+        i: "string",
+        dt: "string",
+        r: true,
+        a: {
+          r: NotificationRoute.MultiSigExn,
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+    listNotificationsMock.mockImplementation(async () => {
+      if (firstTry) {
+        firstTry = false;
+        return {
+          start: 0,
+          end: 2,
+          total: 2,
+          notes: notifications,
+        };
+      } else {
+        throw new Error("Break the while loop");
+      }
+    });
+
+    keriaNotificationService.processNotification = jest
+      .fn()
+      .mockRejectedValue("error");
+    basicStorage.createOrUpdateBasicRecord.mockResolvedValueOnce({
+      id: MiscRecordId.FAILED_NOTIFICATION,
+      content: {
+        notifications: {
+          [notifications[0].i]: notifications[0],
+        },
+        attempts: 1,
+        lastAttempt: Date.now(),
+      },
+    });
+    try {
+      await keriaNotificationService.pollNotifications();
+    } catch (error) {
+      expect((error as Error).message).toBe("Break the while loop");
+    }
+    expect(basicStorage.createOrUpdateBasicRecord).toBeCalledTimes(4);
+  });
+
+  test("Should retry failed notifications if more than 1 minute have passed", async () => {
+    keriaNotificationService.processNotification = jest
+      .fn()
+      .mockRejectedValue("error");
+    jest.advanceTimersByTime(60001);
+
+    try {
+      await keriaNotificationService.pollNotifications();
+    } catch (error) {
+      expect((error as Error).message).toBe("Break the while loop");
+    }
+    expect(
+      keriaNotificationService.retryFailedNotifications
+    ).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("Long running operation tracker", () => {

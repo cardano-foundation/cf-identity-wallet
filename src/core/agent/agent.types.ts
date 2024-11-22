@@ -37,7 +37,9 @@ enum MiscRecordId {
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
   LOGIN_METADATA = "login-metadata",
+  NOTIFICATION_METADATA = "notification-metadata",
   CAMERA_DIRECTION = "camera-direction",
+  FAILED_NOTIFICATION = "failed-notification",
 }
 
 interface ConnectionShortDetails {

@@ -36,11 +36,14 @@ import {
 import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
+import { NotificationAttempts } from "../records/notificationRecord.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly POLL_KERIA_INTERVAL = 2000;
   static readonly CHECK_READINESS_INTERNAL = 25;
+  static readonly NOTIFICATION_ATTEMPT_RECORD_NOT_FOUND =
+    "Notification attempt record not found";
 
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
@@ -124,6 +127,9 @@ class KeriaNotificationService extends AgentService {
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
     }
+
+    let lastFailedRetry = 0;
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!this.loggedIn || !this.getKeriaOnlineStatus()) {
@@ -203,7 +209,47 @@ class KeriaNotificationService extends AgentService {
           // @TODO - Consider how to track/retry old notifications we couldn't process
           /* eslint-disable no-console */
           console.error("Error when process a notification", error);
+
+          const failedNotifications = await this.basicStorage.findById(
+            MiscRecordId.FAILED_NOTIFICATION
+          );
+
+          await this.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.FAILED_NOTIFICATION,
+              content: {
+                notifications: {
+                  ...(failedNotifications?.content.notifications || {}),
+                  [notif.i]: notif,
+                },
+                attempts: 1,
+                lastAttempt: Date.now(),
+              },
+            })
+          );
+
+          // Update the marker to not get stuck on this notification
+          notificationQuery.nextIndex += 1;
+          notificationQuery.lastNotificationId = notif.i;
+
+          await this.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+              content: notificationQuery,
+            })
+          );
+
+          await new Promise((rs) =>
+            setTimeout(rs, KeriaNotificationService.POLL_KERIA_INTERVAL)
+          );
         }
+      }
+
+      const now = Date.now();
+      if (now - lastFailedRetry > 60000) {
+        // Retry failed notifications every minute
+        await this.retryFailedNotifications();
+        lastFailedRetry = now;
       }
       if (!notifications.notes.length) {
         await new Promise((rs) =>
@@ -291,6 +337,55 @@ class KeriaNotificationService extends AgentService {
     // @TODO - foconnor: This post processing may fail, causing notification to be created again
     if (notif.a.r === NotificationRoute.ExnIpexAgree) {
       await this.ipexCommunications.grantAcdcFromAgree(notif.i);
+    }
+  }
+
+  async retryFailedNotifications() {
+    const failedNotifications = await this.basicStorage.findById(
+      MiscRecordId.FAILED_NOTIFICATION
+    );
+
+    if (!failedNotifications || !failedNotifications.content) return;
+
+    const { notificationId, attempts, lastAttempt } =
+      failedNotifications.content as unknown as NotificationAttempts;
+    const now = Date.now();
+
+    const backoffDelays = [5000, 10000, 30000, 60000, 300000];
+    const delay =
+      backoffDelays[Math.min(attempts - 1, backoffDelays.length - 1)];
+
+    if (now - lastAttempt >= delay) {
+      try {
+        // Retry process the notification
+        const failedNotifications = await this.basicStorage
+          .findById(MiscRecordId.FAILED_NOTIFICATION)
+          .then((record) => record?.content?.notifications || {});
+
+        for (const notificationId in failedNotifications as Record<
+          string,
+          Notification
+        >) {
+          const failedNotification =
+            failedNotifications[
+              notificationId as keyof typeof failedNotifications
+            ];
+          await this.processNotification(failedNotification);
+        }
+
+        await this.basicStorage.deleteById(notificationId);
+      } catch (error) {
+        await this.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.FAILED_NOTIFICATION,
+            content: {
+              notificationId,
+              attempts: attempts + 1,
+              lastAttempt: now,
+            },
+          })
+        );
+      }
     }
   }
 
@@ -704,7 +799,7 @@ class KeriaNotificationService extends AgentService {
     const exchange = await this.props.signifyClient.exchanges().get(event.a.d);
 
     const metadata: NotificationRecordStorageProps = {
-      id: event.i,
+      id: "event.i",
       a: event.a,
       read: false,
       route: event.a.r as NotificationRoute,
@@ -919,7 +1014,7 @@ class KeriaNotificationService extends AgentService {
               alias,
               createdAt: new Date((operation.response as State).dt),
             });
-          
+
           this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
             type: EventTypes.ConnectionStateChanged,
             payload: {
