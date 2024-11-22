@@ -8,6 +8,7 @@ import { IdentifierType } from "../../../../../core/agent/services/identifier.ty
 import { KeyStoreKeys } from "../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
+import { showGenericError } from "../../../../../store/reducers/stateCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
 import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
@@ -266,7 +267,7 @@ describe("Credential request", () => {
     })
 
     const backMock = jest.fn();
-    const { getByText, unmount} = render(
+    const {unmount} = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
           pageId="creadential-request"
@@ -278,12 +279,7 @@ describe("Credential request", () => {
     );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.genericerror.text)).toBeVisible();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.genericerror.button));
-
-    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showGenericError(true));
       expect(backMock).toBeCalled();
     })
 
