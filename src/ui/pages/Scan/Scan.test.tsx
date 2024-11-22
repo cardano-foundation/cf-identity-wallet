@@ -154,10 +154,9 @@ describe("Scan Tab", () => {
     connectByOobiUrlMock.mockImplementation(() => {
       return {
         type: KeriConnectionType.NORMAL,
+        connection: connectionsFix[0]
       };
     });
-
-    getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
 
     const { unmount } = render(
       <Provider store={storeMocked}>

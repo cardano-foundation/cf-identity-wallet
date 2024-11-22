@@ -1,4 +1,3 @@
-import { ionFireEvent } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -46,6 +45,15 @@ const storeMocked = {
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: { children: unknown }) => children,
+  IonCheckbox: (props: any) => {
+    return <input type="checkbox" data-testid={props["data-testid"]} checked={props.checked} onChange={(event) => {
+      props.onIonChange({
+        detail: {
+          checked: event.target.checked
+        }
+      })
+    }}/>
+  }
 }));
 
 jest.mock("../../hooks", () => ({
@@ -95,19 +103,17 @@ describe("Switch onboarding mode", () => {
         getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
           "disabled"
         )
-      ).toBe("true");
+      ).toBe("")
     })
 
-    act(() => {
-      ionFireEvent.ionChange(getByTestId("confirm-checkbox"), "true");
-    });
+    fireEvent.click(getByTestId("confirm-checkbox"));
 
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
           "disabled"
         )
-      ).toBe("");
+      ).toBe("false")
     });
 
     act(() => {
@@ -153,22 +159,22 @@ describe("Switch onboarding mode", () => {
       getByText(EN_TRANSLATIONS.switchmodemodal.button.continue)
     ).toBeVisible();
 
-    expect(
-      getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
-        "disabled"
-      )
-    ).toBe("");
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
+          "disabled"
+        )
+      ).toBe("")
+    })
 
-    act(() => {
-      ionFireEvent.ionChange(getByTestId("confirm-checkbox"), "true");
-    });
+    fireEvent.click(getByTestId("confirm-checkbox"));
 
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
           "disabled"
         )
-      ).toBe("");
+      ).toBe("false")
     });
 
     act(() => {
