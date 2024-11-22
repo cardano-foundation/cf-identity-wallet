@@ -1,4 +1,5 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
+import { act } from "react";
 import { CardList } from "./CardList";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 

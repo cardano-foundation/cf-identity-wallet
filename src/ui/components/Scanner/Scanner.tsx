@@ -41,11 +41,10 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   getCurrentOperation,
-  getShowConnections,
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
-  showConnections,
+  showConnections
 } from "../../../store/reducers/stateCache";
 import {
   setPendingConnection,
@@ -86,7 +85,6 @@ const Scanner = forwardRef(
     const currentToastMsgs = useAppSelector(getToastMsgs);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
-    const showConnectionPage = useAppSelector(getShowConnections);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");

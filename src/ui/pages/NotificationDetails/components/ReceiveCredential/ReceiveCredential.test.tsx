@@ -1,19 +1,21 @@
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { act } from "react";
+import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { KeyStoreKeys } from "../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
+import { showGenericError } from "../../../../../store/reducers/stateCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
-import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
-import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { passcodeFiller } from "../../../../utils/passcodeFiller";
-import { ReceiveCredential } from "./ReceiveCredential";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
-import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
+import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
+import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
+import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
+import { ReceiveCredential } from "./ReceiveCredential";
 
 mockIonicReact();
 jest.useFakeTimers();
@@ -59,6 +61,20 @@ jest.mock("../../../../../core/agent/agent", () => ({
   },
 }));
 
+jest.mock("../../../../hooks/useBiometricsHook", () => ({
+  useBiometricAuth: jest.fn(() => ({
+    biometricsIsEnabled: false,
+    biometricInfo: {
+      isAvailable: true,
+      hasCredentials: false,
+      biometryType: BiometryType.fingerprintAuthentication,
+      strongBiometryIsAvailable: true,
+    },
+    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+    setBiometricsIsEnabled: jest.fn(),
+  })),
+}));
+
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 
@@ -89,7 +105,7 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
   IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 describe("Credential request", () => {
@@ -184,9 +200,7 @@ describe("Credential request", () => {
       expect(getByTestId("passcode-button-1")).toBeVisible();
     });
 
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
+    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
@@ -229,6 +243,48 @@ describe("Credential request", () => {
       expect(getByTestId("receive-credential-detail-modal")).toBeVisible();
     });
   }, 10000);
+
+
+  test("Show error when cred open", async () => {
+    const storeMocked = {
+      ...mockStore({
+        ...initialState,
+        stateCache: {
+          routes: [TabsRoutePath.NOTIFICATIONS],
+          authentication: {
+            loggedIn: true,
+            time: Date.now(),
+            passcodeIsSet: true,
+          },
+          isOnline: true,
+        },
+      }),
+      dispatch: dispatchMock,
+    };
+
+    getAcdcFromIpexGrantMock.mockImplementation(() => {
+      return Promise.reject(new Error("Get acdc failed"));
+    })
+
+    const backMock = jest.fn();
+    const {unmount} = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showGenericError(true));
+      expect(backMock).toBeCalled();
+    })
+
+    unmount();
+  });
 });
 
 describe("Credential request: Multisig", () => {
@@ -317,10 +373,14 @@ describe("Credential request: Multisig", () => {
     const backMock = jest.fn();
 
     getAcdcFromIpexGrantMock.mockImplementation(() =>
-      Promise.resolve({
-        ...credsFixAcdc[0],
-        identifierType: IdentifierType.Group,
-        identifierId: filteredIdentifierFix[2].id,
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            ...credsFixAcdc[0],
+            identifierType: IdentifierType.Group,
+            identifierId: filteredIdentifierFix[2].id,
+          })
+        }, 0)
       })
     );
 
@@ -333,7 +393,7 @@ describe("Credential request: Multisig", () => {
       })
     );
 
-    const { getByText } = render(
+    const { getByText, unmount, queryByTestId } = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
           pageId="creadential-request"
@@ -349,16 +409,26 @@ describe("Credential request: Multisig", () => {
         getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.addcred)
       ).toBeVisible();
     });
+
+    await waitFor(() => {
+      expect(queryByTestId("spinner")).toBeNull();
+    })
+
+    unmount();
   });
 
   test("Multisig credential request: Accepted", async () => {
     const backMock = jest.fn();
 
     getAcdcFromIpexGrantMock.mockImplementation(() =>
-      Promise.resolve({
-        ...credsFixAcdc[0],
-        identifierType: IdentifierType.Group,
-        identifierId: filteredIdentifierFix[2].id,
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            ...credsFixAcdc[0],
+            identifierType: IdentifierType.Group,
+            identifierId: filteredIdentifierFix[2].id,
+          })
+        }, 0)
       })
     );
 
@@ -371,10 +441,10 @@ describe("Credential request: Multisig", () => {
       })
     );
 
-    const { queryByTestId } = render(
+    const { queryByTestId, unmount, findByText, queryByText, getByText } = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
-          pageId="creadential-request"
+          pageId="creadential-request-1"
           activeStatus
           handleBack={backMock}
           notificationDetails={notificationsFix[0]}
@@ -382,9 +452,36 @@ describe("Credential request: Multisig", () => {
       </Provider>
     );
 
+    expect(queryByTestId("primary-button-creadential-request")).toBe(null);
+    expect(queryByTestId("secondary-button-creadential-request")).toBe(null);
+
+    const memberName = queryByText("Member 1");
+    expect(memberName).toBeNull();
+
     await waitFor(() => {
-      expect(queryByTestId("primary-button-creadential-request")).toBe(null);
-      expect(queryByTestId("secondary-button-creadential-request")).toBe(null);
+      expect(getLinkedGroupFromIpexGrantMock).toBeCalled();
+    })
+
+    await waitFor(() => {
+      expect(queryByTestId("spinner")).toBeNull();
     });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.receive.members
+        )
+      ).toBeVisible();
+    })
+
+    const memberName1 = await findByText("Member 1");
+    const memberName2 = await findByText("Member 2");
+
+    await waitFor(() => {
+      expect(memberName1).toBeVisible();
+      expect(memberName2).toBeVisible();
+    });
+
+    unmount();
   });
 });

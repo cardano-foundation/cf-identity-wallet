@@ -1,4 +1,5 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
+import { act } from "react";
 import { IdentifierColorSelector } from "./IdentifierColorSelector";
 import { IdentifierColor } from "./IdentifierColorSelector.types";
 

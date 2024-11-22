@@ -2,12 +2,12 @@ import { waitForIonicReact } from "@ionic/react-test-utils";
 import { createMemoryHistory } from "history";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import {
-  act,
   fireEvent,
   getDefaultNormalizer,
   render,
   waitFor,
 } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";

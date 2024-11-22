@@ -1,9 +1,10 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";import { act } from "react";
 import { Provider } from "react-redux";
 import { CredentialCardTemplate } from "./CredentialCardTemplate";
 import { store } from "../../../store";
 import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 import { formatShortDate } from "../../utils/formatters";
+
 
 describe("Credential Card Template", () => {
   it("Renders Rare Evo Card Template", async () => {

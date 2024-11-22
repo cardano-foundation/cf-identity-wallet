@@ -1,11 +1,11 @@
 import { Clipboard } from "@capacitor/clipboard";
 import { IonReactMemoryRouter } from "@ionic/react-router";
-import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent } from "@ionic/react-test-utils";
 import {
   fireEvent,
   getDefaultNormalizer,
   render,
-  waitFor,
+  waitFor
 } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { act } from "react";
@@ -28,6 +28,20 @@ import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IdentifierDetails } from "./IdentifierDetails";
 import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
+
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 const getIndentifier = jest.fn(() => identifierFix[0]);
@@ -52,14 +66,13 @@ const deleteStaleLocalIdentifierMock = jest.fn();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) => (
+  IonModal: ({ children, isOpen, ...props }: any) => isOpen ? (
     <div
-      style={{ display: isOpen ? undefined : "none" }}
       data-testid={props["data-testid"]}
     >
-      {isOpen ? children : null}
-    </div>
-  ),
+      {children}
+    </div> 
+  ) : null,
 }));
 
 const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve(id));
@@ -135,6 +148,7 @@ describe("Individual Identifier details page", () => {
   });
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
+    getMock.mockImplementation(() => "111111");
   });
 
   test("It renders Identifier Details", async () => {
@@ -225,7 +239,7 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It opens the sharing modal", async () => {
-    const { getByTestId, queryByTestId, queryAllByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -246,19 +260,19 @@ describe("Individual Identifier details page", () => {
       );
     });
 
-    expect(queryAllByTestId("share-connection-modal")[0]).not.toBeVisible();
+    expect(queryByTestId("share-connection-modal")).toBeNull();
 
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
 
     await waitFor(() => {
-      expect(queryAllByTestId("share-connection-modal")[0]).toBeVisible();
+      expect(getByTestId("share-connection-modal")).toBeVisible();
     });
   });
 
   test("It opens the edit modal", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -274,13 +288,15 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() => expect(getByTestId("identifier")).toBeInTheDocument());
 
-    expect(getByTestId("identifier-options-modal")).not.toBeVisible();
+    expect(queryByTestId("identifier-options-modal")).toBeNull();
 
     act(() => {
       fireEvent.click(getByTestId("identifier-options-button"));
     });
 
-    expect(getByTestId("identifier-options-modal")).toBeVisible();
+    await waitFor(() => {
+      expect(getByTestId("identifier-options-modal")).toBeVisible();
+    })
   });
 
   test("It shows the button to access the editor", async () => {
@@ -310,7 +326,9 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It asks to verify the password when users try to delete the identifier using the button in the modal", async () => {
-    const { getByTestId, getByText, getAllByText } = render(
+    getMock.mockImplementation(() => "")
+
+    const { getByTestId, getByText, unmount, findByText, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -334,35 +352,35 @@ describe("Individual Identifier details page", () => {
       expect(getByTestId("delete-identifier-option")).toBeInTheDocument();
     });
 
-    act(() => {
-      fireEvent.click(
-        getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.options.delete)[0]
-      );
-    });
+    fireEvent.click(
+      getByTestId("delete-button-identifier-card-details")
+    );
+  
+    const alertTitle = await findByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title);
 
     await waitFor(() => {
-      expect(
-        getAllByText(
-          EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title
-        )[0]
-      ).toBeVisible();
+      expect(alertTitle).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm
-        )[0]
-      );
-    });
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm)
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
+      expect(queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)).toBeNull();
     });
+
+    const verifyTitle = await findByText(EN_TRANSLATIONS.verifypassword.title);
+
+    await waitFor(() => {
+      expect(verifyTitle).toBeVisible();
+    });
+
+    unmount();
   });
 
   test("It shows the warning when I click on the big delete button", async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, queryByText, findByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -382,10 +400,10 @@ describe("Individual Identifier details page", () => {
       fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
+    const alertTitle = await findByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title);
+
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
-      ).toBeVisible();
+      expect(alertTitle).toBeVisible();
     });
 
     act(() => {
@@ -396,9 +414,11 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
-      ).not.toBeVisible();
+        queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+      ).toBeNull()
     });
+
+    unmount();
   });
 
   test("Show loading when indetifier data is null", async () => {
@@ -1133,7 +1153,7 @@ describe("Checking the Identifier Details Page when information is missing from 
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, unmount, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -1147,46 +1167,51 @@ describe("Checking the Identifier Details Page when information is missing from 
       </Provider>
     );
 
-    await waitForIonicReact();
-
     await waitFor(() => {
       expect(
         getByTestId("identifier-card-details-cloud-error-page")
       ).toBeVisible();
+    
       expect(
         getByText(EN_TRANSLATIONS.tabs.identifiers.details.clouderror, {
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
       ).toBeVisible();
+  
     });
 
-    act(() => {
-      fireEvent.click(getByTestId("delete-button-identifier-card-details"));
-    });
+    fireEvent.click(getByTestId("delete-button-identifier-card-details"));
 
     await waitFor(() => {
       expect(
-        getByTestId("alert-confirm-identifier-delete-details")
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
       ).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-confirm-identifier-delete-details-confirm-button")
-      );
+    fireEvent.click(
+      getByTestId("alert-confirm-identifier-delete-details-confirm-button")
+    );
+    fireEvent.click(
+      getByTestId("alert-confirm-identifier-delete-details-cancel-button")
+    )
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+      ).toBeNull();
     });
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
-
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+    
     await waitFor(() => {
       expect(deleteStaleLocalIdentifierMock).toBeCalled();
     });
+
+    unmount();
   });
 });
 
@@ -1196,6 +1221,7 @@ describe("Favourite identifier", () => {
   });
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
+    getMock.mockImplementation(() => "111111");
   });
   test("It changes to favourite icon on click favourite button", async () => {
     const spy = jest
@@ -1427,7 +1453,7 @@ describe("Favourite identifier", () => {
     const history = createMemoryHistory();
     history.push(path);
 
-    const { getByTestId, queryByTestId, getByText } = render(
+    const { getByTestId, queryByTestId, getByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter history={history}>
           <Route
@@ -1448,30 +1474,24 @@ describe("Favourite identifier", () => {
       fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)).toBeVisible();
+    })
+   
+    fireEvent.click(
+      getByTestId("alert-confirm-identifier-delete-details-confirm-button")
+    );
 
     await waitFor(() => {
-      expect(
-        getByTestId("alert-confirm-identifier-delete-details")
-      ).toBeVisible();
+      expect(getByTestId("verify-passcode")).toBeInTheDocument();
     });
 
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-confirm-identifier-delete-details-confirm-button")
-      );
-    });
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
-    });
-
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteIdentifier).toBeCalled();
     });
+
+    unmount();
   });
 });

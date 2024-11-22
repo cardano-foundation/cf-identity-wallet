@@ -167,8 +167,8 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.passwordlength))
-      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.weak))
+      expect(getByText(TRANSLATIONS.createpassword.error.passwordlength)).toBeVisible()
+      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.weak)).toBeVisible()
     })
 
     act(() => {
@@ -177,8 +177,8 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoUppercase));
-      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.medium));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoUppercase)).toBeVisible();
+      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.medium)).toBeVisible();
     })
 
     act(() => {
@@ -187,7 +187,7 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoLowercase));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoLowercase)).toBeVisible();
     })
 
     act(() => {
@@ -196,7 +196,7 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoNumber));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoNumber)).toBeVisible();
     })
 
     act(() => {
@@ -205,7 +205,7 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoSymbol));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoSymbol)).toBeVisible();
     })
 
     act(() => {
@@ -214,14 +214,9 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasSpecialChar));
-      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.strong));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasSpecialChar)).toBeVisible();
+      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.strong)).toBeVisible();
     })
-
-    act(() => {
-      ionFireEvent.ionInput(input, "Passssssssssssss@1");
-      ionFireEvent.ionBlur(input);
-    });
   });
 
   test("Confirm password not match", async () => {
@@ -246,7 +241,7 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoMatch));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoMatch)).toBeVisible();
     });
   });
 
@@ -274,12 +269,12 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hintSameAsPassword));
+      expect(getByText(TRANSLATIONS.createpassword.error.hintSameAsPassword)).toBeVisible();
     });
   });
 
   test("Skip password", async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, findByText, unmount, queryByText } = render(
       <Provider store={storeMocked(initialState)}>
         <PasswordModule
           title="Password Module"
@@ -291,24 +286,27 @@ describe("Password Module", () => {
       </Provider>
     );
 
-    const skipButton = getByTestId("tertiary-button-password-module");
+    fireEvent.click(getByTestId("tertiary-button-password-module"));
 
-    act(() => {
-      ionFireEvent.click(skipButton);
-    });
+    const alertTitle = await findByText(TRANSLATIONS.createpassword.alert.text);
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.alert.text)).toBeVisible();
+      expect(alertTitle).toBeVisible();
     });
-
+    
     const mockDate = new Date(1466424490000);
     const spy = jest
       .spyOn(global, "Date")
       .mockImplementation((() => mockDate) as never);
+
     act(() => {
       fireEvent.click(
         getByText(TRANSLATIONS.createpassword.alert.button.confirm)
       );
+    });
+
+    await waitFor(() => {
+      expect(queryByText(TRANSLATIONS.createpassword.alert.text)).toBeNull();
     });
 
     await waitFor(() => {
@@ -321,6 +319,7 @@ describe("Password Module", () => {
     });
 
     spy.mockRestore();
+    unmount();
   });
 
   test("Submit password", async () => {
@@ -398,7 +397,7 @@ describe("Password Module", () => {
       },
     };
 
-    const { getByTestId, queryByText, getByText } = render(
+    const { getByTestId, queryByText, unmount, findByText } = render(
       <Provider store={storeMocked(initialState)}>
         <PasswordModule
           title="Password Module"
@@ -422,32 +421,30 @@ describe("Password Module", () => {
       ionFireEvent.ionInput(hintInput, "hint");
     });
 
-    const submitButton = getByTestId("primary-button-password-module");
+    fireEvent.click(getByTestId("primary-button-password-module"));
 
-    act(() => {
-      ionFireEvent.click(submitButton);
-    });
+    const alertTitle = await findByText(TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+      .page.alert.existingpassword)
 
     await waitFor(() => {
-      expect(
-        getByText(
-          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
-            .page.alert.existingpassword
-        )
-      ).toBeVisible();
+      expect(alertTitle).toBeVisible();
     });
 
-    act(() => {
-      ionFireEvent.click(
-        getByTestId("manage-password-alert-existing-confirm-button")
-      );
-    });
+    fireEvent.click(
+      getByTestId("manage-password-alert-existing-confirm-button")
+    );
+
+    await waitFor(() => {
+      expect(queryByText(TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword.page.alert.existingpassword)).toBeNull()
+    })
 
     await waitFor(() => {
       expect((input as HTMLInputElement).value).toBe("");
       expect((confirmInput as HTMLInputElement).value).toBe("");
       expect((hintInput as HTMLInputElement).value).toBe("");
     });
+
+    unmount();
   });
 
   test("Open symbol modal", async () => {

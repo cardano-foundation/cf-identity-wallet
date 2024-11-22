@@ -1,15 +1,13 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { waitForIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ForgotAuthInfo } from "./ForgotAuthInfo";
 import { ForgotType } from "./ForgotAuthInfo.types";
-import { KeyStoreKeys } from "../../../core/storage";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { BasicRecord } from "../../../core/agent/records";
 
 const SEED_PHRASE_LENGTH = 18;
 
@@ -18,7 +16,7 @@ const secureStorageSetFunc = jest.fn();
 const secureStorageDeleteFunc = jest.fn();
 const verifySeedPhraseFnc = jest.fn();
 
-const createOrUpdateBasicStore = jest.fn((arg: any) => Promise.resolve());
+const createOrUpdateBasicStore = jest.fn((arg: unknown) => Promise.resolve(arg));
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -27,7 +25,7 @@ jest.mock("../../../core/agent/agent", () => ({
         findById: jest.fn(),
         save: jest.fn(),
         update: jest.fn(),
-        createOrUpdateBasicRecord: (arg: any) => createOrUpdateBasicStore(arg),
+        createOrUpdateBasicRecord: (arg: unknown) => createOrUpdateBasicStore(arg),
       },
     },
   },
@@ -36,27 +34,40 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: (...args: any) => secureStorageGetFunc(...args),
-    set: (...args: any) => secureStorageSetFunc(...args),
-    delete: (...args: any) => secureStorageDeleteFunc(...args),
+    get: (...args: unknown[]) => secureStorageGetFunc(...args),
+    set: (...args: unknown[]) => secureStorageSetFunc(...args),
+    delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
 }));
 
-jest.mock("@ionic/react", () => ({
-  ...jest.requireActual("@ionic/react"),
-  IonInput: (props: any) => {
-    return (
-      <input
-        {...props}
-        data-testid={props["data-testid"]}
-        onBlur={(e) => props.onIonBlur(e)}
-        onFocus={(e) => props.onIonFocus(e)}
-        onChange={(e) => props.onIonInput?.(e)}
-      />
-    );
-  },
-  IonModal: ({ children }: { children: any }) => children,
-}));
+jest.mock("@ionic/react", () => {
+  const { forwardRef, useImperativeHandle } = jest.requireActual("react");
+
+  return ({
+    ...jest.requireActual("@ionic/react"),
+    IonInput: forwardRef((props: any, ref: any) => {
+      const {onIonBlur, onIonFocus, onIonInput, value} = props;
+      const testId = props["data-testid"];
+  
+  
+      useImperativeHandle(ref, () => ({
+        setFocus: jest.fn()
+      }));
+  
+      return (
+        <input
+          ref={ref}
+          value={value}
+          data-testid={testId}
+          onBlur={onIonBlur}
+          onFocus={onIonFocus}
+          onChange={onIonInput}
+        />
+      );
+    }),
+    IonModal: ({ children }: { children: any }) => children,
+  });
+});
 
 jest.mock("../../hooks/useBiometricsHook", () => ({
   useBiometricAuth: jest.fn(() => ({
@@ -98,7 +109,7 @@ describe("Forgot Passcode Page", () => {
 
     const onCloseMock = jest.fn();
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, findByText } = render(
       <Provider store={storeMocked}>
         <ForgotAuthInfo
           isOpen
@@ -108,9 +119,10 @@ describe("Forgot Passcode Page", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.forgotauth.passcode.title)).toBeVisible();
+    });
 
-    expect(getByText(EN_TRANSLATIONS.forgotauth.passcode.title)).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.forgotauth.passcode.description)
     ).toBeVisible();
@@ -170,83 +182,19 @@ describe("Forgot Passcode Page", () => {
       ).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
-    });
+      expect(getByTestId("secondary-button-forgot-auth-info-modal")).toBeVisible();
+    })
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
+    const text = await findByText(EN_TRANSLATIONS.forgotauth.newpasscode.reenterpasscode);
 
     await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
+      expect(text).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.forgotauth.newpasscode.reenterpasscode)
-      ).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
-    });
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(onCloseMock).toBeCalled();
@@ -290,9 +238,10 @@ describe("Forgot Password Page", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.forgotauth.password.title)).toBeVisible();
+    })
 
-    expect(getByText(EN_TRANSLATIONS.forgotauth.password.title)).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.forgotauth.password.description)
     ).toBeVisible();
