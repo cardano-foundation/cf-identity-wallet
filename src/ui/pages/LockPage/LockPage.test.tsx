@@ -1,35 +1,34 @@
-import { MemoryRouter, Route } from "react-router-dom";
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
-import { IonReactRouter } from "@ionic/react-router";
+import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import {
   BiometryError,
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
-import { waitForIonicReact } from "@ionic/react-test-utils";
+import { IonReactRouter } from "@ionic/react-router";
+import { act } from "react";
+import {
+  fireEvent,
+  render,
+  waitFor
+} from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import configureStore from "redux-mock-store";
+import { KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
-import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const incrementLoginAttemptMock = jest.fn();
 const resetLoginAttemptsMock = jest.fn();
+const getMock = jest.fn((arg) => "111111")
 
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: () => "111111",
+    get: (arg: unknown) => getMock(arg),
   },
 }));
 
@@ -219,7 +218,7 @@ describe("Lock Page", () => {
       await findByText(EN_TRANSLATIONS.lockpage.alert.text.verify)
     ).toBeVisible();
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.alert.button.verify));
-    await waitForIonicReact();
+
     expect(
       await findByText(EN_TRANSLATIONS.forgotauth.passcode.title)
     ).toBeVisible();
@@ -243,21 +242,17 @@ describe("Lock Page", () => {
         setBiometricsIsEnabled: jest.fn(),
       })),
     }));
-    const correctPasscode = "111111";
-    jest.spyOn(SecureStorage, "get").mockResolvedValue(correctPasscode);
 
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByTestId, getByTestId } = render(
       <Provider store={storeMocked(initialState)}>
         <LockPage />
       </Provider>
     );
 
-    Array.from(correctPasscode).forEach((digit) => {
-      fireEvent.click(getByText(new RegExp(`^${digit}$`, "i")));
-    });
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(SecureStorage.get).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(getMock).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {
@@ -286,7 +281,7 @@ describe("Lock Page", () => {
     );
 
     await waitFor(() => {
-      expect(SecureStorage.get).not.toHaveBeenCalledWith(
+      expect(getMock).not.toHaveBeenCalledWith(
         KeyStoreKeys.APP_PASSCODE
       );
     });
@@ -342,7 +337,7 @@ describe("Lock Page", () => {
     });
 
     await waitFor(() => {
-      expect(SecureStorage.get).not.toHaveBeenCalledWith(
+      expect(getMock).not.toHaveBeenCalledWith(
         KeyStoreKeys.APP_PASSCODE
       );
     });
@@ -444,7 +439,7 @@ describe("Lock Page: Max login attempt", () => {
     expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(resetLoginAttemptsMock).toBeCalled();

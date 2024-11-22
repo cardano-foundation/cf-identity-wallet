@@ -1,7 +1,7 @@
 import { IonInput } from "@ionic/react";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import {
@@ -31,7 +31,7 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
   IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 jest.mock("@capacitor/core", () => {
@@ -195,15 +195,16 @@ describe("Scanner", () => {
   });
 
   test("Renders spinner", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <Scanner setIsValueCaptured={setIsValueCaptured} />
       </Provider>
     );
 
     expect(getByTestId("qr-code-scanner")).toBeVisible();
-
     expect(getByTestId("scanner-spinner-container")).toBeVisible();
+
+    unmount();
   });
 
   addListener.mockImplementation(

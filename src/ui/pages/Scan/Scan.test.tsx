@@ -51,6 +51,13 @@ jest.mock("@capacitor/keyboard", () => ({
   },
 }));
 
+jest.mock("signify-ts", () => ({
+  ...jest.requireActual("signify-ts"),
+  Salter: jest.fn(() => ({
+    qb64: ""
+  }))
+}));
+
 jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
     ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
@@ -105,12 +112,17 @@ describe("Scan Tab", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
 
-  test("Renders Scan Tab", () => {
+  test("Renders Scan Tab", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <Scan />
       </Provider>
     );
+
+    await waitFor(() => {
+      expect(getByTestId("qr-code-scanner").classList.contains("no-permission")).toBeFalsy();
+    })
+
 
     expect(getByTestId("scan-tab")).toBeInTheDocument();
   });
@@ -147,7 +159,7 @@ describe("Scan Tab", () => {
 
     getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
 
-    render(
+    const { unmount } = render(
       <Provider store={storeMocked}>
         <Scan />
       </Provider>
@@ -156,6 +168,8 @@ describe("Scan Tab", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
+
+    unmount();
   });
 
   test("Nav to identifier after scan duplicate multisig", async () => {

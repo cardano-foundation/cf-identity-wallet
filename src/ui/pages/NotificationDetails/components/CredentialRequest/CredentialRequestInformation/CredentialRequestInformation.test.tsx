@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { TabsRoutePath } from "../../../../../../routes/paths";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
 import { notificationsFix } from "../../../../../__fixtures__/notificationsFix";

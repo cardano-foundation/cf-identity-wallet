@@ -1,6 +1,6 @@
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -68,50 +68,6 @@ describe("Verify Passcode on Cards Details page", () => {
       dispatch: dispatchMock,
     };
   });
-
-  test.skip("It asks to verify the passcode when users try to delete the cred using the button in the modal", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    storeMocked = {
-      ...mockStore(initialStateNoPassword),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    expect(getAllByTestId("verify-passcode")[1].getAttribute("is-open")).toBe(
-      "false"
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("options-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("creds-options-archive-button")).toBeInTheDocument();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("creds-options-archive-button"));
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => {
-      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
-        "is-open",
-        "true"
-      );
-    });
-  });
   test("Render passcode", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -141,7 +97,7 @@ describe("Verify Passcode on Cards Details page", () => {
     jest
       .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
       .mockResolvedValue(credsFixAcdc[0]);
-    const { findByTestId, getAllByText, getAllByTestId } = render(
+    const { findByTestId, getAllByText, getAllByTestId, getByText, findByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -159,15 +115,10 @@ describe("Verify Passcode on Cards Details page", () => {
       fireEvent.click(archiveButton);
     });
 
-    await waitFor(() => {
-      expect(
-        getAllByText(
-          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
-        )[0]
-      ).toBeVisible();
-    });
+    await waitFor(async () => {
+      const text = await findByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title);
 
-    await waitFor(() => {
+      expect(text).toBeVisible();
       expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
         "is-open",
         "false"
@@ -181,8 +132,6 @@ describe("Verify Passcode on Cards Details page", () => {
         )[0]
       );
     });
-
-    await waitForIonicReact();
 
     await waitFor(() => {
       expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
