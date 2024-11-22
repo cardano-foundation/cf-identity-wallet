@@ -799,7 +799,7 @@ class KeriaNotificationService extends AgentService {
     const exchange = await this.props.signifyClient.exchanges().get(event.a.d);
 
     const metadata: NotificationRecordStorageProps = {
-      id: "event.i",
+      id: event.i,
       a: event.a,
       read: false,
       route: event.a.r as NotificationRoute,
