@@ -242,6 +242,53 @@ describe("Credential request", () => {
       expect(getByTestId("receive-credential-detail-modal")).toBeVisible();
     });
   }, 10000);
+
+
+  test("Show error when cred open", async () => {
+    const storeMocked = {
+      ...mockStore({
+        ...initialState,
+        stateCache: {
+          routes: [TabsRoutePath.NOTIFICATIONS],
+          authentication: {
+            loggedIn: true,
+            time: Date.now(),
+            passcodeIsSet: true,
+          },
+          isOnline: true,
+        },
+      }),
+      dispatch: dispatchMock,
+    };
+
+    getAcdcFromIpexGrantMock.mockImplementation(() => {
+      return Promise.reject(new Error("Get acdc failed"));
+    })
+
+    const backMock = jest.fn();
+    const { getByText, unmount} = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.genericerror.text)).toBeVisible();
+    });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.genericerror.button));
+
+    await waitFor(() => {
+      expect(backMock).toBeCalled();
+    })
+
+    unmount();
+  });
 });
 
 describe("Credential request: Multisig", () => {
