@@ -1,6 +1,7 @@
 import { setupIonicReact } from "@ionic/react";
+import { act } from "react";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
@@ -15,6 +16,7 @@ import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierCol
 import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnections } from "./SetupConnections";
+import { passcodeFiller } from "../../../utils/passcodeFiller";
 
 setupIonicReact();
 mockIonicReact();
@@ -436,51 +438,51 @@ describe("Create group identifier - Setup Connection", () => {
       expect(
         getByTestId("delete-button-initiate-multi-sig")
       ).toBeInTheDocument();
-      // await waitFor(() => {
-      //   expect(
-      //     getByTestId("primary-button-initiate-multi-sig").getAttribute(
-      //       "disabled"
-      //     )
-      //   ).toBe("false");
-      // });
+      await waitFor(() => {
+        expect(
+          getByTestId("primary-button-initiate-multi-sig").getAttribute(
+            "disabled"
+          )
+        ).toBe("false");
+      });
 
-      // act(() => {
-      //   fireEvent.click(getByTestId("copy-button-create-identifier"));
-      // });
+      act(() => {
+        fireEvent.click(getByTestId("copy-button-create-identifier"));
+      });
 
-      // await waitFor(() => {
-      //   expect(dispatchMock).toBeCalledWith(
-      //     setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
-      //   );
-      // });
+      await waitFor(() => {
+        expect(dispatchMock).toBeCalledWith(
+          setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
+        );
+      });
 
-      // act(() => {
-      //   fireEvent.click(getByTestId("delete-button-initiate-multi-sig"));
-      // });
+      act(() => {
+        fireEvent.click(getByTestId("delete-button-initiate-multi-sig"));
+      });
 
-      // await waitFor(() => {
-      //   expect(
-      //     getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
-      //   ).toBeInTheDocument();
-      // });
+      await waitFor(() => {
+        expect(
+          getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+        ).toBeInTheDocument();
+      });
 
-      // act(() => {
-      //   fireEvent.click(
-      //     getByText(
-      //       EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm
-      //     )
-      //   );
-      // });
+      act(() => {
+        fireEvent.click(
+          getByText(
+            EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm
+          )
+        );
+      });
 
-      // await waitFor(() => {
-      //   expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
-      // });
+      await waitFor(() => {
+        expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+      });
 
-      // passcodeFiller(getByText, getByTestId, "1", 6);
+      await passcodeFiller(getByText, getByTestId, "1", 6);
 
-      // await waitFor(() => {
-      //   expect(deleteIdentifier).toBeCalled();
-      // });
+      await waitFor(() => {
+        expect(deleteIdentifier).toBeCalled();
+      });
     });
 
     test("Renders Resume Multi Sig with groupInitiator is false", async () => {

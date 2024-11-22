@@ -1,14 +1,18 @@
-import { mockIonicReact } from "@ionic/react-test-utils";
-mockIonicReact();
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { ConnectionsOptionModal } from "./ConnectionsOptionModal";
 import { i18n } from "../../../../../i18n";
 import { store } from "../../../../../store";
 import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
-import { RequestType, OperationType } from "../../../../globals/types";
+import { OperationType, RequestType } from "../../../../globals/types";
+import { ConnectionsOptionModal } from "./ConnectionsOptionModal";
 
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+}));
 describe("Connection modal", () => {
   test("It renders connection modal", async () => {
     const { getByText } = render(

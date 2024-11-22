@@ -1,6 +1,7 @@
 import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { IonInput, IonLabel } from "@ionic/react";

@@ -1,6 +1,7 @@
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
@@ -215,7 +216,6 @@ describe("Cred Detail Module - current not archived credential", () => {
   test("It shows the warning when I click on the big archive button", async () => {
     const {
       findByTestId,
-      getAllByText,
       queryAllByTestId,
       getByTestId,
       getAllByTestId,
@@ -783,7 +783,7 @@ describe("Cred detail - revoked", () => {
   });
 
   test("Delete revoke credential", async () => {
-    const { getByText, getByTestId, queryByText, findByText, unmount } = render(
+    const { getByText, getByTestId, findByText } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
           pageId="credential-card-details"

@@ -1,15 +1,16 @@
 import { IonInput, IonLabel } from "@ionic/react";
-import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { ionFireEvent } from "@ionic/react-test-utils";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../../../routes/paths";
 import { setAuthentication } from "../../../../../store/reducers/stateCache";
 import { CustomInputProps } from "../../../../components/CustomInput/CustomInput.types";
+import { PROFILE_LINK } from "../../../../globals/constants";
 import { Menu } from "../../Menu";
 import { SubMenuKey } from "../../Menu.types";
-import { PROFILE_LINK } from "../../../../globals/constants";
-import { TabsRoutePath } from "../../../../../routes/paths";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {

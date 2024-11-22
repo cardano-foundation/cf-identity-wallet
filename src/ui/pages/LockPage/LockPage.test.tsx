@@ -4,8 +4,8 @@ import {
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { IonReactRouter } from "@ionic/react-router";
+import { act } from "react";
 import {
-  act,
   fireEvent,
   render,
   waitFor

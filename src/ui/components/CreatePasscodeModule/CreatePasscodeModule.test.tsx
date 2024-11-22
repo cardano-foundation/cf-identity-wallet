@@ -5,9 +5,8 @@ import {
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { IonRouterOutlet } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { waitForIonicReact } from "@ionic/react-test-utils";
+import { act } from "react";
 import {
-  act,
   cleanup,
   fireEvent,
   render,

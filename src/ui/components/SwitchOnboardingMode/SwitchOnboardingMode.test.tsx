@@ -90,11 +90,13 @@ describe("Switch onboarding mode", () => {
       getByText(EN_TRANSLATIONS.switchmodemodal.button.continue)
     ).toBeVisible();
 
-    expect(
-      getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
-        "disabled"
-      )
-    ).toBe("");
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
+          "disabled"
+        )
+      ).toBe("true");
+    })
 
     act(() => {
       ionFireEvent.ionChange(getByTestId("confirm-checkbox"), "true");
