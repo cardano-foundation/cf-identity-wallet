@@ -8,6 +8,7 @@ import { IdentifierType } from "../../../../../core/agent/services/identifier.ty
 import { KeyStoreKeys } from "../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
+import { showGenericError } from "../../../../../store/reducers/stateCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
 import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
@@ -242,6 +243,48 @@ describe("Credential request", () => {
       expect(getByTestId("receive-credential-detail-modal")).toBeVisible();
     });
   }, 10000);
+
+
+  test("Show error when cred open", async () => {
+    const storeMocked = {
+      ...mockStore({
+        ...initialState,
+        stateCache: {
+          routes: [TabsRoutePath.NOTIFICATIONS],
+          authentication: {
+            loggedIn: true,
+            time: Date.now(),
+            passcodeIsSet: true,
+          },
+          isOnline: true,
+        },
+      }),
+      dispatch: dispatchMock,
+    };
+
+    getAcdcFromIpexGrantMock.mockImplementation(() => {
+      return Promise.reject(new Error("Get acdc failed"));
+    })
+
+    const backMock = jest.fn();
+    const {unmount} = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showGenericError(true));
+      expect(backMock).toBeCalled();
+    })
+
+    unmount();
+  });
 });
 
 describe("Credential request: Multisig", () => {
