@@ -52,13 +52,7 @@
     }
   }
 
-  .identifier {
-    .card-details-info-content {
-      display: block;
-    }
-  }
-
-  .identifier-detail-section {
+  .identifier-details-split-section {
     margin: 0 !important;
     display: flex;
     justify-content: space-between;
@@ -96,7 +90,7 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    .identifier-detail-section {
+    .identifier-details-split-section {
       flex-direction: column;
 
       .card-block {

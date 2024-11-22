@@ -40,7 +40,7 @@ const CardDetailsAttributes = ({
               `${item[1]}`[10] !== "T" ? (
               <CardDetailsItem
                 key={index}
-                keyValue={`${reservedKeysFilter(item[0], customType)}:`}
+                keyValue={`${reservedKeysFilter(item[0])}:`}
                 info={item[1] as string}
                 copyButton={`${item[1]}`.length > 15}
                 testId="card-details-generic-attribute"

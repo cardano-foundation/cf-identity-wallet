@@ -119,7 +119,7 @@ const IdentifierContent = ({
       <ListHeader
         title={i18n.t("tabs.identifiers.details.identifierdetail.title")}
       />
-      <div className="identifier-detail-section">
+      <div className="identifier-details-split-section">
         <CardBlock
           copyContent={cardData.id}
           title={i18n.t(
@@ -129,8 +129,8 @@ const IdentifierContent = ({
           <CardDetailsItem
             info={cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
             icon={keyOutline}
-            testId="identifier"
-            className="identifier"
+            testId="identifier-id"
+            className="identifier-id"
             mask={false}
           />
         </CardBlock>

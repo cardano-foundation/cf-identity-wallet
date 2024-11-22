@@ -988,9 +988,9 @@
         "delete": "Delete",
         "type": "Type",
         "about": "About",
+        "credentialdetails": "Credential details",
         "description": "Description",
-        "revoked": "Revoked",
-        "id": "Credential ID",
+        "id": "ID",
         "modal": {
           "about": "About {{ type }}"
         },
@@ -1008,7 +1008,7 @@
           "label": "Status",
           "issued": "Issued",
           "revoked": "Revoked",
-          "timestamp": "Timestamp"
+          "timestamp": "Timestamp: "
         },
         "options": {
           "title": "Credential options",

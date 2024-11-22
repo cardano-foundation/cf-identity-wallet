@@ -1,4 +1,8 @@
-import { informationCircleOutline, keyOutline } from "ionicons/icons";
+import {
+  informationCircleOutline,
+  keyOutline,
+  calendarNumberOutline,
+} from "ionicons/icons";
 import { useState } from "react";
 import { JSONObject } from "../../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../../i18n";
@@ -9,12 +13,14 @@ import {
   CardDetailsItem,
   FlatBorderType,
 } from "../../CardDetails";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
 import { ListHeader } from "../../ListHeader";
 import { ReadMore } from "../../ReadMore";
 import { CredentialAttributeDetailModal } from "./CredentialAttributeDetailModal";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 
 const CredentialContent = ({
   cardData,
@@ -60,41 +66,63 @@ const CredentialContent = ({
         title={i18n.t("tabs.credentials.details.attributes.label")}
         onClick={() => setOpenDetailModal(true)}
       />
-
-      <CardDetailsBlock title={i18n.t("tabs.credentials.details.id")}>
+      <ListHeader
+        title={i18n.t("tabs.credentials.details.credentialdetails")}
+      />
+      <CardBlock title={i18n.t("tabs.credentials.details.status.issued")}>
         <CardDetailsItem
-          info={cardData.id}
-          copyButton={true}
-          icon={keyOutline}
-          testId="card-details-id"
+          keyValue={formatShortDate(cardData.a.dt)}
+          info={formatTimeToSec(cardData.a.dt)}
+          icon={calendarNumberOutline}
+          testId="credential-issued-section"
+          className="credential-issued-section"
+          mask={false}
+          fullText
         />
-      </CardDetailsBlock>
-      <CardDetailsBlock
-        title={i18n.t("tabs.credentials.details.schemaversion")}
+      </CardBlock>
+      <CardBlock
+        title={i18n.t("tabs.credentials.details.issuer")}
+        onClick={() => setOpenDetailModal(true)}
       >
-        <CardDetailsItem
-          info={cardData.s.version}
-          icon={informationCircleOutline}
-          testId="card-details-schema-version"
-        />
-      </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("tabs.credentials.details.issuer")}>
         <CardDetailsItem
           info={cardData.i}
-          copyButton={true}
-          icon={keyOutline}
-          testId="card-details-issuer"
+          customIcon={KeriLogo}
+          className="member"
+          testId={"credential-details-issuer"}
         />
-      </CardDetailsBlock>
-      <CardDetailsBlock
-        className="card-attribute-block"
-        title={i18n.t("tabs.credentials.details.status.label")}
-      >
-        <CardDetailsAttributes
-          data={cardData.lastStatus as JSONObject}
-          customType="status"
-        />
-      </CardDetailsBlock>
+      </CardBlock>
+      <div className="credential-details-split-section">
+        <CardBlock
+          copyContent={cardData.id}
+          title={i18n.t("tabs.credentials.details.id")}
+          testId={"credential-details-id-block"}
+        >
+          <CardDetailsItem
+            info={cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
+            icon={keyOutline}
+            testId="credential-details-id"
+            className="credential-details-id"
+            mask={false}
+          />
+        </CardBlock>
+        <CardBlock title={i18n.t("tabs.credentials.details.schemaversion")}>
+          <h2>{cardData.s.version}</h2>
+        </CardBlock>
+      </div>
+      <CardBlock title={i18n.t("tabs.credentials.details.status.label")}>
+        <h2>
+          {cardData.lastStatus.s === "0"
+            ? i18n.t("tabs.credentials.details.status.issued")
+            : i18n.t("tabs.credentials.details.status.revoked")}
+        </h2>
+        <p>
+          {i18n.t("tabs.credentials.details.status.timestamp")}{" "}
+          {formatShortDate(cardData.lastStatus.dt) +
+            " - " +
+            formatTimeToSec(cardData.lastStatus.dt)}
+        </p>
+      </CardBlock>
+
       {cardData.a && (
         <CredentialAttributeDetailModal
           isOpen={openDetailModal}

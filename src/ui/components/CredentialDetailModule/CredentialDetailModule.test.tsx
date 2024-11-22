@@ -8,7 +8,7 @@ import { Agent } from "../../../core/agent/agent";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   addFavouritesCredsCache,
-  removeFavouritesCredsCache
+  removeFavouritesCredsCache,
 } from "../../../store/reducers/credsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { credsFixAcdc, revokedCredFixs } from "../../__fixtures__/credsFix";
@@ -41,8 +41,8 @@ jest.mock("../../../core/agent/agent", () => ({
         createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
       },
       keriaNotifications: {
-        deleteNotificationRecordById: () => deleteNotificationRecordById()
-      }
+        deleteNotificationRecordById: () => deleteNotificationRecordById(),
+      },
     },
   },
 }));
@@ -181,7 +181,9 @@ describe("Cred Detail Module - current not archived credential", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("credential-card-details-cloud-error-page")).toBeVisible();
+      expect(
+        getByTestId("credential-card-details-cloud-error-page")
+      ).toBeVisible();
     });
   });
 
@@ -201,16 +203,16 @@ describe("Cred Detail Module - current not archived credential", () => {
     });
 
     expect(queryByTestId("creds-options-modal")).toBe(null);
-    
+
     const optionsButton = await getByTestId("options-button");
-  
+
     act(() => {
       fireEvent.click(optionsButton);
     });
 
     await waitFor(() => {
       expect(queryByTestId("creds-options-modal")).toBeVisible();
-    })
+    });
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
@@ -221,7 +223,7 @@ describe("Cred Detail Module - current not archived credential", () => {
       getAllByTestId,
       queryByText,
       findByText,
-      unmount
+      unmount,
     } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
@@ -242,12 +244,12 @@ describe("Cred Detail Module - current not archived credential", () => {
       expect(queryAllByTestId("alert-delete-archive")[0]).toBeInTheDocument();
     });
 
-    const alertTile = await findByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title);
-    
+    const alertTile = await findByText(
+      EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
+    );
+
     await waitFor(() => {
-      expect(
-        alertTile
-      ).toBeVisible();
+      expect(alertTile).toBeVisible();
     });
 
     fireEvent.click(getAllByTestId("alert-delete-archive-confirm-button")[0]);
@@ -259,7 +261,11 @@ describe("Cred Detail Module - current not archived credential", () => {
     fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title)).toBe(null);
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
+        )
+      ).toBe(null);
     });
 
     unmount();
@@ -459,18 +465,20 @@ describe("Cred Detail Module - current not archived credential", () => {
       expect(getByText(credsFixAcdc[0].a.i)).toBeVisible();
     });
 
-    fireEvent.click(getByText(
-      EN_TRANSLATIONS.tabs.credentials.details.button.archive
-    ));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.button.archive)
+    );
 
-    const alertTitle = await findByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title);
+    const alertTitle = await findByText(
+      EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
+    );
     await waitFor(() => {
       expect(alertTitle).toBeVisible();
     });
 
-    fireEvent.click(getByText(
-      EN_TRANSLATIONS.tabs.credentials.details.alert.archive.confirm
-    ));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.confirm)
+    );
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
@@ -479,7 +487,11 @@ describe("Cred Detail Module - current not archived credential", () => {
     fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title)).toBe(null);
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
+        )
+      ).toBe(null);
     });
 
     passcodeFiller(getByText, getByTestId, "1", 6);
@@ -611,13 +623,19 @@ describe("Cred Detail Module - archived", () => {
       ).toBeVisible();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.button.delete));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.button.delete)
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)).toBeVisible();
-    })
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)
+      ).toBeVisible();
+    });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.confirm));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.confirm)
+    );
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
@@ -632,7 +650,9 @@ describe("Cred Detail Module - archived", () => {
     fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)).toBe(null);
+      expect(
+        queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)
+      ).toBe(null);
     });
   });
 });
@@ -737,13 +757,15 @@ describe("Cred detail - revoked", () => {
         viewCred: "test-cred",
         step: 0,
       },
-      notifications: [{
-        ...notificationsFix[0],
-        a: {
-          ...notificationsFix[0].a,
-          credentialId: credsFixAcdc[0].id
-        }
-      }]
+      notifications: [
+        {
+          ...notificationsFix[0],
+          a: {
+            ...notificationsFix[0].a,
+            credentialId: credsFixAcdc[0].id,
+          },
+        },
+      ],
     },
   };
 
@@ -774,7 +796,7 @@ describe("Cred detail - revoked", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.credentials.details.revoked)
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.status.revoked)
       ).toBeVisible();
       expect(
         getByText(EN_TRANSLATIONS.tabs.credentials.details.delete)
@@ -795,7 +817,7 @@ describe("Cred detail - revoked", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.credentials.details.revoked)
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.status.revoked)
       ).toBeVisible();
       expect(
         getByText(EN_TRANSLATIONS.tabs.credentials.details.delete)
@@ -804,12 +826,16 @@ describe("Cred detail - revoked", () => {
 
     fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.delete));
 
-    const alertTitle = await findByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title);
+    const alertTitle = await findByText(
+      EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title
+    );
     await waitFor(() => {
       expect(alertTitle).toBeVisible();
-    })
+    });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.confirm));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.confirm)
+    );
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();

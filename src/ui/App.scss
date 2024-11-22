@@ -186,12 +186,19 @@ p {
 .delete-button,
 .archive-button {
   --color: white;
-  --background: var(--ion-color-danger);
 
   ion-icon {
     margin-right: 0.5rem;
     --ion-color-base: white !important;
   }
+}
+
+.delete-button {
+  --background: var(--ion-color-danger);
+}
+
+.archive-button {
+  --background: var(--ion-color-action-blue);
 }
 
 .primary-button,

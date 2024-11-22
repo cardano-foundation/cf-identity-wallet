@@ -364,7 +364,8 @@ const CredentialDetailModule = ({
     setAlertRestoreIsOpen(true);
   };
 
-  const resetOperation = () => dispatch(setCurrentOperation(OperationType.IDLE));
+  const resetOperation = () =>
+    dispatch(setCurrentOperation(OperationType.IDLE));
 
   if (cloudError) {
     return (
@@ -418,7 +419,7 @@ const CredentialDetailModule = ({
           <>
             {isRevoked && (
               <div className="revoked-alert">
-                {i18n.t("tabs.credentials.details.revoked")}
+                {i18n.t("tabs.credentials.details.status.revoked")}
               </div>
             )}
             <CredentialCardTemplate
