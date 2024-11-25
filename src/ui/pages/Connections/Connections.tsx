@@ -201,6 +201,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       }
 
       setConnectionShortDetails(item);
+      setOpenConnectionlModal(true);
     };
 
     const getConnectionsTab = useCallback(() => {

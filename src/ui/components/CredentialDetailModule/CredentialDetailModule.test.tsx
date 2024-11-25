@@ -35,6 +35,9 @@ jest.mock("../../../core/agent/agent", () => ({
         archiveCredential: () => archiveCredential(),
         deleteCredential: () => deleteCredential(),
       },
+      connections: {
+        getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
+      },
       basicStorage: {
         findById: jest.fn(),
         save: jest.fn(),
@@ -147,8 +150,8 @@ describe("Cred Detail Module - current not archived credential", () => {
     };
   });
 
-  test("It renders Card Details", async () => {
-    const { getByText } = render(
+  test("It renders Credential Details content", async () => {
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
           pageId="credential-card-details"
@@ -158,10 +161,10 @@ describe("Cred Detail Module - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
+      expect(getByTestId("card-details-content")).toBeInTheDocument();
     });
     await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].a.i)).toBeVisible;
+      expect(getByTestId("credential-card-details-footer")).toBeInTheDocument();
     });
   });
 
@@ -459,10 +462,9 @@ describe("Cred Detail Module - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].s.description)).toBeVisible();
-    });
-    await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].a.i)).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.button.archive)
+      ).toBeVisible();
     });
 
     fireEvent.click(

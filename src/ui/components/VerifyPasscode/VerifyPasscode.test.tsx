@@ -27,6 +27,9 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
+      connections: {
+        getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
+      },
     },
   },
 }));
@@ -97,7 +100,13 @@ describe("Verify Passcode on Cards Details page", () => {
     jest
       .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
       .mockResolvedValue(credsFixAcdc[0]);
-    const { findByTestId, getAllByText, getAllByTestId, getByText, findByText } = render(
+    const {
+      findByTestId,
+      getAllByText,
+      getAllByTestId,
+      getByText,
+      findByText,
+    } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -116,7 +125,9 @@ describe("Verify Passcode on Cards Details page", () => {
     });
 
     await waitFor(async () => {
-      const text = await findByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title);
+      const text = await findByText(
+        EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
+      );
 
       expect(text).toBeVisible();
       expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(

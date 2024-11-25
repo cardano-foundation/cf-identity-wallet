@@ -444,7 +444,10 @@ const CredentialDetailModule = ({
               }}
               isActive={false}
             />
-            <div className="card-details-content">
+            <div
+              className="card-details-content"
+              data-testid="card-details-content"
+            >
               <CredentialContent
                 joinedCredRequestMembers={joinedCredRequestMembers}
                 cardData={cardData}
