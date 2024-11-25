@@ -16,20 +16,16 @@ import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  ConnectionStatus,
-  KeriConnectionType,
+  KeriConnectionType
 } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { randomSalt } from "../../../core/agent/services/utils";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  removeConnectionCache,
   setMissingAliasUrl,
   setOpenConnectionId,
-  updateOrAddConnectionCache,
-  updateOrAddMultisigConnectionCache,
+  updateOrAddMultisigConnectionCache
 } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
@@ -326,16 +322,6 @@ const Scanner = forwardRef(
         return;
       }
 
-      const pendingId = randomSalt();
-      dispatch(
-        updateOrAddConnectionCache({
-          id: pendingId,
-          label: connectionName || pendingId,
-          status: ConnectionStatus.PENDING,
-          createdAtUTC: new Date().toString(),
-        })
-      );
-
       try {
         await Agent.agent.connections.connectByOobiUrl(content);
       } catch (e) {
@@ -349,8 +335,6 @@ const Scanner = forwardRef(
         }
 
         showError("Scanner Error:", e, dispatch);
-      } finally {
-        dispatch(removeConnectionCache(pendingId));
       }
     };
 
