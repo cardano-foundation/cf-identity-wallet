@@ -71,12 +71,15 @@ const CredentialContent = ({
       <ListHeader
         title={i18n.t("tabs.credentials.details.credentialdetails")}
       />
-      <CardBlock title={i18n.t("tabs.credentials.details.status.issued")}>
+      <CardBlock
+        title={i18n.t("tabs.credentials.details.status.issued")}
+        testId={"credential-issued-label"}
+      >
         <CardDetailsItem
           keyValue={formatShortDate(cardData.a.dt)}
           info={formatTimeToSec(cardData.a.dt)}
+          testId={"credential-issued-section"}
           icon={calendarNumberOutline}
-          testId="credential-issued-section"
           className="credential-issued-section"
           mask={false}
           fullText
@@ -102,22 +105,27 @@ const CredentialContent = ({
           <CardDetailsItem
             info={cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
             icon={keyOutline}
-            testId="credential-details-id"
+            testId={"credential-details-id"}
             className="credential-details-id"
             mask={false}
           />
         </CardBlock>
         <CardBlock title={i18n.t("tabs.credentials.details.schemaversion")}>
-          <h2>{cardData.s.version}</h2>
+          <h2 data-testid="credential-details-schema-version">
+            {cardData.s.version}
+          </h2>
         </CardBlock>
       </div>
-      <CardBlock title={i18n.t("tabs.credentials.details.status.label")}>
-        <h2>
+      <CardBlock
+        title={i18n.t("tabs.credentials.details.status.label")}
+        testId={"credential-details-last-status-label"}
+      >
+        <h2 data-testid="credential-details-last-status">
           {cardData.lastStatus.s === "0"
             ? i18n.t("tabs.credentials.details.status.issued")
             : i18n.t("tabs.credentials.details.status.revoked")}
         </h2>
-        <p>
+        <p data-testid="credential-details-last-status-timestamp">
           {i18n.t("tabs.credentials.details.status.timestamp")}{" "}
           {formatShortDate(cardData.lastStatus.dt) +
             " - " +

@@ -11,9 +11,20 @@ const ReadMore = ({ content }: { content: string }) => {
   };
 
   return (
-    <div className="read-more">
-      <span className={isReadMore ? "" : "clamp"}>{content}</span>
-      <IonButton onClick={toggleReadMore}>
+    <div
+      data-testid="read-more"
+      className="read-more"
+    >
+      <span
+        data-testid="read-more-text"
+        className={isReadMore ? "" : "clamp"}
+      >
+        {content}
+      </span>
+      <IonButton
+        onClick={toggleReadMore}
+        data-testid="read-more-button"
+      >
         {isReadMore ? i18n.t("readmore.less") : i18n.t("readmore.more")}
       </IonButton>
     </div>
