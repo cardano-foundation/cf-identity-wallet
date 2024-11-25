@@ -11,7 +11,7 @@
         .menu-input {
           margin: 0 0.3rem;
           display: flex;
-          background: white;
+          background: var(--ion-color-white);
           flex-direction: column;
           justify-content: space-evenly;
           height: 5.875rem;
@@ -33,7 +33,7 @@
           .sub-label {
             padding: 0.125rem 0.375rem;
             border-radius: 0.25rem;
-            background-color: rgba(187, 187, 187, 0.5);
+            background-color: rgba(var(--ion-color-dark-grey-rgb), 0.5);
             font-size: 0.5rem;
             font-weight: 400;
             line-height: 0.75rem;

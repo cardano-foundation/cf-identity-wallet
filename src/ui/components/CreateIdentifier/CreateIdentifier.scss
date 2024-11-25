@@ -3,7 +3,7 @@ ion-modal.create-identifier-modal {
     .create-identifier-modal-content > *:not(.spinner-container),
     ion-toolbar.page-footer {
       filter: blur(0.1rem);
-      --background: rgba(3, 3, 33, 0);
+      --background: rgba(var(--ion-color-primary-rgb), 0);
     }
 
     ion-toolbar.page-footer {
@@ -22,7 +22,7 @@ ion-modal.create-identifier-modal {
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(3, 3, 33, 0.2);
+    background: rgba(var(--ion-color-primary-rgb), 0.2);
   }
 
   .scrollable-page-layout {

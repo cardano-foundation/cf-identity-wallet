@@ -1,49 +1,49 @@
 ion-card.type-input {
-    margin: 0;
-    display: flex;
-    background: white;
-    border-radius: 1rem;
-    flex-direction: column;
-    justify-content: space-evenly;
-    padding: 0.5rem 1.25rem;
-    box-shadow: none;
-    --inner-border-width: 0;
+  margin: 0;
+  display: flex;
+  background: var(--ion-color-white);
+  border-radius: 1rem;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 0.5rem 1.25rem;
+  box-shadow: none;
+  --inner-border-width: 0;
 
-    ion-list {
-        padding: 0;
+  ion-list {
+    padding: 0;
+  }
+
+  ion-item.identifier-list-item {
+    --min-height: 3rem;
+    --inner-padding-end: 0px;
+    --border-color: transparent;
+    --inner-padding-end: 0;
+
+    ion-label {
+      margin: 0.813rem 0;
+      font-weight: 500;
+      color: var(--ion-color-secondary);
+
+      img {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      .connection-name {
+        font-weight: 500;
+        margin-left: 0.25rem;
+        width: 100%;
+      }
     }
 
-    ion-item.identifier-list-item {
-        --min-height: 3rem;
-        --inner-padding-end: 0px;
-        --border-color: transparent;
-        --inner-padding-end: 0;
-
-        ion-label {
-            margin: 0.813rem 0;
-            font-weight: 500;
-            color: var(--ion-color-secondary);
-
-            img {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-
-            .connection-name {
-                font-weight: 500;
-                margin-left: 0.25rem;
-                width: 100%;
-            }
-        }
-
-        &::part(native) {
-            padding: 0;
-        }
-
-        ion-icon {
-            font-size: 1.5rem;
-            color: var(--ion-color-secondary);
-            opacity: 0.5;
-        }
+    &::part(native) {
+      padding: 0;
     }
+
+    ion-icon {
+      font-size: 1.5rem;
+      color: var(--ion-color-secondary);
+      opacity: 0.5;
+    }
+  }
 }
