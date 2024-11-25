@@ -29,4 +29,11 @@
     --background-focused: rgba(var(--ion-color-dark-grey-rgb), 0.5);
     color: var(--ion-color-primary);
   }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .clamp,
+    ion-button {
+      font-size: 0.8rem;
+    }
+  }
 }
