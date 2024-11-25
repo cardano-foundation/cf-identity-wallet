@@ -1,3 +1,4 @@
+import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
 
 interface MemberInfo {
@@ -13,6 +14,8 @@ enum DetailView {
 interface CredentialContentProps {
   cardData: ACDCDetails;
   joinedCredRequestMembers?: MemberInfo[];
+  connectionShortDetails: ConnectionShortDetails | undefined;
+  setOpenConnectionlModal: (value: boolean) => void;
 }
 
 export type { CredentialContentProps };

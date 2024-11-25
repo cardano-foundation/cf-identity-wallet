@@ -25,6 +25,8 @@ import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 const CredentialContent = ({
   cardData,
   joinedCredRequestMembers,
+  connectionShortDetails,
+  setOpenConnectionlModal,
 }: CredentialContentProps) => {
   const [openDetailModal, setOpenDetailModal] = useState(false);
 
@@ -82,10 +84,10 @@ const CredentialContent = ({
       </CardBlock>
       <CardBlock
         title={i18n.t("tabs.credentials.details.issuer")}
-        onClick={() => setOpenDetailModal(true)}
+        onClick={() => setOpenConnectionlModal(true)}
       >
         <CardDetailsItem
-          info={cardData.i}
+          info={connectionShortDetails ? connectionShortDetails.label : ""}
           customIcon={KeriLogo}
           className="member"
           testId={"credential-details-issuer"}

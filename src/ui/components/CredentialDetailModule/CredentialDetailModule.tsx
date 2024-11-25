@@ -1,8 +1,9 @@
 import { IonButton, IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
+  ConnectionShortDetails,
   MiscRecordId,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
@@ -49,6 +50,7 @@ import {
   setNotificationsCache,
 } from "../../../store/reducers/notificationsCache";
 import { showError } from "../../utils/error";
+import { ConnectionDetails } from "../../pages/ConnectionDetails";
 
 const CredentialDetailModule = ({
   pageId,
@@ -75,13 +77,15 @@ const CredentialDetailModule = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [cardData, setCardData] = useState<ACDCDetails>();
   const [hidden, setHidden] = useState(false);
-
+  const [openConnectionlModal, setOpenConnectionlModal] = useState(false);
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
   const isInactiveCred = (isArchived || isRevoked) && !viewOnly;
-
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === id);
   const [cloudError, setCloudError] = useState(false);
+  const [connectionShortDetails, setConnectionShortDetails] = useState<
+    ConnectionShortDetails | undefined
+  >(undefined);
 
   const fetchArchivedCreds = useCallback(async () => {
     try {
@@ -104,6 +108,11 @@ const CredentialDetailModule = ({
       const cardDetails =
         await Agent.agent.credentials.getCredentialDetailsById(id);
       setCardData(cardDetails);
+      const shortDetails =
+        await Agent.agent.connections.getConnectionShortDetailById(
+          cardDetails.i
+        );
+      setConnectionShortDetails(shortDetails);
     } catch (error) {
       setCloudError(true);
       showError("Unable to get credential detail", error, dispatch);
@@ -390,7 +399,12 @@ const CredentialDetailModule = ({
     );
   }
 
-  return (
+  return openConnectionlModal && connectionShortDetails ? (
+    <ConnectionDetails
+      connectionShortDetails={connectionShortDetails}
+      handleCloseConnectionModal={() => setOpenConnectionlModal(false)}
+    />
+  ) : (
     <>
       <ScrollablePageLayout
         pageId={pageId}
@@ -434,6 +448,8 @@ const CredentialDetailModule = ({
               <CredentialContent
                 joinedCredRequestMembers={joinedCredRequestMembers}
                 cardData={cardData}
+                connectionShortDetails={connectionShortDetails}
+                setOpenConnectionlModal={setOpenConnectionlModal}
               />
               {!viewOnly && (
                 <PageFooter

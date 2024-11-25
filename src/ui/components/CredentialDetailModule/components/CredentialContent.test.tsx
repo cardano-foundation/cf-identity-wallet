@@ -1,7 +1,10 @@
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
-import { credsFixAcdc } from "../../../__fixtures__/credsFix";
+import {
+  connectionDetailsFix,
+  credsFixAcdc,
+} from "../../../__fixtures__/credsFix";
 import { CredentialContent } from "./CredentialContent";
 import { store } from "../../../../store";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
@@ -10,7 +13,12 @@ describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <CredentialContent cardData={credsFixAcdc[0]} />
+        <CredentialContent
+          cardData={credsFixAcdc[0]}
+          joinedCredRequestMembers={[]}
+          connectionShortDetails={connectionDetailsFix}
+          setOpenConnectionlModal={jest.fn()}
+        />
       </Provider>
     );
     expect(getByTestId("card-details-credential-type")).toBeVisible();
