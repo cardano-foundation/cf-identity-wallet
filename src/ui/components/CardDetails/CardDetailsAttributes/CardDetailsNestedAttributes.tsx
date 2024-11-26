@@ -38,7 +38,7 @@ const CardDetailsNestedAttributes = ({
     }
   );
 
-  const infoTestId = item[10] === "T" ? "cred-detail-time" : undefined;
+  const infoTestId = dateRegex.test(item) ? "cred-detail-time" : undefined;
   const innerCardKeyValue = cardKeyValue || `${reservedKeysFilter(key)}:`;
 
   return (
