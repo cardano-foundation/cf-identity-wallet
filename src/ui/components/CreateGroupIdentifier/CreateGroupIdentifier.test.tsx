@@ -9,13 +9,14 @@ import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache"
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CreateGroupIdentifier } from "./CreateGroupIdentifier";
+import { ModalMockProps } from "../../globals/test-types";
 
 setupIonicReact();
 mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div {...props}>{children}</div> : null,
 }));
 
@@ -27,7 +28,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
-const mockGetMultisigConnection = jest.fn((args) => Promise.resolve([]));
+const mockGetMultisigConnection = jest.fn<Promise<never[]>, unknown[]>(() => Promise.resolve([]));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {

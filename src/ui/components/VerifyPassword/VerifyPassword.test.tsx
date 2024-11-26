@@ -12,6 +12,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { VerifyPassword } from "./VerifyPassword";
 import { BasicRecord } from "../../../core/agent/records";
+import { ModalMockProps } from "../../globals/test-types";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -100,7 +101,7 @@ jest.mock("../CustomInput", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: ModalMockProps) => children,
 }));
 
 describe("Verify Password", () => {
@@ -223,12 +224,12 @@ describe("Verify Password", () => {
   });
 
   test("Render hint button success", async () => {
-    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockImplementation(() => 
       Promise.resolve({
         content: {
           value: "1111",
-        },
-      } as any)
+        }
+      } as never)
     );
 
     const mockStore = configureStore();

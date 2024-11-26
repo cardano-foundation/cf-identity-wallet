@@ -127,7 +127,7 @@ const newRecord = new BasicRecord({
   createdAt: startTime,
 });
 
-const storageService = new IonicStorage<BasicRecord>(storageMock as any);
+const storageService = new IonicStorage<BasicRecord>(storageMock as never);
 describe("Ionic Storage Module: Basic Storage Service", () => {
   test("should be able to store a new record", async () => {
     await storageService.save(newRecord);
@@ -210,8 +210,8 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
       BasicRecord
     );
     expect(getMock).toBeCalledWith(existingRecord.id);
-    expect(record!.type).toEqual(BasicRecord.type);
-    expect(record!.id).toEqual(existingRecord.id);
+    expect(record?.type).toEqual(BasicRecord.type);
+    expect(record?.id).toEqual(existingRecord.id);
   });
 
   test("should get an non existing record", async () => {

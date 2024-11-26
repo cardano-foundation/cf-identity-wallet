@@ -18,6 +18,7 @@ import { CustomInputProps } from "../../../../../../components/CustomInput/Custo
 import { OperationType } from "../../../../../../globals/types";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { ManagePassword } from "./ManagePassword";
+import { ModalMockProps } from "../../../../../../globals/test-types";
 
 const deletePasswordMock = jest.fn();
 
@@ -62,7 +63,7 @@ jest.mock("../../../../../../hooks/useBiometricsHook", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

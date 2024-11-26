@@ -9,6 +9,7 @@ import { RoutePath } from "../../../../../../../routes";
 import { OperationType } from "../../../../../../globals/types";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { RecoverySeedPhrase } from "./RecoverySeedPhrase";
+import { ModalMockProps } from "../../../../../../globals/test-types";
 
 jest.mock("../../../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../../../core/storage"),
@@ -45,7 +46,7 @@ jest.mock("../../../../../../hooks/useBiometricsHook", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

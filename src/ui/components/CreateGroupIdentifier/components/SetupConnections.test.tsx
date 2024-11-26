@@ -17,11 +17,12 @@ import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnections } from "./SetupConnections";
 import { passcodeFiller } from "../../../utils/passcodeFiller";
+import { ModalMockProps } from "../../../globals/test-types";
 
 setupIonicReact();
 mockIonicReact();
 
-const getOobiMock = jest.fn((...args: any) =>
+const getOobiMock = jest.fn<Promise<string>, unknown[]>(() =>
   Promise.resolve(
     "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902"
   )
@@ -32,7 +33,7 @@ const markIdentifierPendingDelete = jest.fn();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
@@ -40,7 +41,7 @@ jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getOobi: (...args: any) => getOobiMock(...args),
+        getOobi: (...args: unknown[]) => getOobiMock(...args),
       },
       identifiers: {
         deleteIdentifier: () => deleteIdentifier(),
@@ -55,7 +56,7 @@ const historyPushMock = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: () => ({
-    push: (args: any) => {
+    push: (args: unknown) => {
       historyPushMock(args);
     },
   }),
@@ -129,7 +130,7 @@ describe("Create group identifier - Setup Connection", () => {
   };
 
   const innerSetState = jest.fn();
-  const setState = jest.fn((args: any) => {
+  const setState = jest.fn((args: unknown) => {
     if (typeof args === "function") {
       const result = args({});
 

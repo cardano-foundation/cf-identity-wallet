@@ -22,11 +22,12 @@ import {
   EditConnectionsContainer,
   EditConnectionsModal,
 } from "./EditConnectionsModal";
+import { InputMockProps } from "../../../globals/test-types";
 mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonInput: (props: any) => {
+  IonInput: (props: InputMockProps) => {
     const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
 
     return (
@@ -39,7 +40,7 @@ jest.mock("@ionic/react", () => ({
       />
     );
   },
-  IonTextarea: (props: any) => {
+  IonTextarea: (props: InputMockProps) => {
     const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
     return (
       <textarea
@@ -89,7 +90,7 @@ const initialStateFull = {
 };
 
 const mockNow = 1466424490000;
-let dateSpy: any;
+let dateSpy: jest.SpyInstance<number, []>;
 
 describe("Edit Connection Modal", () => {
   beforeAll(() => {

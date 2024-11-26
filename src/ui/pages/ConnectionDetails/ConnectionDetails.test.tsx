@@ -21,10 +21,11 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ConnectionDetails } from "./ConnectionDetails";
+import { ModalMockProps } from "../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
@@ -182,7 +183,7 @@ describe("ConnectionDetails Page", () => {
     };
 
     const handleCloseConnectionModal = jest.fn();
-    const { getByTestId, getByText, findByTestId, queryByText } = render(
+    const { getByTestId, getByText, findByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}

@@ -132,7 +132,7 @@ const operationPendingStorage = jest.mocked({
 
 const eventEmitter = new CoreEventEmitter();
 const agentServicesProps = {
-  signifyClient: signifyClient as any,
+  signifyClient: signifyClient as never,
   eventEmitter,
 };
 
@@ -1091,7 +1091,7 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockResolvedValue(keriMetadataRecord);
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
-    signifyClient.manager = managerMock as any;
+    signifyClient.manager = managerMock as never;
     expect(
       await identifierService.getSigner(keriMetadataRecord.id)
     ).toStrictEqual(mockSigner);

@@ -15,10 +15,11 @@ import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
 import { ReceiveCredential } from "./ReceiveCredential";
+import { ModalMockProps } from "../../../../globals/test-types";
 
 jest.useFakeTimers();
 
-const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+const mockGet = jest.fn<Promise<string>, string[]>(() => Promise.resolve("111111"));
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
@@ -105,7 +106,7 @@ const initialState = {
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

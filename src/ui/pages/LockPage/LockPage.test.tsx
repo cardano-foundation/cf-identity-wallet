@@ -23,12 +23,12 @@ import { LockPage } from "./LockPage";
 
 const incrementLoginAttemptMock = jest.fn();
 const resetLoginAttemptsMock = jest.fn();
-const getMock = jest.fn((arg) => "111111")
+const getMock = jest.fn<string, string[]>(() => "111111")
 
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: (arg: unknown) => getMock(arg),
+    get: (arg: string) => getMock(arg),
   },
 }));
 

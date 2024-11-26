@@ -9,10 +9,11 @@ import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { ToastMsgType } from "../../../../globals/types";
 import { ConfirmConnectModal } from "./ConfirmConnectModal";
+import { ModalMockProps } from "../../../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
+  IonModal: ({ children, isOpen }: ModalMockProps) => (
     <div
       style={{ display: isOpen ? "block" : "none" }}
       data-testid="add-connection-modal"

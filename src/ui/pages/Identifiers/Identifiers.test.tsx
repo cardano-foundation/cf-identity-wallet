@@ -34,6 +34,7 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import { IdentifiersFilters } from "./Identifiers.types";
 import { store } from "../../../store";
+import { ModalMockProps } from "../../globals/test-types";
 
 const deleteIdentifierMock = jest.fn();
 const markIdentifierPendingDelete = jest.fn();
@@ -114,7 +115,7 @@ const initialState = {
 };
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

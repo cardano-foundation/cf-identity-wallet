@@ -6,7 +6,6 @@ import { TabsRoutePath } from "../../../../routes/paths";
 import { CardDetailsItem } from "./CardDetailsItem";
 
 const mockStore = configureStore();
-const dispatchMock = jest.fn();
 const initialState = {
   stateCache: {
     routes: [TabsRoutePath.IDENTIFIERS],

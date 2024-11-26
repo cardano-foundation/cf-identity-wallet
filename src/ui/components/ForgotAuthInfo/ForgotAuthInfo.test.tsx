@@ -8,6 +8,7 @@ import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ForgotAuthInfo } from "./ForgotAuthInfo";
 import { ForgotType } from "./ForgotAuthInfo.types";
+import { InputMockProps, ModalMockProps } from "../../globals/test-types";
 
 const SEED_PHRASE_LENGTH = 18;
 
@@ -45,7 +46,7 @@ jest.mock("@ionic/react", () => {
 
   return ({
     ...jest.requireActual("@ionic/react"),
-    IonInput: forwardRef((props: any, ref: any) => {
+    IonInput: forwardRef((props: InputMockProps, ref: never) => {
       const {onIonBlur, onIonFocus, onIonInput, value} = props;
       const testId = props["data-testid"];
   
@@ -65,7 +66,7 @@ jest.mock("@ionic/react", () => {
         />
       );
     }),
-    IonModal: ({ children }: { children: any }) => children,
+    IonModal: ({ children }: ModalMockProps) => children,
   });
 });
 

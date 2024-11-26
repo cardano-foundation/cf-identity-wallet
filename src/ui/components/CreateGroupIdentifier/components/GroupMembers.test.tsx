@@ -44,7 +44,7 @@ describe("Identifier Stage 2", () => {
   };
 
   const innerSetState = jest.fn();
-  const setState = jest.fn((args: any) => {
+  const setState = jest.fn((args: unknown) => {
     if (typeof args === "function") {
       const result = args({});
 

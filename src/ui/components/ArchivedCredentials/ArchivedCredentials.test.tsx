@@ -12,8 +12,9 @@ import {
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
+import { ModalMockProps } from "../../globals/test-types";
 
-const deleteCredentialsMock = jest.fn((id: string) => Promise.resolve(true));
+const deleteCredentialsMock = jest.fn<Promise<boolean>, string[]>(() => Promise.resolve(true));
 const deleteNotificationMock = jest.fn(() => Promise.resolve(true));
 const markCredentialPendingDeletionMock = jest.fn((id: string) => Promise.resolve(true));
 
@@ -43,7 +44,7 @@ jest.mock("../../../core/storage", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

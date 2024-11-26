@@ -18,6 +18,7 @@ import { ToastMsgType } from "../../globals/types";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialDetailModule } from "./CredentialDetailModule";
+import { ModalMockProps } from "../../globals/test-types";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -68,7 +69,7 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

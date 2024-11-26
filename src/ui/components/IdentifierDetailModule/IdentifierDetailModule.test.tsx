@@ -21,6 +21,7 @@ import { setToastMsg } from "../../../store/reducers/stateCache";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { ModalMockProps } from "../../globals/test-types";
 import { ToastMsgType } from "../../globals/types";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
@@ -64,8 +65,13 @@ const deleteStaleLocalIdentifierMock = jest.fn();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) => isOpen ? (
+    <div
+      data-testid={props["data-testid"]}
+    >
+      {children}
+    </div> 
+  ) : null,
 }));
 
 const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve(id));

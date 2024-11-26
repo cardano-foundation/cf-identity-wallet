@@ -17,7 +17,7 @@ describe("Card list", () => {
 
     const { getByTestId, queryByTestId, getAllByText, getAllByTestId } = render(
       <CardList
-        data={[displayConnection[0]] as any}
+        data={[displayConnection[0]] as never}
         onCardClick={cardClickFn}
         onRenderCardAction={() => <button>Mock Action</button>}
         onRenderEndSlot={() => <span>End slot</span>}
@@ -45,7 +45,7 @@ describe("Card list", () => {
 
     const { queryByTestId, getByTestId } = render(
       <CardList
-        data={[displayConnection[1] as any]}
+        data={[displayConnection[1]] as never}
         onCardClick={cardClickFn}
       />
     );

@@ -1,10 +1,11 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { ConnectionNote } from "./ConnectionNote";
+import { InputMockProps } from "../../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonInput: (props: any) => {
+  IonInput: (props: InputMockProps) => {
     const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
     const testId = componentProps["data-testid"];
 
@@ -18,7 +19,7 @@ jest.mock("@ionic/react", () => ({
       />
     );
   },
-  IonTextarea: (props: any) => {
+  IonTextarea: (props: InputMockProps) => {
     const { value, ...componentProps } = props;
     const testId = componentProps["data-testid"];
 

@@ -124,9 +124,9 @@ const notificationStorage = jest.mocked({
 
 const credentialService = new CredentialService(
   agentServicesProps,
-  credentialStorage as any,
-  notificationStorage as any,
-  identifierStorage as any
+  credentialStorage as never,
+  notificationStorage as never,
+  identifierStorage as never
 );
 
 const now = new Date();

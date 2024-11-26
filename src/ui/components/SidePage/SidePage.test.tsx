@@ -9,10 +9,11 @@ import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCac
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { signTransactionFix } from "../../__fixtures__/signTransactionFix";
 import { SidePage } from "./SidePage";
+import { ModalMockProps } from "../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, ...props }: any) => (
+  IonModal: ({ children, ...props }: ModalMockProps) => (
     <div data-testid={props["data-testid"]}>{children}</div>
   ),
 }));

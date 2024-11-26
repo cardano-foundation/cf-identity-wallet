@@ -14,11 +14,12 @@ import {
 } from "../../__fixtures__/signTransactionFix";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IncomingRequest } from "./IncomingRequest";
+import { ModalMockProps } from "../../globals/test-types";
 mockIonicReact();
 
 const mockApprovalCallback = jest.fn((status: boolean) => status);
 
-const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+const mockGet = jest.fn<Promise<string>, string[]>(() => Promise.resolve("111111"));
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
@@ -30,7 +31,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
-  IonModal: ({ children, isOpen, ...props }: any) => {
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) => {
     const testId = props["data-testid"];
 
     if(!isOpen) {

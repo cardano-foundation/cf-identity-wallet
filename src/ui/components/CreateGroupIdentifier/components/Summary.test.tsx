@@ -16,7 +16,7 @@ import { Stage } from "../CreateGroupIdentifier.types";
 setupIonicReact();
 mockIonicReact();
 
-const createMultiSignMock = jest.fn((...args: any) => ({
+const createMultiSignMock = jest.fn<object, object[]>(() => ({
   identifier: "mock-id",
   isPending: true,
 }));
@@ -25,7 +25,7 @@ jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       multiSigs: {
-        createMultisig: (...args: any) => createMultiSignMock(...args),
+        createMultisig: (...args: object[]) => createMultiSignMock(...args),
       },
     },
   },
@@ -61,7 +61,7 @@ describe("Create group identifier - Summary", () => {
   };
 
   const innerSetState = jest.fn();
-  const setState = jest.fn((args: any) => {
+  const setState = jest.fn((args: unknown) => {
     if (typeof args === "function") {
       const result = args({});
 
