@@ -1,3 +1,5 @@
+import { Notification } from "../services/credentialService.types";
+
 interface LinkedGroupRequestDetails {
   accepted: boolean;
   saids: Record<string, [string, string][]>;
@@ -5,6 +7,6 @@ interface LinkedGroupRequestDetails {
 interface NotificationAttempts {
   attempts: number;
   lastAttempt: number;
-  notificationId : string
+  notification: Notification;
 }
 export type { LinkedGroupRequestDetails, NotificationAttempts };
