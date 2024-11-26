@@ -40,7 +40,7 @@ body {
       width: 100%;
       align-items: center;
       justify-content: center;
-      background: rgba(3, 3, 33, 0.2);
+      background: rgba(var(--ion-color-primary-rgb), 0.2);
     }
   }
 
@@ -185,13 +185,20 @@ p {
 
 .delete-button,
 .archive-button {
-  --color: white;
-  --background: var(--ion-color-danger);
+  --color: var(--ion-color-white);
 
   ion-icon {
     margin-right: 0.5rem;
-    --ion-color-base: white !important;
+    --ion-color-base: var(--ion-color-white) !important;
   }
+}
+
+.delete-button {
+  --background: var(--ion-color-danger);
+}
+
+.archive-button {
+  --background: var(--ion-color-action-blue);
 }
 
 .primary-button,
@@ -229,7 +236,7 @@ p {
 ion-toast {
   --height: 3.25rem;
   --border-radius: 0.5rem;
-  --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
+  --box-shadow: 3px 3px 10px 0 rgba(var(--ion-color-black-rgb), 0.2);
 
   &::part(message) {
     text-align: left;

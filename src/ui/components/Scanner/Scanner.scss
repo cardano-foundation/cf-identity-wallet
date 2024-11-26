@@ -13,7 +13,8 @@ ion-grid.qr-code-scanner {
     background: var(--ion-color-secondary);
   }
 
-  &.no-permission,&.scan-unavailable {
+  &.no-permission,
+  &.scan-unavailable {
     background: var(--ion-color-secondary);
 
     .qr-code-scanner-text {
@@ -75,7 +76,7 @@ ion-grid.qr-code-scanner {
     width: 100%;
     align-items: center;
     justify-content: center;
-    background: rgba(3, 3, 33, 0.2);
+    background: rgba(var(--ion-color-primary-rgb), 0.2);
   }
 
   .page-footer .secondary-button {

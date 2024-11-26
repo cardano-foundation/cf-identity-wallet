@@ -24,7 +24,6 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionDetails as ConnectionData,
-  ConnectionShortDetails,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
 } from "../../../core/agent/agent.types";
@@ -41,16 +40,12 @@ import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
 import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
 import { showError } from "../../utils/error";
+import { ConnectionDetailsProps } from "./ConnectionDetails.types";
 
 const ConnectionDetails = ({
   connectionShortDetails,
-  setConnectionShortDetails,
-}: {
-  connectionShortDetails: ConnectionShortDetails;
-  setConnectionShortDetails: (
-    connectionShortDetails: ConnectionShortDetails | undefined
-  ) => void;
-}) => {
+  handleCloseConnectionModal,
+}: ConnectionDetailsProps) => {
   const pageId = "connection-details";
   const dispatch = useAppDispatch();
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
@@ -87,7 +82,7 @@ const ConnectionDetails = ({
       ) {
         setCloudError(true);
       } else {
-        handleDone();
+        handleCloseConnectionModal();
         showError("Unable to get connection details", error, dispatch);
       }
     } finally {
@@ -108,10 +103,6 @@ const ConnectionDetails = ({
 
   useOnlineStatusEffect(getData);
 
-  const handleDone = () => {
-    setConnectionShortDetails(undefined);
-  };
-
   const handleDelete = () => {
     setOptionsIsOpen(false);
     setAlertDeleteConnectionIsOpen(true);
@@ -131,7 +122,7 @@ const ConnectionDetails = ({
         }
         dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
         dispatch(removeConnectionCache(connectionShortDetails.id));
-        handleDone();
+        handleCloseConnectionModal();
         setVerifyIsOpen(false);
       } catch (error) {
         showError(
@@ -198,7 +189,7 @@ const ConnectionDetails = ({
           header={
             <PageHeader
               closeButton={true}
-              closeButtonAction={handleDone}
+              closeButtonAction={handleCloseConnectionModal}
               closeButtonLabel={`${i18n.t("connections.details.done")}`}
               currentPath={RoutePath.CONNECTION_DETAILS}
             />
@@ -218,7 +209,7 @@ const ConnectionDetails = ({
           header={
             <PageHeader
               closeButton={true}
-              closeButtonAction={handleDone}
+              closeButtonAction={handleCloseConnectionModal}
               closeButtonLabel={`${i18n.t("connections.details.done")}`}
               currentPath={RoutePath.CONNECTION_DETAILS}
               actionButton={true}

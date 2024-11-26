@@ -987,12 +987,17 @@
         "restore": "Restore",
         "delete": "Delete",
         "type": "Type",
-        "title": "Title",
+        "about": "About",
+        "credentialdetails": "Credential details",
         "description": "Description",
-        "revoked": "Revoked",
-        "id": "Credential ID",
+        "id": "ID",
+        "modal": {
+          "about": "About {{ type }}"
+        },
         "attributes": {
           "label": "Attributes",
+          "description": "Essential details shared by the issuer, which verify and describe key information in this credential.",
+          "details": "Attribute details",
           "issuee": "Issuee",
           "issuancedate": "Issuance Date",
           "lei": "LEI"
@@ -1003,7 +1008,7 @@
           "label": "Status",
           "issued": "Issued",
           "revoked": "Revoked",
-          "timestamp": "Timestamp"
+          "timestamp": "Timestamp: "
         },
         "options": {
           "title": "Credential options",
@@ -1778,5 +1783,9 @@
   "genericerror": {
     "text": "Something went wrong. Please try again.",
     "button": "OK"
+  },
+  "readmore": {
+    "more": "Read more",
+    "less": "Read less"
   }
 }

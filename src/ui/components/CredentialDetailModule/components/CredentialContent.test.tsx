@@ -1,7 +1,10 @@
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
-import { credsFixAcdc } from "../../../__fixtures__/credsFix";
+import {
+  connectionDetailsFix,
+  credsFixAcdc,
+} from "../../../__fixtures__/credsFix";
 import { CredentialContent } from "./CredentialContent";
 import { store } from "../../../../store";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
@@ -10,58 +13,63 @@ describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <CredentialContent cardData={credsFixAcdc[0]} />
+        <CredentialContent
+          cardData={credsFixAcdc[0]}
+          joinedCredRequestMembers={[]}
+          connectionShortDetails={connectionDetailsFix}
+          setOpenConnectionlModal={jest.fn()}
+        />
       </Provider>
     );
-    expect(getByTestId("card-details-credential-type")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.title)
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.about)
     ).toBeVisible();
-    expect(getByText("Qualified vLEI Issuer Credential")).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.description)
-    ).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.id)
-    ).toBeVisible();
-    expect(
-      getByText("EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv")
-    ).toBeVisible();
-    expect(
-      getByText(
-        "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
-      )
-    ).toBeVisible();
+    expect(getByText(credsFixAcdc[0].s.title)).toBeVisible();
+    expect(getByTestId("read-more")).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.label)
     ).toBeVisible();
     expect(
-      getByText("EJWgO4hwKxNMxu2aUpmGFMozKt9Eq2Jz8n-xXR7CYtY_")
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.credentialdetails)
     ).toBeVisible();
-    const date = `${formatShortDate(credsFixAcdc[0].a.dt)} - ${formatTimeToSec(
-      credsFixAcdc[0].a.dt
-    )}`;
-    expect(getByText(date)).toBeVisible();
-    expect(getByText("5493001KJTIIGC8Y1R17")).toBeVisible();
-    expect(getByText("1.0.0")).toBeVisible();
+    expect(getByTestId("credential-issued-label-text-value").innerHTML).toBe(
+      EN_TRANSLATIONS.tabs.credentials.details.status.issued
+    );
+    expect(getByTestId("credential-issued-section-key-value").innerHTML).toBe(
+      formatShortDate(credsFixAcdc[0].a.dt)
+    );
+    expect(getByTestId("credential-issued-section-text-value").innerHTML).toBe(
+      formatTimeToSec(credsFixAcdc[0].a.dt)
+    );
     expect(
-      getByText("EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5")
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.issuer)
     ).toBeVisible();
+    expect(getByText(connectionDetailsFix.label)).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.label)
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.id)
     ).toBeVisible();
+    expect(getByTestId("credential-details-id-text-value").innerHTML).toBe(
+      credsFixAcdc[0].id.substring(0, 5) + "..." + credsFixAcdc[0].id.slice(-5)
+    );
     expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.label + ":")
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.schemaversion)
     ).toBeVisible();
+    expect(getByTestId("credential-details-schema-version").innerHTML).toBe(
+      credsFixAcdc[0].s.version
+    );
     expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.timestamp + ":")
-    ).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.issued)
-    ).toBeVisible();
-    const lastStatus = `${formatShortDate(
+      getByTestId("credential-details-last-status-label-text-value").innerHTML
+    ).toBe(EN_TRANSLATIONS.tabs.credentials.details.status.label);
+    expect(getByTestId("credential-details-last-status").innerHTML).toBe(
+      EN_TRANSLATIONS.tabs.credentials.details.status.issued
+    );
+    const lastStatus = `${
+      EN_TRANSLATIONS.tabs.credentials.details.status.timestamp
+    } ${formatShortDate(credsFixAcdc[0].lastStatus.dt)} - ${formatTimeToSec(
       credsFixAcdc[0].lastStatus.dt
-    )} - ${formatTimeToSec(credsFixAcdc[0].lastStatus.dt)}`;
-    expect(getByText(lastStatus)).toBeVisible();
+    )}`;
+    expect(
+      getByTestId("credential-details-last-status-timestamp").innerHTML
+    ).toBe(lastStatus);
   });
 });

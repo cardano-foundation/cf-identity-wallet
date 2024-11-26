@@ -6,12 +6,12 @@
   .card-details-content .card-block {
     margin: 0.75rem 0 0;
 
-    &.rotate-button-container {
+    &.flat-border-top {
       margin-top: 0.25rem;
     }
   }
 
-  .creation-timestamp  {
+  .creation-timestamp {
     .card-details-info-block-data {
       font-size: 0.875rem;
       font-weight: 500;
@@ -52,25 +52,19 @@
     }
   }
 
-  .identifier {
-    .card-details-info-content {
-      display: block;
-    }
-  }
+  .identifier-details-split-section {
+    margin: 0 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
 
-  .identifier-detail-section {
-      margin: 0 !important;
-      display: flex;
-      justify-content: space-between;
-      align-items: stretch;
+    .card-block {
+      width: 49%;
 
-      .card-block {
-          width: 49%;
-
-          .card-details-info-block-inner {
-            height: 100%;
-          }
+      .card-details-info-block-inner {
+        height: 100%;
       }
+    }
   }
 
   .rotate-keys-button {
@@ -85,7 +79,8 @@
       margin: 0 0.25rem 0 0;
     }
 
-    p, ion-icon {
+    p,
+    ion-icon {
       color: var(--ion-color-action-blue);
     }
   }
@@ -94,9 +89,8 @@
     margin-top: 0.625rem;
   }
 
-
-  @media screen and (min-width: 250px) and (max-width: 370px) { 
-    .identifier-detail-section {
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .identifier-details-split-section {
       flex-direction: column;
 
       .card-block {
@@ -104,10 +98,10 @@
       }
     }
 
-    .creation-timestamp  {
+    .creation-timestamp {
       .card-details-info-block-data {
         font-size: 0.75rem;
-  
+
         .card-details-info-block-key {
           font-size: 0.8rem;
         }

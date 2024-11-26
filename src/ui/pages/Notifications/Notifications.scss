@@ -15,7 +15,7 @@
 
   .notification-empty {
     text-align: center;
-    color: rgba(54, 60, 74, 0.5);
+    color: rgba(var(--ion-color-secondary-rgb), 0.5);
     font-size: 0.875rem;
     line-height: 1.25rem;
     margin: 1rem 0;
@@ -38,7 +38,7 @@
 
   .notifications-tab-content {
     .show-ealier-btn {
-      --background: rgba(187, 187, 187, 0.5);
+      --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
       --border-radius: 0.5rem;
       color: var(--ion-color-primary);
       width: calc(100vw - 2.5rem);
@@ -69,7 +69,7 @@
 
         &.unread {
           background: var(
-            --primaryGradientLight,
+            --primary-gradient-light,
             linear-gradient(
               92deg,
               rgba(146, 255, 192, 0.15) 28.76%,

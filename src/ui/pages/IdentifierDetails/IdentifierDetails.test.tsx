@@ -5,7 +5,7 @@ import {
   fireEvent,
   getDefaultNormalizer,
   render,
-  waitFor
+  waitFor,
 } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { act } from "react";
@@ -27,11 +27,11 @@ import { ToastMsgType } from "../../globals/types";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IdentifierDetails } from "./IdentifierDetails";
-import { AccordionKey } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
+import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -66,13 +66,8 @@ const deleteStaleLocalIdentifierMock = jest.fn();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) => isOpen ? (
-    <div
-      data-testid={props["data-testid"]}
-    >
-      {children}
-    </div> 
-  ) : null,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve(id));
@@ -173,17 +168,22 @@ describe("Individual Identifier details page", () => {
       ).toBeInTheDocument()
     );
     // Render Information
-    expect(getByTestId("identifier")).toBeInTheDocument();
-    expect(getByTestId("identifier-text-value").innerHTML).toBe(
-      identifierFix[0].id.substring(0, 5) + "..." + identifierFix[0].id.slice(-5)
+    expect(getByTestId("identifier-id-text-value").innerHTML).toBe(
+      identifierFix[0].id.substring(0, 5) +
+        "..." +
+        identifierFix[0].id.slice(-5)
     );
     expect(getByTestId("creation-timestamp")).toBeVisible();
     // Render List of signing keys
-    expect(
-      getByTestId("signing-key-0")
-    ).toBeInTheDocument();
+    expect(getByTestId("signing-key-0")).toBeInTheDocument();
     expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
-    expect(getByText(identifierFix[0].k[0].substring(0, 5) + "..." + identifierFix[0].k[0].slice(-5))).toBeInTheDocument();
+    expect(
+      getByText(
+        identifierFix[0].k[0].substring(0, 5) +
+          "..." +
+          identifierFix[0].k[0].slice(-5)
+      )
+    ).toBeInTheDocument();
   });
 
   test("Render advanced modal", async () => {
@@ -207,24 +207,30 @@ describe("Individual Identifier details page", () => {
         getByTestId("identifier-card-template-default-index-0")
       ).toBeInTheDocument()
     );
-   
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
+
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced
+      )
+    );
 
     // Render Sequence number
     await waitFor(() => {
       expect(getByTestId("sequence-number")).toBeInTheDocument();
-    })
+    });
 
     expect(getByText(identifierFix[0].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last key event: ${formatShortDate(identifierFix[0].dt) +
-              " - " +
-              formatTimeToSec(identifierFix[0].dt)}`
+        `Last key event: ${
+          formatShortDate(identifierFix[0].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[0].dt)
+        }`
       )
     ).toBeInTheDocument();
-  })
+  });
 
   test("It opens the sharing modal", async () => {
     const { getByTestId, queryByTestId } = render(
@@ -275,9 +281,7 @@ describe("Individual Identifier details page", () => {
     );
 
     await waitFor(() =>
-      expect(
-        getByTestId("identifier")
-      ).toBeInTheDocument()
+      expect(getByTestId("identifier-id")).toBeInTheDocument()
     );
 
     expect(queryByTestId("identifier-options-modal")).toBeNull();
@@ -288,7 +292,7 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() => {
       expect(getByTestId("identifier-options-modal")).toBeVisible();
-    })
+    });
   });
 
   test("It shows the button to access the editor", async () => {
@@ -307,9 +311,7 @@ describe("Individual Identifier details page", () => {
     );
 
     await waitFor(() =>
-      expect(
-        getByTestId("identifier")
-      ).toBeInTheDocument()
+      expect(getByTestId("identifier-options-button")).toBeInTheDocument()
     );
 
     act(() => {
@@ -322,7 +324,7 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It asks to verify the password when users try to delete the identifier using the button in the modal", async () => {
-    getMock.mockImplementation(() => "")
+    getMock.mockImplementation(() => "");
 
     const { getByTestId, getByText, unmount, findByText, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
@@ -339,9 +341,7 @@ describe("Individual Identifier details page", () => {
     );
 
     await waitFor(() =>
-      expect(
-        getByTestId("identifier")
-      ).toBeInTheDocument()
+      expect(getByTestId("identifier-options-button")).toBeInTheDocument()
     );
 
     act(() => {
@@ -352,11 +352,11 @@ describe("Individual Identifier details page", () => {
       expect(getByTestId("delete-identifier-option")).toBeInTheDocument();
     });
 
-    fireEvent.click(
-      getByTestId("delete-button-identifier-card-details")
+    fireEvent.click(getByTestId("delete-button-identifier-card-details"));
+
+    const alertTitle = await findByText(
+      EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title
     );
-  
-    const alertTitle = await findByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title);
 
     await waitFor(() => {
       expect(alertTitle).toBeVisible();
@@ -367,7 +367,9 @@ describe("Individual Identifier details page", () => {
     );
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)).toBeNull();
+      expect(
+        queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+      ).toBeNull();
     });
 
     const verifyTitle = await findByText(EN_TRANSLATIONS.verifypassword.title);
@@ -396,7 +398,7 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() =>
       expect(
-        getByTestId("identifier")
+        getByTestId("delete-button-identifier-card-details")
       ).toBeInTheDocument()
     );
 
@@ -404,7 +406,9 @@ describe("Individual Identifier details page", () => {
       fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
-    const alertTitle = await findByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title);
+    const alertTitle = await findByText(
+      EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title
+    );
 
     await waitFor(() => {
       expect(alertTitle).toBeVisible();
@@ -419,7 +423,7 @@ describe("Individual Identifier details page", () => {
     await waitFor(() => {
       expect(
         queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
-      ).toBeNull()
+      ).toBeNull();
     });
 
     unmount();
@@ -533,11 +537,23 @@ describe("Individual Identifier details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.message)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.signingkey)).toBeVisible();
-      expect(getByTestId("rotate-keys-title").innerHTML).toBe(EN_TRANSLATIONS.tabs.identifiers.details.options.rotatekeys);
-    })
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.message)
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.signingkey
+        )
+      ).toBeVisible();
+      expect(getByTestId("rotate-keys-title").innerHTML).toBe(
+        EN_TRANSLATIONS.tabs.identifiers.details.options.rotatekeys
+      );
+    });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-rotate-key"));
@@ -662,7 +678,6 @@ describe("Group Identifier details page", () => {
       ],
     });
   });
-  
 
   test("It renders Identifier Details", async () => {
     Clipboard.write = jest.fn();
@@ -722,7 +737,7 @@ describe("Group Identifier details page", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText, getByTestId, getAllByText } = render(
+    const { getByTestId, getAllByText } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -750,12 +765,21 @@ describe("Group Identifier details page", () => {
 
     // Render Keys signing threshold
     expect(getByTestId("rotate-signing-key")).toBeVisible();
-    expect(getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.outof.replace("{{threshold}}", "4"))[0]).toBeVisible();
-    
+    expect(
+      getAllByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.outof.replace(
+          "{{threshold}}",
+          "4"
+        )
+      )[0]
+    ).toBeVisible();
+
     // Render Information
-    expect(getByTestId("identifier")).toBeInTheDocument();
-    expect(getByTestId("identifier-text-value").innerHTML).toBe(
-      identifierFix[2].id.substring(0, 5) + "..." + identifierFix[2].id.slice(-5)
+    expect(getByTestId("identifier-card-details-page")).toBeInTheDocument();
+    expect(getByTestId("identifier-id-text-value").innerHTML).toBe(
+      identifierFix[2].id.substring(0, 5) +
+        "..." +
+        identifierFix[2].id.slice(-5)
     );
   });
 
@@ -789,9 +813,19 @@ describe("Group Identifier details page", () => {
     fireEvent.click(getByTestId("view-member"));
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.content)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember
+            .propexplain.content
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open signing threshold", async () => {
@@ -816,12 +850,27 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.title));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold
+          .title
+      )
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.content)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold
+            .propexplain.content
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open advanced detail", async () => {
@@ -845,20 +894,26 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced
+      )
+    );
 
     // Render Sequence number
     await waitFor(() => {
       expect(getByTestId("sequence-number")).toBeInTheDocument();
-    })
+    });
 
     expect(getByText(identifierFix[0].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last key event: ${formatShortDate(identifierFix[0].dt) +
-              " - " +
-              formatTimeToSec(identifierFix[0].dt)}`
+        `Last key event: ${
+          formatShortDate(identifierFix[0].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[0].dt)
+        }`
       )
     ).toBeInTheDocument();
 
@@ -866,27 +921,60 @@ describe("Group Identifier details page", () => {
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last key event: ${formatShortDate(identifierFix[2].dt) +
-              " - " +
-              formatTimeToSec(identifierFix[2].dt)}`
+        `Last key event: ${
+          formatShortDate(identifierFix[2].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[2].dt)
+        }`
       )
     ).toBeInTheDocument();
 
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewkey.replace(
+          "{{keys}}",
+          "1"
+        )
+      )
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewrotationkey.replace(
+          "{{keys}}",
+          "1"
+        )
+      )
+    ).toBeInTheDocument();
 
-    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewkey.replace("{{keys}}", "1"))).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewrotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
-
-    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.SIGNINGKEY] as any);
+    ionFireEvent.ionChange(getByTestId("key-list"), [
+      AccordionKey.SIGNINGKEY,
+    ] as any);
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hidekey.replace("{{keys}}", "1"))).toBeInTheDocument();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hidekey.replace(
+            "{{keys}}",
+            "1"
+          )
+        )
+      ).toBeInTheDocument();
+    });
 
-    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.ROTATIONKEY] as any);
+    ionFireEvent.ionChange(getByTestId("key-list"), [
+      AccordionKey.ROTATIONKEY,
+    ] as any);
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hiderotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hiderotationkey.replace(
+            "{{keys}}",
+            "1"
+          )
+        )
+      ).toBeInTheDocument();
+    });
   });
 
   test("Open rotation threshold", async () => {
@@ -911,12 +999,27 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+          .title
+      )
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.content
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open group member from rotation threshold", async () => {
@@ -941,11 +1044,26 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+          .title
+      )
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.content
+        )
+      ).toBeVisible();
     });
   });
 
@@ -1061,13 +1179,12 @@ describe("Checking the Identifier Details Page when information is missing from 
       expect(
         getByTestId("identifier-card-details-cloud-error-page")
       ).toBeVisible();
-    
+
       expect(
         getByText(EN_TRANSLATIONS.tabs.identifiers.details.clouderror, {
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
       ).toBeVisible();
-  
     });
 
     fireEvent.click(getByTestId("delete-button-identifier-card-details"));
@@ -1083,7 +1200,7 @@ describe("Checking the Identifier Details Page when information is missing from 
     );
     fireEvent.click(
       getByTestId("alert-confirm-identifier-delete-details-cancel-button")
-    )
+    );
 
     await waitFor(() => {
       expect(
@@ -1096,7 +1213,7 @@ describe("Checking the Identifier Details Page when information is missing from 
     });
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
-    
+
     await waitFor(() => {
       expect(deleteStaleLocalIdentifierMock).toBeCalled();
     });
@@ -1365,9 +1482,11 @@ describe("Favourite identifier", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)).toBeVisible();
-    })
-   
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+      ).toBeVisible();
+    });
+
     fireEvent.click(
       getByTestId("alert-confirm-identifier-delete-details-confirm-button")
     );

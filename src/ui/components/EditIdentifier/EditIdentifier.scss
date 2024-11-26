@@ -69,6 +69,6 @@
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(3, 3, 33, 0.2);
+    background: rgba(var(--ion-color-primary-rgb), 0.2);
   }
 }

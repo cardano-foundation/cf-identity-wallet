@@ -1,6 +1,5 @@
 .profile-content,
 .edit-profile-content {
-
   .edit-name-container {
     .error-message {
       margin-top: 0.25rem;
@@ -31,7 +30,7 @@
   ion-card {
     margin: 0;
     display: flex;
-    background: white;
+    background: var(--ion-color-white);
     border-radius: 1rem;
     flex-direction: column;
     justify-content: space-evenly;

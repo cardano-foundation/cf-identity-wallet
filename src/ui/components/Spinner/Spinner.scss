@@ -4,7 +4,7 @@
   width: 100%;
   align-items: center;
   justify-content: center;
-  background-color: rgba(3, 3, 33, 0.2);
+  background-color: rgba(var(--ion-color-primary-rgb), 0.2);
 
   &.screen {
     position: absolute;

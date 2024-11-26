@@ -26,6 +26,7 @@ jest.mock("../../../core/agent/agent", () => ({
         createMediatorInvitation: jest.fn(),
         getShortenUrl: jest.fn(),
         deleteStaleLocalConnectionById: () => deleteConnectionByIdMock(),
+        getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
       },
     },
   },
@@ -48,17 +49,13 @@ jest.mock("../../../core/storage", () => ({
 jest.mock("@ionic/react", () => {
   const { forwardRef } = jest.requireActual("react");
 
-  return ({
+  return {
     ...jest.requireActual("@ionic/react"),
     IonModal: ({ children, isOpen, ...props }: any) =>
       isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
     IonSearchbar: forwardRef((props: any, ref: any) => {
-      const {
-        onIonInput,
-        onIonFocus,
-        onIonBlur,
-      } = props;
-  
+      const { onIonInput, onIonFocus, onIonBlur } = props;
+
       return (
         <input
           value={props.value}
@@ -69,7 +66,7 @@ jest.mock("@ionic/react", () => {
         />
       );
     }),
-  })
+  };
 });
 
 const mockSetShowConnections = jest.fn();
@@ -91,7 +88,7 @@ const initialStateFull = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
   seedPhraseCache: {},
   credsCache: {
@@ -322,7 +319,7 @@ describe("Connections page", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -350,7 +347,9 @@ describe("Connections page", () => {
 
     fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
 
-    const text = await findByText(EN_TRANSLATIONS.connections.page.alert.message);
+    const text = await findByText(
+      EN_TRANSLATIONS.connections.page.alert.message
+    );
     await waitFor(() => {
       expect(text).toBeVisible();
     });
@@ -390,7 +389,7 @@ describe("Connections page", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -495,7 +494,7 @@ describe("Connections page from Credentials tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -590,7 +589,7 @@ describe("Connections page from Credentials tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -658,7 +657,7 @@ describe("Connections page from Credentials tab", () => {
     });
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
-    
+
     await waitFor(() => {
       expect(deleteConnectionByIdMock).toBeCalled();
     });

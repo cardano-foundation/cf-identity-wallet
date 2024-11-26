@@ -3,7 +3,7 @@ ion-modal.create-group-identifier-modal {
     .create-identifier-modal-content > *:not(.spinner-container),
     ion-toolbar.page-footer {
       filter: blur(0.1rem);
-      --background: rgba(3, 3, 33, 0);
+      --background: rgba(var(--ion-color-primary-rgb), 0);
     }
 
     ion-toolbar.page-footer {
@@ -22,7 +22,7 @@ ion-modal.create-group-identifier-modal {
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(3, 3, 33, 0.2);
+    background: rgba(var(--ion-color-primary-rgb), 0.2);
   }
 
   .responsive-page-content {
@@ -79,8 +79,8 @@ ion-modal.create-group-identifier-modal {
     text-align: center;
 
     #react-qrcode-logo {
-      background-color: white;
-      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
+      background-color: var(--ion-color-white);
+      box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary-rgb), 0.2);
     }
 
     ion-button.copy-button {
@@ -88,7 +88,7 @@ ion-modal.create-group-identifier-modal {
       margin: 0 auto;
 
       &::part(native) {
-        background-color: white;
+        background-color: var(--ion-color-white);
         border-color: var(--ion-color-light);
       }
 
@@ -100,7 +100,7 @@ ion-modal.create-group-identifier-modal {
     .multisig-share-qr-code-blur-overlay-container {
       position: absolute;
       left: calc(50% - 35vw);
-      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
+      box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary), 0.2);
 
       .multisig-share-qr-code-blur-overlay-inner {
         display: none;
@@ -392,7 +392,7 @@ ion-modal.create-group-identifier-modal {
     ion-card {
       margin: 0;
       display: flex;
-      background: white;
+      background: var(--ion-color-white);
       border-radius: 1rem;
       flex-direction: column;
       justify-content: space-evenly;

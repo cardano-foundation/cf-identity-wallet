@@ -4,7 +4,7 @@
   --min-height: 3rem;
 
   .card-details-info-block-line-start-icon {
-    margin: 0 0.9375rem 0 0;
+    margin: 0 0.5rem 0 0;
     width: 1.5rem;
     height: 1.5rem;
   }
@@ -65,8 +65,8 @@
         to right,
         rgba(var(--ion-color-secondary-rgb)) 0,
         rgba(var(--ion-color-secondary-rgb)) 85%,
-        rgba(0, 0, 0, 0.5) 90%,
-        rgba(0, 0, 0, 0) 100%
+        rgba(var(--ion-color-black-rgb), 0.5) 90%,
+        rgba(var(--ion-color-black-rgb), 0) 100%
       );
       -webkit-mask: var(--mask);
       mask: var(--mask);

@@ -44,7 +44,7 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
 
 const deleteStaleLocalConnectionByIdMock = jest.fn();
 const deleteConnection = jest.fn();
-const markConnectionPendingDeleteMock = jest.fn()
+const markConnectionPendingDeleteMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -57,7 +57,7 @@ jest.mock("../../../core/agent/agent", () => ({
         deleteStaleLocalConnectionById: () =>
           deleteStaleLocalConnectionByIdMock(),
         deleteConnectionById: () => deleteConnection(),
-        markConnectionPendingDelete: () => markConnectionPendingDeleteMock()
+        markConnectionPendingDelete: () => markConnectionPendingDeleteMock(),
       },
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -111,7 +111,7 @@ const initialStateFull = {
 
 describe("ConnectionDetails Page", () => {
   afterEach(() => {
-    document.getElementsByTagName("html")[0].innerHTML = ""; 
+    document.getElementsByTagName("html")[0].innerHTML = "";
   });
 
   beforeEach(() => {
@@ -148,12 +148,12 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -181,12 +181,12 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByTestId, getByText, findByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -195,19 +195,24 @@ describe("ConnectionDetails Page", () => {
       "alert-confirm-delete-connection-container"
     );
     expect(alertDeleteConnection).toHaveClass("alert-invisible");
-  
+
     const deleteButton = await findByTestId("delete-button-connection-details");
     fireEvent.click(deleteButton);
 
     await waitFor(() =>
-      expect(getByText(EN_TRANSLATIONS.connections.details.options.alert.deleteconnection.title)).toBeVisible()
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deleteconnection
+            .title
+        )
+      ).toBeVisible()
     );
 
     act(() => {
       fireEvent.click(
         getByTestId("alert-confirm-delete-connection-confirm-button")
-      );  
-    })
+      );
+    });
 
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeVisible();
@@ -230,12 +235,12 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -249,12 +254,12 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -272,12 +277,12 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -311,12 +316,12 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { queryByTestId, getByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[1]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -390,12 +395,12 @@ describe("Checking the Connection Details Page when no notes are available", () 
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -456,12 +461,12 @@ describe("Checking the Connection Details Page when notes are available", () => 
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -525,12 +530,12 @@ describe("Checking the Connection Details Page when notes are available", () => 
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByText, getAllByText } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionDetails}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -600,10 +605,12 @@ describe("Checking the Connection Details Page when notes are available", () => 
 
     await waitFor(() => {
       expect(
-        getByText(`${EN_TRANSLATIONS.connections.details.presented.replace(
-          "{{ credentialType }}",
-          historyEvents[3].credentialType
-        )}`)
+        getByText(
+          `${EN_TRANSLATIONS.connections.details.presented.replace(
+            "{{ credentialType }}",
+            historyEvents[3].credentialType
+          )}`
+        )
       ).toBeVisible();
       expect(
         getByText(
@@ -652,12 +659,12 @@ describe("Checking the Connection Details Page when connection is missing from t
       dispatch: dispatchMock,
     };
 
-    const setConnectionShortDetails = jest.fn();
+    const handleCloseConnectionModal = jest.fn();
     const { getByText, getByTestId, getAllByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionsFix[0]}
-          setConnectionShortDetails={setConnectionShortDetails}
+          handleCloseConnectionModal={handleCloseConnectionModal}
         />
       </Provider>
     );
@@ -678,10 +685,17 @@ describe("Checking the Connection Details Page when connection is missing from t
     });
 
     await waitFor(() =>
-      expect(getAllByText(EN_TRANSLATIONS.connections.details.options.alert.deleteconnection.title)[0]).toBeVisible()
+      expect(
+        getAllByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deleteconnection
+            .title
+        )[0]
+      ).toBeVisible()
     );
 
-    fireEvent.click(getAllByTestId("alert-confirm-delete-connection-confirm-button")[0]);
+    fireEvent.click(
+      getAllByTestId("alert-confirm-delete-connection-confirm-button")[0]
+    );
 
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeVisible();
