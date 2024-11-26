@@ -103,7 +103,7 @@ const CredentialContent = ({
           testId={"credential-details-id-block"}
         >
           <CardDetailsItem
-            info={cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
+            info={`${cardData.id.substring(0, 5)}...${cardData.id.slice(-5)}`}
             icon={keyOutline}
             testId={"credential-details-id"}
             className="credential-details-id"
@@ -126,10 +126,11 @@ const CredentialContent = ({
             : i18n.t("tabs.credentials.details.status.revoked")}
         </h2>
         <p data-testid="credential-details-last-status-timestamp">
-          {i18n.t("tabs.credentials.details.status.timestamp")}{" "}
-          {formatShortDate(cardData.lastStatus.dt) +
-            " - " +
-            formatTimeToSec(cardData.lastStatus.dt)}
+          {`${i18n.t(
+            "tabs.credentials.details.status.timestamp"
+          )} ${formatShortDate(cardData.lastStatus.dt)} - ${formatTimeToSec(
+            cardData.lastStatus.dt
+          )}`}
         </p>
       </CardBlock>
 

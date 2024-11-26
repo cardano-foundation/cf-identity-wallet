@@ -153,7 +153,7 @@ const Advanced = ({ data, currentUserIndex }: AdvancedProps) => {
             mainContent={data.s}
             subContent={`${i18n.t(
               "tabs.identifiers.details.keyrotation.sequencenumber.lastrotate"
-            )}: ${formatShortDate(data.dt) + " - " + formatTimeToSec(data.dt)}`}
+            )}: ${formatShortDate(data.dt)} - ${formatTimeToSec(data.dt)}`}
           />
         </CardBlock>
       )}
