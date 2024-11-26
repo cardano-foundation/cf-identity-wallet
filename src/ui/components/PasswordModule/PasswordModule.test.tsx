@@ -53,7 +53,7 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-const secureStorageGetFunc = jest.fn((...arg: unknown[]) =>
+const secureStorageGetFunc = jest.fn<Promise<string>, string[]>(() =>
   Promise.resolve("Passssssss1@")
 );
 const secureStorageSetFunc = jest.fn();
@@ -62,7 +62,7 @@ const secureStorageDeleteFunc = jest.fn();
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: (...args: unknown[]) => secureStorageGetFunc(...args),
+    get: (...args: string[]) => secureStorageGetFunc(...args),
     set: (...args: unknown[]) => secureStorageSetFunc(...args),
     delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
@@ -472,7 +472,7 @@ describe("Password Module", () => {
       },
     };
 
-    const { getByTestId, getByText, queryByText } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked(initialState)}>
         <PasswordModule
           title="Password Module"

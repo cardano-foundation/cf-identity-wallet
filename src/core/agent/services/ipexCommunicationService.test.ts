@@ -271,7 +271,7 @@ jest.mock("signify-ts", () => ({
 const eventEmitter = new CoreEventEmitter();
 
 const agentServicesProps = {
-  signifyClient: signifyClient as any,
+  signifyClient: signifyClient as never,
   eventEmitter: eventEmitter,
 };
 
@@ -287,12 +287,12 @@ const connections = jest.mocked({
 
 const ipexCommunicationService = new IpexCommunicationService(
   agentServicesProps,
-  identifierStorage as any,
-  credentialStorage as any,
-  notificationStorage as any,
-  operationPendingStorage as any,
-  multisigService as any,
-  connections as any
+  identifierStorage as never,
+  credentialStorage as never,
+  notificationStorage as never,
+  operationPendingStorage as never,
+  multisigService as never,
+  connections as never
 );
 
 const DATETIME = new Date();
@@ -1475,7 +1475,7 @@ describe("IPEX communication service of agent", () => {
     await expect(
       ipexCommunicationService.createLinkedIpexMessageRecord(
         agreeForPresentingExnMessage,
-        "invalid" as any
+        "invalid" as never
       )
     ).rejects.toThrowError("Invalid history type");
   });
@@ -1550,7 +1550,7 @@ describe("IPEX communication service of agent", () => {
       a: {
         d: "msgSaid",
       },
-    } as any;
+    } as never;
 
     const mockMsg = {
       exn: {
@@ -1580,7 +1580,7 @@ describe("IPEX communication service of agent", () => {
       a: {
         d: "msgSaid",
       },
-    } as any;
+    } as never;
 
     const mockMsg = {
       exn: {
@@ -2587,7 +2587,7 @@ describe("IPEX communication service of agent", () => {
       "agreeSaid",
       credentialProps,
       {
-        grantExn: ipexGrantSerder as any,
+        grantExn: ipexGrantSerder as never,
         atc,
       }
     );
