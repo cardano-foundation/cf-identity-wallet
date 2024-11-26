@@ -281,7 +281,7 @@ describe("Individual Identifier details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByTestId("identifier-options-modal")).toBeInTheDocument()
+      expect(getByTestId("identifier-id")).toBeInTheDocument()
     );
 
     expect(queryByTestId("identifier-options-modal")).toBeNull();
