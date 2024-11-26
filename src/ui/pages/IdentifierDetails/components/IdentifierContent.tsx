@@ -127,7 +127,7 @@ const IdentifierContent = ({
           )}
         >
           <CardDetailsItem
-            info={cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
+            info={`${cardData.id.substring(0, 5)}...${cardData.id.slice(-5)}`}
             icon={keyOutline}
             testId="identifier-id"
             className="identifier-id"
@@ -163,7 +163,7 @@ const IdentifierContent = ({
               return (
                 <CardDetailsItem
                   key={item}
-                  info={item.substring(0, 5) + "..." + item.slice(-5)}
+                  info={`${item.substring(0, 5)}...${item.slice(-5)}`}
                   testId={`signing-key-${index}`}
                   icon={keyOutline}
                   mask={false}
