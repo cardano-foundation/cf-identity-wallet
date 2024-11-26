@@ -19,10 +19,11 @@ import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { SubMenuKey } from "../../Menu.types";
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
+import { ModalMockProps } from "../../../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: (props: any) => (
+  IonModal: (props: ModalMockProps) => (
     <div
       data-testid={props["data-testid"]}
       style={{ display: props.isOpen ? "block" : "none" }}
@@ -35,7 +36,7 @@ jest.mock("@ionic/react", () => ({
 jest.mock("../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../core/storage"),
   SecureStorage: {
-    get: (key: string) => {
+    get: () => {
       return "111111";
     },
   },

@@ -103,13 +103,7 @@ describe("Verify Passcode on Cards Details page", () => {
     jest
       .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
       .mockResolvedValue(credsFixAcdc[0]);
-    const {
-      findByTestId,
-      getAllByText,
-      getAllByTestId,
-      getByText,
-      findByText,
-    } = render(
+    const { findByTestId, getAllByText, getAllByTestId, findByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route

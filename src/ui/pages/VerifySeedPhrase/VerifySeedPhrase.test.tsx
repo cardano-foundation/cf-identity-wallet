@@ -64,7 +64,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.GENERATE_SEED_PHRASE);
 
-    const { getByTestId, queryByText, getByText, findByText } = render(
+    const { getByTestId, queryByText, findByText } = render(
       <Provider store={storeMocked}>
         <IonReactMemoryRouter
           history={history}

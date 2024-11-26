@@ -26,6 +26,7 @@ import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { Scanner } from "./Scanner";
 import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
+import { ModalMockProps } from "../../globals/test-types";
 
 const getPlatformMock = jest.fn(() => ["mobile"]);
 
@@ -33,7 +34,7 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
   getPlatforms: () => getPlatformMock(),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

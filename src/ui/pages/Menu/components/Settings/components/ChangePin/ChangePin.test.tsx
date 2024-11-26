@@ -4,7 +4,7 @@ import {
   render,
   waitFor
 } from "@testing-library/react";
-import { act } from "react";
+import { act, ReactNode } from "react";
 import { Provider } from "react-redux";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../../../locales/en/en.json";
@@ -36,7 +36,7 @@ jest.mock("../../../../../../hooks/useBiometricsHook", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: { children: ReactNode }) => children,
 }));
 
 

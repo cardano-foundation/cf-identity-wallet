@@ -5,6 +5,7 @@ import configureStore from "redux-mock-store";
 import TRANSLATIONS from "../../../locales/en/en.json";
 import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { RecoverySeedPhraseModule } from "./RecoverySeedPhraseModule";
+import { InputMockProps } from "../../globals/test-types";
 
 const SEED_PHRASE_LENGTH = 18;
 
@@ -35,7 +36,7 @@ jest.mock("@ionic/react", () => {
 
   return ({
     ...jest.requireActual("@ionic/react"),
-    IonInput: forwardRef((props: any, ref: any) => {
+    IonInput: forwardRef((props: InputMockProps, ref: never) => {
       const {onIonBlur, onIonFocus, onIonInput, value} = props;
       const testId = props["data-testid"];
   
