@@ -21,10 +21,15 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
+import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { Alert as AlertDecline } from "../../../../components/Alert";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
+import {
+  MemberAcceptStatus,
+  MultisigMember,
+} from "../../../../components/CredentialDetailModule/components";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
@@ -38,13 +43,8 @@ import {
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import {
-  MultisigMember,
-  MemberAcceptStatus,
-} from "../../../../components/CredentialDetailModule/components";
 import "./ReceiveCredential.scss";
 import { MultiSigMembersStatus } from "./ReceiveCredential.types";
-import { getAuthentication } from "../../../../../store/reducers/stateCache";
 
 const ANIMATION_DELAY = 2600;
 
@@ -65,6 +65,7 @@ const ReceiveCredential = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [openInfo, setOpenInfo] = useState(false);
+  const [showCommonError, setShowCommonError] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [multisigMemberStatus, setMultisigMemberStatus] =
     useState<MultiSigMembersStatus>({
@@ -139,17 +140,14 @@ const ReceiveCredential = ({
         await getMultiSigMemberStatus();
       }
     } catch (e) {
+      setShowCommonError(true);
+      setTimeout(handleBack);
       setInitiateAnimation(false);
       showError("Unable to get acdc", e, dispatch);
     } finally {
       setIsLoading(false);
     }
-  }, [
-    dispatch,
-    getMultiSigMemberStatus,
-    identifiersData,
-    notificationDetails.a.d,
-  ]);
+  }, [dispatch, getMultiSigMemberStatus, handleBack, identifiersData, notificationDetails.a.d]);
 
   useOnlineStatusEffect(getAcdc);
 
@@ -191,6 +189,7 @@ const ReceiveCredential = ({
     "animation-on": initiateAnimation,
     "animation-off": !initiateAnimation,
     "pending-multisig": userAccepted && isMultisig,
+    "ion-hide": isLoading || showCommonError,
   });
 
   const getStatus = useCallback(
@@ -225,12 +224,9 @@ const ReceiveCredential = ({
     setVerifyIsOpen(true);
   };
 
-  if (isLoading) {
-    return <Spinner show={isLoading} />;
-  }
-
   return (
     <>
+      <Spinner data-testid="spinner" show={isLoading} />
       <ScrollablePageLayout
         pageId={`${pageId}-receive-credential`}
         customClass={classes}

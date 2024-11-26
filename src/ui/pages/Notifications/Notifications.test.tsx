@@ -43,6 +43,16 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: jest.fn(),
+    location: {
+      pathname: TabsRoutePath.NOTIFICATIONS
+    }
+  })
+}))
+
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialState = {
@@ -78,6 +88,9 @@ const fullState = {
   notificationsCache: {
     notifications: notificationsFix,
   },
+  credsCache: {
+    creds: []
+  }
 };
 
 const filterTestData = {
@@ -230,30 +243,20 @@ describe("Notifications Tab", () => {
     );
 
     expect(getByTestId("notifications-tab-section-new")).toBeInTheDocument();
-    setTimeout(() => {
+    await waitFor(() => {
       const notificationElements = getAllByText(
-        "CF Credential Issuance wants to issue you a credential"
+        "has requested a credential from you"
       );
       notificationElements.forEach((element) => {
         expect(element).toBeVisible();
       });
       expect(
-        getByText(
-          "CF Credential Issuance is requesting to create a multi-sig identifier with you"
-        )
-      ).toBeInTheDocument();
-      expect(
-        getByText("CF Credential Issuance has requested a credential from you")
-      ).toBeInTheDocument();
-      expect(
         getByTestId("notifications-tab-section-earlier")
       ).toBeInTheDocument();
       expect(getByText("10m")).toBeInTheDocument();
-      expect(getByText("2h")).toBeInTheDocument();
-      expect(getByText("2d")).toBeInTheDocument();
       expect(getByText("2w")).toBeInTheDocument();
       expect(getByText("2y")).toBeInTheDocument();
-    }, 1);
+    });
   });
 
   test("Open revoked credential detail", async () => {

@@ -1,15 +1,26 @@
+import { ReactNode } from "react";
+
+interface ComponentProps {
+  children: ReactNode;
+  ["data-testid"]: string;
+  [key: string]: unknown;
+}
+
 jest.mock("swiper/react", () => ({
-  Swiper:({ children, ...props }: any) => {
-    return <div {...props}>{children}</div>
+  Swiper: ({ children, ...props }: ComponentProps) => {
+    const testId = props["data-testid"];
+    return <div data-testid={testId}>{children}</div>
   },
-  SwiperSlide: ({ children, ...props }: any) => {
-    return <div {...props}>{children}</div>
+  SwiperSlide: ({ children, ...props }: ComponentProps) => {
+    const testId = props["data-testid"];
+    return <div data-testid={testId}>{children}</div>
   },
   SwiperClass: jest.fn()
 }))
 
 jest.mock("swiper/modules", () => ({
-  Pagination: ({ children, ...props }: any) => {
-    return <div {...props}>{children}</div>
+  Pagination: ({ children, ...props }: ComponentProps) => {
+    const testId = props["data-testid"];
+    return <div data-testid={testId}>{children}</div>
   }
 }));

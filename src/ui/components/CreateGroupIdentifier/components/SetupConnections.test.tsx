@@ -1,6 +1,7 @@
 import { setupIonicReact } from "@ionic/react";
+import { act } from "react";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
@@ -11,11 +12,11 @@ import {
 } from "../../../../store/reducers/stateCache";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { OperationType, ToastMsgType } from "../../../globals/types";
+import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
+import { Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnections } from "./SetupConnections";
 import { passcodeFiller } from "../../../utils/passcodeFiller";
-import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
-import { Stage } from "../CreateGroupIdentifier.types";
 
 setupIonicReact();
 mockIonicReact();
@@ -293,7 +294,7 @@ describe("Create group identifier - Setup Connection", () => {
           getByTestId("primary-button-initiate-multi-sig").getAttribute(
             "disabled"
           )
-        ).toBe("true");
+        ).toBe("");
       });
     });
 
@@ -477,7 +478,7 @@ describe("Create group identifier - Setup Connection", () => {
         expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
       });
 
-      passcodeFiller(getByText, getByTestId, "1", 6);
+      await passcodeFiller(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
         expect(deleteIdentifier).toBeCalled();

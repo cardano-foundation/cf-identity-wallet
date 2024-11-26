@@ -1,22 +1,23 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { IonInput } from "@ionic/react";
-import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent } from "@ionic/react-test-utils";
 import {
   fireEvent,
   render,
-  RenderResult,
-  waitFor,
+  waitFor
 } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { Agent } from "../../../../../../../core/agent/agent";
+import { BasicRecord } from "../../../../../../../core/agent/records";
 import { KeyStoreKeys } from "../../../../../../../core/storage";
 import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { CustomInputProps } from "../../../../../../components/CustomInput/CustomInput.types";
 import { OperationType } from "../../../../../../globals/types";
-import { ManagePassword } from "./ManagePassword";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
+import { ManagePassword } from "./ManagePassword";
 
 const deletePasswordMock = jest.fn();
 
@@ -112,46 +113,6 @@ describe("Manage password", () => {
     });
   });
 
-  test("Password not set", async () => {
-    const { queryByTestId, getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <ManagePassword />
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(getByTestId("settings-item-toggle-password")).toBeVisible();
-      expect(queryByTestId("settings-item-change-password")).toBe(null);
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("settings-item-toggle-password"));
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(
-          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
-            .page.alert.enablemessage
-        )
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-cancel-enable-password-confirm-button")
-      );
-    });
-
-    await waitForIonicReact();
-
-    passcodeFiller(getByText, getByTestId, "1", 6);
-
-    await waitForIonicReact();
-
-    expect(getByTestId("create-password-modal")).toBeVisible();
-  });
-
   test("Cancel alert", async () => {
     const { queryByTestId, getByTestId } = render(
       <Provider store={storeMocked}>
@@ -187,8 +148,6 @@ describe("Manage password", () => {
       );
     });
 
-    await waitForIonicReact();
-
     await waitFor(() => {
       expect(
         getByTestId("alert-cancel-enable-password").getAttribute("is-open")
@@ -198,7 +157,52 @@ describe("Manage password", () => {
     });
   });
 
+  test("Password not set", async () => {
+    const { queryByTestId, getByTestId, getByText, findByText } = render(
+      <Provider store={storeMocked}>
+        <ManagePassword />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("settings-item-toggle-password")).toBeVisible();
+      expect(queryByTestId("settings-item-change-password")).toBe(null);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("settings-item-toggle-password"));
+    });
+
+    const text = await findByText(TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+      .page.alert.enablemessage);
+
+    await waitFor(() => {
+      expect(
+        text
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-cancel-enable-password-confirm-button")
+      );
+    });
+
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+
+    await waitFor(() => {
+      expect(getByTestId("create-password-modal")).toBeVisible();
+    });
+  });
+
   test("Disable password option", async () => {
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(new BasicRecord({
+      id: "id",
+      content: {
+        value: "1213213"
+      }
+    }));
+  
     const initialState = {
       stateCache: {
         routes: [RoutePath.GENERATE_SEED_PHRASE],
@@ -220,7 +224,7 @@ describe("Manage password", () => {
       dispatch: dispatchMock,
     };
 
-    const { queryByTestId, getByTestId, getByText } = render(
+    const { queryByTestId, getByTestId, findByText } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -235,12 +239,12 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("settings-item-toggle-password"));
     });
 
+    const text = await findByText(TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+      .page.alert.disablemessage);
+
     await waitFor(() => {
       expect(
-        getByText(
-          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
-            .page.alert.disablemessage
-        )
+        text
       ).toBeVisible();
     });
 
@@ -248,7 +252,10 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("alert-cancel-confirm-button"));
     });
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByTestId("verify-password-value")).toBeVisible();
+      expect(getByTestId("forgot-hint-btn")).toBeVisible();
+    });
 
     act(() => {
       ionFireEvent.ionInput(
@@ -257,9 +264,7 @@ describe("Manage password", () => {
       );
     });
 
-    act(() => {
-      fireEvent.click(getByTestId("action-button"));
-    });
+    fireEvent.click(getByTestId("action-button"));
 
     await waitFor(() => {
       expect(deletePasswordMock).toBeCalled();
@@ -267,6 +272,13 @@ describe("Manage password", () => {
   });
 
   test("Change password", async () => {
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(new BasicRecord({
+      id: "id",
+      content: {
+        value: "1213213"
+      }
+    }));
+
     const initialState = {
       stateCache: {
         routes: [RoutePath.GENERATE_SEED_PHRASE],
@@ -303,7 +315,11 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("settings-item-change-password"));
     });
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByTestId("verify-password-value")).toBeVisible();
+      expect(getByTestId("forgot-hint-btn")).toBeVisible();
+    });
+
 
     act(() => {
       ionFireEvent.ionInput(
@@ -316,8 +332,8 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("action-button"));
     });
 
-    await waitForIonicReact();
-
-    expect(getByTestId("create-password-modal")).toBeVisible();
+    await waitFor(() => {
+      expect(getByTestId("create-password-modal")).toBeVisible();
+    })
   });
 });

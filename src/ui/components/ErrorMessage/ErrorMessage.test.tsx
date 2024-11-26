@@ -1,4 +1,5 @@
-import { act, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { act } from "react";
 import { ErrorMessage, MESSAGE_MILLISECONDS } from "./ErrorMessage";
 
 describe("ErrorMessage Component", () => {

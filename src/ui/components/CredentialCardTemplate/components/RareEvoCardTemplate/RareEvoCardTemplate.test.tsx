@@ -1,4 +1,5 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { store } from "../../../../../store";
 import { RareEvoCardTemplate } from "./RareEvoCardTemplate";

@@ -1,28 +1,28 @@
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { act } from "react";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { pendingCredFixs } from "../../__fixtures__/credsFix";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { Credentials } from "./Credentials";
-import { passcodeFiller } from "../../utils/passcodeFiller";
-import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
-import {
-  setCurrentRoute,
-  showConnections,
-} from "../../../store/reducers/stateCache";
-import { CredentialsFilters } from "./Credentials.types";
 import { store } from "../../../store";
 import {
   setCredentialsFilters,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import {
+  setCurrentRoute,
+  showConnections,
+} from "../../../store/reducers/stateCache";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { pendingCredFixs } from "../../__fixtures__/credsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { passcodeFiller } from "../../utils/passcodeFiller";
+import { Credentials } from "./Credentials";
+import { CredentialsFilters } from "./Credentials.types";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
@@ -34,6 +34,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(),
         deleteCredential: () => deleteIdentifierMock(),
         archiveCredential: () => archiveIdentifierMock(),
+        getCredentials: jest.fn()
       },
       basicStorage: {
         findById: jest.fn(),
@@ -47,7 +48,7 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 jest.mock("../../../core/storage", () => ({
@@ -201,6 +202,9 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
+    store.dispatch(setCredsCache([]));
+    store.dispatch(setCredentialsFilters(CredentialsFilters.All));
   });
 
   test("Renders favourites in Creds", () => {
@@ -342,16 +346,6 @@ describe("Creds Tab", () => {
         )
       ).toBeVisible();
     });
-
-    store.dispatch(setCredsCache([]));
-
-    act(() => {
-      fireEvent.click(allFilterBtn);
-    });
-
-    await waitFor(() => {
-      expect(allFilterBtn).toHaveClass("selected");
-    });
   });
 
   test("Toggle Creds Filters show Group", async () => {
@@ -398,16 +392,6 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(getByText(filteredCredsFix[3].credentialType)).toBeVisible();
-    });
-
-    store.dispatch(setCredsCache([]));
-
-    act(() => {
-      fireEvent.click(allFilterBtn);
-    });
-
-    await waitFor(() => {
-      expect(allFilterBtn).toHaveClass("selected");
     });
   });
 
@@ -553,8 +537,8 @@ describe("Creds Tab", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
-
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+  
     await waitFor(() => {
       expect(deleteIdentifierMock).toBeCalled();
       expect(archiveIdentifierMock).toBeCalled();

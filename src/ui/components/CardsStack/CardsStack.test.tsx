@@ -1,4 +1,5 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 import { IonReactRouter } from "@ionic/react-router";
@@ -7,11 +8,11 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
 import { IdentifierDetails } from "../../pages/IdentifierDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CardType } from "../../globals/types";
 import { CredentialDetails } from "../../pages/CredentialDetails";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {

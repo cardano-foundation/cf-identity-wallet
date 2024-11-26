@@ -1,5 +1,6 @@
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -14,6 +15,20 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children, ...props }: any) => (
     <div data-testid={props["data-testid"]}>{children}</div>
   ),
+}));
+
+jest.mock("../../hooks/useBiometricsHook", () => ({
+  useBiometricAuth: jest.fn(() => ({
+    biometricsIsEnabled: false,
+    biometricInfo: {
+      isAvailable: true,
+      hasCredentials: false,
+      biometryType: BiometryType.fingerprintAuthentication,
+      strongBiometryIsAvailable: true,
+    },
+    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+    setBiometricsIsEnabled: jest.fn(),
+  })),
 }));
 
 describe("Side Page: wallet connect", () => {

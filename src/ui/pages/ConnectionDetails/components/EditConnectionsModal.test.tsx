@@ -5,34 +5,33 @@ import {
 } from "@ionic/react-test-utils";
 import {
   fireEvent,
-  getAllByTestId,
   render,
-  waitFor,
+  waitFor
 } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../routes/paths";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../../__fixtures__/filteredCredsFix";
+import { ToastMsgType } from "../../../globals/types";
 import { formatShortDate } from "../../../utils/formatters";
 import {
   EditConnectionsContainer,
   EditConnectionsModal,
 } from "./EditConnectionsModal";
-import { setToastMsg } from "../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../globals/types";
 mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonInput: (props: any) => {
-    const { onIonBlur, onIonFocus, onIonInput, ...componentProps } = props;
+    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
 
     return (
       <input
-        {...componentProps}
+        value={value}
         data-testid={componentProps["data-testid"]}
         onBlur={(e) => onIonBlur?.(e)}
         onFocus={(e) => onIonFocus?.(e)}
@@ -41,10 +40,10 @@ jest.mock("@ionic/react", () => ({
     );
   },
   IonTextarea: (props: any) => {
-    const { onIonBlur, onIonFocus, onIonInput, ...componentProps } = props;
+    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
     return (
       <textarea
-        {...componentProps}
+        value={value}
         data-testid={componentProps["data-testid"]}
         onBlur={(e) => onIonBlur?.(e)}
         onFocus={(e) => onIonFocus?.(e)}
@@ -179,7 +178,7 @@ describe("Edit Connection Modal", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, unmount } = render(
+    const { getByTestId, unmount, getByText, queryByText } = render(
       <Provider store={storeMocked}>
         <EditConnectionsContainer
           onConfirm={jest.fn()}
@@ -210,27 +209,24 @@ describe("Edit Connection Modal", () => {
       expect(getByTestId("note-delete-button-1")).toBeVisible();
     });
 
-    const deleteButton = getByTestId("note-delete-button-1");
-
     act(() => {
-      ionFireEvent.click(deleteButton);
+      ionFireEvent.click(getByTestId("note-delete-button-1"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("alert-confirm-delete-note")).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeVisible();
     });
 
-    await waitForIonicReact();
-
-    act(() => {
-      fireEvent.click(getByTestId("alert-confirm-delete-note-confirm-button"));
-      fireEvent.click(getByTestId("alert-confirm-delete-note-cancel-button"));
-    });
+    fireEvent.click(getByTestId("alert-confirm-delete-note-confirm-button"));
+    fireEvent.click(
+      getByTestId("alert-confirm-delete-note-cancel-button")
+    );
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.NOTE_REMOVED)
       );
+      expect(queryByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeNull();
     });
 
     unmount();
@@ -424,7 +420,7 @@ describe("Edit Connection Modal", () => {
 
     const confirmFn = jest.fn();
 
-    const { getByTestId, getAllByTestId } = render(
+    const { getByTestId, getByText, queryByText, unmount } = render(
       <Provider store={storeMocked}>
         <EditConnectionsContainer
           onConfirm={confirmFn}
@@ -479,21 +475,17 @@ describe("Edit Connection Modal", () => {
       expect((noteInput as HTMLInputElement).value).toEqual("new Value");
     });
 
-    const deleteButton = getByTestId("note-delete-button-2");
-
     act(() => {
-      ionFireEvent.click(deleteButton);
+      ionFireEvent.click(getByTestId("note-delete-button-2"));
     });
 
     await waitFor(() => {
-      expect(getAllByTestId("alert-confirm-delete-note")[1]).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeVisible();
     });
-
-    await waitForIonicReact();
 
     act(() => {
       ionFireEvent.click(
-        getAllByTestId("alert-confirm-delete-note-confirm-button")[1]
+        getByTestId("alert-confirm-delete-note-confirm-button")
       );
     });
 
@@ -502,6 +494,10 @@ describe("Edit Connection Modal", () => {
         setToastMsg(ToastMsgType.NOTE_REMOVED)
       );
     });
+
+    ionFireEvent.click(
+      getByTestId("alert-confirm-delete-note-cancel-button")
+    );
 
     const actionBtn = getByTestId("action-button");
 
@@ -514,7 +510,10 @@ describe("Edit Connection Modal", () => {
       expect(deleteNoteMock).toBeCalledTimes(1);
       expect(updateNoteMock).toBeCalledTimes(1);
       expect(confirmFn).toBeCalledTimes(1);
+      expect(queryByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeNull();
     });
+
+    unmount();
   });
 
   test("handle error when save note", async () => {
