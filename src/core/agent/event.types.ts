@@ -51,6 +51,7 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
     connectionId?: string;
     status: ConnectionStatus;
     url?: string;
+    label?: string;
   };
 }
 

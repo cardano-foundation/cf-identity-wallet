@@ -43,7 +43,7 @@ class ConnectionService extends AgentService {
     connectionStorage: ConnectionStorage,
     credentialStorage: CredentialStorage,
     operationPendingStorage: OperationPendingStorage,
-    identifierStorage: IdentifierStorage,
+    identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
@@ -163,6 +163,7 @@ class ConnectionService extends AgentService {
           connectionId,
           status: ConnectionStatus.PENDING,
           url,
+          label: alias,
         },
       });
 
