@@ -62,8 +62,6 @@ const InputRequest = () => {
   }, [showModal])
 
   const resolveConnectionOobi = async (content: string) => {
-    // Adding a pending connection item to the UI.
-    // This will be removed when the create connection process ends.å
     try {
       await Agent.agent.connections.connectByOobiUrl(content);
     } catch (e) {
