@@ -59,6 +59,9 @@ const initialStateNoPassword = {
   notificationsCache: {
     notificationDetailCache: null,
   },
+  identifiersCache: {
+    identifiers: [],
+  },
 };
 
 describe("Verify Passcode on Cards Details page", () => {

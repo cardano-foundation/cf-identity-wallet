@@ -149,6 +149,10 @@ describe("Full page scanner", () => {
         connections: [],
       },
     },
+    connectionsCache: {
+      connections: {},
+      multisigConnections: {},
+    },
   };
 
   const dispatchMock = jest.fn();
@@ -199,6 +203,10 @@ describe("Full page scanner", () => {
           groupId: "",
           connections: [],
         },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -251,6 +259,10 @@ describe("Full page scanner", () => {
           groupId: "",
           connections: [],
         },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -332,6 +344,10 @@ describe("Full page scanner", () => {
           groupId: "",
           connections: [],
         },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 

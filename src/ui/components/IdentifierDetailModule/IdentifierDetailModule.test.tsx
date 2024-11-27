@@ -1,5 +1,4 @@
 import { Clipboard } from "@capacitor/clipboard";
-import { IonReactMemoryRouter } from "@ionic/react-router";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import {
   fireEvent,
@@ -10,7 +9,6 @@ import {
 import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
-import { Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
@@ -26,8 +24,8 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
-import { IdentifierDetails } from "./IdentifierDetails";
 import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
+import { IdentifierDetailModule } from "./IdentifierDetailModule";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -54,7 +52,7 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-const getMock = jest.fn((key: string) => "111111");
+const getMock = jest.fn<string, string[]>(() => "111111");
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
@@ -137,6 +135,8 @@ history.push(TabsRoutePath.IDENTIFIER_DETAILS, {
   ...identifierFix[0],
 });
 
+const pageId = "identifier-card-details";
+
 describe("Individual Identifier details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
@@ -150,15 +150,12 @@ describe("Individual Identifier details page", () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
     // Render card template
@@ -190,15 +187,12 @@ describe("Individual Identifier details page", () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
     // Render card template
@@ -235,15 +229,12 @@ describe("Individual Identifier details page", () => {
   test("It opens the sharing modal", async () => {
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -268,15 +259,12 @@ describe("Individual Identifier details page", () => {
   test("It opens the edit modal", async () => {
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -298,15 +286,12 @@ describe("Individual Identifier details page", () => {
   test("It shows the button to access the editor", async () => {
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -328,15 +313,12 @@ describe("Individual Identifier details page", () => {
 
     const { getByTestId, getByText, unmount, findByText, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -384,15 +366,12 @@ describe("Individual Identifier details page", () => {
   test("It shows the warning when I click on the big delete button", async () => {
     const { getByTestId, queryByText, findByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -434,15 +413,12 @@ describe("Individual Identifier details page", () => {
 
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -458,15 +434,12 @@ describe("Individual Identifier details page", () => {
   test("Hide loading after retrieved indetifier data", async () => {
     const { queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -509,15 +482,12 @@ describe("Individual Identifier details page", () => {
 
     const { queryByTestId, getByTestId, getByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
     await waitFor(() => {
@@ -739,15 +709,12 @@ describe("Group Identifier details page", () => {
 
     const { getByTestId, getAllByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -786,15 +753,12 @@ describe("Group Identifier details page", () => {
   test("Open group member", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -831,15 +795,12 @@ describe("Group Identifier details page", () => {
   test("Open signing threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -876,15 +837,12 @@ describe("Group Identifier details page", () => {
   test("Open advanced detail", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -948,7 +906,7 @@ describe("Group Identifier details page", () => {
 
     ionFireEvent.ionChange(getByTestId("key-list"), [
       AccordionKey.SIGNINGKEY,
-    ] as any);
+    ] as never);
 
     await waitFor(() => {
       expect(
@@ -963,7 +921,7 @@ describe("Group Identifier details page", () => {
 
     ionFireEvent.ionChange(getByTestId("key-list"), [
       AccordionKey.ROTATIONKEY,
-    ] as any);
+    ] as never);
 
     await waitFor(() => {
       expect(
@@ -980,15 +938,12 @@ describe("Group Identifier details page", () => {
   test("Open rotation threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -1025,15 +980,12 @@ describe("Group Identifier details page", () => {
   test("Open group member from rotation threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -1099,15 +1051,12 @@ describe("Group Identifier details page", () => {
 
     const { queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -1163,15 +1112,12 @@ describe("Checking the Identifier Details Page when information is missing from 
 
     const { getByTestId, getByText, unmount, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -1240,12 +1186,12 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -1328,12 +1274,12 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -1395,12 +1341,12 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 
@@ -1462,12 +1408,12 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId, getByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule 
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation          
+        />
       </Provider>
     );
 

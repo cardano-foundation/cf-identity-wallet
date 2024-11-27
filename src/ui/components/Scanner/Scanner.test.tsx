@@ -157,6 +157,10 @@ describe("Scanner", () => {
         connections: [],
       },
     },
+    connectionsCache: {
+      connections: {},
+      multisigConnections: {},
+    },
   };
 
   const dispatchMock = jest.fn();
@@ -341,6 +345,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
         scanGroupId: "mock",
+      },      
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -420,6 +428,10 @@ describe("Scanner", () => {
           connections: [connectionsFix[0]]
         }
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     getPlatformMock.mockImplementation(() => ["mobileweb"])
@@ -430,7 +442,7 @@ describe("Scanner", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <Scanner setIsValueCaptured={setIsValueCaptured} />
       </Provider>
@@ -469,6 +481,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
         scanGroupId: "72e2f089cef6",
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -553,6 +569,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -587,6 +607,10 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -661,6 +685,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -734,6 +762,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -801,6 +833,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -867,6 +903,10 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -944,6 +984,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -1018,6 +1062,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -1079,6 +1127,10 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
