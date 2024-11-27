@@ -9,6 +9,7 @@ import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  getConnectionsCache,
   getMissingAliasUrl,
   setMissingAliasUrl,
   setOpenConnectionId
@@ -30,6 +31,7 @@ import "./InputRequest.scss";
 
 const InputRequest = () => {
   const dispatch = useAppDispatch();
+  const connections = useAppSelector(getConnectionsCache);
   const authentication = useAppSelector(getAuthentication);
   const missingAliasUrl = useAppSelector(getMissingAliasUrl);
   const currentRoute = useAppSelector(getCurrentRoute);
@@ -63,6 +65,14 @@ const InputRequest = () => {
 
   const resolveConnectionOobi = async (content: string) => {
     try {
+      const connectionId = new URL(content).pathname
+        .split("/oobi/")
+        .pop()?.split("/")[0];
+
+      if(connectionId && connections[connectionId]) {
+        throw new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`)        
+      }
+
       await Agent.agent.connections.connectByOobiUrl(content);
     } catch (e) {
       const errorMessage = (e as Error).message;

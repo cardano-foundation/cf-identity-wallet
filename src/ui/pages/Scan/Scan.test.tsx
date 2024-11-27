@@ -144,6 +144,10 @@ describe("Scan Tab", () => {
         identifiers: [],
         scanGroupId: "72e2f089cef6",
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -191,6 +195,10 @@ describe("Scan Tab", () => {
           groupId: "",
           connections: [],
         },
+      },      
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
