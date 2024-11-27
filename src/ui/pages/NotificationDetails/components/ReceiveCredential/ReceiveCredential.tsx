@@ -1,5 +1,6 @@
 import { IonButton, IonCol, IonIcon } from "@ionic/react";
 import {
+  alertCircleOutline,
   checkmark,
   informationCircleOutline,
   personCircleOutline,
@@ -8,7 +9,9 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { NotificationRoute } from "../../../../../core/agent/agent.types";
-import { ACDCDetails } from "../../../../../core/agent/services/credentialService.types";
+import {
+  ACDCDetails
+} from "../../../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
@@ -18,6 +21,7 @@ import {
 } from "../../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
+  deleteNotification,
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
@@ -30,6 +34,7 @@ import {
   MemberAcceptStatus,
   MultisigMember,
 } from "../../../../components/CredentialDetailModule/components";
+import { InfoCard } from "../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
@@ -78,6 +83,7 @@ const ReceiveCredential = ({
   const identifiersData = useAppSelector(getIdentifiersCache);
 
   const isMultisig = credDetail?.identifierType === IdentifierType.Group;
+  const [isRevoked, setIsRevoked] = useState(false);
 
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
@@ -136,6 +142,10 @@ const ReceiveCredential = ({
 
       setCredDetail({ ...credential, identifierType });
 
+      if(credential.lastStatus.s === "1") {
+        setIsRevoked(true);
+      }
+
       if (identifierType === IdentifierType.Group) {
         await getMultiSigMemberStatus();
       }
@@ -150,6 +160,19 @@ const ReceiveCredential = ({
   }, [dispatch, getMultiSigMemberStatus, handleBack, identifiersData, notificationDetails.a.d]);
 
   useOnlineStatusEffect(getAcdc);
+
+  const handleDelete = async () => {
+    try {
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        notificationDetails.id,
+        notificationDetails.a.r as NotificationRoute
+      );
+      dispatch(deleteNotification(notificationDetails));
+      handleBack();
+    } catch (e) {
+      showError("Unable to remove notification", e, dispatch);
+    }
+  };
 
   const handleAccept = async () => {
     try {
@@ -190,6 +213,7 @@ const ReceiveCredential = ({
     "animation-off": !initiateAnimation,
     "pending-multisig": userAccepted && isMultisig,
     "ion-hide": isLoading || showCommonError,
+    revoked: isRevoked,
   });
 
   const getStatus = useCallback(
@@ -247,24 +271,33 @@ const ReceiveCredential = ({
           !userAccepted && (
             <PageFooter
               pageId={pageId}
-              primaryButtonText={`${i18n.t(
+              primaryButtonText={isRevoked ? undefined : `${i18n.t(
                 maxThreshhold
                   ? "tabs.notifications.details.buttons.addcred"
                   : "tabs.notifications.details.buttons.accept"
               )}`}
               primaryButtonAction={handleConfirm}
               secondaryButtonText={
-                maxThreshhold
+                maxThreshhold || isRevoked
                   ? undefined
                   : `${i18n.t("tabs.notifications.details.buttons.decline")}`
               }
               secondaryButtonAction={
                 maxThreshhold ? undefined : () => setAlertDeclineIsOpen(true)
               }
+              deleteButtonText={
+                isRevoked
+                  ? `${i18n.t("tabs.notifications.details.buttons.delete")}`
+                  : undefined
+              }
+              deleteButtonAction={handleConfirm}
             />
           )
         }
       >
+        {isRevoked && (
+          <InfoCard className="alert" content={i18n.t("tabs.notifications.details.credential.receive.revokedalert")} icon={alertCircleOutline}/>
+        )}
         <div className="request-animation-center">
           <div className="request-icons-row">
             <div className="request-user-logo">
@@ -370,7 +403,7 @@ const ReceiveCredential = ({
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}
-        onVerify={handleAccept}
+        onVerify={isRevoked ? handleDelete : handleAccept}
       />
       <CredentialDetailModal
         pageId="receive-credential-detail"
