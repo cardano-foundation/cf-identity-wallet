@@ -21,6 +21,9 @@ import { ListHeader } from "../../ListHeader";
 import { ReadMore } from "../../ReadMore";
 import { CredentialAttributeDetailModal } from "./CredentialAttributeDetailModal";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { IdentifierDetailModal } from "../../IdentifierDetailModule";
+import { useAppSelector } from "../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 
 const CredentialContent = ({
   cardData,
@@ -28,7 +31,12 @@ const CredentialContent = ({
   connectionShortDetails,
   setOpenConnectionlModal,
 }: CredentialContentProps) => {
+  const identifiers = useAppSelector(getIdentifiersCache);
+
   const [openDetailModal, setOpenDetailModal] = useState(false);
+  const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
+
+  const identifier = identifiers.find(item => item.id === cardData.identifierId);
 
   return (
     <>
@@ -151,6 +159,24 @@ const CredentialContent = ({
           </CardBlock>
         </CredentialAttributeDetailModal>
       )}
+      <CardBlock
+        title={i18n.t("tabs.credentials.details.relatedidentifier")}
+        onClick={() => setOpenIdentifierDetail(true)}
+        testId="related-identifier-section"
+      >
+        <CardDetailsItem
+          info={identifier?.displayName || ""}
+          customIcon={KeriLogo}
+          className="related-identifier"
+          testId="related-identifier-name"
+        />
+      </CardBlock>
+      <IdentifierDetailModal
+        isOpen={openIdentifierDetail}
+        setIsOpen={setOpenIdentifierDetail}
+        identifierDetailId={cardData.identifierId}
+        pageId="credential-related-identifier"
+      />
     </>
   );
 };

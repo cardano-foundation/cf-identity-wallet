@@ -990,6 +990,7 @@
         "about": "About",
         "credentialdetails": "Credential details",
         "description": "Description",
+        "relatedidentifier": "Related identifier",
         "id": "ID",
         "modal": {
           "about": "About {{ type }}"

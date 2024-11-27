@@ -286,7 +286,7 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
     );
   };
 
-  const pageClasses = combineClassNames("card-details", {
+  const pageClasses = combineClassNames("card-details identifier-details-module", {
     "back-animation": navAnimation,
     "open-animation": !navAnimation,
     "ion-hide": hidden,

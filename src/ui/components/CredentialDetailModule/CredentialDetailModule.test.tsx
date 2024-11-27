@@ -105,6 +105,9 @@ const initialStateNoPasswordCurrent = {
   notificationsCache: {
     notificationDetailCache: null,
   },
+  identifiersCache: {
+    identifiers: [],
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -131,6 +134,9 @@ const initialStateNoPasswordArchived = {
   },
   notificationsCache: {
     notificationDetailCache: null,
+  },
+  identifiersCache: {
+    identifiers: [],
   },
 };
 
@@ -348,6 +354,9 @@ describe("Cred Detail Module - current not archived credential", () => {
       notificationsCache: {
         notificationDetailCache: null,
       },
+      identifiersCache: {
+        identifiers: [],
+      },
     };
 
     const storeMocked = {
@@ -411,7 +420,9 @@ describe("Cred Detail Module - current not archived credential", () => {
           time: mockNow,
         })),
       },
-
+      identifiersCache: {
+        identifiers: [],
+      },
       notificationsCache: {
         notificationDetailCache: null,
       },
@@ -685,6 +696,9 @@ describe("Cred Detail Module - light mode", () => {
     biometricsCache: {
       enabled: false,
     },
+    identifiersCache: {
+      identifiers: [],
+    },
     notificationsCache: {
       notificationDetailCache: {
         notificationId: "test-id",
@@ -747,6 +761,9 @@ describe("Cred detail - revoked", () => {
       seedPhrase:
         "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
       bran: "bran",
+    },
+    identifiersCache: {
+      identifiers: [],
     },
     credsCache: { creds: credsFixAcdc },
     credsArchivedCache: { creds: [] },
@@ -850,14 +867,6 @@ describe("Cred detail - revoked", () => {
       expect(deleteCredential).toBeCalled();
       expect(deleteNotificationRecordById).toBeCalled();
     });
-
-    // fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
-
-    // await waitFor(() => {
-    //   expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)).toBe(null);
-    // });
-
-    // unmount();
   });
 });
 
@@ -886,6 +895,9 @@ describe("Cred detail - view only", () => {
     credsArchivedCache: { creds: [] },
     biometricsCache: {
       enabled: false,
+    },
+    identifiersCache: {
+      identifiers: [],
     },
     notificationsCache: {
       notificationDetailCache: {
