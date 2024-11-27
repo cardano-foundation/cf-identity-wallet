@@ -119,6 +119,8 @@ const InputRequest = () => {
   };
 
   const handleConfirm = () => {
+    if(errorMessage) return;
+
     if (missingAliasUrl) {
       if (!missingAliasUrl) return;
       const url = new URL(missingAliasUrl);
