@@ -159,7 +159,7 @@ const CredentialContent = ({
           </CardBlock>
         </CredentialAttributeDetailModal>
       )}
-      <CardBlock
+      {identifier && <CardBlock
         title={i18n.t("tabs.credentials.details.relatedidentifier")}
         onClick={() => setOpenIdentifierDetail(true)}
         testId="related-identifier-section"
@@ -170,7 +170,7 @@ const CredentialContent = ({
           className="related-identifier"
           testId="related-identifier-name"
         />
-      </CardBlock>
+      </CardBlock>}
       <IdentifierDetailModal
         isOpen={openIdentifierDetail}
         setIsOpen={setOpenIdentifierDetail}
