@@ -734,6 +734,64 @@ describe("Signify notification service of agent", () => {
     });
   });
 
+  test("Should skip if TEL status is revoke and credential metatdata does not exist", async () => {
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    credentialStateMock.mockResolvedValueOnce({
+      ...credentialStateIssued,
+      et: "rev",
+    });
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    credentialStorage.getCredentialMetadata.mockResolvedValue(undefined);
+    const notification = {
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        r: NotificationRoute.ExnIpexGrant,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: NotificationRoute.ExnIpexGrant,
+      read: false,
+      linkedGroupRequests: {},
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: new Date(),
+    };
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([notification]);
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({
+        id: "id",
+      });
+
+    await keriaNotificationService.processNotification(
+      notificationIpexGrantProp
+    );
+    expect(notificationStorage.deleteById).toBeCalledWith(notification.id);
+    expect(credentialService.markAcdc).toBeCalledTimes(0);
+    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: {
+        keriaNotif: {
+          id: notification.id,
+          createdAt: notification.createdAt.toISOString(),
+          a: notification.a,
+          connectionId: notification.connectionId,
+          read: notification.read,
+        },
+      },
+    });
+  });
+
   test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit, ipex/offer, ipex/grant", async () => {
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);

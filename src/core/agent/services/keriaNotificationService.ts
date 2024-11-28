@@ -1,4 +1,5 @@
 import { Ilks, State } from "signify-ts";
+import { ExposeNodeParser } from "ts-json-schema-generator";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -356,64 +357,94 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
 
-    if (
-      telStatus === Ilks.rev &&
-      existingCredential &&
-      existingCredential.status !== CredentialStatus.REVOKED
-    ) {
-      await this.credentialService.markAcdc(
-        exchange.exn.e.acdc.d,
-        CredentialStatus.REVOKED
-      );
-      await this.ipexCommunications.createLinkedIpexMessageRecord(
-        exchange,
-        ConnectionHistoryType.CREDENTIAL_REVOKED
-      );
+    if (telStatus === Ilks.rev) {
+      if (!existingCredential) {
+        const notifications = await this.notificationStorage.findAllByQuery({
+          route: NotificationRoute.ExnIpexGrant,
+          read: false,
+        })
+          
+        if (notifications.length) {
+          const notificationRecord = notifications[0];
+          await this.deleteNotificationRecordById(
+            notificationRecord.id,
+            notificationRecord.a.r as NotificationRoute
+          );
 
-      const dt = new Date().toISOString().replace("Z", "000+00:00");
-      const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
-        senderName: ourIdentifier.id,
-        message: "",
-        grantSaid: notif.a.d,
-        datetime: dt,
-        recipient: exchange.exn.i,
-      });
-      await this.props.signifyClient
-        .ipex()
-        .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
-
-      const metadata: NotificationRecordStorageProps = {
-        id: randomSalt(),
-        a: {
-          r: NotificationRoute.LocalAcdcRevoked,
-          credentialId: existingCredential.id,
-          credentialTitle: existingCredential.credentialType,
-        },
-        connectionId: existingCredential.connectionId,
-        read: false,
-        route: NotificationRoute.LocalAcdcRevoked,
-      };
-      const notificationRecord = await this.notificationStorage.save(metadata);
-
-      this.props.eventEmitter.emit<NotificationAddedEvent>({
-        type: EventTypes.NotificationAdded,
-        payload: {
-          keriaNotif: {
-            id: notificationRecord.id,
-            createdAt: new Date().toISOString(),
-            a: {
-              r: NotificationRoute.LocalAcdcRevoked,
-              credentialId: existingCredential.id,
-              credentialTitle: existingCredential.credentialType,
+          this.props.eventEmitter.emit<NotificationRemovedEvent>({
+            type: EventTypes.NotificationRemoved,
+            payload: {
+              keriaNotif: {
+                id: notificationRecord.id,
+                createdAt: notificationRecord.createdAt.toISOString(),
+                a: notificationRecord.a,
+                multisigId: notificationRecord.multisigId,
+                connectionId: notificationRecord.connectionId,
+                read: notificationRecord.read,
+              },
             },
-            read: false,
-            connectionId: exchange.exn.i,
-          },
-        },
-      });
+          });
+        }
+        return true
+      }
+      if (
+        existingCredential &&
+        existingCredential.status !== CredentialStatus.REVOKED
+      ) {
+        await this.credentialService.markAcdc(
+          exchange.exn.e.acdc.d,
+          CredentialStatus.REVOKED
+        );
+        await this.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_REVOKED
+        );
 
-      await this.markNotification(notif.i);
-      return false;
+        const dt = new Date().toISOString().replace("Z", "000+00:00");
+        const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
+          senderName: ourIdentifier.id,
+          message: "",
+          grantSaid: notif.a.d,
+          datetime: dt,
+          recipient: exchange.exn.i,
+        });
+        await this.props.signifyClient
+          .ipex()
+          .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
+
+        const metadata: NotificationRecordStorageProps = {
+          id: randomSalt(),
+          a: {
+            r: NotificationRoute.LocalAcdcRevoked,
+            credentialId: existingCredential.id,
+            credentialTitle: existingCredential.credentialType,
+          },
+          connectionId: existingCredential.connectionId,
+          read: false,
+          route: NotificationRoute.LocalAcdcRevoked,
+        };
+        const notificationRecord = await this.notificationStorage.save(metadata);
+
+        this.props.eventEmitter.emit<NotificationAddedEvent>({
+          type: EventTypes.NotificationAdded,
+          payload: {
+            keriaNotif: {
+              id: notificationRecord.id,
+              createdAt: new Date().toISOString(),
+              a: {
+                r: NotificationRoute.LocalAcdcRevoked,
+                credentialId: existingCredential.id,
+                credentialTitle: existingCredential.credentialType,
+              },
+              read: false,
+              connectionId: exchange.exn.i,
+            },
+          },
+        });
+
+        await this.markNotification(notif.i);
+        return false;
+      }
     }
     return true;
   }
