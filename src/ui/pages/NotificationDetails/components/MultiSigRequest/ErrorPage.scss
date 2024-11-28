@@ -12,7 +12,7 @@
     margin-bottom: 1.75rem;
 
     .card-details-info-block-inner {
-      background: rgba(212, 22, 48, 0.1);
+      background: rgba(var(--ion-color-secondary-danger-rgb), 0.1);
       padding: 1rem 1.25rem;
       display: flex;
 
