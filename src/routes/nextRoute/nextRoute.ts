@@ -1,16 +1,15 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import {
-  setAuthentication,
-  setCurrentRoute,
-} from "../../store/reducers/stateCache";
-import {
   clearSeedPhraseCache,
   setSeedPhraseCache,
 } from "../../store/reducers/seedPhraseCache";
-import { DataProps, NextRoute, StoreState } from "./nextRoute.types";
+import {
+  setAuthentication,
+  setCurrentRoute,
+} from "../../store/reducers/stateCache";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { OperationType } from "../../ui/globals/types";
+import { DataProps, NextRoute, StoreState } from "./nextRoute.types";
 
 const getNextRootRoute = (data: DataProps) => {
   const authentication = data.store.stateCache.authentication;
@@ -220,17 +219,8 @@ const nextRoute: Record<string, NextRoute> = {
 };
 
 export {
-  getNextRootRoute,
-  getNextRoute,
-  getNextOnboardingRoute,
-  getNextSetPasscodeRoute,
-  updateStoreAfterSetPasscodeRoute,
-  getNextGenerateSeedPhraseRoute,
-  getNextVerifySeedPhraseRoute,
-  updateStoreCurrentRoute,
-  updateStoreSetSeedPhrase,
-  updateStoreAfterVerifySeedPhraseRoute,
-  getNextCreatePasswordRoute,
-  updateStoreAfterCreatePassword,
-  getNextCreateSSIAgentRoute,
+  getNextCreatePasswordRoute, getNextCreateSSIAgentRoute, getNextGenerateSeedPhraseRoute, getNextOnboardingRoute, getNextRootRoute,
+  getNextRoute, getNextSetPasscodeRoute, getNextVerifySeedPhraseRoute, updateStoreAfterCreatePassword, updateStoreAfterSetPasscodeRoute, updateStoreAfterVerifySeedPhraseRoute, updateStoreCurrentRoute,
+  updateStoreSetSeedPhrase
 };
+

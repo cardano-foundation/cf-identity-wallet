@@ -16,8 +16,12 @@ interface SeedPhraseModuleProps {
   errorInputIndexs?: number[];
 }
 
+interface IonInputRef {
+  setFocus: () => void;
+}
+
 interface SeedPhraseModuleRef {
   focusInputByIndex: (index: number) => void;
 }
 
-export type { SeedPhraseModuleProps, SeedPhraseModuleRef };
+export type { SeedPhraseModuleProps, SeedPhraseModuleRef, IonInputRef };

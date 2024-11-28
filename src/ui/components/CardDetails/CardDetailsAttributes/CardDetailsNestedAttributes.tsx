@@ -1,11 +1,15 @@
 import { useMemo } from "react";
+import { JSONValue } from "../../../../core/agent/services/credentialService.types";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { combineClassNames } from "../../../utils/style";
+import { CardDetailsBlock } from "../CardDetailsBlock";
 import { CardDetailsItem } from "../CardDetailsItem";
+import "./CardDetailsAttributes.scss";
 import { CardDetailsNestedAttributesProps } from "./CardDetailsAttributes.types";
 import { reservedKeysFilter } from "./CardDetailsAttributes.utils";
-import "./CardDetailsAttributes.scss";
-import { CardDetailsBlock } from "../CardDetailsBlock";
-import { combineClassNames } from "../../../utils/style";
+
+const dateRegex =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}([+-]\d{2}:\d{2}|Z)$/;
 
 const CardDetailsNestedAttributes = ({
   attribute,
@@ -14,9 +18,7 @@ const CardDetailsNestedAttributes = ({
 }: CardDetailsNestedAttributesProps) => {
   const { className, ...restItemProps } = itemProps || {};
   const key = attribute[0];
-  const item = attribute[1] as any;
-  const dateRegex =
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}([+-]\d{2}:\d{2}|Z)$/;
+  const item = attribute[1] as string;
 
   const cardDetailInfo = useMemo(() => {
     if (dateRegex.test(item))
@@ -27,7 +29,7 @@ const CardDetailsNestedAttributes = ({
     if (isValuedType) return item;
 
     return "";
-  }, []);
+  }, [item]);
 
   const isObjectItem = typeof item === "object" && item !== null;
   const detailItemsClass = combineClassNames(
@@ -53,12 +55,12 @@ const CardDetailsNestedAttributes = ({
       />
       {isObjectItem && (
         <CardDetailsBlock className="card-details-nested-content">
-          {Object.entries(item).map((sub: any, i: number) => {
+          {Object.entries(item).map((sub, i: number) => {
             return (
               <CardDetailsNestedAttributes
                 key={i}
                 cardKeyValue={sub[0].replace(/([a-z])([A-Z])/g, "$1 $2") + ":"}
-                attribute={sub}
+                attribute={sub as [string, JSONValue]}
                 itemProps={itemProps}
               />
             );
