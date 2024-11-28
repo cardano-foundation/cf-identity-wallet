@@ -172,25 +172,30 @@ const Identifiers = () => {
     const tmpAllIdentifiers = [];
     const tmpIndividualIdentifiers = [];
     const tmpGroupIdentifiers = [];
+
     for (const identifier of identifiersData) {
+      if (identifier.isPending) {
+        tmpPendingIdentifiers.push(identifier);
+        continue;
+      }
+
       if (!identifier.groupMetadata) {
         identifier.multisigManageAid
           ? tmpGroupIdentifiers.push(identifier)
           : tmpIndividualIdentifiers.push(identifier);
       }
+      
       if (favouriteIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
         tmpAllIdentifiers.push(identifier);
         continue;
       }
-      if (identifier.isPending) {
-        tmpPendingIdentifiers.push(identifier);
-        continue;
-      }
+
       if (identifier.groupMetadata?.groupId) {
         tmpMultisigIdentifiers.push(identifier);
         continue;
       }
+
       tmpAllIdentifiers.push(identifier);
     }
     setAllIdentifiers(tmpAllIdentifiers);
