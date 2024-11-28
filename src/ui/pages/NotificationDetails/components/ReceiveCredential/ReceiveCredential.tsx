@@ -1,4 +1,4 @@
-import { IonButton, IonCol, IonIcon } from "@ionic/react";
+import { IonButton, IonCol, IonIcon, IonItem, IonText } from "@ionic/react";
 import {
   alertCircleOutline,
   checkmark,
@@ -40,7 +40,7 @@ import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { Spinner } from "../../../../components/Spinner";
 import { Verification } from "../../../../components/Verification";
-import { BackEventPriorityType } from "../../../../globals/types";
+import { BackEventPriorityType, IDENTIFIER_BG_MAPPING } from "../../../../globals/types";
 import {
   useIonHardwareBackButton,
   useOnlineStatusEffect,
@@ -50,6 +50,7 @@ import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 import { MultiSigMembersStatus } from "./ReceiveCredential.types";
+import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
 
 const ANIMATION_DELAY = 2600;
 
@@ -84,6 +85,7 @@ const ReceiveCredential = ({
 
   const isMultisig = credDetail?.identifierType === IdentifierType.Group;
   const [isRevoked, setIsRevoked] = useState(false);
+  const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
 
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
@@ -244,6 +246,10 @@ const ReceiveCredential = ({
     });
   }, [multisigMemberStatus.members, multisignConnectionsCache, userName]);
 
+  const identifier = useMemo(() => {
+    return identifiersData.find(item => item.id === credDetail?.identifierId)
+  }, [credDetail?.identifierId, identifiersData])
+
   const handleConfirm = () => {
     setVerifyIsOpen(true);
   };
@@ -381,6 +387,37 @@ const ReceiveCredential = ({
               ))}
             </CardDetailsBlock>
           )}
+          {identifier && 
+          <CardDetailsBlock
+            className="related-identifiers"
+            title={i18n.t(
+              "tabs.notifications.details.credential.receive.relatedidentifier"
+            )}
+          >
+            <IonItem
+              lines="none"
+              className="related-identifier"
+              onClick={() => setOpenIdentifierDetail(true)}
+              data-testid="related-identifier-detail"
+            >
+              <img
+                className="theme"
+                slot="start"
+                src={IDENTIFIER_BG_MAPPING[identifier.theme] as string}
+                alt="theme"
+              />
+              <IonText
+                slot="start"
+                className="identifier-name"
+              >
+                {identifier.displayName}
+              </IonText>
+              <IonIcon
+                slot="end"
+                icon={informationCircleOutline}
+              />
+            </IonItem>
+          </CardDetailsBlock>}
         </div>
       </ScrollablePageLayout>
       <AlertDecline
@@ -414,6 +451,14 @@ const ReceiveCredential = ({
         credDetail={credDetail}
         viewOnly
       />
+      {
+        credDetail && <IdentifierDetailModal 
+          isOpen={openIdentifierDetail} 
+          setIsOpen={setOpenIdentifierDetail}
+          pageId="identifier-detail"
+          identifierDetailId={credDetail.identifierId}
+        />
+      }
     </>
   );
 };
