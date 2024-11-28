@@ -1148,7 +1148,8 @@
           "providecredential": "Provide credential",
           "addcred": "Add Credential",
           "done": "Done",
-          "ok": "Ok"
+          "ok": "Ok",
+          "delete": "Delete"
         },
         "credential": {
           "request": {
@@ -1187,6 +1188,8 @@
             "credentialpending": "Credential pending",
             "credentialdetailbutton": "Credential details",
             "members": "Group member",
+            "revokedalert": "This credential has been revoked by the issuer and is no longer available.",
+            "relatedidentifier": "Related identifier",
             "alert": {
               "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
             }
