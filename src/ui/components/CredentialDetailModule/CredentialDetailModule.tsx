@@ -1,6 +1,6 @@
 import { IonButton, IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,

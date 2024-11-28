@@ -8,7 +8,7 @@ import { useAppDispatch } from "../../../store/hooks";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
-  deleteNotification,
+  deleteNotification
 } from "../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";

@@ -34,14 +34,14 @@ const CardDetailsAttributes = ({
           return;
         }
         default: {
-          return typeof item[1] === ("string" || "number") &&
+          return typeof item[1] === "number" &&
               !customType &&
               !`${item[1]}`.includes(" ") &&
               `${item[1]}`[10] !== "T" ? (
               <CardDetailsItem
                 key={index}
                 keyValue={`${reservedKeysFilter(item[0])}:`}
-                info={item[1] as string}
+                info={`${item[1]}`}
                 copyButton={`${item[1]}`.length > 15}
                 testId="card-details-generic-attribute"
                 className={itemClass}
