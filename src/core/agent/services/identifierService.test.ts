@@ -6,6 +6,7 @@ import { CoreEventEmitter } from "../event";
 import { IdentifierService } from "./identifierService";
 import { EventTypes } from "../event.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { IdentifierStorage } from "../records";
 
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
@@ -559,35 +560,68 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
+  test("Should correctly sync KERI identifiers, handling both group and non-group cases", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     listIdentifiersMock.mockReturnValue({
       aids: [
         {
-          name: "12219bf2-613a-4d5f-8c5d-5d093e7035b3",
+          name: "0:groupId:test1",
           prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-          salty: {
-            sxlt: "1AAHb70F3mVAOPNTX3GTp3lsfmwCxqLXa4MKDY-bR4oDlW_Env9lEPyo92Qya_OGK0QDeGOjzmEgXnRixFOm8uoaqYcrAs38qmZg",
-            pidx: 0,
-            kidx: 0,
-            stem: "signify:aid",
-            tier: "low",
-            dcode: "E",
-            icodes: ["A"],
-            ncodes: ["A"],
-            transferable: true,
+          group: {
+            mhab: {
+              name: "0:groupId:test1",
+              prefix: "EOq_aeNv3ROHX5shEEPnibLuop5SYGWpjBxY-Lna5GM3",
+            },
           },
+        },
+        {
+          name: "0:test2",
+          prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
         },
       ],
       start: 1,
       end: 2,
-      total: 1,
+      total: 2,
     });
+  
     identifierStorage.getKeriIdentifiersMetadata = jest
       .fn()
       .mockReturnValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockImplementation(async (prefix) => {
+        if (prefix === "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs") {
+          throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);
+        }
+      });
+    identifierStorage.createIdentifierMetadataRecord = jest.fn();
+  
     await identifierService.syncKeriaIdentifiers();
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+  
+    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+      id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      displayName: "groupId",
+      theme: 0,
+      multisigManageAid: "EOq_aeNv3ROHX5shEEPnibLuop5SYGWpjBxY-Lna5GM3",
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+      id: "EOq_aeNv3ROHX5shEEPnibLuop5SYGWpjBxY-Lna5GM3",
+      displayName: "groupId",
+      theme: 0,
+      groupMetadata: {
+        groupId: "groupId",
+        groupCreated: true,
+        groupInitiator: false, 
+      },
+    });
+  
+    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+      id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      displayName: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      theme: 0,
+    });
+  
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(3);
   });
 
   test("should call signify.rotateIdentifier with correct params", async () => {
