@@ -489,6 +489,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
     });
+
+    Agent.agent.identifiers.onIdentifierRemoved()
   };
 
   const initApp = async () => {

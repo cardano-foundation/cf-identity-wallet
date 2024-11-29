@@ -151,7 +151,7 @@ const SetupConnections = ({
         (item) => item.id !== identifierId
       );
 
-      await Agent.agent.identifiers.deleteIdentifier(identifierId);
+      await Agent.agent.identifiers.markIdentifierPendingDelete(identifierId);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));

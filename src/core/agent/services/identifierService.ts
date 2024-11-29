@@ -19,7 +19,11 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { ConnectionService } from "./connectionService";
-import { EventTypes, OperationAddedEvent } from "../event.types";
+import {
+  EventTypes,
+  IdentifierRemovedEvent,
+  OperationAddedEvent,
+} from "../event.types";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -53,6 +57,15 @@ class IdentifierService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connections = connections;
+  }
+
+  onIdentifierRemoved() {
+    this.props.eventEmitter.on(
+      EventTypes.IdentifierRemoved,
+      (data: IdentifierRemovedEvent) => {
+        this.deleteIdentifier(data.payload.id!)
+      }
+    );
   }
 
   async getIdentifiers(): Promise<IdentifierShortDetails[]> {
@@ -217,6 +230,35 @@ class IdentifierService extends AgentService {
     ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
     }
+  }
+
+  async removeIdentifierPendingDeletion() {
+    const pendingIdentifierDeletions =
+      await this.identifierStorage.getIdentifierPendingDeletions();
+
+    for (const identifier of pendingIdentifierDeletions) {
+      await this.deleteIdentifier(identifier.id);
+    }
+
+    return pendingIdentifierDeletions;
+  }
+
+  async markIdentifierPendingDelete(id: string) {
+    const identifierProps = await this.identifierStorage.getIdentifierMetadata(
+      id
+    );
+    if (!identifierProps) return;
+    identifierProps.pendingDeletion = true;
+    await this.identifierStorage.updateIdentifierMetadata(id, {
+      pendingDeletion: true,
+    });
+
+    this.props.eventEmitter.emit<IdentifierRemovedEvent>({
+      type: EventTypes.IdentifierRemoved,
+      payload: {
+        id,
+      },
+    });
   }
 
   private async deleteGroupLinkedConnections(groupId: string) {

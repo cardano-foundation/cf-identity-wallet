@@ -28,6 +28,7 @@ class IdentifierStorage {
     const records = await this.storageService.findAllByQuery(
       {
         isDeleted: false,
+        pendingDeletion: false,
         $not: {
           groupCreated: true,
         },
@@ -35,6 +36,18 @@ class IdentifierStorage {
       IdentifierMetadataRecord
     );
     return records;
+  }
+
+  async getIdentifierPendingDeletions(): Promise<IdentifierMetadataRecord[]> {
+    return this.storageService.findAllByQuery(
+      {
+        pendingDeletion: true,
+        $not: {
+          groupCreated: true,
+        },
+      },
+      IdentifierMetadataRecord
+    );
   }
 
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
@@ -46,7 +59,7 @@ class IdentifierStorage {
     metadata: Partial<
       Pick<
         IdentifierMetadataRecord,
-        "displayName" | "theme" | "isPending" | "isDeleted" | "groupMetadata"
+        "displayName" | "theme" | "isPending" | "isDeleted" | "groupMetadata" | "pendingDeletion"
       >
     >
   ): Promise<void> {
