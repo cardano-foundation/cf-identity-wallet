@@ -283,11 +283,40 @@ class IdentifierService extends AgentService {
     if (unSyncedData.length) {
       //sync the storage with the signify data
       for (const identifier of unSyncedData) {
-        await this.identifierStorage.createIdentifierMetadataRecord({
-          id: identifier.prefix,
-          displayName: identifier.prefix, //same as the id at the moment
-          theme: 0,
-        });
+        if(identifier.group){
+          const groupId = identifier.group.mhab.name.split(":")[1];
+          const groupMetadata = {
+            groupId,
+            groupCreated: true,
+            groupInitiator: false
+          }
+          await this.identifierStorage.createIdentifierMetadataRecord({
+            id: identifier.prefix,
+            displayName: groupId,
+            theme: 0,
+            multisigManageAid: identifier.group.mhab.prefix,
+          });
+          await this.identifierStorage.createIdentifierMetadataRecord({
+            id: identifier.group.mhab.prefix,
+            displayName: groupId,
+            theme: 0,
+            groupMetadata
+          });
+        }
+        else {
+          await this.identifierStorage.getIdentifierMetadata(identifier.prefix).catch(async (e) => {
+            if (
+              e.message ===
+                IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+            ) {
+              await this.identifierStorage.createIdentifierMetadataRecord({
+                id: identifier.prefix,
+                displayName: identifier.prefix, //same as the id at the moment
+                theme: 0,
+              });
+            }
+          });
+        }
       }
     }
   }
