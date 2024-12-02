@@ -74,6 +74,8 @@ class IdentifierStorage {
       identifierMetadataRecord.isDeleted = metadata.isDeleted;
     if (metadata.groupMetadata !== undefined)
       identifierMetadataRecord.groupMetadata = metadata.groupMetadata;
+    if (metadata.pendingDeletion !== undefined)
+      identifierMetadataRecord.pendingDeletion = metadata.pendingDeletion;
     await this.storageService.update(identifierMetadataRecord);
   }
 

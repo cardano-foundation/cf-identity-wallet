@@ -512,6 +512,7 @@ describe("Single sig service of agent", () => {
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+        pendingDeletion: false,
       }
     );
   });
@@ -555,6 +556,7 @@ describe("Single sig service of agent", () => {
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+        pendingDeletion: false,
       }
     );
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(

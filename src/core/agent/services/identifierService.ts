@@ -63,7 +63,7 @@ class IdentifierService extends AgentService {
     this.props.eventEmitter.on(
       EventTypes.IdentifierRemoved,
       (data: IdentifierRemovedEvent) => {
-        this.deleteIdentifier(data.payload.id!)
+        this.deleteIdentifier(data.payload.id!);
       }
     );
   }
@@ -210,6 +210,7 @@ class IdentifierService extends AgentService {
         metadata.multisigManageAid,
         {
           isDeleted: true,
+          pendingDeletion: false,
         }
       );
       await this.deleteGroupLinkedConnections(
@@ -219,6 +220,7 @@ class IdentifierService extends AgentService {
 
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
+      pendingDeletion: false,
     });
 
     const connectedDApp =
