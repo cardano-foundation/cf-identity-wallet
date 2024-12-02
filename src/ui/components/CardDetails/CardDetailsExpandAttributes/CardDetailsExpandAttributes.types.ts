@@ -7,6 +7,7 @@ import { CardDetailsItemProps } from "../CardDetailsItem/CardDetailsItem.types";
 export interface CardDetailsExpandAttributesProps {
   data: JSONObject;
   itemProps?: Omit<CardDetailsItemProps, "info">;
+  ignoreKeys?: string[];
 }
 
 export interface CardDetailsAttributeProps {
@@ -16,4 +17,5 @@ export interface CardDetailsAttributeProps {
   customType?: string;
   itemProps?: Omit<CardDetailsItemProps, "info">;
   deepLevel?: number;
+  ignoreKeys?: string[];
 }

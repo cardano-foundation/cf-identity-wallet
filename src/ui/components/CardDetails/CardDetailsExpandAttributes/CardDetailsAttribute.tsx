@@ -14,6 +14,7 @@ const CardDetailsAttribute = ({
   attributeValue,
   customAttributeKey,
   itemProps,
+  ignoreKeys = [],
   deepLevel = 0
 }: CardDetailsAttributeProps) => {
   const key = attributeKey.toLowerCase().replace(/\s/g, "-");
@@ -40,6 +41,8 @@ const CardDetailsAttribute = ({
   );
 
   const attributeKeyName = customAttributeKey || reservedKeysFilter(attributeKey);
+
+  if(ignoreKeys.includes(attributeKey)) return null;
 
   if(!isObjectAttribute) {
     return <CardDetailsItem
