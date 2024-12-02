@@ -4,7 +4,7 @@ import { CardBlock, CardDetailsExpandAttributes, CardDetailsItem } from "../../.
 import { ListHeader } from "../../../ListHeader"
 import { CredentialAttributeContentProps } from "./CredentialAttributeDetailModal.types"
 
-const IGNORE_KEYS = ["i"];
+const IGNORE_KEYS = ["i", "dt", "d"];
 
 const CredentialAttributeContent = ({ data }: CredentialAttributeContentProps) => {
   return (
