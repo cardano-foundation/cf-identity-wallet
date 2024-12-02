@@ -145,11 +145,11 @@ ion-modal.create-group-identifier-modal {
 
     &.page-footer {
       z-index: 1000;
-      bottom: calc(-100vh + 4.5rem);
+      bottom: calc(-100vh + 5rem);
       padding-inline: 0.9rem;
 
       &.identifier-stage-3 {
-        bottom: calc(-100vh + 8.5rem);
+        bottom: calc(-100vh + 9.5rem);
       }
     }
   }

@@ -25,7 +25,7 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-const shareFnc = jest.fn();
+const shareFnc = jest.fn(() => Promise.resolve(true));
 jest.mock("@capacitor/share", () => ({
   ...jest.requireActual("@capacitor/share"),
   Share: {
