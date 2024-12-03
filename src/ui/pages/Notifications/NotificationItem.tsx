@@ -32,15 +32,15 @@ const NotificationItem = ({
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
       return t("tabs.notifications.tab.labels.exnipexgrant", {
-        connection: connectionsCache?.[item.connectionId]?.label,
+        connection: connectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
       });
     case NotificationRoute.MultiSigIcp:
       return t("tabs.notifications.tab.labels.multisigicp", {
-        connection: multisigConnectionsCache?.[item.connectionId]?.label,
+        connection: multisigConnectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
       });
     case NotificationRoute.ExnIpexApply:
       return t("tabs.notifications.tab.labels.exnipexapply", {
-        connection: connectionsCache?.[item.connectionId]?.label,
+        connection: connectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
       });
     case NotificationRoute.LocalAcdcRevoked:
       return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
@@ -48,7 +48,7 @@ const NotificationItem = ({
       });
     case NotificationRoute.MultiSigExn:
       return t("tabs.notifications.tab.labels.multisigexn", {
-        connection: connectionsCache?.[item.connectionId]?.label,
+        connection: connectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
       });
     default:
       return "";
