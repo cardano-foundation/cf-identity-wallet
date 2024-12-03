@@ -510,6 +510,7 @@ describe("Single sig service of agent", () => {
         isDeleted: true,
       }
     );
+    expect(updateIdentifierMock).toBeCalledTimes(1)
   });
 
   test("can update an identifier", async () => {
@@ -553,6 +554,7 @@ describe("Single sig service of agent", () => {
         isDeleted: true,
       }
     );
+    expect(updateIdentifierMock).toBeCalledTimes(1)
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
       "dApp-address",
       true
