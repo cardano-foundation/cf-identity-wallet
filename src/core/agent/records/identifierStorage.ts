@@ -38,13 +38,10 @@ class IdentifierStorage {
     return records;
   }
 
-  async getIdentifierPendingDeletions(): Promise<IdentifierMetadataRecord[]> {
+  async getIdentifiersPendingDeletion(): Promise<IdentifierMetadataRecord[]> {
     return this.storageService.findAllByQuery(
       {
         pendingDeletion: true,
-        $not: {
-          groupCreated: true,
-        },
       },
       IdentifierMetadataRecord
     );

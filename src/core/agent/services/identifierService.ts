@@ -234,22 +234,22 @@ class IdentifierService extends AgentService {
     }
   }
 
-  async removeIdentifierPendingDeletion() {
+  async removeIdentifiersPendingDeletion(): Promise<void> {
     const pendingIdentifierDeletions =
-      await this.identifierStorage.getIdentifierPendingDeletions();
+      await this.identifierStorage.getIdentifiersPendingDeletion();
 
     for (const identifier of pendingIdentifierDeletions) {
       await this.deleteIdentifier(identifier.id);
     }
-
-    return pendingIdentifierDeletions;
   }
 
   async markIdentifierPendingDelete(id: string) {
     const identifierProps = await this.identifierStorage.getIdentifierMetadata(
       id
     );
-    if (!identifierProps) return;
+    if (!identifierProps) {
+      throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);
+    }
     identifierProps.pendingDeletion = true;
     await this.identifierStorage.updateIdentifierMetadata(id, {
       pendingDeletion: true,

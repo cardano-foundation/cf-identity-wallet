@@ -35,7 +35,7 @@ const mockConnectionService = {
   resolvePendingConnections: jest.fn(),
 };
 const mockIdentifierService = {
-  removeIdentifierPendingDeletion: jest.fn(),
+  removeIdentifiersPendingDeletion: jest.fn(),
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -155,7 +155,7 @@ describe("test cases of bootAndConnect function", () => {
     mockConnectionService.resolvePendingConnections = jest
       .fn()
       .mockReturnValue(undefined);
-    mockIdentifierService.removeIdentifierPendingDeletion = jest
+    mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
     await agent.bootAndConnect(mockAgentUrls);
@@ -271,7 +271,7 @@ describe("test cases of recoverKeriaAgent function", () => {
     mockConnectionService.removeConnectionsPendingDeletion = jest
       .fn()
       .mockReturnValue(["id1", "id2"]);
-    mockIdentifierService.removeIdentifierPendingDeletion = jest
+    mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
 

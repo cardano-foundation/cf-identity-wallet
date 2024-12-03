@@ -322,9 +322,9 @@ class Agent {
     if (online) {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
-      this.identifierService.removeIdentifierPendingDeletion();
+      this.identifierService.removeIdentifiersPendingDeletion();
     }
-    
+
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
       type: EventTypes.KeriaStatusChanged,
       payload: {
@@ -434,6 +434,7 @@ class Agent {
     };
     this.connections.onConnectionRemoved();
     this.connections.onConnectionAdded();
+    this.identifierService.onIdentifierRemoved();
   }
 
   async connect(retryInterval = 1000) {

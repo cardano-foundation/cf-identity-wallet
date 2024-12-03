@@ -26,7 +26,6 @@ jest.mock("../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
-        onIdentifierRemoved: jest.fn()
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),

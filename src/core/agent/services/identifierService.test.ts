@@ -113,7 +113,7 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
   getIdentifierMetadataByGroupId: jest.fn(),
   deleteIdentifierMetadata: jest.fn(),
-  getIdentifierPendingDeletions: jest.fn(),
+  getIdentifiersPendingDeletion: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -699,13 +699,14 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("Should return when result find identifier by id is empty", async () => {
+  test("Should not try to mark an identifier as pending delete if it does note exist", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(undefined);
 
-    await identifierService.markIdentifierPendingDelete(keriMetadataRecord.id);
-
+    await expect(
+      identifierService.markIdentifierPendingDelete(keriMetadataRecord.id)
+    ).rejects.toThrow(new Error("Identifier metadata record does not exist"));
     expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
   });
 
@@ -716,21 +717,13 @@ describe("Single sig service of agent", () => {
       .mockResolvedValueOnce(undefined)
       .mockResolvedValueOnce(undefined);
 
-    identifierStorage.getIdentifierPendingDeletions.mockResolvedValueOnce([
+    identifierStorage.getIdentifiersPendingDeletion.mockResolvedValueOnce([
       { id: "id1" },
       { id: "id2" },
     ]);
-    const result = await identifierService.removeIdentifierPendingDeletion();
+    await identifierService.removeIdentifiersPendingDeletion();
 
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id1");
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id2");
-    expect(result).toEqual([
-      {
-        id: "id1",
-      },
-      {
-        id: "id2",
-      },
-    ]);
   });
 });
