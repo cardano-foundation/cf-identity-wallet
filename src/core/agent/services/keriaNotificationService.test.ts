@@ -667,6 +667,7 @@ describe("Signify notification service of agent", () => {
       name: "name",
       done: true,
     });
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
@@ -702,6 +703,23 @@ describe("Signify notification service of agent", () => {
       done: true,
     });
 
+    const notification = {
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        r: NotificationRoute.ExnIpexGrant,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: NotificationRoute.ExnIpexGrant,
+      read: false,
+      linkedGroupRequests: {},
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: new Date(),
+    };
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([notification]);
+
+
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
@@ -713,7 +731,7 @@ describe("Signify notification service of agent", () => {
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REVOKED
     );
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).toBeCalledTimes(2);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.NotificationAdded,
       payload: {
@@ -2743,7 +2761,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test("Should retry connection when \"Failed to fetch\" error occurs when process operation", async () => {
+  test('Should retry connection when "Failed to fetch" error occurs when process operation', async () => {
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",

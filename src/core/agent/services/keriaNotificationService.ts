@@ -1,5 +1,4 @@
 import { Ilks, State } from "signify-ts";
-import { ExposeNodeParser } from "ts-json-schema-generator";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -358,35 +357,30 @@ class KeriaNotificationService extends AgentService {
     }
 
     if (telStatus === Ilks.rev) {
-      if (!existingCredential) {
-        const notifications = await this.notificationStorage.findAllByQuery({
-          route: NotificationRoute.ExnIpexGrant,
-          read: false,
-        })
-          
-        if (notifications.length) {
-          const notificationRecord = notifications[0];
-          await this.deleteNotificationRecordById(
-            notificationRecord.id,
-            notificationRecord.a.r as NotificationRoute
-          );
+      const notifications = await this.notificationStorage.findAllByQuery({
+        route: NotificationRoute.ExnIpexGrant,
+      });
+      for (const notificationRecord of notifications) {
+        await this.deleteNotificationRecordById(
+          notificationRecord.id,
+          notificationRecord.a.r as NotificationRoute
+        );
 
-          this.props.eventEmitter.emit<NotificationRemovedEvent>({
-            type: EventTypes.NotificationRemoved,
-            payload: {
-              keriaNotif: {
-                id: notificationRecord.id,
-                createdAt: notificationRecord.createdAt.toISOString(),
-                a: notificationRecord.a,
-                multisigId: notificationRecord.multisigId,
-                connectionId: notificationRecord.connectionId,
-                read: notificationRecord.read,
-              },
+        this.props.eventEmitter.emit<NotificationRemovedEvent>({
+          type: EventTypes.NotificationRemoved,
+          payload: {
+            keriaNotif: {
+              id: notificationRecord.id,
+              createdAt: notificationRecord.createdAt.toISOString(),
+              a: notificationRecord.a,
+              multisigId: notificationRecord.multisigId,
+              connectionId: notificationRecord.connectionId,
+              read: notificationRecord.read,
             },
-          });
-        }
-        return true
+          },
+        });
       }
+
       if (
         existingCredential &&
         existingCredential.status !== CredentialStatus.REVOKED
@@ -401,13 +395,15 @@ class KeriaNotificationService extends AgentService {
         );
 
         const dt = new Date().toISOString().replace("Z", "000+00:00");
-        const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
-          senderName: ourIdentifier.id,
-          message: "",
-          grantSaid: notif.a.d,
-          datetime: dt,
-          recipient: exchange.exn.i,
-        });
+        const [admit, sigs, aend] = await this.props.signifyClient
+          .ipex()
+          .admit({
+            senderName: ourIdentifier.id,
+            message: "",
+            grantSaid: notif.a.d,
+            datetime: dt,
+            recipient: exchange.exn.i,
+          });
         await this.props.signifyClient
           .ipex()
           .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
@@ -423,7 +419,9 @@ class KeriaNotificationService extends AgentService {
           read: false,
           route: NotificationRoute.LocalAcdcRevoked,
         };
-        const notificationRecord = await this.notificationStorage.save(metadata);
+        const notificationRecord = await this.notificationStorage.save(
+          metadata
+        );
 
         this.props.eventEmitter.emit<NotificationAddedEvent>({
           type: EventTypes.NotificationAdded,
