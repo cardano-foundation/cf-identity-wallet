@@ -1,13 +1,40 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
+import { store } from "../../../../store";
 import {
   connectionDetailsFix,
   credsFixAcdc,
 } from "../../../__fixtures__/credsFix";
-import { CredentialContent } from "./CredentialContent";
-import { store } from "../../../../store";
+import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
+import { identifierFix } from "../../../__fixtures__/identifierFix";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { CredentialContent } from "./CredentialContent";
+
+const getIndentifier = jest.fn(() => identifierFix[0]);
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+}));
+
+jest.mock("../../../../core/agent/agent", () => ({
+  Agent: {
+    MISSING_DATA_ON_KERIA:
+      "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
+    agent: {
+      identifiers: {
+        getIdentifier: () => getIndentifier(),
+      },
+      connections: {
+        getOobi: jest.fn(() => Promise.resolve("oobi")),
+        getMultisigConnections: jest.fn().mockResolvedValue([]),
+      }
+    },
+  },
+}));
 
 describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
@@ -71,5 +98,52 @@ describe("Creds content", () => {
     expect(
       getByTestId("credential-details-last-status-timestamp").innerHTML
     ).toBe(lastStatus);
+  });
+
+  test("Open related identifier", async () => {
+    const state = {
+      stateCache: {
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+        },
+      },
+      credsCache: { creds: credsFixAcdc, favourites: [] },
+      credsArchivedCache: { creds: credsFixAcdc },
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+    };
+
+
+    const mockStore = configureStore();
+    const storeMocked = {
+      ...mockStore(state),
+      dispatch: jest.fn(),
+    };
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <CredentialContent
+          cardData={credsFixAcdc[0]}
+          joinedCredRequestMembers={[]}
+          connectionShortDetails={connectionDetailsFix}
+          setOpenConnectionlModal={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.relatedidentifier)).toBeVisible();
+    })
+
+    fireEvent.click(getByTestId("related-identifier-name"));
+
+    await waitFor(() => {
+      expect(getByTestId("credential-related-identifier-modal")).toBeVisible();
+    });
   });
 });

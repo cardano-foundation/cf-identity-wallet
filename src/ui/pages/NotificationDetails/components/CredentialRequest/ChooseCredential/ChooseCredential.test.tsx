@@ -254,6 +254,9 @@ describe("Credential request - choose request", () => {
           { ...credsFixAcdc[0], id: credRequestFix.credentials[0].acdc.d },
         ],
       },
+      identifiersCache: {
+        identifiers: [],
+      },
     };
 
     const storeMocked = {

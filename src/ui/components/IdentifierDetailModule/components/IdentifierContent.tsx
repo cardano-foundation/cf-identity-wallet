@@ -4,7 +4,7 @@ import {
   keyOutline,
   refreshOutline,
 } from "ionicons/icons";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { useAppSelector } from "../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
@@ -36,10 +36,10 @@ const IdentifierContent = ({
   const [openDetailModal, setOpenDetailModal] = useState(false);
   const [viewType, setViewType] = useState(DetailView.AdvancedDetail);
 
-  const openPropDetailModal = (view: DetailView) => {
+  const openPropDetailModal = useCallback((view: DetailView) => {
     setViewType(view);
     setOpenDetailModal(true);
-  };
+  }, []);
 
   const isMultiSig = useMemo(() => {
     const identifier = identifiersData.find((data) => data.id === cardData.id);

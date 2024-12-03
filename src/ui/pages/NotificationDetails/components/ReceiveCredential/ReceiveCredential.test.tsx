@@ -1,5 +1,4 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth";
-import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -17,7 +16,6 @@ import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
 import { ReceiveCredential } from "./ReceiveCredential";
 
-mockIonicReact();
 jest.useFakeTimers();
 
 const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
@@ -56,6 +54,9 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
       identifiers: {
         getIdentifier: jest.fn(() => Promise.resolve(identifierFix[0])),
+      },
+      connections: {
+        getOobi: jest.fn(),
       },
     },
   },
@@ -113,7 +114,7 @@ describe("Credential request", () => {
     getAcdcFromIpexGrantMock.mockImplementation(() =>
       Promise.resolve({
         ...credsFixAcdc[0],
-        status: "peding",
+        status: "pending",
       })
     );
   });
@@ -244,6 +245,71 @@ describe("Credential request", () => {
     });
   }, 10000);
 
+  test("Open indentifier detail", async () => {
+
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.NOTIFICATIONS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        isOnline: true
+      },
+      credsCache: {
+        creds: [],
+      },
+      connectionsCache: {
+        connections: connectionsForNotifications,
+      },
+      notificationsCache: {
+        notifications: notificationsFix,
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const backMock = jest.fn();
+    const { getAllByText, getByTestId, getByText, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    expect(
+      getAllByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.title
+      )[0]
+    ).toBeVisible();
+
+    await waitFor(() => {
+      expect(getByText("Profess")).toBeVisible();
+    })
+
+    fireEvent.click(getByTestId("related-identifier-detail"));
+
+    await waitFor(() => {
+      expect(getByTestId("identifier-detail-modal")).toBeVisible();
+    });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.done));
+
+    await waitFor(() => {
+      expect(queryByTestId("identifier-detail-modal")).toBeNull();
+    });
+  }, 10000);
 
   test("Show error when cred open", async () => {
     const storeMocked = {

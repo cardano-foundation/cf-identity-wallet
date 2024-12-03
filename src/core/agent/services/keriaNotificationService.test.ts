@@ -5,7 +5,11 @@ import {
   MiscRecordId,
   NotificationRoute,
 } from "../agent.types";
-import { IdentifierStorage, NotificationStorage } from "../records";
+import {
+  BasicRecord,
+  IdentifierStorage,
+  NotificationStorage,
+} from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { CredentialStatus } from "./credentialService.types";
 import { CoreEventEmitter } from "../event";
@@ -196,6 +200,7 @@ const basicStorage = jest.mocked({
   findById: jest.fn(),
   save: jest.fn(),
   createOrUpdateBasicRecord: jest.fn(),
+  update: jest.fn(),
 });
 
 const multiSigs = jest.mocked({
@@ -1883,6 +1888,262 @@ describe("Signify notification service of agent", () => {
     await expect(
       keriaNotificationService.processNotification(notificationIpexOfferProp)
     ).rejects.toThrow(errorMessage);
+  });
+
+  test("Should create a new failed notification to basic record if processNotification throws any error", async () => {
+    jest.useFakeTimers();
+    jest
+      .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
+      .mockReturnValue(true);
+    jest.spyOn(console, "error").mockReturnValueOnce();
+    basicStorage.findById = jest.fn().mockResolvedValueOnce({
+      id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+      content: {
+        nextIndex: 0,
+        lastNotificationId: "",
+      },
+    });
+    let firstTry = true;
+    const notifications = [
+      {
+        i: "string",
+        dt: "string",
+        r: true,
+        a: {
+          r: NotificationRoute.ExnIpexApply,
+          d: "string",
+          m: "",
+        },
+      },
+      {
+        i: "string",
+        dt: "string",
+        r: true,
+        a: {
+          r: NotificationRoute.MultiSigExn,
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+    listNotificationsMock.mockImplementation(async () => {
+      if (firstTry) {
+        firstTry = false;
+        return {
+          start: 0,
+          end: 2,
+          total: 2,
+          notes: notifications,
+        };
+      } else {
+        throw new Error("Break the while loop");
+      }
+    });
+
+    keriaNotificationService.processNotification = jest
+      .fn()
+      .mockRejectedValue("error");
+    basicStorage.createOrUpdateBasicRecord.mockResolvedValueOnce({
+      id: MiscRecordId.FAILED_NOTIFICATIONS,
+      content: {
+        [notifications[0].i]: {
+          notification: notifications[0],
+          attempts: 1,
+          lastAttempt: Date.now(),
+        },
+      },
+    });
+    try {
+      await keriaNotificationService.pollNotifications();
+    } catch (error) {
+      expect((error as Error).message).toBe("Break the while loop");
+    }
+    expect(basicStorage.createOrUpdateBasicRecord).toBeCalledTimes(4);
+  });
+
+  test("Should retry failed notifications and remove successfully processed ones", async () => {
+    jest.spyOn(keriaNotificationService, "processNotification");
+    const notif1 = {
+      i: "notif1",
+      dt: "string",
+      r: true,
+      a: {
+        r: NotificationRoute.ExnIpexApply,
+        d: "string",
+        m: "",
+      },
+    };
+    const notif2 = {
+      i: "notif2",
+      dt: "string",
+      r: true,
+      a: {
+        r: NotificationRoute.MultiSigExn,
+        d: "string",
+        m: "",
+      },
+    };
+    const notif3 = {
+      i: "notif3",
+      dt: "string",
+      r: true,
+      a: {
+        r: NotificationRoute.MultiSigExn,
+        d: "string",
+        m: "",
+      },
+    };
+    const failedNotifications = {
+      notif1: {
+        notification: notif1,
+        attempts: 1,
+        lastAttempt: Date.now() - 6000,
+      }, // Ready for retry
+      notif2: {
+        notification: notif2,
+        attempts: 3,
+        lastAttempt: Date.now() - 50000,
+      }, // Ready for retry
+      notif3: {
+        notification: notif3,
+        attempts: 5,
+        lastAttempt: Date.now() - 1000,
+      }, // Not ready yet
+    };
+
+    basicStorage.findById = jest.fn().mockResolvedValueOnce(
+      new BasicRecord({
+        id: MiscRecordId.FAILED_NOTIFICATIONS,
+        content: failedNotifications,
+        createdAt: new Date(),
+      })
+    );
+
+    await keriaNotificationService.retryFailedNotifications();
+    const now = new Date();
+    expect(keriaNotificationService.processNotification).toHaveBeenCalledTimes(
+      2
+    );
+    expect(keriaNotificationService.processNotification).toHaveBeenCalledWith(
+      notif1
+    );
+    expect(keriaNotificationService.processNotification).toHaveBeenCalledWith(
+      notif2
+    );
+
+    expect(basicStorage.update).toHaveBeenCalledWith(
+      new BasicRecord({
+        id: MiscRecordId.FAILED_NOTIFICATIONS,
+        content: {
+          notif3: failedNotifications.notif3,
+        },
+        createdAt: now,
+      })
+    );
+  });
+
+  test("Should handle failure when retrying a failed notification", async () => {
+    const notif1 = {
+      i: "notif1",
+      dt: "string",
+      r: true,
+      a: {
+        r: NotificationRoute.ExnIpexApply,
+        d: "string",
+        m: "",
+      },
+    };
+
+    const failedNotifications = {
+      notif1: {
+        notification: notif1,
+        attempts: 1,
+        lastAttempt: Date.now() - 6000,
+      },
+    };
+
+    basicStorage.findById = jest.fn().mockResolvedValue({
+      id: MiscRecordId.FAILED_NOTIFICATIONS,
+      content: failedNotifications,
+      createdAt: new Date(),
+    });
+
+    jest
+      .spyOn(keriaNotificationService, "processNotification")
+      .mockRejectedValue(new Error("Process notification failed"));
+
+    await keriaNotificationService.retryFailedNotifications();
+    expect(basicStorage.createOrUpdateBasicRecord).toHaveBeenCalledWith(
+      new BasicRecord({
+        id: MiscRecordId.FAILED_NOTIFICATIONS,
+        content: {
+          notif1: {
+            ...failedNotifications.notif1,
+            attempts: 2,
+            lastAttempt: Date.now(),
+          },
+        },
+      })
+    );
+  });
+
+  test("Should retry failed notifications if more than 1 minute have passed", async () => {
+    jest.useFakeTimers();
+    jest.spyOn(keriaNotificationService, "retryFailedNotifications");
+    jest
+      .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
+      .mockReturnValue(true);
+    let firstTry = true;
+    const notifications = [
+      {
+        i: "string",
+        dt: "string",
+        r: true,
+        a: {
+          r: NotificationRoute.ExnIpexApply,
+          d: "string",
+          m: "",
+        },
+      },
+      {
+        i: "string",
+        dt: "string",
+        r: true,
+        a: {
+          r: NotificationRoute.MultiSigExn,
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    listNotificationsMock.mockImplementation(async () => {
+      if (firstTry) {
+        firstTry = false;
+        return {
+          start: 0,
+          end: 2,
+          total: 2,
+          notes: notifications,
+        };
+      } else {
+        throw new Error("Break the while loop");
+      }
+    });
+
+    keriaNotificationService.processNotification = jest
+      .fn()
+      .mockRejectedValue("error");
+    jest.advanceTimersByTime(60001);
+
+    try {
+      await keriaNotificationService.pollNotifications();
+    } catch (error) {
+      expect((error as Error).message).toBe("Break the while loop");
+    }
+    expect(
+      keriaNotificationService.retryFailedNotifications
+    ).toHaveBeenCalledTimes(1);
   });
 });
 

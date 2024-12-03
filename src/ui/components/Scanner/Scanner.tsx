@@ -23,6 +23,7 @@ import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  getConnectionsCache,
   setMissingAliasUrl,
   setOpenConnectionId,
   updateOrAddMultisigConnectionCache
@@ -76,6 +77,7 @@ const Scanner = forwardRef(
     const platforms = getPlatforms();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
+    const connections = useAppSelector(getConnectionsCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsgs = useAppSelector(getToastMsgs);
@@ -323,6 +325,14 @@ const Scanner = forwardRef(
       }
 
       try {
+        const connectionId = new URL(content).pathname
+          .split("/oobi/")
+          .pop()?.split("/")[0];
+
+        if(connectionId && connections[connectionId]) {
+          throw new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`);
+        }
+
         await Agent.agent.connections.connectByOobiUrl(content);
       } catch (e) {
         const errorMessage = (e as Error).message;
