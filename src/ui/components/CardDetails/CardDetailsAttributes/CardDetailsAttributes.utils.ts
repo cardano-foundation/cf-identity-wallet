@@ -2,8 +2,6 @@ import { i18n } from "../../../../i18n";
 
 export const reservedKeysFilter = (key: string) => {
   switch (key) {
-  case "d":
-    return i18n.t("tabs.credentials.details.attributes.blocksaid");
   case "i":
     return i18n.t("tabs.credentials.details.attributes.issuee");
   case "dt":

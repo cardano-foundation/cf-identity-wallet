@@ -1002,7 +1002,6 @@
           "details": "Attribute details",
           "issuee": "Issuer",
           "issuancedate": "Issuance Date Time",
-          "blocksaid": "Attributes block SAID",
           "lei": "LEI"
         },
         "schemaversion": "Schema Version",
