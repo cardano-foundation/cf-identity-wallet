@@ -21,10 +21,10 @@ const addListener = jest.fn(
       listenerFunc({
         barcode: {
           displayValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
           format: BarcodeFormat.QrCode,
           rawValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
           valueType: BarcodeValueType.Url,
         },
       });
