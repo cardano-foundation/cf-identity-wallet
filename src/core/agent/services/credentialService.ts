@@ -185,7 +185,7 @@ class CredentialService extends AgentService {
             isArchived: false,
             issuanceDate: new Date(credential.sad.a.dt).toISOString(),
             credentialType: credential.schema.title,
-            status: CredentialStatus.PENDING,
+            status: CredentialStatus.CONFIRMED,
             connectionId: credential.sad.i,
             schema: credential.schema.$id,
             identifierId: credential.sad.a.i,
