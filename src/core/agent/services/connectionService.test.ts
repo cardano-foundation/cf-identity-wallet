@@ -162,7 +162,7 @@ const connectionService = new ConnectionService(
   connectionStorage as any,
   credentialStorage as any,
   operationPendingStorage as any,
-  identifiers as any,
+  identifiers as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -264,6 +264,14 @@ describe("Connection service of agent", () => {
 
     await connectionService.connectByOobiUrl(oobi);
     expect(connectionStorage.save).toBeCalled();
+  });
+
+  test("Should throw an error if invalid OOBI URL format", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const oobi = "http://localhost/oobi/123";
+    await expect(connectionService.connectByOobiUrl(oobi)).rejects.toThrowError(
+      new Error(ConnectionService.OOBI_INVALID)
+    );
   });
 
   test("can get all connections and multi-sig related ones are filtered", async () => {

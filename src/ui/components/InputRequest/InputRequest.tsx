@@ -2,7 +2,9 @@ import { IonModal, isPlatform } from "@ionic/react";
 import { useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  MiscRecordId
+  MiscRecordId,
+  OOBI_AGENT_ONLY_RE,
+  WOOBI_RE
 } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { StorageMessage } from "../../../core/storage/storage.types";
@@ -64,6 +66,13 @@ const InputRequest = () => {
   }, [showModal])
 
   const resolveConnectionOobi = async (content: string) => {
+    if (
+      !new URL(content).pathname.match(OOBI_AGENT_ONLY_RE) &&
+      !new URL(content).pathname.match(WOOBI_RE)
+    ) {
+      throw new Error("Invalid connection url");
+    }
+
     try {
       const connectionId = new URL(content).pathname
         .split("/oobi/")
