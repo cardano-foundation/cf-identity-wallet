@@ -24,7 +24,6 @@
     "react-hook-form": "^7.51.5",
     "react-icons": "^5.2.1",
     "react-router-dom": "^6.16.0",
-    "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -51,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "react-scripts": "5.0.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-private-property-in-object": "^7.23.4"
   }
