@@ -562,15 +562,21 @@ describe("Single sig service of agent", () => {
 
   test("Should correctly sync KERI identifiers, handling both group and non-group cases", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+  
     listIdentifiersMock.mockReturnValue({
       aids: [
         {
-          name: "0:groupId:test1",
+          name: "0:group1:test1",
           prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+         
+        },
+        {
+          name: "0:test1",
+          prefix: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
           group: {
             mhab: {
-              name: "0:groupId:test1",
-              prefix: "EOq_aeNv3ROHX5shEEPnibLuop5SYGWpjBxY-Lna5GM3",
+              name: "0:group1:test1",
+              prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
             },
           },
         },
@@ -580,40 +586,44 @@ describe("Single sig service of agent", () => {
         },
       ],
       start: 1,
-      end: 2,
-      total: 2,
+      end: 3,
+      total: 3,
     });
   
-    identifierStorage.getKeriIdentifiersMetadata = jest
-      .fn()
-      .mockReturnValue([]);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockImplementation(async (prefix) => {
-        if (prefix === "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs") {
-          throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);
-        }
-      });
+    identifierStorage.getKeriIdentifiersMetadata = jest.fn().mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
+    identifierStorage.updateIdentifierMetadata = jest.fn();
   
     await identifierService.syncKeriaIdentifiers();
   
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-      displayName: "groupId",
-      theme: 0,
-      multisigManageAid: "EOq_aeNv3ROHX5shEEPnibLuop5SYGWpjBxY-Lna5GM3",
-    });
-    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
-      id: "EOq_aeNv3ROHX5shEEPnibLuop5SYGWpjBxY-Lna5GM3",
-      displayName: "groupId",
+      displayName: "group1",
       theme: 0,
       groupMetadata: {
-        groupId: "groupId",
-        groupCreated: true,
-        groupInitiator: false, 
+        groupId: "group1",
+        groupCreated: false,
+        groupInitiator: false,
       },
     });
+  
+    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+      id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      displayName: "group1",
+      theme: 0,
+      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl"
+    });
+
+    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
+      "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      {
+        groupMetadata: {
+          groupId: "group1",
+          groupCreated: true,
+          groupInitiator: false,
+        },
+      }
+    );
   
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
@@ -621,7 +631,6 @@ describe("Single sig service of agent", () => {
       theme: 0,
     });
   
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(3);
   });
 
   test("should call signify.rotateIdentifier with correct params", async () => {

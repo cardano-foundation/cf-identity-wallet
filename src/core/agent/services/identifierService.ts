@@ -1,4 +1,4 @@
-import { Salter, Signer } from "signify-ts";
+import { HabState, Salter, Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
   IdentifierDetails,
@@ -282,43 +282,61 @@ class IdentifierService extends AgentService {
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
+      let groupId;
       for (const identifier of unSyncedData) {
-        if(identifier.group){
-          const groupId = identifier.group.mhab.name.split(":")[1];
+        const checkDeletedIdentifier = this.checkIdentifierNameIsDeleted(identifier.name);
+        if(checkDeletedIdentifier) continue;
+        const checkNameIsMultiSig = this.checkIdentifierNameIsMultiSig(identifier.name);
+        if(checkNameIsMultiSig){
+          groupId = identifier.name.split(":")[1];
           const groupMetadata = {
             groupId,
-            groupCreated: true,
+            groupCreated: false,
             groupInitiator: false
           }
           await this.identifierStorage.createIdentifierMetadataRecord({
             id: identifier.prefix,
             displayName: groupId,
             theme: 0,
-            multisigManageAid: identifier.group.mhab.prefix,
-          });
-          await this.identifierStorage.createIdentifierMetadataRecord({
-            id: identifier.group.mhab.prefix,
-            displayName: groupId,
-            theme: 0,
             groupMetadata
           });
         }
         else {
-          await this.identifierStorage.getIdentifierMetadata(identifier.prefix).catch(async (e) => {
-            if (
-              e.message ===
-                IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-            ) {
-              await this.identifierStorage.createIdentifierMetadataRecord({
-                id: identifier.prefix,
-                displayName: identifier.prefix, //same as the id at the moment
-                theme: 0,
-              });
-            }
+          if(identifier.group){
+            const multisigManageAid = identifier.group.mhab.prefix;
+            groupId = identifier.group.mhab.name.split(":")[1];
+            await this,this.identifierStorage.createIdentifierMetadataRecord({
+              id: identifier.prefix,
+              displayName: groupId,
+              theme: 0,
+              multisigManageAid
+            })
+            await this,this.identifierStorage.updateIdentifierMetadata(multisigManageAid,{
+              groupMetadata: {
+                groupId,
+                groupCreated: true,
+                groupInitiator: false
+              }
+            })
+          }
+          await this.identifierStorage.createIdentifierMetadataRecord({
+            id: identifier.prefix,
+            displayName: identifier.prefix, //same as the id at the moment
+            theme: 0,
           });
         }
       }
     }
+  }
+
+  private checkIdentifierNameIsMultiSig(name: string): boolean {
+    const regex = /^0:[A-Za-z0-9]+:[A-Za-z0-9]+$/;
+    return regex.test(name);
+  }
+
+  private checkIdentifierNameIsDeleted(name: string): boolean {
+    const regex = /^[A-Za-z]{2}-[a-zA-Z0-9]{3,}:[a-zA-Z]+$/;
+    return regex.test(name);
   }
 
   @OnlineOnly
