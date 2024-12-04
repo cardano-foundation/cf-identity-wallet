@@ -4,6 +4,8 @@ import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
+import { useAppDispatch } from "../../../store/hooks";
+import { showError as showErrorMessage } from "../../utils/error";
 import { Alert } from "../Alert";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
@@ -12,8 +14,6 @@ import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
 import { OptionModal } from "../OptionsModal";
 import "./VerifyPassword.scss";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
-import { showError as showErrorMessage } from "../../utils/error";
-import { useAppDispatch } from "../../../store/hooks";
 
 const VerifyPassword = ({
   isOpen,
@@ -22,7 +22,6 @@ const VerifyPassword = ({
 }: VerifyPasswordProps) => {
   const dispatch = useAppDispatch();
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
-  const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
   const [alertHintIsOpen, setAlertHintIsOpen] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -83,37 +82,33 @@ const VerifyPassword = ({
     setStoredHint(`${hint || ""}`);
   }, [isOpen, dispatch]);
 
-  const resetModal = () => {
+  const resetModal = useCallback(() => {
     setIsOpen(false);
     setVerifyPasswordValue("");
-  };
+  }, [setIsOpen]);
 
   useEffect(() => {
     handleFetchStoredValues();
   }, [handleFetchStoredValues]);
 
-  useEffect(() => {
-    if (
-      verifyPasswordValue.length > 0 &&
-      verifyPasswordValue !== storedPassword
-    ) {
+  const handleRecoveryPassword = () => {
+    setOpenRecoveryAuth(true);
+  };
+
+  const handleConfirm = useCallback(() => {
+    if(verifyPasswordValue.length <= 0) return;
+
+    if (verifyPasswordValue !== storedPassword) {
       setShowError(true);
       setTimeout(() => {
         setShowError(false);
       }, MESSAGE_MILLISECONDS * 1.5);
+      return;
     }
-    if (
-      verifyPasswordValue.length > 0 &&
-      verifyPasswordValue === storedPassword
-    ) {
-      resetModal();
-      onVerify();
-    }
-  }, [attempts]);
 
-  const handleRecoveryPassword = () => {
-    setOpenRecoveryAuth(true);
-  };
+    resetModal();
+    onVerify();
+  }, [onVerify, resetModal, storedPassword, verifyPasswordValue])
 
   const headerOptions = useMemo(
     () => ({
@@ -123,10 +118,10 @@ const VerifyPassword = ({
       title: `${i18n.t("verifypassword.title")}`,
       actionButton: true,
       actionButtonDisabled: !verifyPasswordValue.length,
-      actionButtonAction: () => setAttempts(attempts - 1),
+      actionButtonAction: handleConfirm,
       actionButtonLabel: `${i18n.t("verifypassword.confirm")}`,
     }),
-    [attempts, setIsOpen, verifyPasswordValue.length]
+    [handleConfirm, setIsOpen, verifyPasswordValue.length]
   );
 
   const handleDissmissShowHint = () => {

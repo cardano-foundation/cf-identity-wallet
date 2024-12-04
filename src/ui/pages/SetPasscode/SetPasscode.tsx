@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -87,6 +87,13 @@ const SetPasscode = () => {
     ionRouter.push(backPath.pathname, "back", "pop");
   };
 
+  const handlePasscodeChange = useCallback((passcode: string, originalPasscode: string) => {
+    setPassCodeValue({
+      passcode,
+      originalPasscode,
+    });
+  }, []);
+
   const description = stateCache.authentication.recoveryWalletProgress
     ? i18n.t("setpasscode.recoverydescription")
     : i18n.t("setpasscode.description");
@@ -112,12 +119,7 @@ const SetPasscode = () => {
         ref={ref}
         testId={pageId}
         onCreateSuccess={handlePassAuth}
-        onPasscodeChange={(passcode, originalPasscode) => {
-          setPassCodeValue({
-            passcode,
-            originalPasscode,
-          });
-        }}
+        onPasscodeChange={handlePasscodeChange}
       />
     </ResponsivePageLayout>
   );

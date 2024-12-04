@@ -1,19 +1,18 @@
-import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { RootState } from "../../store";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import {
   removeCurrentRoute,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
-import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
+import { DataProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
+import { BackRouter } from "./backRoute.types";
 
 const getBackRoute = (
   currentPath: string,
   data: DataProps
 ): {
   backPath: { pathname: string };
-  updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
+  updateRedux: BackRouter["updateRedux"];
 } => {
   const { updateRedux } = backRoute[currentPath];
   const backPathUrl = backPath(data);
@@ -74,7 +73,7 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
 };
 
 const calcPreviousRoute = (
-  routes: { path: string; payload?: PayloadProps }[]
+  routes: { path: string; }[]
 ) => {
   if (!routes || routes.length < 2) return undefined;
   return routes[1];
@@ -82,7 +81,7 @@ const calcPreviousRoute = (
 
 const backPath = (data: DataProps) => getPreviousRoute(data);
 
-const backRoute: Record<string, any> = {
+const backRoute: Record<string, BackRouter> = {
   [RoutePath.ROOT]: {
     updateRedux: [],
   },
@@ -127,5 +126,6 @@ export {
   calcPreviousRoute,
   getBackRoute,
   getPreviousRoute,
-  updateStoreSetCurrentRoute,
+  updateStoreSetCurrentRoute
 };
+

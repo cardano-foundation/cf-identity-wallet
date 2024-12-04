@@ -96,17 +96,18 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     useEffect(() => {
       const fetchConnectionDetails = async () => {
         if (openDetailId === undefined) return;
+
         const connection = connectionsCache[openDetailId];
         dispatch(setOpenConnectionId(undefined));
         if (!connection || connection.status === ConnectionStatus.PENDING) {
           return;
-        } else {
-          await getConnectionShortDetails(openDetailId);
-        }
+        }  
+        
+        await getConnectionShortDetails(openDetailId);
       };
 
       fetchConnectionDetails();
-    }, [openDetailId]);
+    }, [connectionsCache, dispatch, openDetailId]);
 
     useEffect(() => {
       const connections = Object.values(connectionsCache);
@@ -272,10 +273,10 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       "hide-header": hideHeader,
     });
 
-    const handleCloseConnectionModal = () => {
+    const handleCloseConnectionModal = useCallback(() => {
       setConnectionShortDetails(undefined);
       setOpenConnectionlModal(false);
-    };
+    }, []);
 
     return connectionShortDetails && openConnectionlModal ? (
       <ConnectionDetails

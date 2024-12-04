@@ -9,7 +9,7 @@ import {
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { PluginListenerHandle } from "@capacitor/core";
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
 import { showError } from "../utils/error";
 import { useAppDispatch } from "../../store/hooks";
@@ -48,7 +48,7 @@ const useBiometricAuth = () => {
     return biometricResult;
   };
 
-  const handleBiometricAuth = async (): Promise<boolean | BiometryError> => {
+  const handleBiometricAuth = useCallback(async (): Promise<boolean | BiometryError> => {
     const biometricResult = await checkBiometrics();
 
     if (!biometricResult?.strongBiometryIsAvailable) {
@@ -82,7 +82,7 @@ const useBiometricAuth = () => {
       }
       return new BiometryError(`${error}`, BiometryErrorType.none);
     }
-  };
+  }, [setPauseTimestamp]);
 
   return {
     biometricInfo,

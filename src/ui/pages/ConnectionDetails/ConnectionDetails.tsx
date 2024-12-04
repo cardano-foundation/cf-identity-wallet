@@ -88,7 +88,7 @@ const ConnectionDetails = ({
     } finally {
       setLoading((value) => ({ ...value, details: false, history: false }));
     }
-  }, [connectionShortDetails?.id, dispatch]);
+  }, [connectionShortDetails.id, dispatch, handleCloseConnectionModal]);
 
   const getData = useCallback(() => {
     if (!connectionShortDetails?.id) return;

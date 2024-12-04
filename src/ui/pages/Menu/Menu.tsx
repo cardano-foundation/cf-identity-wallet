@@ -14,7 +14,7 @@ import {
   settingsOutline,
   walletOutline,
 } from "ionicons/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -54,7 +54,7 @@ const Menu = () => {
     [showSubMenu]
   );
 
-  const handleOpenUrl = (key: SubMenuKey) => {
+  const handleOpenUrl = useCallback((key: SubMenuKey) => {
     switch (key) {
     case SubMenuKey.Crypto: {
       Browser.open({ url: CRYPTO_LINK });
@@ -71,7 +71,7 @@ const Menu = () => {
     default:
       return;
     }
-  };
+  }, [dispatch]);
 
   const menuItems: Omit<MenuItemProps, "onClick">[] = [
     {
@@ -104,23 +104,24 @@ const Menu = () => {
     },
   ];
 
+  const showSelectedOption = useCallback((key: SubMenuKey) => {
+    if (
+      [SubMenuKey.Crypto, SubMenuKey.Connections, SubMenuKey.Chat].includes(key)
+    ) {
+      handleOpenUrl(key);
+      return;
+    }
+
+    setShowSubMenu(true);
+    setSelectedOption(key);
+  }, [handleOpenUrl]);
+
   useEffect(() => {
     if (showWalletConnect) {
       showSelectedOption(SubMenuKey.ConnectWallet);
       dispatch(showConnectWallet(false));
     }
-  }, [dispatch, showWalletConnect]);
-
-  const showSelectedOption = (key: SubMenuKey) => {
-    if (
-      [SubMenuKey.Crypto, SubMenuKey.Connections, SubMenuKey.Chat].includes(key)
-    ) {
-      handleOpenUrl(key);
-    }
-    if (!subMenuItems.has(key)) return;
-    setShowSubMenu(true);
-    setSelectedOption(key);
-  };
+  }, [dispatch, showSelectedOption, showWalletConnect]);
 
   const subMenuItems = SubMenuItems(showSelectedOption);
 

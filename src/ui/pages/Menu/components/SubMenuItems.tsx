@@ -33,21 +33,21 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
 
   const backToParentMenu = useCallback(() => {
     showSelectedOption(SubMenuKey.Settings);
-  }, []);
+  }, [showSelectedOption]);
 
-  const toggleEditProfile = () => {
+  const toggleEditProfile = useCallback(() => {
     setIsEditingProfile((prev) => {
       const newState = !prev;
       return newState;
     });
-  };
+  }, []);
 
-  const saveChanges = () => {
+  const saveChanges = useCallback(() => {
     profileRef.current?.saveChanges();
     toggleEditProfile();
-  };
+  }, [toggleEditProfile]);
 
-  const menuMapData: [SubMenuKey, SubMenuData][] = [
+  const menuMapData: [SubMenuKey, SubMenuData][] = useMemo(() => [
     [
       SubMenuKey.Profile,
       {
@@ -99,9 +99,9 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
         renderAsModal: false,
       },
     ],
-  ];
+  ], [isEditingProfile, saveChanges, toggleEditProfile]);
 
-  const settingsMapData: [SubMenuKey, SubMenuData][] = [
+  const settingsMapData: [SubMenuKey, SubMenuData][] = useMemo(() => [
     [
       SubMenuKey.Settings,
       {
@@ -152,14 +152,12 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
         renderAsModal: RENDER_SETTING_AS_MODAL,
       },
     ],
-  ];
+  ], [RENDER_SETTING_AS_MODAL, backToParentMenu, showSelectedOption]);
 
-  const subMenuMapData: [SubMenuKey, SubMenuData][] = [
+  return useMemo(() => new Map([
     ...menuMapData,
     ...settingsMapData,
-  ];
-
-  return useMemo(() => new Map(subMenuMapData), [isEditingProfile]);
+  ]), [menuMapData, settingsMapData]);
 };
 
 export { emptySubMenu, SubMenuItems };

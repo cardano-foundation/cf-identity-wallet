@@ -2,7 +2,7 @@ import { App, AppState } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
 import i18n from "i18next";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { PublicRoutes, RoutePath } from "../../../routes/paths";
@@ -33,8 +33,8 @@ import { BackEventPriorityType } from "../../globals/types";
 import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
-import "./LockPage.scss";
 import { showError } from "../../utils/error";
+import "./LockPage.scss";
 
 const LockPageContainer = () => {
   const pageId = "lock-page";
@@ -80,17 +80,28 @@ const LockPageContainer = () => {
     }
   }, [passcodeIncorrect]);
 
+  const handleBiometrics = useCallback(async () => {
+    disablePrivacy();
+    const isAuthenticated = await handleBiometricAuth();
+    if (isAuthenticated === true) {
+      dispatch(login());
+      dispatch(setFirstAppLaunch(false));
+    }
+    enablePrivacy();
+  }, [disablePrivacy, dispatch, enablePrivacy, handleBiometricAuth]);
+
+  const handleUseBiometrics = useCallback(async () => {
+    if (biometricsCache.enabled) {
+      await handleBiometrics();
+    }
+  }, [biometricsCache.enabled, handleBiometrics]);
+
   useEffect(() => {
     if (firstAppLaunch) {
       handleUseBiometrics();
     }
-  }, []);
+  }, [firstAppLaunch, handleUseBiometrics]);
 
-  const handleUseBiometrics = async () => {
-    if (biometricsCache.enabled) {
-      await handleBiometrics();
-    }
-  };
   const handlePinChange = async (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
 
@@ -129,16 +140,6 @@ const LockPageContainer = () => {
     }
   };
 
-  const handleBiometrics = async () => {
-    disablePrivacy();
-    const isAuthenticated = await handleBiometricAuth();
-    if (isAuthenticated === true) {
-      dispatch(login());
-      dispatch(setFirstAppLaunch(false));
-    }
-    enablePrivacy();
-  };
-
   const resetPasscode = () => {
     setOpenRecoveryAuth(true);
   };
@@ -173,7 +174,7 @@ const LockPageContainer = () => {
     return () => {
       listener.then((value) => value.remove()).catch((e) => showError("Unable to clear listener", e));
     };
-  }, []);
+  }, [handleUseBiometrics]);
 
   return (
     <ResponsivePageLayout

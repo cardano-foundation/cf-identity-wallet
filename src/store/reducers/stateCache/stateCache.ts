@@ -91,9 +91,12 @@ const stateCacheSlice = createSlice({
     },
     setAuthentication: (
       state,
-      action: PayloadAction<AuthenticationCacheProps>
+      action: PayloadAction<Partial<AuthenticationCacheProps>>
     ) => {
-      state.authentication = action.payload;
+      state.authentication = {
+        ...state.authentication,
+        ...action.payload
+      };
     },
     setCurrentOperation: (state, action: PayloadAction<OperationType>) => {
       state.currentOperation = action.payload;
