@@ -28,6 +28,7 @@ const getOobiMock = jest.fn((...args: any) =>
 );
 
 const deleteIdentifier = jest.fn();
+const markIdentifierPendingDelete = jest.fn();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -43,6 +44,7 @@ jest.mock("../../../../core/agent/agent", () => ({
       },
       identifiers: {
         deleteIdentifier: () => deleteIdentifier(),
+        markIdentifierPendingDelete: () => markIdentifierPendingDelete(),
       },
     },
   },
@@ -481,7 +483,7 @@ describe("Create group identifier - Setup Connection", () => {
       await passcodeFiller(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
-        expect(deleteIdentifier).toBeCalled();
+        expect(markIdentifierPendingDelete).toBeCalled();
       });
     });
 

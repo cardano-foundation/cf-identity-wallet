@@ -70,6 +70,7 @@ jest.mock("@ionic/react", () => ({
 
 const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve(id));
 const deleteIdentifier = jest.fn(() => Promise.resolve());
+const markIdentifierPendingDelete = jest.fn(() => Promise.resolve());
 const createOrUpdateMock = jest.fn().mockResolvedValue(undefined);
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -82,6 +83,7 @@ jest.mock("../../../core/agent/agent", () => ({
         rotateIdentifier: (id: string) => rotateIdentifierMock(id),
         deleteStaleLocalIdentifier: () => deleteStaleLocalIdentifierMock(),
         deleteIdentifier: () => deleteIdentifier(),
+        markIdentifierPendingDelete: () => markIdentifierPendingDelete(),
       },
       connections: {
         getOobi: jest.fn(() => Promise.resolve("oobi")),
@@ -150,11 +152,11 @@ describe("Individual Identifier details page", () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -187,11 +189,11 @@ describe("Individual Identifier details page", () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -229,11 +231,11 @@ describe("Individual Identifier details page", () => {
   test("It opens the sharing modal", async () => {
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -259,11 +261,11 @@ describe("Individual Identifier details page", () => {
   test("It opens the edit modal", async () => {
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -286,11 +288,11 @@ describe("Individual Identifier details page", () => {
   test("It shows the button to access the editor", async () => {
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -313,11 +315,11 @@ describe("Individual Identifier details page", () => {
 
     const { getByTestId, getByText, unmount, findByText, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -366,11 +368,11 @@ describe("Individual Identifier details page", () => {
   test("It shows the warning when I click on the big delete button", async () => {
     const { getByTestId, queryByText, findByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -413,11 +415,11 @@ describe("Individual Identifier details page", () => {
 
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -434,11 +436,11 @@ describe("Individual Identifier details page", () => {
   test("Hide loading after retrieved indetifier data", async () => {
     const { queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -482,11 +484,11 @@ describe("Individual Identifier details page", () => {
 
     const { queryByTestId, getByTestId, getByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -709,11 +711,11 @@ describe("Group Identifier details page", () => {
 
     const { getByTestId, getAllByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -753,11 +755,11 @@ describe("Group Identifier details page", () => {
   test("Open group member", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -795,11 +797,11 @@ describe("Group Identifier details page", () => {
   test("Open signing threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -837,11 +839,11 @@ describe("Group Identifier details page", () => {
   test("Open advanced detail", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -938,11 +940,11 @@ describe("Group Identifier details page", () => {
   test("Open rotation threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -980,11 +982,11 @@ describe("Group Identifier details page", () => {
   test("Open group member from rotation threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -1051,11 +1053,11 @@ describe("Group Identifier details page", () => {
 
     const { queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -1112,11 +1114,11 @@ describe("Checking the Identifier Details Page when information is missing from 
 
     const { getByTestId, getByText, unmount, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -1186,11 +1188,11 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -1274,11 +1276,11 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -1341,11 +1343,11 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -1408,11 +1410,11 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId, getByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
-        <IdentifierDetailModule 
+        <IdentifierDetailModule
           identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
           onClose={jest.fn()}
           pageId={pageId}
-          navAnimation          
+          navAnimation
         />
       </Provider>
     );
@@ -1444,7 +1446,7 @@ describe("Favourite identifier", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(deleteIdentifier).toBeCalled();
+      expect(markIdentifierPendingDelete).toBeCalled();
     });
 
     unmount();

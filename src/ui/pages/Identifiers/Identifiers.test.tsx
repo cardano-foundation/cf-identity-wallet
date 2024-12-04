@@ -36,6 +36,7 @@ import { IdentifiersFilters } from "./Identifiers.types";
 import { store } from "../../../store";
 
 const deleteIdentifierMock = jest.fn();
+const markIdentifierPendingDelete = jest.fn();
 
 jest.mock("react-qrcode-logo", () => {
   return {
@@ -50,6 +51,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
         deleteIdentifier: () => deleteIdentifierMock(),
+        markIdentifierPendingDelete: () => markIdentifierPendingDelete(),
       },
       basicStorage: {
         deleteById: jest.fn(() => Promise.resolve()),
@@ -351,14 +353,23 @@ describe("Identifiers Tab", () => {
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    
     await waitFor(() => {
-      expect(getByTestId("identifiers-tab").classList.contains("cards-identifier-nav")).toBeFalsy();
+      expect(
+        getByTestId("identifiers-tab").classList.contains(
+          "cards-identifier-nav"
+        )
+      ).toBeFalsy();
     });
 
     await waitFor(() => {
-      expect(getByTestId("identifiers-tab").classList.contains("cards-identifier-nav")).toBeFalsy();
-      expect(getByTestId("card-stack").classList.contains("transition-start")).toBeFalsy();
+      expect(
+        getByTestId("identifiers-tab").classList.contains(
+          "cards-identifier-nav"
+        )
+      ).toBeFalsy();
+      expect(
+        getByTestId("card-stack").classList.contains("transition-start")
+      ).toBeFalsy();
     });
 
     expect(
@@ -373,7 +384,7 @@ describe("Identifiers Tab", () => {
       expect(
         queryByText(EN_TRANSLATIONS.tabs.identifiers.tab.title)
       ).toBeVisible();
-    })
+    });
   });
 
   test("Open multisig", async () => {
@@ -416,12 +427,14 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
-
     const history = createMemoryHistory();
     history.push(TabsRoutePath.IDENTIFIERS);
 
     const { getByText } = render(
-      <IonReactMemoryRouter history={history} initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[TabsRoutePath.IDENTIFIERS]}
+      >
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
@@ -646,7 +659,7 @@ describe("Identifiers Tab", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() => {
-      expect(deleteIdentifierMock).toBeCalled();
+      expect(markIdentifierPendingDelete).toBeCalled();
     });
 
     unmount();
@@ -833,9 +846,12 @@ describe("Identifiers Tab", () => {
 
     const history = createMemoryHistory();
     history.push(TabsRoutePath.IDENTIFIERS);
-  
+
     const { getByText, getByTestId } = render(
-      <IonReactMemoryRouter history={history} initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[TabsRoutePath.IDENTIFIERS]}
+      >
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
