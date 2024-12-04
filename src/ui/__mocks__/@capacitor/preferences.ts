@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export const Preferences = {
   async get(data: { key: string }): Promise<{ value: string | undefined }> {
     return { value: undefined };

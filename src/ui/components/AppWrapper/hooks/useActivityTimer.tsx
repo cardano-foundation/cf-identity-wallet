@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { App } from "@capacitor/app";
 import { getPlatforms } from "@ionic/react";
 import { useAppDispatch } from "../../../../store/hooks";
@@ -17,16 +17,16 @@ const useActivityTimer = () => {
     }
   };
 
-  const setActivityTimer = () => {
+  const setActivityTimer = useCallback(() => {
     clearTimer();
     timer.current = setTimeout(() => {
       dispatch(logout());
     }, timeout);
-  };
+  }, [dispatch]);
 
-  const handleActivity = () => {
+  const handleActivity = useCallback(() => {
     setActivityTimer();
-  };
+  }, [setActivityTimer]);
 
   useEffect(() => {
     const platforms = getPlatforms();
@@ -49,7 +49,7 @@ const useActivityTimer = () => {
         clearTimer();
       };
     }
-  }, [pauseTimestamp]);
+  }, [dispatch, pauseTimestamp]);
 
   useEffect(() => {
     const events = [
@@ -72,7 +72,8 @@ const useActivityTimer = () => {
       });
       clearTimer();
     };
-  }, []);
+  }, [handleActivity]);
+
   return {
     setPauseTimestamp,
   };

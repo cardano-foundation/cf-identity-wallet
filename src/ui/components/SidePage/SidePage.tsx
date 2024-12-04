@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { SideSlider } from "../SideSlider";
 import {
   getQueueIncomingRequest,
@@ -45,7 +45,7 @@ const SidePage = () => {
     isConnecting,
   ]);
 
-  const getContent = () => {
+  const getContent = useCallback(() => {
     if (canOpenPendingWalletConnection) {
       return (
         <WalletConnect
@@ -74,7 +74,7 @@ const SidePage = () => {
     }
 
     return null;
-  };
+  }, [canOpenConnections, canOpenIncomingRequest, canOpenPendingWalletConnection, openSidePage]);
 
   const clearLastContent = () => {
     setTimeout(() => {
@@ -85,7 +85,7 @@ const SidePage = () => {
   useEffect(() => {
     getContent() !== null && setLastContent(getContent());
     !openSidePage && clearLastContent();
-  }, [openSidePage]);
+  }, [getContent, openSidePage]);
 
   return (
     <SideSlider

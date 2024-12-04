@@ -376,6 +376,8 @@ const CredentialDetailModule = ({
   const resetOperation = () =>
     dispatch(setCurrentOperation(OperationType.IDLE));
 
+  const handleCloseConnectionDetails = useCallback(() => setOpenConnectionlModal(false), []);
+
   if (cloudError) {
     return (
       <CloudError
@@ -402,7 +404,7 @@ const CredentialDetailModule = ({
   return openConnectionlModal && connectionShortDetails ? (
     <ConnectionDetails
       connectionShortDetails={connectionShortDetails}
-      handleCloseConnectionModal={() => setOpenConnectionlModal(false)}
+      handleCloseConnectionModal={handleCloseConnectionDetails}
     />
   ) : (
     <>
