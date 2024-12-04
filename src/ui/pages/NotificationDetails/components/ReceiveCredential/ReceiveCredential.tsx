@@ -187,7 +187,7 @@ const ReceiveCredential = ({
       //   If multisigMemberStatus.members.length && multisigMemberStatus.members[0] === identifier?.multisigManageAid, we can call admitAcdc
       //   Otherwise, can call joinMultisigAdmit IF multisigMemberStatus.linkedGroupRequest.current !== undefined
       if (multisigMemberStatus.linkedGroupRequest.current) {
-        await Agent.agent.ipexCommunications.joinMultisigAdmit(pageId);
+        await Agent.agent.ipexCommunications.joinMultisigAdmit(notificationDetails.id);
       } else {
         await Agent.agent.ipexCommunications.admitAcdc(notificationDetails.id);
       }
