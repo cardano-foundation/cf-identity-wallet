@@ -21,6 +21,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   displayName!: string;
   isDeleted?: boolean;
   isPending?: boolean;
+  pendingDeletion = false;
   theme!: number;
   multisigManageAid?: string;
   groupMetadata?: groupMetadata;
@@ -50,6 +51,7 @@ class IdentifierMetadataRecord extends BaseRecord {
       isDeleted: this.isDeleted,
       isPending: this.isPending,
       groupCreated: this.groupMetadata?.groupCreated,
+      pendingDeletion: this.pendingDeletion,
     };
   }
 }

@@ -13,6 +13,7 @@ import { ResponsiveModal } from "../layout/ResponsiveModal";
 import "./ShareConnection.scss";
 import { ShareConnectionProps, ShareType } from "./ShareConnection.types";
 
+const SHARE_CANCELLED_ERROR = "Share canceled";
 const ShareConnection = ({
   isOpen,
   setIsOpen,
@@ -30,6 +31,15 @@ const ShareConnection = ({
       return i18n.t("shareidentifier.subtitle.identifier");
     }
   }, [shareLocation]);
+
+  const nativeShare = () => {
+    Share.share({
+      text: oobi,
+    }).catch((e) => {
+      if(e.message === SHARE_CANCELLED_ERROR) return;
+      throw e;
+    });
+  }
 
   const closeModal = () => setIsOpen(false);
 
@@ -111,11 +121,7 @@ const ShareConnection = ({
           <span
             className="share-identifier-option"
             data-testid="share-identifier-share-button"
-            onClick={async () => {
-              await Share.share({
-                text: oobi,
-              });
-            }}
+            onClick={nativeShare}
           >
             <span>
               <IonButton

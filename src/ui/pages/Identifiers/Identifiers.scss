@@ -99,7 +99,7 @@
     }
 
     .identifier-cards {
-      .list-header {
+      .list-header,.identifiers-tab-chips {
         animation: indentifierFavouriteCardHeaderResize 0.25s ease;
         animation-fill-mode: forwards;
 

@@ -86,6 +86,14 @@ const connectionStateChangedHandler = async (
   if (event.payload.status === ConnectionStatus.PENDING) {
     if (event.payload.isMultiSigInvite) return;
 
+    dispatch(
+      updateOrAddConnectionCache({
+        id: event.payload.connectionId || "",
+        label: event.payload.label || "",
+        status: event.payload.status,
+        createdAtUTC: new Date().toString(),
+      })
+    );
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
     const connectionRecordId = event.payload.connectionId!;
@@ -491,7 +499,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   const initApp = async () => {
     await new ConfigurationService().start();
-    await Agent.agent.initDatabaseConnection();
+    await Agent.agent.setupLocalDependencies();
 
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.

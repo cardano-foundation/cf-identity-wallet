@@ -13,7 +13,7 @@
   ion-card {
     margin: 0;
     display: flex;
-    background: white;
+    background: var(--ion-color-white);
     border-radius: 1rem;
     flex-direction: column;
     justify-content: space-evenly;
@@ -68,7 +68,7 @@
           --track-background-checked: var(--ion-color-primary-gradient);
 
           &.md {
-            --handle-background-checked: white;
+            --handle-background-checked: var(--ion-color-white);
           }
         }
       }

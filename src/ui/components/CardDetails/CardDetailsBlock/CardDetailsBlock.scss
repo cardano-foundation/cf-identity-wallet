@@ -8,7 +8,7 @@
 
   .card-details-info-block-inner {
     @include text-style;
-    background: white;
+    background: var(--ion-color-white);
     box-shadow: none;
     --inner-border-width: 0;
     padding: 0.5rem 1.25rem;
@@ -87,7 +87,7 @@
     }
   }
 
-  &.flat-border-bot{
+  &.flat-border-bot {
     .card-details-info-block-inner {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
@@ -117,7 +117,7 @@
     }
   }
 
-  @media screen and (min-width: 250px) and (max-width: 370px) { 
+  @media screen and (min-width: 250px) and (max-width: 370px) {
     &.has-content {
       .card-header {
         margin-bottom: 0.8rem;
@@ -126,6 +126,7 @@
 
     .card-details-info-block-inner {
       padding: 1rem;
+      font-size: 0.8rem;
     }
   }
 }

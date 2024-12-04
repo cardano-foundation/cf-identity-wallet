@@ -77,7 +77,18 @@ class CredentialService extends AgentService {
   @OnlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
-    const acdc = await this.props.signifyClient.credentials().get(metadata.id);
+    const acdc = await this.props.signifyClient
+      .credentials()
+      .get(metadata.id)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
@@ -174,7 +185,7 @@ class CredentialService extends AgentService {
             isArchived: false,
             issuanceDate: new Date(credential.sad.a.dt).toISOString(),
             credentialType: credential.schema.title,
-            status: CredentialStatus.PENDING,
+            status: CredentialStatus.CONFIRMED,
             connectionId: credential.sad.i,
             schema: credential.schema.$id,
             identifierId: credential.sad.a.i,

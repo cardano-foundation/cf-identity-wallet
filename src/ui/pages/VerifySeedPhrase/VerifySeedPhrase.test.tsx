@@ -1,19 +1,18 @@
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import {
-  ionFireEvent as fireEvent,
-  waitForIonicReact,
+  ionFireEvent as fireEvent
 } from "@ionic/react-test-utils";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
-import { KeyStoreKeys } from "../../../core/storage";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -65,7 +64,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.GENERATE_SEED_PHRASE);
 
-    const { getByTestId, queryByText, getByText } = render(
+    const { getByTestId, queryByText, getByText, findByText } = render(
       <Provider store={storeMocked}>
         <IonReactMemoryRouter
           history={history}
@@ -94,7 +93,6 @@ describe("Verify Seed Phrase Page", () => {
       fireEvent.click(termsCheckbox);
       fireEvent.click(generateContinueButton);
     });
-    await waitForIonicReact();
 
     const seedPhraseContainer = getByTestId("seed-phrase-container");
     for (let i = 0, len = seedPhraseContainer.childNodes.length; i < len; i++) {
@@ -103,7 +101,7 @@ describe("Verify Seed Phrase Page", () => {
       );
     }
 
-    const generateConfirmButton = getByText(
+    const generateConfirmButton = await findByText(
       EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.confirm
     );
 
@@ -126,7 +124,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.VERIFY_SEED_PHRASE);
 
-    const { getByTestId, queryByText } = render(
+    const { getByTestId, getByText, queryByText, findByText, unmount } = render(
       <Provider store={storeMocked}>
         <IonReactMemoryRouter
           history={history}
@@ -167,11 +165,17 @@ describe("Verify Seed Phrase Page", () => {
 
     fireEvent.click(continueButton);
 
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)
-      ).toBeVisible()
-    );
+    const text = await findByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text);
+
+    expect(text).toBeVisible();
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.button.confirm));
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)).toBeNull();
+    });
+
+    unmount();
   });
 
   test("The user can Verify the Seed Phrase when Onboarding", async () => {
@@ -394,7 +398,7 @@ describe("Verify Seed Phrase Page", () => {
 
     expect(continueButton).toBeDisabled();
 
-    initialState.seedPhraseCache.seedPhrase.split(" ").forEach(async (word) => {
+    initialState.seedPhraseCache.seedPhrase.split(" ").sort((a, b) => a.localeCompare(b)).forEach(async (word) => {
       fireEvent.click(getByText(`${word}`));
     });
 

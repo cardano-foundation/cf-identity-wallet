@@ -1,18 +1,17 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { MemoryRouter, Route } from "react-router-dom";
-import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
-import { AnyAction, Store } from "@reduxjs/toolkit";
 import { IonInput } from "@ionic/react";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { CredentialDetails } from "../../pages/CredentialDetails";
+import { ionFireEvent } from "@ionic/react-test-utils";
+import { AnyAction, Store } from "@reduxjs/toolkit";
+import { render, waitFor } from "@testing-library/react";
+import { act } from "react";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
-import { VerifyPassword } from "./VerifyPassword";
-import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { SecureStorage } from "../../../core/storage";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { CustomInputProps } from "../CustomInput/CustomInput.types";
+import { VerifyPassword } from "./VerifyPassword";
+import { BasicRecord } from "../../../core/agent/records";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -86,124 +85,6 @@ const initialStateWithPassword = {
   credsArchivedCache: { creds: credsFixAcdc },
 };
 
-describe("Verify Password on Cards Details page", () => {
-  let storeMocked: Store<unknown, AnyAction>;
-  beforeEach(() => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    storeMocked = {
-      ...mockStore(initialStateNoPassword),
-      dispatch: dispatchMock,
-    };
-  });
-
-  test.skip("It renders verify password when clicking on the big archive button", async () => {
-    jest
-      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixAcdc[0]);
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    storeMocked = {
-      ...mockStore(initialStateWithPassword),
-      dispatch: dispatchMock,
-    };
-    const { findByTestId, getAllByText, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    const archiveButton = await findByTestId(
-      "archive-button-credential-card-details"
-    );
-
-    act(() => {
-      fireEvent.click(archiveButton);
-    });
-
-    await waitFor(() => {
-      expect(
-        getAllByText(
-          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
-        )[1]
-      ).toBeVisible();
-    });
-
-    await waitFor(() => {
-      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
-        "is-open",
-        "false"
-      );
-    });
-
-    act(() => {
-      fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.confirm
-        )[0]
-      );
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => {
-      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
-        "is-open",
-        "true"
-      );
-    });
-  });
-
-  test.skip("It asks to verify the password when users try to archive the cred using the button in the modal", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    storeMocked = {
-      ...mockStore(initialStateWithPassword),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    expect(getAllByTestId("verify-password")[1].getAttribute("is-open")).toBe(
-      "false"
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("options-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("creds-options-archive-button")).toBeInTheDocument();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("creds-options-archive-button"));
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => {
-      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
-        "is-open",
-        "true"
-      );
-    });
-  });
-});
-
 jest.mock("../CustomInput", () => ({
   CustomInput: (props: CustomInputProps) => {
     return (
@@ -234,6 +115,13 @@ describe("Verify Password", () => {
   });
 
   test("Verify failed", async () => {
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(new BasicRecord({
+      id: "id",
+      content: {
+        value: "1213213"
+      }
+    }));
+
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     storeMocked = {
@@ -254,7 +142,9 @@ describe("Verify Password", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByTestId("forgot-hint-btn")).toBeVisible();
+    })
 
     const passwordInput = await findByTestId("verify-password-value");
 
@@ -279,6 +169,12 @@ describe("Verify Password", () => {
 
   test("Verify success", async () => {
     jest.spyOn(SecureStorage, "get").mockResolvedValue("1111");
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(new BasicRecord({
+      id: "id",
+      content: {
+        value: "1213213"
+      }
+    }));
 
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -290,7 +186,7 @@ describe("Verify Password", () => {
     const setIsOpenMock = jest.fn();
     const onVerifyMock = jest.fn();
 
-    const { findByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <VerifyPassword
           isOpen={true}
@@ -300,11 +196,12 @@ describe("Verify Password", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByTestId("forgot-hint-btn")).toBeVisible();
+    })
 
-    const passwordInput = await findByTestId("verify-password-value");
-
-    const confirmButton = await findByTestId("action-button");
+    const passwordInput = getByTestId("verify-password-value");
+    const confirmButton = getByTestId("action-button");
 
     act(() => {
       ionFireEvent.ionInput(passwordInput, "1111");
@@ -321,6 +218,8 @@ describe("Verify Password", () => {
     await waitFor(() => {
       expect(onVerifyMock).toBeCalledTimes(1);
     });
+
+    unmount();
   });
 
   test("Render hint button success", async () => {
@@ -352,12 +251,8 @@ describe("Verify Password", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
-
-    const forgorBtn = getByTestId("forgot-hint-btn");
-
     await waitFor(() => {
-      expect(forgorBtn).toBeVisible();
+      expect(getByTestId("forgot-hint-btn")).toBeVisible();
     });
   });
 });

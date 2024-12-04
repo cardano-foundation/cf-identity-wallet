@@ -987,12 +987,18 @@
         "restore": "Restore",
         "delete": "Delete",
         "type": "Type",
-        "title": "Title",
+        "about": "About",
+        "credentialdetails": "Credential details",
         "description": "Description",
-        "revoked": "Revoked",
-        "id": "Credential ID",
+        "relatedidentifier": "Related identifier",
+        "id": "ID",
+        "modal": {
+          "about": "About {{ type }}"
+        },
         "attributes": {
           "label": "Attributes",
+          "description": "Essential details shared by the issuer, which verify and describe key information in this credential.",
+          "details": "Attribute details",
           "issuee": "Issuee",
           "issuancedate": "Issuance Date",
           "lei": "LEI"
@@ -1003,7 +1009,7 @@
           "label": "Status",
           "issued": "Issued",
           "revoked": "Revoked",
-          "timestamp": "Timestamp"
+          "timestamp": "Timestamp: "
         },
         "options": {
           "title": "Credential options",
@@ -1142,7 +1148,8 @@
           "providecredential": "Provide credential",
           "addcred": "Add Credential",
           "done": "Done",
-          "ok": "Ok"
+          "ok": "Ok",
+          "delete": "Delete"
         },
         "credential": {
           "request": {
@@ -1181,6 +1188,8 @@
             "credentialpending": "Credential pending",
             "credentialdetailbutton": "Credential details",
             "members": "Group member",
+            "revokedalert": "This credential has been revoked by the issuer and is no longer available.",
+            "relatedidentifier": "Related identifier",
             "alert": {
               "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
             }
@@ -1778,5 +1787,9 @@
   "genericerror": {
     "text": "Something went wrong. Please try again.",
     "button": "OK"
+  },
+  "readmore": {
+    "more": "Read more",
+    "less": "Read less"
   }
 }

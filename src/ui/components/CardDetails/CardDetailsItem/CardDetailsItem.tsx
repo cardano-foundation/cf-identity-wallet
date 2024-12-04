@@ -19,7 +19,7 @@ const CardDetailsItem = ({
   className,
   fullText = false,
   mask = true,
-  endSlot
+  endSlot,
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
 
@@ -63,16 +63,16 @@ const CardDetailsItem = ({
         />
       )}
       <div className={contentClass}>
-        <IonText
-          className={textClass}
-          data-testid={`${testId}-text-value`}
-        >
+        <IonText className={textClass}>
           {keyValue && (
-            <IonText className="card-details-info-block-key">
+            <IonText
+              data-testid={`${testId}-key-value`}
+              className="card-details-info-block-key"
+            >
               {keyValue}
             </IonText>
           )}
-          {info}
+          <span data-testid={`${testId}-text-value`}>{info}</span>
         </IonText>
         {copyButton && (
           <IonButton
@@ -85,9 +85,7 @@ const CardDetailsItem = ({
             <IonIcon icon={copyOutline} />
           </IonButton>
         )}
-        {
-          endSlot
-        }
+        {endSlot}
       </div>
     </IonItem>
   );

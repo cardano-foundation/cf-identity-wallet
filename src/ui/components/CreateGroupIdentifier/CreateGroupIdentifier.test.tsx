@@ -15,14 +15,13 @@ mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
-    <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>
-  ),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
 }));
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
-    get: (key: string) => {
+    get: () => {
       return "111111";
     },
   },
@@ -34,8 +33,9 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getMultisigLinkedContacts: (args: any) =>
+        getMultisigLinkedContacts: (args: unknown) =>
           mockGetMultisigConnection(args),
+        getOobi: jest.fn()
       },
     },
   },

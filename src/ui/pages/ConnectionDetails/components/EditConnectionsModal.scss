@@ -55,7 +55,7 @@
     margin-bottom: 2.94rem;
     padding: 1.25rem;
     border-radius: 1rem;
-    background-color: white;
+    background-color: var(--ion-color-white);
 
     .connection-details-delete-note {
       position: absolute;
@@ -155,7 +155,7 @@
     }
 
     .action-button {
-      background: white;
+      background: var(--ion-color-white);
     }
 
     .close-button-label,

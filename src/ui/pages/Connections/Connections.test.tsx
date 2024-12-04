@@ -26,6 +26,7 @@ jest.mock("../../../core/agent/agent", () => ({
         createMediatorInvitation: jest.fn(),
         getShortenUrl: jest.fn(),
         deleteStaleLocalConnectionById: () => deleteConnectionByIdMock(),
+        getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
       },
     },
   },
@@ -45,32 +46,28 @@ jest.mock("../../../core/storage", () => ({
   },
 }));
 
-jest.mock("@ionic/react", () => ({
-  ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
-  IonSearchbar: (props: any) => {
-    const {
-      onIonInput,
-      debounce,
-      onIonCancel,
-      showCancelButton,
-      onIonFocus,
-      onIonBlur,
-      ...resProps
-    } = props;
+jest.mock("@ionic/react", () => {
+  const { forwardRef } = jest.requireActual("react");
 
-    return (
-      <input
-        {...resProps}
-        data-testid="search-bar"
-        onChange={onIonInput}
-        onBlur={onIonBlur}
-        onFocus={onIonFocus}
-      />
-    );
-  },
-}));
+  return {
+    ...jest.requireActual("@ionic/react"),
+    IonModal: ({ children, isOpen, ...props }: any) =>
+      isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+    IonSearchbar: forwardRef((props: any, ref: any) => {
+      const { onIonInput, onIonFocus, onIonBlur } = props;
+
+      return (
+        <input
+          value={props.value}
+          data-testid="search-bar"
+          onChange={onIonInput}
+          onBlur={onIonBlur}
+          onFocus={onIonFocus}
+        />
+      );
+    }),
+  };
+});
 
 const mockSetShowConnections = jest.fn();
 
@@ -91,7 +88,7 @@ const initialStateFull = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
   seedPhraseCache: {},
   credsCache: {
@@ -322,7 +319,7 @@ describe("Connections page", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -333,7 +330,7 @@ describe("Connections page", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, queryByText } = render(
+    const { getByTestId, queryByText, findByText, unmount } = render(
       <Provider store={storeMocked}>
         <Connections
           setShowConnections={mockSetShowConnections}
@@ -342,33 +339,30 @@ describe("Connections page", () => {
       </Provider>
     );
 
-    act(() => {
-      fireEvent.click(getByTestId("primary-button-connections"));
-    });
+    fireEvent.click(getByTestId("primary-button-connections"));
 
     await waitFor(() => {
       expect(getByTestId("add-connection-modal-provide-qr-code")).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
-    });
+    fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
 
+    const text = await findByText(
+      EN_TRANSLATIONS.connections.page.alert.message
+    );
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.connections.page.alert.message)
-      ).toBeVisible();
+      expect(text).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(getByTestId("alert-create-keri-cancel-button"));
-    });
+    fireEvent.click(getByTestId("alert-create-keri-cancel-button"));
 
     await waitFor(() => {
       expect(
         queryByText(EN_TRANSLATIONS.connections.page.alert.message)
       ).toBeNull();
     });
+
+    unmount();
   });
 
   test("Search", async () => {
@@ -395,7 +389,7 @@ describe("Connections page", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -500,7 +494,7 @@ describe("Connections page from Credentials tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: [],
@@ -595,7 +589,7 @@ describe("Connections page from Credentials tab", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -607,7 +601,7 @@ describe("Connections page from Credentials tab", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, unmount } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={storeMocked}>
           <Connections
@@ -662,10 +656,12 @@ describe("Connections page from Credentials tab", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteConnectionByIdMock).toBeCalled();
     });
+
+    unmount();
   });
 });

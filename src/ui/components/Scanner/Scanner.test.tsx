@@ -1,7 +1,7 @@
 import { IonInput } from "@ionic/react";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import {
@@ -27,18 +27,23 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { Scanner } from "./Scanner";
 import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
 
+const getPlatformMock = jest.fn(() => ["mobile"]);
+
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
+  getPlatforms: () => getPlatformMock(),
   IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
+
+const isNativePlatformMock = jest.fn(() => true);
 
 jest.mock("@capacitor/core", () => {
   return {
     ...jest.requireActual("@capacitor/core"),
     Capacitor: {
-      isNativePlatform: () => true,
+      isNativePlatform: () => isNativePlatformMock(),
     },
   };
 });
@@ -152,6 +157,10 @@ describe("Scanner", () => {
         connections: [],
       },
     },
+    connectionsCache: {
+      connections: {},
+      multisigConnections: {},
+    },
   };
 
   const dispatchMock = jest.fn();
@@ -160,7 +169,7 @@ describe("Scanner", () => {
     dispatch: dispatchMock,
   };
 
-  const setIsValueCaptured = jest.fn();
+  const setIsValueCaptured = jest.fn(() => []);
 
   beforeEach(() => {
     checkPermisson.mockImplementation(() =>
@@ -168,6 +177,10 @@ describe("Scanner", () => {
         camera: "granted",
       })
     );
+
+    getPlatformMock.mockClear();
+
+    isNativePlatformMock.mockImplementation(() => true);
 
     addListener.mockImplementation(
       (
@@ -195,15 +208,16 @@ describe("Scanner", () => {
   });
 
   test("Renders spinner", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <Scanner setIsValueCaptured={setIsValueCaptured} />
       </Provider>
     );
 
     expect(getByTestId("qr-code-scanner")).toBeVisible();
-
     expect(getByTestId("scanner-spinner-container")).toBeVisible();
+
+    unmount();
   });
 
   addListener.mockImplementation(
@@ -315,7 +329,7 @@ describe("Scanner", () => {
     });
   });
 
-  test("Multisign initiator scan - groupId not match", async () => {
+  test("Multisign initiator scan 1 - groupId not match", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.SCAN],
@@ -331,6 +345,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
         scanGroupId: "mock",
+      },      
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -406,47 +424,25 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
         scanGroupId: "72e2f089cef6",
+        multiSigGroup: {
+          connections: [connectionsFix[0]]
+        }
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
-    getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
+    getPlatformMock.mockImplementation(() => ["mobileweb"])
+    isNativePlatformMock.mockImplementation(() => false);
 
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
 
-    connectByOobiUrlMock.mockImplementation(() => {
-      return {
-        type: KeriConnectionType.MULTI_SIG_INITIATOR,
-      };
-    });
-
-    addListener.mockImplementation(
-      (
-        eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
-      ) => {
-        setTimeout(() => {
-          listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
-          });
-        }, 100);
-
-        return {
-          remove: jest.fn(),
-        };
-      }
-    );
-
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <Scanner setIsValueCaptured={setIsValueCaptured} />
       </Provider>
@@ -465,14 +461,6 @@ describe("Scanner", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(OperationType.MULTI_SIG_INITIATOR_INIT)
-      );
-      expect(getByTestId("create-identifier-modal")).toBeVisible();
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER)
-      );
-
-      expect(dispatchMock).not.toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
       );
     });
   });
@@ -493,6 +481,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
         scanGroupId: "72e2f089cef6",
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -577,6 +569,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -611,6 +607,10 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -685,6 +685,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -758,6 +762,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -825,6 +833,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -891,6 +903,10 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -968,6 +984,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -1042,6 +1062,10 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -1103,6 +1127,10 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 

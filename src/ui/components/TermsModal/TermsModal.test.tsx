@@ -45,8 +45,6 @@ describe("Terms and conditions screen", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
-
     await waitFor(() => {
       expect(getByTestId("terms-of-use-modal")).toBeVisible();
     });

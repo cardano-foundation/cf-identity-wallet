@@ -44,7 +44,7 @@ describe("Passcode Module", () => {
   const handleRemove = jest.fn();
 
   test("Clicking on a number button returns a digit", async () => {
-    const { getByText } = render(
+    const { getByText, unmount } = render(
       <Provider store={storeMocked(initialState)}>
         <PasscodeModule
           error={errorFunction()}
@@ -60,5 +60,6 @@ describe("Passcode Module", () => {
       expect(handlePinChange()).toBe(i);
       handlePinChange = jest.fn(() => i + 1);
     }
+    unmount();
   });
 });

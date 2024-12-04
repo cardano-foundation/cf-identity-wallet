@@ -2,7 +2,7 @@ ion-modal#input-request {
   padding: 1.25rem;
   --height: fit-content;
   --border-radius: 1rem;
-  --box-shadow: 2px 2px 10px 0px rgba(3, 3, 33, 0.3);
+  --box-shadow: 2px 2px 10px 0px rgba(var(--ion-color-primary-rgb), 0.3);
 
   &.connection-alias {
     --backdrop-opacity: var(--ion-backdrop-opacity, 0.4);
@@ -24,7 +24,7 @@ ion-modal#input-request {
     }
 
     ion-item.custom-input {
-      --background: white;
+      --background: var(--ion-color-white);
       margin-top: 1.563rem;
 
       ion-label {

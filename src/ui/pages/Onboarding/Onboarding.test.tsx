@@ -1,15 +1,16 @@
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route } from "react-router-dom";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { act } from "react";
-import { Onboarding } from "./index";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { SetPasscode } from "../SetPasscode";
-import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
+import { store } from "../../../store";
 import { OperationType } from "../../globals/types";
 import { CreatePassword } from "../CreatePassword";
+import { SetPasscode } from "../SetPasscode";
+import { Onboarding } from "./index";
 
 const exitApp = jest.fn();
 jest.mock("@capacitor/app", () => ({
@@ -23,6 +24,20 @@ jest.mock("@capacitor/app", () => ({
     ),
   },
 }));
+
+jest.mock("../../hooks/useBiometricsHook", () => ({
+  useBiometricAuth: jest.fn(() => ({
+    biometricsIsEnabled: false,
+    biometricInfo: {
+      isAvailable: false,
+      hasCredentials: false,
+      biometryType: BiometryType.fingerprintAuthentication,
+      strongBiometryIsAvailable: true,
+    },
+    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+    setBiometricsIsEnabled: jest.fn(),
+  })),
+}))
 
 jest.mock("@capacitor/core", () => {
   return {
@@ -73,7 +88,7 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
-    const { getByText, queryByText } = render(
+    const { getByText, findByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={store}>
           <Onboarding />
@@ -86,13 +101,16 @@ describe("Onboarding Page", () => {
       EN_TRANSLATIONS.onboarding.getstarted.button.label
     );
 
-    fireEvent.click(buttonContinue);
+    act(() => {
+      fireEvent.click(buttonContinue);
+    })
 
-    await waitFor(() =>
+    await waitFor(async () => {
+      const text = await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode);
       expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
+        text
       ).toBeVisible()
-    );
+    });
   });
 
   test("If the user has already set a passcode but they haven't created a password, they will be asked to create one", async () => {
@@ -134,7 +152,9 @@ describe("Onboarding Page", () => {
       EN_TRANSLATIONS.onboarding.getstarted.button.label
     );
 
-    fireEvent.click(buttonContinue);
+    act(() => {
+      fireEvent.click(buttonContinue);
+    })
 
     await waitFor(() => {
       expect(queryAllByText(EN_TRANSLATIONS.createpassword.title)).toHaveLength(

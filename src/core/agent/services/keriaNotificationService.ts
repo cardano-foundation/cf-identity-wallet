@@ -1,7 +1,8 @@
-import { State } from "signify-ts";
+import { Ilks, State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
+  ConnectionStatus,
   ExchangeRoute,
   KeriaNotification,
   KeriaNotificationMarker,
@@ -30,10 +31,12 @@ import {
   OperationCompleteEvent,
   OperationAddedEvent,
   NotificationRemovedEvent,
+  ConnectionStateChangedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
+import { NotificationAttempts } from "../records/notificationRecord.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -122,6 +125,9 @@ class KeriaNotificationService extends AgentService {
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
     }
+
+    let lastFailedNotificationsRetryTime = 0;
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!this.loggedIn || !this.getKeriaOnlineStatus()) {
@@ -186,22 +192,47 @@ class KeriaNotificationService extends AgentService {
       for (const notif of notifications.notes) {
         try {
           await this.processNotification(notif);
-          const nextNotificationIndex = notificationQuery.nextIndex + 1;
-          notificationQuery = {
-            nextIndex: nextNotificationIndex,
-            lastNotificationId: notif.i,
-          };
-          await this.basicStorage.createOrUpdateBasicRecord(
-            new BasicRecord({
-              id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
-              content: notificationQuery,
-            })
-          );
         } catch (error) {
-          // @TODO - Consider how to track/retry old notifications we couldn't process
           /* eslint-disable no-console */
           console.error("Error when process a notification", error);
+
+          const failedNotifications = await this.basicStorage.findById(
+            MiscRecordId.FAILED_NOTIFICATIONS
+          );
+
+          await this.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.FAILED_NOTIFICATIONS,
+              content: {
+                ...(failedNotifications?.content || {}),
+                [notif.i]: {
+                  notification: notif,
+                  attempts: 1,
+                  lastAttempt: Date.now(),
+                },
+              },
+            })
+          );
         }
+
+        const nextNotificationIndex = notificationQuery.nextIndex + 1;
+        notificationQuery = {
+          nextIndex: nextNotificationIndex,
+          lastNotificationId: notif.i,
+        };
+        await this.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+            content: notificationQuery,
+          })
+        );
+      }
+
+      const now = Date.now();
+      if (now - lastFailedNotificationsRetryTime > 60000) {
+        // Retry failed notifications every minute
+        await this.retryFailedNotifications();
+        lastFailedNotificationsRetryTime = now;
       }
       if (!notifications.notes.length) {
         await new Promise((rs) =>
@@ -239,6 +270,7 @@ class KeriaNotificationService extends AgentService {
       return;
     }
     const exchange = await this.verifyExternalNotification(notif);
+
     if (!exchange) {
       return;
     }
@@ -291,10 +323,61 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
+  async retryFailedNotifications() {
+    const failedNotificationsRecord = await this.basicStorage.findById(
+      MiscRecordId.FAILED_NOTIFICATIONS
+    );
+
+    if (!failedNotificationsRecord || !failedNotificationsRecord.content) {
+      return;
+    }
+
+    const failedNotifications = failedNotificationsRecord.content;
+
+    for (const [notificationId, notificationData] of Object.entries(
+      failedNotifications as Record<string, NotificationAttempts>
+    )) {
+      const { attempts, lastAttempt, notification } = notificationData;
+      const now = Date.now();
+
+      const backoffDelays = [5000, 10000, 30000, 60000, 300000];
+      const delay =
+        backoffDelays[Math.min(attempts - 1, backoffDelays.length - 1)];
+
+      if (now - lastAttempt >= delay) {
+        try {
+          // Retry process the notification
+          await this.processNotification(notification);
+
+          delete failedNotifications[notificationId];
+          await this.basicStorage.update(
+            new BasicRecord({
+              id: MiscRecordId.FAILED_NOTIFICATIONS,
+              content: failedNotifications,
+            })
+          );
+        } catch (error) {
+          failedNotifications[notificationId] = {
+            ...notificationData,
+            attempts: attempts + 1,
+            lastAttempt: now,
+          };
+          await this.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.FAILED_NOTIFICATIONS,
+              content: failedNotifications,
+            })
+          );
+        }
+      }
+    }
+  }
+
   private async verifyExternalNotification(
     notif: Notification
   ): Promise<ExnMessage | undefined> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
+
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.i)
       .catch((error) => {
@@ -329,6 +412,10 @@ class KeriaNotificationService extends AgentService {
     notif: Notification,
     exchange: ExnMessage
   ): Promise<boolean> {
+    const credentialState = await this.props.signifyClient
+      .credentials()
+      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
+    const telStatus = credentialState.et;
     const existingCredential =
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
     const ourIdentifier = await this.identifierStorage
@@ -347,10 +434,21 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
+
     if (
+      telStatus === Ilks.rev &&
       existingCredential &&
       existingCredential.status !== CredentialStatus.REVOKED
     ) {
+      await this.credentialService.markAcdc(
+        exchange.exn.e.acdc.d,
+        CredentialStatus.REVOKED
+      );
+      await this.ipexCommunications.createLinkedIpexMessageRecord(
+        exchange,
+        ConnectionHistoryType.CREDENTIAL_REVOKED
+      );
+
       const dt = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
         senderName: ourIdentifier.id,
@@ -359,14 +457,40 @@ class KeriaNotificationService extends AgentService {
         datetime: dt,
         recipient: exchange.exn.i,
       });
-      const op = await this.props.signifyClient
+      await this.props.signifyClient
         .ipex()
         .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.ExchangeRevokeCredential,
+
+      const metadata: NotificationRecordStorageProps = {
+        id: randomSalt(),
+        a: {
+          r: NotificationRoute.LocalAcdcRevoked,
+          credentialId: existingCredential.id,
+          credentialTitle: existingCredential.credentialType,
+        },
+        connectionId: existingCredential.connectionId,
+        read: false,
+        route: NotificationRoute.LocalAcdcRevoked,
+      };
+      const notificationRecord = await this.notificationStorage.save(metadata);
+
+      this.props.eventEmitter.emit<NotificationAddedEvent>({
+        type: EventTypes.NotificationAdded,
+        payload: {
+          keriaNotif: {
+            id: notificationRecord.id,
+            createdAt: new Date().toISOString(),
+            a: {
+              r: NotificationRoute.LocalAcdcRevoked,
+              credentialId: existingCredential.id,
+              credentialTitle: existingCredential.credentialType,
+            },
+            read: false,
+            connectionId: exchange.exn.i,
+          },
+        },
       });
-      this.pendingOperations.push(pendingOperation);
+
       await this.markNotification(notif.i);
       return false;
     }
@@ -494,7 +618,14 @@ class KeriaNotificationService extends AgentService {
       const existingCredential = await this.props.signifyClient
         .credentials()
         .get(credentialId)
-        .catch(() => undefined);
+        .catch((error) => {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
 
       // @TODO - foconnor: If multi-sig it may not complete now
       if (existingCredential) {
@@ -870,20 +1001,21 @@ class KeriaNotificationService extends AgentService {
         const connectionRecord = await this.connectionStorage.findById(
           (operation.response as State).i
         );
-        // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
-        // Also unskip tests for this
+          // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
+          // Also unskip tests for this
 
         // const existingConnection = await this.props.signifyClient
         //   .contacts()
         //   .get((operation.response as State).i)
         //   .catch(() => undefined);
         //if (connectionRecord && !existingConnection) {
-        if (connectionRecord) {
+        if (connectionRecord && !connectionRecord.pendingDeletion) {
           connectionRecord.pending = false;
           connectionRecord.createdAt = new Date(
             (operation.response as State).dt
           );
           await this.connectionStorage.update(connectionRecord);
+
           const alias = connectionRecord.alias;
           await this.props.signifyClient
             .contacts()
@@ -891,6 +1023,14 @@ class KeriaNotificationService extends AgentService {
               alias,
               createdAt: new Date((operation.response as State).dt),
             });
+
+          this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+            type: EventTypes.ConnectionStateChanged,
+            payload: {
+              connectionId: connectionRecord.id,
+              status: ConnectionStatus.CONFIRMED,
+            },
+          });
         } else {
           await this.props.signifyClient
             .contacts()
@@ -951,59 +1091,6 @@ class KeriaNotificationService extends AgentService {
               credentialId,
               CredentialStatus.CONFIRMED
             );
-          }
-        }
-        break;
-      }
-      case OperationPendingRecordType.ExchangeRevokeCredential: {
-        const admitExchange = await this.props.signifyClient
-          .exchanges()
-          .get(operation.metadata?.said);
-        if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
-          const grantExchange = await this.props.signifyClient
-            .exchanges()
-            .get(admitExchange.exn.p);
-          const credentialId = grantExchange?.exn?.e?.acdc?.d;
-          const credentialMetadata =
-              await this.credentialStorage.getCredentialMetadata(credentialId);
-          const credential = await this.props.signifyClient
-            .credentials()
-            .get(credentialId);
-          if (credential.status.s === "0") {
-            // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
-            return;
-          }
-          if (
-            credential &&
-              credential.status.s === "1" &&
-              credentialMetadata?.status !== CredentialStatus.REVOKED
-          ) {
-            await this.credentialService.markAcdc(
-              credentialId,
-              CredentialStatus.REVOKED
-            );
-            await this.ipexCommunications.createLinkedIpexMessageRecord(
-              grantExchange,
-              ConnectionHistoryType.CREDENTIAL_REVOKED
-            );
-            const metadata: any = {
-              id: randomSalt(),
-              a: {
-                r: NotificationRoute.LocalAcdcRevoked,
-                credentialId,
-                credentialTitle: credential.schema.title,
-              },
-              read: false,
-              route: NotificationRoute.LocalAcdcRevoked,
-            };
-            await this.notificationStorage.save(metadata);
-            this.props.eventEmitter.emit<OperationCompleteEvent>({
-              type: EventTypes.OperationComplete,
-              payload: {
-                opType: operationRecord.recordType,
-                oid: recordId,
-              },
-            });
           }
         }
         break;

@@ -16,7 +16,7 @@ jest.mock("../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: () => mockInitDatabase(),
+      setupLocalDependencies: () => mockInitDatabase(),
       getBranAndMnemonic: jest.fn(() =>
         Promise.resolve({
           bran: "",
@@ -118,6 +118,32 @@ jest.mock("@ionic/react", () => ({
   getPlatforms: () => getPlatformsMock(),
 }));
 
+const isNativeMock = jest.fn(() => false);
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => isNativeMock(),
+    },
+  };
+});
+
+const addKeyboardEventMock = jest.fn();
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: (...params: any[]) => addKeyboardEventMock(...params),
+    hide: jest.fn()
+  },
+}));
+
+jest.mock("@capacitor-community/privacy-screen", () => ({
+  PrivacyScreen: {
+    enable: jest.fn(),
+    disable: jest.fn(),
+  },
+}));
+
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialState = {
@@ -173,7 +199,7 @@ const initialState = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
   biometricsCache: {
     enabled: false,
@@ -194,9 +220,10 @@ const storeMocked = {
 
 describe("App", () => {
   beforeEach(() => {
+    isNativeMock.mockImplementation(() => false);
     mockInitDatabase.mockClear();
     getPlatformsMock.mockImplementation(() => ["android"]);
-  })
+  });
 
   test("Mobile header hidden when app not in preview mode", async () => {
     const { queryByTestId } = render(
@@ -213,6 +240,7 @@ describe("App", () => {
 
   test("Force status bar style is dark mode on ios", async () => {
     getPlatformsMock.mockImplementation(() => ["ios"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -229,6 +257,7 @@ describe("App", () => {
 
   test("Should not force status bar style is dark mode on android or browser", async () => {
     getPlatformsMock.mockImplementation(() => ["android", "mobileweb"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -243,6 +272,7 @@ describe("App", () => {
 
   test("Should lock screen orientation to portrait mode", async () => {
     getPlatformsMock.mockImplementation(() => ["android"]);
+    isNativeMock.mockImplementation(() => true);
 
     render(
       <Provider store={store}>
@@ -322,7 +352,7 @@ describe("App", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -349,14 +379,16 @@ describe("App", () => {
   });
 
   test("Show error when unhandledrejection event fired", async () => {
-    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
-      if(type === "unhandledrejection") {
-        listener({
-          preventDefault: jest.fn(),
-          promise: Promise.reject(new Error("Failed"))
-        })
-      }
-    })
+    const spy = jest
+      .spyOn(window, "addEventListener")
+      .mockImplementation((type, listener: any) => {
+        if (type === "unhandledrejection") {
+          listener({
+            preventDefault: jest.fn(),
+            promise: Promise.reject(new Error("Failed")),
+          });
+        }
+      });
 
     render(
       <Provider store={storeMocked}>
@@ -372,14 +404,16 @@ describe("App", () => {
   });
 
   test("Show error when error fired", async () => {
-    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
-      if(type === "error") {
-        listener({
-          preventDefault: jest.fn(),
-          error: new Error("Failed")
-        })
-      }
-    })
+    const spy = jest
+      .spyOn(window, "addEventListener")
+      .mockImplementation((type, listener: any) => {
+        if (type === "error") {
+          listener({
+            preventDefault: jest.fn(),
+            error: new Error("Failed"),
+          });
+        }
+      });
 
     render(
       <Provider store={storeMocked}>
@@ -450,7 +484,7 @@ describe("App", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -478,7 +512,9 @@ describe("App", () => {
     );
 
     await waitFor(() => {
-      expect(getByText(Eng_Trans.inputrequest.title.username)).toBeInTheDocument();
+      expect(
+        getByText(Eng_Trans.inputrequest.title.username)
+      ).toBeInTheDocument();
     });
   });
 });

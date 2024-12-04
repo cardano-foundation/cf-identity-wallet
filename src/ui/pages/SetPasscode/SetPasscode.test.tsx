@@ -57,17 +57,17 @@ describe("SetPasscode Page", () => {
 
   test("Renders Re-enter Passcode title and start over button when passcode is set", async () => {
     require("@ionic/react");
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, getByTestId, findByText } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
     );
-    passcodeFiller(getByText, getByTestId, "1", 6);
+
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+    const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-      ).toBeInTheDocument()
+      expect(text).toBeInTheDocument()
     );
 
     expect(
@@ -77,18 +77,19 @@ describe("SetPasscode Page", () => {
 
   test("renders enter passcode restarting the process when start over button is clicked", async () => {
     require("@ionic/react");
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, queryByText, getByTestId, findByText } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
     );
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+    const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-      ).toBeInTheDocument()
+      expect(text).toBeInTheDocument()
     );
+
 
     const startOverElement = getByText(
       EN_TRANSLATIONS.createpasscodemodule.cantremember
@@ -104,18 +105,18 @@ describe("SetPasscode Page", () => {
   });
 
   test("Back to enter passcode screen from re-enter passcode screen", async () => {
-    const { getByText, getByTestId, queryByText } = render(
+    const { getByText, getByTestId, queryByText, findByText } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
     );
-    passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "2", 6);
+    const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-      ).toBeInTheDocument()
+      expect(text).toBeInTheDocument()
     );
+
 
     fireEvent.click(getByTestId("close-button"));
 
@@ -128,7 +129,7 @@ describe("SetPasscode Page", () => {
 
   test("Redirects to next page when passcode is entered correctly", async () => {
     require("@ionic/react");
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, queryByText, getByTestId, findByText } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
@@ -151,15 +152,15 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+
+    const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-      ).toBeInTheDocument()
+      expect(text).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(

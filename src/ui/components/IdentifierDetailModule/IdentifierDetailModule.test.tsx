@@ -1,6 +1,5 @@
 import { Clipboard } from "@capacitor/clipboard";
-import { IonReactMemoryRouter } from "@ionic/react-router";
-import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent } from "@ionic/react-test-utils";
 import {
   fireEvent,
   getDefaultNormalizer,
@@ -10,7 +9,6 @@ import {
 import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
-import { Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
@@ -26,8 +24,22 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
-import { IdentifierDetails } from "./IdentifierDetails";
-import { AccordionKey } from "./components/IdetifierDetailModal/IdentifierDetailModal.types";
+import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
+import { IdentifierDetailModule } from "./IdentifierDetailModule";
+
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 const getIndentifier = jest.fn(() => identifierFix[0]);
@@ -40,7 +52,7 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-const getMock = jest.fn((key: string) => "111111");
+const getMock = jest.fn<string, string[]>(() => "111111");
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
@@ -52,18 +64,13 @@ const deleteStaleLocalIdentifierMock = jest.fn();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) => (
-    <div
-      style={{ display: isOpen ? undefined : "none" }}
-      data-testid={props["data-testid"]}
-    >
-      {isOpen ? children : null}
-    </div>
-  ),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve(id));
 const deleteIdentifier = jest.fn(() => Promise.resolve());
+const markIdentifierPendingDelete = jest.fn(() => Promise.resolve());
 const createOrUpdateMock = jest.fn().mockResolvedValue(undefined);
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -76,6 +83,7 @@ jest.mock("../../../core/agent/agent", () => ({
         rotateIdentifier: (id: string) => rotateIdentifierMock(id),
         deleteStaleLocalIdentifier: () => deleteStaleLocalIdentifierMock(),
         deleteIdentifier: () => deleteIdentifier(),
+        markIdentifierPendingDelete: () => markIdentifierPendingDelete(),
       },
       connections: {
         getOobi: jest.fn(() => Promise.resolve("oobi")),
@@ -129,27 +137,27 @@ history.push(TabsRoutePath.IDENTIFIER_DETAILS, {
   ...identifierFix[0],
 });
 
+const pageId = "identifier-card-details";
+
 describe("Individual Identifier details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
+    getMock.mockImplementation(() => "111111");
   });
 
   test("It renders Identifier Details", async () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
     // Render card template
@@ -159,32 +167,34 @@ describe("Individual Identifier details page", () => {
       ).toBeInTheDocument()
     );
     // Render Information
-    expect(getByTestId("identifier")).toBeInTheDocument();
-    expect(getByTestId("identifier-text-value").innerHTML).toBe(
-      identifierFix[0].id.substring(0, 5) + "..." + identifierFix[0].id.slice(-5)
+    expect(getByTestId("identifier-id-text-value").innerHTML).toBe(
+      identifierFix[0].id.substring(0, 5) +
+        "..." +
+        identifierFix[0].id.slice(-5)
     );
     expect(getByTestId("creation-timestamp")).toBeVisible();
     // Render List of signing keys
-    expect(
-      getByTestId("signing-key-0")
-    ).toBeInTheDocument();
+    expect(getByTestId("signing-key-0")).toBeInTheDocument();
     expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
-    expect(getByText(identifierFix[0].k[0].substring(0, 5) + "..." + identifierFix[0].k[0].slice(-5))).toBeInTheDocument();
+    expect(
+      getByText(
+        identifierFix[0].k[0].substring(0, 5) +
+          "..." +
+          identifierFix[0].k[0].slice(-5)
+      )
+    ).toBeInTheDocument();
   });
 
   test("Render advanced modal", async () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
     // Render card template
@@ -193,37 +203,40 @@ describe("Individual Identifier details page", () => {
         getByTestId("identifier-card-template-default-index-0")
       ).toBeInTheDocument()
     );
-   
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
+
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced
+      )
+    );
 
     // Render Sequence number
     await waitFor(() => {
       expect(getByTestId("sequence-number")).toBeInTheDocument();
-    })
+    });
 
     expect(getByText(identifierFix[0].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last key event: ${formatShortDate(identifierFix[0].dt) +
-              " - " +
-              formatTimeToSec(identifierFix[0].dt)}`
+        `Last key event: ${
+          formatShortDate(identifierFix[0].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[0].dt)
+        }`
       )
     ).toBeInTheDocument();
-  })
+  });
 
   test("It opens the sharing modal", async () => {
-    const { getByTestId, queryByTestId, queryAllByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -234,66 +247,58 @@ describe("Individual Identifier details page", () => {
       );
     });
 
-    expect(queryAllByTestId("share-connection-modal")[0]).not.toBeVisible();
+    expect(queryByTestId("share-connection-modal")).toBeNull();
 
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
 
     await waitFor(() => {
-      expect(queryAllByTestId("share-connection-modal")[0]).toBeVisible();
+      expect(getByTestId("share-connection-modal")).toBeVisible();
     });
   });
 
   test("It opens the edit modal", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
     await waitFor(() =>
-      expect(
-        getByTestId("identifier")
-      ).toBeInTheDocument()
+      expect(getByTestId("identifier-id")).toBeInTheDocument()
     );
 
-    expect(getByTestId("identifier-options-modal")).not.toBeVisible();
+    expect(queryByTestId("identifier-options-modal")).toBeNull();
 
     act(() => {
       fireEvent.click(getByTestId("identifier-options-button"));
     });
 
-    expect(getByTestId("identifier-options-modal")).toBeVisible();
+    await waitFor(() => {
+      expect(getByTestId("identifier-options-modal")).toBeVisible();
+    });
   });
 
   test("It shows the button to access the editor", async () => {
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
     await waitFor(() =>
-      expect(
-        getByTestId("identifier")
-      ).toBeInTheDocument()
+      expect(getByTestId("identifier-options-button")).toBeInTheDocument()
     );
 
     act(() => {
@@ -306,24 +311,21 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It asks to verify the password when users try to delete the identifier using the button in the modal", async () => {
-    const { getByTestId, getByText, getAllByText } = render(
+    getMock.mockImplementation(() => "");
+
+    const { getByTestId, getByText, unmount, findByText, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
     await waitFor(() =>
-      expect(
-        getByTestId("identifier")
-      ).toBeInTheDocument()
+      expect(getByTestId("identifier-options-button")).toBeInTheDocument()
     );
 
     act(() => {
@@ -334,51 +336,50 @@ describe("Individual Identifier details page", () => {
       expect(getByTestId("delete-identifier-option")).toBeInTheDocument();
     });
 
-    act(() => {
-      fireEvent.click(
-        getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.options.delete)[0]
-      );
+    fireEvent.click(getByTestId("delete-button-identifier-card-details"));
+
+    const alertTitle = await findByText(
+      EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title
+    );
+
+    await waitFor(() => {
+      expect(alertTitle).toBeVisible();
     });
+
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm)
+    );
 
     await waitFor(() => {
       expect(
-        getAllByText(
-          EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title
-        )[0]
-      ).toBeVisible();
+        queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+      ).toBeNull();
     });
 
-    act(() => {
-      fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm
-        )[0]
-      );
-    });
+    const verifyTitle = await findByText(EN_TRANSLATIONS.verifypassword.title);
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
+      expect(verifyTitle).toBeVisible();
     });
+
+    unmount();
   });
 
   test("It shows the warning when I click on the big delete button", async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, queryByText, findByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
     await waitFor(() =>
       expect(
-        getByTestId("identifier")
+        getByTestId("delete-button-identifier-card-details")
       ).toBeInTheDocument()
     );
 
@@ -386,10 +387,12 @@ describe("Individual Identifier details page", () => {
       fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
+    const alertTitle = await findByText(
+      EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title
+    );
+
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
-      ).toBeVisible();
+      expect(alertTitle).toBeVisible();
     });
 
     act(() => {
@@ -400,9 +403,11 @@ describe("Individual Identifier details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
-      ).not.toBeVisible();
+        queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+      ).toBeNull();
     });
+
+    unmount();
   });
 
   test("Show loading when indetifier data is null", async () => {
@@ -410,15 +415,12 @@ describe("Individual Identifier details page", () => {
 
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -434,15 +436,12 @@ describe("Individual Identifier details page", () => {
   test("Hide loading after retrieved indetifier data", async () => {
     const { queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -485,15 +484,12 @@ describe("Individual Identifier details page", () => {
 
     const { queryByTestId, getByTestId, getByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
     await waitFor(() => {
@@ -513,11 +509,23 @@ describe("Individual Identifier details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.message)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.signingkey)).toBeVisible();
-      expect(getByTestId("rotate-keys-title").innerHTML).toBe(EN_TRANSLATIONS.tabs.identifiers.details.options.rotatekeys);
-    })
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.message)
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.signingkey
+        )
+      ).toBeVisible();
+      expect(getByTestId("rotate-keys-title").innerHTML).toBe(
+        EN_TRANSLATIONS.tabs.identifiers.details.options.rotatekeys
+      );
+    });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-rotate-key"));
@@ -573,7 +581,6 @@ describe("Individual Identifier details page", () => {
 });
 
 describe("Group Identifier details page", () => {
-
   const initialStateKeri = {
     stateCache: {
       routes: [TabsRoutePath.IDENTIFIERS],
@@ -643,7 +650,6 @@ describe("Group Identifier details page", () => {
       ],
     });
   });
-  
 
   test("It renders Identifier Details", async () => {
     Clipboard.write = jest.fn();
@@ -703,17 +709,14 @@ describe("Group Identifier details page", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText, getByTestId, getAllByText } = render(
+    const { getByTestId, getAllByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -731,27 +734,33 @@ describe("Group Identifier details page", () => {
 
     // Render Keys signing threshold
     expect(getByTestId("rotate-signing-key")).toBeVisible();
-    expect(getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.outof.replace("{{threshold}}", "4"))[0]).toBeVisible();
-    
+    expect(
+      getAllByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.outof.replace(
+          "{{threshold}}",
+          "4"
+        )
+      )[0]
+    ).toBeVisible();
+
     // Render Information
-    expect(getByTestId("identifier")).toBeInTheDocument();
-    expect(getByTestId("identifier-text-value").innerHTML).toBe(
-      identifierFix[2].id.substring(0, 5) + "..." + identifierFix[2].id.slice(-5)
+    expect(getByTestId("identifier-card-details-page")).toBeInTheDocument();
+    expect(getByTestId("identifier-id-text-value").innerHTML).toBe(
+      identifierFix[2].id.substring(0, 5) +
+        "..." +
+        identifierFix[2].id.slice(-5)
     );
   });
 
   test("Open group member", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -770,23 +779,30 @@ describe("Group Identifier details page", () => {
     fireEvent.click(getByTestId("view-member"));
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember.propexplain.content)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.groupmember
+            .propexplain.content
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open signing threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -797,26 +813,38 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold.title));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.group.signingkeysthreshold
+          .title
+      )
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold.propexplain.content)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.signingthreshold
+            .propexplain.content
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open advanced detail", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -826,20 +854,26 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.identifierdetail.showadvanced
+      )
+    );
 
     // Render Sequence number
     await waitFor(() => {
       expect(getByTestId("sequence-number")).toBeInTheDocument();
-    })
+    });
 
     expect(getByText(identifierFix[0].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last key event: ${formatShortDate(identifierFix[0].dt) +
-              " - " +
-              formatTimeToSec(identifierFix[0].dt)}`
+        `Last key event: ${
+          formatShortDate(identifierFix[0].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[0].dt)
+        }`
       )
     ).toBeInTheDocument();
 
@@ -847,41 +881,71 @@ describe("Group Identifier details page", () => {
     // Render Last key rotation timestamp
     expect(
       getByText(
-        `Last key event: ${formatShortDate(identifierFix[2].dt) +
-              " - " +
-              formatTimeToSec(identifierFix[2].dt)}`
+        `Last key event: ${
+          formatShortDate(identifierFix[2].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[2].dt)
+        }`
       )
     ).toBeInTheDocument();
 
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewkey.replace(
+          "{{keys}}",
+          "1"
+        )
+      )
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewrotationkey.replace(
+          "{{keys}}",
+          "1"
+        )
+      )
+    ).toBeInTheDocument();
 
-    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewkey.replace("{{keys}}", "1"))).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.viewrotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
-
-    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.SIGNINGKEY] as any);
+    ionFireEvent.ionChange(getByTestId("key-list"), [
+      AccordionKey.SIGNINGKEY,
+    ] as never);
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hidekey.replace("{{keys}}", "1"))).toBeInTheDocument();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hidekey.replace(
+            "{{keys}}",
+            "1"
+          )
+        )
+      ).toBeInTheDocument();
+    });
 
-    ionFireEvent.ionChange(getByTestId("key-list"), [AccordionKey.ROTATIONKEY] as any);
+    ionFireEvent.ionChange(getByTestId("key-list"), [
+      AccordionKey.ROTATIONKEY,
+    ] as never);
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hiderotationkey.replace("{{keys}}", "1"))).toBeInTheDocument();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.advanceddetail.hiderotationkey.replace(
+            "{{keys}}",
+            "1"
+          )
+        )
+      ).toBeInTheDocument();
+    });
   });
 
   test("Open rotation threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -892,26 +956,38 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+          .title
+      )
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.content
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open group member from rotation threshold", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -922,11 +998,26 @@ describe("Group Identifier details page", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.title));
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+          .title
+      )
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.title)).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold.propexplain.content)).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.title
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.detailmodal.rotationthreshold
+            .propexplain.content
+        )
+      ).toBeVisible();
     });
   });
 
@@ -962,15 +1053,12 @@ describe("Group Identifier details page", () => {
 
     const { queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -1024,26 +1112,22 @@ describe("Checking the Identifier Details Page when information is missing from 
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, unmount, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter
-          history={history}
-          initialEntries={[path]}
-        >
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
-
-    await waitForIonicReact();
 
     await waitFor(() => {
       expect(
         getByTestId("identifier-card-details-cloud-error-page")
       ).toBeVisible();
+
       expect(
         getByText(EN_TRANSLATIONS.tabs.identifiers.details.clouderror, {
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
@@ -1051,33 +1135,38 @@ describe("Checking the Identifier Details Page when information is missing from 
       ).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(getByTestId("delete-button-identifier-card-details"));
-    });
+    fireEvent.click(getByTestId("delete-button-identifier-card-details"));
 
     await waitFor(() => {
       expect(
-        getByTestId("alert-confirm-identifier-delete-details")
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
       ).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-confirm-identifier-delete-details-confirm-button")
-      );
+    fireEvent.click(
+      getByTestId("alert-confirm-identifier-delete-details-confirm-button")
+    );
+    fireEvent.click(
+      getByTestId("alert-confirm-identifier-delete-details-cancel-button")
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
+      ).toBeNull();
     });
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteStaleLocalIdentifierMock).toBeCalled();
     });
+
+    unmount();
   });
 });
 
@@ -1087,6 +1176,7 @@ describe("Favourite identifier", () => {
   });
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
+    getMock.mockImplementation(() => "111111");
   });
   test("It changes to favourite icon on click favourite button", async () => {
     const spy = jest
@@ -1098,12 +1188,12 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -1186,12 +1276,12 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -1253,12 +1343,12 @@ describe("Favourite identifier", () => {
 
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -1318,14 +1408,14 @@ describe("Favourite identifier", () => {
     const history = createMemoryHistory();
     history.push(path);
 
-    const { getByTestId, queryByTestId, getByText } = render(
+    const { getByTestId, queryByTestId, getByText, unmount } = render(
       <Provider store={storeMockedAidKeri}>
-        <IonReactMemoryRouter history={history}>
-          <Route
-            path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierDetails}
-          />
-        </IonReactMemoryRouter>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+        />
       </Provider>
     );
 
@@ -1339,30 +1429,26 @@ describe("Favourite identifier", () => {
       fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
-    await waitForIonicReact();
-
     await waitFor(() => {
       expect(
-        getByTestId("alert-confirm-identifier-delete-details")
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
       ).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-confirm-identifier-delete-details-confirm-button")
-      );
-    });
+    fireEvent.click(
+      getByTestId("alert-confirm-identifier-delete-details-confirm-button")
+    );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+      expect(getByTestId("verify-passcode")).toBeInTheDocument();
     });
 
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(deleteIdentifier).toBeCalled();
+      expect(markIdentifierPendingDelete).toBeCalled();
     });
+
+    unmount();
   });
 });

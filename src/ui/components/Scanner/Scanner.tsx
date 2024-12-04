@@ -16,20 +16,17 @@ import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  ConnectionStatus,
-  KeriConnectionType,
+  KeriConnectionType
 } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { randomSalt } from "../../../core/agent/services/utils";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  removeConnectionCache,
+  getConnectionsCache,
   setMissingAliasUrl,
   setOpenConnectionId,
-  updateOrAddConnectionCache,
-  updateOrAddMultisigConnectionCache,
+  updateOrAddMultisigConnectionCache
 } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
@@ -41,11 +38,10 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   getCurrentOperation,
-  getShowConnections,
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
-  showConnections,
+  showConnections
 } from "../../../store/reducers/stateCache";
 import {
   setPendingConnection,
@@ -81,12 +77,12 @@ const Scanner = forwardRef(
     const platforms = getPlatforms();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
+    const connections = useAppSelector(getConnectionsCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsgs = useAppSelector(getToastMsgs);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
-    const showConnectionPage = useAppSelector(getShowConnections);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
@@ -328,17 +324,15 @@ const Scanner = forwardRef(
         return;
       }
 
-      const pendingId = randomSalt();
-      dispatch(
-        updateOrAddConnectionCache({
-          id: pendingId,
-          label: connectionName || pendingId,
-          status: ConnectionStatus.PENDING,
-          createdAtUTC: new Date().toString(),
-        })
-      );
-
       try {
+        const connectionId = new URL(content).pathname
+          .split("/oobi/")
+          .pop()?.split("/")[0];
+
+        if(connectionId && connections[connectionId]) {
+          throw new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`);
+        }
+
         await Agent.agent.connections.connectByOobiUrl(content);
       } catch (e) {
         const errorMessage = (e as Error).message;
@@ -349,8 +343,8 @@ const Scanner = forwardRef(
           await handleDuplicateConnectionError(e as Error, content, false);
           return;
         }
-      } finally {
-        dispatch(removeConnectionCache(pendingId));
+
+        showError("Scanner Error:", e, dispatch);
       }
     };
 
@@ -462,8 +456,7 @@ const Scanner = forwardRef(
               OperationType.MULTI_SIG_INITIATOR_SCAN,
               OperationType.MULTI_SIG_RECEIVER_SCAN,
             ].includes(currentOperation) &&
-              !isDuplicateConnectionToast)) &&
-          !showConnectionPage && !createIdentifierModalIsOpen
+              !isDuplicateConnectionToast))
         ) {
           await initScan();
         } else {
@@ -471,7 +464,7 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsgs, routePath, cameraDirection, showConnectionPage, createIdentifierModalIsOpen]);
+    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
 
     useEffect(() => {
       return () => {

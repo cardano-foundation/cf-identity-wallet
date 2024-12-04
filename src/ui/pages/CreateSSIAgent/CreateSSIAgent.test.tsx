@@ -3,7 +3,7 @@ import { IonReactMemoryRouter } from "@ionic/react-router";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MiscRecordId } from "../../../core/agent/agent.types";
@@ -53,7 +53,11 @@ jest.mock("../../../core/agent/agent", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children, ...props }: any) => {
+    const testId = props["data-testid"];
+
+    return <div data-testid={testId}>{children}</div>;
+  }
 }));
 
 const browserMock = jest.fn(({ link }: { link: string }) =>
@@ -413,6 +417,10 @@ describe("SSI agent page", () => {
         "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
       url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
     });
+
+    await waitFor(() => {
+      expect(getByTestId("ssi-spinner-container")).toBeVisible();
+    })
   });
 
   test("Open SSI Agent info modal (Onboarding)", async () => {
@@ -780,7 +788,7 @@ describe("SSI agent page: show error", () => {
 
     bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK)))
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId } = render(
       <IonReactMemoryRouter history={history}>
         <Provider store={storeMocked}>
           <CreateSSIAgent />

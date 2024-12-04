@@ -80,30 +80,12 @@
     color: var(--ion-color-secondary);
     margin-top: 1.5625rem;
 
-    .cred-content-acdc-card {
-      .card-details-info-block-inner {
-        padding: 1.25rem;
-      }
-    }
-
     > *:not(:first-child) {
       margin: 1.56rem 0 1rem;
-    }
-
-    .card-attribute-block {
-      .card-details-info-block-inner {
-        padding: 1.25rem;
-      }
     }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    .cred-content-acdc-card {
-      .card-details-info-block-inner {
-        font-size: 0.8rem;
-      }
-    }
-
     &.archived-credential {
       .action-button-label,
       .action-button-label.md {
@@ -132,12 +114,6 @@
 
       > *:not(:first-child) {
         margin: 1rem 0 0.85rem;
-      }
-
-      .card-attribute-block {
-        .card-details-info-block-inner {
-          padding: 1rem 1.25rem;
-        }
       }
     }
   }

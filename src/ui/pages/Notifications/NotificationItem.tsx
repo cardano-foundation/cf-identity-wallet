@@ -5,7 +5,7 @@ import {
   fingerPrintOutline,
   idCardOutline,
 } from "ionicons/icons";
-import { MouseEvent, useCallback, useEffect, useState } from "react";
+import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
 import {
   KeriaNotification,
@@ -27,50 +27,33 @@ const NotificationItem = ({
 }: NotificationItemProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
   const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
-  const [notificationLabelText, setNotificationLabelText] =
-    useState<string>("");
-  const [loading, setLoading] = useState(true);
 
-  const notificationLabel = useCallback(
-    (item: KeriaNotification) => {
-      switch (item.a.r) {
-      case NotificationRoute.ExnIpexGrant:
-        return t("tabs.notifications.tab.labels.exnipexgrant", {
-          connection: connectionsCache?.[item.connectionId]?.label,
-        });
-      case NotificationRoute.MultiSigIcp:
-        return t("tabs.notifications.tab.labels.multisigicp", {
-          connection: multisigConnectionsCache?.[item.connectionId]?.label,
-        });
-      case NotificationRoute.ExnIpexApply:
-        return t("tabs.notifications.tab.labels.exnipexapply", {
-          connection: connectionsCache?.[item.connectionId]?.label,
-        });
-      case NotificationRoute.LocalAcdcRevoked:
-        return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
-          credential: item.a.credentialTitle,
-        });
-      case NotificationRoute.MultiSigExn:
-        return t("tabs.notifications.tab.labels.multisigexn", {
-          connection: connectionsCache?.[item.connectionId]?.label,
-        });
-      default:
-        return "";
-      }
-    },
-    [connectionsCache, multisigConnectionsCache]
-  );
-
-  const fetchNotificationLabel = useCallback(() => {
-    const label = notificationLabel(item);
-
-    setNotificationLabelText(label);
-    setLoading(false);
-  }, [item, notificationLabel]);
-
-  useEffect(() => {
-    fetchNotificationLabel();
-  }, [fetchNotificationLabel, item]);
+  const notificationLabelText = useMemo(() => {
+    switch (item.a.r) {
+    case NotificationRoute.ExnIpexGrant:
+      return t("tabs.notifications.tab.labels.exnipexgrant", {
+        connection: connectionsCache?.[item.connectionId]?.label,
+      });
+    case NotificationRoute.MultiSigIcp:
+      return t("tabs.notifications.tab.labels.multisigicp", {
+        connection: multisigConnectionsCache?.[item.connectionId]?.label,
+      });
+    case NotificationRoute.ExnIpexApply:
+      return t("tabs.notifications.tab.labels.exnipexapply", {
+        connection: connectionsCache?.[item.connectionId]?.label,
+      });
+    case NotificationRoute.LocalAcdcRevoked:
+      return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
+        credential: item.a.credentialTitle,
+      });
+    case NotificationRoute.MultiSigExn:
+      return t("tabs.notifications.tab.labels.multisigexn", {
+        connection: connectionsCache?.[item.connectionId]?.label,
+      });
+    default:
+      return "";
+    }
+  }, [connectionsCache, item.a.credentialTitle, item.a.r, item.connectionId, multisigConnectionsCache])
 
   const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {
@@ -91,45 +74,41 @@ const NotificationItem = ({
   };
 
   return (
-    <>
-      {!loading && (
-        <IonItem
-          onClick={() => onClick(item)}
-          className={`notifications-tab-item${item.read ? "" : " unread"}`}
-          data-testid={`notifications-tab-item-${item.id}`}
-        >
-          <div className="notification-logo">
-            <img
-              src={KeriLogo}
-              alt="notifications-tab-item-logo"
-              className="notifications-tab-item-logo"
-              data-testid="notifications-tab-item-logo"
-            />
-            <IonIcon
-              src={referIcon(item)}
-              size="small"
-              className="notification-ref-icon"
-            />
-          </div>
-          <IonLabel>
-            <Trans>{notificationLabelText}</Trans>
-            <br />
-            <span className="notifications-tab-item-time">
-              {timeDifference(item.createdAt)[0]}
-              {timeDifference(item.createdAt)[1]}
-            </span>
-          </IonLabel>
-          <IonIcon
-            aria-hidden="true"
-            icon={ellipsisHorizontal}
-            slot="end"
-            className="notifications-tab-item-ellipsis"
-            data-testid={`${item.id}-option-btn`}
-            onClick={openOptionModal}
-          />
-        </IonItem>
-      )}
-    </>
+    <IonItem
+      onClick={() => onClick(item)}
+      className={`notifications-tab-item${item.read ? "" : " unread"}`}
+      data-testid={`notifications-tab-item-${item.id}`}
+    >
+      <div className="notification-logo">
+        <img
+          src={KeriLogo}
+          alt="notifications-tab-item-logo"
+          className="notifications-tab-item-logo"
+          data-testid="notifications-tab-item-logo"
+        />
+        <IonIcon
+          src={referIcon(item)}
+          size="small"
+          className="notification-ref-icon"
+        />
+      </div>
+      <IonLabel>
+        <Trans>{notificationLabelText}</Trans>
+        <br />
+        <span className="notifications-tab-item-time">
+          {timeDifference(item.createdAt)[0]}
+          {timeDifference(item.createdAt)[1]}
+        </span>
+      </IonLabel>
+      <IonIcon
+        aria-hidden="true"
+        icon={ellipsisHorizontal}
+        slot="end"
+        className="notifications-tab-item-ellipsis"
+        data-testid={`${item.id}-option-btn`}
+        onClick={openOptionModal}
+      />
+    </IonItem>
   );
 };
 

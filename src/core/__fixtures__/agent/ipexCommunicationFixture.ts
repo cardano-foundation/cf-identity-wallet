@@ -681,6 +681,36 @@ const ipexSubmitAdmitSig = [
 const ipexSubmitAdmitEnd =
   "-LA35AACAA-e-exn-FABEB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac0AAAAAAAAAAAAAAAAAAAAAAAEB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac-AABABDwPi6ZSD6AMwz-1VDbgGtVWMLUZKmbD6GHXqgYRdgklSO8x_qEwheY16XQvDz9uwpukMg2LyL9FBa64qu65xgE";
 
+const credentialStateIssued = {
+  vn: [1, 0],
+  i: "EJd6GsxIhMXj1M8Ie0mq7oLgCcoEqp2p0YJIoh6wGa6M",
+  s: "0",
+  d: "EEFWKiBAQWh4RK2l_M8SxMZcPPsTaCG1-hIgl5Ve7Vy0",
+  ri: "EEewa3h_r6kU-VW9RC-CvP6-ZBXhXQzzBQIMnI1_-_GX",
+  ra: {},
+  a: {
+    s: 18,
+    d: "EHQp2tuAj4RygtixT0QsYUtP6YW5L_yzPThBMwmaARlC",
+  },
+  dt: "2024-11-07T08:32:34.943000+00:00",
+  et: "iss",
+};
+
+const credentialStateRevoked = {
+  vn: [1, 0],
+  i: "EJd6GsxIhMXj1M8Ie0mq7oLgCcoEqp2p0YJIoh6wGa6M",
+  s: "0",
+  d: "EEFWKiBAQWh4RK2l_M8SxMZcPPsTaCG1-hIgl5Ve7Vy0",
+  ri: "EEewa3h_r6kU-VW9RC-CvP6-ZBXhXQzzBQIMnI1_-_GX",
+  ra: {},
+  a: {
+    s: 18,
+    d: "EHQp2tuAj4RygtixT0QsYUtP6YW5L_yzPThBMwmaARlC",
+  },
+  dt: "2024-11-07T08:32:34.943000+00:00",
+  et: "rev",
+};
+
 export {
   QVISchema,
   credentialRecordProps,
@@ -714,4 +744,6 @@ export {
   ipexSubmitAdmitSerder,
   ipexSubmitAdmitSig,
   ipexSubmitAdmitEnd,
+  credentialStateIssued,
+  credentialStateRevoked
 };

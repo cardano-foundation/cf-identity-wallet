@@ -114,6 +114,7 @@ const identifierStorage = jest.mocked({
   getIdentifierMetadataByGroupId: jest.fn(),
   deleteIdentifierMetadata: jest.fn(),
   getIdentifierPendingCreation: jest.fn(),
+  getIdentifiersPendingDeletion: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -512,6 +513,7 @@ describe("Single sig service of agent", () => {
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+        pendingDeletion: false,
       }
     );
   });
@@ -555,6 +557,7 @@ describe("Single sig service of agent", () => {
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+        pendingDeletion: false,
       }
     );
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
@@ -706,5 +709,54 @@ describe("Single sig service of agent", () => {
       "agent",
       signifyClient.agent!.pre
     );
+  });
+  test("Should mark identifier is pending when start delete identifier", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    eventEmitter.emit = jest.fn();
+
+    await identifierService.markIdentifierPendingDelete(keriMetadataRecord.id);
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.IdentifierRemoved,
+      payload: {
+        id: keriMetadataRecord.id,
+      },
+    });
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      keriMetadataRecord.id,
+      {
+        pendingDeletion: true,
+      }
+    );
+  });
+
+  test("Should not try to mark an identifier as pending delete if it does note exist", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(undefined);
+
+    await expect(
+      identifierService.markIdentifierPendingDelete(keriMetadataRecord.id)
+    ).rejects.toThrow(new Error("Identifier metadata record does not exist"));
+    expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
+  });
+
+  test("Should retrieve pending deletions and delete each by ID", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierService.deleteIdentifier = jest
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    identifierStorage.getIdentifiersPendingDeletion.mockResolvedValueOnce([
+      { id: "id1" },
+      { id: "id2" },
+    ]);
+    await identifierService.removeIdentifiersPendingDeletion();
+
+    expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id1");
+    expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id2");
   });
 });

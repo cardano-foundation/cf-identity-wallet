@@ -16,6 +16,7 @@ class ConnectionRecord extends BaseRecord {
   oobi!: string;
   groupId?: string;
   pending!: boolean;
+  pendingDeletion = false;
   static readonly type = "ConnectionRecord";
   readonly type = ConnectionRecord.type;
 
@@ -36,6 +37,8 @@ class ConnectionRecord extends BaseRecord {
     return {
       ...this._tags,
       groupId: this.groupId,
+      pendingDeletion: this.pendingDeletion,
+      pending: this.pending,
     };
   }
 }

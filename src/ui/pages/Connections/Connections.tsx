@@ -64,9 +64,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const [connectionShortDetails, setConnectionShortDetails] = useState<
       ConnectionShortDetails | undefined
     >(undefined);
-    const availableIdentifiers = identifierCache.filter(
-      (item) => !item.isPending
-    ).filter((item) => !item.groupMetadata?.groupId);
+    const availableIdentifiers = identifierCache
+      .filter((item) => !item.isPending)
+      .filter((item) => !item.groupMetadata?.groupId);
     const [mappedConnections, setMappedConnections] = useState<
       MappedConnections[]
     >([]);
@@ -87,6 +87,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const userName = stateCache.authentication.userName;
     const [oobi, setOobi] = useState("");
     const [hideHeader, setHideHeader] = useState(false);
+    const [openConnectionlModal, setOpenConnectionlModal] = useState(false);
 
     useEffect(() => {
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
@@ -200,6 +201,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       }
 
       setConnectionShortDetails(item);
+      setOpenConnectionlModal(true);
     };
 
     const getConnectionsTab = useCallback(() => {
@@ -270,10 +272,15 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       "hide-header": hideHeader,
     });
 
-    return connectionShortDetails ? (
+    const handleCloseConnectionModal = () => {
+      setConnectionShortDetails(undefined);
+      setOpenConnectionlModal(false);
+    };
+
+    return connectionShortDetails && openConnectionlModal ? (
       <ConnectionDetails
         connectionShortDetails={connectionShortDetails}
-        setConnectionShortDetails={setConnectionShortDetails}
+        handleCloseConnectionModal={handleCloseConnectionModal}
       />
     ) : (
       <>

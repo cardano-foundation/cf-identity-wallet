@@ -1,5 +1,6 @@
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -250,9 +251,7 @@ describe("Archived and revoked credentials", () => {
         expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
       });
 
-      act(() => {
-        passcodeFiller(getByText, getByTestId, "1", 6);
-      });
+      await passcodeFiller(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
         expect(deleteCredentialsMock).toBeCalled();
@@ -349,9 +348,7 @@ describe("Archived and revoked credentials", () => {
         expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
       });
 
-      act(() => {
-        passcodeFiller(getByText, getByTestId, "1", 6);
-      });
+      await passcodeFiller(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
         expect(deleteCredentialsMock).toBeCalled();
