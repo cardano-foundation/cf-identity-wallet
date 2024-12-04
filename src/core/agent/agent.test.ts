@@ -23,6 +23,9 @@ const mockAgentServicesProps = {
 };
 
 const mockGetBranValue = "AEsI_2YqNsQlf8brzDJaP";
+jest
+  .spyOn(SecureStorage, "get")
+  .mockResolvedValue(mockGetBranValue);
 const mockBasicStorageService = {
   save: jest.fn(),
 };
