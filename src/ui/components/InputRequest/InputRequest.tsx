@@ -66,13 +66,6 @@ const InputRequest = () => {
   }, [showModal])
 
   const resolveConnectionOobi = async (content: string) => {
-    if (
-      !new URL(content).pathname.match(OOBI_AGENT_ONLY_RE) &&
-      !new URL(content).pathname.match(WOOBI_RE)
-    ) {
-      throw new Error("Invalid connection url");
-    }
-
     try {
       const connectionId = new URL(content).pathname
         .split("/oobi/")
