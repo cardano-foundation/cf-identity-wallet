@@ -209,7 +209,7 @@ class IdentifierService extends AgentService {
     });
 
     await this.props.signifyClient.identifiers().update(identifier, {
-      name: `${metadata.theme}-${randomSalt()}:${metadata.displayName}`,
+      name: `XX-${randomSalt()}:${metadata.displayName}`,
     });
 
     const connectedDApp =
