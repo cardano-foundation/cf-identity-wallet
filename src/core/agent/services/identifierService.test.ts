@@ -137,18 +137,6 @@ const identifierService = new IdentifierService(
   connections as any
 );
 
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      connections: {
-        getConnectionShortDetailById: jest.fn(),
-        getConnections: jest.fn(),
-      },
-      getKeriaOnlineStatus: jest.fn(),
-    },
-  },
-}));
-
 jest.mock("../../cardano/walletConnect/peerConnection", () => ({
   PeerConnection: {
     peerConnection: {

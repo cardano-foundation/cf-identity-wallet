@@ -175,7 +175,7 @@ const credentialRecordProps = {
   status: CredentialStatus.PENDING,
 };
 
-const identifierMetadataRecord = {
+const groupIdentifierMetadataRecord = {
   type: "IdentifierMetadataRecord",
   id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
   displayName: "holder",
@@ -719,7 +719,7 @@ export {
   applyForPresentingExnMessage,
   offerForPresentingExnMessage,
   agreeForPresentingExnMessage,
-  identifierMetadataRecord,
+  groupIdentifierMetadataRecord,
   multisigExnOfferForPresenting,
   multisigExnAdmitForIssuance,
   multisigExnGrant,
