@@ -17,10 +17,10 @@ services:
       - 3902:3902
       - 3903:3903
 
-  witness:
-    container_name: idw-witness
+  witnesess:
+    container_name: idw-witnesses
     restart: unless-stopped
-    image: weboftrust/keri:1.1.6
+    image: weboftrust/keri:1.1.26
     environment:
         - PYTHONUNBUFFERED=1
         - PYTHONIOENCODING=UTF-8
@@ -33,6 +33,9 @@ services:
       - 5642:5642
       - 5643:5643
       - 5644:5644
+      - 5645:5645
+      - 5646:5646
+      - 5647:5647
 
   cred-issuance:
     container_name: cred-issuance

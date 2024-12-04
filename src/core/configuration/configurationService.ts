@@ -1,6 +1,6 @@
-import { Configuration, BackingMode } from "./configurationService.types";
+import { Configuration } from "./configurationService.types";
 // eslint-disable-next-line no-undef
-const environment = process.env.ENVIRONMENT || "local-comm";
+const environment = process.env.ENVIRONMENT || "local";
 const keriaIP = process.env.KERIA_IP;
 class ConfigurationService {
   private static configurationEnv: Configuration;
@@ -87,32 +87,7 @@ class ConfigurationService {
     if (typeof backerMode !== "string") {
       return this.invalid("Missing backer type");
     }
-
-    if (backerMode === BackingMode.POOLS) {
-      const witnessConfig = keri.backing.pools;
-      const witnessConfigValid =
-        Array.isArray(witnessConfig) &&
-        witnessConfig.length > 0 &&
-        witnessConfig.every((witness) => typeof witness === "string");
-      return witnessConfigValid
-        ? { success: true }
-        : this.invalid("Invalid witness config format");
-    } else if (backerMode === BackingMode.LEDGER) {
-      const ledgerConfig = keri.backing.ledger;
-      if (typeof ledgerConfig !== "object") {
-        return this.invalid("Ledger config must be an object");
-      }
-
-      const ledgerConfigValid =
-        typeof ledgerConfig.aid === "string" &&
-        typeof ledgerConfig.address === "string";
-      return ledgerConfigValid
-        ? { success: true }
-        : this.invalid("Ledger config is not valid");
-    } else if (backerMode === BackingMode.DIRECT) {
-      return { success: true };
-    }
-    return this.invalid("Invalid backer mode");
+    return { success: true };
   }
 
   private invalid(reason: string) {

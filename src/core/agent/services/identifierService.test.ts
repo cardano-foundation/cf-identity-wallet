@@ -36,6 +36,7 @@ const operationGetMock = jest.fn().mockImplementation((id: string) => {
     },
   };
 });
+const getAgentConfigMock = jest.fn();
 
 jest.mock("signify-ts", () => ({
   Salter: jest.fn().mockImplementation(() => {
@@ -104,7 +105,11 @@ const signifyClient = jest.mocked({
     get: jest.fn(),
   }),
   manager: undefined,
+  config: () => ({
+    get: getAgentConfigMock,
+  }),
 });
+
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
   getAllIdentifierMetadata: jest.fn(),
@@ -229,10 +234,24 @@ const identifierMembersState = {
   ],
 };
 
+const WITNESSES = [
+  "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller?role=witness",
+  "http://witnesess:5643/oobi/BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM/controller?role=witness",
+  "http://witnesess:5644/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX/controller?role=witness",
+  "http://witnesess:5645/oobi/BM35JN8XeJSEfpxopjn5jr7tAHCE5749f0OobhMLCorE/controller?role=witness",
+  "http://witnesess:5646/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHP/controller?role=witness",
+  "http://witnesess:5647/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsM/controller?role=witness"
+];
+
 describe("Single sig service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();
+
+    getAgentConfigMock.mockResolvedValue({
+      iurls: WITNESSES
+    });
   });
+  
   test("can get all identifiers", async () => {
     identifierStorage.getAllIdentifierMetadata = jest
       .fn()
@@ -346,6 +365,7 @@ describe("Single sig service of agent", () => {
         done: true,
       }),
     });
+
     expect(
       await identifierService.createIdentifier({
         displayName,
@@ -355,7 +375,10 @@ describe("Single sig service of agent", () => {
       identifier: aid,
       isPending: false,
     });
-    expect(createIdentifierMock).toBeCalled();
+    expect(createIdentifierMock).toBeCalledWith(`0:${displayName}`, {
+      toad: WITNESSES.length,
+      wits: WITNESSES
+    });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
 
@@ -397,7 +420,10 @@ describe("Single sig service of agent", () => {
       identifier: aid,
       isPending: true,
     });
-    expect(createIdentifierMock).toBeCalled();
+    expect(createIdentifierMock).toBeCalledWith(`0:${displayName}`, {
+      toad: WITNESSES.length,
+      wits: WITNESSES
+    });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationAdded,
@@ -427,6 +453,35 @@ describe("Single sig service of agent", () => {
         theme: 44,
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
+    expect(createIdentifierMock).not.toBeCalled();
+  });
+
+  test("cannot create identifier is agent config is missing", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    getAgentConfigMock.mockResolvedValueOnce({});
+
+    await expect(
+      identifierService.createIdentifier({
+        displayName: "newDisplayName",
+        theme: 0,
+      })
+    ).rejects.toThrowError(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
+    expect(createIdentifierMock).not.toBeCalled();
+  });
+
+  test("cannot create identifier is there are no discoverable witnesses", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: ["http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller"]
+    });
+
+    await expect(
+      identifierService.createIdentifier({
+        displayName: "newDisplayName",
+        theme: 0,
+      })
+    ).rejects.toThrowError(IdentifierService.NO_WITNESSES_AVAILABLE);
+    expect(createIdentifierMock).not.toBeCalled();
   });
 
   test("should throw an error if identifier name already exists", async () => {

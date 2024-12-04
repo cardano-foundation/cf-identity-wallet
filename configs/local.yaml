@@ -4,6 +4,4 @@ keri:
     bootUrl: "http://127.0.0.1:3903"
   credentials:
     testServer:
-      urlInt: "http://cred-issuance:3001"
-  backing:
-    mode: direct 
+      urlInt: "http://127.0.0.1:3001"
