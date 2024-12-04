@@ -204,12 +204,12 @@ class IdentifierService extends AgentService {
       );
     }
 
-    await this.identifierStorage.updateIdentifierMetadata(identifier, {
-      isDeleted: true,
-    });
-
     await this.props.signifyClient.identifiers().update(identifier, {
       name: `XX-${randomSalt()}:${metadata.displayName}`,
+    });
+
+    await this.identifierStorage.updateIdentifierMetadata(identifier, {
+      isDeleted: true,
     });
 
     const connectedDApp =
