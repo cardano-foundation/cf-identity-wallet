@@ -138,8 +138,9 @@ class IdentifierService extends AgentService {
 
     let name = `${metadata.theme}:${metadata.displayName}`;
     if (metadata.groupMetadata) {
-      name = `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`;
-    }
+      const initiatorFlag = metadata.groupMetadata.groupInitiator ? "1" : "0";
+      name = `${metadata.theme}:${initiatorFlag}-${metadata.groupMetadata.groupId}:${metadata.displayName}`;
+    } 
     const operation = await this.props.signifyClient.identifiers().create(name);
     let op = await operation.op().catch((error) => {
       const err = error.message.split(" - ");
@@ -149,7 +150,6 @@ class IdentifierService extends AgentService {
       throw error;
     });
     const identifier = operation.serder.ked.i;
-
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
@@ -292,7 +292,7 @@ class IdentifierService extends AgentService {
           const groupMetadata = {
             groupId,
             groupCreated: false,
-            groupInitiator: false
+            groupInitiator: this.checkGroupInitiator(groupId)
           }
           await this.identifierStorage.createIdentifierMetadataRecord({
             id: identifier.prefix,
@@ -305,18 +305,32 @@ class IdentifierService extends AgentService {
           if(identifier.group){
             const multisigManageAid = identifier.group.mhab.prefix;
             groupId = identifier.group.mhab.name.split(":")[1];
-            await this,this.identifierStorage.createIdentifierMetadataRecord({
+            const op = await this.props.signifyClient.operations().get(`group.${identifier.prefix}`)
+            const isPending = !op.done;
+            if(isPending){
+              const pendingOperation = await this.operationPendingStorage.save({
+                id: op.name,
+                recordType: OperationPendingRecordType.Group,
+              });
+              this.props.eventEmitter.emit<OperationAddedEvent>({
+                type: EventTypes.OperationAdded,
+                payload: { operation: pendingOperation },
+              });
+            }else{
+              await this,this.identifierStorage.updateIdentifierMetadata(multisigManageAid,{
+                groupMetadata: {
+                  groupId,
+                  groupCreated: true,
+                  groupInitiator: this.checkGroupInitiator(groupId)
+                }
+              })
+            }
+            await this.identifierStorage.createIdentifierMetadataRecord({
               id: identifier.prefix,
               displayName: groupId,
               theme: 0,
-              multisigManageAid
-            })
-            await this,this.identifierStorage.updateIdentifierMetadata(multisigManageAid,{
-              groupMetadata: {
-                groupId,
-                groupCreated: true,
-                groupInitiator: false
-              }
+              multisigManageAid,
+              isPending
             })
           }
           await this.identifierStorage.createIdentifierMetadataRecord({
@@ -330,13 +344,18 @@ class IdentifierService extends AgentService {
   }
 
   private checkIdentifierNameIsMultiSig(name: string): boolean {
-    const regex = /^0:[A-Za-z0-9]+:[A-Za-z0-9]+$/;
-    return regex.test(name);
+    const parts = name.split(":");
+    return parts.length === 3;
   }
 
   private checkIdentifierNameIsDeleted(name: string): boolean {
     const regex = /^[A-Za-z]{2}-[a-zA-Z0-9]{3,}:[a-zA-Z]+$/;
     return regex.test(name);
+  }
+
+  private checkGroupInitiator(groupId: string): boolean {
+    const groupInitiator = groupId.split("-")[0];
+    return groupInitiator === "1";
   }
 
   @OnlineOnly

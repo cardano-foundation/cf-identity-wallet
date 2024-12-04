@@ -561,21 +561,22 @@ describe("Single sig service of agent", () => {
   });
 
   test("Should correctly sync KERI identifiers, handling both group and non-group cases", async () => {
+    // Mock the online status of the agent
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
   
+    // Mock the list of identifiers returned by signifyClient
     listIdentifiersMock.mockReturnValue({
       aids: [
         {
-          name: "0:group1:test1",
+          name: "0:1-group1:test1",
           prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-         
         },
         {
           name: "0:test1",
           prefix: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
           group: {
             mhab: {
-              name: "0:group1:test1",
+              name: "0:1-group1:test1",
               prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
             },
           },
@@ -585,42 +586,53 @@ describe("Single sig service of agent", () => {
           prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
         },
       ],
-      start: 1,
-      end: 3,
-      total: 3,
     });
   
+    // Mock the identifier storage
     identifierStorage.getKeriIdentifiersMetadata = jest.fn().mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
     identifierStorage.updateIdentifierMetadata = jest.fn();
   
+    // Mock the signifyClient operations call
+    const mockOperation = {
+      done: true,
+      name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+    };
+    jest
+      .spyOn(signifyClient.operations(), "get")
+      .mockResolvedValue(mockOperation);
+  
+    // Call the function to test
     await identifierService.syncKeriaIdentifiers();
   
+    // Expectations for a multi-sig identifier
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-      displayName: "group1",
+      displayName: "1-group1",
       theme: 0,
       groupMetadata: {
-        groupId: "group1",
+        groupId: "1-group1",
         groupCreated: false,
-        groupInitiator: false,
+        groupInitiator: true,
       },
     });
   
+    // Expectations for an identifier within a group
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-      displayName: "group1",
+      displayName: "1-group1",
       theme: 0,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl"
+      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      isPending: false,
     });
-
+  
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       {
         groupMetadata: {
-          groupId: "group1",
+          groupId: "1-group1",
           groupCreated: true,
-          groupInitiator: false,
+          groupInitiator: true,
         },
       }
     );
@@ -630,8 +642,8 @@ describe("Single sig service of agent", () => {
       displayName: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
       theme: 0,
     });
-  
   });
+  
 
   test("should call signify.rotateIdentifier with correct params", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
@@ -667,7 +679,6 @@ describe("Single sig service of agent", () => {
       await identifierService.getSigner(keriMetadataRecord.id)
     ).toStrictEqual(mockSigner);
   });
-
   test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
