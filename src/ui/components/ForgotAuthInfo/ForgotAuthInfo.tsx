@@ -1,5 +1,5 @@
 import { IonModal } from "@ionic/react";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -80,6 +80,10 @@ const ForgotAuthInfo = ({
       ? "forgotauth.passcode.description"
       : "forgotauth.password.description";
 
+  const onPasscodeChange = useCallback((passcode: string, originalPassCode: string) => {
+    setReEnterPasscodeStep(!!originalPassCode);
+  }, []);
+
   return (
     <IonModal
       isOpen={isOpen}
@@ -117,9 +121,7 @@ const ForgotAuthInfo = ({
           <CreatePasscodeModule
             description={`${i18n.t("forgotauth.newpasscode.description")}`}
             testId={pageId}
-            onPasscodeChange={(passcode, originalPassCode) => {
-              setReEnterPasscodeStep(!!originalPassCode);
-            }}
+            onPasscodeChange={onPasscodeChange}
             onCreateSuccess={handleClose}
             overrideAlertZIndex={overrideAlertZIndex}
           />

@@ -1,16 +1,13 @@
-import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
-import { ThunkAction } from "@reduxjs/toolkit";
+import { ThunkDispatch } from "redux-thunk";
+import { DataProps, UpdateRedux } from "../routes/nextRoute/nextRoute.types";
 import { RootState } from "./index";
-import { DataProps } from "../routes/nextRoute/nextRoute.types";
 
 const updateReduxState = (
   nextRoute: string,
   data: DataProps,
   dispatch: ThunkDispatch<RootState, undefined, AnyAction>,
-  functions: ((
-    data: DataProps
-  ) => ThunkAction<void, RootState, undefined, AnyAction>)[]
+  functions: UpdateRedux[]
 ) => {
   if (data.state) {
     data.state.nextRoute = nextRoute;

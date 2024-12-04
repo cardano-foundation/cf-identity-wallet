@@ -96,13 +96,15 @@ const connectionStateChangedHandler = async (
     );
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
-    const connectionRecordId = event.payload.connectionId!;
-    const connectionDetails =
+    const connectionRecordId = event.payload.connectionId;
+    if(connectionRecordId) {
+      const connectionDetails =
       await Agent.agent.connections.getConnectionShortDetailById(
         connectionRecordId
       );
-    dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
+      dispatch(updateOrAddConnectionCache(connectionDetails));
+      dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
+    }
   }
 };
 
@@ -193,10 +195,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    initApp();
-  }, []);
-
-  useEffect(() => {
     if (authentication.loggedIn) {
       dispatch(setPauseQueueIncomingRequest(!isOnline));
     } else {
@@ -260,7 +258,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
 
-  const loadDatabase = async () => {
+  const loadDatabase = useCallback(async () => {
     try {
       const connectionsDetails = await Agent.agent.connections.getConnections();
       const multisigConnectionsDetails =
@@ -286,9 +284,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } catch (e) {
       showError("Failed to load database data", e, dispatch);
     }
-  };
+  }, [dispatch]);
 
-  const loadCacheBasicStorage = async () => {
+  const loadCacheBasicStorage = useCallback(async () => {
     try {
       let userName: { userName: string } = { userName: "" };
       let identifiersSelectedFilter: IdentifiersFilters =
@@ -430,7 +428,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
       dispatch(
         setAuthentication({
-          ...authentication,
           userName: userName.userName as string,
           passcodeIsSet,
           seedPhraseIsSet,
@@ -452,9 +449,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         keriaConnectUrlRecord: null,
       };
     }
-  };
+  }, [dispatch]);
 
-  const setupEventServiceCallbacks = () => {
+  const setupEventServiceCallbacks = useCallback(() => {
     Agent.agent.onKeriaStatusStateChanged((event) => {
       setOnlineStatus(event.payload.isOnline);
     });
@@ -489,9 +486,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
     });
-  };
+  }, [dispatch, setOnlineStatus]);
 
-  const initApp = async () => {
+  const initApp = useCallback(async () => {
     await new ConfigurationService().start();
     await Agent.agent.setupLocalDependencies();
 
@@ -538,7 +535,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.pollNotifications();
     Agent.agent.keriaNotifications.pollLongOperations();
     dispatch(setInitialized(true));
-  };
+  }, [dispatch, loadCacheBasicStorage, loadDatabase, setupEventServiceCallbacks]);
+
+  useEffect(() => {
+    initApp();
+  }, [initApp]);
 
   return (
     <>

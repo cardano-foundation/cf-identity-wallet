@@ -1,13 +1,28 @@
-import { StateCacheProps } from "../../store/reducers/stateCache";
+import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
+import { RootState } from "../../store";
 import { SeedPhraseCacheProps } from "../../store/reducers/seedPhraseCache";
+import { StateCacheProps } from "../../store/reducers/stateCache";
 import { RoutePath, TabsRoutePath } from "../paths";
 
-interface PageState {
-  [key: string]: any;
+type PageDefaultState = Record<string, string | boolean | undefined>;
+
+interface RecoveryWalletProgressState {
+  recoveryWalletProgress: boolean;
 }
-interface PayloadProps {
-  [key: string]: any;
+
+interface SeedPhraseCacheState {
+  seedPhrase?: string;
+  bran?: string;
 }
+
+interface RouteState {
+  nextRoute: string;
+}
+
+interface PasswordState {
+  skipped: boolean;
+}
+
 interface StoreState {
   stateCache: StateCacheProps;
   seedPhraseCache?: SeedPhraseCacheProps;
@@ -17,13 +32,16 @@ interface NextRoute {
   nextPath: (data: DataProps) => {
     pathname: RoutePath | TabsRoutePath | string;
   };
-  updateRedux: any[];
+  updateRedux: UpdateRedux[];
 }
 
-interface DataProps {
+interface DataProps<S = PageDefaultState, P = object> {
   store: StoreState;
-  state?: PageState;
-  payload?: PayloadProps;
+  state?: S;
+  payload?: P;
 }
 
-export type { PageState, PayloadProps, StoreState, DataProps, NextRoute };
+type UpdateRedux = ((data: DataProps<unknown>) => AnyAction) | (() => AnyAction) | ((data: DataProps) => AnyAction) | ((data: DataProps) => ThunkAction<void, RootState, undefined, AnyAction>);
+
+export type { DataProps, NextRoute, PageDefaultState, PasswordState, RecoveryWalletProgressState, RouteState, SeedPhraseCacheState, StoreState, UpdateRedux };
+

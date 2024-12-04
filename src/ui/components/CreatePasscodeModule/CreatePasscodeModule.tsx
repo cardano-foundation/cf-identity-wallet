@@ -185,7 +185,7 @@ const CreatePasscodeModule = forwardRef<
           }
         });
       }
-    }, [originalPassCode, passcode]);
+    }, [onPasscodeChange, originalPassCode, passcode]);
 
     const errorMessage = () => {
       if (passcodeMatch) {

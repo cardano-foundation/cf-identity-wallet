@@ -14,7 +14,7 @@ const useToggleConnections = (location: string) => {
     )
       return;
     setShowConnections(false);
-  }, [history.location.pathname]);
+  }, [history.location.pathname, location]);
 
   useEffect(() => {
     const openConnections = (history.location.state as Record<string, unknown>)
