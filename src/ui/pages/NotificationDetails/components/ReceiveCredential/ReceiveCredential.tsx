@@ -49,8 +49,8 @@ import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
-import { MultiSigMembersStatus } from "./ReceiveCredential.types";
 import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
+import { LinkedGroupInfoGrant } from "../../../../../core/agent/services/ipexCommunicationService.types";
 
 const ANIMATION_DELAY = 2600;
 
@@ -74,11 +74,13 @@ const ReceiveCredential = ({
   const [showCommonError, setShowCommonError] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [multisigMemberStatus, setMultisigMemberStatus] =
-    useState<MultiSigMembersStatus>({
+    useState<LinkedGroupInfoGrant>({
       threshold: "0",
-      accepted: false,
-      membersJoined: [],
       members: [],
+      othersJoined: [],
+      linkedGroupRequest: {
+        accepted: false,
+      }
     });
   const [isLoading, setIsLoading] = useState(false);
   const identifiersData = useAppSelector(getIdentifiersCache);
@@ -90,10 +92,10 @@ const ReceiveCredential = ({
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
 
-  const userAccepted = multisigMemberStatus.accepted;
-  const maxThreshhold =
+  const userAccepted = multisigMemberStatus.linkedGroupRequest.accepted;
+  const maxThreshold =
     isMultisig &&
-    multisigMemberStatus.membersJoined.length >=
+    (multisigMemberStatus.othersJoined.length + (multisigMemberStatus.linkedGroupRequest.accepted ? 1 : 0)) >=
       Number(multisigMemberStatus.threshold);
 
   useIonHardwareBackButton(
@@ -180,7 +182,15 @@ const ReceiveCredential = ({
     try {
       const startTime = Date.now();
       setInitiateAnimation(true);
-      await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+
+      // @TODO - foconnor: Should be refined in the upcoming UI ticket
+      //   If multisigMemberStatus.members.length && multisigMemberStatus.members[0] === identifier?.multisigManageAid, we can call admitAcdc
+      //   Otherwise, can call joinMultisigAdmit IF multisigMemberStatus.linkedGroupRequest.current !== undefined
+      if (multisigMemberStatus.linkedGroupRequest.current) {
+        await Agent.agent.ipexCommunications.joinMultisigAdmit(pageId);
+      } else {
+        await Agent.agent.ipexCommunications.admitAcdc(notificationDetails.id);
+      }
       const finishTime = Date.now();
 
       setTimeout(() => {
@@ -220,13 +230,17 @@ const ReceiveCredential = ({
 
   const getStatus = useCallback(
     (member: string): MemberAcceptStatus => {
-      if (multisigMemberStatus.membersJoined.includes(member)) {
+      if (multisigMemberStatus.othersJoined.includes(member)) {
+        return MemberAcceptStatus.Accepted;
+      }
+
+      if (multisigMemberStatus.linkedGroupRequest.accepted && identifier?.multisigManageAid === member) {
         return MemberAcceptStatus.Accepted;
       }
 
       return MemberAcceptStatus.Waiting;
     },
-    [multisigMemberStatus.membersJoined]
+    [multisigMemberStatus.linkedGroupRequest]
   );
 
   const members = useMemo(() => {
@@ -278,18 +292,18 @@ const ReceiveCredential = ({
             <PageFooter
               pageId={pageId}
               primaryButtonText={isRevoked ? undefined : `${i18n.t(
-                maxThreshhold
+                maxThreshold
                   ? "tabs.notifications.details.buttons.addcred"
                   : "tabs.notifications.details.buttons.accept"
               )}`}
               primaryButtonAction={handleConfirm}
               secondaryButtonText={
-                maxThreshhold || isRevoked
+                maxThreshold || isRevoked
                   ? undefined
                   : `${i18n.t("tabs.notifications.details.buttons.decline")}`
               }
               secondaryButtonAction={
-                maxThreshhold ? undefined : () => setAlertDeclineIsOpen(true)
+                maxThreshold ? undefined : () => setAlertDeclineIsOpen(true)
               }
               deleteButtonText={
                 isRevoked
