@@ -152,15 +152,6 @@ const connectionService = new ConnectionService(
   identifiers as any
 );
 
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      getKeriaOnlineStatus: jest.fn(),
-      identifiers: { getKeriIdentifierByGroupId: jest.fn() },
-    },
-  },
-}));
-
 jest.mock("uuid", () => {
   return {
     v4: () => "uuid",
@@ -839,12 +830,12 @@ describe("Connection service of agent", () => {
         alias: "alias",
         oobi: "oobi",
         id: "id",
-        [`${KeriaContactKeyPrefix.CONNECTION_NOTE}:id`]:
+        [`${KeriaContactKeyPrefix.CONNECTION_NOTE}id`]:
           JSON.stringify(connectionNote),
-        [`${KeriaContactKeyPrefix.HISTORY_IPEX}:id`]: JSON.stringify(
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}id`]: JSON.stringify(
           mockHistoryIpexMessage
         ),
-        [`${KeriaContactKeyPrefix.HISTORY_REVOKE}:id`]: JSON.stringify(
+        [`${KeriaContactKeyPrefix.HISTORY_REVOKE}id`]: JSON.stringify(
           mockHistoryRevokeMessage
         ),
         createdAt: nowISO,

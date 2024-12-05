@@ -9,7 +9,6 @@ import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
   deleteNotification,
-  setNotificationsCache,
 } from "../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";

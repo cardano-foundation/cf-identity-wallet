@@ -28,7 +28,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 }));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const acceptAcdcMock = jest.fn(
+const admitAcdcMock = jest.fn(
   (id: string) =>
     new Promise((res) => {
       setTimeout(() => {
@@ -48,7 +48,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
           deleteNotificationMock(id),
       },
       ipexCommunications: {
-        acceptAcdc: (id: string) => acceptAcdcMock(id),
+        admitAcdc: (id: string) => admitAcdcMock(id),
         getAcdcFromIpexGrant: () => getAcdcFromIpexGrantMock(),
         getLinkedGroupFromIpexGrant: () => getLinkedGroupFromIpexGrantMock(),
       },
@@ -208,7 +208,7 @@ describe("Credential request", () => {
     });
 
     await waitFor(() => {
-      expect(acceptAcdcMock).toBeCalledWith(notificationsFix[0].id);
+      expect(admitAcdcMock).toBeCalledWith(notificationsFix[0].id);
     });
   }, 10000);
 
@@ -394,22 +394,20 @@ describe("Credential request: Multisig", () => {
   test("Multisig credential request", async () => {
     const backMock = jest.fn();
 
-    getAcdcFromIpexGrantMock.mockImplementation(() =>
-      Promise.resolve({
-        ...credsFixAcdc[0],
-        identifierType: IdentifierType.Group,
-        identifierId: filteredIdentifierFix[2].id,
-      })
-    );
+    getAcdcFromIpexGrantMock.mockResolvedValue({
+      ...credsFixAcdc[0],
+      identifierType: IdentifierType.Group,
+      identifierId: filteredIdentifierFix[2].id,
+    });
 
-    getLinkedGroupFromIpexGrantMock.mockImplementation(() =>
-      Promise.resolve({
-        threshold: "2",
+    getLinkedGroupFromIpexGrantMock.mockResolvedValue({
+      threshold: "2",
+      members: ["member-1", "member-2"],
+      othersJoined: [],
+      linkedGroupRequest: {
         accepted: false,
-        membersJoined: [],
-        members: ["member-1", "member-2"],
-      })
-    );
+      }
+    });
 
     const { getByText } = render(
       <Provider store={storeMocked}>
@@ -435,29 +433,23 @@ describe("Credential request: Multisig", () => {
     });
   });
 
-  test("Multisig credential request: max thresh hold", async () => {
+  test("Multisig credential request: max threshold", async () => {
     const backMock = jest.fn();
 
-    getAcdcFromIpexGrantMock.mockImplementation(() =>
-      new Promise(resolve => {
-        setTimeout(() => {
-          resolve({
-            ...credsFixAcdc[0],
-            identifierType: IdentifierType.Group,
-            identifierId: filteredIdentifierFix[2].id,
-          })
-        }, 0)
-      })
-    );
-
-    getLinkedGroupFromIpexGrantMock.mockImplementation(() =>
-      Promise.resolve({
-        threshold: "2",
+    getAcdcFromIpexGrantMock.mockResolvedValue({
+      ...credsFixAcdc[0],
+      identifierType: IdentifierType.Group,
+      identifierId: filteredIdentifierFix[2].id,
+    });
+    
+    getLinkedGroupFromIpexGrantMock.mockResolvedValue({
+      threshold: "2",
+      members: ["member-1", "member-2", "member-3"],
+      othersJoined: ["member-1", "member-2"],
+      linkedGroupRequest: {
         accepted: false,
-        membersJoined: ["member-1", "member-2"],
-        members: ["member-1", "member-2"],
-      })
-    );
+      }
+    });
 
     const { getByText, unmount, queryByTestId } = render(
       <Provider store={storeMocked}>
@@ -486,26 +478,21 @@ describe("Credential request: Multisig", () => {
   test("Multisig credential request: Accepted", async () => {
     const backMock = jest.fn();
 
-    getAcdcFromIpexGrantMock.mockImplementation(() =>
-      new Promise(resolve => {
-        setTimeout(() => {
-          resolve({
-            ...credsFixAcdc[0],
-            identifierType: IdentifierType.Group,
-            identifierId: filteredIdentifierFix[2].id,
-          })
-        }, 0)
-      })
-    );
+    getAcdcFromIpexGrantMock.mockResolvedValue({
+      ...credsFixAcdc[0],
+      identifierType: IdentifierType.Group,
+      identifierId: filteredIdentifierFix[2].id,
+    });
 
-    getLinkedGroupFromIpexGrantMock.mockImplementation(() =>
-      Promise.resolve({
-        threshold: "2",
+    getLinkedGroupFromIpexGrantMock.mockResolvedValue({
+      threshold: "2",
+      members: ["member-1", "member-2"],
+      othersJoined: ["member-1"],
+      linkedGroupRequest: {
         accepted: true,
-        membersJoined: ["member-1"],
-        members: ["member-1", "member-2"],
-      })
-    );
+        current: "currentadmitsaid"
+      }
+    });
 
     const { queryByTestId, unmount, findByText, queryByText, getByText } = render(
       <Provider store={storeMocked}>
