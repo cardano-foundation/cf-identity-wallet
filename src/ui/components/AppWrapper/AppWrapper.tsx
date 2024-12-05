@@ -213,7 +213,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // because we haven’t updated Signify in a bit.
       // The issue was fixed in Signify main repo but we’re on a fork…
       // await Promise.all([
-      //   Agent.agent.identifiers.syncKeriaIdentifiers(),
+      // Agent.agent.identifiers.syncKeriaIdentifiers(),
       // Agent.agent.connections.syncKeriaContacts(),
       // Agent.agent.credentials.syncACDCs(),
       // ]);
