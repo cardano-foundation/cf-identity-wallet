@@ -491,7 +491,6 @@ describe("Single sig service of agent", () => {
         isPending: true,
         multisigManageAid: "manageAid",
       });
-
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
         id: "group-id",
@@ -501,13 +500,15 @@ describe("Single sig service of agent", () => {
         status: ConnectionStatus.CONFIRMED,
       },
     ]);
-
     identifierStorage.updateIdentifierMetadata = jest.fn();
-
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
+
     expect(connections.deleteConnectionById).toBeCalledWith("group-id");
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       identifierMetadataRecord.id,
@@ -516,6 +517,9 @@ describe("Single sig service of agent", () => {
         pendingDeletion: false,
       }
     );
+    expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
+      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`
+    });
   });
 
   test("can update an identifier", async () => {
@@ -549,7 +553,11 @@ describe("Single sig service of agent", () => {
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
+
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       identifierMetadataRecord.id
     );
@@ -560,6 +568,9 @@ describe("Single sig service of agent", () => {
         pendingDeletion: false,
       }
     );
+    expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
+      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`
+    });
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
       "dApp-address",
       true

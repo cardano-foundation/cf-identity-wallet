@@ -9,7 +9,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
@@ -238,6 +238,10 @@ class IdentifierService extends AgentService {
         localMember.groupMetadata!.groupId
       );
     }
+
+    await this.props.signifyClient.identifiers().update(identifier, {
+      name: `XX-${randomSalt()}:${metadata.displayName}`,
+    });
 
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
