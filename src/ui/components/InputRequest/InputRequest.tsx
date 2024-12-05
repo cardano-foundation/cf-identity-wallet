@@ -1,9 +1,7 @@
 import { IonModal, isPlatform } from "@ionic/react";
 import { useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import {
-  MiscRecordId
-} from "../../../core/agent/agent.types";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";

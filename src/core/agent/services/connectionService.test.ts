@@ -121,16 +121,6 @@ const connectionStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const connectionNoteStorage = jest.mocked({
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
-});
-
 const operationPendingStorage = jest.mocked({
   save: saveOperationPendingMock,
   delete: jest.fn(),
@@ -140,8 +130,6 @@ const operationPendingStorage = jest.mocked({
   findAllByQuery: jest.fn(),
   getAll: jest.fn(),
 });
-
-const getIpexMessageMetadataByConnectionIdMock = jest.fn();
 
 const credentialStorage = jest.mocked({
   getAllCredentialMetadata: jest.fn(),
@@ -161,7 +149,7 @@ const connectionService = new ConnectionService(
   connectionStorage as any,
   credentialStorage as any,
   operationPendingStorage as any,
-  identifiers as any,
+  identifiers as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -263,6 +251,75 @@ describe("Connection service of agent", () => {
 
     await connectionService.connectByOobiUrl(oobi);
     expect(connectionStorage.save).toBeCalled();
+  });
+
+  test("Should throw an error if invalid OOBI URL format", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    let invalidUrls = [
+      "https://localhost/oobi",
+      "https://localhost/oobi/1234",
+      "https://localhost/oobi/1234/agent/eid/extra",
+      "https://localhost/.well-known/keri/oobi/",
+      "https://localhost/oobi/1234/witness/eid",
+      "https://localhost",
+    ];
+
+    for (const url of invalidUrls) {
+      await expect(
+        connectionService.connectByOobiUrl(url)
+      ).rejects.toThrowError(new Error(ConnectionService.OOBI_INVALID));
+    }
+
+    invalidUrls = [
+      "https://localhost/oobi",
+      "https://localhost",
+      "https://localhost/oobi/1234/agent/eid/extra",
+    ];
+
+    for (const url of invalidUrls) {
+      await expect(connectionService.resolveOobi(url)).rejects.toThrowError(
+        new Error(ConnectionService.OOBI_INVALID)
+      );
+    }
+  });
+
+  test("Should create connection and resolveOOBI with valid URL format", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    let validUrls = [
+      "https://localhost/oobi/1234/agent?name=alias",
+      "https://localhost/oobi/1234/agent/5678?name=alias",
+      "https://localhost/.well-known/keri/oobi/1234?name=alias",
+    ];
+
+    for (const url of validUrls) {
+      await connectionService.connectByOobiUrl(url);
+      expect(connectionStorage.save).toBeCalled();
+    }
+
+    validUrls = [
+      "https://localhost/oobi/1234/agent?name=alias",
+      "https://localhost/oobi/1234/witness?name=alias",
+      "https://localhost/.well-known/keri/oobi/1234?name=alias",
+      "https://localhost/oobi/EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao?name=alias"
+    ];
+
+    signifyClient.operations().get = jest
+      .fn()
+      .mockResolvedValue({ done: true });
+    for (const url of validUrls) {
+      const op = await connectionService.resolveOobi(url);
+      expect(op).toEqual({
+        op: {
+          response: { i: "id", dt: now },
+          name: url,
+          metadata: {
+            oobi: `${oobiPrefix}${failUuid}`,
+          },
+          done: true,
+        },
+        alias: "alias",
+      });
+    }
   });
 
   test("can get all connections and multi-sig related ones are filtered", async () => {
