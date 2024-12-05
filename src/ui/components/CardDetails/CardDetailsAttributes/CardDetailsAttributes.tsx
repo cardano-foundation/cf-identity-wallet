@@ -17,12 +17,14 @@ const CardDetailsAttributes = ({
   return (
     <>
       {attributes.map((item, index) => {
-        switch (item[0]) {
+        const [key, value] = [...item];
+
+        switch (key) {
         case "id": {
           return (
             <CardDetailsItem
               key={index}
-              info={item[1] as string}
+              info={value as string}
               copyButton={true}
               className={itemClass}
               testId="card-details-attributes-id"
@@ -36,13 +38,13 @@ const CardDetailsAttributes = ({
         default: {
           return (typeof item[1] === "string" || typeof item[1] === "number") &&
               !customType &&
-              !`${item[1]}`.includes(" ") &&
-              `${item[1]}`[10] !== "T" ? (
+              !`${value}`.includes(" ") &&
+              `${value}`[10] !== "T" ? (
               <CardDetailsItem
                 key={index}
-                keyValue={`${reservedKeysFilter(item[0])}:`}
-                info={`${item[1]}`}
-                copyButton={`${item[1]}`.length > 15}
+                keyValue={`${reservedKeysFilter(key)}:`}
+                info={`${value}`}
+                copyButton={`${value}`.length > 15}
                 testId="card-details-generic-attribute"
                 className={itemClass}
                 {...restItemProps}

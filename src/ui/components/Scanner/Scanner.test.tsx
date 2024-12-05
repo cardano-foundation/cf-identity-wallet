@@ -247,6 +247,8 @@ describe("Scanner", () => {
   );
 
   test("Renders content and input wallet connection pid", async () => {
+    getPlatformMock.mockImplementation(() => ["mobileweb"])
+
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <Scanner setIsValueCaptured={setIsValueCaptured} />

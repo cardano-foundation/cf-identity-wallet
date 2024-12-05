@@ -17,21 +17,20 @@ const CardDetailsNestedAttributes = ({
   itemProps,
 }: CardDetailsNestedAttributesProps) => {
   const { className, ...restItemProps } = itemProps || {};
+  
   const key = attribute[0];
   const item = attribute[1] as string;
+  const isObjectItem = typeof item === "object" && item !== null;
 
   const cardDetailInfo = useMemo(() => {
     if (dateRegex.test(item))
       return `${formatShortDate(item)} - ${formatTimeToSec(item)}`;
 
-    const isValuedType = typeof item === "string" || typeof item === "number";
-
-    if (isValuedType) return item;
+    if (!isObjectItem) return item;
 
     return "";
-  }, [item]);
+  }, [isObjectItem, item]);
 
-  const isObjectItem = typeof item === "object" && item !== null;
   const detailItemsClass = combineClassNames(
     "card-details-attribute-item",
     className,
