@@ -3,7 +3,23 @@ export interface IAttributes {
 }
 
 export interface IAttributeObj {
+  defaultValue: any;
+  type: any;
   key: string;
   label: string;
   value?: string;
+}
+
+export interface SchemaShortDetails {
+  $id: string;
+  title: string;
+}
+
+export interface SchemaField {
+  name: string;
+  description: string;
+  type: string;
+  customizable: boolean;
+  default?: string | number;
+  fields?: SchemaField[];
 }

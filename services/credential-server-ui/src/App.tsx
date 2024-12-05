@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
@@ -10,6 +10,7 @@ import { ConnectionPage } from "./pages/ConnectionPage";
 import { CredentialPage } from "./pages/CredentialPage";
 import { RequestCredential } from "./pages/RequestCredential";
 import { RevocationPage } from "./pages/RevocationPage";
+import { CreateSchemaPage } from "./pages/CreateSchemaPage";
 
 export const MENU_ITEMS = [
   {
@@ -35,6 +36,12 @@ export const MENU_ITEMS = [
     label: "Revoke Credential",
     path: "/revocation",
     component: <RevocationPage />,
+  },
+  {
+    key: "create-schema",
+    label: "Create Schema",
+    path: "/create-schema",
+    component: <CreateSchemaPage />,
   },
 ];
 

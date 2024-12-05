@@ -5,6 +5,7 @@ import { config } from "./config";
 import { Agent } from "./agent";
 import router from "./routes";
 import { log } from "./log";
+import { initilizeDB } from "./utils/initializeDB";
 
 async function startServer() {
   const app = express();
@@ -18,7 +19,9 @@ async function startServer() {
       error: err.message,
     });
   });
+
   await Agent.agent.start();
+  await initilizeDB();
   app.listen(config.port, async () => {
     await Agent.agent.initKeri();
     log(`Listening on port ${config.port}`);

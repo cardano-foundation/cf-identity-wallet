@@ -25,6 +25,10 @@ const config = {
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
     deleteContact: "/deleteContact",
+    saveSchema: "/saveSchema",
+    schemaList: "/schemaList",
+    schemaCustomFields: "/schemaCustomFields",
+    deleteSchema: "/deleteSchema",
   },
 };
 
