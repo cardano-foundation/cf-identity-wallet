@@ -255,7 +255,7 @@ const Identifiers = () => {
         (item) => item.id !== deletedPendingItem.id
       );
 
-      await Agent.agent.identifiers.deleteIdentifier(deletedPendingItem.id);
+      await Agent.agent.identifiers.markIdentifierPendingDelete(deletedPendingItem.id);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));

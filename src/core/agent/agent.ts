@@ -141,7 +141,7 @@ class Agent {
         this.connectionStorage,
         this.credentialStorage,
         this.operationPendingStorage,
-        this.identifierStorage,
+        this.identifierStorage
       );
     }
     return this.connectionService;
@@ -322,8 +322,9 @@ class Agent {
     if (online) {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
+      this.identifiers.removeIdentifiersPendingDeletion();
     }
-    
+
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
       type: EventTypes.KeriaStatusChanged,
       payload: {
@@ -433,6 +434,7 @@ class Agent {
     };
     this.connections.onConnectionRemoved();
     this.connections.onConnectionAdded();
+    this.identifiers.onIdentifierRemoved();
   }
 
   async connect(retryInterval = 1000) {

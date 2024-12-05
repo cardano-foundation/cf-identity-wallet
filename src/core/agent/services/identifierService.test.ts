@@ -15,7 +15,7 @@ const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
-const operationMock = jest.fn()
+const operationMock = jest.fn();
 const mockSigner = {
   _code: "A",
   _size: -1,
@@ -114,6 +114,7 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
   getIdentifierMetadataByGroupId: jest.fn(),
   deleteIdentifierMetadata: jest.fn(),
+  getIdentifiersPendingDeletion: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -433,7 +434,8 @@ describe("Single sig service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const displayName = "newDisplayName";
     const theme = 0;
-    const errorMessage = "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
+    const errorMessage =
+      "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
     createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
@@ -448,7 +450,9 @@ describe("Single sig service of agent", () => {
         displayName,
         theme,
       })
-    ).rejects.toThrowError(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${theme}:${displayName}`);
+    ).rejects.toThrowError(
+      `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${theme}:${displayName}`
+    );
   });
 
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
@@ -487,7 +491,6 @@ describe("Single sig service of agent", () => {
         isPending: true,
         multisigManageAid: "manageAid",
       });
-
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
         id: "group-id",
@@ -497,20 +500,26 @@ describe("Single sig service of agent", () => {
         status: ConnectionStatus.CONFIRMED,
       },
     ]);
-
     identifierStorage.updateIdentifierMetadata = jest.fn();
-
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
+
     expect(connections.deleteConnectionById).toBeCalledWith("group-id");
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+        pendingDeletion: false,
       }
     );
+    expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
+      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`
+    });
   });
 
   test("can update an identifier", async () => {
@@ -544,7 +553,11 @@ describe("Single sig service of agent", () => {
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
+
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       identifierMetadataRecord.id
     );
@@ -552,8 +565,12 @@ describe("Single sig service of agent", () => {
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+        pendingDeletion: false,
       }
     );
+    expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
+      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`
+    });
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
       "dApp-address",
       true
@@ -712,5 +729,55 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
       identifierId
     );
+  });
+
+  test("Should mark identifier is pending when start delete identifier", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    eventEmitter.emit = jest.fn();
+
+    await identifierService.markIdentifierPendingDelete(keriMetadataRecord.id);
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.IdentifierRemoved,
+      payload: {
+        id: keriMetadataRecord.id,
+      },
+    });
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      keriMetadataRecord.id,
+      {
+        pendingDeletion: true,
+      }
+    );
+  });
+
+  test("Should not try to mark an identifier as pending delete if it does note exist", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(undefined);
+
+    await expect(
+      identifierService.markIdentifierPendingDelete(keriMetadataRecord.id)
+    ).rejects.toThrow(new Error("Identifier metadata record does not exist"));
+    expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
+  });
+
+  test("Should retrieve pending deletions and delete each by ID", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierService.deleteIdentifier = jest
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    identifierStorage.getIdentifiersPendingDeletion.mockResolvedValueOnce([
+      { id: "id1" },
+      { id: "id2" },
+    ]);
+    await identifierService.removeIdentifiersPendingDeletion();
+
+    expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id1");
+    expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id2");
   });
 });

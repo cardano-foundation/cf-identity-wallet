@@ -9,7 +9,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
@@ -19,7 +19,11 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { ConnectionService } from "./connectionService";
-import { EventTypes, OperationAddedEvent } from "../event.types";
+import {
+  EventTypes,
+  IdentifierRemovedEvent,
+  OperationAddedEvent,
+} from "../event.types";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -53,6 +57,15 @@ class IdentifierService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connections = connections;
+  }
+
+  onIdentifierRemoved() {
+    this.props.eventEmitter.on(
+      EventTypes.IdentifierRemoved,
+      (data: IdentifierRemovedEvent) => {
+        this.deleteIdentifier(data.payload.id!);
+      }
+    );
   }
 
   async getIdentifiers(): Promise<IdentifierShortDetails[]> {
@@ -197,6 +210,7 @@ class IdentifierService extends AgentService {
         metadata.multisigManageAid,
         {
           isDeleted: true,
+          pendingDeletion: false,
         }
       );
       await this.deleteGroupLinkedConnections(
@@ -204,8 +218,13 @@ class IdentifierService extends AgentService {
       );
     }
 
+    await this.props.signifyClient.identifiers().update(identifier, {
+      name: `XX-${randomSalt()}:${metadata.displayName}`,
+    });
+
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
+      pendingDeletion: false,
     });
 
     const connectedDApp =
@@ -217,6 +236,35 @@ class IdentifierService extends AgentService {
     ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
     }
+  }
+
+  async removeIdentifiersPendingDeletion(): Promise<void> {
+    const pendingIdentifierDeletions =
+      await this.identifierStorage.getIdentifiersPendingDeletion();
+
+    for (const identifier of pendingIdentifierDeletions) {
+      await this.deleteIdentifier(identifier.id);
+    }
+  }
+
+  async markIdentifierPendingDelete(id: string) {
+    const identifierProps = await this.identifierStorage.getIdentifierMetadata(
+      id
+    );
+    if (!identifierProps) {
+      throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);
+    }
+    identifierProps.pendingDeletion = true;
+    await this.identifierStorage.updateIdentifierMetadata(id, {
+      pendingDeletion: true,
+    });
+
+    this.props.eventEmitter.emit<IdentifierRemovedEvent>({
+      type: EventTypes.IdentifierRemoved,
+      payload: {
+        id,
+      },
+    });
   }
 
   private async deleteGroupLinkedConnections(groupId: string) {

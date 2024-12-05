@@ -10,7 +10,6 @@ import {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
-import { ConnectionRecord, ConnectionRecordStorageProps } from "../records";
 
 const contactListMock = jest.fn();
 let deleteContactMock = jest.fn();

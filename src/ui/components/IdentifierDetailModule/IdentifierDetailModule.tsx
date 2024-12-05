@@ -154,7 +154,7 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
     }
 
     if (cardData) {
-      await Agent.agent.identifiers.deleteIdentifier(cardData.id);
+      await Agent.agent.identifiers.markIdentifierPendingDelete(cardData.id);
       if (isFavourite) {
         handleSetFavourite(cardData.id);
       }
