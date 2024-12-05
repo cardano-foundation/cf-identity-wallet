@@ -280,77 +280,100 @@ class IdentifierService extends AgentService {
       (identifier: IdentifierResult) =>
         !storageIdentifiers.find((item) => identifier.prefix === item.id)
     );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      let groupId;
-      for (const identifier of unSyncedData) {
-        const checkDeletedIdentifier = this.checkIdentifierNameIsDeleted(identifier.name);
-        if(checkDeletedIdentifier) continue;
-        const checkNameIsMultiSig = this.checkIdentifierNameIsMultiSig(identifier.name);
-        if(checkNameIsMultiSig){
-          groupId = identifier.name.split(":")[1];
-          const groupMetadata = {
-            groupId,
-            groupCreated: false,
-            groupInitiator: this.checkGroupInitiator(groupId)
-          }
+    
+    const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [
+      unSyncedData.filter((item: HabState) => item.group !== undefined),
+      unSyncedData.filter((item: HabState) => item.group === undefined),
+    ];
+
+    if (unSyncedDataWithoutGroup.length) {
+      for (const identifier of unSyncedDataWithoutGroup) {
+        if (identifier.name.startsWith("XX")) {
+          continue;
+        }
+
+        const op = await this.props.signifyClient.operations().get(`done.${identifier.prefix}`)
+        const isPending = !op.done;
+
+        if(isPending){
+          const pendingOperation = await this.operationPendingStorage.save({
+            id: op.name,
+            recordType: OperationPendingRecordType.Witness,
+          });
+          this.props.eventEmitter.emit<OperationAddedEvent>({
+            type: EventTypes.OperationAdded,
+            payload: { operation: pendingOperation },
+          });
+        }
+
+        if(this.checkIdentifierNameIsMultiSig(identifier.name)){
+          const groupId = identifier.name.split(":")[1];
+
           await this.identifierStorage.createIdentifierMetadataRecord({
             id: identifier.prefix,
             displayName: groupId,
-            theme: 0,
-            groupMetadata
+            theme: this.getThemeFromIdentifier(identifier.name),
+            groupMetadata: {
+              groupId,
+              groupCreated: true,
+              groupInitiator: this.checkGroupInitiator(groupId)
+            },
+            isPending
           });
+
+          continue;
         }
-        else {
-          if(identifier.group){
-            const multisigManageAid = identifier.group.mhab.prefix;
-            groupId = identifier.group.mhab.name.split(":")[1];
-            const op = await this.props.signifyClient.operations().get(`group.${identifier.prefix}`)
-            const isPending = !op.done;
-            if(isPending){
-              const pendingOperation = await this.operationPendingStorage.save({
-                id: op.name,
-                recordType: OperationPendingRecordType.Group,
-              });
-              this.props.eventEmitter.emit<OperationAddedEvent>({
-                type: EventTypes.OperationAdded,
-                payload: { operation: pendingOperation },
-              });
-            }else{
-              await this,this.identifierStorage.updateIdentifierMetadata(multisigManageAid,{
-                groupMetadata: {
-                  groupId,
-                  groupCreated: true,
-                  groupInitiator: this.checkGroupInitiator(groupId)
-                }
-              })
-            }
-            await this.identifierStorage.createIdentifierMetadataRecord({
-              id: identifier.prefix,
-              displayName: groupId,
-              theme: 0,
-              multisigManageAid,
-              isPending
-            })
-          }
-          await this.identifierStorage.createIdentifierMetadataRecord({
-            id: identifier.prefix,
-            displayName: identifier.prefix, //same as the id at the moment
-            theme: 0,
-          });
-        }
+
+        await this.identifierStorage.createIdentifierMetadataRecord({
+          id: identifier.prefix,
+          displayName: identifier.prefix,
+          theme: this.getThemeFromIdentifier(identifier.name),
+          isPending,
+        });
       }
     }
+
+    if (unSyncedDataWithGroup.length){
+      for (const identifier of unSyncedDataWithGroup) {
+        if (identifier.name.startsWith("XX")) {
+          continue;
+        }
+
+        const multisigManageAid = identifier.group.mhab.prefix;
+        const groupId = identifier.group.mhab.name.split(":")[1];
+        const op = await this.props.signifyClient.operations().get(`group.${identifier.prefix}`)
+        const isPending = !op.done;
+
+        if(isPending){
+          const pendingOperation = await this.operationPendingStorage.save({
+            id: op.name,
+            recordType: OperationPendingRecordType.Group,
+          });
+          this.props.eventEmitter.emit<OperationAddedEvent>({
+            type: EventTypes.OperationAdded,
+            payload: { operation: pendingOperation },
+          });
+        }
+
+        await this.identifierStorage.createIdentifierMetadataRecord({
+          id: identifier.prefix,
+          displayName: groupId,
+          theme: this.getThemeFromIdentifier(identifier.name),
+          multisigManageAid,
+          isPending
+        })
+      }
+    }
+  }
+
+  private getThemeFromIdentifier(name: string): number  {
+    const parts = name.split(":");
+    return parseInt(parts[0], 10);
   }
 
   private checkIdentifierNameIsMultiSig(name: string): boolean {
     const parts = name.split(":");
     return parts.length === 3;
-  }
-
-  private checkIdentifierNameIsDeleted(name: string): boolean {
-    const regex = /^[A-Za-z]{2}-[a-zA-Z0-9]{3,}:[a-zA-Z]+$/;
-    return regex.test(name);
   }
 
   private checkGroupInitiator(groupId: string): boolean {

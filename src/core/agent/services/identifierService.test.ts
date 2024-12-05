@@ -572,7 +572,7 @@ describe("Single sig service of agent", () => {
           prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
         },
         {
-          name: "0:test1",
+          name: "15:test1",
           prefix: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
           group: {
             mhab: {
@@ -582,7 +582,7 @@ describe("Single sig service of agent", () => {
           },
         },
         {
-          name: "0:test2",
+          name: "33:test2",
           prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
         },
       ],
@@ -605,42 +605,31 @@ describe("Single sig service of agent", () => {
     // Call the function to test
     await identifierService.syncKeriaIdentifiers();
   
-    // Expectations for a multi-sig identifier
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       displayName: "1-group1",
       theme: 0,
       groupMetadata: {
         groupId: "1-group1",
-        groupCreated: false,
+        groupCreated: true,
         groupInitiator: true,
       },
-    });
-  
-    // Expectations for an identifier within a group
-    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
-      id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-      displayName: "1-group1",
-      theme: 0,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       isPending: false,
     });
-  
-    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
-      "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-      {
-        groupMetadata: {
-          groupId: "1-group1",
-          groupCreated: true,
-          groupInitiator: true,
-        },
-      }
-    );
   
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
       displayName: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
-      theme: 0,
+      theme: 33,
+      isPending: false,
+    });
+
+    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+      id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      displayName: "1-group1",
+      theme: 15,
+      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      isPending: false,
     });
   });
   
