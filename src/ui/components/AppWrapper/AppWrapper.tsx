@@ -212,11 +212,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Right now if you delete a connection, it will re-appear after 2 reloads
       // because we haven’t updated Signify in a bit.
       // The issue was fixed in Signify main repo but we’re on a fork…
-      // await Promise.all([
-      // Agent.agent.identifiers.syncKeriaIdentifiers(),
+      await Promise.all([
+        Agent.agent.identifiers.syncKeriaIdentifiers(),
       // Agent.agent.connections.syncKeriaContacts(),
       // Agent.agent.credentials.syncACDCs(),
-      // ]);
+      ]);
     };
     if (isOnline) {
       syncWithKeria();
