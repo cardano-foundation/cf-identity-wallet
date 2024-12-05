@@ -473,7 +473,7 @@ class IdentifierService extends AgentService {
     for (const oobi of config.iurls) {
       const role = new URL(oobi).searchParams.get("role");
       if (role === "witness") {
-        witnesses.push(oobi);
+        witnesses.push(oobi.split("/oobi/")[1].split("/")[0]);  // EID - endpoint identifier
       }
     }
 

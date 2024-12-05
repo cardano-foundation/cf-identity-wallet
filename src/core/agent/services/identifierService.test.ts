@@ -231,6 +231,7 @@ const WITNESSES = [
   "http://witnesess:5646/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHP/controller?role=witness",
   "http://witnesess:5647/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsM/controller?role=witness"
 ];
+const witnessEids = WITNESSES.map((oobi: string) => oobi.split("/oobi/")[1].split("/")[0]);
 
 describe("Single sig service of agent", () => {
   beforeEach(() => {
@@ -366,7 +367,7 @@ describe("Single sig service of agent", () => {
     });
     expect(createIdentifierMock).toBeCalledWith(`0:${displayName}`, {
       toad: WITNESSES.length,
-      wits: WITNESSES
+      wits: witnessEids
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
@@ -411,7 +412,7 @@ describe("Single sig service of agent", () => {
     });
     expect(createIdentifierMock).toBeCalledWith(`0:${displayName}`, {
       toad: WITNESSES.length,
-      wits: WITNESSES
+      wits: witnessEids
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
