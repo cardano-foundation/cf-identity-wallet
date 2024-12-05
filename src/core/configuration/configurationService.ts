@@ -78,15 +78,6 @@ class ConfigurationService {
       );
     }
 
-    // BACKING config
-    if (typeof keri.backing !== "object") {
-      return this.invalid("Missing backing configuration object");
-    }
-
-    const backerMode = keri.backing.mode;
-    if (typeof backerMode !== "string") {
-      return this.invalid("Missing backer type");
-    }
     return { success: true };
   }
 
