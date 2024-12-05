@@ -228,6 +228,10 @@ const ReceiveCredential = ({
     revoked: isRevoked,
   });
 
+  const identifier = useMemo(() => {
+    return identifiersData.find(item => item.id === credDetail?.identifierId)
+  }, [credDetail?.identifierId, identifiersData]);
+
   const getStatus = useCallback(
     (member: string): MemberAcceptStatus => {
       if (multisigMemberStatus.othersJoined.includes(member)) {
@@ -240,7 +244,7 @@ const ReceiveCredential = ({
 
       return MemberAcceptStatus.Waiting;
     },
-    [multisigMemberStatus.linkedGroupRequest]
+    [multisigMemberStatus.othersJoined, multisigMemberStatus.linkedGroupRequest, identifier]
   );
 
   const members = useMemo(() => {
@@ -259,10 +263,6 @@ const ReceiveCredential = ({
       };
     });
   }, [multisigMemberStatus.members, multisignConnectionsCache, userName]);
-
-  const identifier = useMemo(() => {
-    return identifiersData.find(item => item.id === credDetail?.identifierId)
-  }, [credDetail?.identifierId, identifiersData])
 
   const handleConfirm = () => {
     setVerifyIsOpen(true);
