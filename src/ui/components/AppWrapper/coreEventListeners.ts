@@ -1,11 +1,18 @@
 import {
   EventTypes,
+  IdentifierAddedEvent,
   NotificationAddedEvent,
   NotificationRemovedEvent,
 } from "../../../core/agent/event.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { useAppDispatch } from "../../../store/hooks";
-import { updateIsPending } from "../../../store/reducers/identifiersCache";
+import {
+  setIdentifiersCache,
+  setMultiSigGroupCache,
+  updateIsPending,
+  updateOrAddIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
   deleteNotification,
@@ -45,4 +52,33 @@ const signifyOperationStateChangeHandler = async (
       break;
   }
 };
-export { notificatiStateChanged, signifyOperationStateChangeHandler };
+
+const identifierAddedHandler = async (
+  event: IdentifierAddedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  console.log('event: ', event);
+  
+  const identifier = event.payload.identifier;
+  if (identifier) {
+    const newIdentifier: IdentifierShortDetails = {
+      id: identifier.id,
+      displayName: identifier.displayName,
+      createdAtUTC: new Date().toISOString(),
+      theme: identifier.theme,
+      isPending: true,
+    };
+
+    if (identifier.groupMetadata) {
+      newIdentifier.groupMetadata = identifier.groupMetadata;
+    }
+
+    dispatch(updateOrAddIdentifiersCache(newIdentifier));
+  }
+};
+
+export {
+  notificatiStateChanged,
+  signifyOperationStateChangeHandler,
+  identifierAddedHandler,
+};

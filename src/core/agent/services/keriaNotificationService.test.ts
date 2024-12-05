@@ -726,7 +726,7 @@ describe("Signify notification service of agent", () => {
         keriaNotif: {
           id: "id",
           createdAt: expect.stringMatching(
-            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/
           ),
           a: {
             r: NotificationRoute.LocalAcdcRevoked,

@@ -1,4 +1,4 @@
-import { Salter, Signer } from "signify-ts";
+import { Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
   IdentifierDetails,
@@ -10,8 +10,12 @@ import {
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
-import { AgentServicesProps, IdentifierResult } from "../agent.types";
-import { IdentifierStorage } from "../records";
+import {
+  AgentServicesProps,
+  IdentifierResult,
+  MiscRecordId,
+} from "../agent.types";
+import { BasicRecord, BasicStorage, IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { BackingMode } from "../../configuration/configurationService.types";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
@@ -21,6 +25,8 @@ import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { ConnectionService } from "./connectionService";
 import {
   EventTypes,
+  IdentifierAddedEvent,
+  IdentifierCreatedEvent,
   IdentifierRemovedEvent,
   OperationAddedEvent,
 } from "../event.types";
@@ -46,17 +52,20 @@ class IdentifierService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connections: ConnectionService;
+  protected readonly basicStorage: BasicStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
-    connections: ConnectionService
+    connections: ConnectionService,
+    basicStorage: BasicStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connections = connections;
+    this.basicStorage = basicStorage;
   }
 
   onIdentifierRemoved() {
@@ -66,6 +75,19 @@ class IdentifierService extends AgentService {
         this.deleteIdentifier(data.payload.id!);
       }
     );
+  }
+
+  onIdentifierCreated() {
+    this.props.eventEmitter.on(
+      EventTypes.IdentifierCreated,
+      (data: IdentifierCreatedEvent) => {
+        this.createIdentifier(data.payload.name, data.payload.metadata);
+      }
+    );
+  }
+
+  onIdentifierAdded(callback: (event: IdentifierAddedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.IdentifierAdded, callback);
   }
 
   async getIdentifiers(): Promise<IdentifierShortDetails[]> {
@@ -155,11 +177,9 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async createIdentifier(
+  async markIdentifierPendingCreate(
     metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
-  ): Promise<CreateIdentifierResult> {
-    const startTime = Date.now();
-
+  ): Promise<void> {
     if (!identifierTypeThemes.includes(metadata.theme)) {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
@@ -168,6 +188,30 @@ class IdentifierService extends AgentService {
       ? `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`
       : `${metadata.theme}:${metadata.displayName}`;
 
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIER_PENDING_CREATION,
+        content: {
+          name,
+        },
+      })
+    );
+
+    this.props.eventEmitter.emit<IdentifierCreatedEvent>({
+      type: EventTypes.IdentifierCreated,
+      payload: {
+        name,
+        metadata,
+      },
+    });
+  }
+
+  @OnlineOnly
+  async createIdentifier(
+    name: string,
+    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
+  ): Promise<void> {
+    const startTime = Date.now();
     const operation = await this.props.signifyClient.identifiers().create(name);
     let op = await operation.op().catch((error) => {
       const err = error.message.split(" - ");
@@ -212,7 +256,14 @@ class IdentifierService extends AgentService {
       isPending,
     });
 
-    return { identifier, isPending };
+    this.props.eventEmitter.emit<IdentifierAddedEvent>({
+      type: EventTypes.IdentifierAdded,
+      payload: { identifier: { id: identifier, ...metadata } },
+    });
+
+    await this.basicStorage.deleteById(
+      MiscRecordId.IDENTIFIER_PENDING_CREATION
+    );
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
