@@ -345,7 +345,7 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
         scanGroupId: "mock",
-      },      
+      },
       connectionsCache: {
         connections: {},
         multisigConnections: {},
@@ -425,8 +425,8 @@ describe("Scanner", () => {
         identifiers: [],
         scanGroupId: "72e2f089cef6",
         multiSigGroup: {
-          connections: [connectionsFix[0]]
-        }
+          connections: [connectionsFix[0]],
+        },
       },
       connectionsCache: {
         connections: {},
@@ -434,7 +434,7 @@ describe("Scanner", () => {
       },
     };
 
-    getPlatformMock.mockImplementation(() => ["mobileweb"])
+    getPlatformMock.mockImplementation(() => ["mobileweb"]);
     isNativePlatformMock.mockImplementation(() => false);
 
     const storeMocked = {
@@ -509,10 +509,10 @@ describe("Scanner", () => {
           listenerFunc({
             barcode: {
               displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
               format: BarcodeFormat.QrCode,
               rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
               valueType: BarcodeValueType.Url,
             },
           });
@@ -859,10 +859,10 @@ describe("Scanner", () => {
           listenerFunc({
             barcode: {
               displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
               format: BarcodeFormat.QrCode,
               rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
               valueType: BarcodeValueType.Url,
             },
           });
@@ -1152,7 +1152,9 @@ describe("Scanner", () => {
     );
 
     await waitFor(() => {
-      expect(getByText(EN_Translation.tabs.scan.tab.cameraunavailable)).toBeVisible();
+      expect(
+        getByText(EN_Translation.tabs.scan.tab.cameraunavailable)
+      ).toBeVisible();
     });
   });
 });

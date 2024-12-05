@@ -1,6 +1,6 @@
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
-import { LinkedGroupRequestDetails } from "./notificationRecord.types";
+import { LinkedGroupRequest } from "./notificationRecord.types";
 import { randomSalt } from "../services/utils";
 
 interface NotificationRecordStorageProps {
@@ -12,7 +12,6 @@ interface NotificationRecordStorageProps {
   read: boolean;
   multisigId?: string;
   connectionId: string;
-  linkedGroupRequests?: Record<string, LinkedGroupRequestDetails>;
 }
 
 class NotificationRecord extends BaseRecord {
@@ -21,7 +20,8 @@ class NotificationRecord extends BaseRecord {
   read!: boolean;
   multisigId?: string;
   connectionId!: string;
-  linkedGroupRequests!: Record<string, LinkedGroupRequestDetails>;
+  linkedGroupRequest!: LinkedGroupRequest;
+
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
 
@@ -36,7 +36,7 @@ class NotificationRecord extends BaseRecord {
       this.multisigId = props.multisigId ?? undefined;
       this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
-      this.linkedGroupRequests = props.linkedGroupRequests ?? {};
+      this.linkedGroupRequest = { accepted: false };
     }
   }
 

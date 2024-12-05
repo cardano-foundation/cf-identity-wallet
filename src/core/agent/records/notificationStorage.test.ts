@@ -27,7 +27,6 @@ const notificationRecordProps: NotificationRecordStorageProps = {
   a: {},
   route: NotificationRoute.ExnIpexApply,
   read: true,
-  linkedGroupRequests: {},
   connectionId: "connectionId",
 };
 const notificationRecordA = new NotificationRecord(notificationRecordProps);
