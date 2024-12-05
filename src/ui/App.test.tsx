@@ -26,6 +26,7 @@ jest.mock("../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+        onIdentifierAdded: jest.fn(),
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -133,7 +134,7 @@ const addKeyboardEventMock = jest.fn();
 jest.mock("@capacitor/keyboard", () => ({
   Keyboard: {
     addListener: (...params: any[]) => addKeyboardEventMock(...params),
-    hide: jest.fn()
+    hide: jest.fn(),
   },
 }));
 

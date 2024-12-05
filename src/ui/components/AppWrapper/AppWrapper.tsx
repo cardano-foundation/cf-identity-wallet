@@ -69,6 +69,7 @@ import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
+  identifierAddedHandler,
   notificatiStateChanged,
   signifyOperationStateChangeHandler,
 } from "./coreEventListeners";
@@ -218,8 +219,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
+
+    const resolvePendingIdentifiers = async () => {
+      await Agent.agent.identifiers.resolvePendingIdentifier();
+    };
+
     if (isOnline) {
       syncWithKeria();
+      resolvePendingIdentifiers();
     }
   }, [isOnline, dispatch]);
 
@@ -488,6 +495,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
+    });
+
+    Agent.agent.identifiers.onIdentifierAdded((event) => {
+      identifierAddedHandler(event, dispatch);
     });
   };
 
