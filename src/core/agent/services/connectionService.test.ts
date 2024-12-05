@@ -260,6 +260,8 @@ describe("Connection service of agent", () => {
       "https://localhost/oobi/1234",
       "https://localhost/oobi/1234/agent/eid/extra",
       "https://localhost/.well-known/keri/oobi/",
+      "https://localhost/oobi/1234/witness/eid",
+      "https://localhost",
     ];
 
     for (const url of invalidUrls) {
@@ -268,7 +270,11 @@ describe("Connection service of agent", () => {
       ).rejects.toThrowError(new Error(ConnectionService.OOBI_INVALID));
     }
 
-    invalidUrls = ["https://localhost/oobi"];
+    invalidUrls = [
+      "https://localhost/oobi",
+      "https://localhost",
+      "https://localhost/oobi/1234/agent/eid/extra",
+    ];
 
     for (const url of invalidUrls) {
       await expect(connectionService.resolveOobi(url)).rejects.toThrowError(
@@ -279,16 +285,23 @@ describe("Connection service of agent", () => {
 
   test("Should create connection and resolveOOBI with valid URL format", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const validUrls = [
-      "https://example.com/oobi/1234/agent?name=alias",
-      "https://example.com/oobi/1234/agent/5678?name=alias",
-      "https://example.com/.well-known/keri/oobi/1234?name=alias",
+    let validUrls = [
+      "https://localhost/oobi/1234/agent?name=alias",
+      "https://localhost/oobi/1234/agent/5678?name=alias",
+      "https://localhost/.well-known/keri/oobi/1234?name=alias",
     ];
 
     for (const url of validUrls) {
       await connectionService.connectByOobiUrl(url);
       expect(connectionStorage.save).toBeCalled();
     }
+
+    validUrls = [
+      "https://localhost/oobi/1234/agent?name=alias",
+      "https://localhost/oobi/1234/witness?name=alias",
+      "https://localhost/.well-known/keri/oobi/1234?name=alias",
+      "https://localhost/oobi/EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao?name=alias"
+    ];
 
     signifyClient.operations().get = jest
       .fn()
