@@ -622,13 +622,14 @@ describe("Single sig service of agent", () => {
     // Call the function to test
     await identifierService.syncKeriaIdentifiers();
   
+    // sync data of non-group record
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       displayName: "1-group1",
       theme: 0,
       groupMetadata: {
         groupId: "1-group1",
-        groupCreated: true,
+        groupCreated: false,
         groupInitiator: true,
       },
       isPending: false,
@@ -640,6 +641,18 @@ describe("Single sig service of agent", () => {
       theme: 33,
       isPending: false,
     });
+
+    // sync data of group record
+    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
+      "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      {
+        groupMetadata: {
+          groupId: "1-group1",
+          groupCreated: true,
+          groupInitiator: true,
+        },
+      }
+    );
 
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",

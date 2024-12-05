@@ -363,7 +363,7 @@ class IdentifierService extends AgentService {
             theme: this.getThemeFromIdentifier(identifier.name),
             groupMetadata: {
               groupId,
-              groupCreated: true,
+              groupCreated: false,
               groupInitiator: this.checkGroupInitiator(groupId)
             },
             isPending
@@ -403,6 +403,14 @@ class IdentifierService extends AgentService {
           });
         }
 
+        await this.identifierStorage.updateIdentifierMetadata(multisigManageAid, {
+          groupMetadata: {
+            groupId,
+            groupCreated: true,
+            groupInitiator: this.checkGroupInitiator(groupId)
+          }
+        });
+        
         await this.identifierStorage.createIdentifierMetadataRecord({
           id: identifier.prefix,
           displayName: groupId,
