@@ -38,6 +38,7 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   getCurrentOperation,
+  getShowConnections,
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
@@ -78,6 +79,7 @@ const Scanner = forwardRef(
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const connections = useAppSelector(getConnectionsCache);
+    const isShowConnectionsModal = useAppSelector(getShowConnections);
     const currentOperation = useAppSelector(getCurrentOperation);
     const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsgs = useAppSelector(getToastMsgs);
@@ -117,6 +119,7 @@ const Scanner = forwardRef(
     const stopScan = async () => {
       if (permission) {
         await BarcodeScanner.stopScan();
+        await BarcodeScanner.removeAllListeners();
       }
 
       setScanning(false);
@@ -433,6 +436,11 @@ const Scanner = forwardRef(
 
     useEffect(() => {
       const onLoad = async () => {
+        if(routePath === TabsRoutePath.SCAN && (isShowConnectionsModal || createIdentifierModalIsOpen)) {
+          await stopScan();
+          return;
+        }
+
         const isDuplicateConnectionToast = currentToastMsgs.some(
           (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
         );
@@ -443,28 +451,27 @@ const Scanner = forwardRef(
           ].includes(item.message)
         );
 
-        if (
-          (((routePath === TabsRoutePath.SCAN ||
-            [
-              OperationType.SCAN_CONNECTION,
-              OperationType.SCAN_WALLET_CONNECTION,
-              OperationType.SCAN_SSI_BOOT_URL,
-              OperationType.SCAN_SSI_CONNECT_URL,
-            ].includes(currentOperation)) &&
-            !isRequestPending) ||
-            ([
-              OperationType.MULTI_SIG_INITIATOR_SCAN,
-              OperationType.MULTI_SIG_RECEIVER_SCAN,
-            ].includes(currentOperation) &&
-              !isDuplicateConnectionToast))
-        ) {
+        const isScanning = routePath === TabsRoutePath.SCAN ||
+        [
+          OperationType.SCAN_CONNECTION,
+          OperationType.SCAN_WALLET_CONNECTION,
+          OperationType.SCAN_SSI_BOOT_URL,
+          OperationType.SCAN_SSI_CONNECT_URL,
+        ].includes(currentOperation);
+
+        const isMultisignScan = [
+          OperationType.MULTI_SIG_INITIATOR_SCAN,
+          OperationType.MULTI_SIG_RECEIVER_SCAN,
+        ].includes(currentOperation) && !isDuplicateConnectionToast;
+
+        if ((isScanning && !isRequestPending) || isMultisignScan) {
           await initScan();
         } else {
           await stopScan();
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
+    }, [currentOperation, routePath, cameraDirection, isShowConnectionsModal, createIdentifierModalIsOpen, currentToastMsgs]);
 
     useEffect(() => {
       return () => {
