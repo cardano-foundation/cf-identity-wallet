@@ -118,6 +118,28 @@ interface IpexGrantMultiSigExn {
   };
 }
 
+interface IpexAdmitMultiSigRequest {
+  exn: CommonExn & {
+    a: {
+      i: string;
+      gid: string;
+    };
+    e: {
+      exn: CommonExn & {
+        a: {
+          i: string;
+          m: string;
+        };
+        e: Record<string, never>;
+      };
+      d: string;
+    };
+  };
+  paths: {
+    exn: string;
+  }
+}
+
 interface GrantToJoinMultisigExnPayload {
   grantExn: IpexGrantMultiSigExn;
   atc: string;
@@ -132,4 +154,5 @@ export type {
   GrantToJoinMultisigExnPayload,
   IpexGrantMultiSigExn,
   InceptMultiSigExnMessage,
+  IpexAdmitMultiSigRequest,
 };

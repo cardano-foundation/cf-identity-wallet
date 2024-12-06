@@ -86,6 +86,14 @@ const connectionStateChangedHandler = async (
   if (event.payload.status === ConnectionStatus.PENDING) {
     if (event.payload.isMultiSigInvite) return;
 
+    dispatch(
+      updateOrAddConnectionCache({
+        id: event.payload.connectionId || "",
+        label: event.payload.label || "",
+        status: event.payload.status,
+        createdAtUTC: new Date().toString(),
+      })
+    );
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
     const connectionRecordId = event.payload.connectionId!;

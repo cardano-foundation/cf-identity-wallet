@@ -4,7 +4,7 @@ import { InfoCardProps } from "./InfoCard.types";
 import { combineClassNames } from "../../utils/style";
 import "./InfoCard.scss";
 
-const InfoCard = ({content ,className}: InfoCardProps) => {
+const InfoCard = ({content ,className, icon}: InfoCardProps) => {
   const classes = combineClassNames("info-card", className);
 
   return (
@@ -12,7 +12,7 @@ const InfoCard = ({content ,className}: InfoCardProps) => {
       <p>{content}</p>
       <div className="alert-icon">
         <IonIcon
-          icon={informationCircleOutline}
+          icon={icon ?? informationCircleOutline}
           slot="icon-only"
         />
       </div>

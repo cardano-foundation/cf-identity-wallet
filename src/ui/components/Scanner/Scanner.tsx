@@ -13,23 +13,22 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  ConnectionStatus,
   KeriConnectionType,
+  OOBI_AGENT_ONLY_RE,
+  WOOBI_RE
 } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { randomSalt } from "../../../core/agent/services/utils";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  removeConnectionCache,
+  getConnectionsCache,
   setMissingAliasUrl,
   setOpenConnectionId,
-  updateOrAddConnectionCache,
-  updateOrAddMultisigConnectionCache,
+  updateOrAddMultisigConnectionCache
 } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
@@ -45,7 +44,7 @@ import {
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
-  showConnections,
+  showConnections
 } from "../../../store/reducers/stateCache";
 import {
   setPendingConnection,
@@ -81,12 +80,13 @@ const Scanner = forwardRef(
     const platforms = getPlatforms();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
+    const connections = useAppSelector(getConnectionsCache);
+    const isShowConnectionsModal = useAppSelector(getShowConnections);
     const currentOperation = useAppSelector(getCurrentOperation);
     const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsgs = useAppSelector(getToastMsgs);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
-    const showConnectionPage = useAppSelector(getShowConnections);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
@@ -98,6 +98,7 @@ const Scanner = forwardRef(
       useState(false);
     const [resumeMultiSig, setResumeMultiSig] =
         useState<IdentifierShortDetails | null>(null);
+    const isHandlingQR = useRef(false);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -121,6 +122,7 @@ const Scanner = forwardRef(
     const stopScan = async () => {
       if (permission) {
         await BarcodeScanner.stopScan();
+        await BarcodeScanner.removeAllListeners();
       }
 
       setScanning(false);
@@ -245,7 +247,9 @@ const Scanner = forwardRef(
 
       if (
         (!isMultiSigUrl && !isValidConnectionUrl(url)) ||
-        (isMultiSigUrl && !isValidHttpUrl(url))
+        (isMultiSigUrl && !isValidHttpUrl(url)) ||
+        (!new URL(url).pathname.match(OOBI_AGENT_ONLY_RE) &&
+          !new URL(url).pathname.match(WOOBI_RE))
       ) {
         throw new Error(ErrorMessage.INVALID_CONNECTION_URL);
       }
@@ -314,6 +318,8 @@ const Scanner = forwardRef(
         }
 
         throw e;
+      } finally {
+        isHandlingQR.current = false;
       }
     };
 
@@ -328,17 +334,15 @@ const Scanner = forwardRef(
         return;
       }
 
-      const pendingId = randomSalt();
-      dispatch(
-        updateOrAddConnectionCache({
-          id: pendingId,
-          label: connectionName || pendingId,
-          status: ConnectionStatus.PENDING,
-          createdAtUTC: new Date().toString(),
-        })
-      );
-
       try {
+        const connectionId = new URL(content).pathname
+          .split("/oobi/")
+          .pop()?.split("/")[0];
+
+        if(connectionId && connections[connectionId]) {
+          throw new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`);
+        }
+
         await Agent.agent.connections.connectByOobiUrl(content);
       } catch (e) {
         const errorMessage = (e as Error).message;
@@ -352,7 +356,7 @@ const Scanner = forwardRef(
 
         showError("Scanner Error:", e, dispatch);
       } finally {
-        dispatch(removeConnectionCache(pendingId));
+        isHandlingQR.current = false;
       }
     };
 
@@ -387,6 +391,7 @@ const Scanner = forwardRef(
 
       if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(content)) {
         handleConnectWallet(content);
+        isHandlingQR.current = false;
         return;
       }
 
@@ -397,6 +402,7 @@ const Scanner = forwardRef(
         ].includes(currentOperation)
       ) {
         handleSSIScan(content);
+        isHandlingQR.current = false;
         return;
       }
 
@@ -410,10 +416,15 @@ const Scanner = forwardRef(
         onCheckPermissionFinish?.(!!allowed);
 
         if (allowed) {
+          await BarcodeScanner.removeAllListeners();
           const listener = await BarcodeScanner.addListener(
             "barcodeScanned",
             async (result) => {
               await listener.remove();
+
+              if(isHandlingQR.current) return;
+              isHandlingQR.current = true;
+
               await processValue(result.barcode.rawValue);
             }
           );
@@ -441,6 +452,11 @@ const Scanner = forwardRef(
 
     useEffect(() => {
       const onLoad = async () => {
+        if(routePath === TabsRoutePath.SCAN && (isShowConnectionsModal || createIdentifierModalIsOpen)) {
+          await stopScan();
+          return;
+        }
+
         const isDuplicateConnectionToast = currentToastMsgs.some(
           (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
         );
@@ -451,28 +467,27 @@ const Scanner = forwardRef(
           ].includes(item.message)
         );
 
-        if (
-          (((routePath === TabsRoutePath.SCAN ||
-            [
-              OperationType.SCAN_CONNECTION,
-              OperationType.SCAN_WALLET_CONNECTION,
-              OperationType.SCAN_SSI_BOOT_URL,
-              OperationType.SCAN_SSI_CONNECT_URL,
-            ].includes(currentOperation)) &&
-            !isRequestPending) ||
-            ([
-              OperationType.MULTI_SIG_INITIATOR_SCAN,
-              OperationType.MULTI_SIG_RECEIVER_SCAN,
-            ].includes(currentOperation) &&
-              !isDuplicateConnectionToast))
-        ) {
+        const isScanning = routePath === TabsRoutePath.SCAN ||
+        [
+          OperationType.SCAN_CONNECTION,
+          OperationType.SCAN_WALLET_CONNECTION,
+          OperationType.SCAN_SSI_BOOT_URL,
+          OperationType.SCAN_SSI_CONNECT_URL,
+        ].includes(currentOperation);
+
+        const isMultisignScan = [
+          OperationType.MULTI_SIG_INITIATOR_SCAN,
+          OperationType.MULTI_SIG_RECEIVER_SCAN,
+        ].includes(currentOperation) && !isDuplicateConnectionToast;
+
+        if ((isScanning && !isRequestPending) || isMultisignScan) {
           await initScan();
         } else {
           await stopScan();
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
+    }, [currentOperation, routePath, cameraDirection, isShowConnectionsModal, createIdentifierModalIsOpen, currentToastMsgs]);
 
     useEffect(() => {
       return () => {

@@ -1,4 +1,3 @@
-import { Agent } from "../../../core/agent/agent";
 import {
   EventTypes,
   NotificationAddedEvent,
@@ -10,7 +9,6 @@ import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
   deleteNotification,
-  setNotificationsCache,
 } from "../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
@@ -41,13 +39,6 @@ const signifyOperationStateChangeHandler = async (
     dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
-  case OperationPendingRecordType.ExchangeRevokeCredential: {
-    // @TODO: Inject with `addNotification` instead of fetching all notifications
-    const notifications =
-        await Agent.agent.keriaNotifications.getAllNotifications();
-    dispatch(setNotificationsCache(notifications));
-    break;
-  }
   }
 };
 export { notificatiStateChanged, signifyOperationStateChangeHandler };

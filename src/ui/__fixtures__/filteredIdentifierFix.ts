@@ -31,6 +31,13 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     isPending: false,
     multisigManageAid: "EHzi_GBx0jIgd3G0Qqcjg3ZaLJ6d84wp6q0qUvC_iOQ4",
   },
+  {
+    displayName: "Profess",
+    id: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+    createdAtUTC: "2024-10-21T11:15:58.673Z",
+    theme: 0,
+    isPending: false,
+  },
 ];
 
 const multisignIdentifierFix: IdentifierShortDetails[] = [

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { i18n } from "../../../../i18n";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { CardDetailsItem } from "../CardDetailsItem";
 import { CardDetailsNestedAttributesProps } from "./CardDetailsAttributes.types";
@@ -11,7 +10,6 @@ import { combineClassNames } from "../../../utils/style";
 const CardDetailsNestedAttributes = ({
   attribute,
   cardKeyValue,
-  customType,
   itemProps,
 }: CardDetailsNestedAttributesProps) => {
   const { className, ...restItemProps } = itemProps || {};
@@ -25,10 +23,6 @@ const CardDetailsNestedAttributes = ({
       return `${formatShortDate(item)} - ${formatTimeToSec(item)}`;
 
     const isValuedType = typeof item === ("string" || "number");
-    if (isValuedType && customType === "status")
-      return item === "0"
-        ? i18n.t("tabs.credentials.details.status.issued")
-        : i18n.t("tabs.credentials.details.status.revoked");
 
     if (isValuedType) return item;
 
@@ -44,9 +38,8 @@ const CardDetailsNestedAttributes = ({
     }
   );
 
-  const infoTestId = item[10] === "T" ? "cred-detail-time" : undefined;
-  const innerCardKeyValue =
-    cardKeyValue || `${reservedKeysFilter(key, customType)}:`;
+  const infoTestId = dateRegex.test(item) ? "cred-detail-time" : undefined;
+  const innerCardKeyValue = cardKeyValue || `${reservedKeysFilter(key)}:`;
 
   return (
     <>

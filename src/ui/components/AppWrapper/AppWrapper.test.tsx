@@ -105,6 +105,7 @@ jest.mock("../../../core/agent/agent", () => ({
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
         onRemoveNotification: jest.fn(),
+        stopNotification: jest.fn()
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
@@ -375,28 +376,5 @@ describe("Signify operation state changed handler", () => {
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
     );
-  });
-
-  test("handles completed admit on revoked credential operation", async () => {
-    const notifications = [
-      {
-        id: "id",
-        createdAt: new Date().toISOString(),
-        a: {},
-        connectionId: "connection",
-        read: false,
-      },
-    ];
-    Agent.agent.keriaNotifications.getAllNotifications = jest
-      .fn()
-      .mockResolvedValue(notifications);
-    await signifyOperationStateChangeHandler(
-      {
-        opType: OperationPendingRecordType.ExchangeRevokeCredential,
-        oid: "id",
-      },
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(setNotificationsCache(notifications));
   });
 });

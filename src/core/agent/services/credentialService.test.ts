@@ -100,14 +100,6 @@ const credentialStorage = jest.mocked({
   updateCredentialMetadata: jest.fn(),
 });
 
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      getKeriaOnlineStatus: jest.fn(),
-    },
-  },
-}));
-
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventEmitter: new CoreEventEmitter(),

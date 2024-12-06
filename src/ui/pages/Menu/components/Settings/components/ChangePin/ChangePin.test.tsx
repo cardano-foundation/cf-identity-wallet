@@ -1,18 +1,16 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import {
-  RenderResult,
   fireEvent,
   render,
-  waitFor,
+  waitFor
 } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
-import { waitForIonicReact } from "@ionic/react-test-utils";
-import { act } from "react-dom/test-utils";
+import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { store } from "../../../../../../../store";
-import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
-import { ChangePin } from "./ChangePin";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
+import { ChangePin } from "./ChangePin";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 const mockSetIsOpen = jest.fn();
@@ -39,6 +37,14 @@ jest.mock("../../../../../../hooks/useBiometricsHook", () => ({
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: { children: any }) => children,
+}));
+
+
+jest.mock("signify-ts", () => ({
+  ...jest.requireActual("signify-ts"),
+  Salter: jest.fn(() => ({
+    qb64: ""
+  }))
 }));
 
 describe("ChangePin Modal", () => {
@@ -74,7 +80,6 @@ describe("ChangePin Modal", () => {
         />
       </Provider>
     );
-    await waitForIonicReact();
 
     expect(getByTestId("close-button")).toBeInTheDocument();
     expect(
@@ -101,7 +106,7 @@ describe("ChangePin Modal", () => {
 
   test("Renders Re-enter Passcode when first time passcode is set", async () => {
     require("@ionic/react");
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, queryByText, getByTestId, findByText } = render(
       <Provider store={store}>
         <ChangePin
           isOpen={true}
@@ -109,18 +114,16 @@ describe("ChangePin Modal", () => {
         />
       </Provider>
     );
-    await waitForIonicReact();
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+
+    const text = await findByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+      .reenterpasscode);
 
     await waitFor(() =>
-      expect(
-        queryByText(
-          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
-            .reenterpasscode
-        )
-      ).toBeInTheDocument()
+      expect(text).toBeInTheDocument()
     );
+
     await waitFor(() =>
       expect(
         queryByText(
@@ -151,7 +154,7 @@ describe("ChangePin Modal", () => {
       setBiometricsIsEnabled: jest.fn(),
     }));
 
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, getByTestId, findByText } = render(
       <Provider store={store}>
         <ChangePin
           isOpen={true}
@@ -159,24 +162,20 @@ describe("ChangePin Modal", () => {
         />
       </Provider>
     );
-    await waitForIonicReact();
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+    const text = await findByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+      .reenterpasscode);
 
-    await waitFor(() =>
-      expect(
-        queryByText(
-          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
-            .reenterpasscode
-        )
-      ).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      expect(text).toBeInTheDocument();
+    });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
-    await waitFor(() =>
-      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
-    );
+    await waitFor(() => {
+      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+    });
   });
 
   test("Cancel change pin", async () => {

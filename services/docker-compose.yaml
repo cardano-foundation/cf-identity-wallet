@@ -5,7 +5,7 @@ services:
     container_name: idw-keria
     restart: unless-stopped
     build:
-      context: github.com/WebOfTrust/keria.git#736947191069cfc1617a43f63dbc64210c351b5c
+      context: github.com/WebOfTrust/keria.git#58e9f340ee5f375ce04e7422e93c18f115b6e92d
       dockerfile: ./images/keria.dockerfile
     environment:
       - KERI_AGENT_CORS=true
@@ -36,6 +36,25 @@ services:
       - "traefik.http.routers.keria-boot.tls.certresolver=myresolver"
       - "traefik.http.routers.keria-boot.service=keria-boot"
       - "traefik.http.services.keria-boot.loadbalancer.server.port=3903"
+
+  witnesses:
+    container_name: idw-witnesses
+    restart: unless-stopped
+    image: weboftrust/keri:1.1.26
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+    entrypoint:
+        - kli
+    command:
+        - witness
+        - demo
+    volumes:
+        - ./keria-config/witnesses:/keripy/scripts/keri/cf/main
+    ports:
+      - 5642:5642
+      - 5643:5643
+      - 5644:5644
 
   cred-issuance:
     container_name: cred-issuance

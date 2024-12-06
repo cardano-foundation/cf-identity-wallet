@@ -3,7 +3,6 @@ import { MiscRecordId } from "../agent.types";
 import { LoginAttempts } from "./auth.types";
 import { AuthService } from "./authService";
 import { BasicRecord } from "../../agent/records";
-import { Agent } from "../agent";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -109,19 +108,6 @@ const basicStorage = jest.mocked({
 });
 
 const authService = new AuthService(agentServicesProps, basicStorage as any);
-
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      basicStorage: {
-        findById: jest.fn(),
-        save: jest.fn(),
-        update: jest.fn(),
-        createOrUpdateBasicRecord: jest.fn(),
-      },
-    },
-  },
-}));
 
 describe("Auth service of agent", () => {
   beforeEach(() => {

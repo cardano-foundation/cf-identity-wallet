@@ -162,30 +162,6 @@ const multiSigService = new MultiSigService(
   identifiers as any
 );
 
-const mockResolveOobi = jest.fn();
-const mockGetIdentifiers = jest.fn();
-
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      connections: {
-        getConnectionShortDetailById: jest.fn(),
-        resolveOobi: () => mockResolveOobi(),
-        getMultisigLinkedContacts: jest.fn(),
-      },
-      identifiers: {
-        getIdentifiers: () => mockGetIdentifiers(),
-        rotateIdentifier: () => jest.fn(),
-        updateIdentifier: jest.fn(),
-      },
-      keriaNotifications: {
-        markNotification: (id: string) => markNotificationMock(id),
-      },
-      getKeriaOnlineStatus: jest.fn(),
-    },
-  },
-}));
-
 const now = new Date();
 const nowISO = now.toISOString();
 const creatorIdentifier = "creatorIdentifier";

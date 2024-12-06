@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { TermsAndPrivacy } from "./TermsAndPrivacy";

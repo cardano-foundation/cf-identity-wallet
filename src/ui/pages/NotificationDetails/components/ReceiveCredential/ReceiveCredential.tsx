@@ -1,5 +1,6 @@
-import { IonButton, IonCol, IonIcon } from "@ionic/react";
+import { IonButton, IonCol, IonIcon, IonItem, IonText } from "@ionic/react";
 import {
+  alertCircleOutline,
   checkmark,
   informationCircleOutline,
   personCircleOutline,
@@ -8,7 +9,9 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { NotificationRoute } from "../../../../../core/agent/agent.types";
-import { ACDCDetails } from "../../../../../core/agent/services/credentialService.types";
+import {
+  ACDCDetails
+} from "../../../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
@@ -18,19 +21,26 @@ import {
 } from "../../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
+  deleteNotification,
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
+import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { Alert as AlertDecline } from "../../../../components/Alert";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
+import {
+  MemberAcceptStatus,
+  MultisigMember,
+} from "../../../../components/CredentialDetailModule/components";
+import { InfoCard } from "../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { Spinner } from "../../../../components/Spinner";
 import { Verification } from "../../../../components/Verification";
-import { BackEventPriorityType } from "../../../../globals/types";
+import { BackEventPriorityType, IDENTIFIER_BG_MAPPING } from "../../../../globals/types";
 import {
   useIonHardwareBackButton,
   useOnlineStatusEffect,
@@ -38,13 +48,9 @@ import {
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import {
-  MultisigMember,
-  MemberAcceptStatus,
-} from "../../../../components/CredentialDetailModule/components";
 import "./ReceiveCredential.scss";
-import { MultiSigMembersStatus } from "./ReceiveCredential.types";
-import { getAuthentication } from "../../../../../store/reducers/stateCache";
+import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
+import { LinkedGroupInfoGrant } from "../../../../../core/agent/services/ipexCommunicationService.types";
 
 const ANIMATION_DELAY = 2600;
 
@@ -65,26 +71,31 @@ const ReceiveCredential = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [openInfo, setOpenInfo] = useState(false);
+  const [showCommonError, setShowCommonError] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [multisigMemberStatus, setMultisigMemberStatus] =
-    useState<MultiSigMembersStatus>({
+    useState<LinkedGroupInfoGrant>({
       threshold: "0",
-      accepted: false,
-      membersJoined: [],
       members: [],
+      othersJoined: [],
+      linkedGroupRequest: {
+        accepted: false,
+      }
     });
   const [isLoading, setIsLoading] = useState(false);
   const identifiersData = useAppSelector(getIdentifiersCache);
 
   const isMultisig = credDetail?.identifierType === IdentifierType.Group;
+  const [isRevoked, setIsRevoked] = useState(false);
+  const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
 
   const connection =
-    connectionsCache?.[notificationDetails.connectionId]?.label;
+    connectionsCache?.[notificationDetails.connectionId]?.label || i18n.t("connections.unknown");
 
-  const userAccepted = multisigMemberStatus.accepted;
-  const maxThreshhold =
+  const userAccepted = multisigMemberStatus.linkedGroupRequest.accepted;
+  const maxThreshold =
     isMultisig &&
-    multisigMemberStatus.membersJoined.length >=
+    (multisigMemberStatus.othersJoined.length + (multisigMemberStatus.linkedGroupRequest.accepted ? 1 : 0)) >=
       Number(multisigMemberStatus.threshold);
 
   useIonHardwareBackButton(
@@ -135,29 +146,51 @@ const ReceiveCredential = ({
 
       setCredDetail({ ...credential, identifierType });
 
+      if(credential.lastStatus.s === "1") {
+        setIsRevoked(true);
+      }
+
       if (identifierType === IdentifierType.Group) {
         await getMultiSigMemberStatus();
       }
     } catch (e) {
+      setShowCommonError(true);
+      setTimeout(handleBack);
       setInitiateAnimation(false);
       showError("Unable to get acdc", e, dispatch);
     } finally {
       setIsLoading(false);
     }
-  }, [
-    dispatch,
-    getMultiSigMemberStatus,
-    identifiersData,
-    notificationDetails.a.d,
-  ]);
+  }, [dispatch, getMultiSigMemberStatus, handleBack, identifiersData, notificationDetails.a.d]);
 
   useOnlineStatusEffect(getAcdc);
+
+  const handleDelete = async () => {
+    try {
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        notificationDetails.id,
+        notificationDetails.a.r as NotificationRoute
+      );
+      dispatch(deleteNotification(notificationDetails));
+      handleBack();
+    } catch (e) {
+      showError("Unable to remove notification", e, dispatch);
+    }
+  };
 
   const handleAccept = async () => {
     try {
       const startTime = Date.now();
       setInitiateAnimation(true);
-      await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+
+      // @TODO - foconnor: Should be refined in the upcoming UI ticket
+      //   If multisigMemberStatus.members.length && multisigMemberStatus.members[0] === identifier?.multisigManageAid, we can call admitAcdc
+      //   Otherwise, can call joinMultisigAdmit IF multisigMemberStatus.linkedGroupRequest.current !== undefined
+      if (multisigMemberStatus.linkedGroupRequest.current) {
+        await Agent.agent.ipexCommunications.joinMultisigAdmit(notificationDetails.id);
+      } else {
+        await Agent.agent.ipexCommunications.admitAcdc(notificationDetails.id);
+      }
       const finishTime = Date.now();
 
       setTimeout(() => {
@@ -191,17 +224,27 @@ const ReceiveCredential = ({
     "animation-on": initiateAnimation,
     "animation-off": !initiateAnimation,
     "pending-multisig": userAccepted && isMultisig,
+    "ion-hide": isLoading || showCommonError,
+    revoked: isRevoked,
   });
+
+  const identifier = useMemo(() => {
+    return identifiersData.find(item => item.id === credDetail?.identifierId)
+  }, [credDetail?.identifierId, identifiersData]);
 
   const getStatus = useCallback(
     (member: string): MemberAcceptStatus => {
-      if (multisigMemberStatus.membersJoined.includes(member)) {
+      if (multisigMemberStatus.othersJoined.includes(member)) {
+        return MemberAcceptStatus.Accepted;
+      }
+
+      if (multisigMemberStatus.linkedGroupRequest.accepted && identifier?.multisigManageAid === member) {
         return MemberAcceptStatus.Accepted;
       }
 
       return MemberAcceptStatus.Waiting;
     },
-    [multisigMemberStatus.membersJoined]
+    [multisigMemberStatus.othersJoined, multisigMemberStatus.linkedGroupRequest, identifier]
   );
 
   const members = useMemo(() => {
@@ -225,12 +268,9 @@ const ReceiveCredential = ({
     setVerifyIsOpen(true);
   };
 
-  if (isLoading) {
-    return <Spinner show={isLoading} />;
-  }
-
   return (
     <>
+      <Spinner data-testid="spinner" show={isLoading} />
       <ScrollablePageLayout
         pageId={`${pageId}-receive-credential`}
         customClass={classes}
@@ -251,24 +291,33 @@ const ReceiveCredential = ({
           !userAccepted && (
             <PageFooter
               pageId={pageId}
-              primaryButtonText={`${i18n.t(
-                maxThreshhold
+              primaryButtonText={isRevoked ? undefined : `${i18n.t(
+                maxThreshold
                   ? "tabs.notifications.details.buttons.addcred"
                   : "tabs.notifications.details.buttons.accept"
               )}`}
               primaryButtonAction={handleConfirm}
               secondaryButtonText={
-                maxThreshhold
+                maxThreshold || isRevoked
                   ? undefined
                   : `${i18n.t("tabs.notifications.details.buttons.decline")}`
               }
               secondaryButtonAction={
-                maxThreshhold ? undefined : () => setAlertDeclineIsOpen(true)
+                maxThreshold ? undefined : () => setAlertDeclineIsOpen(true)
               }
+              deleteButtonText={
+                isRevoked
+                  ? `${i18n.t("tabs.notifications.details.buttons.delete")}`
+                  : undefined
+              }
+              deleteButtonAction={handleConfirm}
             />
           )
         }
       >
+        {isRevoked && (
+          <InfoCard className="alert" content={i18n.t("tabs.notifications.details.credential.receive.revokedalert")} icon={alertCircleOutline}/>
+        )}
         <div className="request-animation-center">
           <div className="request-icons-row">
             <div className="request-user-logo">
@@ -352,6 +401,37 @@ const ReceiveCredential = ({
               ))}
             </CardDetailsBlock>
           )}
+          {identifier && 
+          <CardDetailsBlock
+            className="related-identifiers"
+            title={i18n.t(
+              "tabs.notifications.details.credential.receive.relatedidentifier"
+            )}
+          >
+            <IonItem
+              lines="none"
+              className="related-identifier"
+              onClick={() => setOpenIdentifierDetail(true)}
+              data-testid="related-identifier-detail"
+            >
+              <img
+                className="theme"
+                slot="start"
+                src={IDENTIFIER_BG_MAPPING[identifier.theme] as string}
+                alt="theme"
+              />
+              <IonText
+                slot="start"
+                className="identifier-name"
+              >
+                {identifier.displayName}
+              </IonText>
+              <IonIcon
+                slot="end"
+                icon={informationCircleOutline}
+              />
+            </IonItem>
+          </CardDetailsBlock>}
         </div>
       </ScrollablePageLayout>
       <AlertDecline
@@ -374,7 +454,7 @@ const ReceiveCredential = ({
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}
-        onVerify={handleAccept}
+        onVerify={isRevoked ? handleDelete : handleAccept}
       />
       <CredentialDetailModal
         pageId="receive-credential-detail"
@@ -385,6 +465,14 @@ const ReceiveCredential = ({
         credDetail={credDetail}
         viewOnly
       />
+      {
+        credDetail && <IdentifierDetailModal 
+          isOpen={openIdentifierDetail} 
+          setIsOpen={setOpenIdentifierDetail}
+          pageId="identifier-detail"
+          identifierDetailId={credDetail.identifierId}
+        />
+      }
     </>
   );
 };

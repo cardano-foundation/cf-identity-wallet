@@ -1,4 +1,4 @@
-import { Contact, Operation, Salter, State } from "signify-ts";
+import { Contact, Operation, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -7,8 +7,12 @@ import {
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  DOOBI_RE,
   KeriConnectionType,
+  OOBI_AGENT_ONLY_RE,
+  OOBI_RE,
   OobiScan,
+  WOOBI_RE,
 } from "../agent.types";
 import {
   ConnectionRecord,
@@ -43,7 +47,7 @@ class ConnectionService extends AgentService {
     connectionStorage: ConnectionStorage,
     credentialStorage: CredentialStorage,
     operationPendingStorage: OperationPendingStorage,
-    identifierStorage: IdentifierStorage,
+    identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
@@ -60,6 +64,7 @@ class ConnectionService extends AgentService {
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
+  static readonly OOBI_INVALID = "OOBI URL is invalid";
 
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -91,6 +96,13 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async connectByOobiUrl(url: string): Promise<OobiScan> {
+    if (
+      !new URL(url).pathname.match(OOBI_AGENT_ONLY_RE) &&
+      !new URL(url).pathname.match(WOOBI_RE)
+    ) {
+      throw new Error(ConnectionService.OOBI_INVALID);
+    }
+
     const multiSigInvite = url.includes("groupId");
     const connectionId = new URL(url).pathname
       .split("/oobi/")
@@ -163,6 +175,7 @@ class ConnectionService extends AgentService {
           connectionId,
           status: ConnectionStatus.PENDING,
           url,
+          label: alias,
         },
       });
 
@@ -203,7 +216,7 @@ class ConnectionService extends AgentService {
       pendingDeletion: false,
     });
     for (const connection of associatedContacts) {
-      connectionsDetails.push(await this.getConnectionShortDetails(connection));
+      connectionsDetails.push(this.getConnectionShortDetails(connection));
     }
     return connectionsDetails;
   }
@@ -441,6 +454,13 @@ class ConnectionService extends AgentService {
     op: Operation & { response: State };
     alias: string;
   }> {
+    if (
+      !new URL(url).pathname.match(OOBI_RE) &&
+      !new URL(url).pathname.match(DOOBI_RE) &&
+      !new URL(url).pathname.match(WOOBI_RE)
+    ) {
+      throw new Error(ConnectionService.OOBI_INVALID);
+    }
     const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     let operation: Operation & { response: State };
     if (waitForCompletion) {
@@ -450,7 +470,7 @@ class ConnectionService extends AgentService {
         5000
       )) as Operation & { response: State };
       if (!operation.done) {
-        throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+        throw new Error(`${ConnectionService.FAILED_TO_RESOLVE_OOBI} [url: ${url}]`);
       }
       if (operation.response && operation.response.i) {
         const connectionId = operation.response.i;

@@ -199,7 +199,7 @@ const initialState = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
   biometricsCache: {
     enabled: false,
@@ -223,7 +223,7 @@ describe("App", () => {
     isNativeMock.mockImplementation(() => false);
     mockInitDatabase.mockClear();
     getPlatformsMock.mockImplementation(() => ["android"]);
-  })
+  });
 
   test("Mobile header hidden when app not in preview mode", async () => {
     const { queryByTestId } = render(
@@ -379,14 +379,16 @@ describe("App", () => {
   });
 
   test("Show error when unhandledrejection event fired", async () => {
-    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
-      if(type === "unhandledrejection") {
-        listener({
-          preventDefault: jest.fn(),
-          promise: Promise.reject(new Error("Failed"))
-        })
-      }
-    })
+    const spy = jest
+      .spyOn(window, "addEventListener")
+      .mockImplementation((type, listener: any) => {
+        if (type === "unhandledrejection") {
+          listener({
+            preventDefault: jest.fn(),
+            promise: Promise.reject(new Error("Failed")),
+          });
+        }
+      });
 
     render(
       <Provider store={storeMocked}>
@@ -402,14 +404,16 @@ describe("App", () => {
   });
 
   test("Show error when error fired", async () => {
-    const spy = jest.spyOn(window, "addEventListener").mockImplementation((type, listener: any) => {
-      if(type === "error") {
-        listener({
-          preventDefault: jest.fn(),
-          error: new Error("Failed")
-        })
-      }
-    })
+    const spy = jest
+      .spyOn(window, "addEventListener")
+      .mockImplementation((type, listener: any) => {
+        if (type === "error") {
+          listener({
+            preventDefault: jest.fn(),
+            error: new Error("Failed"),
+          });
+        }
+      });
 
     render(
       <Provider store={storeMocked}>
@@ -480,7 +484,7 @@ describe("App", () => {
         credential: {
           viewType: null,
           favouriteIndex: 0,
-        }
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -508,7 +512,9 @@ describe("App", () => {
     );
 
     await waitFor(() => {
-      expect(getByText(Eng_Trans.inputrequest.title.username)).toBeInTheDocument();
+      expect(
+        getByText(Eng_Trans.inputrequest.title.username)
+      ).toBeInTheDocument();
     });
   });
 });

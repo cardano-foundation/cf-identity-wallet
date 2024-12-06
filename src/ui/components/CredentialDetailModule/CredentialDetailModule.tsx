@@ -3,6 +3,7 @@ import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
 import { useCallback, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
+  ConnectionShortDetails,
   MiscRecordId,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
@@ -22,6 +23,10 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../store/reducers/notificationsCache";
+import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -29,8 +34,11 @@ import "../../components/CardDetails/CardDetails.scss";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
+import { ConnectionDetails } from "../../pages/ConnectionDetails";
+import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { Alert as AlertDeleteArchive, Alert as AlertRestore } from "../Alert";
+import { CloudError } from "../CloudError";
 import { CredentialCardTemplate } from "../CredentialCardTemplate";
 import { CredentialOptions } from "../CredentialOptions";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
@@ -43,12 +51,6 @@ import {
   BackReason,
   CredentialDetailModuleProps,
 } from "./CredentialDetailModule.types";
-import { CloudError } from "../CloudError";
-import {
-  getNotificationsCache,
-  setNotificationsCache,
-} from "../../../store/reducers/notificationsCache";
-import { showError } from "../../utils/error";
 
 const CredentialDetailModule = ({
   pageId,
@@ -75,13 +77,15 @@ const CredentialDetailModule = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [cardData, setCardData] = useState<ACDCDetails>();
   const [hidden, setHidden] = useState(false);
-
+  const [openConnectionlModal, setOpenConnectionlModal] = useState(false);
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
   const isInactiveCred = (isArchived || isRevoked) && !viewOnly;
-
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === id);
   const [cloudError, setCloudError] = useState(false);
+  const [connectionShortDetails, setConnectionShortDetails] = useState<
+    ConnectionShortDetails | undefined
+  >(undefined);
 
   const fetchArchivedCreds = useCallback(async () => {
     try {
@@ -91,6 +95,18 @@ const CredentialDetailModule = ({
       showError("Unable to get archived credential", e, dispatch);
     }
   }, [dispatch]);
+
+  const getConnection = useCallback(async (connectionId: string) => {
+    try {
+      const shortDetails =
+        await Agent.agent.connections.getConnectionShortDetailById(
+          connectionId
+        );
+      setConnectionShortDetails(shortDetails);
+    } catch(error) {
+      showError("Unable to load connection", error);
+    }
+  }, []);
 
   const getCredDetails = useCallback(async () => {
     if (credDetail) {
@@ -104,11 +120,12 @@ const CredentialDetailModule = ({
       const cardDetails =
         await Agent.agent.credentials.getCredentialDetailsById(id);
       setCardData(cardDetails);
+      getConnection(cardDetails.i);
     } catch (error) {
       setCloudError(true);
       showError("Unable to get credential detail", error, dispatch);
     }
-  }, [id, dispatch, credDetail]);
+  }, [credDetail, id, getConnection, dispatch]);
 
   useOnlineStatusEffect(getCredDetails);
 
@@ -364,7 +381,8 @@ const CredentialDetailModule = ({
     setAlertRestoreIsOpen(true);
   };
 
-  const resetOperation = () => dispatch(setCurrentOperation(OperationType.IDLE));
+  const resetOperation = () =>
+    dispatch(setCurrentOperation(OperationType.IDLE));
 
   if (cloudError) {
     return (
@@ -389,7 +407,12 @@ const CredentialDetailModule = ({
     );
   }
 
-  return (
+  return openConnectionlModal && connectionShortDetails ? (
+    <ConnectionDetails
+      connectionShortDetails={connectionShortDetails}
+      handleCloseConnectionModal={() => setOpenConnectionlModal(false)}
+    />
+  ) : (
     <>
       <ScrollablePageLayout
         pageId={pageId}
@@ -418,7 +441,7 @@ const CredentialDetailModule = ({
           <>
             {isRevoked && (
               <div className="revoked-alert">
-                {i18n.t("tabs.credentials.details.revoked")}
+                {i18n.t("tabs.credentials.details.status.revoked")}
               </div>
             )}
             <CredentialCardTemplate
@@ -429,10 +452,15 @@ const CredentialDetailModule = ({
               }}
               isActive={false}
             />
-            <div className="card-details-content">
+            <div
+              className="card-details-content"
+              data-testid="card-details-content"
+            >
               <CredentialContent
                 joinedCredRequestMembers={joinedCredRequestMembers}
                 cardData={cardData}
+                connectionShortDetails={connectionShortDetails}
+                setOpenConnectionlModal={setOpenConnectionlModal}
               />
               {!viewOnly && (
                 <PageFooter

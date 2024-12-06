@@ -40,7 +40,7 @@
     }
 
     &.rejected {
-      background: #ff7d7a;
+      background: var(--ion-color-light-red);
     }
 
     &.waiting {

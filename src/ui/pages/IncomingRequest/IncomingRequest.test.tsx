@@ -1,7 +1,9 @@
 import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { dequeueIncomingRequest } from "../../../store/reducers/stateCache";
@@ -10,9 +12,8 @@ import {
   signObjectFix,
   signTransactionFix,
 } from "../../__fixtures__/signTransactionFix";
-import { IncomingRequest } from "./IncomingRequest";
-import { KeyStoreKeys } from "../../../core/storage";
 import { passcodeFiller } from "../../utils/passcodeFiller";
+import { IncomingRequest } from "./IncomingRequest";
 mockIonicReact();
 
 const mockApprovalCallback = jest.fn((status: boolean) => status);
@@ -29,8 +30,15 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
-  IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
+  IonModal: ({ children, isOpen, ...props }: any) => {
+    const testId = props["data-testid"];
+
+    if(!isOpen) {
+      return null;
+    }
+
+    return <div data-testid={testId}>{children}</div>;
+  }
 }));
 
 const requestData = {
@@ -188,9 +196,7 @@ describe("Sign request", () => {
       expect(getByTestId("passcode-button-1")).toBeVisible();
     });
 
-    act(() => {
-      passcodeFiller(getByText, getByTestId, "1", 6);
-    });
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);

@@ -1,4 +1,5 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";

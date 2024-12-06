@@ -2,12 +2,12 @@ import { waitForIonicReact } from "@ionic/react-test-utils";
 import { createMemoryHistory } from "history";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import {
-  act,
   fireEvent,
   getDefaultNormalizer,
   render,
   waitFor,
 } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -36,6 +36,9 @@ jest.mock("../../../core/agent/agent", () => ({
         restoreCredential: jest.fn(() => Promise.resolve(true)),
         getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
         getCredentials: jest.fn(() => Promise.resolve(true)),
+      },
+      connections: {
+        getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
       },
       basicStorage: {
         findById: jest.fn(),
@@ -88,6 +91,9 @@ const initialStateNoPasswordCurrent = {
   notificationsCache: {
     notificationDetailCache: null,
   },
+  identifiersCache: {
+    identifiers: [],
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -115,6 +121,9 @@ const initialStateNoPasswordArchived = {
   notificationsCache: {
     notificationDetailCache: null,
   },
+  identifiersCache: {
+    identifiers: [],
+  },
 };
 
 describe("Cred Details page - current not archived credential", () => {
@@ -134,7 +143,7 @@ describe("Cred Details page - current not archived credential", () => {
   });
 
   test("It renders Card Details", async () => {
-    const { getByText, getAllByText } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -145,13 +154,10 @@ describe("Cred Details page - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getAllByText(credsFixAcdc[0].s.title)).toHaveLength(2);
+      expect(getByTestId("card-details-content")).toBeInTheDocument();
     });
     await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
-    });
-    await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].a.i)).toBeVisible;
+      expect(getByTestId("credential-card-details-footer")).toBeInTheDocument();
     });
   });
 
@@ -180,6 +186,9 @@ describe("Cred Details page - current not archived credential", () => {
       },
       notificationsCache: {
         notificationDetailCache: null,
+      },
+      identifiersCache: {
+        identifiers: [],
       },
     };
 

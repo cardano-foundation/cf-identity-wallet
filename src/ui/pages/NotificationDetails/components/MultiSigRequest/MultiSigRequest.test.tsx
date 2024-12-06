@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import {
@@ -51,7 +51,7 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
   IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 jest.mock("../../../../../core/agent/agent", () => ({

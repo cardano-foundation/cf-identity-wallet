@@ -1,20 +1,16 @@
 import { IonModal, isPlatform } from "@ionic/react";
 import { useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import {
-  ConnectionStatus,
-  MiscRecordId,
-} from "../../../core/agent/agent.types";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  getConnectionsCache,
   getMissingAliasUrl,
-  removeConnectionCache,
   setMissingAliasUrl,
-  setOpenConnectionId,
-  updateOrAddConnectionCache,
+  setOpenConnectionId
 } from "../../../store/reducers/connectionsCache";
 import {
   getAuthentication,
@@ -24,16 +20,16 @@ import {
 } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
+import { nameChecker } from "../../utils/nameChecker";
 import { CustomInput } from "../CustomInput";
+import { ErrorMessage } from "../ErrorMessage";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { PageFooter } from "../PageFooter";
 import "./InputRequest.scss";
-import { randomSalt } from "../../../core/agent/services/utils";
-import { nameChecker } from "../../utils/nameChecker";
-import { ErrorMessage } from "../ErrorMessage";
 
 const InputRequest = () => {
   const dispatch = useAppDispatch();
+  const connections = useAppSelector(getConnectionsCache);
   const authentication = useAppSelector(getAuthentication);
   const missingAliasUrl = useAppSelector(getMissingAliasUrl);
   const currentRoute = useAppSelector(getCurrentRoute);
@@ -66,21 +62,15 @@ const InputRequest = () => {
   }, [showModal])
 
   const resolveConnectionOobi = async (content: string) => {
-    // Adding a pending connection item to the UI.
-    // This will be removed when the create connection process ends.
-    const connectionName = new URL(content).searchParams.get("name");
-
-    const pendingId = randomSalt();
-    dispatch(
-      updateOrAddConnectionCache({
-        id: pendingId,
-        label: connectionName || pendingId,
-        status: ConnectionStatus.PENDING,
-        createdAtUTC: new Date().toString(),
-      })
-    );
-
     try {
+      const connectionId = new URL(content).pathname
+        .split("/oobi/")
+        .pop()?.split("/")[0];
+
+      if(connectionId && connections[connectionId]) {
+        throw new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`)        
+      }
+
       await Agent.agent.connections.connectByOobiUrl(content);
     } catch (e) {
       const errorMessage = (e as Error).message;
@@ -102,8 +92,6 @@ const InputRequest = () => {
       );
 
       dispatch(setOpenConnectionId(urlId));
-    } finally {
-      dispatch(removeConnectionCache(pendingId));
     }
   };
 
@@ -139,6 +127,8 @@ const InputRequest = () => {
   };
 
   const handleConfirm = () => {
+    if(errorMessage) return;
+
     if (missingAliasUrl) {
       if (!missingAliasUrl) return;
       const url = new URL(missingAliasUrl);
