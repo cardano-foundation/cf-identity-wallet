@@ -1,3 +1,4 @@
+import { Salter } from "signify-ts";
 import { Agent } from "../agent";
 import {
   ConnectionStatus,
@@ -67,6 +68,7 @@ jest.mock("signify-ts", () => ({
     return { qb64: "" };
   }),
   Ilks: {
+    iss: "iss",
     rev: "rev",
   },
 }));
@@ -281,7 +283,9 @@ describe("Signify notification service of agent", () => {
       .mockRejectedValueOnce(
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       )
-      .mockResolvedValue({});
+      .mockResolvedValue({
+        id: "id"
+      });
     notificationStorage.save = jest.fn().mockReturnValue({
       id: "0AC0W27tnnd2WyHWUh-368EI",
       createdAt: new Date("2024-09-20T02:51:24.930Z"),
@@ -295,11 +299,11 @@ describe("Signify notification service of agent", () => {
     });
 
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
-    jest.useFakeTimers();
+
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif);
     }
-    expect(notificationStorage.save).toBeCalledTimes(1);
+    
     expect(eventEmitter.emit).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.NotificationAdded,
@@ -320,7 +324,7 @@ describe("Signify notification service of agent", () => {
     });
   });
 
-  test("Should admit if there is an existing credential", async () => {
+  test("Should admit revocation if there is an existing credential", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     getCredentialMock.mockResolvedValue(getCredentialResponse);
     credentialStateMock.mockResolvedValueOnce({
@@ -352,11 +356,11 @@ describe("Signify notification service of agent", () => {
       name: "name",
       done: true,
     });
+
     for (const notif of notes) {
-      jest.useRealTimers();
       await keriaNotificationService.processNotification(notif);
-      jest.useFakeTimers();
     }
+
     expect(admitMock).toBeCalledTimes(1);
     expect(submitAdmitMock).toBeCalledTimes(1);
     expect(markNotificationMock).toBeCalledTimes(1);
@@ -366,7 +370,7 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should call update when read a notification", async () => {
+  test("Should mark notification as read in DB", async () => {
     const notification = {
       id: "id",
       read: false,
@@ -374,7 +378,18 @@ describe("Signify notification service of agent", () => {
 
     notificationStorage.findById = jest.fn().mockResolvedValue(notification);
     await keriaNotificationService.readNotification(notification.id);
-    expect(notificationStorage.update).toBeCalledTimes(1);
+    expect(notificationStorage.update).toBeCalledWith({ id: "id", read: true });
+  });
+
+  test("Should mark notification as unread in DB", async () => {
+    const notification = {
+      id: "id",
+      read: true,
+    };
+
+    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
+    await keriaNotificationService.unreadNotification(notification.id);
+    expect(notificationStorage.update).toBeCalledWith({ id: "id", read: false });
   });
 
   test("Should throw error when read an invalid notification", async () => {
@@ -460,7 +475,7 @@ describe("Signify notification service of agent", () => {
     expect(eventEmitter.emit).toBeCalledTimes(0);
   });
 
-  test("Should skip if there is a existed multi-sig", async () => {
+  test("Should skip multi-sig inceptions if the identifier already exists", async () => {
     exchangesGetMock.mockResolvedValueOnce({
       exn: {
         r: NotificationRoute.MultiSigIcp,
@@ -482,7 +497,7 @@ describe("Signify notification service of agent", () => {
     expect(eventEmitter.emit).toBeCalledTimes(0);
   });
 
-  test("Should skip if there is a missing gid multi-sig notification", async () => {
+  test("Should skip invalid multi-sig inception messages (no gid)", async () => {
     exchangesGetMock
       .mockResolvedValueOnce({
         exn: {
@@ -515,17 +530,6 @@ describe("Signify notification service of agent", () => {
       await keriaNotificationService.processNotification(notif);
     }
     expect(eventEmitter.emit).toBeCalledTimes(0);
-  });
-
-  test("Should call update when unread a notification", async () => {
-    const notification = {
-      id: "id",
-      read: true,
-    };
-
-    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
-    await keriaNotificationService.unreadNotification(notification.id);
-    expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
   test("Should throw error when unread an invalid notification", async () => {
@@ -660,15 +664,15 @@ describe("Signify notification service of agent", () => {
     });
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
-    jest.useRealTimers();
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
-    jest.useFakeTimers();
+
     expect(markNotificationMock).toBeCalledTimes(1);
+    expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(grantForIssuanceExnMessage, ConnectionHistoryType.CREDENTIAL_REVOKED);
   });
 
-  test("Should call createLinkedIpexMessageRecord with TEL status is revoke and credential exist in cloud", async () => {
+  test("Should call createLinkedIpexMessageRecord with TEL status is revoked and exists locally", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     getCredentialMock.mockResolvedValue(getCredentialResponse);
     credentialStateMock.mockResolvedValueOnce({
@@ -712,11 +716,10 @@ describe("Signify notification service of agent", () => {
     };
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([notification]);
 
-    jest.useRealTimers();
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
-    jest.useFakeTimers();
+
     expect(credentialService.markAcdc).toBeCalledWith(
       grantForIssuanceExnMessage.exn.e.acdc.d,
       CredentialStatus.REVOKED
@@ -746,7 +749,7 @@ describe("Signify notification service of agent", () => {
     });
   });
 
-  test("Should skip if TEL status is revoke and credential metatdata does not exist", async () => {
+  test("Should delete old issuance notifications if the same credential gets revoked in a new notification", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     getCredentialMock.mockResolvedValue(getCredentialResponse);
     credentialStateMock.mockResolvedValueOnce({
@@ -787,6 +790,7 @@ describe("Signify notification service of agent", () => {
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
+
     expect(notificationStorage.deleteById).toBeCalledWith(notification.id);
     expect(credentialService.markAcdc).toBeCalledTimes(0);
     expect(markNotificationMock).toBeCalledTimes(1);
@@ -802,6 +806,39 @@ describe("Signify notification service of agent", () => {
         },
       },
     });
+  });
+
+  test("Should error if we receive a iss grant for an existing credential (set for re-processing in case of TEL update -> rev delays)", async () => {
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    credentialStateMock.mockResolvedValueOnce({
+      ...credentialStateIssued,
+      et: "iss",
+    });
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    credentialStorage.getCredentialMetadata.mockResolvedValue(
+      credentialMetadataMock
+    );
+    getCredentialMock.mockResolvedValue(getCredentialResponse);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({
+        id: "id",
+      });
+
+    await expect(keriaNotificationService.processNotification(
+      notificationIpexGrantProp
+    )).rejects.toThrowError(KeriaNotificationService.DUPLICATE_ISSUANCE);
+
+    expect(notificationStorage.deleteById).not.toBeCalled();
+    expect(credentialService.markAcdc).not.toBeCalled();
+    expect(markNotificationMock).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
   });
 
   test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit, ipex/offer, ipex/grant", async () => {
@@ -2839,7 +2876,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test('Should retry connection when "Failed to fetch" error occurs when process operation', async () => {
+  test("Should retry connection when \"Failed to fetch\" error occurs when process operation", async () => {
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",

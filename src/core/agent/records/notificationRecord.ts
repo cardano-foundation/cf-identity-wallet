@@ -23,6 +23,7 @@ class NotificationRecord extends BaseRecord {
   connectionId!: string;
   linkedGroupRequest!: LinkedGroupRequest;
   credentialId?: string;
+
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
 
@@ -34,11 +35,11 @@ class NotificationRecord extends BaseRecord {
       this.a = props.a;
       this.route = props.route;
       this.read = props.read;
-      this.multisigId = props.multisigId ?? undefined;
+      this.multisigId = props.multisigId;
       this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
       this.linkedGroupRequest = { accepted: false };
-      this.credentialId = props.credentialId ?? undefined;
+      this.credentialId = props.credentialId;
     }
   }
 
