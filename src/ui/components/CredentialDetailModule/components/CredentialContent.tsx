@@ -96,7 +96,7 @@ const CredentialContent = ({
         onClick={() => setOpenConnectionlModal(true)}
       >
         <CardDetailsItem
-          info={connectionShortDetails ? connectionShortDetails.label : ""}
+          info={connectionShortDetails ? connectionShortDetails.label : i18n.t("connections.unknown")}
           customIcon={KeriLogo}
           className="member"
           testId={"credential-details-issuer"}

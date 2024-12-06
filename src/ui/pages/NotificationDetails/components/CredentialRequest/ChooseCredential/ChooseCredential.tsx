@@ -68,7 +68,7 @@ const ChooseCredential = ({
 
   const mappedCredentials = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
-      const connection = connections?.[cred.connectionId]?.label || "";
+      const connection = connections?.[cred.connectionId]?.label || i18n.t("connections.unknown");
 
       return {
         id: cred.acdc.d,

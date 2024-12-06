@@ -296,7 +296,7 @@ const MultiSigRequest = ({
                               size="10.35"
                               className="multisig-connection-info"
                             >
-                              <IonLabel>{connection.label}</IonLabel>
+                              <IonLabel>{connection.label || i18n.t("connections.unknown")}</IonLabel>
                             </IonCol>
                           </IonRow>
                         </IonGrid>
