@@ -415,12 +415,17 @@ class KeriaNotificationService extends AgentService {
     notif: Notification,
     exchange: ExnMessage
   ): Promise<boolean> {
+    const existingCredential =
+      await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
+
+    if (existingCredential) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
     const credentialState = await this.props.signifyClient
       .credentials()
       .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
     const telStatus = credentialState.et;
-    const existingCredential =
-      await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.a.i)
       .catch((error) => {

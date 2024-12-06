@@ -353,7 +353,9 @@ describe("Signify notification service of agent", () => {
       done: true,
     });
     for (const notif of notes) {
+      jest.useRealTimers();
       await keriaNotificationService.processNotification(notif);
+      jest.useFakeTimers();
     }
     expect(admitMock).toBeCalledTimes(1);
     expect(submitAdmitMock).toBeCalledTimes(1);
@@ -658,9 +660,11 @@ describe("Signify notification service of agent", () => {
     });
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
+    jest.useRealTimers();
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
+    jest.useFakeTimers();
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
@@ -708,10 +712,11 @@ describe("Signify notification service of agent", () => {
     };
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([notification]);
 
-
+    jest.useRealTimers();
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
+    jest.useFakeTimers();
     expect(credentialService.markAcdc).toBeCalledWith(
       grantForIssuanceExnMessage.exn.e.acdc.d,
       CredentialStatus.REVOKED
@@ -868,10 +873,11 @@ describe("Signify notification service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps)
-      .mockRejectedValueOnce(new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING));
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
 
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnAdmitForIssuance);
+    exchangesGetMock.mockResolvedValueOnce(multisigExnAdmitForIssuance);
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -907,7 +913,7 @@ describe("Signify notification service of agent", () => {
       read: true,
       linkedGroupRequest: {
         accepted: false,
-        current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO"
+        current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
@@ -920,14 +926,18 @@ describe("Signify notification service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps)
-      .mockRejectedValueOnce(new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING));
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
 
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnAdmitForIssuance)
       .mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    credentialStorage.getCredentialMetadata.mockResolvedValue(credentialMetadataMock);
+    credentialStorage.getCredentialMetadata.mockResolvedValue(
+      credentialMetadataMock
+    );
 
     await keriaNotificationService.processNotification(
       notificationMultisigExnProp
@@ -953,9 +963,9 @@ describe("Signify notification service of agent", () => {
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     credentialStorage.getCredentialMetadata.mockResolvedValue(null);
 
-    await expect(keriaNotificationService.processNotification(notificationMultisigExnProp)).rejects.toThrowError(
-      KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION
-    );
+    await expect(
+      keriaNotificationService.processNotification(notificationMultisigExnProp)
+    ).rejects.toThrowError(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
 
     expect(notificationStorage.update).not.toBeCalledWith();
     expect(markNotificationMock).not.toBeCalled();
@@ -1629,9 +1639,11 @@ describe("Signify notification service of agent", () => {
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       );
 
+    jest.useRealTimers();
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
     );
+    jest.useFakeTimers();
     expect(markNotificationMock).toHaveBeenCalledWith(
       notificationIpexGrantProp.i
     );
