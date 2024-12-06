@@ -440,7 +440,7 @@ class KeriaNotificationService extends AgentService {
 
     if (telStatus === Ilks.rev) {
       const notifications = await this.notificationStorage.findAllByQuery({
-        route: NotificationRoute.ExnIpexGrant,
+        credentialId: exchange.exn.e.acdc.d,
       });
       for (const notificationRecord of notifications) {
         await this.deleteNotificationRecordById(
@@ -500,6 +500,7 @@ class KeriaNotificationService extends AgentService {
           connectionId: existingCredential.connectionId,
           read: false,
           route: NotificationRoute.LocalAcdcRevoked,
+          credentialId: existingCredential.id,
         };
         const notificationRecord = await this.notificationStorage.save(
           metadata
@@ -759,6 +760,7 @@ class KeriaNotificationService extends AgentService {
       read: false,
       route: event.a.r as NotificationRoute,
       connectionId: exchange.exn.i,
+      credentialId: exchange.exn.e.acdc.d ?? undefined,
     };
 
     if (
