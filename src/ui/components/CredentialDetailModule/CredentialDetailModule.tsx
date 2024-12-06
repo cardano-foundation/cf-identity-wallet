@@ -1,6 +1,6 @@
 import { IonButton, IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
@@ -376,6 +376,8 @@ const CredentialDetailModule = ({
   const resetOperation = () =>
     dispatch(setCurrentOperation(OperationType.IDLE));
 
+  const handleCloseConnectionDetails = useCallback(() => setOpenConnectionlModal(false), []);
+
   if (cloudError) {
     return (
       <CloudError
@@ -402,7 +404,7 @@ const CredentialDetailModule = ({
   return openConnectionlModal && connectionShortDetails ? (
     <ConnectionDetails
       connectionShortDetails={connectionShortDetails}
-      handleCloseConnectionModal={() => setOpenConnectionlModal(false)}
+      handleCloseConnectionModal={handleCloseConnectionDetails}
     />
   ) : (
     <>

@@ -12,6 +12,7 @@ import { EditIdentifier } from "./EditIdentifier";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { IdentifierService } from "../../../core/agent/services";
+import { ModalMockProps } from "../../globals/test-types";
 
 const updateMock = jest.fn();
 
@@ -27,7 +28,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: ModalMockProps) => children,
 }));
 
 const isNativeMock = jest.fn();

@@ -11,7 +11,7 @@ const storageService = jest.mocked({
   getAll: jest.fn(),
 });
 
-const peerConnectionStorage = new PeerConnectionStorage(storageService as any);
+const peerConnectionStorage = new PeerConnectionStorage(storageService as never);
 
 const peerConnectionMetadataRecordProps = {
   id: "id",

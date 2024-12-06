@@ -25,7 +25,7 @@ interface ConnectionRequestData {
   goal_code: string;
   goal: string;
   handshake_protocols: string[];
-  requestattach: any[];
+  requestattach: unknown[];
   service: {
     id: string;
     type: string;

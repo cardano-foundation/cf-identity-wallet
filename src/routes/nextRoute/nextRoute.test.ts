@@ -16,7 +16,7 @@ import { IdentifiersFilters } from "../../ui/pages/Identifiers/Identifiers.types
 import { CredentialsFilters } from "../../ui/pages/Credentials/Credentials.types";
 
 describe("NextRoute", () => {
-  let localStorageMock: any;
+  let localStorageMock: Record<string, unknown>;
   let storeMock: RootState;
   let data = {};
 

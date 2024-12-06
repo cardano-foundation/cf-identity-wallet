@@ -13,19 +13,20 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CreateIdentifier } from "./CreateIdentifier";
+import { ModalMockProps } from "../../globals/test-types";
 
 setupIonicReact();
 mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
+  IonModal: ({ children, isOpen }: ModalMockProps) => (
     <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>
   ),
 }));
 
-const mockGetMultisigConnection = jest.fn((args: any) => Promise.resolve(([] as ConnectionDetails[])));
-const createIdentifierMock = jest.fn((args: unknown) => ({
+const mockGetMultisigConnection = jest.fn<Promise<unknown[]>, string[]>(() => Promise.resolve(([] as ConnectionDetails[])));
+const createIdentifierMock = jest.fn<object, never[]>(() => ({
   identifier: "mock-id",
   isPending: true,
 }));
@@ -34,12 +35,12 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getMultisigLinkedContacts: (args: any) =>
+        getMultisigLinkedContacts: (args: never) =>
           mockGetMultisigConnection(args)
       },
       identifiers: {
         getIdentifiersCache: jest.fn(),
-        createIdentifier: (args: unknown) => createIdentifierMock(args),
+        createIdentifier: (args: never) => createIdentifierMock(args),
       },
     },
   },
@@ -57,7 +58,7 @@ const addKeyboardEventMock = jest.fn();
 
 jest.mock("@capacitor/keyboard", () => ({
   Keyboard: {
-    addListener: (...params: any[]) => addKeyboardEventMock(...params),
+    addListener: (...params: never[]) => addKeyboardEventMock(...params),
   },
 }));
 
@@ -97,7 +98,7 @@ jest.mock("../CustomInput", () => ({
 describe("Create Identifier modal", () => {
   const mockStore = configureStore();
   beforeEach(() => {
-    mockGetMultisigConnection.mockImplementation((): any=> Promise.resolve(([] as ConnectionDetails[])))
+    mockGetMultisigConnection.mockImplementation(() => Promise.resolve(([] as ConnectionDetails[])))
   })
 
   const initialState = {

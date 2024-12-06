@@ -11,6 +11,7 @@ import { CustomInputProps } from "../../../../components/CustomInput/CustomInput
 import { PROFILE_LINK } from "../../../../globals/constants";
 import { Menu } from "../../Menu";
 import { SubMenuKey } from "../../Menu.types";
+import { ModalMockProps } from "../../../../globals/test-types";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -38,7 +39,7 @@ jest.mock("../../../../../core/storage", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: ModalMockProps) => children,
 }));
 
 jest.mock("../../../../components/CustomInput", () => ({
@@ -123,7 +124,7 @@ const storeMocked = {
 
 describe("Profile page", () => {
   test("Change username", async () => {
-    const { getByTestId, getByText, findByText } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Menu />
       </Provider>

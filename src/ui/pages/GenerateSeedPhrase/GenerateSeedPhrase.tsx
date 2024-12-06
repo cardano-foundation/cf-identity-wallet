@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IonCheckbox } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
@@ -39,7 +39,7 @@ const GenerateSeedPhrase = () => {
   const [privacyModalIsOpen, setPrivacyModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  const initializeSeedPhrase = async () => {
+  const initializeSeedPhrase = useCallback(async () => {
     setHideSeedPhrase(true);
     if (seedPhraseStore.seedPhrase.length > 0) {
       setSeedPhrase(seedPhraseStore.seedPhrase.split(" "));
@@ -56,13 +56,13 @@ const GenerateSeedPhrase = () => {
         showError("Unable to get mnemonic", e, dispatch);
       }
     }
-  };
+  }, [dispatch, seedPhraseStore.bran, seedPhraseStore.seedPhrase]);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       initializeSeedPhrase();
     }
-  }, [history?.location.pathname]);
+  }, [history?.location.pathname, initializeSeedPhrase]);
 
   const handleClearState = () => {
     setSeedPhrase([]);

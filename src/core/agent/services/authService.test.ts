@@ -1,8 +1,8 @@
-import { CoreEventEmitter } from "../event";
+import { BasicRecord } from "../../agent/records";
 import { MiscRecordId } from "../agent.types";
+import { CoreEventEmitter } from "../event";
 import { LoginAttempts } from "./auth.types";
 import { AuthService } from "./authService";
-import { BasicRecord } from "../../agent/records";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -81,7 +81,7 @@ const signifyClient = jest.mocked({
 });
 
 const agentServicesProps = {
-  signifyClient: signifyClient as any,
+  signifyClient: signifyClient as never,
   eventEmitter: new CoreEventEmitter(),
 };
 
@@ -107,7 +107,7 @@ const basicStorage = jest.mocked({
   createOrUpdateBasicRecord: jest.fn(),
 });
 
-const authService = new AuthService(agentServicesProps, basicStorage as any);
+const authService = new AuthService(agentServicesProps, basicStorage as never);
 
 describe("Auth service of agent", () => {
   beforeEach(() => {

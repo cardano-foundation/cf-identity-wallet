@@ -23,7 +23,7 @@ const mockAgentServicesProps = {
 };
 
 const mockGetBranValue = "AEsI_2YqNsQlf8brzDJaP";
-const getKeyStoreSpy = jest
+jest
   .spyOn(SecureStorage, "get")
   .mockResolvedValue(mockGetBranValue);
 const mockBasicStorageService = {
@@ -43,7 +43,7 @@ const mockEntropy = "00000000000000000000000000000000";
 describe("test cases of bootAndConnect function", () => {
   let agent: Agent;
   let mockAgentUrls: AgentUrls;
-  let mockSignifyClient: any;
+  let mockSignifyClient: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockSignifyClient = {
@@ -52,8 +52,11 @@ describe("test cases of bootAndConnect function", () => {
     };
     (SignifyClient as jest.Mock).mockImplementation(() => mockSignifyClient);
     agent = Agent.agent;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (agent as any).basicStorageService = mockBasicStorageService;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (agent as any).agentServicesProps = mockAgentServicesProps;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (agent as any).connectionService = mockConnectionService;
     (agent as any).identifierService = mockIdentifierService;
 
@@ -225,7 +228,7 @@ describe("test cases of recoverKeriaAgent function", () => {
   let agent: Agent;
   let mockSeedPhrase: string[];
   let mockConnectUrl: string;
-  let mockSignifyClient: any;
+  let mockSignifyClient: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockSignifyClient = {
@@ -234,8 +237,11 @@ describe("test cases of recoverKeriaAgent function", () => {
     };
     (SignifyClient as jest.Mock).mockImplementation(() => mockSignifyClient);
     agent = Agent.agent;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (agent as any).basicStorageService = mockBasicStorageService;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (agent as any).agentServicesProps = mockAgentServicesProps;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (agent as any).connectionService = mockConnectionService;
 
     mockSeedPhrase = [

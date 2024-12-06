@@ -13,7 +13,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   KeriConnectionType,
@@ -116,7 +116,7 @@ const Scanner = forwardRef(
       }
     };
 
-    const stopScan = async () => {
+    const stopScan = useCallback(async () => {
       if (permission) {
         await BarcodeScanner.stopScan();
       }
@@ -124,7 +124,7 @@ const Scanner = forwardRef(
       setScanning(false);
       document?.querySelector("body")?.classList.remove("scanner-active");
       setGroupId("");
-    };
+    }, [permission]);
 
     useImperativeHandle(ref, () => ({
       stopScan,
@@ -468,13 +468,14 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
 
     useEffect(() => {
       return () => {
         stopScan();
       };
-    }, []);
+    }, [stopScan]);
 
     const handlePrimaryButtonAction = () => {
       stopScan();

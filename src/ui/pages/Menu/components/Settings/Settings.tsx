@@ -11,7 +11,7 @@ import {
 } from "ionicons/icons";
 import "./Settings.scss";
 import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   NativeSettings,
   AndroidSettings,
@@ -111,7 +111,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     },
   ];
 
-  const handleToggleBiometricAuth = async () => {
+  const handleToggleBiometricAuth = useCallback(async () => {
     await Agent.agent.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.APP_BIOMETRY,
@@ -119,9 +119,9 @@ const Settings = ({ switchView }: SettingsProps) => {
       })
     );
     dispatch(setEnableBiometricsCache(!biometricsCache.enabled));
-  };
+  }, [biometricsCache.enabled, dispatch]);
 
-  const handleBiometricUpdate = () => {
+  const handleBiometricUpdate = useCallback(() => {
     inBiometricSetup.current = false;
 
     if (biometricsCache.enabled) {
@@ -144,7 +144,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     }
 
     setVerifyIsOpen(true);
-  };
+  }, [biometricInfo?.code, biometricInfo?.strongBiometryIsAvailable, biometricsCache.enabled, handleToggleBiometricAuth]);
 
   const biometricAuth = async () => {
     try {
@@ -159,7 +159,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     if (biometricInfo?.strongBiometryIsAvailable && inBiometricSetup.current) {
       handleBiometricUpdate();
     }
-  }, [biometricInfo]);
+  }, [biometricInfo?.strongBiometryIsAvailable, handleBiometricUpdate]);
 
   const handleChangePin = () => {
     setVerifyIsOpen(true);

@@ -38,7 +38,7 @@ const SignRequest = ({
       signContent = requestData.signTransaction.payload.payload;
     }
     return signContent;
-  }, [requestData.type]);
+  }, [requestData.signTransaction]);
 
   const signRequest = requestData.signTransaction;
   const logo = requestData.peerConnection.iconB64 || UserIcon;

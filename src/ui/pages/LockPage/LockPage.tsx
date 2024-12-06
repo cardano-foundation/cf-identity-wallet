@@ -1,5 +1,4 @@
-import i18n from "i18next";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
@@ -31,6 +30,7 @@ import {
   useLoginAttempt,
 } from "../../components/MaxLoginAttemptAlert";
 import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
+import { i18n } from "../../../i18n";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -76,17 +76,28 @@ const LockPage = () => {
     }
   }, [passcodeIncorrect]);
 
+  const handleBiometrics = useCallback(async () => {
+    disablePrivacy();
+    const isAuthenticated = await handleBiometricAuth();
+    if (isAuthenticated === true) {
+      dispatch(login());
+      dispatch(setFirstAppLaunch(false));
+    }
+    enablePrivacy();
+  }, [disablePrivacy, dispatch, enablePrivacy, handleBiometricAuth]);
+
+  const handleUseBiometrics = useCallback(async () => {
+    if (biometricsCache.enabled) {
+      await handleBiometrics();
+    }
+  }, [biometricsCache.enabled, handleBiometrics]);
+
   useEffect(() => {
     if (firstAppLaunch) {
       handleUseBiometrics();
     }
-  }, []);
+  }, [firstAppLaunch, handleUseBiometrics]);
 
-  const handleUseBiometrics = async () => {
-    if (biometricsCache.enabled) {
-      await handleBiometrics();
-    }
-  };
   const handlePinChange = async (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
 
@@ -125,16 +136,6 @@ const LockPage = () => {
     }
   };
 
-  const handleBiometrics = async () => {
-    disablePrivacy();
-    const isAuthenticated = await handleBiometricAuth();
-    if (isAuthenticated === true) {
-      dispatch(login());
-      dispatch(setFirstAppLaunch(false));
-    }
-    enablePrivacy();
-  };
-
   const resetPasscode = () => {
     setOpenRecoveryAuth(true);
   };
@@ -168,7 +169,7 @@ const LockPage = () => {
     return () => {
       App.removeAllListeners();
     };
-  }, []);
+  }, [handleUseBiometrics]);
 
   return (
     <ResponsivePageLayout
