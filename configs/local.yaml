@@ -5,5 +5,3 @@ keri:
   credentials:
     testServer:
       urlInt: "http://cred-issuance:3001"
-  backing:
-    mode: direct 

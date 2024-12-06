@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ACDCDetails } from "../../../../../core/agent/services/credentialService.types";
 
 interface CredentialAttributeDetailModalProps {
   isOpen: boolean;
@@ -8,4 +9,8 @@ interface CredentialAttributeDetailModalProps {
   children: ReactNode;
 }
 
-export type { CredentialAttributeDetailModalProps };
+interface CredentialAttributeContentProps {
+  data: ACDCDetails;
+}
+
+export type { CredentialAttributeDetailModalProps, CredentialAttributeContentProps };

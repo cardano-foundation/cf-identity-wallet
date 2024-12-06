@@ -4,23 +4,23 @@ services:
     container_name: idw-keria
     restart: unless-stopped
     build:
-      context: https://github.com/WebOfTrust/keria.git#736947191069cfc1617a43f63dbc64210c351b5c
+      context: https://github.com/WebOfTrust/keria.git#e36521703ebc62856e6b25e21ed6b21110467be4
       dockerfile: ./images/keria.dockerfile
     environment:
       - KERI_AGENT_CORS=true
     volumes:
       - keria-data:/usr/local/var/keri
-      - ./keria-oobi-config.json:/keria/scripts/keri/cf/backer-oobis.json
-    entrypoint: keria start --config-file backer-oobis --config-dir ./scripts
+      - ./keria-config/config.json:/keria/scripts/keri/cf/backer-oobis.json
+    entrypoint: keria start --config-file backer-oobis --config-dir ./scripts --loglevel INFO
     ports:
       - 3901:3901
       - 3902:3902
       - 3903:3903
 
-  witness:
-    container_name: idw-witness
+  witnesses:
+    container_name: idw-witnesses
     restart: unless-stopped
-    image: weboftrust/keri:1.1.6
+    image: weboftrust/keri:1.1.26
     environment:
         - PYTHONUNBUFFERED=1
         - PYTHONIOENCODING=UTF-8
@@ -29,10 +29,15 @@ services:
     command:
         - witness
         - demo
+    volumes:
+        - ./keria-config/witnesses:/keripy/scripts/keri/cf/main
     ports:
       - 5642:5642
       - 5643:5643
       - 5644:5644
+      - 5645:5645
+      - 5646:5646
+      - 5647:5647
 
   cred-issuance:
     container_name: cred-issuance

@@ -996,11 +996,12 @@
           "about": "About {{ type }}"
         },
         "attributes": {
+          "fullaccess": "Full access",
           "label": "Attributes",
           "description": "Essential details shared by the issuer, which verify and describe key information in this credential.",
           "details": "Attribute details",
-          "issuee": "Issuee",
-          "issuancedate": "Issuance Date",
+          "issuee": "Issuer",
+          "issuancedate": "Issuance Date Time",
           "lei": "LEI"
         },
         "schemaversion": "Schema Version",
@@ -1473,7 +1474,8 @@
         }
       },
       "clouderror": "We couldn’t locate this connection in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this connection, tap “Delete connection” to remove."
-    }
+    },
+    "unknown": "Unknown"
   },
   "connectmodal": {
     "title": "Add a",

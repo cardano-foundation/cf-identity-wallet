@@ -1,29 +1,27 @@
 import {
+  calendarNumberOutline,
   informationCircleOutline,
   keyOutline,
-  calendarNumberOutline,
 } from "ionicons/icons";
 import { useState } from "react";
-import { JSONObject } from "../../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../../i18n";
+import { useAppSelector } from "../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import {
   CardBlock,
-  CardDetailsAttributes,
   CardDetailsBlock,
   CardDetailsItem,
-  FlatBorderType,
+  FlatBorderType
 } from "../../CardDetails";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { IdentifierDetailModal } from "../../IdentifierDetailModule";
+import { ListHeader } from "../../ListHeader";
+import { ReadMore } from "../../ReadMore";
+import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./CredentialAttributeDetailModal";
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
-import { ListHeader } from "../../ListHeader";
-import { ReadMore } from "../../ReadMore";
-import { CredentialAttributeDetailModal } from "./CredentialAttributeDetailModal";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
-import { IdentifierDetailModal } from "../../IdentifierDetailModule";
-import { useAppSelector } from "../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 
 const CredentialContent = ({
   cardData,
@@ -98,7 +96,7 @@ const CredentialContent = ({
         onClick={() => setOpenConnectionlModal(true)}
       >
         <CardDetailsItem
-          info={connectionShortDetails ? connectionShortDetails.label : ""}
+          info={connectionShortDetails ? connectionShortDetails.label : i18n.t("connections.unknown")}
           customIcon={KeriLogo}
           className="member"
           testId={"credential-details-issuer"}
@@ -151,12 +149,7 @@ const CredentialContent = ({
             "tabs.credentials.details.attributes.description"
           )}`}
         >
-          <ListHeader
-            title={i18n.t("tabs.credentials.details.attributes.details")}
-          />
-          <CardBlock>
-            <CardDetailsAttributes data={cardData.a as JSONObject} />
-          </CardBlock>
+          <CredentialAttributeContent data={cardData} />
         </CredentialAttributeDetailModal>
       )}
       {identifier && <CardBlock

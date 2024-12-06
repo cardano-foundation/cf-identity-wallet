@@ -110,6 +110,10 @@
       &.card-header {
         align-items: start;
 
+        .card-details-info-content {
+          color: var(--ion-color-primary);
+        }
+
         .card-details-info-block-key {
           display: block;
         }

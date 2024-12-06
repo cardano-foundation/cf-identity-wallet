@@ -102,6 +102,7 @@ jest.mock("@capacitor-mlkit/barcode-scanning", () => {
       ) => addListener(eventName, listenerFunc),
       startScan: () => startScan(),
       stopScan: jest.fn(),
+      removeAllListeners: jest.fn()
     },
   };
 });

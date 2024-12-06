@@ -21,7 +21,7 @@ PODS:
   - CapacitorCordova (6.1.2)
   - CapacitorKeyboard (6.0.2):
     - Capacitor
-  - CapacitorMlkitBarcodeScanning (6.1.0):
+  - CapacitorMlkitBarcodeScanning (6.2.0):
     - Capacitor
     - GoogleMLKit/BarcodeScanning (= 5.0.0)
   - CapacitorNativeSettings (6.0.1):
@@ -181,7 +181,7 @@ SPEC CHECKSUMS:
   CapacitorCommunitySqlite: d0b543e12a06ee6fd0dc287c389e6b435ec4acdf
   CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
   CapacitorKeyboard: 2700f9b18687be021e28b5a09b59eb151a46d5e0
-  CapacitorMlkitBarcodeScanning: 63e217d376f8f63b1be84c0d19568f318e87f4d3
+  CapacitorMlkitBarcodeScanning: 178fb57424ec688b6a2fceee506ecc1ea00d1c8d
   CapacitorNativeSettings: 1ce5585ff07b161616cd0a795702637316677af2
   CapacitorScreenOrientation: 6039dc2ea4a8596b79316709d5727e8bb7e32845
   CapacitorShare: 591ae4693d85686ceb590db8e8b44aa014ec6490
@@ -205,4 +205,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 3d984c226b41598bd9ba6e349fdb4a7ae11e20f7
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
