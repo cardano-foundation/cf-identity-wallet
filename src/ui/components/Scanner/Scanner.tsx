@@ -412,6 +412,7 @@ const Scanner = forwardRef(
         onCheckPermissionFinish?.(!!allowed);
 
         if (allowed) {
+          await BarcodeScanner.removeAllListeners();
           const listener = await BarcodeScanner.addListener(
             "barcodeScanned",
             async (result) => {
