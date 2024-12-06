@@ -13,7 +13,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   KeriConnectionType
@@ -96,6 +96,7 @@ const Scanner = forwardRef(
       useState(false);
     const [resumeMultiSig, setResumeMultiSig] =
         useState<IdentifierShortDetails | null>(null);
+    const isHandlingQR = useRef(false);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -313,6 +314,8 @@ const Scanner = forwardRef(
         }
 
         throw e;
+      } finally {
+        isHandlingQR.current = false;
       }
     };
 
@@ -348,6 +351,8 @@ const Scanner = forwardRef(
         }
 
         showError("Scanner Error:", e, dispatch);
+      } finally {
+        isHandlingQR.current = false;
       }
     };
 
@@ -382,6 +387,7 @@ const Scanner = forwardRef(
 
       if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(content)) {
         handleConnectWallet(content);
+        isHandlingQR.current = false;
         return;
       }
 
@@ -392,6 +398,7 @@ const Scanner = forwardRef(
         ].includes(currentOperation)
       ) {
         handleSSIScan(content);
+        isHandlingQR.current = false;
         return;
       }
 
@@ -409,6 +416,10 @@ const Scanner = forwardRef(
             "barcodeScanned",
             async (result) => {
               await listener.remove();
+
+              if(isHandlingQR.current) return;
+              isHandlingQR.current = true;
+
               await processValue(result.barcode.rawValue);
             }
           );
