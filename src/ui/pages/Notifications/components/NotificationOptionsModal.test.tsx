@@ -1,8 +1,6 @@
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { ReactNode } from "react";
-import { act } from "react-dom/test-utils";
+import { ReactNode, act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
@@ -82,16 +80,17 @@ describe("Notification Options modal", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
+    await waitFor(() => {
+      expect(getByTestId("show-notification-detail")).toBeVisible();
+    })
 
-    expect(getByTestId("show-notification-detail")).toBeVisible();
     expect(getByTestId("toogle-read-notification")).toBeVisible();
     expect(getByTestId("delete-notification")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.optionmodal.title)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.title)
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.optionmodal.markasread)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.markasread)
     ).toBeVisible();
   });
 
@@ -107,9 +106,9 @@ describe("Notification Options modal", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
-
-    expect(getByTestId("delete-notification")).toBeVisible();
+    await waitFor(() => {
+      expect(getByTestId("delete-notification")).toBeVisible();
+    })
 
     act(() => {
       fireEvent.click(getByTestId("delete-notification"));
@@ -118,7 +117,7 @@ describe("Notification Options modal", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.tab.optionmodal.deletealert.text
+          EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.deletealert.text
         )
       ).toBeVisible();
     });
@@ -144,8 +143,6 @@ describe("Notification Options modal", () => {
         />
       </Provider>
     );
-
-    await waitForIonicReact();
 
     expect(getByTestId("toogle-read-notification")).toBeVisible();
 
@@ -179,8 +176,6 @@ describe("Notification Options modal", () => {
       </Provider>
     );
 
-    await waitForIonicReact();
-
     expect(getByTestId("toogle-read-notification")).toBeVisible();
 
     act(() => {
@@ -210,8 +205,6 @@ describe("Notification Options modal", () => {
         />
       </Provider>
     );
-
-    await waitForIonicReact();
 
     expect(getByTestId("show-notification-detail")).toBeVisible();
 

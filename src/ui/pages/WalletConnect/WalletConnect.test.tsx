@@ -1,25 +1,19 @@
-import { setupIonicReact } from "@ionic/react";
-import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
-import { store } from "../../../store";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
-setupIonicReact();
-mockIonicReact();
 
 const identifierCache = [
   {
     displayName: "mutil sign",
     id: "testid_00",
-    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
     isPending: false,
@@ -28,7 +22,6 @@ const identifierCache = [
   {
     displayName: "mutil sign 1",
     id: "testid_0",
-    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
     isPending: false,
@@ -41,7 +34,6 @@ const identifierCache = [
   {
     displayName: "mutil sign 2",
     id: "testid_1",
-    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
     isPending: false,
@@ -83,10 +75,29 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 }));
 
 describe("Wallet Connect Stage One", () => {
+  const initialState = {
+    stateCache: {
+      routes: [TabsRoutePath.MENU],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+      },
+    },
+    walletConnectionsCache: {
+      walletConnections: [],
+      pendingConnection: walletConnectionsFix[0],
+    },
+    identifiersCache: {
+      identifiers: identifierFix,
+    },
+  };
+
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
   const storeMocked = {
-    ...mockStore(store.getState()),
+    ...mockStore(initialState),
     dispatch: dispatchMock,
   };
 
@@ -106,13 +117,14 @@ describe("Wallet Connect Stage One", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone.title
       )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.message
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone
+          .message
       )
     ).toBeVisible();
 
@@ -142,7 +154,7 @@ describe("Wallet Connect Stage One", () => {
   });
 
   test("Click to decline button", async () => {
-    const { getByText, getAllByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <WalletConnectStageOne
           isOpen={true}
@@ -156,28 +168,98 @@ describe("Wallet Connect Stage One", () => {
       fireEvent.click(getByText(EN_TRANSLATIONS.request.button.decline));
     });
 
-    await waitForIonicReact();
-
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
-            .titleconfirm
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone
+            .alert.titleconfirm
         )
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
-            .confirm
-        )[1]
-      );
+    fireEvent.click(
+      getByTestId("alert-decline-connect-confirm-button")
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone
+            .alert.titleconfirm
+        )
+      ).toBeNull();
     });
 
     await waitFor(() => {
       expect(handleCancel).toBeCalled();
+    });
+  });
+
+  test("Renders show missing identifier alert", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        pendingConnection: walletConnectionsFix[0],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText, findByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <WalletConnectStageOne
+          isOpen={true}
+          onAccept={handleAccept}
+          onClose={handleCancel}
+        />
+      </Provider>
+    );
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone.title
+      )
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connect-wallet-stage-one"));
+    });
+
+    const missingIdenTitle = await findByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+      .missingidentifieralert.message);
+
+    await waitFor(() => {
+      expect(missingIdenTitle).toBeVisible();
+    });
+
+    fireEvent.click(
+      getByTestId("missing-identifier-alert-confirm-button")
+    );
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+        .missingidentifieralert.message)).toBeNull();
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.add.title)
+      ).toBeVisible();
     });
   });
 });
@@ -226,13 +308,14 @@ describe("Wallet Connect Stage Two", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stagetwo.title
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stagetwo.title
       )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stagetwo.message
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stagetwo
+          .message
       )
     ).toBeVisible();
 
@@ -321,7 +404,7 @@ describe("Wallet Connect Request", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone.title
       )
     ).toBeVisible();
 
@@ -332,7 +415,8 @@ describe("Wallet Connect Request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stagetwo.title
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stagetwo
+            .title
         )
       ).toBeVisible();
     });
@@ -361,7 +445,7 @@ describe("Wallet Connect Request", () => {
   });
 
   test("Renders close in stage one ", async () => {
-    const { getByTestId, getByText, getAllByText, queryByTestId } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <WalletConnect
           open={true}
@@ -372,30 +456,23 @@ describe("Wallet Connect Request", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone.title
       )
     ).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("secondary-button-connect-wallet-stage-one"));
     });
-    await waitForIonicReact();
 
     await waitFor(() => {
       expect(
-        getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
-            .titleconfirm
-        )
+        getByTestId("secondary-button-connect-wallet-stage-one")
       ).toBeInTheDocument();
     });
 
     act(() => {
       fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
-            .confirm
-        )[1]
+        getByTestId("secondary-button-connect-wallet-stage-one")
       );
     });
 

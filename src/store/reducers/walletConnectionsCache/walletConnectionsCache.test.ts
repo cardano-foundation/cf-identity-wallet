@@ -4,11 +4,13 @@ import {
   getConnectedWallet,
   getIsConnecting,
   getPendingConnection,
+  getShowConnectWallet,
   getWalletConnectionsCache,
   setConnectedWallet,
   setIsConnecting,
   setPendingConnection,
   setWalletConnectionsCache,
+  showConnectWallet,
   walletConnectionsCacheSlice,
 } from "./walletConnectionsCache";
 import {
@@ -22,6 +24,7 @@ describe("walletConnectionsCacheSlice", () => {
     connectedWallet: null,
     pendingConnection: null,
     isConnecting: false,
+    showConnectWallet: false,
   };
 
   it("should return the initial state", () => {
@@ -73,6 +76,14 @@ describe("walletConnectionsCacheSlice", () => {
       setIsConnecting(true)
     );
     expect(newState.isConnecting).toEqual(true);
+  });
+
+  it("should show connect wallet", () => {
+    const newState = walletConnectionsCacheSlice.reducer(
+      initialState,
+      showConnectWallet(true)
+    );
+    expect(newState.showConnectWallet).toEqual(true);
   });
 });
 
@@ -138,6 +149,17 @@ describe("Get wallet connections cache", () => {
     const pendingMeerKatCache = getIsConnecting(state);
     expect(pendingMeerKatCache).toEqual(
       state.walletConnectionsCache.isConnecting
+    );
+  });
+  it("should get show wallet connect", () => {
+    const state = {
+      walletConnectionsCache: {
+        showConnectWallet: false,
+      },
+    } as RootState;
+    const showConnectWallet = getShowConnectWallet(state);
+    expect(showConnectWallet).toEqual(
+      state.walletConnectionsCache.showConnectWallet
     );
   });
 });

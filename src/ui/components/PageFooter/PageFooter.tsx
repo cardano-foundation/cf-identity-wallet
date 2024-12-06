@@ -29,6 +29,7 @@ const PageFooter = ({
   return (
     <IonToolbar
       className={`page-footer${customClass ? " " + customClass : ""}`}
+      data-testid={`${pageId}-footer`}
     >
       {children}
       <div className="page-footer-content">

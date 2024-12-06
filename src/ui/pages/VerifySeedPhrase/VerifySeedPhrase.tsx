@@ -1,7 +1,6 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
@@ -25,7 +24,6 @@ import { showError } from "../../utils/error";
 
 const VerifySeedPhrase = () => {
   const pageId = "verify-seed-phrase";
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
@@ -40,21 +38,25 @@ const VerifySeedPhrase = () => {
     [seedPhraseStore.seedPhrase]
   );
 
-  const shuffleSeedPhrase = useCallback(() => {
+  const sortSeedPhrase = useCallback(() => {
     setSeedPhraseRemaining(
-      [...originalSeedPhrase].sort(() => Math.random() - 0.5)
+      [...originalSeedPhrase].sort((a, b) => a.localeCompare(b))
     );
   }, [originalSeedPhrase]);
 
+  const sortCurrentSeedPhrase = useCallback(() => {
+    setSeedPhraseRemaining((originalSeedPhrase) => 
+      [...originalSeedPhrase].sort((a, b) => a.localeCompare(b))
+    );
+  }, []);
+
   useEffect(() => {
-    if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
-      shuffleSeedPhrase();
-    }
-  }, [history?.location.pathname, shuffleSeedPhrase]);
+    sortSeedPhrase();
+  }, []);
 
   const handleClearSelected = () => {
     setSeedPhraseSelected([]);
-    shuffleSeedPhrase();
+    sortSeedPhrase();
     setClearAlertOpen(false);
   };
 
@@ -87,6 +89,7 @@ const VerifySeedPhrase = () => {
     }
     setSeedPhraseRemaining(seedPhraseRemaining.concat(words));
     setSeedPhraseSelected(newMatch);
+    sortCurrentSeedPhrase();
   };
 
   const storeIdentitySeedPhrase = async () => {

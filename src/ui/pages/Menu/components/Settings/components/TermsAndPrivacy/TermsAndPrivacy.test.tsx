@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
-import ENG_trans from "../../../../../../../locales/en/en.json";
+import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { TermsAndPrivacy } from "./TermsAndPrivacy";
 import { store } from "../../../../../../../store";
 
@@ -14,7 +14,10 @@ describe("Term and Privacy", () => {
     );
 
     expect(
-      getByText(ENG_trans.settings.sections.support.terms.submenu.termsofuse)
+      getByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.support.terms.submenu
+          .termsofuse
+      )
     ).toBeVisible();
 
     act(() => {
@@ -34,7 +37,10 @@ describe("Term and Privacy", () => {
     );
 
     expect(
-      getByText(ENG_trans.settings.sections.support.terms.submenu.termsofuse)
+      getByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.support.terms.submenu
+          .termsofuse
+      )
     ).toBeVisible();
 
     act(() => {

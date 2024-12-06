@@ -5,7 +5,7 @@ import {
   LensFacing,
 } from "@capacitor-mlkit/barcode-scanning";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
@@ -53,6 +53,7 @@ jest.mock("@capacitor-mlkit/barcode-scanning", () => {
       ) => addListener(eventName, listenerFunc),
       startScan: jest.fn(),
       stopScan: jest.fn(),
+      removeAllListeners: jest.fn()
     },
   };
 });
@@ -70,6 +71,15 @@ jest.mock("@capacitor/core", () => {
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
+}));
+
+
+const addKeyboardEventMock = jest.fn();
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: (...params: unknown[]) => addKeyboardEventMock(...params),
+  },
 }));
 
 const connectByOobiUrlMock = jest.fn();
@@ -132,6 +142,18 @@ describe("Full page scanner", () => {
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
       toastMsgs: [],
     },
+    identifiersCache: {
+      identifiers: [],
+      favourites: [],
+      multiSigGroup: {
+        groupId: "",
+        connections: [],
+      },
+    },
+    connectionsCache: {
+      connections: {},
+      multisigConnections: {},
+    },
   };
 
   const dispatchMock = jest.fn();
@@ -174,6 +196,18 @@ describe("Full page scanner", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
         toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 
@@ -219,6 +253,18 @@ describe("Full page scanner", () => {
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
         toastMsgs: [],
       },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -254,7 +300,7 @@ describe("Full page scanner", () => {
 
     const setShowScanMock = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <FullPageScanner
           showScan={true}
@@ -262,6 +308,10 @@ describe("Full page scanner", () => {
         />
       </Provider>
     );
+
+    await waitFor(() => {
+      expect(getByTestId("qr-code-scanner").classList.contains("no-permission")).toBeFalsy();
+    })
 
     act(() => {
       fireEvent.click(getByTestId("action-button"));
@@ -271,6 +321,8 @@ describe("Full page scanner", () => {
       expect(createOrUpdateBasicRecordMock).toBeCalled();
       expect(dispatchMock).toBeCalledWith(setCameraDirection(LensFacing.Front));
     });
+
+    unmount();
   });
 
   test("Close scan screen", async () => {
@@ -285,6 +337,18 @@ describe("Full page scanner", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
         toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 

@@ -1,16 +1,12 @@
 .notification-details-multi-sig-request {
   &.setup-identifier.blur {
     filter: blur(0.1rem);
-    --background: rgba(3, 3, 33, 0);
+    --background: rgba(var(--ion-color-primary-rgb), 0);
   }
 
   ion-header ion-toolbar {
     margin-top: 0.625rem;
     --background: var(--ion-color-light);
-
-    ion-title.md {
-      margin-left: -3rem;
-    }
   }
 
   h2 {
@@ -31,7 +27,7 @@
     ion-card {
       margin: 0;
       display: flex;
-      background: white;
+      background: var(--ion-color-white);
       border-radius: 1rem;
       flex-direction: column;
       justify-content: space-evenly;
@@ -199,14 +195,6 @@
 
 ion-toolbar.multisig-request-footer {
   &.page-footer {
-    z-index: 1000;
-    bottom: calc(-100vh + 8.5rem);
-    padding-inline: 0.9rem;
-  }
-
-  @media screen and (min-width: 250px) and (max-width: 370px) {
-    &.page-footer {
-      bottom: calc(-100vh + 6.5rem);
-    }
+    padding-bottom: 0.5rem;
   }
 }

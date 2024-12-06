@@ -1,4 +1,4 @@
-import { IonChip, IonList, useIonViewWillEnter } from "@ionic/react";
+import { IonList, useIonViewWillEnter } from "@ionic/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
@@ -18,24 +18,15 @@ import { CredentialDetailModal } from "../../components/CredentialDetailModule";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { showError } from "../../utils/error";
 import { timeDifference } from "../../utils/formatters";
-import { FilterChipProps, NotificationFilter } from "./Notification.types";
+import { NotificationFilters } from "./Notification.types";
 import { NotificationItem } from "./NotificationItem";
 import "./Notifications.scss";
 import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
-
-const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
-  <span>
-    <IonChip
-      className={isActive ? "selected" : ""}
-      onClick={() => onClick(filter)}
-      data-testid={`${filter}-filter-btn`}
-    >
-      {label}
-    </IonChip>
-  </span>
-);
+import { FilterChip } from "../../components/FilterChip/FilterChip";
+import { IdentifiersFilters } from "../Identifiers/Identifiers.types";
+import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
@@ -45,7 +36,9 @@ const Notifications = () => {
   const notifications = [...notificationsCache].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
-  const [selectedFilter, setSelectedFilter] = useState(NotificationFilter.All);
+  const [selectedFilter, setSelectedFilter] = useState<
+    NotificationFilters | IdentifiersFilters
+  >(NotificationFilters.All);
   const earlierNotificationRef = useRef<EarlierNotificationRef>(null);
   const [selectedItem, setSelectedItem] = useState<KeriaNotification | null>(
     null
@@ -54,11 +47,11 @@ const Notifications = () => {
   const [viewCred, setViewCred] = useState("");
 
   const filteredNotification = useMemo(() => {
-    if (selectedFilter === NotificationFilter.All) {
+    if (selectedFilter === NotificationFilters.All) {
       return notifications;
     }
 
-    if (selectedFilter === NotificationFilter.Identifier) {
+    if (selectedFilter === NotificationFilters.Identifier) {
       return notifications.filter(
         (notification) => notification.a.r === NotificationRoute.MultiSigIcp
       );
@@ -126,21 +119,21 @@ const Notifications = () => {
 
   const filterOptions = [
     {
-      filter: NotificationFilter.All,
-      label: i18n.t("notifications.tab.chips.all"),
+      filter: NotificationFilters.All,
+      label: i18n.t("tabs.notifications.tab.chips.all"),
     },
     {
-      filter: NotificationFilter.Identifier,
-      label: i18n.t("notifications.tab.chips.identifiers"),
+      filter: NotificationFilters.Identifier,
+      label: i18n.t("tabs.notifications.tab.chips.identifiers"),
     },
     {
-      filter: NotificationFilter.Credential,
-      label: i18n.t("notifications.tab.chips.credentials"),
+      filter: NotificationFilters.Credential,
+      label: i18n.t("tabs.notifications.tab.chips.credentials"),
     },
   ];
 
-  const handleSelectFilter = (filter: NotificationFilter) => {
-    setSelectedFilter(filter);
+  const handleSelectFilter = (filter: AllowedChipFilter) => {
+    setSelectedFilter(filter as NotificationFilters);
     earlierNotificationRef.current?.reset();
   };
 
@@ -163,11 +156,11 @@ const Notifications = () => {
       <TabLayout
         pageId={pageId}
         header={true}
-        title={`${i18n.t("notifications.tab.header")}`}
+        title={`${i18n.t("tabs.notifications.tab.header")}`}
       >
         <div className="notifications-tab-chips">
           {filterOptions.map((option) => (
-            <Chip
+            <FilterChip
               key={option.filter}
               filter={option.filter}
               label={option.label}
@@ -183,7 +176,7 @@ const Notifications = () => {
               data-testid="notifications-tab-section-new"
             >
               <h3 className="notifications-tab-section-title">
-                {i18n.t("notifications.tab.sections.new")}
+                {i18n.t("tabs.notifications.tab.sections.new")}
               </h3>
               <IonList
                 lines="none"
@@ -209,8 +202,8 @@ const Notifications = () => {
           />
           <p className="notification-empty">
             {filteredNotification.length === 0
-              ? i18n.t("notifications.tab.empty")
-              : i18n.t("notifications.tab.sections.earlier.end")}
+              ? i18n.t("tabs.notifications.tab.empty")
+              : i18n.t("tabs.notifications.tab.sections.earlier.end")}
           </p>
         </div>
         {selectedItem && (

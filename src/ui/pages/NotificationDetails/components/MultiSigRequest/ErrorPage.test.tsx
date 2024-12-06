@@ -1,6 +1,6 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
@@ -28,7 +28,6 @@ jest.mock("../../../../../core/agent/agent", () => ({
         createIdentifier: jest.fn(() => ({
           identifier: "mock-id",
           isPending: true,
-          signifyName: "mock name",
         })),
       },
       connections: {
@@ -96,47 +95,49 @@ describe("Multisign error feedback", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.alerttext
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .alerttext
       )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.title
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.detailtext
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.stepone
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage
+          .instructions.steptwo
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
           .title
       )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
-          .detailtext
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
-          .stepone
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.instructions
-          .steptwo
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help.title
-      )
-    ).toBeVisible();
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help.detailtext.replace(
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help.detailtext.replace(
           "<0>{{discordSupportChannel}}</0>",
           ""
         )
@@ -145,7 +146,7 @@ describe("Multisign error feedback", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
           .supportchannel
       )
     ).toBeVisible();
@@ -178,7 +179,7 @@ describe("Multisign error feedback", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+        EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
           .supportchannel
       )
     ).toBeVisible();
@@ -186,7 +187,7 @@ describe("Multisign error feedback", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+          EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.help
             .supportchannel
         )
       );

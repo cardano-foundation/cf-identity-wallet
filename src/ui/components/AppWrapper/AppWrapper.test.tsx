@@ -1,29 +1,16 @@
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import {
-  acdcChangeHandler,
-  AppWrapper,
-  connectionStateChangedHandler,
-  peerConnectRequestSignChangeHandler,
-  peerConnectedChangeHandler,
-  peerConnectionBrokenChangeHandler,
-  peerDisconnectedChangeHandler,
-} from "./AppWrapper";
-import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
-import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
-import {
-  setCurrentOperation,
-  setQueueIncomingRequest,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { OperationType, ToastMsgType } from "../../globals/types";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../../../core/agent/agent.types";
-import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
+import {
+  AcdcStateChangedEvent,
+  ConnectionStateChangedEvent,
+  EventTypes,
+} from "../../../core/agent/event.types";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -35,26 +22,38 @@ import {
   PeerConnectionEventTypes,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
+import { store } from "../../../store";
+import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
+import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
+import { updateIsPending } from "../../../store/reducers/identifiersCache";
+import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
+import {
+  setQueueIncomingRequest,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
   ConnectionData,
   setConnectedWallet,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
-import { updateIsPending } from "../../../store/reducers/identifiersCache";
-import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
-import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
-import { signifyOperationStateChangeHandler } from "./coreEventListeners";
+import { ToastMsgType } from "../../globals/types";
 import {
-  AcdcStateChangedEvent,
-  ConnectionStateChangedEvent,
-  EventTypes,
-} from "../../../core/agent/event.types";
+  AppWrapper,
+  acdcChangeHandler,
+  connectionStateChangedHandler,
+  peerConnectRequestSignChangeHandler,
+  peerConnectedChangeHandler,
+  peerConnectionBrokenChangeHandler,
+  peerDisconnectedChangeHandler,
+} from "./AppWrapper";
+import { signifyOperationStateChangeHandler } from "./coreEventListeners";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      initDatabaseConnection: jest.fn(),
+      setupLocalDependencies: jest.fn(),
       auth: {
         getLoginAttempts: jest.fn(() =>
           Promise.resolve({
@@ -105,6 +104,8 @@ jest.mock("../../../core/agent/agent", () => ({
         getAllNotifications: jest.fn(),
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
+        onRemoveNotification: jest.fn(),
+        stopNotification: jest.fn()
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
@@ -210,17 +211,14 @@ describe("AppWrapper handler", () => {
       );
     });
 
-    test.skip("handles connection state pending", async () => {
-      // await connectionStateChangedHandler(
-      //   connectionStateChangedEventMock,
-      //   dispatch
-      // );
-      // expect(dispatch).toBeCalledWith(
-      //   setCurrentOperation(OperationType.IDLE)
-      // );
-      // expect(dispatch).toBeCalledWith(
-      //   setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
-      // );
+    test("handles connection state pending", async () => {
+      await connectionStateChangedHandler(
+        connectionStateChangedEventMock,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
+      );
     });
 
     test("handles connection state succuss", async () => {
@@ -378,28 +376,5 @@ describe("Signify operation state changed handler", () => {
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
     );
-  });
-
-  test("handles completed admit on revoked credential operation", async () => {
-    const notifications = [
-      {
-        id: "id",
-        createdAt: new Date().toISOString(),
-        a: {},
-        connectionId: "connection",
-        read: false,
-      },
-    ];
-    Agent.agent.keriaNotifications.getAllNotifications = jest
-      .fn()
-      .mockResolvedValue(notifications);
-    await signifyOperationStateChangeHandler(
-      {
-        opType: OperationPendingRecordType.ExchangeRevokeCredential,
-        oid: "id",
-      },
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(setNotificationsCache(notifications));
   });
 });

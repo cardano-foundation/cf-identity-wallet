@@ -25,6 +25,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import {
+  setCredentialsFilters,
   setCredsCache,
   setFavouritesCredsCache,
   updateOrAddCredsCache,
@@ -32,12 +33,14 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  setIdentifiersFilters,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
-  setFavouriteIndex,
-  setViewTypeCache,
-} from "../../../store/reducers/identifierViewTypeCache";
+  setCredentialViewTypeCache,
+  setIdentifierFavouriteIndex,
+  setIdentifierViewTypeCache,
+} from "../../../store/reducers/viewTypeCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   getAuthentication,
@@ -73,6 +76,8 @@ import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
 } from "../../../core/agent/event.types";
+import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
+import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -81,6 +86,14 @@ const connectionStateChangedHandler = async (
   if (event.payload.status === ConnectionStatus.PENDING) {
     if (event.payload.isMultiSigInvite) return;
 
+    dispatch(
+      updateOrAddConnectionCache({
+        id: event.payload.connectionId || "",
+        label: event.payload.label || "",
+        status: event.payload.status,
+        createdAtUTC: new Date().toString(),
+      })
+    );
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
     const connectionRecordId = event.payload.connectionId!;
@@ -278,6 +291,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadCacheBasicStorage = async () => {
     try {
       let userName: { userName: string } = { userName: "" };
+      let identifiersSelectedFilter: IdentifiersFilters =
+        IdentifiersFilters.All;
+      let credentialsSelectedFilter: CredentialsFilters =
+        CredentialsFilters.All;
       const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
       const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
@@ -310,14 +327,51 @@ const AppWrapper = (props: { children: ReactNode }) => {
           )
         );
       }
-      const viewType = await Agent.agent.basicStorage.findById(
+      const indentifierViewType = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
       );
-      if (viewType) {
+      if (indentifierViewType) {
         dispatch(
-          setViewTypeCache(viewType.content.viewType as CardListViewType)
+          setIdentifierViewTypeCache(
+            indentifierViewType.content.viewType as CardListViewType
+          )
         );
       }
+
+      const indentifiersFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_SELECTED_FILTER
+      );
+      if (indentifiersFilters) {
+        identifiersSelectedFilter = indentifiersFilters.content
+          .filter as IdentifiersFilters;
+      }
+      if (identifiersSelectedFilter) {
+        dispatch(setIdentifiersFilters(identifiersSelectedFilter));
+      }
+
+      const credViewType = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_VIEW_TYPE
+      );
+
+      if (credViewType) {
+        dispatch(
+          setCredentialViewTypeCache(
+            credViewType.content.viewType as CardListViewType
+          )
+        );
+      }
+
+      const credentialsFilters = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_SELECTED_FILTER
+      );
+      if (credentialsFilters) {
+        credentialsSelectedFilter = credentialsFilters.content
+          .filter as CredentialsFilters;
+      }
+      if (credentialsSelectedFilter) {
+        dispatch(setCredentialsFilters(credentialsSelectedFilter));
+      }
+
       const appBiometrics = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_BIOMETRY
       );
@@ -334,13 +388,27 @@ const AppWrapper = (props: { children: ReactNode }) => {
         userName = appUserNameRecord.content as { userName: string };
       }
 
-      const favouriteIndex = await Agent.agent.basicStorage.findById(
+      const identifierFavouriteIndex = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
       );
 
-      if (favouriteIndex) {
+      if (identifierFavouriteIndex) {
         dispatch(
-          setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(
+            Number(identifierFavouriteIndex.content.favouriteIndex)
+          )
+        );
+      }
+
+      const credFavouriteIndex = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_FAVOURITE_INDEX
+      );
+
+      if (credFavouriteIndex) {
+        dispatch(
+          setIdentifierFavouriteIndex(
+            Number(credFavouriteIndex.content.favouriteIndex)
+          )
         );
       }
 
@@ -411,22 +479,21 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     );
     Agent.agent.keriaNotifications.onNewNotification((event) => {
-      notificatiStateChanged(event.payload.keriaNotif, dispatch);
+      notificatiStateChanged(event, dispatch);
     });
 
     Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
       signifyOperationStateChangeHandler(event.payload, dispatch);
     });
+
+    Agent.agent.keriaNotifications.onRemoveNotification((event) => {
+      notificatiStateChanged(event, dispatch);
+    });
   };
 
   const initApp = async () => {
     await new ConfigurationService().start();
-    await Agent.agent.initDatabaseConnection();
-
-    // This will skip the onboarding screen with dev mode.
-    if (process.env.DEV_SKIP_ONBOARDING === "true") {
-      await Agent.agent.devPreload();
-    }
+    await Agent.agent.setupLocalDependencies();
 
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
@@ -438,6 +505,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
+
+    // This will skip the onboarding screen with dev mode.
+    if (process.env.DEV_SKIP_ONBOARDING === "true") {
+      await Agent.agent.devPreload();
+    }
+
     await loadDatabase();
     const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
 
@@ -475,10 +548,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         setIsOpen={setIsAlertPeerBrokenOpen}
         dataTestId="alert-confirm-connection-broken"
         headerText={i18n.t(
-          "menu.tab.items.connectwallet.connectionbrokenalert.message"
+          "tabs.menu.tab.items.connectwallet.connectionbrokenalert.message"
         )}
         confirmButtonText={`${i18n.t(
-          "menu.tab.items.connectwallet.connectionbrokenalert.confirm"
+          "tabs.menu.tab.items.connectwallet.connectionbrokenalert.confirm"
         )}`}
         actionConfirm={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}

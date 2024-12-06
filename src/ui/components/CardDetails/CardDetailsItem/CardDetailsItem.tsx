@@ -1,6 +1,5 @@
-import { IonButton, IonIcon, IonItem, IonLabel, IonText } from "@ionic/react";
+import { IonButton, IonIcon, IonItem, IonText } from "@ionic/react";
 import { copyOutline } from "ionicons/icons";
-import { i18n } from "../../../../i18n";
 import { ToastMsgType } from "../../../globals/types";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../../store/hooks";
@@ -13,15 +12,14 @@ const CardDetailsItem = ({
   info,
   copyButton,
   icon,
+  customIcon,
   keyValue,
-  textIcon,
+  copyContent,
   testId,
-  infoTestId,
   className,
-  actionButton: actionIcon,
-  actionButtonClick: actionIconClick,
   fullText = false,
   mask = true,
+  endSlot,
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
 
@@ -39,7 +37,7 @@ const CardDetailsItem = ({
   });
 
   const copy = () => {
-    writeToClipboard(info);
+    writeToClipboard(copyContent || info);
     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
   };
 
@@ -54,39 +52,28 @@ const CardDetailsItem = ({
           className="card-details-info-block-line-start-icon"
           icon={icon}
           slot="start"
-        ></IonIcon>
+        />
       )}
-      {textIcon && (
-        <IonText
+      {customIcon && (
+        <img
+          className="card-details-info-block-line-start-icon"
           slot="start"
-          className="card-details-info-block-text-icon"
-        >
-          {i18n.t(textIcon)}
-        </IonText>
+          src={customIcon}
+          alt="keri"
+        />
       )}
       <div className={contentClass}>
-        <IonText
-          className={textClass}
-          data-testid={`${testId}-text-value`}
-        >
+        <IonText className={textClass}>
           {keyValue && (
-            <IonText className="card-details-info-block-key">
+            <IonText
+              data-testid={`${testId}-key-value`}
+              className="card-details-info-block-key"
+            >
               {keyValue}
             </IonText>
           )}
-          {info}
+          <span data-testid={`${testId}-text-value`}>{info}</span>
         </IonText>
-        {actionIcon && (
-          <IonButton
-            slot="end"
-            shape="round"
-            className="action-button"
-            data-testid={`${testId}-action-icon`}
-            onClick={actionIconClick}
-          >
-            <IonIcon icon={actionIcon} />
-          </IonButton>
-        )}
         {copyButton && (
           <IonButton
             slot="end"
@@ -98,6 +85,7 @@ const CardDetailsItem = ({
             <IonIcon icon={copyOutline} />
           </IonButton>
         )}
+        {endSlot}
       </div>
     </IonItem>
   );

@@ -1,7 +1,7 @@
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -168,7 +168,7 @@ describe("Identifier Options function test", () => {
     });
 
     expect(
-      getAllByText(EN_TRANSLATIONS.identifiers.details.options.edit)[0]
+      getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.options.edit)[0]
     ).toBeVisible();
 
     act(() => {

@@ -6,8 +6,8 @@ import {
   ConnectionDetails,
   ConnectionHistoryItem,
 } from "../../../../core/agent/agent.types";
-import { ConnectionHistoryType } from "../../../../core/agent/services/connection.types";
 import { i18n } from "../../../../i18n";
+import { ConnectionHistoryType } from "../../../../core/agent/services/connectionService.types";
 
 const ConnectionHistoryEvent = ({
   index,
@@ -51,12 +51,13 @@ const ConnectionHistoryEvent = ({
             })}
           {historyItem.type ===
             ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT &&
-            i18next.t("connections.details.present", {
+            i18next.t("connections.details.requestpresent", {
               issuer: connectionDetails?.label,
             })}
-          {historyItem.type ===
-            ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE &&
-            i18n.t("connections.details.agree")}
+          {historyItem.type === ConnectionHistoryType.CREDENTIAL_PRESENTED &&
+            i18n.t("connections.details.presented", {
+              credentialType: historyItem.credentialType,
+            })}
           {historyItem.type === ConnectionHistoryType.CREDENTIAL_REVOKED &&
             i18next.t("connections.details.update", {
               credential: historyItem.credentialType
@@ -98,8 +99,8 @@ const ConnectionHistoryEvent = ({
           className="connection-details-history-timestamp"
         >
           {` ${formatShortDate(
-            `${connectionDetails?.connectionDate}`
-          )} - ${formatTimeToSec(`${connectionDetails?.connectionDate}`)}`}
+            `${connectionDetails?.createdAtUTC}`
+          )} - ${formatTimeToSec(`${connectionDetails?.createdAtUTC}`)}`}
         </span>
       </p>
     </div>

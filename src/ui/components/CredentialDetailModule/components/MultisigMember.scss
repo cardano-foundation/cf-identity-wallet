@@ -1,0 +1,69 @@
+.multisig-member {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --padding-top: 0.75rem;
+  --padding-bottom: 0.75rem;
+  --min-height: auto;
+
+  .member-avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .member-name {
+    width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    font-size: 1rem;
+
+    &.md {
+      margin-inline-end: 0;
+    }
+  }
+
+  .status {
+    border-radius: 50%;
+    padding: 0.3125rem;
+    width: 0.875rem;
+    height: 0.875rem;
+
+    &.md {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    &.accepted {
+      background: var(--ion-color-primary-gradient);
+    }
+
+    &.rejected {
+      background: var(--ion-color-light-red);
+    }
+
+    &.waiting {
+      background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
+
+    .member-name {
+      font-size: 0.875rem;
+    }
+
+    .status {
+      padding: 0.125rem;
+      width: 0.675rem;
+      height: 0.675rem;
+
+      &.md {
+        margin-inline-start: 0;
+      }
+    }
+  }
+}

@@ -24,7 +24,6 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionDetails as ConnectionData,
-  ConnectionShortDetails,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
 } from "../../../core/agent/agent.types";
@@ -41,16 +40,12 @@ import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
 import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
 import { showError } from "../../utils/error";
+import { ConnectionDetailsProps } from "./ConnectionDetails.types";
 
 const ConnectionDetails = ({
   connectionShortDetails,
-  setConnectionShortDetails,
-}: {
-  connectionShortDetails: ConnectionShortDetails;
-  setConnectionShortDetails: (
-    connectionShortDetails: ConnectionShortDetails | undefined
-  ) => void;
-}) => {
+  handleCloseConnectionModal,
+}: ConnectionDetailsProps) => {
   const pageId = "connection-details";
   const dispatch = useAppDispatch();
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
@@ -78,9 +73,8 @@ const ConnectionDetails = ({
         connectionShortDetails.id
       );
       setConnectionDetails(connectionDetails);
-      if (connectionDetails.notes) {
-        setNotes(connectionDetails.notes);
-      }
+      setNotes(connectionDetails.notes);
+      setConnectionHistory(connectionDetails.historyItems);
     } catch (error) {
       if (
         error instanceof Error &&
@@ -88,28 +82,11 @@ const ConnectionDetails = ({
       ) {
         setCloudError(true);
       } else {
-        handleDone();
+        handleCloseConnectionModal();
         showError("Unable to get connection details", error, dispatch);
       }
     } finally {
-      setLoading((value) => ({ ...value, details: false }));
-    }
-  }, [connectionShortDetails?.id, dispatch]);
-
-  const getHistory = useCallback(async () => {
-    if (!connectionShortDetails?.id) return;
-
-    try {
-      const connectionHistory =
-        await Agent.agent.connections.getConnectionHistoryById(
-          connectionShortDetails.id
-        );
-      setConnectionHistory(connectionHistory);
-    } catch (e) {
-      handleDone();
-      showError("Unable to get connection history", e, dispatch);
-    } finally {
-      setLoading((value) => ({ ...value, history: false }));
+      setLoading((value) => ({ ...value, details: false, history: false }));
     }
   }, [connectionShortDetails?.id, dispatch]);
 
@@ -122,14 +99,9 @@ const ConnectionDetails = ({
     });
 
     getDetails();
-    getHistory();
-  }, [connectionShortDetails?.id, getDetails, getHistory]);
+  }, [connectionShortDetails?.id, getDetails]);
 
   useOnlineStatusEffect(getData);
-
-  const handleDone = () => {
-    setConnectionShortDetails(undefined);
-  };
 
   const handleDelete = () => {
     setOptionsIsOpen(false);
@@ -144,13 +116,13 @@ const ConnectionDetails = ({
             connectionShortDetails.id
           );
         } else {
-          await Agent.agent.connections.deleteConnectionById(
+          await Agent.agent.connections.markConnectionPendingDelete(
             connectionShortDetails.id
           );
         }
         dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
         dispatch(removeConnectionCache(connectionShortDetails.id));
-        handleDone();
+        handleCloseConnectionModal();
         setVerifyIsOpen(false);
       } catch (error) {
         showError(
@@ -172,7 +144,7 @@ const ConnectionDetails = ({
     },
     {
       title: i18n.t("connections.details.date"),
-      value: formatShortDate(`${connectionDetails?.connectionDate}`),
+      value: formatShortDate(`${connectionDetails?.createdAtUTC}`),
     },
     {
       title: i18n.t("connections.details.endpoints"),
@@ -217,7 +189,7 @@ const ConnectionDetails = ({
           header={
             <PageHeader
               closeButton={true}
-              closeButtonAction={handleDone}
+              closeButtonAction={handleCloseConnectionModal}
               closeButtonLabel={`${i18n.t("connections.details.done")}`}
               currentPath={RoutePath.CONNECTION_DETAILS}
             />
@@ -237,7 +209,7 @@ const ConnectionDetails = ({
           header={
             <PageHeader
               closeButton={true}
-              closeButtonAction={handleDone}
+              closeButtonAction={handleCloseConnectionModal}
               closeButtonLabel={`${i18n.t("connections.details.done")}`}
               currentPath={RoutePath.CONNECTION_DETAILS}
               actionButton={true}
@@ -250,7 +222,7 @@ const ConnectionDetails = ({
             <ConnectionDetailsHeader
               logo={connectionDetails?.logo || KeriLogo}
               label={connectionDetails?.label}
-              date={connectionDetails?.connectionDate}
+              date={connectionDetails?.createdAtUTC}
             />
             <IonSegment
               data-testid="connection-details-segment"

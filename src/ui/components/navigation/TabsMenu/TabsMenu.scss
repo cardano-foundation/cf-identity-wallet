@@ -24,7 +24,7 @@ ion-tab-bar {
         line-height: 1rem;
         position: absolute;
         margin: 0 0 1rem 1.5rem;
-        color: white;
+        color: var(--ion-color-white);
         justify-content: center;
         align-items: center;
         border-radius: 0.625rem;
@@ -91,7 +91,7 @@ ion-tab-bar {
       }
 
       ion-label {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
       }
 
       &:not(.tab-selected) .notifications-counter {

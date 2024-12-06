@@ -1,8 +1,8 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import ENG_Trans from "../../../locales/en/en.json";
+import TRANSLATIONS from "../../../locales/en/en.json";
 import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { RecoverySeedPhraseModule } from "./RecoverySeedPhraseModule";
 
@@ -24,26 +24,39 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: (...args: any) => secureStorageGetFunc(...args),
-    set: (...args: any) => secureStorageSetFunc(...args),
-    delete: (...args: any) => secureStorageDeleteFunc(...args),
+    get: (...args: unknown[]) => secureStorageGetFunc(...args),
+    set: (...args: unknown[]) => secureStorageSetFunc(...args),
+    delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
 }));
 
-jest.mock("@ionic/react", () => ({
-  ...jest.requireActual("@ionic/react"),
-  IonInput: (props: any) => {
-    return (
-      <input
-        {...props}
-        data-testid={props["data-testid"]}
-        onBlur={(e) => props.onIonBlur(e)}
-        onFocus={(e) => props.onIonFocus(e)}
-        onChange={(e) => props.onIonInput?.(e)}
-      />
-    );
-  },
-}));
+jest.mock("@ionic/react", () => {
+  const { forwardRef, useImperativeHandle } = jest.requireActual("react");
+
+  return ({
+    ...jest.requireActual("@ionic/react"),
+    IonInput: forwardRef((props: any, ref: any) => {
+      const {onIonBlur, onIonFocus, onIonInput, value} = props;
+      const testId = props["data-testid"];
+  
+  
+      useImperativeHandle(ref, () => ({
+        setFocus: jest.fn()
+      }));
+  
+      return (
+        <input
+          ref={ref}
+          value={value}
+          data-testid={testId}
+          onBlur={onIonBlur}
+          onFocus={onIonFocus}
+          onChange={onIonInput}
+        />
+      );
+    }),
+  })
+});
 
 describe("Recovery Seed Phrase", () => {
   const mockStore = configureStore();
@@ -68,21 +81,23 @@ describe("Recovery Seed Phrase", () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <RecoverySeedPhraseModule
-          title={ENG_Trans.verifyrecoveryseedphrase.title}
-          description={ENG_Trans.verifyrecoveryseedphrase.paragraph.top}
+          title={TRANSLATIONS.verifyrecoveryseedphrase.title}
+          description={TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top}
           testId="verify-recovery-seed-phrase"
           onVerifySuccess={jest.fn()}
         />
       </Provider>
     );
 
-    expect(getByText(ENG_Trans.verifyrecoveryseedphrase.title)).toBeVisible();
     expect(
-      getByText(ENG_Trans.verifyrecoveryseedphrase.paragraph.top)
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.title)
+    ).toBeVisible();
+    expect(
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top)
     ).toBeVisible();
     expect(
       getByText(
-        ENG_Trans.verifyrecoveryseedphrase.button.continue
+        TRANSLATIONS.verifyrecoveryseedphrase.button.continue
       ).getAttribute("disabled")
     ).toBe("true");
     expect(getByTestId("word-input-0")).toBeVisible();
@@ -92,15 +107,17 @@ describe("Recovery Seed Phrase", () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <RecoverySeedPhraseModule
-          title={ENG_Trans.verifyrecoveryseedphrase.title}
-          description={ENG_Trans.verifyrecoveryseedphrase.paragraph.top}
+          title={TRANSLATIONS.verifyrecoveryseedphrase.title}
+          description={TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top}
           testId="verify-recovery-seed-phrase"
           onVerifySuccess={jest.fn()}
         />
       </Provider>
     );
 
-    expect(getByText(ENG_Trans.verifyrecoveryseedphrase.title)).toBeVisible();
+    expect(
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.title)
+    ).toBeVisible();
 
     const firstInput = getByTestId("word-input-0");
     act(() => {
@@ -111,7 +128,7 @@ describe("Recovery Seed Phrase", () => {
     });
 
     expect(
-      getByText(ENG_Trans.verifyrecoveryseedphrase.suggestions.title)
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.suggestions.title)
     ).toBeVisible();
     expect(getByText("abandon")).toBeVisible();
     expect(getByTestId("word-input-1")).toBeVisible();
@@ -129,15 +146,17 @@ describe("Recovery Seed Phrase", () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
         <RecoverySeedPhraseModule
-          title={ENG_Trans.verifyrecoveryseedphrase.title}
-          description={ENG_Trans.verifyrecoveryseedphrase.paragraph.top}
+          title={TRANSLATIONS.verifyrecoveryseedphrase.title}
+          description={TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top}
           testId="verify-recovery-seed-phrase"
           onVerifySuccess={jest.fn()}
         />
       </Provider>
     );
 
-    expect(getByText(ENG_Trans.verifyrecoveryseedphrase.title)).toBeVisible();
+    expect(
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.title)
+    ).toBeVisible();
 
     const firstInput = getByTestId("word-input-0");
     act(() => {
@@ -148,7 +167,7 @@ describe("Recovery Seed Phrase", () => {
     });
 
     expect(
-      getByText(ENG_Trans.verifyrecoveryseedphrase.suggestions.title)
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.suggestions.title)
     ).toBeVisible();
 
     act(() => {
@@ -167,7 +186,7 @@ describe("Recovery Seed Phrase", () => {
     });
 
     expect(
-      getByText(ENG_Trans.verifyrecoveryseedphrase.suggestions.title)
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.suggestions.title)
     ).toBeVisible();
 
     act(() => {
@@ -187,15 +206,17 @@ describe("Recovery Seed Phrase", () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <RecoverySeedPhraseModule
-          title={ENG_Trans.verifyrecoveryseedphrase.title}
-          description={ENG_Trans.verifyrecoveryseedphrase.paragraph.top}
+          title={TRANSLATIONS.verifyrecoveryseedphrase.title}
+          description={TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top}
           testId="verify-recovery-seed-phrase"
           onVerifySuccess={jest.fn()}
         />
       </Provider>
     );
 
-    expect(getByText(ENG_Trans.verifyrecoveryseedphrase.title)).toBeVisible();
+    expect(
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.title)
+    ).toBeVisible();
     for (let i = 0; i < SEED_PHRASE_LENGTH; i++) {
       act(() => {
         const input = getByTestId(`word-input-${i}`);
@@ -222,13 +243,13 @@ describe("Recovery Seed Phrase", () => {
 
     expect(
       getByText(
-        ENG_Trans.verifyrecoveryseedphrase.button.continue
+        TRANSLATIONS.verifyrecoveryseedphrase.button.continue
       ).getAttribute("disabled")
     ).toBe("false");
 
     act(() => {
       fireEvent.click(
-        getByText(ENG_Trans.verifyrecoveryseedphrase.button.continue)
+        getByText(TRANSLATIONS.verifyrecoveryseedphrase.button.continue)
       );
     });
 

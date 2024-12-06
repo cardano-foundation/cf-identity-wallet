@@ -23,7 +23,6 @@ interface IdentifierShortDetails {
 }
 
 interface IdentifierDetails extends IdentifierShortDetails {
-  signifyOpName?: string;
   s: string;
   dt: string;
   kt: string | string[];
@@ -33,6 +32,7 @@ interface IdentifierDetails extends IdentifierShortDetails {
   bt: string;
   b: string[];
   di?: string;
+  members?: string[];
 }
 
 interface MultiSigIcpRequestDetails {
@@ -44,7 +44,6 @@ interface MultiSigIcpRequestDetails {
 
 interface CreateIdentifierResult {
   identifier: string;
-  signifyName: string;
   isPending: boolean;
 }
 

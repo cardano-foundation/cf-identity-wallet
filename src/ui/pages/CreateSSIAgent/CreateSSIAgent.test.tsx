@@ -1,36 +1,51 @@
-import { Provider } from "react-redux";
-import { fireEvent, getByText, render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
 import { IonButton, IonIcon, IonInput, IonLabel } from "@ionic/react";
-import { act } from "react-dom/test-utils";
-import { ionFireEvent } from "@ionic/react-test-utils";
 import { IonReactMemoryRouter } from "@ionic/react-router";
+import { ionFireEvent } from "@ionic/react-test-utils";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import { CreateSSIAgent } from "./CreateSSIAgent";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { CustomInputProps } from "../../components/CustomInput/CustomInput.types";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { OperationType } from "../../globals/types";
-import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
-import { RoutePath } from "../../../routes";
+import { act } from "react";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { RoutePath } from "../../../routes";
+import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
+import { setCurrentOperation, setToastMsg } from "../../../store/reducers/stateCache";
+import { CustomInputProps } from "../../components/CustomInput/CustomInput.types";
 import {
   ONBOARDING_DOCUMENTATION_LINK,
   RECOVERY_DOCUMENTATION_LINK,
 } from "../../globals/constants";
+import { OperationType, ToastMsgType } from "../../globals/types";
+import { CreateSSIAgent } from "./CreateSSIAgent";
+import { Agent } from "../../../core/agent/agent";
 
-const bootAndConnectMock = jest.fn((...args: any) => Promise.resolve());
+const bootAndConnectMock = jest.fn((...args: unknown[]) => Promise.resolve(args));
 const recoverKeriaAgentMock = jest.fn();
 const basicStorageDeleteMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
+  ...jest.requireActual("../../../core/agent/agent"),
   Agent: {
-    ...jest.requireActual("../../../core/agent/agent"),
+    KERIA_CONNECTION_BROKEN :
+    "The app is not connected to KERIA at the moment",
+    KERIA_BOOT_FAILED_BAD_NETWORK :
+    "Failed to boot due to network connectivity",
+    KERIA_CONNECT_FAILED_BAD_NETWORK :
+    "Failed to connect due to network connectivity",
+    KERIA_BOOT_FAILED : "Failed to boot signify client",
+    KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT :
+    "KERIA agent is already booted but cannot connect",
+    KERIA_NOT_BOOTED :
+    "Agent has not been booted for a given Signify passcode",
+    INVALID_MNEMONIC : "Seed phrase is invalid",
+    MISSING_DATA_ON_KERIA :
+    "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
     agent: {
-      bootAndConnect: (...args: any) => bootAndConnectMock(...args),
-      recoverKeriaAgent: (...args: any) => recoverKeriaAgentMock(...args),
+      bootAndConnect: (...args: unknown[]) => bootAndConnectMock(...args),
+      recoverKeriaAgent: (...args: unknown[]) => recoverKeriaAgentMock(...args),
       basicStorage: {
-        deleteById: (...args: any) => basicStorageDeleteMock(...args),
+        deleteById: (...args: unknown[]) => basicStorageDeleteMock(...args),
       },
     },
   },
@@ -38,7 +53,11 @@ jest.mock("../../../core/agent/agent", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children, ...props }: any) => {
+    const testId = props["data-testid"];
+
+    return <div data-testid={testId}>{children}</div>;
+  }
 }));
 
 const browserMock = jest.fn(({ link }: { link: string }) =>
@@ -97,7 +116,7 @@ const secureStorageDeleteFunc = jest.fn();
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    delete: (...args: any) => secureStorageDeleteFunc(...args),
+    delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
 }));
 
@@ -293,7 +312,7 @@ describe("SSI agent page", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <CreateSSIAgent />
       </Provider>
@@ -398,6 +417,10 @@ describe("SSI agent page", () => {
         "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
       url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
     });
+
+    await waitFor(() => {
+      expect(getByTestId("ssi-spinner-container")).toBeVisible();
+    })
   });
 
   test("Open SSI Agent info modal (Onboarding)", async () => {
@@ -561,3 +584,224 @@ describe("SSI agent page: recovery mode", () => {
     });
   });
 });
+
+describe("SSI agent page: show error", () => {
+  const dispatchMock = jest.fn();
+
+  test("Invalid boot url", async () => {
+    const mockStore = configureStore();
+    const initialState = {
+      stateCache: {
+        authentication: {
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: true,
+          passwordIsSkipped: true,
+          loggedIn: false,
+          userName: "",
+          time: 0,
+          ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
+        },
+      },
+      ssiAgentCache: {
+        bootUrl:
+          "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
+        connectUrl:
+          "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
+      },
+      seedPhraseCache: {
+        seedPhrase: "mock-seed",
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(RoutePath.SSI_AGENT);
+
+    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_BOOT_FAILED)))
+
+    const { getByTestId, getByText } = render(
+      <IonReactMemoryRouter history={history}>
+        <Provider store={storeMocked}>
+          <CreateSSIAgent />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-ssi-agent"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.ssiagent.error.invalidbooturl)).toBeVisible();
+    });
+  });
+
+  test("Invalid connect url", async () => {
+    const mockStore = configureStore();
+    const initialState = {
+      stateCache: {
+        authentication: {
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: true,
+          passwordIsSkipped: true,
+          loggedIn: false,
+          userName: "",
+          time: 0,
+          ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
+        },
+      },
+      ssiAgentCache: {
+        bootUrl:
+          "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
+        connectUrl:
+          "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
+      },
+      seedPhraseCache: {
+        seedPhrase: "mock-seed",
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(RoutePath.SSI_AGENT);
+
+    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT)))
+
+    const { getByTestId, getByText } = render(
+      <IonReactMemoryRouter history={history}>
+        <Provider store={storeMocked}>
+          <CreateSSIAgent />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-ssi-agent"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.ssiagent.error.invalidconnecturl)).toBeVisible();
+    });
+  });
+
+  test("Mismatch url", async () => {
+    const mockStore = configureStore();
+    const initialState = {
+      stateCache: {
+        authentication: {
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: true,
+          passwordIsSkipped: true,
+          loggedIn: false,
+          userName: "",
+          time: 0,
+          ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
+        },
+      },
+      ssiAgentCache: {
+        bootUrl:
+          "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
+        connectUrl:
+          "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
+      },
+      seedPhraseCache: {
+        seedPhrase: "mock-seed",
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(RoutePath.SSI_AGENT);
+
+    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_NOT_BOOTED)))
+
+    const { getByTestId, getByText } = render(
+      <IonReactMemoryRouter history={history}>
+        <Provider store={storeMocked}>
+          <CreateSSIAgent />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-ssi-agent"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.ssiagent.error.mismatchconnecturl)).toBeVisible();
+    });
+  });
+
+
+  test("Network error", async () => {
+    const mockStore = configureStore();
+    const initialState = {
+      stateCache: {
+        authentication: {
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: true,
+          passwordIsSkipped: true,
+          loggedIn: false,
+          userName: "",
+          time: 0,
+          ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
+        },
+      },
+      ssiAgentCache: {
+        bootUrl:
+          "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
+        connectUrl:
+          "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
+      },
+      seedPhraseCache: {
+        seedPhrase: "mock-seed",
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(RoutePath.SSI_AGENT);
+
+    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK)))
+
+    const { getByTestId } = render(
+      <IonReactMemoryRouter history={history}>
+        <Provider store={storeMocked}>
+          <CreateSSIAgent />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-ssi-agent"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(setToastMsg(ToastMsgType.UNKNOWN_ERROR));
+    });
+  });
+})

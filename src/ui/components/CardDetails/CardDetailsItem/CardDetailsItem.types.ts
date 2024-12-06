@@ -1,14 +1,16 @@
+import { ReactNode } from "react";
+
 export interface CardDetailsItemProps {
   info: string;
   copyButton?: boolean;
   icon?: string;
+  customIcon?: string;
   keyValue?: string;
-  textIcon?: string;
   testId?: string;
   infoTestId?: string;
   className?: string;
   mask?: boolean;
   fullText?: boolean;
-  actionButton?: string;
-  actionButtonClick?: () => void;
+  endSlot?: ReactNode;
+  copyContent?: string;
 }

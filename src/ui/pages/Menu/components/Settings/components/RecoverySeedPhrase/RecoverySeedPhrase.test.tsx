@@ -1,11 +1,10 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeyStoreKeys } from "../../../../../../../core/storage";
-import ENG_trans from "../../../../../../../locales/en/en.json";
+import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { OperationType } from "../../../../../../globals/types";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
@@ -25,9 +24,7 @@ jest.mock("../../../../../../../core/storage", () => ({
 jest.mock("../../../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      basicStorage: {
-        getMnemonic: jest.fn(() => Promise.resolve("")),
-      },
+      getMnemonic: jest.fn(() => Promise.resolve("")),
     },
   },
 }));
@@ -82,25 +79,39 @@ describe("Recovery Phrase", () => {
       </Provider>
     );
 
-    expect(
-      getByText(ENG_trans.settings.sections.security.seedphrase.page.tips.one)
-    ).toBeVisible();
-    expect(
-      getByText(ENG_trans.settings.sections.security.seedphrase.page.tips.two)
-    ).toBeVisible();
-    expect(
-      getByText(ENG_trans.settings.sections.security.seedphrase.page.tips.three)
-    ).toBeVisible();
-    expect(
-      getByText(
-        ENG_trans.settings.sections.security.seedphrase.page.button.view
-      )
-    ).toBeVisible();
-    expect(
-      queryByText(
-        ENG_trans.settings.sections.security.seedphrase.page.button.hide
-      )
-    ).toBe(null);
+    await waitFor(() => {
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .tips.one
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .tips.two
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .tips.three
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.view
+        )
+      ).toBeVisible();
+      expect(
+        queryByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.hide
+        )
+      ).toBe(null);
+    })
+
     expect(
       getByTestId("seed-phrase-module").classList.contains("seed-phrase-hidden")
     ).toBe(true);
@@ -113,21 +124,28 @@ describe("Recovery Phrase", () => {
       </Provider>
     );
 
-    expect(
-      getByText(
-        ENG_trans.settings.sections.security.seedphrase.page.button.view
-      )
-    ).toBeVisible();
-
-    act(() => {
-      fireEvent.click(
+    await waitFor(() => {
+      expect(
         getByText(
-          ENG_trans.settings.sections.security.seedphrase.page.button.view
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .tips.one
         )
-      );
+      ).toBeVisible();
+
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.view
+        )
+      ).toBeVisible();
     });
 
-    await waitForIonicReact();
+    fireEvent.click(
+      getByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+          .button.view
+      )
+    );
 
     expect(getByTestId("confirm-view-seedpharse")).toBeVisible();
     expect(getByTestId("primary-button-confirm-view-seedpharse")).toBeVisible();
@@ -135,13 +153,11 @@ describe("Recovery Phrase", () => {
       getByTestId("primary-button-confirm-view-seedpharse").getAttribute(
         "disabled"
       )
-    ).toBe("");
+    ).toBe("true");
 
-    act(() => {
-      fireEvent.click(getByTestId("condition-item-0"));
-      fireEvent.click(getByTestId("condition-item-1"));
-      fireEvent.click(getByTestId("condition-item-2"));
-    });
+    fireEvent.click(getByTestId("condition-item-0"));
+    fireEvent.click(getByTestId("condition-item-1"));
+    fireEvent.click(getByTestId("condition-item-2"));
 
     await waitFor(() => {
       expect(
@@ -155,7 +171,16 @@ describe("Recovery Phrase", () => {
       fireEvent.click(getByTestId("primary-button-confirm-view-seedpharse"));
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await waitFor(() => {
+      expect(getByText(TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+
+    await waitFor(() => {
+      expect(queryByText(TRANSLATIONS.verifypasscode.title)).toBeNull();
+      expect(getByTestId("seed-phrase-module").classList.contains("seed-phrase-visible")).toBeTruthy();
+    });
 
     await waitFor(() => {
       expect(queryByTestId("confirm-view-seedpharse")).toBe(null);
@@ -166,7 +191,8 @@ describe("Recovery Phrase", () => {
       ).toBe(true);
       expect(
         queryByText(
-          ENG_trans.settings.sections.security.seedphrase.page.button.hide
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.hide
         )
       ).toBeVisible();
     });
@@ -174,7 +200,8 @@ describe("Recovery Phrase", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          ENG_trans.settings.sections.security.seedphrase.page.button.hide
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.hide
         )
       );
     });

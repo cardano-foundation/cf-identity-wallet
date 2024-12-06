@@ -1,12 +1,13 @@
 import { SignifyClient } from "signify-ts";
 import { CoreEventEmitter } from "./event";
-import { ConnectionHistoryType } from "./services/connection.types";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./services/connectionService.types";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
   ACCEPTED = "accepted",
+  DELETED = "deleted",
 }
 
 interface ConnectionHistoryItem {
@@ -26,19 +27,24 @@ enum MiscRecordId {
   APP_BIOMETRY = "app-biometry",
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
+  APP_CRED_VIEW_TYPE = "app-cred-view-type",
+  APP_IDENTIFIER_SELECTED_FILTER = "app-identifier-selected-filter",
+  APP_CRED_SELECTED_FILTER = "app-cred-selected-filter",
   KERIA_CONNECT_URL = "keria-connect-url",
   KERIA_BOOT_URL = "keria-boot-url",
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
+  APP_CRED_FAVOURITE_INDEX = "cred-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
   LOGIN_METADATA = "login-metadata",
   CAMERA_DIRECTION = "camera-direction",
+  FAILED_NOTIFICATIONS = "failed-notifications",
 }
 
 interface ConnectionShortDetails {
   id: string;
   label: string;
-  connectionDate: string;
+  createdAtUTC: string;
   logo?: string;
   status: ConnectionStatus;
   oobi?: string;
@@ -60,7 +66,7 @@ interface JSONArray extends Array<JSONValue> {}
 
 type JSONValue = string | number | boolean | JSONObject | JSONArray;
 
-type IpexMessage = {
+type ExnMessage = {
   exn: {
     v: string;
     t: string;
@@ -72,6 +78,7 @@ type IpexMessage = {
     q: JSONValue;
     a: any;
     e: any;
+    rp: string;
   };
   pathed: {
     acdc?: string;
@@ -83,8 +90,9 @@ type IpexMessage = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  serviceEndpoints?: string[];
-  notes?: ConnectionNoteDetails[];
+  serviceEndpoints: string[];
+  notes: ConnectionNoteDetails[];
+  historyItems: ConnectionHistoryItem[];
 }
 interface NotificationRpy {
   a: {
@@ -137,7 +145,6 @@ interface AgentServicesProps {
 }
 
 interface CreateIdentifierResult {
-  signifyName: string;
   identifier: string;
   multisigManageAid?: string;
   isPending?: boolean;
@@ -189,6 +196,13 @@ type OperationCallback = ({
   opType: OperationPendingRecordType;
 }) => void;
 
+export const OOBI_RE =
+  /^\/oobi\/(?<cid>[^/]+)\/(?<role>[^/]+)(?:\/(?<eid>[^/]+))?$/i;
+export const OOBI_AGENT_ONLY_RE =
+  /^\/oobi\/(?<cid>[^/]+)\/agent(?:\/(?<eid>[^/]+))?$/i;
+export const DOOBI_RE = /^\/oobi\/(?<said>[^/]+)$/i;
+export const WOOBI_RE = /^\/\.well-known\/keri\/oobi\/(?<cid>[^/]+)$/;
+
 export {
   ConnectionStatus,
   MiscRecordId,
@@ -211,7 +225,7 @@ export type {
   IdentifierResult,
   AgentUrls,
   BranAndMnemonic,
-  IpexMessage,
+  ExnMessage,
   NotificationRpy,
   AuthorizationRequestExn,
   OperationCallback,

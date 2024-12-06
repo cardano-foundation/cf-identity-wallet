@@ -100,14 +100,6 @@ const credentialStorage = jest.mocked({
   updateCredentialMetadata: jest.fn(),
 });
 
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      getKeriaOnlineStatus: jest.fn(),
-    },
-  },
-}));
-
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventEmitter: new CoreEventEmitter(),
@@ -143,8 +135,8 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-  identifierType: IdentifierType.Individual,
   identifierId: memberIdentifierRecord.id,
+  identifierType: IdentifierType.Individual,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -180,8 +172,8 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-        identifierType: IdentifierType.Individual,
         identifierId: memberIdentifierRecord.id,
+        identifierType: IdentifierType.Individual,
       },
       {
         id: id2,
@@ -189,8 +181,8 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-        identifierType: IdentifierType.Individual,
         identifierId: memberIdentifierRecord.id,
+        identifierType: IdentifierType.Individual,
       },
     ]);
   });
@@ -333,8 +325,8 @@ describe("Credential service of agent", () => {
         dt: nowISO,
       },
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-      identifierType: IdentifierType.Individual,
       identifierId: memberIdentifierRecord.id,
+      identifierType: IdentifierType.Individual,
     });
   });
 
@@ -360,8 +352,8 @@ describe("Credential service of agent", () => {
       credentialType,
       issuanceDate: nowISO,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-      identifierType: IdentifierType.Individual,
       identifierId: memberIdentifierRecord.id,
+      identifierType: IdentifierType.Individual,
     });
   });
 
@@ -441,9 +433,27 @@ describe("Credential service of agent", () => {
       .fn()
       .mockResolvedValue(credentialMetadataRecordA);
     credentialListMock = jest.fn().mockResolvedValue([]);
+    const error404 = new Error("Not Found - 404");
+    getCredentialMock.mockRejectedValueOnce(error404);
+
     await expect(
       credentialService.getCredentialDetailsById(id)
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
+  });
+
+  test("Should throw error if other error occurs with get credential in cloud", async () => {
+    const id = "not-found-id";
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(credentialMetadataRecordA);
+    credentialListMock = jest.fn().mockResolvedValue([]);
+    const errorMessage = new Error("Error - 500");
+    getCredentialMock.mockRejectedValueOnce(errorMessage);
+
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrow(errorMessage);
   });
 
   test("Can delete stale local credential", async () => {
@@ -458,7 +468,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {
@@ -480,7 +490,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {
@@ -514,7 +524,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
+      id: "id",
     });
     credentialListMock.mockResolvedValue([
       {

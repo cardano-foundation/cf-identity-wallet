@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
+import { randomSalt } from "../services/utils";
 
 interface ConnectionRecordStorageProps {
   id?: string;
@@ -16,13 +16,14 @@ class ConnectionRecord extends BaseRecord {
   oobi!: string;
   groupId?: string;
   pending!: boolean;
+  pendingDeletion = false;
   static readonly type = "ConnectionRecord";
   readonly type = ConnectionRecord.type;
 
   constructor(props: ConnectionRecordStorageProps) {
     super();
     if (props) {
-      this.id = props.id ?? uuidv4();
+      this.id = props.id ?? randomSalt();
       this.createdAt = props.createdAt ?? new Date();
       this.alias = props.alias;
       this.oobi = props.oobi;
@@ -36,6 +37,8 @@ class ConnectionRecord extends BaseRecord {
     return {
       ...this._tags,
       groupId: this.groupId,
+      pendingDeletion: this.pendingDeletion,
+      pending: this.pending,
     };
   }
 }

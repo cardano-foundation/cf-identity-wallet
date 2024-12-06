@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import {
@@ -44,7 +44,6 @@ const getMultiSignMock = jest.fn().mockResolvedValue(multisigIcpDetails);
 const joinMultisignMock = jest.fn((...params: unknown[]) =>
   Promise.resolve({
     identifier: "identifier-id",
-    signifyName: params,
   })
 );
 
@@ -52,7 +51,7 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
   IonModal: ({ children, isOpen, ...props }: any) =>
-    isOpen ? <div {...props}>{children}</div> : null,
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 jest.mock("../../../../../core/agent/agent", () => ({
@@ -114,7 +113,7 @@ describe("Multisign request", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.notifications.details.identifier.title)
+        getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.title)
       ).toBeVisible();
     });
 
@@ -125,7 +124,8 @@ describe("Multisign request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.identifier.alert.textdecline
+          EN_TRANSLATIONS.tabs.notifications.details.identifier.alert
+            .textdecline
         )
       ).toBeVisible();
     });
@@ -161,7 +161,7 @@ describe("Multisign request", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.notifications.details.identifier.title)
+        getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.title)
       ).toBeVisible();
     });
 
@@ -227,7 +227,7 @@ describe("Multisign request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.identifier.errorpage.title
+          EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.title
         )
       ).toBeVisible();
     });

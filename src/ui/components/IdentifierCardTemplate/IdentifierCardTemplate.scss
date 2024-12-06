@@ -17,8 +17,8 @@
   }
 
   &:not(:first-child) {
-    margin-top: -10rem;
-    box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
+    margin-top: -45%;
+    box-shadow: 0px -5px 5px rgba(var(--ion-color-secondary-rgb), 0.25);
   }
 
   .identifier-card-template-inner {
@@ -104,7 +104,7 @@
         .card-footer-column-label {
           font-size: 0.625rem;
           font-weight: 700;
-          color: white;
+          color: var(--ion-color-white);
         }
 
         .card-footer-column-info {
@@ -122,10 +122,6 @@
     border-radius: 0.85rem;
     font-size: 0.75rem;
     line-height: 1.169rem;
-
-    &:not(:first-child) {
-      margin-top: -7.5rem;
-    }
 
     .identifier-card-template-inner {
       &.pending {

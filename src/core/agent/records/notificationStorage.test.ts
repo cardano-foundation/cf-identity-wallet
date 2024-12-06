@@ -1,11 +1,12 @@
 import { Query, StorageService } from "../../storage/storage.types";
+import { NotificationRoute } from "../agent.types";
 import {
-  ConnectionNoteRecord,
-  ConnectionNoteRecordStorageProps,
-} from "./connectionNoteRecord";
-import { ConnectionNoteStorage } from "./connectionNoteStorage";
+  NotificationRecord,
+  NotificationRecordStorageProps,
+} from "./notificationRecord";
+import { NotificationStorage } from "./notificationStorage";
 
-const storageService = jest.mocked<StorageService<ConnectionNoteRecord>>({
+const storageService = jest.mocked<StorageService<NotificationRecord>>({
   save: jest.fn(),
   delete: jest.fn(),
   deleteById: jest.fn(),
@@ -15,70 +16,63 @@ const storageService = jest.mocked<StorageService<ConnectionNoteRecord>>({
   getAll: jest.fn(),
 });
 
-const connectionNoteStorage = new ConnectionNoteStorage(storageService);
+const notificationStorage = new NotificationStorage(storageService);
 
 const id1 = "id1";
 const id2 = "id2";
 
-const now = new Date();
-
-const connectionNoteRecordProps: ConnectionNoteRecordStorageProps = {
+const notificationRecordProps: NotificationRecordStorageProps = {
   id: id1,
-  createdAt: now,
+  createdAt: new Date(),
+  a: {},
+  route: NotificationRoute.ExnIpexApply,
+  read: true,
   connectionId: "connectionId",
-  title: "title",
-  message: "message",
-  tags: {},
 };
+const notificationRecordA = new NotificationRecord(notificationRecordProps);
 
-const connectionNoteRecordA = new ConnectionNoteRecord(
-  connectionNoteRecordProps
-);
-
-const connectionNoteRecordB = new ConnectionNoteRecord({
-  ...connectionNoteRecordProps,
+const notificationRecordB = new NotificationRecord({
+  ...notificationRecordProps,
   id: id2,
 });
 
-describe("ConnectionNote Storage", () => {
+describe("Notification Storage", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  test("Should save connectionNote record", async () => {
-    storageService.save.mockResolvedValue(connectionNoteRecordA);
-    await connectionNoteStorage.save(connectionNoteRecordProps);
-    expect(storageService.save).toBeCalledWith(connectionNoteRecordA);
+  test("Should save notification record", async () => {
+    storageService.save.mockResolvedValue(notificationRecordA);
+    await notificationStorage.save(notificationRecordProps);
+    expect(storageService.save).toBeCalledWith(notificationRecordA);
   });
 
-  test("Should delete connectionNote record", async () => {
+  test("Should delete notification record", async () => {
     storageService.delete.mockResolvedValue();
-    await connectionNoteStorage.delete(connectionNoteRecordA);
-    expect(storageService.delete).toBeCalledWith(connectionNoteRecordA);
+    await notificationStorage.delete(notificationRecordA);
+    expect(storageService.delete).toBeCalledWith(notificationRecordA);
   });
 
-  test("Should delete connectionNote record by ID", async () => {
+  test("Should delete notification record by ID", async () => {
     storageService.deleteById.mockResolvedValue();
-    await connectionNoteStorage.deleteById(connectionNoteRecordA.id);
-    expect(storageService.deleteById).toBeCalledWith(connectionNoteRecordA.id);
+    await notificationStorage.deleteById(notificationRecordA.id);
+    expect(storageService.deleteById).toBeCalledWith(notificationRecordA.id);
   });
 
-  test("Should update connectionNote record", async () => {
+  test("Should update notification record", async () => {
     storageService.update.mockResolvedValue();
-    await connectionNoteStorage.update(connectionNoteRecordA);
-    expect(storageService.update).toBeCalledWith(connectionNoteRecordA);
+    await notificationStorage.update(notificationRecordA);
+    expect(storageService.update).toBeCalledWith(notificationRecordA);
   });
 
-  test("Should find connectionNote record by ID", async () => {
-    storageService.findById.mockResolvedValue(connectionNoteRecordA);
-    const result = await connectionNoteStorage.findById(
-      connectionNoteRecordA.id
-    );
-    expect(result).toEqual(connectionNoteRecordA);
+  test("Should find notification record by ID", async () => {
+    storageService.findById.mockResolvedValue(notificationRecordA);
+    const result = await notificationStorage.findById(notificationRecordA.id);
+    expect(result).toEqual(notificationRecordA);
   });
 
-  test("Should find all connectionNote records by query", async () => {
-    const query: Query<ConnectionNoteRecord> = {
+  test("Should find all notification records by query", async () => {
+    const query: Query<NotificationRecord> = {
       filter: {
         title: "title",
       },
@@ -87,16 +81,16 @@ describe("ConnectionNote Storage", () => {
       },
       limit: 10,
     };
-    const records = [connectionNoteRecordA, connectionNoteRecordB];
+    const records = [notificationRecordA, notificationRecordB];
     storageService.findAllByQuery.mockResolvedValue(records);
-    const result = await connectionNoteStorage.findAllByQuery(query);
+    const result = await notificationStorage.findAllByQuery(query);
     expect(result).toEqual(records);
   });
 
-  test("Should get all connectionNote records", async () => {
-    const records = [connectionNoteRecordA, connectionNoteRecordB];
+  test("Should get all notification records", async () => {
+    const records = [notificationRecordA, notificationRecordB];
     storageService.getAll.mockResolvedValue(records);
-    const result = await connectionNoteStorage.getAll();
+    const result = await notificationStorage.getAll();
     expect(result).toEqual(records);
   });
 
@@ -104,46 +98,46 @@ describe("ConnectionNote Storage", () => {
   test("Should handle saving error", async () => {
     storageService.save.mockRejectedValue(new Error("Saving error"));
     await expect(
-      connectionNoteStorage.save(connectionNoteRecordProps)
+      notificationStorage.save(notificationRecordProps)
     ).rejects.toThrow("Saving error");
   });
 
   test("Should handle deleting error", async () => {
     storageService.delete.mockRejectedValue(new Error("Deleting error"));
     await expect(
-      connectionNoteStorage.delete(connectionNoteRecordA)
+      notificationStorage.delete(notificationRecordA)
     ).rejects.toThrow("Deleting error");
   });
 
   test("Should handle updating error", async () => {
     storageService.update.mockRejectedValue(new Error("Updating error"));
     await expect(
-      connectionNoteStorage.update(connectionNoteRecordA)
+      notificationStorage.update(notificationRecordA)
     ).rejects.toThrow("Updating error");
   });
 
   test("Should handle finding error", async () => {
     storageService.findById.mockRejectedValue(new Error("Finding error"));
     await expect(
-      connectionNoteStorage.findById(connectionNoteRecordA.id)
+      notificationStorage.findById(notificationRecordA.id)
     ).rejects.toThrow("Finding error");
   });
 
   test("Should handle not found", async () => {
     storageService.findById.mockResolvedValue(null);
-    const result = await connectionNoteStorage.findById("nonexistentId");
+    const result = await notificationStorage.findById("nonexistentId");
     expect(result).toBeNull();
   });
 
   test("Should handle empty result", async () => {
     storageService.findAllByQuery.mockResolvedValue([]);
-    const result = await connectionNoteStorage.findAllByQuery({ filter: {} });
+    const result = await notificationStorage.findAllByQuery({ filter: {} });
     expect(result).toEqual([]);
   });
 
   test("Should handle empty result for getAll", async () => {
     storageService.getAll.mockResolvedValue([]);
-    const result = await connectionNoteStorage.getAll();
+    const result = await notificationStorage.getAll();
     expect(result).toEqual([]);
   });
 });

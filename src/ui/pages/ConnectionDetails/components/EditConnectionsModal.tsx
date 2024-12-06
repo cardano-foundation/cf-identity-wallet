@@ -66,7 +66,10 @@ export const EditConnectionsContainer = ({
 
           if (!noteFind) {
             update = true;
-            return Agent.agent.connections.deleteConnectionNoteById(note.id);
+            return Agent.agent.connections.deleteConnectionNoteById(
+              connectionDetails.id,
+              note.id
+            );
           }
 
           if (
@@ -75,7 +78,8 @@ export const EditConnectionsContainer = ({
           ) {
             update = true;
             return Agent.agent.connections.updateConnectionNoteById(
-              note.id,
+              connectionDetails.id,
+              noteFind.id,
               noteFind
             );
           }
@@ -170,7 +174,7 @@ export const EditConnectionsContainer = ({
           <ConnectionDetailsHeader
             logo={connectionDetails?.logo || KeriLogo}
             label={connectionDetails?.label}
-            date={connectionDetails?.connectionDate}
+            date={connectionDetails?.createdAtUTC}
           />
           <div className="connection-details-info-block">
             {updatedNotes.length ? (

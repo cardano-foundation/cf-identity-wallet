@@ -2,8 +2,8 @@ import {
   BiometryErrorType,
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import { useState } from "react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act, useState } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../../../core/agent/agent";
@@ -15,10 +15,10 @@ import {
   DISCORD_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { SubMenuKey } from "../../Menu.types";
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
-import { SubMenuKey } from "../../Menu.types";
-import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -108,34 +108,48 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin.title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.managepassword.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+          .title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase
+          .title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.contact)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.contact)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.learnmore)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.learnmore
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.terms.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.terms.title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.version)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.version)
     ).toBeInTheDocument();
   });
 
@@ -169,7 +183,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -180,41 +196,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode-content-page")).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
-    });
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -258,7 +240,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -330,7 +314,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -350,11 +336,13 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.contact)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.contact)
     ).toBeInTheDocument();
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.learnmore)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.learnmore
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -389,7 +377,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.terms.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.terms.title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -401,7 +391,10 @@ describe("Settings page", () => {
     });
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.managepassword.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+          .title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -415,7 +408,10 @@ describe("Settings page", () => {
     });
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase
+          .title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -438,7 +434,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin.title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -449,12 +447,13 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.settings.sections.security.changepin.createpasscode
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+            .createpasscode
         )
       ).toBeVisible();
     });

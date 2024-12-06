@@ -64,9 +64,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const [connectionShortDetails, setConnectionShortDetails] = useState<
       ConnectionShortDetails | undefined
     >(undefined);
-    const availableIdentifiers = identifierCache.filter(
-      (item) => !item.isPending
-    );
+    const availableIdentifiers = identifierCache
+      .filter((item) => !item.isPending)
+      .filter((item) => !item.groupMetadata?.groupId);
     const [mappedConnections, setMappedConnections] = useState<
       MappedConnections[]
     >([]);
@@ -87,6 +87,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const userName = stateCache.authentication.userName;
     const [oobi, setOobi] = useState("");
     const [hideHeader, setHideHeader] = useState(false);
+    const [openConnectionlModal, setOpenConnectionlModal] = useState(false);
 
     useEffect(() => {
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
@@ -200,6 +201,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       }
 
       setConnectionShortDetails(item);
+      setOpenConnectionlModal(true);
     };
 
     const getConnectionsTab = useCallback(() => {
@@ -214,9 +216,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
 
     const deletePendingCheckProps = useMemo(
       () => ({
-        title: i18n.t("connections.tab.detelepending.title"),
-        description: i18n.t("connections.tab.detelepending.description"),
-        button: i18n.t("connections.tab.detelepending.button"),
+        title: i18n.t("connections.page.detelepending.title"),
+        description: i18n.t("connections.page.detelepending.description"),
+        button: i18n.t("connections.page.detelepending.button"),
       }),
       []
     );
@@ -270,10 +272,15 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       "hide-header": hideHeader,
     });
 
-    return connectionShortDetails ? (
+    const handleCloseConnectionModal = () => {
+      setConnectionShortDetails(undefined);
+      setOpenConnectionlModal(false);
+    };
+
+    return connectionShortDetails && openConnectionlModal ? (
       <ConnectionDetails
         connectionShortDetails={connectionShortDetails}
-        setConnectionShortDetails={setConnectionShortDetails}
+        handleCloseConnectionModal={handleCloseConnectionModal}
       />
     ) : (
       <>
@@ -286,14 +293,14 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
               hardwareBackButtonConfig={backHardwareConfig}
               backButton={true}
               onBack={handleDone}
-              title={`${i18n.t("connections.tab.title")}`}
+              title={`${i18n.t("connections.page.title")}`}
               additionalButtons={<AdditionalButtons />}
             />
           }
         >
           {showPlaceholder ? (
             <CardsPlaceholder
-              buttonLabel={i18n.t("connections.tab.create")}
+              buttonLabel={`${i18n.t("connections.page.create")}`}
               buttonAction={handleConnectModal}
               testId={pageId}
             >
@@ -332,9 +339,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           isOpen={openIdentifierMissingAlert}
           setIsOpen={setOpenIdentifierMissingAlert}
           dataTestId="alert-create-keri"
-          headerText={i18n.t("connections.tab.alert.message")}
-          confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
-          cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
+          headerText={i18n.t("connections.page.alert.message")}
+          confirmButtonText={`${i18n.t("connections.page.alert.confirm")}`}
+          cancelButtonText={`${i18n.t("connections.page.alert.cancel")}`}
           actionConfirm={handleCreateIdentifier}
           actionCancel={handleCloseAlert}
           actionDismiss={handleCloseAlert}
@@ -345,7 +352,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           firstCheckProps={deletePendingCheckProps}
           onClose={() => setOpenDeletePendingAlert(false)}
           secondCheckTitle={`${i18n.t(
-            "connections.tab.detelepending.secondchecktitle"
+            "connections.page.detelepending.secondchecktitle"
           )}`}
           onDeletePendingItem={deleteConnection}
         />

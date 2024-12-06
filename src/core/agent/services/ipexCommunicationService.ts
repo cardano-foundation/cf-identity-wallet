@@ -1,8 +1,17 @@
-import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
+import {
+  b,
+  d,
+  Ilks,
+  messagize,
+  Operation,
+  Saider,
+  Serder,
+  Siger,
+} from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
-  IpexMessage,
+  ExnMessage,
   NotificationRoute,
   type AgentServicesProps,
   type KeriaNotification,
@@ -12,16 +21,14 @@ import {
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
-  IpexMessageStorage,
   IdentifierMetadataRecord,
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
 import { OnlineOnly, deleteNotificationRecordById } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
-import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
+import { CredentialsMatchingApply, LinkedGroupInfoGrant } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
 import {
@@ -31,27 +38,29 @@ import {
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { IdentifierType } from "./identifier.types";
+import {
+  ConnectionHistoryItem,
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
     "Cannot accept incoming ACDC, issuee AID not found in local wallet DB";
-  static readonly ACDC_NOT_APPEARING = "ACDC is not appearing..."; // @TODO - foconnor: This is async we should wait for a notification
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
     "Credential not found with this schema";
-
   static readonly CREDENTIAL_NOT_FOUND = "Credential not found";
   static readonly SCHEMA_NOT_FOUND = "Schema not found";
+  static readonly ACDC_ALREADY_ADMITTED = "ACDC has already been accepted";
+  static readonly NO_ADMIT_TO_JOIN = "Cannot admit grant as there is no current admit exn to join";
 
-  static readonly CREDENTIAL_SERVER =
-    "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID_RARE_EVO_DEMO =
     "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly multisigService: MultiSigService;
   protected readonly connections: ConnectionService;
@@ -61,7 +70,6 @@ class IpexCommunicationService extends AgentService {
     identifierStorage: IdentifierStorage,
     credentialStorage: CredentialStorage,
     notificationStorage: NotificationStorage,
-    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
     multisigService: MultiSigService,
     connections: ConnectionService
@@ -70,43 +78,28 @@ class IpexCommunicationService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.multisigService = multisigService;
     this.connections = connections;
   }
 
   @OnlineOnly
-  async acceptAcdc(id: string): Promise<void> {
-    const grantNoteRecord = await this.notificationStorage.findById(id);
-
+  async admitAcdc(notificationId: string): Promise<void> {
+    const grantNoteRecord = await this.notificationStorage.findById(notificationId);
     if (!grantNoteRecord) {
       throw new Error(
-        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
       );
     }
 
-    if (Object.keys(grantNoteRecord.linkedGroupRequests).length) {
-      const linkedGroupRequestDetails = Object.values(
-        grantNoteRecord.linkedGroupRequests
-      )[0]; // Can only be related to 1 credentialId
-      if (!linkedGroupRequestDetails.accepted) {
-        // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
-        for (const [, msSaids] of Object.entries(
-          linkedGroupRequestDetails.saids
-        )) {
-          if (!msSaids.length) continue; // Should never happen
-          await this.acceptAcdcFromMultisigExn(msSaids[0][1]); // Join the first received for this particular /ipex/admit, skip the rest
-        }
-      }
-      return;
+    // For groups only
+    if (grantNoteRecord.linkedGroupRequest.accepted) {
+      throw new Error(`${IpexCommunicationService.ACDC_ALREADY_ADMITTED} ${notificationId}`);
     }
 
     const grantExn = await this.props.signifyClient
       .exchanges()
       .get(grantNoteRecord.a.d as string);
-
-    const connectionId = grantExn.exn.i;
 
     const holder = await this.identifierStorage.getIdentifierMetadata(
       grantExn.exn.a.i
@@ -132,7 +125,7 @@ class IpexCommunicationService extends AgentService {
       grantExn.exn.e.acdc.d,
       grantExn.exn.e.acdc.a.dt,
       schema.title,
-      connectionId,
+      grantExn.exn.i,
       schemaSaid
     );
 
@@ -149,21 +142,16 @@ class IpexCommunicationService extends AgentService {
       const {
         op: opMultisigAdmit,
         exnSaid,
-        ipexAdmitSaid,
-        member,
       } = await this.multisigAdmit(
         holder.id,
-        grantNoteRecord.a.d as string,
+        grantExn,
         allSchemaSaids
       );
       op = opMultisigAdmit;
-      grantNoteRecord.linkedGroupRequests = {
-        [credential.id]: {
-          accepted: true,
-          saids: {
-            [ipexAdmitSaid]: [[member, exnSaid]],
-          },
-        },
+      grantNoteRecord.linkedGroupRequest = {
+        ...grantNoteRecord.linkedGroupRequest,
+        accepted: true,
+        current: exnSaid,
       };
       await this.notificationStorage.update(grantNoteRecord);
     } else {
@@ -174,6 +162,7 @@ class IpexCommunicationService extends AgentService {
         allSchemaSaids
       );
     }
+    
     await this.createLinkedIpexMessageRecord(
       grantExn,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -193,7 +182,7 @@ class IpexCommunicationService extends AgentService {
       await deleteNotificationRecordById(
         this.props.signifyClient,
         this.notificationStorage,
-        id,
+        notificationId,
         grantNoteRecord.a.r as NotificationRoute
       );
     }
@@ -209,22 +198,22 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    if (Object.keys(applyNoteRecord.linkedGroupRequests).length) {
-      const linkedGroupRequestDetails =
-        applyNoteRecord.linkedGroupRequests[acdc.d];
-      if (linkedGroupRequestDetails) {
-        if (!linkedGroupRequestDetails.accepted) {
-          // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
-          for (const [, msSaids] of Object.entries(
-            linkedGroupRequestDetails.saids
-          )) {
-            if (!msSaids.length) continue; // Should never happen
-            await this.joinMultisigOffer(msSaids[0][1]); // Join the first received for this particular /ipex/apply, skip the rest
-          }
-        }
-        return; // Only return here if there are linked requests for this credential ID!
-      }
-    }
+    // if (Object.keys(applyNoteRecord.linkedGroupRequests).length) {
+    //   const linkedGroupRequestDetails =
+    //     applyNoteRecord.linkedGroupRequests[acdc.d];
+    //   if (linkedGroupRequestDetails) {
+    //     if (!linkedGroupRequestDetails.accepted) {
+    //       // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
+    //       for (const [, msSaids] of Object.entries(
+    //         linkedGroupRequestDetails.saids
+    //       )) {
+    //         if (!msSaids.length) continue; // Should never happen
+    //         await this.joinMultisigOffer(msSaids[0][1]); // Join the first received for this particular /ipex/apply, skip the rest
+    //       }
+    //     }
+    //     return; // Only return here if there are linked requests for this credential ID!
+    //   }
+    // }
 
     const msgSaid = applyNoteRecord.a.d as string;
     const applyExn = await this.props.signifyClient.exchanges().get(msgSaid);
@@ -247,15 +236,15 @@ class IpexCommunicationService extends AgentService {
         applyExn.exn.i
       );
       op = opMultisigOffer;
-      applyNoteRecord.linkedGroupRequests = {
-        [acdcSaid]: {
-          accepted: true,
-          saids: {
-            [ipexOfferSaid]: [[member, exnSaid]],
-          },
-        },
-      };
-      await this.notificationStorage.update(applyNoteRecord);
+      // applyNoteRecord.linkedGroupRequests = {
+      //   [acdcSaid]: {
+      //     accepted: true,
+      //     saids: {
+      //       [ipexOfferSaid]: [[member, exnSaid]],
+      //     },
+      //   },
+      // };
+      // await this.notificationStorage.update(applyNoteRecord);
     } else {
       const [offer, sigs, end] = await this.props.signifyClient.ipex().offer({
         senderName: discloser.id,
@@ -304,28 +293,37 @@ class IpexCommunicationService extends AgentService {
       .get(agreeExn.exn.p);
     const acdcSaid = offerExn.exn.e.acdc.d;
 
-    if (Object.keys(agreeNoteRecord.linkedGroupRequests).length) {
-      const linkedGroupRequestDetails =
-        agreeNoteRecord.linkedGroupRequests[acdcSaid];
+    // if (Object.keys(agreeNoteRecord.linkedGroupRequests).length) {
+    //   const linkedGroupRequestDetails =
+    //     agreeNoteRecord.linkedGroupRequests[acdcSaid];
 
-      if (linkedGroupRequestDetails) {
-        if (!linkedGroupRequestDetails.accepted) {
-          // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
-          for (const [, msSaids] of Object.entries(
-            linkedGroupRequestDetails.saids
-          )) {
-            if (!msSaids.length) continue; // Should never happen
-            await this.joinMultisigGrant(msSaids[0][1]); // Join the first received for this particular /ipex/agree, skip the rest
-          }
-        }
-        return; // Only return here if there are linked requests for this credential ID!
-      }
-    }
+    //   if (linkedGroupRequestDetails) {
+    //     if (!linkedGroupRequestDetails.accepted) {
+    //       // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
+    //       for (const [, msSaids] of Object.entries(
+    //         linkedGroupRequestDetails.saids
+    //       )) {
+    //         if (!msSaids.length) continue; // Should never happen
+    //         await this.joinMultisigGrant(msSaids[0][1]); // Join the first received for this particular /ipex/agree, skip the rest
+    //       }
+    //     }
+    //     return; // Only return here if there are linked requests for this credential ID!
+    //   }
+    // }
 
     //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
-      .get(acdcSaid);
+      .get(acdcSaid)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
     if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
@@ -350,15 +348,15 @@ class IpexCommunicationService extends AgentService {
       op = opMultisigGrant;
 
       const credentialSaid = pickedCred.sad.d as string;
-      agreeNoteRecord.linkedGroupRequests = {
-        [credentialSaid]: {
-          accepted: true,
-          saids: {
-            [ipexGrantSaid]: [[member, exnSaid]],
-          },
-        },
-      };
-      await this.notificationStorage.update(agreeNoteRecord);
+      // agreeNoteRecord.linkedGroupRequests = {
+      //   [credentialSaid]: {
+      //     accepted: true,
+      //     saids: {
+      //       [ipexGrantSaid]: [[member, exnSaid]],
+      //     },
+      //   },
+      // };
+      // await this.notificationStorage.update(agreeNoteRecord);
     } else {
       const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
         senderName: discloser.id,
@@ -459,6 +457,7 @@ class IpexCommunicationService extends AgentService {
         };
       }),
       attributes: attributes,
+      identifier: msg.exn.a.i,
     };
   }
 
@@ -478,10 +477,10 @@ class IpexCommunicationService extends AgentService {
       status: CredentialStatus.PENDING,
       connectionId,
       schema,
+      identifierId: holder.id,
       identifierType: holder.multisigManageAid
         ? IdentifierType.Group
         : IdentifierType.Individual,
-      identifierId: holder.id,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -519,10 +518,14 @@ class IpexCommunicationService extends AgentService {
   }
 
   async createLinkedIpexMessageRecord(
-    message: IpexMessage,
+    message: ExnMessage,
     historyType: ConnectionHistoryType
   ): Promise<void> {
     let schemaSaid;
+    const connectionId =
+      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED
+        ? message.exn.rp
+        : message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
@@ -538,17 +541,50 @@ class IpexCommunicationService extends AgentService {
       `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
     );
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    await this.ipexMessageStorage.createIpexMessageRecord({
+
+    let prefix;
+    let key;
+    switch (historyType) {
+    case ConnectionHistoryType.CREDENTIAL_REVOKED:
+      prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
+      key = message.exn.e.acdc.d;
+      break;
+    case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
+    case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
+    case ConnectionHistoryType.CREDENTIAL_PRESENTED:
+      prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
+      key = message.exn.d;
+      break;
+    default:
+      throw new Error("Invalid history type");
+    }
+    const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,
-      credentialType: schema?.title,
-      content: message,
-      connectionId: message.exn.i,
+      dt: message.exn.dt,
+      credentialType: schema.title,
+      connectionId,
       historyType,
+    };
+
+    await this.props.signifyClient.contacts().update(connectionId, {
+      [`${prefix}${key}`]: JSON.stringify(historyItem),
     });
   }
 
   @OnlineOnly
-  async acceptAcdcFromMultisigExn(multiSigExnSaid: string): Promise<void> {
+  async joinMultisigAdmit(grantNotificationId: string): Promise<void> {
+    const grantNoteRecord = await this.notificationStorage.findById(grantNotificationId);
+    if (!grantNoteRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${grantNotificationId}`
+      );
+    }
+
+    const multiSigExnSaid = grantNoteRecord.linkedGroupRequest.current;
+    if (!multiSigExnSaid) {
+      throw new Error(IpexCommunicationService.NO_ADMIT_TO_JOIN);
+    }
+
     const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
 
     const admitExn = exn.exn.e.exn;
@@ -573,33 +609,33 @@ class IpexCommunicationService extends AgentService {
 
     const { op } = await this.multisigAdmit(
       holder.id,
-      grantExn.exn.d as string,
+      grantExn,
       allSchemaSaids,
       admitExn
     );
 
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    const credentialPending =
-      await this.credentialStorage.getCredentialMetadata(credentialId);
+    const credential = await this.saveAcdcMetadataRecord(
+      holder,
+      credentialId,
+      grantExn.exn.e.acdc.a.dt,
+      schema.title,
+      connectionId,
+      schemaSaid
+    );
 
-    if (!credentialPending) {
-      const credential = await this.saveAcdcMetadataRecord(
-        holder,
-        credentialId,
-        grantExn.exn.e.acdc.a.dt,
-        schema.title,
-        connectionId,
-        schemaSaid
-      );
-
-      this.props.eventEmitter.emit<AcdcStateChangedEvent>({
-        type: EventTypes.AcdcStateChanged,
-        payload: {
-          credential,
-          status: CredentialStatus.PENDING,
-        },
-      });
-    }
+    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+      type: EventTypes.AcdcStateChanged,
+      payload: {
+        credential,
+        status: CredentialStatus.PENDING,
+      },
+    });
+    
+    await this.createLinkedIpexMessageRecord(
+      grantExn,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
@@ -611,24 +647,16 @@ class IpexCommunicationService extends AgentService {
       payload: { operation: pendingOperation },
     });
 
-    const notifications = await this.notificationStorage.findAllByQuery({
-      exnSaid: grantExn.d,
-    });
+    grantNoteRecord.linkedGroupRequest = {
+      ...grantNoteRecord.linkedGroupRequest,
+      accepted: true,
+    };
 
-    // @TODO - foconnor: Similarly called in keriaNotificationService too - need to refactor in case of reliability issues
-    if (notifications.length) {
-      const notificationRecord = notifications[0];
-      notificationRecord.linkedGroupRequests[credentialId] = {
-        ...notificationRecord.linkedGroupRequests[credentialId],
-        accepted: true,
-      };
-
-      await this.notificationStorage.update(notificationRecord);
-    }
+    await this.notificationStorage.update(grantNoteRecord);
   }
 
-  async joinMultisigOffer(multiSigExnSaid: string): Promise<void> {
-    const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
+  async joinMultisigOffer(multisigExnSaid: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(multisigExnSaid);
     const offerExn = exn.exn.e.exn;
     const holder = await this.identifierStorage.getIdentifierMetadata(
       offerExn.i
@@ -664,21 +692,21 @@ class IpexCommunicationService extends AgentService {
       exnSaid: offerExn.p,
     });
 
-    // @TODO - foconnor: Similarly called in keriaNotificationService too - need to refactor in case of reliability issues
-    if (notifications.length) {
-      const acdcSaid = credential.d as string;
-      const notificationRecord = notifications[0];
-      notificationRecord.linkedGroupRequests[acdcSaid] = {
-        ...notificationRecord.linkedGroupRequests[acdcSaid],
-        accepted: true,
-      };
+    // // @TODO - foconnor: Similarly called in keriaNotificationService too - need to refactor in case of reliability issues
+    // if (notifications.length) {
+    //   const acdcSaid = credential.d as string;
+    //   const notificationRecord = notifications[0];
+    //   notificationRecord.linkedGroupRequests[acdcSaid] = {
+    //     ...notificationRecord.linkedGroupRequests[acdcSaid],
+    //     accepted: true,
+    //   };
 
-      await this.notificationStorage.update(notificationRecord);
-    }
+    //   await this.notificationStorage.update(notificationRecord);
+    // }
   }
 
-  async joinMultisigGrant(multiSigExnSaid: string): Promise<void> {
-    const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
+  async joinMultisigGrant(multisigExnSaid: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(multisigExnSaid);
 
     const grantExn = exn.exn.e.exn;
     const credential = grantExn.e.acdc;
@@ -715,16 +743,16 @@ class IpexCommunicationService extends AgentService {
       exnSaid: exn?.exn.e.exn.p,
     });
 
-    if (notifications.length) {
-      const acdcSaid = credential.d as string;
-      const notificationRecord = notifications[0];
-      notificationRecord.linkedGroupRequests[acdcSaid] = {
-        ...notificationRecord.linkedGroupRequests[acdcSaid],
-        accepted: true,
-      };
+    // if (notifications.length) {
+    //   const acdcSaid = credential.d as string;
+    //   const notificationRecord = notifications[0];
+    //   notificationRecord.linkedGroupRequests[acdcSaid] = {
+    //     ...notificationRecord.linkedGroupRequests[acdcSaid],
+    //     accepted: true,
+    //   };
 
-      await this.notificationStorage.update(notificationRecord);
-    }
+    //   await this.notificationStorage.update(notificationRecord);
+    // }
   }
 
   async multisigOfferAcdcFromApply(
@@ -944,11 +972,13 @@ class IpexCommunicationService extends AgentService {
     return { op, exnSaid: exn.ked.d, ipexGrantSaid, member: ourIdentifier.id };
   }
 
-  async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
+  async getAcdcFromIpexGrant(
+    said: string
+  ): Promise<Omit<ACDCDetails, "identifierType">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      exchange.exn.a.i
-    );
+    const credentialState = await this.props.signifyClient
+      .credentials()
+      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient
       .schemas()
@@ -975,27 +1005,23 @@ class IpexCommunicationService extends AgentService {
         version: schema.version,
       },
       lastStatus: {
-        s: exchange.exn.e.iss.s,
-        dt: new Date(exchange.exn.e.iss.dt).toISOString(),
+        s: credentialState.et === Ilks.iss ? "0" : "1",
+        dt: new Date(credentialState.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,
-      identifierId: holder.id,
-      identifierType: holder.multisigManageAid
-        ? IdentifierType.Group
-        : IdentifierType.Individual,
+      identifierId: exchange.exn.a.i,
     };
   }
 
   private async multisigAdmit(
     multisigId: string,
-    notificationSaid: string,
+    grantExn: ExnMessage,
     schemaSaids: string[],
     admitExnToJoin?: any
   ) {
     let exn: Serder;
     let sigsMes: string[];
     let dtime: string;
-    let ipexAdmitSaid: string;
 
     await Promise.all(
       schemaSaids.map(
@@ -1007,10 +1033,6 @@ class IpexCommunicationService extends AgentService {
       )
     );
 
-    const exchangeMessage = await this.props.signifyClient
-      .exchanges()
-      .get(notificationSaid);
-    const grantSaid = exchangeMessage.exn.d;
     const { ourIdentifier, multisigMembers } =
       await this.multisigService.getMultisigParticipants(multisigId);
     const gHab = await this.props.signifyClient.identifiers().get(multisigId);
@@ -1018,14 +1040,14 @@ class IpexCommunicationService extends AgentService {
       .identifiers()
       .get(ourIdentifier.id);
 
-    const recp = multisigMembers
+    const recp: string[] = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
     if (admitExnToJoin) {
       const [, ked] = Saider.saidify(admitExnToJoin);
       const admit = new Serder(ked);
-      const keeper = await this.props.signifyClient.manager!.get(gHab);
+      const keeper = this.props.signifyClient.manager!.get(gHab);
       const sigs = await keeper.sign(b(new Serder(admitExnToJoin).raw));
 
       const mstateNew = gHab["state"];
@@ -1053,15 +1075,14 @@ class IpexCommunicationService extends AgentService {
           gembeds,
           recp[0]
         );
-      ipexAdmitSaid = admit.ked.d;
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
         senderName: multisigId,
         message: "",
-        grantSaid,
+        grantSaid: grantExn.exn.d,
         datetime: time,
-        recipient: exchangeMessage.exn.i,
+        recipient: grantExn.exn.i,
       });
 
       const mstate = gHab["state"];
@@ -1087,17 +1108,16 @@ class IpexCommunicationService extends AgentService {
           gembeds,
           recp[0]
         );
-      ipexAdmitSaid = admit.ked.d;
     }
 
     const op = await this.props.signifyClient
       .ipex()
       .submitAdmit(multisigId, exn, sigsMes, dtime, recp);
 
-    return { op, exnSaid: exn.ked.d, ipexAdmitSaid, member: ourIdentifier.id };
+    return { op, exnSaid: exn.ked.d };
   }
 
-  async getLinkedGroupFromIpexGrant(id: string) {
+  async getLinkedGroupFromIpexGrant(id: string): Promise<LinkedGroupInfoGrant> {
     const grantNoteRecord = await this.notificationStorage.findById(id);
 
     if (!grantNoteRecord) {
@@ -1106,36 +1126,30 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    const membersJoined: Set<string> = new Set();
-    const linkedGroupRequest = grantNoteRecord.linkedGroupRequests;
-    const exchange = await this.props.signifyClient
+    const grantExn = await this.props.signifyClient
       .exchanges()
       .get(grantNoteRecord.a.d as string);
 
-    const credentialSaid = exchange.exn.e.acdc.d;
+    const multisigAid = await this.props.signifyClient
+      .identifiers()
+      .get(grantExn.exn.a.i);
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(grantExn.exn.a.i);
+    const memberAids = members.signing.map((member: any) => member.aid);
 
-    if (Object.keys(linkedGroupRequest).length) {
-      const saids = linkedGroupRequest[credentialSaid].saids;
-
-      for (const admitSaid in saids) {
-        const memberDetails = saids[admitSaid];
-
-        for (const memberInfo of memberDetails) {
-          if (memberInfo.length > 0) {
-            membersJoined.add(memberInfo[0]);
-          }
-        }
+    const othersJoined: string[] = [];
+    if (grantNoteRecord.linkedGroupRequest.current) {
+      for (const signal of (await this.props.signifyClient.groups().getRequest(grantNoteRecord.linkedGroupRequest.current))) {
+        othersJoined.push(signal.exn.i);
       }
+    }
 
-      return {
-        accepted: linkedGroupRequest[credentialSaid].accepted,
-        membersJoined: Array.from(membersJoined),
-      };
-    } else {
-      return {
-        accepted: false,
-        membersJoined: [],
-      };
+    return {
+      threshold: multisigAid.state.kt,
+      members: memberAids,
+      othersJoined: othersJoined,
+      linkedGroupRequest: grantNoteRecord.linkedGroupRequest,
     }
   }
 
@@ -1148,37 +1162,57 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    const linkedGroupRequest = applyNoteRecord.linkedGroupRequests;
+    const linkedGroupRequest = applyNoteRecord.linkedGroupRequest;
+    const exchange = await this.props.signifyClient
+      .exchanges()
+      .get(applyNoteRecord.a.d as string);
+
+    const multisigAid = await this.props.signifyClient
+      .identifiers()
+      .get(exchange.exn.a.i);
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(exchange.exn.a.i);
+    const memberAids = members.signing.map((member: any) => member.aid);
+
     const result: Record<
       string,
       { accepted: boolean; membersJoined: string[] }
     > = {};
 
     if (Object.keys(linkedGroupRequest).length === 0) {
-      return result;
-    }
-
-    for (const credentialSaid in linkedGroupRequest) {
-      const saids = linkedGroupRequest[credentialSaid].saids;
-      const membersJoined: Set<string> = new Set();
-
-      for (const offerSaid in saids) {
-        const memberDetails = saids[offerSaid];
-
-        for (const memberInfo of memberDetails) {
-          if (memberInfo.length > 0) {
-            membersJoined.add(memberInfo[0]);
-          }
-        }
-      }
-
-      result[credentialSaid] = {
-        accepted: linkedGroupRequest[credentialSaid].accepted,
-        membersJoined: Array.from(membersJoined),
+      return {
+        threshold: multisigAid.state.kt,
+        members: memberAids,
+        offer: {},
       };
     }
 
-    return result;
+    // for (const credentialSaid in linkedGroupRequest) {
+    //   const saids = linkedGroupRequest[credentialSaid].saids;
+    //   const membersJoined: Set<string> = new Set();
+
+    //   for (const offerSaid in saids) {
+    //     const memberDetails = saids[offerSaid];
+
+    //     for (const memberInfo of memberDetails) {
+    //       if (memberInfo.length > 0) {
+    //         membersJoined.add(memberInfo[0]);
+    //       }
+    //     }
+    //   }
+
+    //   result[credentialSaid] = {
+    //     accepted: linkedGroupRequest[credentialSaid].accepted,
+    //     membersJoined: Array.from(membersJoined),
+    //   };
+    // }
+
+    return {
+      threshold: multisigAid.state.kt,
+      members: memberAids,
+      offer: result,
+    };
   }
 }
 

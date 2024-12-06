@@ -15,7 +15,7 @@
 
   .notification-empty {
     text-align: center;
-    color: rgba(54, 60, 74, 0.5);
+    color: rgba(var(--ion-color-secondary-rgb), 0.5);
     font-size: 0.875rem;
     line-height: 1.25rem;
     margin: 1rem 0;
@@ -30,23 +30,15 @@
     font-size: 1rem;
     font-weight: 400;
 
-    .selected {
-      background: var(--ion-color-primary-gradient);
-    }
-
     @media screen and (min-width: 250px) and (max-width: 370px) {
       padding-inline: 0.9rem;
       font-size: 0.8rem;
-    }
-
-    span {
-      min-width: fit-content;
     }
   }
 
   .notifications-tab-content {
     .show-ealier-btn {
-      --background: rgba(187, 187, 187, 0.5);
+      --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
       --border-radius: 0.5rem;
       color: var(--ion-color-primary);
       width: calc(100vw - 2.5rem);
@@ -77,7 +69,7 @@
 
         &.unread {
           background: var(
-            --primaryGradientLight,
+            --primary-gradient-light,
             linear-gradient(
               92deg,
               rgba(146, 255, 192, 0.15) 28.76%,
@@ -115,6 +107,15 @@
           margin-right: 1rem;
         }
 
+        @media screen and (min-width: 250px) and (max-width: 370px) {
+          .notifications-tab-item-logo {
+            border-radius: 2.4rem;
+            width: 2.4rem;
+            height: 2.4rem;
+            margin-right: 0.8rem;
+          }
+        }
+
         .notifications-tab-item-fallback-logo {
           background-color: var(--ion-color-primary);
           display: var(--display-fallback);
@@ -144,8 +145,26 @@
           }
         }
 
-        .notifications-tab-item-ellipsis {
+        @media screen and (min-width: 250px) and (max-width: 370px) {
+          ion-label {
+            line-height: 0.8rem;
+            font-size: 0.7rem;
+          }
+        }
+
+        ion-icon.notifications-tab-item-ellipsis {
+          width: 1.475rem;
+          height: 1.475rem;
+          margin: 0.25rem 0;
           align-self: baseline;
+        }
+
+        @media screen and (min-width: 250px) and (max-width: 370px) {
+          ion-icon.notifications-tab-item-ellipsis {
+            width: 1.18rem;
+            height: 1.18rem;
+            margin: 0.5rem 0;
+          }
         }
       }
     }

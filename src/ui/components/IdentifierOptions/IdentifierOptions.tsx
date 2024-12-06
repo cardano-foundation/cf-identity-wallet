@@ -6,10 +6,8 @@ import {
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { i18n } from "../../../i18n";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppSelector } from "../../../store/hooks";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { OperationType } from "../../globals/types";
 import { EditIdentifier } from "../EditIdentifier";
 import { OptionItem, OptionModal } from "../OptionsModal";
 import { ShareConnection } from "../ShareConnection";
@@ -25,7 +23,6 @@ const IdentifierOptions = ({
   handleRotateKey,
   oobi,
 }: IdentifierOptionsProps) => {
-  const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [isMultiSig, setIsMultiSig] = useState(false);
@@ -49,7 +46,6 @@ const IdentifierOptions = ({
   };
 
   const updateIdentifier = () => {
-    dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
     setOptionsIsOpen(false);
     setEditorIsOpen(true);
   };
@@ -57,31 +53,30 @@ const IdentifierOptions = ({
   const deleteIdentifier = () => {
     setOptionsIsOpen(false);
     handleDelete();
-    dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
   };
 
   const optionsRotate: OptionItem[] = [
     {
       icon: pencilOutline,
-      label: i18n.t("identifiers.details.options.edit"),
+      label: i18n.t("tabs.identifiers.details.options.edit"),
       onClick: updateIdentifier,
       testId: "edit-identifier-option",
     },
     {
       icon: refreshOutline,
-      label: i18n.t("identifiers.details.options.rotatekeys"),
+      label: i18n.t("tabs.identifiers.details.options.rotatekeys"),
       onClick: rotateKey,
       testId: "rotate-keys-option",
     },
     {
       icon: shareOutline,
-      label: i18n.t("identifiers.details.options.share"),
+      label: i18n.t("tabs.identifiers.details.options.share"),
       onClick: () => setShareIsOpen(true),
       testId: "share-identifier-option",
     },
     {
       icon: trashOutline,
-      label: i18n.t("identifiers.details.options.delete"),
+      label: i18n.t("tabs.identifiers.details.options.delete"),
       onClick: deleteIdentifier,
       testId: "delete-identifier-option",
     },
@@ -98,7 +93,7 @@ const IdentifierOptions = ({
         componentId="identifier-options-modal"
         onDismiss={() => setOptionsIsOpen(false)}
         header={{
-          title: `${i18n.t("identifiers.details.options.title")}`,
+          title: `${i18n.t("tabs.identifiers.details.options.title")}`,
         }}
         items={isMultiSig ? optionsNoRotate : optionsRotate}
       />

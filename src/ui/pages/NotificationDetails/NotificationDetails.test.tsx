@@ -36,6 +36,7 @@ jest.mock("../../../core/agent/agent", () => ({
       ipexCommunications: {
         getIpexApplyDetails: jest.fn(() => Promise.resolve(credRequestFix)),
         getAcdcFromIpexGrant: jest.fn(() => Promise.resolve(credsFixAcdc[0])),
+        getLinkedGroupFromIpexApply: jest.fn(),
       },
     },
   },
@@ -88,13 +89,17 @@ describe("Notification Detail", () => {
         </Provider>
       </IonReactMemoryRouter>
     );
+
+    await waitFor(() => {
+      expect(
+        getAllByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.receive.title
+        )[0]
+      ).toBeVisible();
+    });
+
     expect(
-      getAllByText(
-        EN_TRANSLATIONS.notifications.details.credential.receive.title
-      )[0]
-    ).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.notifications.details.buttons.close)
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.close)
     ).toBeVisible();
   });
 
@@ -123,7 +128,7 @@ describe("Notification Detail", () => {
     );
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.notifications.details.identifier.title)
+        getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.title)
       ).toBeVisible();
     });
   });

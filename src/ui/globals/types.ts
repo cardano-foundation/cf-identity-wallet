@@ -33,11 +33,7 @@ enum RequestType {
 // String enums as some of these map to i18n values (if relevant)
 enum OperationType {
   IDLE = "idle",
-  UPDATE_IDENTIFIER = "updateIdentifier",
-  DELETE_IDENTIFIER = "deleteIdentifier",
   DELETE_CONNECTION = "deleteConnection",
-  ARCHIVE_CREDENTIAL = "archiveCredential",
-  DELETE_CREDENTIAL = "deleteCredential",
   SCAN_CONNECTION = "scanConnection",
   MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
   MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",
@@ -101,6 +97,7 @@ enum ToastMsgType {
   FAILED_UPDATE_CONNECTION = "failedupdateconnectionerror",
   DUPLICATE_CONNECTION = "duplicateconnectionerror",
   GROUP_ID_NOT_MATCH_ERROR = "groupidnotmatcherror",
+  UNKNOWN_ERROR="unknownerror"
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

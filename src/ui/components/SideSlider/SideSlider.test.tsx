@@ -1,4 +1,3 @@
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { render, waitFor } from "@testing-library/react";
 import { SideSlider } from "./SideSlider";
 
@@ -13,7 +12,6 @@ describe("Side Slider", () => {
       </SideSlider>
     );
 
-    await waitForIonicReact();
     await waitFor(() => {
       expect(getByText("Content")).toBeInTheDocument();
 

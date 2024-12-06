@@ -1,3 +1,4 @@
+import { Browser } from "@capacitor/browser";
 import {
   IonButton,
   IonGrid,
@@ -6,33 +7,37 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
-  settingsOutline,
-  personCircleOutline,
-  walletOutline,
-  peopleOutline,
-  linkOutline,
   chatbubbleOutline,
+  linkOutline,
+  peopleOutline,
+  personCircleOutline,
+  settingsOutline,
+  walletOutline,
 } from "ionicons/icons";
-import { useMemo, useState } from "react";
-import { Browser } from "@capacitor/browser";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { useAppDispatch } from "../../../store/hooks";
+import { useEffect, useMemo, useState } from "react";
+import { i18n } from "../../../i18n";
+import { TabsRoutePath } from "../../../routes/paths";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
-  showConnections,
+  showConnections
 } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import "./Menu.scss";
-import { i18n } from "../../../i18n";
-import { SubMenu } from "./components/SubMenu";
-import { MenuItemProps, SubMenuKey } from "./Menu.types";
+import {
+  getShowConnectWallet,
+  showConnectWallet,
+} from "../../../store/reducers/walletConnectionsCache";
+import { TabLayout } from "../../components/layout/TabLayout";
 import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
-import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
 import MenuItem from "./components/MenuItem";
+import { SubMenu } from "./components/SubMenu";
+import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
+import "./Menu.scss";
+import { MenuItemProps, SubMenuKey } from "./Menu.types";
 
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
+  const showWalletConnect = useAppSelector(getShowConnectWallet);
   const [showSubMenu, setShowSubMenu] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     SubMenuKey | undefined
@@ -72,32 +77,39 @@ const Menu = () => {
     {
       itemKey: SubMenuKey.Profile,
       icon: personCircleOutline,
-      label: `${i18n.t("menu.tab.items.profile.title")}`,
+      label: `${i18n.t("tabs.menu.tab.items.profile.title")}`,
     },
     {
       itemKey: SubMenuKey.Crypto,
       icon: walletOutline,
-      label: `${i18n.t("menu.tab.items.crypto.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.crypto.sublabel")}`,
+      label: `${i18n.t("tabs.menu.tab.items.crypto.title")}`,
+      subLabel: `${i18n.t("tabs.menu.tab.items.crypto.sublabel")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
       icon: peopleOutline,
-      label: `${i18n.t("menu.tab.items.connections.title")}`,
+      label: `${i18n.t("tabs.menu.tab.items.connections.title")}`,
     },
     {
       itemKey: SubMenuKey.ConnectWallet,
       icon: linkOutline,
-      label: `${i18n.t("menu.tab.items.connectwallet.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.connectwallet.sublabel")}`,
+      label: `${i18n.t("tabs.menu.tab.items.connectwallet.title")}`,
+      subLabel: `${i18n.t("tabs.menu.tab.items.connectwallet.sublabel")}`,
     },
     {
       itemKey: SubMenuKey.Chat,
       icon: chatbubbleOutline,
-      label: `${i18n.t("menu.tab.items.chat.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.chat.sublabel")}`,
+      label: `${i18n.t("tabs.menu.tab.items.chat.title")}`,
+      subLabel: `${i18n.t("tabs.menu.tab.items.chat.sublabel")}`,
     },
   ];
+
+  useEffect(() => {
+    if (showWalletConnect) {
+      showSelectedOption(SubMenuKey.ConnectWallet);
+      dispatch(showConnectWallet(false));
+    }
+  }, [dispatch, showWalletConnect]);
 
   const showSelectedOption = (key: SubMenuKey) => {
     if (
@@ -143,7 +155,7 @@ const Menu = () => {
         pageId={pageId}
         hardwareBackButtonConfig={backHardwareConfig}
         header={true}
-        title={`${i18n.t("menu.tab.header")}`}
+        title={`${i18n.t("tabs.menu.tab.header")}`}
         additionalButtons={<AdditionalButtons />}
       >
         <IonGrid>

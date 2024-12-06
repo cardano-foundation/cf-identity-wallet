@@ -32,8 +32,12 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
 
   const title =
     passCodeValue.originalPasscode.length === 0
-      ? i18n.t("settings.sections.security.changepin.createpasscode")
-      : i18n.t("settings.sections.security.changepin.reenterpasscode");
+      ? i18n.t(
+        "tabs.menu.tab.settings.sections.security.changepin.createpasscode"
+      )
+      : i18n.t(
+        "tabs.menu.tab.settings.sections.security.changepin.reenterpasscode"
+      );
 
   return (
     <IonModal
@@ -50,8 +54,12 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
               closeButton={true}
               closeButtonLabel={`${
                 passCodeValue.originalPasscode.length === 6
-                  ? i18n.t("settings.sections.security.changepin.back")
-                  : i18n.t("settings.sections.security.changepin.cancel")
+                  ? i18n.t(
+                    "tabs.menu.tab.settings.sections.security.changepin.back"
+                  )
+                  : i18n.t(
+                    "tabs.menu.tab.settings.sections.security.changepin.cancel"
+                  )
               }`}
               closeButtonAction={handleCancel}
             />
@@ -60,7 +68,7 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
           <CreatePasscodeModule
             title={title}
             description={`${i18n.t(
-              "settings.sections.security.changepin.description"
+              "tabs.menu.tab.settings.sections.security.changepin.description"
             )}`}
             ref={ref}
             testId={pageId}

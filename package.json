@@ -8,7 +8,7 @@
     "build:local": "cross-env ENVIRONMENT=local-direct webpack --config webpack.prod.cjs",
     "build:cap": "npm run build && npx cap sync",
     "build:e2e": "npm run build:local && npx cap sync",
-    "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'services/credential-server/src/**/*.{ts,tsx,scss}'",
+    "prettier": "npx prettier --write '{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "wdio:android:s23ultra": "npx wdio tests/config/wdio.emu.android.galaxyS23Ultra.config.ts --watch",
@@ -52,8 +52,8 @@
     "react-qrcode-logo": "^3.0.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.3.4",
-    "signify-ts": "github:WebOfTrust/signify-ts#1212b54bfeaf085ad2217278e1e0fcaf4181621a",
-    "swiper": "^9.2.0",
+    "signify-ts": "github:WebOfTrust/signify-ts#07abd3189e1172e08abcd7cf8c2c77b98b791d02",
+    "swiper": "^11.1.14",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
@@ -64,7 +64,7 @@
     "@peculiar/webcrypto": "^1.5.0",
     "@testing-library/dom": "^9.3.1",
     "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^13.3.0",
+    "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^12.6.3",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.38",
@@ -138,7 +138,7 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": "eslint --cache --fix",
-    "src/**/*.{ts,tsx,scss}": "npx prettier --write"
+    "{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx,scss}": "npx prettier --write"
   },
   "type": "module"
 }

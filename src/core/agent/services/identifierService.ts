@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
-import { Signer } from "signify-ts";
+import { HabState, Operation, Salter, Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
   IdentifierDetails,
@@ -10,7 +9,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
@@ -20,7 +19,11 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { ConnectionService } from "./connectionService";
-import { EventTypes, OperationAddedEvent } from "../event.types";
+import {
+  EventTypes,
+  IdentifierRemovedEvent,
+  OperationAddedEvent,
+} from "../event.types";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -36,6 +39,8 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
+  static readonly IDENTIFIER_NAME_TAKEN =
+    "Identifier name has already been used on KERIA";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
   protected readonly identifierStorage: IdentifierStorage;
@@ -52,6 +57,15 @@ class IdentifierService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connections = connections;
+  }
+
+  onIdentifierRemoved() {
+    this.props.eventEmitter.on(
+      EventTypes.IdentifierRemoved,
+      (data: IdentifierRemovedEvent) => {
+        this.deleteIdentifier(data.payload.id!);
+      }
+    );
   }
 
   async getIdentifiers(): Promise<IdentifierShortDetails[]> {
@@ -82,7 +96,7 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-    if (metadata.isPending && metadata.signifyOpName) {
+    if (metadata.isPending) {
       throw new Error(IdentifierService.IDENTIFIER_IS_PENDING);
     }
     const aid = await this.props.signifyClient
@@ -97,12 +111,18 @@ class IdentifierService extends AgentService {
         }
       });
 
+    let members;
+    if (aid.group) {
+      members = (
+        await this.props.signifyClient.identifiers().members(identifier)
+      ).signing.map((member: any) => member.aid);
+    }
+
     return {
       id: aid.prefix,
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
-      signifyOpName: metadata.signifyOpName,
       multisigManageAid: metadata.multisigManageAid,
       isPending: metadata.isPending ?? false,
       groupMetadata: metadata.groupMetadata,
@@ -115,15 +135,13 @@ class IdentifierService extends AgentService {
       bt: aid.state.bt,
       b: aid.state.b,
       di: aid.state.di,
+      members,
     };
   }
 
   @OnlineOnly
   async createIdentifier(
-    metadata: Omit<
-      IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "signifyName"
-    >
+    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
   ): Promise<CreateIdentifierResult> {
     const startTime = Date.now();
 
@@ -131,14 +149,20 @@ class IdentifierService extends AgentService {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
 
-    const signifyName = uuidv4();
-    const operation = await this.props.signifyClient
-      .identifiers()
-      .create(signifyName); //, this.getCreateAidOptions());
-    let op = await operation.op();
-    const signifyOpName = op.name;
+    let name = `${metadata.theme}:${metadata.displayName}`;
+    if (metadata.groupMetadata) {
+      const initiatorFlag = metadata.groupMetadata.groupInitiator ? "1" : "0";
+      name = `${metadata.theme}:${initiatorFlag}-${metadata.groupMetadata.groupId}:${metadata.displayName}`;
+    } 
+    const operation = await this.props.signifyClient.identifiers().create(name);
+    let op = await operation.op().catch((error) => {
+      const err = error.message.split(" - ");
+      if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
+        throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
+      }
+      throw error;
+    });
     const identifier = operation.serder.ked.i;
-
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
@@ -165,11 +189,9 @@ class IdentifierService extends AgentService {
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
-      signifyOpName: signifyOpName,
       isPending: !op.done,
-      signifyName: signifyName,
     });
-    return { identifier, signifyName, isPending: !op.done };
+    return { identifier, isPending: !op.done };
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
@@ -188,6 +210,7 @@ class IdentifierService extends AgentService {
         metadata.multisigManageAid,
         {
           isDeleted: true,
+          pendingDeletion: false,
         }
       );
       await this.deleteGroupLinkedConnections(
@@ -195,8 +218,13 @@ class IdentifierService extends AgentService {
       );
     }
 
+    await this.props.signifyClient.identifiers().update(identifier, {
+      name: `XX-${randomSalt()}:${metadata.displayName}`,
+    });
+
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
+      pendingDeletion: false,
     });
 
     const connectedDApp =
@@ -208,6 +236,35 @@ class IdentifierService extends AgentService {
     ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
     }
+  }
+
+  async removeIdentifiersPendingDeletion(): Promise<void> {
+    const pendingIdentifierDeletions =
+      await this.identifierStorage.getIdentifiersPendingDeletion();
+
+    for (const identifier of pendingIdentifierDeletions) {
+      await this.deleteIdentifier(identifier.id);
+    }
+  }
+
+  async markIdentifierPendingDelete(id: string) {
+    const identifierProps = await this.identifierStorage.getIdentifierMetadata(
+      id
+    );
+    if (!identifierProps) {
+      throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);
+    }
+    identifierProps.pendingDeletion = true;
+    await this.identifierStorage.updateIdentifierMetadata(id, {
+      pendingDeletion: true,
+    });
+
+    this.props.eventEmitter.emit<IdentifierRemovedEvent>({
+      type: EventTypes.IdentifierRemoved,
+      payload: {
+        id,
+      },
+    });
   }
 
   private async deleteGroupLinkedConnections(groupId: string) {
@@ -239,6 +296,9 @@ class IdentifierService extends AgentService {
       "theme" | "displayName" | "groupMetadata"
     >
   ): Promise<void> {
+    await this.props.signifyClient.identifiers().update(identifier, {
+      name: `${data.theme}:${data.displayName}`,
+    });
     return this.identifierStorage.updateIdentifierMetadata(identifier, {
       theme: data.theme,
       displayName: data.displayName,
@@ -268,16 +328,111 @@ class IdentifierService extends AgentService {
       (identifier: IdentifierResult) =>
         !storageIdentifiers.find((item) => identifier.prefix === item.id)
     );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      for (const identifier of unSyncedData) {
-        await this.identifierStorage.createIdentifierMetadataRecord({
-          id: identifier.prefix,
-          displayName: identifier.prefix, //same as the id at the moment
-          theme: 0,
-          signifyName: identifier.name,
+    
+    const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [
+      unSyncedData.filter((item: HabState) => item.group !== undefined),
+      unSyncedData.filter((item: HabState) => item.group === undefined),
+    ];
+
+    for (const identifier of unSyncedDataWithoutGroup) {
+      if (identifier.name.startsWith("XX")) {
+        continue;
+      }
+ 
+      const op: Operation = await this.props.signifyClient
+        .operations()
+        .get(`witness.${identifier.prefix}`)
+        .catch(async (error) => {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
+            return await this.props.signifyClient
+              .operations()
+              .get(`done.${identifier.prefix}`);
+          }
+          throw error;
+        });
+      const isPending = !op.done;
+
+      if(isPending){
+        const pendingOperation = await this.operationPendingStorage.save({
+          id: op.name,
+          recordType: OperationPendingRecordType.Witness,
+        });
+        this.props.eventEmitter.emit<OperationAddedEvent>({
+          type: EventTypes.OperationAdded,
+          payload: { operation: pendingOperation },
         });
       }
+
+      const name = identifier.name.split(":");
+      const theme = parseInt(name[0], 10);
+      const isMultiSig = name.length === 3;
+
+      if(isMultiSig){
+        const groupId = identifier.name.split(":")[1];
+        const groupInitiator = groupId.split("-")[0] === "1";
+
+        await this.identifierStorage.createIdentifierMetadataRecord({
+          id: identifier.prefix,
+          displayName: groupId,
+          theme,
+          groupMetadata: {
+            groupId,
+            groupCreated: false,
+            groupInitiator
+          },
+          isPending
+        });
+
+        continue;
+      }
+
+      await this.identifierStorage.createIdentifierMetadataRecord({
+        id: identifier.prefix,
+        displayName: identifier.prefix,
+        theme,
+        isPending,
+      });
+    }
+
+    for (const identifier of unSyncedDataWithGroup) {
+      if (identifier.name.startsWith("XX")) {
+        continue;
+      }
+
+      const multisigManageAid = identifier.group.mhab.prefix;
+      const groupId = identifier.group.mhab.name.split(":")[1];
+      const theme = parseInt(identifier.name.split(":")[0], 10);
+      const groupInitiator = groupId.split("-")[0] === "1";
+      const op = await this.props.signifyClient.operations().get(`group.${identifier.prefix}`)
+      const isPending = !op.done;
+
+      if(isPending){
+        const pendingOperation = await this.operationPendingStorage.save({
+          id: op.name,
+          recordType: OperationPendingRecordType.Group,
+        });
+        this.props.eventEmitter.emit<OperationAddedEvent>({
+          type: EventTypes.OperationAdded,
+          payload: { operation: pendingOperation },
+        });
+      }
+
+      await this.identifierStorage.updateIdentifierMetadata(multisigManageAid, {
+        groupMetadata: {
+          groupId,
+          groupCreated: true,
+          groupInitiator
+        }
+      });
+        
+      await this.identifierStorage.createIdentifierMetadataRecord({
+        id: identifier.prefix,
+        displayName: groupId,
+        theme,
+        multisigManageAid,
+        isPending
+      })
     }
   }
 

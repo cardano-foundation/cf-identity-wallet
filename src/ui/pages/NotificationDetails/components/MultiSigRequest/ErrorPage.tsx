@@ -1,21 +1,21 @@
+import { Browser } from "@capacitor/browser";
 import { IonIcon, IonText } from "@ionic/react";
 import { alertCircleOutline } from "ionicons/icons";
 import { useState } from "react";
 import { Trans } from "react-i18next";
-import { Browser } from "@capacitor/browser";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
-import { CreateIdentifier } from "../../../../components/CreateIdentifier";
+import { CreateGroupIdentifier } from "../../../../components/CreateGroupIdentifier";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
+import { DISCORD_LINK } from "../../../../globals/constants";
 import "./ErrorPage.scss";
 import { ErrorPageProps } from "./ErrorPage.types";
-import { DISCORD_LINK } from "../../../../globals/constants";
 
 const ErrorPage = ({
   pageId,
@@ -58,7 +58,7 @@ const ErrorPage = ({
         onClick={() => Browser.open({ url: DISCORD_LINK })}
       >
         {i18n.t(
-          "notifications.details.identifier.errorpage.help.supportchannel"
+          "tabs.notifications.details.identifier.errorpage.help.supportchannel"
         )}
       </u>
     );
@@ -75,10 +75,10 @@ const ErrorPage = ({
             closeButton={true}
             closeButtonAction={handleBack}
             closeButtonLabel={`${i18n.t(
-              "notifications.details.buttons.close"
+              "tabs.notifications.details.buttons.close"
             )}`}
             title={`${i18n.t(
-              "notifications.details.identifier.errorpage.title"
+              "tabs.notifications.details.identifier.errorpage.title"
             )}`}
           />
         }
@@ -87,7 +87,7 @@ const ErrorPage = ({
             pageId={pageId}
             customClass="multisig-feedback-footer"
             primaryButtonText={`${i18n.t(
-              "notifications.details.identifier.errorpage.continuesetup"
+              "tabs.notifications.details.identifier.errorpage.continuesetup"
             )}`}
             primaryButtonAction={() => actionAccept()}
           />
@@ -95,7 +95,9 @@ const ErrorPage = ({
       >
         <CardDetailsBlock className="alert">
           <IonText className="alert-text">
-            {i18n.t("notifications.details.identifier.errorpage.alerttext")}
+            {i18n.t(
+              "tabs.notifications.details.identifier.errorpage.alerttext"
+            )}
           </IonText>
           <div className="alert-icon">
             <IonIcon
@@ -107,24 +109,24 @@ const ErrorPage = ({
         <div className="instructions">
           <h2 className="title">
             {i18n.t(
-              "notifications.details.identifier.errorpage.instructions.title"
+              "tabs.notifications.details.identifier.errorpage.instructions.title"
             )}
           </h2>
           <IonText className="detail-text">
             {i18n.t(
-              "notifications.details.identifier.errorpage.instructions.detailtext"
+              "tabs.notifications.details.identifier.errorpage.instructions.detailtext"
             )}
           </IonText>
           <CardDetailsBlock className="content">
             <ol className="instruction-list">
               <li>
                 {i18n.t(
-                  "notifications.details.identifier.errorpage.instructions.stepone"
+                  "tabs.notifications.details.identifier.errorpage.instructions.stepone"
                 )}
               </li>
               <li>
                 {i18n.t(
-                  "notifications.details.identifier.errorpage.instructions.steptwo"
+                  "tabs.notifications.details.identifier.errorpage.instructions.steptwo"
                 )}
               </li>
             </ol>
@@ -132,19 +134,21 @@ const ErrorPage = ({
         </div>
         <div className="help">
           <h2 className="title">
-            {i18n.t("notifications.details.identifier.errorpage.help.title")}
+            {i18n.t(
+              "tabs.notifications.details.identifier.errorpage.help.title"
+            )}
           </h2>
           <IonText className="detail-text">
             <Trans
               i18nKey={i18n.t(
-                "notifications.details.identifier.errorpage.help.detailtext"
+                "tabs.notifications.details.identifier.errorpage.help.detailtext"
               )}
               components={[<HandleDiscordLink key="" />]}
             />
           </IonText>
         </div>
       </ScrollablePageLayout>
-      <CreateIdentifier
+      <CreateGroupIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
         setModalIsOpen={handleCloseCreateIdentifier}
         resumeMultiSig={resumeMultiSig}

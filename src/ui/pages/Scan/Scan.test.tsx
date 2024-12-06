@@ -21,10 +21,10 @@ const addListener = jest.fn(
       listenerFunc({
         barcode: {
           displayValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
           format: BarcodeFormat.QrCode,
           rawValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
           valueType: BarcodeValueType.Url,
         },
       });
@@ -51,6 +51,13 @@ jest.mock("@capacitor/keyboard", () => ({
   },
 }));
 
+jest.mock("signify-ts", () => ({
+  ...jest.requireActual("signify-ts"),
+  Salter: jest.fn(() => ({
+    qb64: ""
+  }))
+}));
+
 jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
     ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
@@ -65,6 +72,7 @@ jest.mock("@capacitor-mlkit/barcode-scanning", () => {
       ) => addListener(eventName, listenerFunc),
       startScan: jest.fn(),
       stopScan: jest.fn(),
+      removeAllListeners: jest.fn()
     },
   };
 });
@@ -105,12 +113,17 @@ describe("Scan Tab", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
 
-  test("Renders Scan Tab", () => {
+  test("Renders Scan Tab", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <Scan />
       </Provider>
     );
+
+    await waitFor(() => {
+      expect(getByTestId("qr-code-scanner").classList.contains("no-permission")).toBeFalsy();
+    })
+
 
     expect(getByTestId("scan-tab")).toBeInTheDocument();
   });
@@ -132,6 +145,10 @@ describe("Scan Tab", () => {
         identifiers: [],
         scanGroupId: "72e2f089cef6",
       },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
     };
 
     const storeMocked = {
@@ -142,12 +159,11 @@ describe("Scan Tab", () => {
     connectByOobiUrlMock.mockImplementation(() => {
       return {
         type: KeriConnectionType.NORMAL,
+        connection: connectionsFix[0]
       };
     });
 
-    getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
-
-    render(
+    const { unmount } = render(
       <Provider store={storeMocked}>
         <Scan />
       </Provider>
@@ -156,6 +172,8 @@ describe("Scan Tab", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
+
+    unmount();
   });
 
   test("Nav to identifier after scan duplicate multisig", async () => {
@@ -170,6 +188,18 @@ describe("Scan Tab", () => {
         },
         currentOperation: OperationType.IDLE,
         toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },      
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
       },
     };
 

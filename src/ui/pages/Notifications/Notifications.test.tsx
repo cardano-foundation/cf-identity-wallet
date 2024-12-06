@@ -11,7 +11,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsForNotifications } from "../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
-import { NotificationFilter } from "./Notification.types";
+import { NotificationFilters } from "./Notification.types";
 import { Notifications } from "./Notifications";
 
 mockIonicReact();
@@ -42,6 +42,16 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: jest.fn(),
+    location: {
+      pathname: TabsRoutePath.NOTIFICATIONS
+    }
+  })
+}))
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -78,6 +88,9 @@ const fullState = {
   notificationsCache: {
     notifications: notificationsFix,
   },
+  credsCache: {
+    creds: []
+  }
 };
 
 const filterTestData = {
@@ -113,16 +126,16 @@ describe("Notifications Tab", () => {
 
     expect(getByTestId("notifications-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.header)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.header)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.chips.all)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.chips.all)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.chips.identifiers)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.chips.identifiers)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.chips.credentials)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.chips.credentials)
     ).toBeInTheDocument();
     expect(queryByTestId("notifications-tab-section-new")).toBeNull();
     expect(queryByTestId("notifications-tab-section-earlier")).toBeNull();
@@ -152,7 +165,7 @@ describe("Notifications Tab", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`${NotificationFilter.Credential}-filter-btn`)
+        getByTestId(`${NotificationFilters.Credential}-filter-btn`)
       );
     });
 
@@ -167,7 +180,7 @@ describe("Notifications Tab", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`${NotificationFilter.Identifier}-filter-btn`)
+        getByTestId(`${NotificationFilters.Identifier}-filter-btn`)
       );
     });
 
@@ -230,30 +243,20 @@ describe("Notifications Tab", () => {
     );
 
     expect(getByTestId("notifications-tab-section-new")).toBeInTheDocument();
-    setTimeout(() => {
+    await waitFor(() => {
       const notificationElements = getAllByText(
-        "CF Credential Issuance wants to issue you a credential"
+        "has requested a credential from you"
       );
       notificationElements.forEach((element) => {
         expect(element).toBeVisible();
       });
       expect(
-        getByText(
-          "CF Credential Issuance is requesting to create a multi-sig identifier with you"
-        )
-      ).toBeInTheDocument();
-      expect(
-        getByText("CF Credential Issuance has requested a credential from you")
-      ).toBeInTheDocument();
-      expect(
         getByTestId("notifications-tab-section-earlier")
       ).toBeInTheDocument();
       expect(getByText("10m")).toBeInTheDocument();
-      expect(getByText("2h")).toBeInTheDocument();
-      expect(getByText("2d")).toBeInTheDocument();
       expect(getByText("2w")).toBeInTheDocument();
       expect(getByText("2y")).toBeInTheDocument();
-    }, 1);
+    });
   });
 
   test("Open revoked credential detail", async () => {

@@ -12,6 +12,8 @@ import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { DataProps } from "./nextRoute.types";
 import { OperationType } from "../../ui/globals/types";
+import { IdentifiersFilters } from "../../ui/pages/Identifiers/Identifiers.types";
+import { CredentialsFilters } from "../../ui/pages/Credentials/Credentials.types";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -61,8 +63,13 @@ describe("NextRoute", () => {
           groupId: "",
           connections: [],
         },
+        filters: IdentifiersFilters.All,
       },
-      credsCache: { creds: [], favourites: [] },
+      credsCache: {
+        creds: [],
+        favourites: [],
+        filters: CredentialsFilters.All,
+      },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: {},
@@ -73,9 +80,15 @@ describe("NextRoute", () => {
         connectedWallet: null,
         pendingConnection: null,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-        favouriteIndex: 0,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -310,8 +323,9 @@ describe("getNextRoute", () => {
         groupId: "",
         connections: [],
       },
+      filters: IdentifiersFilters.All,
     },
-    credsCache: { creds: [], favourites: [] },
+    credsCache: { creds: [], favourites: [], filters: CredentialsFilters.All },
     credsArchivedCache: { creds: [] },
     connectionsCache: {
       connections: {},
@@ -322,9 +336,15 @@ describe("getNextRoute", () => {
       connectedWallet: null,
       pendingConnection: null,
     },
-    identifierViewTypeCacheCache: {
-      viewType: null,
-      favouriteIndex: 0,
+    viewTypeCache: {
+      identifier: {
+        viewType: null,
+        favouriteIndex: 0,
+      },
+      credential: {
+        viewType: null,
+        favouriteIndex: 0,
+      },
     },
     biometricsCache: {
       enabled: false,

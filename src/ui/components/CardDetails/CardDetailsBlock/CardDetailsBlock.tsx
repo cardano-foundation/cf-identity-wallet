@@ -5,24 +5,29 @@ import "./CardDetailsBlock.scss";
 
 const CardDetailsBlock = ({
   title,
+  action,
   children,
   className,
+  onClick,
 }: CardDetailsBlockProps) => {
   const classes = combineClassNames("card-details-info-block", className);
 
   return (
     <div className={classes}>
-      {title && (
-        <h4
-          data-testid={`card-block-title-${title
-            .replace(/\s+/g, "")
-            .toLowerCase()}`}
-          className="card-details-info-block-title"
-        >
-          {title}
-        </h4>
-      )}
-      <IonCard className="card-details-info-block-inner">{children}</IonCard>
+      <div className="card-details-info-block-header">
+        {title && (
+          <h4
+            data-testid={`card-block-title-${title
+              .replace(/\s+/g, "")
+              .toLowerCase()}`}
+            className="card-details-info-block-title"
+          >
+            {title}
+          </h4>
+        )}
+        {action && action}
+      </div>
+      <IonCard onClick={onClick} className="card-details-info-block-inner">{children}</IonCard>
     </div>
   );
 };

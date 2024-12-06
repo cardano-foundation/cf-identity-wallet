@@ -87,7 +87,6 @@ describe("PeerConnection", () => {
     const dAppIdentifier = "testDApp";
     Agent.agent.identifiers.getIdentifier = jest.fn().mockResolvedValue({
       id: "id",
-      signifyName: "signifyName",
     });
     Agent.agent.connections.getOobi = jest.fn().mockResolvedValue("test-oobi");
     Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata = jest

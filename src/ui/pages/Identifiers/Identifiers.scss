@@ -1,4 +1,15 @@
 .identifiers-tab {
+  &.tab-layout {
+    padding-inline: 0;
+  }
+
+  .tab-header,
+  .cards-placeholder-container,
+  ion-content > *:not(.identifier-favourite-cards),
+  .card-slider-header {
+    padding-inline: 1.25rem;
+  }
+
   .cards-placeholder-container {
     margin-top: 2.5rem;
   }
@@ -14,12 +25,8 @@
       line-height: 1.5rem;
     }
 
-    &:first-of-type {
-      margin-bottom: 2.5rem;
-    }
-
     .list-header {
-      margin-bottom: 0.875rem;
+      margin-bottom: 0.75rem;
     }
 
     ion-list {
@@ -27,6 +34,18 @@
 
       ion-item.card-item {
         --card-height: calc(4.8125rem * 200 / 350);
+      }
+    }
+
+    .identifiers-tab-chips {
+      margin-bottom: 1.5rem;
+      display: flex;
+      font-size: 1rem;
+      font-weight: 400;
+
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        margin-bottom: 1.2rem;
+        font-size: 0.8rem;
       }
     }
   }
@@ -80,7 +99,7 @@
     }
 
     .identifier-cards {
-      .list-header {
+      .list-header,.identifiers-tab-chips {
         animation: indentifierFavouriteCardHeaderResize 0.25s ease;
         animation-fill-mode: forwards;
 
@@ -109,7 +128,7 @@
       margin-bottom: 1.6rem;
 
       .list-header {
-        margin-bottom: 0.7rem;
+        margin-bottom: 0.6rem;
       }
 
       ion-list {

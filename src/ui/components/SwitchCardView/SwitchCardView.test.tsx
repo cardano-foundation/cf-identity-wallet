@@ -1,11 +1,11 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { CardType } from "../../globals/types";
 import { SwitchCardView } from "./SwitchCardView";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
@@ -39,8 +39,15 @@ const initialState = {
       passwordIsSet: true,
     },
   },
-  identifierViewTypeCacheCache: {
-    viewType: null,
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
   },
 };
 let mockedStore: Store<unknown, AnyAction>;

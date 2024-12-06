@@ -49,13 +49,9 @@ class CredentialService extends AgentService {
     const listMetadatas = await this.credentialStorage.getAllCredentialMetadata(
       isGetArchive
     );
-    // Only get credentials that are not deleted
-    // @TODO - foconnor: Should be filtering via SQL for the deleted ones.
-    return listMetadatas
-      .filter((item) => !item.isDeleted)
-      .map((element: CredentialMetadataRecord) =>
-        this.getCredentialShortDetails(element)
-      );
+    return listMetadatas.map((element: CredentialMetadataRecord) =>
+      this.getCredentialShortDetails(element)
+    );
   }
 
   private getCredentialShortDetails(
@@ -81,7 +77,18 @@ class CredentialService extends AgentService {
   @OnlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
-    const acdc = await this.props.signifyClient.credentials().get(metadata.id);
+    const acdc = await this.props.signifyClient
+      .credentials()
+      .get(metadata.id)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
@@ -107,10 +114,7 @@ class CredentialService extends AgentService {
   }
 
   async createMetadata(data: CredentialMetadataRecordProps) {
-    const metadataRecord = new CredentialMetadataRecord({
-      ...data,
-    });
-
+    const metadataRecord = new CredentialMetadataRecord(data);
     await this.credentialStorage.saveCredentialMetadataRecord(metadataRecord);
   }
 
@@ -181,13 +185,13 @@ class CredentialService extends AgentService {
             isArchived: false,
             issuanceDate: new Date(credential.sad.a.dt).toISOString(),
             credentialType: credential.schema.title,
-            status: CredentialStatus.PENDING,
+            status: CredentialStatus.CONFIRMED,
             connectionId: credential.sad.i,
             schema: credential.schema.$id,
+            identifierId: credential.sad.a.i,
             identifierType: identifier.multisigManageAid
               ? IdentifierType.Group
               : IdentifierType.Individual,
-            identifierId: credential.sad.a.i,
           });
         } catch (error) {
           /* eslint-disable no-console */

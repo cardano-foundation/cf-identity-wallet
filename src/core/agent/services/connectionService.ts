@@ -1,59 +1,57 @@
-import { v4 as uuidv4 } from "uuid";
-import { SqliteStorage } from "../../storage/sqliteStorage";
+import { Contact, Operation, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
   ConnectionDetails,
-  ConnectionHistoryItem,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  DOOBI_RE,
   KeriConnectionType,
+  OOBI_AGENT_ONLY_RE,
+  OOBI_RE,
   OobiScan,
+  WOOBI_RE,
 } from "../agent.types";
 import {
-  ConnectionNoteStorage,
   ConnectionRecord,
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
-  IpexMessageStorage,
   OperationPendingStorage,
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { KeriaContact } from "./connection.types";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
+  ConnectionRemovedEvent,
   ConnectionStateChangedEvent,
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
+import {
+  ConnectionHistoryItem,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
-  protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly identifierStorage: IdentifierStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
-    connectionNoteStorage: ConnectionNoteStorage,
     credentialStorage: CredentialStorage,
-    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
     identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
-    this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.identifierStorage = identifierStorage;
   }
@@ -66,6 +64,7 @@ class ConnectionService extends AgentService {
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
+  static readonly OOBI_INVALID = "OOBI URL is invalid";
 
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -73,44 +72,75 @@ class ConnectionService extends AgentService {
     this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
   }
 
+  onConnectionAdded() {
+    this.props.eventEmitter.on(
+      EventTypes.ConnectionStateChanged,
+      (event: ConnectionStateChangedEvent) => {
+        if (
+          event.payload.url &&
+          event.payload.status === ConnectionStatus.PENDING
+        ) {
+          this.resolveOobi(event.payload.url, event.payload.isMultiSigInvite);
+        }
+      }
+    );
+  }
+
+  onConnectionRemoved() {
+    this.props.eventEmitter.on(
+      EventTypes.ConnectionRemoved,
+      (data: ConnectionRemovedEvent) =>
+        this.deleteConnectionById(data.payload.connectionId!)
+    );
+  }
+
   @OnlineOnly
   async connectByOobiUrl(url: string): Promise<OobiScan> {
+    if (
+      !new URL(url).pathname.match(OOBI_AGENT_ONLY_RE) &&
+      !new URL(url).pathname.match(WOOBI_RE)
+    ) {
+      throw new Error(ConnectionService.OOBI_INVALID);
+    }
+
     const multiSigInvite = url.includes("groupId");
+    const connectionId = new URL(url).pathname
+      .split("/oobi/")
+      .pop()!
+      .split("/")[0];
 
-    // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
-    // To fix once we handle errors for the scanner in general.
-    this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-      type: EventTypes.ConnectionStateChanged,
-      payload: {
-        isMultiSigInvite: multiSigInvite,
-        connectionId: undefined,
-        status: ConnectionStatus.PENDING,
-      },
-    });
-
-    const operation = await this.resolveOobi(url, multiSigInvite);
-    const connectionId =
-      operation.done && operation.response
-        ? operation.response.i
-        : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
-    const connectionMetadata: any = {
-      alias: operation.alias,
-      oobi: url,
-      pending: !operation.done,
-    };
+    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
+    const connectionDate = new Date().toISOString();
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
-    const connectionDate = operation.response?.dt ?? new Date();
+
+    const connectionMetadata: Record<string, unknown> = {
+      alias,
+      oobi: url,
+      pending: true,
+      createdAtUTC: connectionDate,
+    };
+
     const connection = {
       id: connectionId,
-      connectionDate,
-      oobi: operation.metadata.oobi,
-      status: ConnectionStatus.CONFIRMED,
-      label: operation.alias,
+      createdAtUTC: connectionDate,
+      oobi: url,
+      status: ConnectionStatus.PENDING,
+      label: alias,
       groupId,
     };
 
     if (multiSigInvite) {
+      const oobiResult = (await this.resolveOobi(url, multiSigInvite)) as {
+        op: Operation & { response: State };
+        connection: Contact;
+        alias: string;
+      };
+      connection.id = oobiResult.op.response.i;
+      connectionMetadata.pending = false;
+      connectionMetadata.createdAtUTC = oobiResult.op.response.dt;
+      connectionMetadata.status = ConnectionStatus.CONFIRMED;
       connectionMetadata.groupId = groupId;
+
       const identifierWithGroupId =
         await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
 
@@ -118,7 +148,7 @@ class ConnectionService extends AgentService {
       // We let the UI handle it as it requires some metadata from the user like display name.
       if (!identifierWithGroupId) {
         await this.createConnectionMetadata(
-          connectionId,
+          oobiResult.op.response.i,
           connectionMetadata
         ).catch((error) => {
           if (
@@ -136,17 +166,20 @@ class ConnectionService extends AgentService {
           connection,
         };
       }
-    }
-    await this.createConnectionMetadata(connectionId, connectionMetadata);
-
-    if (!multiSigInvite) {
+      await this.createConnectionMetadata(connectionId, connectionMetadata);
+    } else {
       this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
         type: EventTypes.ConnectionStateChanged,
         payload: {
+          isMultiSigInvite: false,
           connectionId,
-          status: ConnectionStatus.CONFIRMED,
+          status: ConnectionStatus.PENDING,
+          url,
+          label: alias,
         },
       });
+
+      await this.createConnectionMetadata(connectionId, connectionMetadata);
     }
     return { type: KeriConnectionType.NORMAL, connection };
   }
@@ -154,6 +187,7 @@ class ConnectionService extends AgentService {
   async getConnections(): Promise<ConnectionShortDetails[]> {
     const connections = await this.connectionStorage.findAllByQuery({
       groupId: undefined,
+      pendingDeletion: false,
     });
     return connections.map((connection) =>
       this.getConnectionShortDetails(connection)
@@ -165,6 +199,7 @@ class ConnectionService extends AgentService {
       $not: {
         groupId: undefined,
       },
+      pendingDeletion: false,
     });
 
     return multisigConnections.map((connection) =>
@@ -178,10 +213,11 @@ class ConnectionService extends AgentService {
     const connectionsDetails: ConnectionShortDetails[] = [];
     const associatedContacts = await this.connectionStorage.findAllByQuery({
       groupId,
+      pendingDeletion: false,
     });
-    associatedContacts.forEach(async (connection) => {
+    for (const connection of associatedContacts) {
       connectionsDetails.push(this.getConnectionShortDetails(connection));
-    });
+    }
     return connectionsDetails;
   }
 
@@ -191,7 +227,7 @@ class ConnectionService extends AgentService {
     const connection: ConnectionShortDetails = {
       id: record.id,
       label: record.alias,
-      connectionDate: record.createdAt.toISOString(),
+      createdAtUTC: record.createdAt.toISOString(),
       status: record.pending
         ? ConnectionStatus.PENDING
         : ConnectionStatus.CONFIRMED,
@@ -217,33 +253,85 @@ class ConnectionService extends AgentService {
           throw error;
         }
       });
+    const notes: Array<ConnectionNoteDetails> = [];
+    const historyItems: Array<ConnectionHistoryItem> = [];
+    Object.keys(connection).forEach((key) => {
+      if (
+        key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
+        connection[key]
+      ) {
+        notes.push(JSON.parse(connection[key] as string));
+      } else if (
+        key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
+        key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
+      ) {
+        historyItems.push(JSON.parse(connection[key] as string));
+      }
+    });
+
     return {
       label: connection?.alias,
       id: connection.id,
       status: ConnectionStatus.CONFIRMED,
-      connectionDate: (
-        await this.getConnectionMetadataById(connection.id)
-      ).createdAt.toISOString(),
+      createdAtUTC: connection.createdAt as string,
       serviceEndpoints: [connection.oobi],
-      notes: await this.getConnectNotesByConnectionId(connection.id),
+      notes,
+      historyItems: historyItems
+        .sort((a, b) => new Date(b.dt).getTime() - new Date(a.dt).getTime())
+        .map((messageRecord) => {
+          const { historyType, dt, credentialType } = messageRecord;
+          return {
+            type: historyType,
+            timestamp: dt,
+            credentialType,
+          };
+        }),
     };
   }
 
   @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
-    await this.props.signifyClient.contacts().delete(id);
+    await this.props.signifyClient
+      .contacts()
+      .delete(id)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (!/404/gi.test(status)) {
+          throw error;
+        }
+      });
     await this.connectionStorage.deleteById(id);
-    const notes = await this.getConnectNotesByConnectionId(id);
-    await Promise.all(
-      notes.map((note) => this.connectionNoteStorage.deleteById(note.id))
-    );
-    const historyItems =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
-    await Promise.all(
-      historyItems.map((historyItem) =>
-        this.ipexMessageStorage.deleteIpexMessageMetadata(historyItem.id)
-      )
-    );
+  }
+
+  async markConnectionPendingDelete(id: string) {
+    const connectionProps = await this.connectionStorage.findById(id);
+    if (!connectionProps) return;
+    connectionProps.pendingDeletion = true;
+    await this.connectionStorage.update(connectionProps);
+
+    this.props.eventEmitter.emit<ConnectionRemovedEvent>({
+      type: EventTypes.ConnectionRemoved,
+      payload: {
+        connectionId: id,
+      },
+    });
+  }
+
+  async getConnectionsPendingDeletion() {
+    const connections = await this.connectionStorage.findAllByQuery({
+      pendingDeletion: true,
+    });
+
+    return connections.map((connection) => connection.id);
+  }
+
+  async getConnectionsPending() {
+    const connections = await this.connectionStorage.findAllByQuery({
+      pending: true,
+      groupId: undefined,
+    });
+
+    return connections;
   }
 
   async deleteStaleLocalConnectionById(id: string): Promise<void> {
@@ -261,31 +349,33 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.connectionNoteStorage.save({
-      id: uuidv4(),
-      title: note.title,
-      message: note.message,
-      connectionId,
+    const id = randomSalt();
+    await this.props.signifyClient.contacts().update(connectionId, {
+      [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
+        ...note,
+        id: `${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`,
+        timestamp: new Date().toISOString(),
+      }),
     });
   }
 
   async updateConnectionNoteById(
+    connectionId: string,
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.connectionNoteStorage.findById(
-      connectionNoteId
-    );
-    if (!noteRecord) {
-      throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
-    }
-    noteRecord.title = note.title;
-    noteRecord.message = note.message;
-    await this.connectionNoteStorage.update(noteRecord);
+    await this.props.signifyClient.contacts().update(connectionId, {
+      [connectionNoteId]: JSON.stringify(note),
+    });
   }
 
-  async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.connectionNoteStorage.deleteById(connectionNoteId);
+  async deleteConnectionNoteById(
+    connectionId: string,
+    connectionNoteId: string
+  ) {
+    return this.props.signifyClient.contacts().update(connectionId, {
+      [connectionNoteId]: null,
+    });
   }
 
   @OnlineOnly
@@ -320,6 +410,7 @@ class ConnectionService extends AgentService {
       oobi: metadata.oobi as string,
       groupId: metadata.groupId as string,
       pending: !!metadata.pending,
+      createdAt: new Date(metadata.createdAtUTC as string),
     });
   }
 
@@ -333,33 +424,13 @@ class ConnectionService extends AgentService {
     return connection;
   }
 
-  async getConnectionHistoryById(
-    connectionId: string
-  ): Promise<ConnectionHistoryItem[]> {
-    const linkedIpexMessages =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
-        connectionId
-      );
-    const requestMessages = linkedIpexMessages
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .map((messageRecord) => {
-        const { historyType, createdAt, credentialType } = messageRecord;
-        return {
-          type: historyType,
-          timestamp: createdAt.toISOString(),
-          credentialType,
-        };
-      });
-    return requestMessages;
-  }
-
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
   @OnlineOnly
   async syncKeriaContacts() {
     const signifyContacts = await this.props.signifyClient.contacts().list();
     const storageContacts = await this.connectionStorage.getAll();
     const unSyncedData = signifyContacts.filter(
-      (contact: KeriaContact) =>
+      (contact: Contact) =>
         !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {
@@ -368,59 +439,75 @@ class ConnectionService extends AgentService {
         await this.createConnectionMetadata(contact.id, {
           alias: contact.alias,
           oobi: contact.oobi,
+          groupId: contact.groupCreationId,
+          createdAtUTC: contact.createdAt,
         });
       }
     }
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
-    const startTime = Date.now();
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    let operation;
+  async resolveOobi(
+    url: string,
+    waitForCompletion = true
+  ): Promise<{
+    op: Operation & { response: State };
+    alias: string;
+  }> {
+    if (
+      !new URL(url).pathname.match(OOBI_RE) &&
+      !new URL(url).pathname.match(DOOBI_RE) &&
+      !new URL(url).pathname.match(WOOBI_RE)
+    ) {
+      throw new Error(ConnectionService.OOBI_INVALID);
+    }
+    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
+    let operation: Operation & { response: State };
     if (waitForCompletion) {
-      operation = await waitAndGetDoneOp(
+      operation = (await waitAndGetDoneOp(
         this.props.signifyClient,
         await this.props.signifyClient.oobis().resolve(url, alias),
         5000
-      );
+      )) as Operation & { response: State };
+      if (!operation.done) {
+        throw new Error(`${ConnectionService.FAILED_TO_RESOLVE_OOBI} [url: ${url}]`);
+      }
+      if (operation.response && operation.response.i) {
+        const connectionId = operation.response.i;
+        await this.props.signifyClient.contacts().update(connectionId, {
+          alias,
+          groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
+          createdAt: new Date().toISOString(),
+        });
+      }
     } else {
-      operation = await waitAndGetDoneOp(
-        this.props.signifyClient,
-        await this.props.signifyClient.oobis().resolve(url, alias),
-        2000 - (Date.now() - startTime)
-      );
-    }
-    if (!operation.done && !waitForCompletion) {
+      operation = await this.props.signifyClient.oobis().resolve(url, alias);
       const pendingOperation = await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-
       this.props.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
-    } else if (!operation.done) {
-      throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
-    const oobi = { ...operation, alias };
-    return oobi;
+    return { op: operation, alias };
   }
 
-  private async getConnectNotesByConnectionId(
-    connectionId: string
-  ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.connectionNoteStorage.findAllByQuery({
-      connectionId,
-    });
-    return notes.map((note) => {
-      return {
-        id: note.id,
-        title: note.title,
-        message: note.message,
-      };
-    });
+  async removeConnectionsPendingDeletion() {
+    const pendingDeletions = await this.getConnectionsPendingDeletion();
+    for (const id of pendingDeletions) {
+      await this.deleteConnectionById(id);
+    }
+
+    return pendingDeletions;
+  }
+
+  async resolvePendingConnections() {
+    const pendingConnections = await this.getConnectionsPending();
+    for (const pendingConnection of pendingConnections) {
+      await this.resolveOobi(pendingConnection.oobi);
+    }
   }
 }
 

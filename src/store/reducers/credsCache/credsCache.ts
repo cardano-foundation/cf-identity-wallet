@@ -2,13 +2,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
+import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
 
 const initialState: {
   creds: CredentialShortDetails[];
   favourites: FavouriteIdentifier[];
+  filters: CredentialsFilters;
 } = {
   creds: [],
   favourites: [],
+  filters: CredentialsFilters.All,
 };
 const credsCacheSlice = createSlice({
   name: "credsCache",
@@ -42,6 +45,12 @@ const credsCacheSlice = createSlice({
         (fav) => fav.id !== action.payload
       );
     },
+    setCredentialsFilters: (
+      state,
+      action: PayloadAction<CredentialsFilters>
+    ) => {
+      state.filters = action.payload;
+    },
   },
 });
 
@@ -53,10 +62,12 @@ export const {
   setFavouritesCredsCache,
   addFavouritesCredsCache,
   removeFavouritesCredsCache,
+  setCredentialsFilters,
 } = credsCacheSlice.actions;
 
 const getCredsCache = (state: RootState) => state.credsCache.creds;
 const getFavouritesCredsCache = (state: RootState) =>
   state.credsCache.favourites;
+const getCredentialsFilters = (state: RootState) => state.credsCache.filters;
 
-export { getCredsCache, getFavouritesCredsCache };
+export { getCredsCache, getFavouritesCredsCache, getCredentialsFilters };
