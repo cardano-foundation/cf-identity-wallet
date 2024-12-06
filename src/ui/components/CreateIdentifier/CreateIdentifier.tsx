@@ -112,6 +112,7 @@ const CreateIdentifier = ({
     dispatch(setMultiSigGroupCache(undefined));
     setIdentifierData({...initalState});
     setInputChange(false);
+    setDuplicateName(false);
   };
 
   const handleCreateIdentifier = async () => {
@@ -257,7 +258,7 @@ const CreateIdentifier = ({
           header={
             <PageHeader
               closeButton={true}
-              closeButtonAction={() => resetModal()}
+              closeButtonAction={resetModal}
               closeButtonLabel={`${i18n.t(
                 multiSigGroup
                   ? "createidentifier.back"

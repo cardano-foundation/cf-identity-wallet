@@ -36,9 +36,12 @@ import {
 import { deleteNotificationRecordById, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
+import { NotificationAttempts } from "../records/notificationRecord.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
+  static readonly OUT_OF_ORDER_NOTIFICATION = "Out of order notification received, unable to process right now";
+
   static readonly POLL_KERIA_INTERVAL = 2000;
   static readonly CHECK_READINESS_INTERNAL = 25;
 
@@ -124,6 +127,9 @@ class KeriaNotificationService extends AgentService {
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
     }
+
+    let lastFailedNotificationsRetryTime = 0;
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!this.loggedIn || !this.getKeriaOnlineStatus()) {
@@ -188,22 +194,47 @@ class KeriaNotificationService extends AgentService {
       for (const notif of notifications.notes) {
         try {
           await this.processNotification(notif);
-          const nextNotificationIndex = notificationQuery.nextIndex + 1;
-          notificationQuery = {
-            nextIndex: nextNotificationIndex,
-            lastNotificationId: notif.i,
-          };
-          await this.basicStorage.createOrUpdateBasicRecord(
-            new BasicRecord({
-              id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
-              content: notificationQuery,
-            })
-          );
         } catch (error) {
-          // @TODO - Consider how to track/retry old notifications we couldn't process
           /* eslint-disable no-console */
           console.error("Error when process a notification", error);
+
+          const failedNotifications = await this.basicStorage.findById(
+            MiscRecordId.FAILED_NOTIFICATIONS
+          );
+
+          await this.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.FAILED_NOTIFICATIONS,
+              content: {
+                ...(failedNotifications?.content || {}),
+                [notif.i]: {
+                  notification: notif,
+                  attempts: 1,
+                  lastAttempt: Date.now(),
+                },
+              },
+            })
+          );
         }
+
+        const nextNotificationIndex = notificationQuery.nextIndex + 1;
+        notificationQuery = {
+          nextIndex: nextNotificationIndex,
+          lastNotificationId: notif.i,
+        };
+        await this.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+            content: notificationQuery,
+          })
+        );
+      }
+
+      const now = Date.now();
+      if (now - lastFailedNotificationsRetryTime > 60000) {
+        // Retry failed notifications every minute
+        await this.retryFailedNotifications();
+        lastFailedNotificationsRetryTime = now;
       }
       if (!notifications.notes.length) {
         await new Promise((rs) =>
@@ -240,11 +271,12 @@ class KeriaNotificationService extends AgentService {
     ) {
       return;
     }
-    const exchange = await this.verifyExternalNotification(notif);
 
+    const exchange = await this.getExternalExnMessage(notif);
     if (!exchange) {
       return;
     }
+
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
       shouldCreateRecord = await this.processExnIpexApplyNotification(exchange);
@@ -294,7 +326,57 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async verifyExternalNotification(
+  async retryFailedNotifications() {
+    const failedNotificationsRecord = await this.basicStorage.findById(
+      MiscRecordId.FAILED_NOTIFICATIONS
+    );
+
+    if (!failedNotificationsRecord || !failedNotificationsRecord.content) {
+      return;
+    }
+
+    const failedNotifications = failedNotificationsRecord.content;
+
+    for (const [notificationId, notificationData] of Object.entries(
+      failedNotifications as Record<string, NotificationAttempts>
+    )) {
+      const { attempts, lastAttempt, notification } = notificationData;
+      const now = Date.now();
+
+      const backoffDelays = [5000, 10000, 30000, 60000, 300000];
+      const delay =
+        backoffDelays[Math.min(attempts - 1, backoffDelays.length - 1)];
+
+      if (now - lastAttempt >= delay) {
+        try {
+          // Retry process the notification
+          await this.processNotification(notification);
+
+          delete failedNotifications[notificationId];
+          await this.basicStorage.update(
+            new BasicRecord({
+              id: MiscRecordId.FAILED_NOTIFICATIONS,
+              content: failedNotifications,
+            })
+          );
+        } catch (error) {
+          failedNotifications[notificationId] = {
+            ...notificationData,
+            attempts: attempts + 1,
+            lastAttempt: now,
+          };
+          await this.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.FAILED_NOTIFICATIONS,
+              content: failedNotifications,
+            })
+          );
+        }
+      }
+    }
+  }
+
+  private async getExternalExnMessage(
     notif: Notification
   ): Promise<ExnMessage | undefined> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
@@ -534,93 +616,32 @@ class KeriaNotificationService extends AgentService {
   ): Promise<boolean> {
     switch (exchange.exn.e?.exn?.r) {
     case ExchangeRoute.IpexAdmit: {
-      const admitSaid = exchange.exn.e.exn.d;
-      const otherMember = exchange.exn.i;
-
-      const grantExn = await this.props.signifyClient
-        .exchanges()
-        .get(exchange.exn.e.exn.p);
-
-      const notificationsGrant =
+      const grantNotificationRecords =
           await this.notificationStorage.findAllByQuery({
-            exnSaid: grantExn.exn.d,
+            exnSaid: exchange.exn.e.exn.p,
           });
-
-      const existMultisig = await this.identifierStorage
-        .getIdentifierMetadata(exchange.exn.e.exn.i)
-        .catch((error) => {
-          if (
-            error.message ===
-              IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-          ) {
-            return undefined;
-          } else {
-            throw error;
-          }
-        });
-
-      if (!existMultisig) {
-        await this.markNotification(notif.i);
-        return false;
-      }
-
-      const credentialId = grantExn.exn.e.acdc.d;
-      const existingCredential = await this.props.signifyClient
-        .credentials()
-        .get(credentialId)
-        .catch((error) => {
-          const status = error.message.split(" - ")[1];
-          if (/404/gi.test(status)) {
-            return undefined;
-          } else {
-            throw error;
-          }
-        });
-
-      // @TODO - foconnor: If multi-sig it may not complete now
-      if (existingCredential) {
-        await this.markNotification(notif.i);
-        return false;
-      }
-
-      // @TODO - foconnor: We may receive admit before grant, will cause issues
-      if (notificationsGrant.length) {
-        const notificationRecord = notificationsGrant[0];
-
-        // Can only be one, as grant tied to credential ID
-        let linkedGroupRequestDetails =
-            notificationRecord.linkedGroupRequests[credentialId];
-        if (linkedGroupRequestDetails) {
-          if (
-            linkedGroupRequestDetails.accepted &&
-              !linkedGroupRequestDetails.saids[admitSaid]
-          ) {
-            // Only auto-join NEW /ipex/admit
-            await this.ipexCommunications.acceptAcdcFromMultisigExn(
-              exchange.exn.d
-            );
-          }
-
-          if (!linkedGroupRequestDetails.saids[admitSaid]) {
-            // First /multisig/exn for specific /ipex/admit
-            linkedGroupRequestDetails.saids[admitSaid] = [];
-          }
-          linkedGroupRequestDetails.saids[admitSaid].push([
-            otherMember,
-            exchange.exn.d,
-          ]); // Record, should only get 1 notification
-        } else {
-          linkedGroupRequestDetails = {
-            // First /multisig/exn linking to /ipex/grant
-            accepted: false,
-            saids: { [admitSaid]: [[otherMember, exchange.exn.d]] },
-          };
+      
+      // Either relates to an processed and deleted grant notification, or is out of order
+      if (grantNotificationRecords.length === 0) {
+        const grantExn = await this.props.signifyClient
+          .exchanges()
+          .get(exchange.exn.e.exn.p);
+        const credentialId = grantExn.exn.e.acdc.d;
+        if (await this.credentialStorage.getCredentialMetadata(credentialId) !== null) {
+          await this.markNotification(notif.i);
+          return false;
         }
 
-        notificationRecord.linkedGroupRequests[credentialId] =
-            linkedGroupRequestDetails;
-        await this.notificationStorage.update(notificationRecord);
+        throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
       }
+
+      const notificationRecord = grantNotificationRecords[0];
+      notificationRecord.linkedGroupRequest = {
+        ...notificationRecord.linkedGroupRequest,
+        current: exchange.exn.d,
+      };
+
+      await this.notificationStorage.update(notificationRecord);
       return false;
     }
     case ExchangeRoute.IpexOffer: {
@@ -639,36 +660,36 @@ class KeriaNotificationService extends AgentService {
         const offerSaid = exchange.exn.e.exn.d;
         const otherMember = exchange.exn.i;
 
-        let linkedGroupRequestDetails =
-            notificationRecord.linkedGroupRequests[acdcSaid];
-        if (linkedGroupRequestDetails) {
-          if (
-            linkedGroupRequestDetails.accepted &&
-              !linkedGroupRequestDetails.saids[offerSaid]
-          ) {
-            // Only auto-join NEW /ipex/offer
-            await this.ipexCommunications.joinMultisigOffer(exchange.exn.d);
-          }
+        // let linkedGroupRequestDetails =
+        //     notificationRecord.linkedGroupRequests[acdcSaid];
+        // if (linkedGroupRequestDetails) {
+        //   if (
+        //     linkedGroupRequestDetails.accepted &&
+        //       !linkedGroupRequestDetails.saids[offerSaid]
+        //   ) {
+        //     // Only auto-join NEW /ipex/offer
+        //     await this.ipexCommunications.joinMultisigOffer(exchange.exn.d);
+        //   }
 
-          if (!linkedGroupRequestDetails.saids[offerSaid]) {
-            // First /multisig/exn for specific /ipex/offer
-            linkedGroupRequestDetails.saids[offerSaid] = [];
-          }
-          linkedGroupRequestDetails.saids[offerSaid].push([
-            otherMember,
-            exchange.exn.d,
-          ]); // Record, should only get 1 notification
-        } else {
-          linkedGroupRequestDetails = {
-            // First /multisig/exn linking to /ipex/apply with this credentialId
-            accepted: false,
-            saids: { [offerSaid]: [[otherMember, exchange.exn.d]] },
-          };
-        }
+        //   if (!linkedGroupRequestDetails.saids[offerSaid]) {
+        //     // First /multisig/exn for specific /ipex/offer
+        //     linkedGroupRequestDetails.saids[offerSaid] = [];
+        //   }
+        //   linkedGroupRequestDetails.saids[offerSaid].push([
+        //     otherMember,
+        //     exchange.exn.d,
+        //   ]); // Record, should only get 1 notification
+        // } else {
+        //   linkedGroupRequestDetails = {
+        //     // First /multisig/exn linking to /ipex/apply with this credentialId
+        //     accepted: false,
+        //     saids: { [offerSaid]: [[otherMember, exchange.exn.d]] },
+        //   };
+        // }
 
-        notificationRecord.linkedGroupRequests[acdcSaid] =
-            linkedGroupRequestDetails;
-        await this.notificationStorage.update(notificationRecord);
+        // notificationRecord.linkedGroupRequests[acdcSaid] =
+        //     linkedGroupRequestDetails;
+        // await this.notificationStorage.update(notificationRecord);
       }
       return false;
     }
@@ -688,36 +709,36 @@ class KeriaNotificationService extends AgentService {
         const grantSaid = exchange.exn.e.exn.d;
         const otherMember = exchange.exn.i;
 
-        let linkedGroupRequestDetails =
-            notificationRecord.linkedGroupRequests[credentialId];
-        if (linkedGroupRequestDetails) {
-          if (
-            linkedGroupRequestDetails.accepted &&
-              !linkedGroupRequestDetails.saids[grantSaid]
-          ) {
-            // Only auto-join NEW /ipex/grant
-            await this.ipexCommunications.joinMultisigGrant(exchange.exn.d);
-          }
+        // let linkedGroupRequestDetails =
+        //     notificationRecord.linkedGroupRequests[credentialId];
+        // if (linkedGroupRequestDetails) {
+        //   if (
+        //     linkedGroupRequestDetails.accepted &&
+        //       !linkedGroupRequestDetails.saids[grantSaid]
+        //   ) {
+        //     // Only auto-join NEW /ipex/grant
+        //     await this.ipexCommunications.joinMultisigGrant(exchange.exn.d);
+        //   }
 
-          if (!linkedGroupRequestDetails.saids[grantSaid]) {
-            // First /multisig/exn for specific /ipex/grant
-            linkedGroupRequestDetails.saids[grantSaid] = [];
-          }
-          linkedGroupRequestDetails.saids[grantSaid].push([
-            otherMember,
-            exchange.exn.d,
-          ]); // Record, should only get 1 notification
-        } else {
-          linkedGroupRequestDetails = {
-            // First /multisig/exn linking to /ipex/apply with this credentialId
-            accepted: false,
-            saids: { [grantSaid]: [[otherMember, exchange.exn.d]] },
-          };
-        }
+        //   if (!linkedGroupRequestDetails.saids[grantSaid]) {
+        //     // First /multisig/exn for specific /ipex/grant
+        //     linkedGroupRequestDetails.saids[grantSaid] = [];
+        //   }
+        //   linkedGroupRequestDetails.saids[grantSaid].push([
+        //     otherMember,
+        //     exchange.exn.d,
+        //   ]); // Record, should only get 1 notification
+        // } else {
+        //   linkedGroupRequestDetails = {
+        //     // First /multisig/exn linking to /ipex/apply with this credentialId
+        //     accepted: false,
+        //     saids: { [grantSaid]: [[otherMember, exchange.exn.d]] },
+        //   };
+        // }
 
-        notificationRecord.linkedGroupRequests[credentialId] =
-            linkedGroupRequestDetails;
-        await this.notificationStorage.update(notificationRecord);
+        // notificationRecord.linkedGroupRequests[credentialId] =
+        //     linkedGroupRequestDetails;
+        // await this.notificationStorage.update(notificationRecord);
       }
       return false;
     }
@@ -948,7 +969,7 @@ class KeriaNotificationService extends AgentService {
               alias,
               createdAt: new Date((operation.response as State).dt),
             });
-          
+
           this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
             type: EventTypes.ConnectionStateChanged,
             payload: {
@@ -979,44 +1000,41 @@ class KeriaNotificationService extends AgentService {
             .exchanges()
             .get(admitExchange.exn.p);
           const credentialId = grantExchange.exn.e.acdc.d;
-          if (credentialId) {
-            const holder = await this.identifierStorage.getIdentifierMetadata(
-              admitExchange.exn.i
-            );
-            if (holder.multisigManageAid) {
-              const notifications =
-                  await this.notificationStorage.findAllByQuery({
-                    exnSaid: grantExchange.exn.d,
-                  });
-              for (const notification of notifications) {
-                // @TODO: Delete other long running operations in linkedGroupRequests
-                await deleteNotificationRecordById(
-                  this.props.signifyClient,
-                  this.notificationStorage,
-                  notification.id,
-                    notification.a.r as NotificationRoute
-                );
-
-                this.props.eventEmitter.emit<NotificationRemovedEvent>({
-                  type: EventTypes.NotificationRemoved,
-                  payload: {
-                    keriaNotif: {
-                      id: notification.id,
-                      createdAt: notification.createdAt.toISOString(),
-                      a: notification.a,
-                      multisigId: notification.multisigId,
-                      connectionId: notification.connectionId,
-                      read: notification.read,
-                    },
-                  },
+          const holder = await this.identifierStorage.getIdentifierMetadata(
+            admitExchange.exn.i
+          );
+          if (holder.multisigManageAid) {
+            const notifications =
+                await this.notificationStorage.findAllByQuery({
+                  exnSaid: grantExchange.exn.d,
                 });
-              }
+            for (const notification of notifications) {
+              await deleteNotificationRecordById(
+                this.props.signifyClient,
+                this.notificationStorage,
+                notification.id,
+                  notification.a.r as NotificationRoute
+              );
+
+              this.props.eventEmitter.emit<NotificationRemovedEvent>({
+                type: EventTypes.NotificationRemoved,
+                payload: {
+                  keriaNotif: {
+                    id: notification.id,
+                    createdAt: notification.createdAt.toISOString(),
+                    a: notification.a,
+                    multisigId: notification.multisigId,
+                    connectionId: notification.connectionId,
+                    read: notification.read,
+                  },
+                },
+              });
             }
-            await this.credentialService.markAcdc(
-              credentialId,
-              CredentialStatus.CONFIRMED
-            );
           }
+          await this.credentialService.markAcdc(
+            credentialId,
+            CredentialStatus.CONFIRMED
+          );
         }
         break;
       }

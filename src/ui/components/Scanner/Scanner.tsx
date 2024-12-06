@@ -16,7 +16,9 @@ import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  KeriConnectionType
+  KeriConnectionType,
+  OOBI_AGENT_ONLY_RE,
+  WOOBI_RE
 } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
@@ -241,7 +243,9 @@ const Scanner = forwardRef(
 
       if (
         (!isMultiSigUrl && !isValidConnectionUrl(url)) ||
-        (isMultiSigUrl && !isValidHttpUrl(url))
+        (isMultiSigUrl && !isValidHttpUrl(url)) ||
+        (!new URL(url).pathname.match(OOBI_AGENT_ONLY_RE) &&
+          !new URL(url).pathname.match(WOOBI_RE))
       ) {
         throw new Error(ErrorMessage.INVALID_CONNECTION_URL);
       }

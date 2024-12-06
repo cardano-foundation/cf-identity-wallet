@@ -34,6 +34,10 @@ const mockConnectionService = {
   removeConnectionsPendingDeletion: jest.fn(),
   resolvePendingConnections: jest.fn(),
 };
+const mockIdentifierService = {
+  removeIdentifiersPendingDeletion: jest.fn(),
+};
+
 const mockEntropy = "00000000000000000000000000000000";
 
 describe("test cases of bootAndConnect function", () => {
@@ -51,6 +55,7 @@ describe("test cases of bootAndConnect function", () => {
     (agent as any).basicStorageService = mockBasicStorageService;
     (agent as any).agentServicesProps = mockAgentServicesProps;
     (agent as any).connectionService = mockConnectionService;
+    (agent as any).identifierService = mockIdentifierService;
 
     mockAgentUrls = {
       url: "http://127.0.0.1:3901",
@@ -148,6 +153,9 @@ describe("test cases of bootAndConnect function", () => {
       .fn()
       .mockReturnValue(["id1", "id2"]);
     mockConnectionService.resolvePendingConnections = jest
+      .fn()
+      .mockReturnValue(undefined);
+    mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
     await agent.bootAndConnect(mockAgentUrls);
@@ -263,6 +271,9 @@ describe("test cases of recoverKeriaAgent function", () => {
     mockConnectionService.removeConnectionsPendingDeletion = jest
       .fn()
       .mockReturnValue(["id1", "id2"]);
+    mockIdentifierService.removeIdentifiersPendingDeletion = jest
+      .fn()
+      .mockReturnValue(undefined);
 
     await agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl);
 
