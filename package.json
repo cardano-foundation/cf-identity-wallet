@@ -110,7 +110,7 @@
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^29.5.0",
     "jest-transform-yaml": "^1.1.2",
-    "lint-staged": "^14.0.1",
+    "lint-staged": "^15.2.10",
     "mini-css-extract-plugin": "^2.6.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "prettier": "2.8.7",
