@@ -26,7 +26,6 @@ import { store } from "../../../store";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
-import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   setQueueIncomingRequest,
   setToastMsg,

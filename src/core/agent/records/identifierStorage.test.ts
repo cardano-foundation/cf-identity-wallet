@@ -11,7 +11,7 @@ const storageService = jest.mocked({
   getAll: jest.fn(),
 });
 
-const identifierStorage = new IdentifierStorage(storageService as any);
+const identifierStorage = new IdentifierStorage(storageService as never);
 
 const identifierMetadataRecordProps = {
   id: "aidHere",

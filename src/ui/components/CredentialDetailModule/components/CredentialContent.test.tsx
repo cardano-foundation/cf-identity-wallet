@@ -13,6 +13,7 @@ import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { CredentialContent } from "./CredentialContent";
 import { ACDCDetails, CredentialStatus } from "../../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../../core/agent/services/identifier.types";
+import { ModalMockProps } from "../../../globals/test-types";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -32,7 +33,7 @@ const getIndentifier = jest.fn(() => identifierFix[0]);
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

@@ -6,10 +6,11 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialOptions } from "./CredentialOptions";
+import { ModalMockProps } from "../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: ModalMockProps) => children,
 }));
 
 const dispatchMock = jest.fn();

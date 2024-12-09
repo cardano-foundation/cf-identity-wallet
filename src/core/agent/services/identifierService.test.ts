@@ -128,7 +128,7 @@ const operationPendingStorage = jest.mocked({
 
 const eventEmitter = new CoreEventEmitter();
 const agentServicesProps = {
-  signifyClient: signifyClient as any,
+  signifyClient: signifyClient as never,
   eventEmitter,
 };
 
@@ -139,9 +139,9 @@ const connections = jest.mocked({
 
 const identifierService = new IdentifierService(
   agentServicesProps,
-  identifierStorage as any,
-  operationPendingStorage as any,
-  connections as any
+  identifierStorage as never,
+  operationPendingStorage as never,
+  connections as never
 );
 
 jest.mock("../../cardano/walletConnect/peerConnection", () => ({
@@ -737,7 +737,7 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockResolvedValue(keriMetadataRecord);
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
-    signifyClient.manager = managerMock as any;
+    signifyClient.manager = managerMock as never;
     expect(
       await identifierService.getSigner(keriMetadataRecord.id)
     ).toStrictEqual(mockSigner);

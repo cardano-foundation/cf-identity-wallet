@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { IonModal } from "@ionic/react";
 import "./ChangePin.scss";
 import { useDispatch } from "react-redux";
@@ -29,6 +29,13 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
     passCodeValue.originalPasscode.length === 0 && setIsOpen(false);
     ref.current?.clearState();
   };
+  
+  const onPasscodeChange = useCallback((passcode: string, originalPasscode: string) => {
+    setPassCodeValue({
+      passcode,
+      originalPasscode,
+    });
+  }, []);
 
   const title =
     passCodeValue.originalPasscode.length === 0
@@ -38,6 +45,7 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
       : i18n.t(
         "tabs.menu.tab.settings.sections.security.changepin.reenterpasscode"
       );
+      
 
   return (
     <IonModal
@@ -73,12 +81,7 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
             ref={ref}
             testId={pageId}
             onCreateSuccess={handlePassAuth}
-            onPasscodeChange={(passcode, originalPasscode) => {
-              setPassCodeValue({
-                passcode,
-                originalPasscode,
-              });
-            }}
+            onPasscodeChange={onPasscodeChange}
           />
         </ResponsivePageLayout>
       )}

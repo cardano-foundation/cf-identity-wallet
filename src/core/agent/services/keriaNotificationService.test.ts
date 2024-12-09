@@ -139,7 +139,7 @@ const signifyClient = jest.mocked({
 const eventEmitter = new CoreEventEmitter();
 
 const agentServicesProps = {
-  signifyClient: signifyClient as any,
+  signifyClient: signifyClient as never,
   eventEmitter: eventEmitter,
 };
 
@@ -223,15 +223,15 @@ const credentialService = jest.mocked({
 
 const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
-  notificationStorage as any,
-  identifierStorage as any,
-  operationPendingStorage as any,
-  connectionStorage as any,
-  credentialStorage as any,
-  basicStorage as any,
-  multiSigs as any,
-  ipexCommunications as any,
-  credentialService as any,
+  notificationStorage as never,
+  identifierStorage as never,
+  operationPendingStorage as never,
+  connectionStorage as never,
+  credentialStorage as never,
+  basicStorage as never,
+  multiSigs as never,
+  ipexCommunications as never,
+  credentialService as never,
   Agent.agent.getKeriaOnlineStatus,
   Agent.agent.markAgentStatus,
   Agent.agent.connect
@@ -2789,6 +2789,7 @@ describe("Long running operation tracker", () => {
 
   test("Should update notification marker after the notification is processed", async () => {
     jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
       .mockReturnValue(true);
     jest.spyOn(console, "error").mockReturnValueOnce();
@@ -2887,6 +2888,7 @@ describe("Long running operation tracker", () => {
 
     operationsGetMock.mockRejectedValueOnce(new Error("Failed to fetch"));
     jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
       .mockReturnValue(true);
 
@@ -2908,6 +2910,7 @@ describe("Long running operation tracker", () => {
     const errorMessage = "Error - 500";
     operationsGetMock.mockRejectedValueOnce(new Error(errorMessage));
     jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
       .mockReturnValue(true);
 

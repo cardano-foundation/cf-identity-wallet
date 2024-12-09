@@ -46,7 +46,6 @@ const Card = ({cardType, name, index, cardData, handleShowCardDetails, pickedCar
   );
 }
 
-
 const CardSlider = ({
   name,
   cardType,
@@ -102,7 +101,7 @@ const CardSlider = ({
   useEffect(() => {
     if (!swiper) return;
     swiper.slideTo(favouriteIndex, 300);
-  }, [swiper]);
+  }, [favouriteIndex, swiper]);
 
   const containerClasses = `card-slider ${
     pickedCardIndex !== null ? "transition-start" : ""

@@ -16,6 +16,7 @@ import { walletConnectionsFix } from "../../../../__fixtures__/walletConnections
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { ConnectWallet } from "./ConnectWallet";
+import { ModalMockProps } from "../../../../globals/test-types";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -38,7 +39,7 @@ jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) => (
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) => (
     <div
       data-testid={props["data-testid"]}
       style={{ display: isOpen ? "block" : "none" }}
@@ -51,7 +52,7 @@ jest.mock("@ionic/react", () => ({
 jest.mock("../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../core/storage"),
   SecureStorage: {
-    get: (key: string) => {
+    get: () => {
       return "111111";
     },
     remove: () => jest.fn(),

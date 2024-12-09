@@ -44,7 +44,7 @@ const getMock = jest
 const getAllKvMock = jest
   .spyOn(SqliteStorage.prototype, "scanItems")
   .mockImplementation(
-    async (type: string, query: any): Promise<StorageRecord[]> => {
+    async (type: string, query: unknown): Promise<StorageRecord[]> => {
       const records = [
         {
           category: BasicRecord.type,
@@ -129,7 +129,7 @@ const newRecord = new BasicRecord({
   },
 });
 
-const storageService = new SqliteStorage<BasicRecord>({} as any);
+const storageService = new SqliteStorage<BasicRecord>({} as never);
 
 describe("Aries - Sqlite Storage Module: Storage Service", () => {
   test("should be able to store a new record", async () => {
@@ -200,8 +200,8 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
       BasicRecord
     );
     expect(getMock).toBeCalledWith(existingRecord.id);
-    expect(record!.type).toEqual(BasicRecord.type);
-    expect(record!.id).toEqual(existingRecord.id);
+    expect(record?.type).toEqual(BasicRecord.type);
+    expect(record?.id).toEqual(existingRecord.id);
   });
 
   test("should get an non existing record", async () => {

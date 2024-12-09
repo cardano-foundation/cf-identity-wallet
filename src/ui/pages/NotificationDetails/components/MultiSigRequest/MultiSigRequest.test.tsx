@@ -16,10 +16,11 @@ import { setNotificationsCache } from "../../../../../store/reducers/notificatio
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 import { KeyStoreKeys } from "../../../../../core/storage";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { ModalMockProps } from "../../../../globals/test-types";
 
 mockIonicReact();
 
-const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+const mockGet = jest.fn<Promise<string>, string[]>(() => Promise.resolve("111111"));
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
@@ -41,7 +42,7 @@ const multisigIcpDetails = {
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const getMultiSignMock = jest.fn().mockResolvedValue(multisigIcpDetails);
-const joinMultisignMock = jest.fn((...params: unknown[]) =>
+const joinMultisignMock = jest.fn<Promise<object>, string[]>(() =>
   Promise.resolve({
     identifier: "identifier-id",
   })
@@ -50,7 +51,7 @@ const joinMultisignMock = jest.fn((...params: unknown[]) =>
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
@@ -63,7 +64,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
       multiSigs: {
         getMultisigIcpDetails: () => getMultiSignMock(),
-        joinMultisig: (...params: unknown[]) => joinMultisignMock(...params),
+        joinMultisig: (...params: string[]) => joinMultisignMock(...params),
       },
     },
   },
