@@ -1757,6 +1757,10 @@
     "pending": "{{action}} pending",
     "success": "{{action}} successful"
   },
+  "missingissuer": {
+    "done": "Done",
+    "content": "This credential was issued through a connection that has since been deleted or is no longer accessible. As a result, the connection details cannot be displayed."
+  },
   "inputrequest": {
     "title": {
       "username": "Welcome! What should we call you?",

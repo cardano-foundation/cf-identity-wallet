@@ -245,6 +245,58 @@ describe("Credential request", () => {
     });
   }, 10000);
 
+  test("Open missing issuer modal", async () => {
+
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.NOTIFICATIONS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      credsCache: {
+        creds: [],
+      },
+      connectionsCache: {
+        connections: [],
+      },
+      notificationsCache: {
+        notifications: notificationsFix,
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const backMock = jest.fn();
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[1]}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("show-missing-issuer-icon")).toBeVisible();
+
+    fireEvent.click(getByTestId("show-missing-issuer-icon"));
+
+    await waitFor(() => {
+      expect(getByTestId("missing-issuer-modal")).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.missingissuer.content)).toBeVisible();
+    })
+  });
+
   test("Open indentifier detail", async () => {
 
     const initialState = {

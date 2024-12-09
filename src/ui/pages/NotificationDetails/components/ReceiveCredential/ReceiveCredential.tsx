@@ -51,6 +51,7 @@ import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
 import { LinkedGroupInfoGrant } from "../../../../../core/agent/services/ipexCommunicationService.types";
+import { MissingIssuerModal } from "../../../../components/MissingIssuerModal";
 
 const ANIMATION_DELAY = 2600;
 
@@ -72,6 +73,7 @@ const ReceiveCredential = ({
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [openInfo, setOpenInfo] = useState(false);
   const [showCommonError, setShowCommonError] = useState(false);
+  const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [multisigMemberStatus, setMultisigMemberStatus] =
     useState<LinkedGroupInfoGrant>({
@@ -90,7 +92,7 @@ const ReceiveCredential = ({
   const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
 
   const connection =
-    connectionsCache?.[notificationDetails.connectionId]?.label || i18n.t("connections.unknown");
+    connectionsCache?.[notificationDetails.connectionId]?.label;
 
   const userAccepted = multisigMemberStatus.linkedGroupRequest.accepted;
   const maxThreshold =
@@ -357,7 +359,17 @@ const ReceiveCredential = ({
               <span className="break-text">
                 {i18n.t("tabs.notifications.details.credential.receive.from")}
               </span>
-              <strong>{connection}</strong>
+              <span className="issuer-name">
+                <strong>
+                  {connection || i18n.t("connections.unknown")} 
+                </strong>
+                {!connection && <IonIcon
+                  onClick={() => setShowMissingIssuerModal(true)}
+                  data-testid="show-missing-issuer-icon"
+                  className="missing-connection-icon"
+                  icon={informationCircleOutline}
+                />}
+              </span>
             </IonCol>
           </div>
           <div className="request-status">
@@ -451,6 +463,7 @@ const ReceiveCredential = ({
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
       />
+      <MissingIssuerModal isOpen={showMissingIssuerModal} setIsOpen={setShowMissingIssuerModal} />
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}
