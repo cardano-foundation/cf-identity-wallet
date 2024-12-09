@@ -178,7 +178,7 @@ const CredentialRequestInformation = ({
           >
             <div className="request-from-content">
               <img src={connection?.logo || KeriLogo} />
-              <p>{connection?.label}</p>
+              <p>{connection?.label || i18n.t("connections.unknown")}</p>
             </div>
           </CardDetailsBlock>
           <CardDetailsBlock

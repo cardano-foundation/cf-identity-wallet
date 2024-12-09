@@ -5,5 +5,3 @@ keri:
   credentials:
     testServer:
       urlInt: "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org"
-  backing:
-    mode: direct

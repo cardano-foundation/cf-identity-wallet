@@ -1,9 +1,5 @@
-import { Signer } from "signify-ts";
-import {
-  CreateIdentifierResult,
-  IdentifierDetails,
-  IdentifierShortDetails,
-} from "./identifier.types";
+import { HabState, Operation, Signer } from "signify-ts";
+import { IdentifierDetails, IdentifierShortDetails } from "./identifier.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -16,8 +12,6 @@ import {
   MiscRecordId,
 } from "../agent.types";
 import { BasicRecord, BasicStorage, IdentifierStorage } from "../records";
-import { ConfigurationService } from "../../configuration";
-import { BackingMode } from "../../configuration/configurationService.types";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
@@ -49,6 +43,11 @@ class IdentifierService extends AgentService {
     "Identifier name has already been used on KERIA";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
+  static readonly NO_WITNESSES_AVAILABLE =
+    "No discoverable witnesses available on connected KERIA instance";
+  static readonly MISCONFIGURED_AGENT_CONFIGURATION =
+    "Misconfigured KERIA agent for this wallet type";
+
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connections: ConnectionService;
@@ -184,10 +183,11 @@ class IdentifierService extends AgentService {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
 
-    const name = metadata.groupMetadata
-      ? `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`
-      : `${metadata.theme}:${metadata.displayName}`;
-
+    let name = `${metadata.theme}:${metadata.displayName}`;
+    if (metadata.groupMetadata) {
+      const initiatorFlag = metadata.groupMetadata.groupInitiator ? "1" : "0";
+      name = `${metadata.theme}:${initiatorFlag}-${metadata.groupMetadata.groupId}:${metadata.displayName}`;
+    }
     await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.IDENTIFIER_PENDING_CREATION,
@@ -212,7 +212,20 @@ class IdentifierService extends AgentService {
     metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
   ): Promise<void> {
     const startTime = Date.now();
-    const operation = await this.props.signifyClient.identifiers().create(name);
+    const witnesses = await this.getAvailableWitnesses();
+    if (witnesses.length === 0) {
+      throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE);
+    }
+
+    // @TODO - foconnor: Follow up ticket to pick a sane default for threshold. Right now max is too much.
+    //   Must also enforce a minimum number of available witnesses.
+    const operation = await this.props.signifyClient
+      .identifiers()
+      .create(name, {
+        toad: witnesses.length,
+        wits: witnesses,
+      });
+
     let op = await operation.op().catch((error) => {
       const err = error.message.split(" - ");
       if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
@@ -223,12 +236,10 @@ class IdentifierService extends AgentService {
     const identifier = operation.serder.ked.i;
     const isPending = true;
 
-    if (metadata.groupMetadata?.groupId) {
-      const addRoleOperation = await this.props.signifyClient
-        .identifiers()
-        .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
-      await addRoleOperation.op();
-    }
+    const addRoleOperation = await this.props.signifyClient
+      .identifiers()
+      .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
+    await addRoleOperation.op();
 
     op = await waitAndGetDoneOp(
       this.props.signifyClient,
@@ -400,15 +411,113 @@ class IdentifierService extends AgentService {
       (identifier: IdentifierResult) =>
         !storageIdentifiers.find((item) => identifier.prefix === item.id)
     );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      for (const identifier of unSyncedData) {
-        await this.identifierStorage.createIdentifierMetadataRecord({
-          id: identifier.prefix,
-          displayName: identifier.prefix, //same as the id at the moment
-          theme: 0,
+
+    const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [
+      unSyncedData.filter((item: HabState) => item.group !== undefined),
+      unSyncedData.filter((item: HabState) => item.group === undefined),
+    ];
+
+    for (const identifier of unSyncedDataWithoutGroup) {
+      if (identifier.name.startsWith("XX")) {
+        continue;
+      }
+
+      const op: Operation = await this.props.signifyClient
+        .operations()
+        .get(`witness.${identifier.prefix}`)
+        .catch(async (error) => {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
+            return await this.props.signifyClient
+              .operations()
+              .get(`done.${identifier.prefix}`);
+          }
+          throw error;
+        });
+      const isPending = !op.done;
+
+      if (isPending) {
+        const pendingOperation = await this.operationPendingStorage.save({
+          id: op.name,
+          recordType: OperationPendingRecordType.Witness,
+        });
+        this.props.eventEmitter.emit<OperationAddedEvent>({
+          type: EventTypes.OperationAdded,
+          payload: { operation: pendingOperation },
         });
       }
+
+      const name = identifier.name.split(":");
+      const theme = parseInt(name[0], 10);
+      const isMultiSig = name.length === 3;
+
+      if (isMultiSig) {
+        const groupId = identifier.name.split(":")[1];
+        const groupInitiator = groupId.split("-")[0] === "1";
+
+        await this.identifierStorage.createIdentifierMetadataRecord({
+          id: identifier.prefix,
+          displayName: groupId,
+          theme,
+          groupMetadata: {
+            groupId,
+            groupCreated: false,
+            groupInitiator,
+          },
+          isPending,
+        });
+
+        continue;
+      }
+
+      await this.identifierStorage.createIdentifierMetadataRecord({
+        id: identifier.prefix,
+        displayName: identifier.prefix,
+        theme,
+        isPending,
+      });
+    }
+
+    for (const identifier of unSyncedDataWithGroup) {
+      if (identifier.name.startsWith("XX")) {
+        continue;
+      }
+
+      const multisigManageAid = identifier.group.mhab.prefix;
+      const groupId = identifier.group.mhab.name.split(":")[1];
+      const theme = parseInt(identifier.name.split(":")[0], 10);
+      const groupInitiator = groupId.split("-")[0] === "1";
+      const op = await this.props.signifyClient
+        .operations()
+        .get(`group.${identifier.prefix}`);
+      const isPending = !op.done;
+
+      if (isPending) {
+        const pendingOperation = await this.operationPendingStorage.save({
+          id: op.name,
+          recordType: OperationPendingRecordType.Group,
+        });
+        this.props.eventEmitter.emit<OperationAddedEvent>({
+          type: EventTypes.OperationAdded,
+          payload: { operation: pendingOperation },
+        });
+      }
+
+      await this.identifierStorage.updateIdentifierMetadata(multisigManageAid, {
+        groupMetadata: {
+          groupId,
+          groupCreated: true,
+          groupInitiator,
+        },
+      });
+
+      await this.identifierStorage.createIdentifierMetadataRecord({
+        id: identifier.prefix,
+        displayName: groupId,
+        theme,
+        multisigManageAid,
+        isPending,
+      });
     }
   }
 
@@ -426,26 +535,21 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private getCreateAidOptions() {
-    if (ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER) {
-      return {
-        toad: 1,
-        wits: [ConfigurationService.env.keri.backing.ledger.aid],
-        count: 1,
-        ncount: 1,
-        isith: "1",
-        nsith: "1",
-        data: [{ ca: ConfigurationService.env.keri.backing.ledger.address }],
-      };
-    } else if (
-      ConfigurationService.env.keri.backing.mode === BackingMode.POOLS
-    ) {
-      return {
-        toad: ConfigurationService.env.keri.backing.pools.length,
-        wits: ConfigurationService.env.keri.backing.pools,
-      };
+  private async getAvailableWitnesses(): Promise<string[]> {
+    const config = await this.props.signifyClient.config().get();
+    if (!config.iurls) {
+      throw new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
     }
-    return {};
+
+    const witnesses = [];
+    for (const oobi of config.iurls) {
+      const role = new URL(oobi).searchParams.get("role");
+      if (role === "witness") {
+        witnesses.push(oobi.split("/oobi/")[1].split("/")[0]); // EID - endpoint identifier
+      }
+    }
+
+    return witnesses;
   }
 }
 

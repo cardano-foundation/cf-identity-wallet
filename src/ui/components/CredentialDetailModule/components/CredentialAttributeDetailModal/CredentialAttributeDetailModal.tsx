@@ -39,7 +39,7 @@ const CredentialAttributeDetailModal = ({
           <div className="attribute-description">
             <h3>
               {t("tabs.credentials.details.modal.about", {
-                type: title,
+                type: title.toLowerCase(),
               })}
             </h3>
           </div>
