@@ -130,11 +130,6 @@
     "workbox-webpack-plugin": "^6.5.4",
     "yaml-loader": "^0.8.0"
   },
-  "overrides": {
-    "express": {
-      "path-to-regexp": "0.1.12"
-    }
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
