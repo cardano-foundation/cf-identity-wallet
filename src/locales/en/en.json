@@ -1570,7 +1570,7 @@
     "share": {
       "title": "Share identifier",
       "subtitle": "You've scanned",
-      "copybutton": "Copy OOBI connection",
+      "copybutton": "Copy connection URL",
       "notes": {
         "top": "Before proceeding, please make sure that everyone you want to include as a signer scans this QR code.",
         "middle": "After everyone has scanned your QR code, please be sure to scan everyone else's QR code as well.",
@@ -1596,7 +1596,7 @@
     "scan": {
       "cancel": "Cancel",
       "confirm": "Confirm",
-      "pasteoobi": "Paste OOBI",
+      "pasteoobi": "Paste URL",
       "initiate": "Initiate group",
       "scanqrcode": "Scan QR code",
       "pastecontents": "Paste contents"
