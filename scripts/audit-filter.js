@@ -2,14 +2,21 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
+console.log(`Testing1..`);
 const __filename = fileURLToPath(import.meta.url);
+console.log(`Testing2..`);
 const __dirname = dirname(__filename);
+console.log(`Testing3..`);
 const auditFilePath = join(__dirname, 'audit-results.json');
+console.log(`Testing4..`);
 const configPath = join(__dirname, '..', 'configs', 'ignored-node-vulnerabilities.json');
 
+console.log(`Testing5..`);
 const auditResults = JSON.parse(fs.readFileSync(auditFilePath));
 const ignoredData = JSON.parse(fs.readFileSync(configPath));
 const ignoredIDs = new Set(ignoredData.ignoredIDs);
+
+console.log(`Testing6..`);
 
 function getEmoji(severity) {
   switch (severity) {
