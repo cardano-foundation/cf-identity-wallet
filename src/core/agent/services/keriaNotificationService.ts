@@ -474,6 +474,7 @@ class KeriaNotificationService extends AgentService {
         connectionId: existingCredential.connectionId,
         read: false,
         route: NotificationRoute.LocalAcdcRevoked,
+        createdAt: new Date(notif.dt)
       };
       const notificationRecord = await this.notificationStorage.save(metadata);
 
@@ -730,6 +731,7 @@ class KeriaNotificationService extends AgentService {
       read: false,
       route: event.a.r as NotificationRoute,
       connectionId: exchange.exn.i,
+      createdAt: new Date(event.dt)
     };
 
     if (

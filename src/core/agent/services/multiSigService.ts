@@ -135,12 +135,17 @@ class MultiSigService extends AgentService {
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
 
+    const multisigDetail = await this.props.signifyClient
+      .identifiers()
+      .get(multisigId.id as string);
+
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: ourMetadata.displayName,
       theme: ourMetadata.theme,
       isPending,
       multisigManageAid: ourIdentifier,
+      createdAt: new Date(multisigDetail.state.dt)
     });
     ourMetadata.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(
@@ -369,12 +374,17 @@ class MultiSigService extends AgentService {
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
 
+    const multisigDetail = await this.props.signifyClient
+      .identifiers()
+      .get(multisigId);
+    
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
       theme: meta.theme,
       isPending,
       multisigManageAid: identifier.id,
+      createdAt: new Date(multisigDetail.state.dt)
     });
     identifier.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(

@@ -356,6 +356,7 @@ describe("Receive individual ACDC actions", () => {
       ...credentialRecordProps,
       identifierId: "identifierId",
       identifierType: "individual",
+      createdAt: new Date(credentialRecordProps.issuanceDate)
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -364,6 +365,7 @@ describe("Receive individual ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "identifierId",
           identifierType: "individual",
+          createdAt: new Date(credentialRecordProps.issuanceDate)
         },
         status: CredentialStatus.PENDING,
       },
@@ -534,6 +536,7 @@ describe("Receive group ACDC actions", () => {
       ...credentialRecordProps,
       identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       identifierType: "group",
+      createdAt: new Date(credentialRecordProps.issuanceDate)
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -542,6 +545,7 @@ describe("Receive group ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
           identifierType: "group",
+          createdAt: new Date(credentialRecordProps.issuanceDate)
         },
         status: CredentialStatus.PENDING,
       },
@@ -722,6 +726,7 @@ describe("Receive group ACDC actions", () => {
       ...credentialRecordProps,
       identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       identifierType: "group",
+      createdAt: new Date(credentialRecordProps.issuanceDate)
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -730,6 +735,7 @@ describe("Receive group ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
           identifierType: "group",
+          createdAt: new Date(credentialRecordProps.issuanceDate)
         },
         status: CredentialStatus.PENDING,
       },

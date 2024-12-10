@@ -335,6 +335,8 @@ describe("Single sig service of agent", () => {
         done: true,
       }),
     });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+
     expect(
       await identifierService.createIdentifier({
         displayName,
@@ -376,6 +378,7 @@ describe("Single sig service of agent", () => {
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
 
     expect(
       await identifierService.createIdentifier({
@@ -606,7 +609,11 @@ describe("Single sig service of agent", () => {
     jest
       .spyOn(signifyClient.operations(), "get")
       .mockResolvedValue(mockOperation);
-  
+      
+    getIdentifiersMock.mockResolvedValue({state: {
+      dt: "2024-12-10T07:28:18.217384+00:00"
+    }});
+
     // Call the function to test
     await identifierService.syncKeriaIdentifiers();
   
@@ -621,6 +628,7 @@ describe("Single sig service of agent", () => {
         groupInitiator: true,
       },
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
     });
   
     expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
@@ -628,6 +636,7 @@ describe("Single sig service of agent", () => {
       displayName: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
       theme: 33,
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
     });
 
     // sync data of group record
@@ -648,6 +657,7 @@ describe("Single sig service of agent", () => {
       theme: 15,
       multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
     });
   });
   

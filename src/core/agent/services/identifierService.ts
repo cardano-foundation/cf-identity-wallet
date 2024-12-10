@@ -163,6 +163,8 @@ class IdentifierService extends AgentService {
       throw error;
     });
     const identifier = operation.serder.ked.i;
+    const identifierDetail = await this.props.signifyClient.identifiers().get(identifier);
+
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
@@ -190,6 +192,7 @@ class IdentifierService extends AgentService {
       id: identifier,
       ...metadata,
       isPending: !op.done,
+      createdAt: new Date(identifierDetail.state.dt)
     });
     return { identifier, isPending: !op.done };
   }
@@ -367,6 +370,7 @@ class IdentifierService extends AgentService {
       const name = identifier.name.split(":");
       const theme = parseInt(name[0], 10);
       const isMultiSig = name.length === 3;
+      const identifierDetail = await this.props.signifyClient.identifiers().get(identifier);
 
       if(isMultiSig){
         const groupId = identifier.name.split(":")[1];
@@ -381,7 +385,8 @@ class IdentifierService extends AgentService {
             groupCreated: false,
             groupInitiator
           },
-          isPending
+          isPending,
+          createdAt: new Date(identifierDetail.state.dt)
         });
 
         continue;
@@ -392,6 +397,7 @@ class IdentifierService extends AgentService {
         displayName: identifier.prefix,
         theme,
         isPending,
+        createdAt: new Date(identifierDetail.state.dt)
       });
     }
 
@@ -406,6 +412,7 @@ class IdentifierService extends AgentService {
       const groupInitiator = groupId.split("-")[0] === "1";
       const op = await this.props.signifyClient.operations().get(`group.${identifier.prefix}`)
       const isPending = !op.done;
+      const identifierDetail = await this.props.signifyClient.identifiers().get(identifier);
 
       if(isPending){
         const pendingOperation = await this.operationPendingStorage.save({
@@ -431,7 +438,8 @@ class IdentifierService extends AgentService {
         displayName: groupId,
         theme,
         multisigManageAid,
-        isPending
+        isPending,
+        createdAt: new Date(identifierDetail.state.dt)
       })
     }
   }
