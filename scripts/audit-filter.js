@@ -107,12 +107,12 @@ vulnerabilitiesToDisplay.forEach(vuln => {
 });
 
 console.log('\n' + '-'.repeat(col1Width + col2Width + col3Width + 6));
-console.log(`Audit completed. Summary:`);
+console.log(`\nAudit completed. Summary:`);
 console.log(`${getEmoji('info')} Total ignored: ${totalIgnored} of ${totalVulnerabilities} vulnerabilities.`);
 
 if (criticalCount > 0) {
   console.error(
-    `\n${getEmoji('critical')} There are ${criticalCount} critical vulnerabilities that need attention.`
+    `${getEmoji('critical')} There are ${criticalCount} critical vulnerabilities that need attention.`
   );
   console.log("\n\nWhat to do next:");
   console.log("1. Run 'npm audit' for a detailed report.");
