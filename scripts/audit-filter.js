@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import path, { dirname, join } from 'path';
+import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,7 +31,7 @@ console.log(`Loading ignored vulnerabilities from: ${configPath}\n`);
 
 let vulnerabilitiesToDisplay = [];
 
-Object.entries(auditResults.vulnerabilities).forEach(([key, vuln]) => {
+Object.entries(auditResults.vulnerabilities).forEach(([_, vuln]) => {
   const severity = vuln.severity;
   const name = vuln.name;
 

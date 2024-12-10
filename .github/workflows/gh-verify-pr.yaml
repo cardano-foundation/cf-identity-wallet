@@ -51,8 +51,19 @@ jobs:
 
     - name: Audit Dependencies
       run: |
+        if [ -f configs/ignored-node-vulnerabilities.json ]; then
+        echo "Ignored node vulnerabilities file found"
+        else
+        echo "Ignored node vulnerabilities file not found!"
+        exit 1
+        fi
         npm audit --json > scripts/audit-results.json
-        cat scripts/audit-results.json
+        if [ -f scripts/audit-results.json ]; then
+            echo "Audit results file found"
+        else
+          echo "Audit results file not found!"
+          exit 1
+        fi
         node scripts/audit-filter.js
 
     - name: 🔨 Build project
