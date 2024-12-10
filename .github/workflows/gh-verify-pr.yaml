@@ -52,6 +52,7 @@ jobs:
           exit 1
         fi
         
+        npm audit
         echo "Lets generate audit-results.json"
         npm audit --json > scripts/audit-results.json
         echo "Lets check audit-results.json"
