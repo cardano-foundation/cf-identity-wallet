@@ -52,6 +52,7 @@ jobs:
     - name: Audit Dependencies
       run: |
         npm audit --json > scripts/audit-results.json
+        cat scripts/audit-results.json
         node scripts/audit-filter.js
 
     - name: 🔨 Build project

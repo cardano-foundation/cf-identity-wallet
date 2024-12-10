@@ -100,3 +100,5 @@ if (criticalCount > 0) {
 } else {
   console.log(`${getEmoji('info')} No critical vulnerabilities found.`);
 }
+
+process.stdout.write('\n');
