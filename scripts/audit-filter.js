@@ -40,6 +40,13 @@ function formatColumn(value, width) {
   return value.length > width ? value.slice(0, width - 3) + '...' : value.padEnd(width);
 }
 
+console.log(`
+▗▖  ▗▖ ▗▄▖ ▗▄▄▄ ▗▄▄▄▖     ▗▄▖ ▗▖ ▗▖▗▄▄▄ ▗▄▄▄▖▗▄▄▄▖
+▐▛▚▖▐▌▐▌ ▐▌▐▌  █▐▌       ▐▌ ▐▌▐▌ ▐▌▐▌  █  █    █  
+▐▌ ▝▜▌▐▌ ▐▌▐▌  █▐▛▀▀▘    ▐▛▀▜▌▐▌ ▐▌▐▌  █  █    █  
+▐▌  ▐▌▝▚▄▞▘▐▙▄▄▀▐▙▄▄▖    ▐▌ ▐▌▝▚▄▞▘▐▙▄▄▀▗▄█▄▖  █  
+`);
+
 console.log(`Starting vulnerability audit. Checking for issues...`);
 console.log(`Loading ignored vulnerabilities from: ${configPath}\n`);
 
@@ -56,16 +63,21 @@ Object.entries(auditResults.vulnerabilities).forEach(([_, vuln]) => {
     return; // Skip vulnerabilities with no `source`
   }
 
-  totalVulnerabilities++; // Increment total vulnerabilities processed
+  totalVulnerabilities++;
 
-  const isIgnoredByID = viaWithSource.some(v => ignoredIDs.has(v.source.toString()));
-  if (isIgnoredByID) {
-    totalIgnored++; // Increment ignored vulnerabilities
-  }
+  const isIgnoredByID = viaWithSource.some(v => {
+    if (ignoredIDs.has(v.source.toString())) {
+      totalIgnored++;
+      return true;
+    }
+    return false;
+  });
+
+  const sourceIDs = viaWithSource.map(v => v.source).join(", ");
 
   const status = isIgnoredByID
-    ? `Ignored (Advisory ID)`
-    : `Found (Requires Attention)`;
+    ? `Ignored (${sourceIDs})`
+    : `Requires Attention (${sourceIDs})`;
 
   vulnerabilitiesToDisplay.push({
     name,
@@ -85,7 +97,7 @@ vulnerabilitiesToDisplay.sort((a, b) => {
 
 const col1Width = 25; // Vulnerability column width
 const col2Width = 10; // Severity column width
-const col3Width = 30; // Status column width
+const col3Width = 35; // Status column width
 
 console.log(
   `${formatColumn('Vulnerability', col1Width)} | ${formatColumn('Severity', col2Width)}    | ${formatColumn('Status', col3Width)}`
@@ -114,7 +126,7 @@ if (criticalCount > 0) {
   console.error(
     `${getEmoji('critical')} There are ${criticalCount} critical vulnerabilities that need attention.`
   );
-  console.log("\n\nWhat to do next:");
+  console.log("\nWhat to do next:");
   console.log("1. Run 'npm audit' for a detailed report.");
   console.log("2. Run 'npm audit --json' for a more detailed JSON formatted report.");
   console.log("3. To investigate a specific package, use 'npm list [package-name]', replacing [package-name] with the actual name of the package.");
