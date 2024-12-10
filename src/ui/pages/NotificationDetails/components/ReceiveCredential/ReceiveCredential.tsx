@@ -27,7 +27,7 @@ import {
 } from "../../../../../store/reducers/notificationsCache";
 import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
-import { Alert as AlertDecline } from "../../../../components/Alert";
+import { Alert, Alert as AlertDecline } from "../../../../components/Alert";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
 import {
@@ -72,6 +72,7 @@ const ReceiveCredential = ({
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [openInfo, setOpenInfo] = useState(false);
   const [showCommonError, setShowCommonError] = useState(false);
+  const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [multisigMemberStatus, setMultisigMemberStatus] =
     useState<LinkedGroupInfoGrant>({
@@ -90,7 +91,7 @@ const ReceiveCredential = ({
   const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
 
   const connection =
-    connectionsCache?.[notificationDetails.connectionId]?.label || i18n.t("connections.unknown");
+    connectionsCache?.[notificationDetails.connectionId]?.label;
 
   const userAccepted = multisigMemberStatus.linkedGroupRequest.accepted;
   const maxThreshold =
@@ -268,6 +269,8 @@ const ReceiveCredential = ({
     setVerifyIsOpen(true);
   };
 
+  const closeAlert = () => setShowMissingIssuerModal(false);
+
   return (
     <>
       <Spinner data-testid="spinner" show={isLoading} />
@@ -357,7 +360,17 @@ const ReceiveCredential = ({
               <span className="break-text">
                 {i18n.t("tabs.notifications.details.credential.receive.from")}
               </span>
-              <strong>{connection}</strong>
+              <span className="issuer-name">
+                <strong>
+                  {connection || i18n.t("connections.unknown")} 
+                </strong>
+                {!connection && <IonIcon
+                  onClick={() => setShowMissingIssuerModal(true)}
+                  data-testid="show-missing-issuer-icon"
+                  className="missing-connection-icon"
+                  icon={informationCircleOutline}
+                />}
+              </span>
             </IonCol>
           </div>
           <div className="request-status">
@@ -450,6 +463,15 @@ const ReceiveCredential = ({
         actionConfirm={() => handleDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
+      />      
+      <Alert
+        dataTestId="missing-issuer-alert"
+        headerText={i18n.t("tabs.notifications.details.identifier.alert.missingissuer.text")}
+        confirmButtonText={`${i18n.t("tabs.notifications.details.identifier.alert.missingissuer.confirm")}`}
+        isOpen={showMissingIssuerModal} 
+        setIsOpen={setShowMissingIssuerModal} 
+        actionConfirm={closeAlert}
+        actionDismiss={closeAlert}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}

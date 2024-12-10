@@ -6,6 +6,12 @@
   .card-details-content .card-block {
     margin: 0.75rem 0 0;
 
+    .identifier-id {
+      .card-details-info-content {
+        display: block;
+      }
+    }
+
     &.flat-border-top {
       margin-top: 0.25rem;
     }

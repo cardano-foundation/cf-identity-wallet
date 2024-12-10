@@ -246,9 +246,13 @@ class Agent {
         /* eslint-disable no-console */
         console.error(e);
         if (e.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK, {
+            cause: e,
+          });
         }
-        throw new Error(Agent.KERIA_BOOT_FAILED);
+        throw new Error(Agent.KERIA_BOOT_FAILED, {
+          cause: e,
+        });
       });
 
       if (!bootResult.ok && bootResult.status !== 409) {
@@ -281,7 +285,9 @@ class Agent {
       bran = branBuffer.toString("utf-8");
     } catch (error) {
       if (error instanceof Error && error.message === "Invalid mnemonic") {
-        throw new Error(Agent.INVALID_MNEMONIC);
+        throw new Error(Agent.INVALID_MNEMONIC, {
+          cause: error,
+        });
       }
       throw error;
     }
@@ -307,12 +313,18 @@ class Agent {
       console.error(error);
       const status = error.message.split(" - ")[1];
       if (error.message === "Failed to fetch") {
-        throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
+        throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK, {
+          cause: error,
+        });
       }
       if (/404/gi.test(status)) {
-        throw new Error(Agent.KERIA_NOT_BOOTED);
+        throw new Error(Agent.KERIA_NOT_BOOTED, {
+          cause: error,
+        });
       }
-      throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
+      throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT, {
+        cause: error,
+      });
     });
   }
 
