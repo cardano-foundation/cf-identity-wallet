@@ -43,18 +43,7 @@ jobs:
         node-version: '18'
 
     - name: Audit Dependencies
-      run: |
-        echo "Lets check ignored-node-vulnerabilities.json"
-        if [ -f configs/ignored-node-vulnerabilities.json ]; then
-          echo "Ignored node vulnerabilities file found"
-        else
-          echo "Ignored node vulnerabilities file not found!"
-          exit 1
-        fi
-        
-        echo "Lets generate audit-results.json"
-        npm run audit
-        echo "Lets check audit-results.json"
+      run: npm run audit
 
     - name: Run unit tests
       env:
