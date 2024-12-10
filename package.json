@@ -14,7 +14,8 @@
     "wdio:android:s23ultra": "npx wdio tests/config/wdio.emu.android.galaxyS23Ultra.config.ts --watch",
     "wdio:ios:15promax": "npx wdio tests/config/wdio.sim.ios.iphone15ProMax.config.ts --watch",
     "wdio:ios:16promax": "npx wdio tests/config/wdio.sim.ios.iphone16ProMax.config.ts --watch",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "audit": "npm audit --json > audit-results.json; node scripts/audit-filter.js"
   },
   "dependencies": {
     "@aparajita/capacitor-biometric-auth": "^8.0.0",

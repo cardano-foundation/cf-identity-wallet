@@ -52,18 +52,9 @@ jobs:
           exit 1
         fi
         
-        npm audit
         echo "Lets generate audit-results.json"
-        npm audit --json > scripts/audit-results.json
+        npm run audit
         echo "Lets check audit-results.json"
-        if [ -f scripts/audit-results.json ]; then
-          echo "Audit results file found"
-        else
-          echo "Audit results file not found!"
-          exit 1
-        fi
-        echo "Lets run audit-filter.js"
-        node scripts/audit-filter.js
 
     - name: Run unit tests
       env:

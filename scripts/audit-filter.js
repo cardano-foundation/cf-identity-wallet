@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 console.log(`Testing2..`);
 const __dirname = dirname(__filename);
 console.log(`Testing3..`);
-const auditFilePath = join(__dirname, 'audit-results.json');
+const auditFilePath = join(__dirname, '..', 'audit-results.json');
 console.log(`Testing4..`);
 const configPath = join(__dirname, '..', 'configs', 'ignored-node-vulnerabilities.json');
 
