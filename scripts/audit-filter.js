@@ -2,21 +2,28 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-console.log(`Testing1..`);
 const __filename = fileURLToPath(import.meta.url);
-console.log(`Testing2..`);
 const __dirname = dirname(__filename);
-console.log(`Testing3..`);
 const auditFilePath = join(__dirname, '..', 'audit-results.json');
-console.log(`Testing4..`);
 const configPath = join(__dirname, '..', 'configs', 'ignored-node-vulnerabilities.json');
 
-console.log(`Testing5..`);
-const auditResults = JSON.parse(fs.readFileSync(auditFilePath));
-const ignoredData = JSON.parse(fs.readFileSync(configPath));
-const ignoredIDs = new Set(ignoredData.ignoredIDs);
+let auditResults, ignoredData;
 
-console.log(`Testing6..`);
+try {
+  auditResults = JSON.parse(fs.readFileSync(auditFilePath, 'utf8'));
+} catch (error) {
+  console.error(`Failed to read or parse audit results: ${error}`);
+  process.exit(1);
+}
+
+try {
+  ignoredData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+} catch (error) {
+  console.error(`Failed to read or parse configuration: ${error}`);
+  process.exit(1);
+}
+
+const ignoredIDs = new Set(ignoredData.ignoredIDs);
 
 function getEmoji(severity) {
   switch (severity) {
@@ -37,26 +44,29 @@ console.log(`Starting vulnerability audit. Checking for issues...`);
 console.log(`Loading ignored vulnerabilities from: ${configPath}\n`);
 
 let vulnerabilitiesToDisplay = [];
+let totalIgnored = 0;
+let totalVulnerabilities = 0;
 
 Object.entries(auditResults.vulnerabilities).forEach(([_, vuln]) => {
   const severity = vuln.severity;
   const name = vuln.name;
-
-  // Filter vulnerabilities: Only process those with a `source` in the `via` field
   const viaWithSource = vuln.via && vuln.via.filter(v => typeof v === 'object' && v.source);
 
   if (!viaWithSource || viaWithSource.length === 0) {
     return; // Skip vulnerabilities with no `source`
   }
 
-  // Check if the vulnerability is ignored
+  totalVulnerabilities++; // Increment total vulnerabilities processed
+
   const isIgnoredByID = viaWithSource.some(v => ignoredIDs.has(v.source.toString()));
+  if (isIgnoredByID) {
+    totalIgnored++; // Increment ignored vulnerabilities
+  }
 
   const status = isIgnoredByID
     ? `Ignored (Advisory ID)`
     : `Found (Requires Attention)`;
 
-  // Add the vulnerability to the list to display
   vulnerabilitiesToDisplay.push({
     name,
     severity,
@@ -98,14 +108,22 @@ vulnerabilitiesToDisplay.forEach(vuln => {
 
 console.log('\n' + '-'.repeat(col1Width + col2Width + col3Width + 6));
 console.log(`Audit completed. Summary:`);
+console.log(`${getEmoji('info')} Total ignored: ${totalIgnored} of ${totalVulnerabilities} vulnerabilities.`);
 
 if (criticalCount > 0) {
   console.error(
     `${getEmoji('critical')} There are ${criticalCount} critical vulnerabilities that need attention.`
   );
+  console.log("\nWhat to do next:");
+  console.log("1. Run 'npm audit' for a detailed report.");
+  console.log("2. Run 'npm audit --json' for a more detailed JSON formatted report.");
+  console.log("3. To investigate a specific package, use 'npm list [package-name]', replacing [package-name] with the actual name of the package.");
+  console.log("4. Consider updating or replacing vulnerable packages.");
+  if (totalIgnored > 0) {
+    console.log("\nNote: Some vulnerabilities are ignored based on specific source IDs in 'configs/ignored-node-vulnerabilities.json'.");
+  }
   process.exit(1);
 } else {
   console.log(`${getEmoji('info')} No critical vulnerabilities found.`);
+  console.log("\nAll clear! No further action is required, but keep monitoring regularly.");
 }
-
-process.stdout.write('\n');
