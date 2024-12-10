@@ -42,13 +42,6 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Run unit tests
-      env:
-        NODE_OPTIONS: "--max_old_space_size=8192"
-      run: |
-        npm ci
-        npm run test
-
     - name: Audit Dependencies
       run: |
         echo "Lets check ignored-node-vulnerabilities.json"
@@ -69,6 +62,13 @@ jobs:
         fi
         echo "Lets run audit-filter.js"
         node scripts/audit-filter.js
+
+    - name: Run unit tests
+      env:
+        NODE_OPTIONS: "--max_old_space_size=8192"
+      run: |
+        npm ci
+        npm run test
 
     - name: 🔨 Build project
       run: npm run build
