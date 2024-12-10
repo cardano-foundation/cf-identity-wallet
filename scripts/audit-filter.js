@@ -112,7 +112,7 @@ console.log(`${getEmoji('info')} Total ignored: ${totalIgnored} of ${totalVulner
 
 if (criticalCount > 0) {
   console.error(
-    `${getEmoji('critical')} There are ${criticalCount} critical vulnerabilities that need attention.`
+    `\n${getEmoji('critical')} There are ${criticalCount} critical vulnerabilities that need attention.`
   );
   console.log("\nWhat to do next:");
   console.log("1. Run 'npm audit' for a detailed report.");
