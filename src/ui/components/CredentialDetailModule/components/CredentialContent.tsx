@@ -22,7 +22,7 @@ import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./Cr
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
-import { MissingIssuerModal } from "../../MissingIssuerModal";
+import { Alert } from "../../Alert";
 
 const CredentialContent = ({
   cardData,
@@ -45,6 +45,8 @@ const CredentialContent = ({
       setShowMissingIssuerModal(true);
     }
   }
+
+  const closeAlert = () => setShowMissingIssuerModal(false);
 
   return (
     <>
@@ -180,7 +182,15 @@ const CredentialContent = ({
         identifierDetailId={cardData.identifierId}
         pageId="credential-related-identifier"
       />
-      <MissingIssuerModal isOpen={showMissingIssuerModal} setIsOpen={setShowMissingIssuerModal} />
+      <Alert
+        dataTestId="cred-missing-issuer-alert"
+        headerText={i18n.t("tabs.credentials.details.alert.missingissuer.text")}
+        confirmButtonText={`${i18n.t("tabs.credentials.details.alert.missingissuer.confirm")}`}
+        isOpen={showMissingIssuerModal} 
+        setIsOpen={setShowMissingIssuerModal} 
+        actionConfirm={closeAlert}
+        actionDismiss={closeAlert}
+      />
     </>
   );
 };

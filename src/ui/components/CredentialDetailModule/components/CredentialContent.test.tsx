@@ -135,8 +135,8 @@ describe("Creds content", () => {
     fireEvent.click(getByText(EN_TRANSLATIONS.connections.unknown));
 
     await waitFor(() => {
-      expect(getByTestId("missing-issuer-modal")).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.missingissuer.content)).toBeVisible();
+      expect(getByTestId("cred-missing-issuer-alert")).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.missingissuer.text)).toBeVisible();
     })
   });
 

@@ -246,7 +246,6 @@ describe("Credential request", () => {
   }, 10000);
 
   test("Open missing issuer modal", async () => {
-
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.NOTIFICATIONS],
@@ -292,8 +291,8 @@ describe("Credential request", () => {
     fireEvent.click(getByTestId("show-missing-issuer-icon"));
 
     await waitFor(() => {
-      expect(getByTestId("missing-issuer-modal")).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.missingissuer.content)).toBeVisible();
+      expect(getByTestId("missing-issuer-alert")).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.alert.missingissuer.text)).toBeVisible();
     })
   });
 

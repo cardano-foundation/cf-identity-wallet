@@ -1036,6 +1036,10 @@
             "title": "Are you sure you want to view this with your other credentials?",
             "confirm": "Yes, restore credential",
             "cancel": "Cancel"
+          },
+          "missingissuer": {
+            "confirm": "OK",
+            "text": "This credential was issued through a connection that has since been deleted or is no longer accessible. As a result, the connection details cannot be displayed."
           }
         },
         "toast": {
@@ -1205,7 +1209,11 @@
           "accepted": "Accepted",
           "threshold": "Threshold",
           "alert": {
-            "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
+            "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+            "missingissuer": {
+              "confirm": "OK",
+              "text": "This credential was issued through a connection that has since been deleted or is no longer accessible. As a result, the connection details cannot be displayed."
+            }
           },
           "errorpage": {
             "title": "Please review",
@@ -1756,10 +1764,6 @@
     },
     "pending": "{{action}} pending",
     "success": "{{action}} successful"
-  },
-  "missingissuer": {
-    "done": "Done",
-    "content": "This credential was issued through a connection that has since been deleted or is no longer accessible. As a result, the connection details cannot be displayed."
   },
   "inputrequest": {
     "title": {

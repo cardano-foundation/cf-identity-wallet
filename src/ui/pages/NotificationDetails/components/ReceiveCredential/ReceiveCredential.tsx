@@ -27,7 +27,7 @@ import {
 } from "../../../../../store/reducers/notificationsCache";
 import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
-import { Alert as AlertDecline } from "../../../../components/Alert";
+import { Alert, Alert as AlertDecline } from "../../../../components/Alert";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
 import {
@@ -51,7 +51,6 @@ import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
 import { LinkedGroupInfoGrant } from "../../../../../core/agent/services/ipexCommunicationService.types";
-import { MissingIssuerModal } from "../../../../components/MissingIssuerModal";
 
 const ANIMATION_DELAY = 2600;
 
@@ -270,6 +269,8 @@ const ReceiveCredential = ({
     setVerifyIsOpen(true);
   };
 
+  const closeAlert = () => setShowMissingIssuerModal(false);
+
   return (
     <>
       <Spinner data-testid="spinner" show={isLoading} />
@@ -462,8 +463,16 @@ const ReceiveCredential = ({
         actionConfirm={() => handleDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
+      />      
+      <Alert
+        dataTestId="missing-issuer-alert"
+        headerText={i18n.t("tabs.notifications.details.identifier.alert.missingissuer.text")}
+        confirmButtonText={`${i18n.t("tabs.notifications.identifier.details.alert.missingissuer.confirm")}`}
+        isOpen={showMissingIssuerModal} 
+        setIsOpen={setShowMissingIssuerModal} 
+        actionConfirm={closeAlert}
+        actionDismiss={closeAlert}
       />
-      <MissingIssuerModal isOpen={showMissingIssuerModal} setIsOpen={setShowMissingIssuerModal} />
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}
