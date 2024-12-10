@@ -114,7 +114,7 @@ if (criticalCount > 0) {
   console.error(
     `\n${getEmoji('critical')} There are ${criticalCount} critical vulnerabilities that need attention.`
   );
-  console.log("\nWhat to do next:");
+  console.log("\n\nWhat to do next:");
   console.log("1. Run 'npm audit' for a detailed report.");
   console.log("2. Run 'npm audit --json' for a more detailed JSON formatted report.");
   console.log("3. To investigate a specific package, use 'npm list [package-name]', replacing [package-name] with the actual name of the package.");
