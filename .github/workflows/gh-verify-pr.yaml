@@ -54,6 +54,7 @@ jobs:
         
         echo "Lets generate audit-results.json"
         npm audit --json > scripts/audit-results.json
+        echo "Lets check audit-results.json"
         if [ -f scripts/audit-results.json ]; then
           echo "Audit results file found"
         else
