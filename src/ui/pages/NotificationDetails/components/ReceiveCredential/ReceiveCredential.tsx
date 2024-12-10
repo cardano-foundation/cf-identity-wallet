@@ -90,7 +90,7 @@ const ReceiveCredential = ({
   const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
 
   const connection =
-    connectionsCache?.[notificationDetails.connectionId]?.label;
+    connectionsCache?.[notificationDetails.connectionId]?.label || i18n.t("connections.unknown");
 
   const userAccepted = multisigMemberStatus.linkedGroupRequest.accepted;
   const maxThreshold =

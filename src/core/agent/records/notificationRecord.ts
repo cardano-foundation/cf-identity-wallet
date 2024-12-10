@@ -12,6 +12,7 @@ interface NotificationRecordStorageProps {
   read: boolean;
   multisigId?: string;
   connectionId: string;
+  credentialId?: string;
 }
 
 class NotificationRecord extends BaseRecord {
@@ -21,6 +22,7 @@ class NotificationRecord extends BaseRecord {
   multisigId?: string;
   connectionId!: string;
   linkedGroupRequest!: LinkedGroupRequest;
+  credentialId?: string;
 
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
@@ -33,10 +35,11 @@ class NotificationRecord extends BaseRecord {
       this.a = props.a;
       this.route = props.route;
       this.read = props.read;
-      this.multisigId = props.multisigId ?? undefined;
+      this.multisigId = props.multisigId;
       this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
       this.linkedGroupRequest = { accepted: false };
+      this.credentialId = props.credentialId;
     }
   }
 
@@ -46,6 +49,7 @@ class NotificationRecord extends BaseRecord {
       read: this.read,
       multisigId: this.multisigId,
       exnSaid: this.a.d,
+      credentialId: this.credentialId,
       ...this._tags,
     };
   }

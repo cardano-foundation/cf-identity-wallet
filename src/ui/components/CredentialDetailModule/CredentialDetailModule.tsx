@@ -1,6 +1,6 @@
 import { IonButton, IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
@@ -23,6 +23,10 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../store/reducers/notificationsCache";
+import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -30,8 +34,11 @@ import "../../components/CardDetails/CardDetails.scss";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
+import { ConnectionDetails } from "../../pages/ConnectionDetails";
+import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { Alert as AlertDeleteArchive, Alert as AlertRestore } from "../Alert";
+import { CloudError } from "../CloudError";
 import { CredentialCardTemplate } from "../CredentialCardTemplate";
 import { CredentialOptions } from "../CredentialOptions";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
@@ -44,13 +51,6 @@ import {
   BackReason,
   CredentialDetailModuleProps,
 } from "./CredentialDetailModule.types";
-import { CloudError } from "../CloudError";
-import {
-  getNotificationsCache,
-  setNotificationsCache,
-} from "../../../store/reducers/notificationsCache";
-import { showError } from "../../utils/error";
-import { ConnectionDetails } from "../../pages/ConnectionDetails";
 
 const CredentialDetailModule = ({
   pageId,
@@ -96,6 +96,18 @@ const CredentialDetailModule = ({
     }
   }, [dispatch]);
 
+  const getConnection = useCallback(async (connectionId: string) => {
+    try {
+      const shortDetails =
+        await Agent.agent.connections.getConnectionShortDetailById(
+          connectionId
+        );
+      setConnectionShortDetails(shortDetails);
+    } catch(error) {
+      showError("Unable to load connection", error);
+    }
+  }, []);
+
   const getCredDetails = useCallback(async () => {
     if (credDetail) {
       setCardData(credDetail);
@@ -108,16 +120,12 @@ const CredentialDetailModule = ({
       const cardDetails =
         await Agent.agent.credentials.getCredentialDetailsById(id);
       setCardData(cardDetails);
-      const shortDetails =
-        await Agent.agent.connections.getConnectionShortDetailById(
-          cardDetails.i
-        );
-      setConnectionShortDetails(shortDetails);
+      getConnection(cardDetails.i);
     } catch (error) {
       setCloudError(true);
       showError("Unable to get credential detail", error, dispatch);
     }
-  }, [id, dispatch, credDetail]);
+  }, [credDetail, id, getConnection, dispatch]);
 
   useOnlineStatusEffect(getCredDetails);
 
