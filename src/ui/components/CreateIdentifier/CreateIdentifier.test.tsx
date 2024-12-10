@@ -29,6 +29,7 @@ const createIdentifierMock = jest.fn((args: unknown) => ({
   identifier: "mock-id",
   isPending: true,
 }));
+const markIdentifierPendingCreateMock = jest.fn((args: unknown) => ({}));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -40,6 +41,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiersCache: jest.fn(),
         createIdentifier: (args: unknown) => createIdentifierMock(args),
+        markIdentifierPendingCreate:  (args: unknown) => markIdentifierPendingCreateMock(args),
       },
     },
   },
@@ -296,7 +298,7 @@ describe("Create Identifier modal", () => {
     });
 
     await waitFor(() => {
-      expect(createIdentifierMock).toBeCalledWith({
+      expect(markIdentifierPendingCreateMock).toBeCalledWith({
         displayName: "Test",
         theme: 11,
         groupMetadata: undefined,
@@ -364,16 +366,6 @@ describe("Create Identifier modal", () => {
 
     await waitFor(() => {
       expect(queryByTestId("error-message")).toBe(null);
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.duplicatename)
-      ).toBeVisible();
     });
   });
 

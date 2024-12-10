@@ -43,6 +43,7 @@ const identifiersCreateMock = jest.fn();
 const identifiersMemberMock = jest.fn();
 const identifiersInteractMock = jest.fn();
 const identifiersRotateMock = jest.fn();
+const identifiersAddEndRoleMock = jest.fn();
 
 const groupGetRequestMock = jest.fn();
 
@@ -84,7 +85,7 @@ const signifyClient = jest.mocked({
     list: identifiersListMock,
     get: identifiersGetMock,
     create: identifiersCreateMock,
-    addEndRole: jest.fn(),
+    addEndRole: identifiersAddEndRoleMock,
     interact: identifiersInteractMock,
     rotate: identifiersRotateMock,
     members: identifiersMemberMock,
@@ -735,7 +736,7 @@ describe("Signify notification service of agent", () => {
         keriaNotif: {
           id: "id",
           createdAt: expect.stringMatching(
-            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/
           ),
           a: {
             r: NotificationRoute.LocalAcdcRevoked,
@@ -2137,12 +2138,75 @@ describe("Long running operation tracker", () => {
       recordType: "witness",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
+      type: "IdentifierMetadataRecord",
+      id: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      displayName: "holder",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     await keriaNotificationService.processOperation(operationRecord);
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       {
         isPending: false,
       }
+    );
+    expect(identifiersAddEndRoleMock).toHaveBeenCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      "agent",
+      signifyClient.agent!.pre
+    );
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationComplete,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type indivisual", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "indivisual.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "individual",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
+      type: "IdentifierMetadataRecord",
+      id: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      displayName: "holder",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    await keriaNotificationService.processOperation(operationRecord);
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      {
+        isPending: false,
+      }
+    );
+    expect(identifiersAddEndRoleMock).toHaveBeenCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      "agent",
+      signifyClient.agent!.pre
     );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,

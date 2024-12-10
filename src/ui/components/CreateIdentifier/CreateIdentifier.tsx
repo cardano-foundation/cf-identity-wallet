@@ -138,26 +138,7 @@ const CreateIdentifier = ({
     }
     metadata.groupMetadata = groupMetadata;
     try {
-      const { identifier, isPending } =
-        await Agent.agent.identifiers.createIdentifier(metadata);
-    
-      if(!identifier) {
-        throw new Error("Cannot create identifier");
-      }
-
-      const newIdentifier: IdentifierShortDetails = {
-        id: identifier,
-        displayName: identifierData.displayName,
-        createdAtUTC: new Date().toISOString(),
-        theme: selectedTheme,
-        isPending: isPending,
-      };
-
-      if (groupMetadata) {
-        newIdentifier.groupMetadata = groupMetadata;
-      }
-
-      dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+      await Agent.agent.identifiers.createIdentifier(metadata);
       if (multiSigGroup) {
         const connections =
             await Agent.agent.connections.getMultisigLinkedContacts(
@@ -170,7 +151,7 @@ const CreateIdentifier = ({
         dispatch(setMultiSigGroupCache(newMultiSigGroup));
       }
 
-      resetModal(newIdentifier);
+      resetModal();
 
       dispatch(
         setToastMsg(
@@ -182,7 +163,9 @@ const CreateIdentifier = ({
         )
       );
     } catch (e) {
-      if ((e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
+      if (
+        (e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)
+      ) {
         setDuplicateName(true);
         return;
       }
