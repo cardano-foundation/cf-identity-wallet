@@ -220,13 +220,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // ]);
     };
 
-    const resolvePendingIdentifiers = async () => {
-      await Agent.agent.identifiers.resolvePendingIdentifier();
-    };
-
     if (isOnline) {
       syncWithKeria();
-      resolvePendingIdentifiers();
     }
   }, [isOnline, dispatch]);
 

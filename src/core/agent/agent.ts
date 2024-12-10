@@ -324,6 +324,7 @@ class Agent {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
       this.identifiers.removeIdentifiersPendingDeletion();
+      this.identifiers.resolvePendingIdentifier();
     }
 
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
@@ -436,7 +437,6 @@ class Agent {
     this.connections.onConnectionRemoved();
     this.connections.onConnectionAdded();
     this.identifiers.onIdentifierRemoved();
-    this.identifiers.onIdentifierCreated();
   }
 
   async connect(retryInterval = 1000) {

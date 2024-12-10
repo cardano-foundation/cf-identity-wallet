@@ -20,7 +20,6 @@ import { ConnectionService } from "./connectionService";
 import {
   EventTypes,
   IdentifierAddedEvent,
-  IdentifierCreatedEvent,
   IdentifierRemovedEvent,
   OperationAddedEvent,
 } from "../event.types";
@@ -72,15 +71,6 @@ class IdentifierService extends AgentService {
       EventTypes.IdentifierRemoved,
       (data: IdentifierRemovedEvent) => {
         this.deleteIdentifier(data.payload.id!);
-      }
-    );
-  }
-
-  onIdentifierCreated() {
-    this.props.eventEmitter.on(
-      EventTypes.IdentifierCreated,
-      (data: IdentifierCreatedEvent) => {
-        this.createIdentifier(data.payload.name, data.payload.metadata);
       }
     );
   }
@@ -161,23 +151,52 @@ class IdentifierService extends AgentService {
   }
 
   async resolvePendingIdentifier() {
-    const pendingIdentifers =
-      await this.identifierStorage.getIdentifierPendingCreation();
+    const pendingIdentifierCreation = await this.basicStorage.findById(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
+    );
 
-    for (const identifier of pendingIdentifers) {
-      await this.props.signifyClient
-        .identifiers()
-        .addEndRole(
-          identifier.id,
-          "agent",
-          this.props.signifyClient.agent!.pre
-        );
+    if (
+      pendingIdentifierCreation &&
+      Array.isArray(pendingIdentifierCreation?.content?.name)
+    ) {
+      for (const name of pendingIdentifierCreation.content.name) {
+        let metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">;
+        const [themeString, rest] = name.split(":");
+        if (!rest) {
+          throw new Error(
+            `${IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING}`
+          );
+        }
+
+        const theme = Number(themeString);
+        const groupMatch = rest.match(/^(\d)-(.+)-(.+)$/);
+        if (groupMatch) {
+          const [, initiatorFlag, groupId, displayName] = groupMatch;
+          metadata = {
+            theme,
+            displayName,
+            groupMetadata: {
+              groupId,
+              groupInitiator: initiatorFlag === "1",
+              groupCreated: false,
+            },
+          };
+        } else {
+          metadata = {
+            theme,
+            displayName: rest,
+          };
+        }
+
+        await this.createIdentifier(metadata, true);
+      }
     }
   }
 
   @OnlineOnly
-  async markIdentifierPendingCreate(
-    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
+  async createIdentifier(
+    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">,
+    isResolvePendingCration?: boolean
   ): Promise<void> {
     if (!identifierTypeThemes.includes(metadata.theme)) {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
@@ -188,34 +207,48 @@ class IdentifierService extends AgentService {
       const initiatorFlag = metadata.groupMetadata.groupInitiator ? "1" : "0";
       name = `${metadata.theme}:${initiatorFlag}-${metadata.groupMetadata.groupId}:${metadata.displayName}`;
     }
-    await this.basicStorage.createOrUpdateBasicRecord(
-      new BasicRecord({
-        id: MiscRecordId.IDENTIFIER_PENDING_CREATION,
-        content: {
-          name,
-        },
-      })
+    let namesPendingCreation = [name];
+
+    const existRecord = await this.basicStorage.findById(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
-    this.props.eventEmitter.emit<IdentifierCreatedEvent>({
-      type: EventTypes.IdentifierCreated,
-      payload: {
-        name,
-        metadata,
-      },
-    });
-  }
+    if (
+      existRecord &&
+      Array.isArray(existRecord?.content?.name) &&
+      !isResolvePendingCration
+    ) {
+      const isNameExist = existRecord.content.name.includes(name);
+      namesPendingCreation = [...existRecord.content.name, name];
 
-  @OnlineOnly
-  async createIdentifier(
-    name: string,
-    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
-  ): Promise<void> {
-    const startTime = Date.now();
+      if (isNameExist) {
+        throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
+      }
+    }
+
+    await this.props.signifyClient
+      .identifiers()
+      .get(metadata.displayName)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return;
+        } else {
+          throw error;
+        }
+      });
+
     const witnesses = await this.getAvailableWitnesses();
     if (witnesses.length === 0) {
       throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE);
     }
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: { name: namesPendingCreation },
+      })
+    );
 
     // @TODO - foconnor: Follow up ticket to pick a sane default for threshold. Right now max is too much.
     //   Must also enforce a minimum number of available witnesses.
@@ -226,7 +259,7 @@ class IdentifierService extends AgentService {
         wits: witnesses,
       });
 
-    let op = await operation.op().catch((error) => {
+    const op = await operation.op().catch((error) => {
       const err = error.message.split(" - ");
       if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
         throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
@@ -234,18 +267,10 @@ class IdentifierService extends AgentService {
       throw error;
     });
     const identifier = operation.serder.ked.i;
-    const isPending = true;
-
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
-
-    op = await waitAndGetDoneOp(
-      this.props.signifyClient,
-      op,
-      2000 - (Date.now() - startTime)
-    );
 
     const recordType = op.done
       ? OperationPendingRecordType.Individual
@@ -261,6 +286,7 @@ class IdentifierService extends AgentService {
       payload: { operation: pendingOperation },
     });
 
+    const isPending = true;
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
@@ -269,12 +295,22 @@ class IdentifierService extends AgentService {
 
     this.props.eventEmitter.emit<IdentifierAddedEvent>({
       type: EventTypes.IdentifierAdded,
-      payload: { identifier: { id: identifier, ...metadata } },
+      payload: { identifier: { id: identifier, ...metadata, isPending } },
     });
 
-    await this.basicStorage.deleteById(
-      MiscRecordId.IDENTIFIER_PENDING_CREATION
+    const updatedRecord = await this.basicStorage.findById(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
+
+    if (updatedRecord && Array.isArray(updatedRecord?.content?.name)) {
+      const isExist = updatedRecord.content.name.includes(name);
+      if (isExist) {
+        updatedRecord.content.name = updatedRecord.content.name.filter(
+          (item: string) => item !== name
+        );
+        await this.basicStorage.update(updatedRecord);
+      }
+    }
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {

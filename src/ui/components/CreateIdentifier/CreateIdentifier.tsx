@@ -138,7 +138,7 @@ const CreateIdentifier = ({
     }
     metadata.groupMetadata = groupMetadata;
     try {
-      await Agent.agent.identifiers.markIdentifierPendingCreate(metadata);
+      await Agent.agent.identifiers.createIdentifier(metadata);
       if (multiSigGroup) {
         const connections =
             await Agent.agent.connections.getMultisigLinkedContacts(
@@ -158,8 +158,8 @@ const CreateIdentifier = ({
           identifierData.selectedAidType === 1 || multiSigGroup
             ? ToastMsgType.MULTI_SIGN_IDENTIFIER_CREATED
             : identifierData.selectedAidType === 2
-            ? ToastMsgType.DELEGATED_IDENTIFIER_CREATED
-            : ToastMsgType.IDENTIFIER_CREATED
+              ? ToastMsgType.DELEGATED_IDENTIFIER_CREATED
+              : ToastMsgType.IDENTIFIER_CREATED
         )
       );
     } catch (e) {

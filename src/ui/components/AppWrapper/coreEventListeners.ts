@@ -25,14 +25,14 @@ const notificatiStateChanged = (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   switch (event.type) {
-    case EventTypes.NotificationAdded:
-      dispatch(addNotification(event.payload.keriaNotif));
-      break;
-    case EventTypes.NotificationRemoved:
-      dispatch(deleteNotification(event.payload.keriaNotif));
-      break;
-    default:
-      break;
+  case EventTypes.NotificationAdded:
+    dispatch(addNotification(event.payload.keriaNotif));
+    break;
+  case EventTypes.NotificationRemoved:
+    dispatch(deleteNotification(event.payload.keriaNotif));
+    break;
+  default:
+    break;
   }
 };
 
@@ -41,15 +41,15 @@ const signifyOperationStateChangeHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   switch (opType) {
-    case OperationPendingRecordType.Witness:
-    case OperationPendingRecordType.Group:
-      dispatch(updateIsPending({ id: oid, isPending: false }));
-      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-      break;
-    case OperationPendingRecordType.Individual:
-      dispatch(updateIsPending({ id: oid, isPending: false }));
-      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-      break;
+  case OperationPendingRecordType.Witness:
+  case OperationPendingRecordType.Group:
+    dispatch(updateIsPending({ id: oid, isPending: false }));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    break;
+  case OperationPendingRecordType.Individual:
+    dispatch(updateIsPending({ id: oid, isPending: false }));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    break;
   }
 };
 
@@ -57,8 +57,6 @@ const identifierAddedHandler = async (
   event: IdentifierAddedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  console.log('event: ', event);
-  
   const identifier = event.payload.identifier;
   if (identifier) {
     const newIdentifier: IdentifierShortDetails = {
@@ -71,6 +69,7 @@ const identifierAddedHandler = async (
 
     if (identifier.groupMetadata) {
       newIdentifier.groupMetadata = identifier.groupMetadata;
+      newIdentifier.multisigManageAid = identifier.multisigManageAid;
     }
 
     dispatch(updateOrAddIdentifiersCache(newIdentifier));

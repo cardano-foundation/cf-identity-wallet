@@ -21,7 +21,7 @@ enum EventTypes {
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
-  IdentifierCreated = "IdentifierCreated",
+  PendingIdentifierCreationQueued = "PendingIdentifierCreationQueued",
   IdentifierRemoved = "IdentifierRemoved",
   IdentifierAdded = "IdentifierAdded",
 }
@@ -88,13 +88,6 @@ interface NotificationRemovedEvent extends BaseEventEmitter {
   };
 }
 
-interface IdentifierCreatedEvent extends BaseEventEmitter {
-  type: typeof EventTypes.IdentifierCreated;
-  payload: {
-    name: string;
-    metadata: any;
-  };
-}
 interface IdentifierRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.IdentifierRemoved;
   payload: {
@@ -118,7 +111,6 @@ export type {
   KeriaStatusChangedEvent,
   OperationAddedEvent,
   NotificationRemovedEvent,
-  IdentifierCreatedEvent,
   ConnectionRemovedEvent,
   IdentifierRemovedEvent,
   IdentifierAddedEvent,
