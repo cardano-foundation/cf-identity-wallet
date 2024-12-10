@@ -35,3 +35,5 @@ resources/android
 resources/ios
 
 services/credential-server/data/brans.json
+
+scripts/audit-results.json

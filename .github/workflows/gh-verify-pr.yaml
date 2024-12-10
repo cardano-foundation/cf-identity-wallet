@@ -49,5 +49,10 @@ jobs:
         npm ci
         npm run test
 
+    - name: Audit Dependencies
+      run: |
+        npm audit --json > scripts/audit-results.json
+        node scripts/audit-filter.js
+
     - name: 🔨 Build project
       run: npm run build
