@@ -467,7 +467,7 @@ const ReceiveCredential = ({
       <Alert
         dataTestId="missing-issuer-alert"
         headerText={i18n.t("tabs.notifications.details.identifier.alert.missingissuer.text")}
-        confirmButtonText={`${i18n.t("tabs.notifications.identifier.details.alert.missingissuer.confirm")}`}
+        confirmButtonText={`${i18n.t("tabs.notifications.details.identifier.alert.missingissuer.confirm")}`}
         isOpen={showMissingIssuerModal} 
         setIsOpen={setShowMissingIssuerModal} 
         actionConfirm={closeAlert}
