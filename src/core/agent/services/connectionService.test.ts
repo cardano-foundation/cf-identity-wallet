@@ -726,8 +726,12 @@ describe("Connection service of agent", () => {
     contactGetMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
     );
-    await expect(connectionService.getConnectionById("id")).rejects.toThrow(
-      new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`)
+    await expect(
+      connectionService.getConnectionById("id")
+    ).rejects.toMatchObject(
+      new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`, {
+        cause: "request - 404 - SignifyClient message",
+      })
     );
   });
 

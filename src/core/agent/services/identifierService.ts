@@ -116,7 +116,9 @@ class IdentifierService extends AgentService {
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
-          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${metadata.id}`);
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${metadata.id}`, {
+            cause: error,
+          });
         } else {
           throw error;
         }
@@ -262,7 +264,9 @@ class IdentifierService extends AgentService {
     const op = await operation.op().catch((error) => {
       const err = error.message.split(" - ");
       if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
-        throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
+        throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`, {
+          cause: error,
+        });
       }
       throw error;
     });

@@ -22,6 +22,7 @@ import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./Cr
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
+import { Alert } from "../../Alert";
 
 const CredentialContent = ({
   cardData,
@@ -33,8 +34,19 @@ const CredentialContent = ({
 
   const [openDetailModal, setOpenDetailModal] = useState(false);
   const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
+  const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
 
   const identifier = identifiers.find(item => item.id === cardData.identifierId);
+
+  const openConnection = () => {
+    if(connectionShortDetails) {
+      setOpenConnectionlModal(true);
+    } else {
+      setShowMissingIssuerModal(true);
+    }
+  }
+
+  const closeAlert = () => setShowMissingIssuerModal(false);
 
   return (
     <>
@@ -93,7 +105,7 @@ const CredentialContent = ({
       </CardBlock>
       <CardBlock
         title={i18n.t("tabs.credentials.details.issuer")}
-        onClick={() => setOpenConnectionlModal(true)}
+        onClick={openConnection}
       >
         <CardDetailsItem
           info={connectionShortDetails ? connectionShortDetails.label : i18n.t("connections.unknown")}
@@ -169,6 +181,15 @@ const CredentialContent = ({
         setIsOpen={setOpenIdentifierDetail}
         identifierDetailId={cardData.identifierId}
         pageId="credential-related-identifier"
+      />
+      <Alert
+        dataTestId="cred-missing-issuer-alert"
+        headerText={i18n.t("tabs.credentials.details.alert.missingissuer.text")}
+        confirmButtonText={`${i18n.t("tabs.credentials.details.alert.missingissuer.confirm")}`}
+        isOpen={showMissingIssuerModal} 
+        setIsOpen={setShowMissingIssuerModal} 
+        actionConfirm={closeAlert}
+        actionDismiss={closeAlert}
       />
     </>
   );
