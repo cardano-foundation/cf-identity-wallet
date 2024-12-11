@@ -24,7 +24,9 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-const mockGetMultisigConnection = jest.fn((args: any) => Promise.resolve(([] as ConnectionDetails[])));
+const mockGetMultisigConnection = jest.fn((args: any) =>
+  Promise.resolve([] as ConnectionDetails[])
+);
 const createIdentifierMock = jest.fn((args: unknown) => ({
   identifier: "mock-id",
   isPending: true,
@@ -36,12 +38,13 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       connections: {
         getMultisigLinkedContacts: (args: any) =>
-          mockGetMultisigConnection(args)
+          mockGetMultisigConnection(args),
       },
       identifiers: {
         getIdentifiersCache: jest.fn(),
         createIdentifier: (args: unknown) => createIdentifierMock(args),
-        markIdentifierPendingCreate:  (args: unknown) => markIdentifierPendingCreateMock(args),
+        markIdentifierPendingCreate: (args: unknown) =>
+          markIdentifierPendingCreateMock(args),
       },
     },
   },
@@ -99,8 +102,10 @@ jest.mock("../CustomInput", () => ({
 describe("Create Identifier modal", () => {
   const mockStore = configureStore();
   beforeEach(() => {
-    mockGetMultisigConnection.mockImplementation((): any=> Promise.resolve(([] as ConnectionDetails[])))
-  })
+    mockGetMultisigConnection.mockImplementation((): any =>
+      Promise.resolve([] as ConnectionDetails[])
+    );
+  });
 
   const initialState = {
     stateCache: {
@@ -237,7 +242,9 @@ describe("Create Identifier modal", () => {
 
   test("Multisig create new identifier: mutilsign", async () => {
     const groupMockId = "b75838e5-98cb-46cf-9233-8bf3beca4cd3";
-    mockGetMultisigConnection.mockImplementation(() => Promise.resolve([connectionsFix[3]]))
+    mockGetMultisigConnection.mockImplementation(() =>
+      Promise.resolve([connectionsFix[3]])
+    );
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>
@@ -291,14 +298,14 @@ describe("Create Identifier modal", () => {
 
     await waitFor(() => {
       expect(getByTestId("color-1").classList.contains("selected"));
-    })
+    });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
 
     await waitFor(() => {
-      expect(markIdentifierPendingCreateMock).toBeCalledWith({
+      expect(createIdentifierMock).toBeCalledWith({
         displayName: "Test",
         theme: 11,
         groupMetadata: undefined,
@@ -308,8 +315,8 @@ describe("Create Identifier modal", () => {
 
   test("Display error when display name invalid", async () => {
     createIdentifierMock.mockImplementation(() => {
-      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN)
-    })
+      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN);
+    });
 
     const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
@@ -325,9 +332,7 @@ describe("Create Identifier modal", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
@@ -335,19 +340,18 @@ describe("Create Identifier modal", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+      ionFireEvent.ionInput(
+        getByTestId("display-name-input"),
+        "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke"
+      );
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.maxlength)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.maxlength)).toBeVisible();
     });
 
     act(() => {
@@ -355,17 +359,23 @@ describe("Create Identifier modal", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.hasspecialchar)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.hasspecialchar)).toBeVisible();
     });
-    
+
     act(() => {
       ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke");
     });
 
     await waitFor(() => {
       expect(queryByTestId("error-message")).toBe(null);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATION.nameerror.duplicatename)).toBeVisible();
     });
   });
 
