@@ -28,7 +28,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 }));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const admitAcdcMock = jest.fn(
+const admitAcdcFromGrantMock = jest.fn(
   (id: string) =>
     new Promise((res) => {
       setTimeout(() => {
@@ -48,7 +48,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
           deleteNotificationMock(id),
       },
       ipexCommunications: {
-        admitAcdc: (id: string) => admitAcdcMock(id),
+        admitAcdcFromGrant: (id: string) => admitAcdcFromGrantMock(id),
         getAcdcFromIpexGrant: () => getAcdcFromIpexGrantMock(),
         getLinkedGroupFromIpexGrant: () => getLinkedGroupFromIpexGrantMock(),
       },
@@ -109,7 +109,7 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
-describe("Credential request", () => {
+describe("Receive credential", () => {
   beforeEach(() => {
     getAcdcFromIpexGrantMock.mockImplementation(() =>
       Promise.resolve({
@@ -208,7 +208,7 @@ describe("Credential request", () => {
     });
 
     await waitFor(() => {
-      expect(admitAcdcMock).toBeCalledWith(notificationsFix[0].id);
+      expect(admitAcdcFromGrantMock).toBeCalledWith(notificationsFix[0].id);
     });
   }, 10000);
 

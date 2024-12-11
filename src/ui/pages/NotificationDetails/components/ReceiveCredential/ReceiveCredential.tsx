@@ -50,7 +50,7 @@ import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
-import { LinkedGroupInfoGrant } from "../../../../../core/agent/services/ipexCommunicationService.types";
+import { LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
 
 const ANIMATION_DELAY = 2600;
 
@@ -74,7 +74,7 @@ const ReceiveCredential = ({
   const [showCommonError, setShowCommonError] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [multisigMemberStatus, setMultisigMemberStatus] =
-    useState<LinkedGroupInfoGrant>({
+    useState<LinkedGroupInfo>({
       threshold: "0",
       members: [],
       othersJoined: [],
@@ -189,7 +189,7 @@ const ReceiveCredential = ({
       if (multisigMemberStatus.linkedGroupRequest.current) {
         await Agent.agent.ipexCommunications.joinMultisigAdmit(notificationDetails.id);
       } else {
-        await Agent.agent.ipexCommunications.admitAcdc(notificationDetails.id);
+        await Agent.agent.ipexCommunications.admitAcdcFromGrant(notificationDetails.id);
       }
       const finishTime = Date.now();
 

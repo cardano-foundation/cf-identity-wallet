@@ -1,24 +1,15 @@
 import { KeriaNotification } from "../../../../../core/agent/agent.types";
-import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
+import { CredentialsMatchingApply, LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
 
 interface MemberInfo {
   aid: string;
   name: string;
-  joinedCred?: string;
+  joined: boolean;
 }
-interface LinkedGroup {
-  threshold: string | string[];
-  members: string[];
-  offer: Record<
-    string,
-    {
-      accepted: boolean;
-      membersJoined: string[];
-    }
-  >;
+
+type LinkedGroup = LinkedGroupInfo & {
   memberInfos: MemberInfo[];
-  joinedMembers: number;
 }
 
 interface CredentialRequestProps {

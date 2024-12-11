@@ -33,7 +33,7 @@ import {
   ChooseCredentialProps,
   RequestCredential,
 } from "../CredentialRequest.types";
-import { JoinedMember } from "../JoinedMember";
+// import { JoinedMember } from "../JoinedMember";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
 import { MembersModal } from "../MembersModal";
 import "./ChooseCredential.scss";
@@ -147,10 +147,18 @@ const ChooseCredential = ({
       }
 
       setLoading(true);
-      await Agent.agent.ipexCommunications.offerAcdcFromApply(
-        notificationDetails.id,
-        selectedCred.acdc
-      );
+
+      // @TODO - foconnor: Should be refined in the upcoming UI ticket
+      //   If multisigMemberStatus.members.length && multisigMemberStatus.members[0] === identifier?.multisigManageAid, we can call admitAcdc
+      //   Otherwise, can call joinMultisigAdmit IF multisigMemberStatus.linkedGroupRequest.current !== undefined
+      if (linkedGroup?.linkedGroupRequest.current) {
+        await Agent.agent.ipexCommunications.joinMultisigOffer(notificationDetails.id);
+      } else {
+        await Agent.agent.ipexCommunications.offerAcdcFromApply(
+          notificationDetails.id,
+          selectedCred.acdc
+        );
+      }
 
       if(!linkedGroup) {
         handleNotificationUpdate();
@@ -177,20 +185,23 @@ const ChooseCredential = ({
     [connections, showMemberCred]
   );
 
+  // @TODO - foconnor: joinedCredMembers and showCredMembers of these will default to all joined members, this UI will change.
   const joinedCredMembers = useMemo(() => {
-    if(!viewCredDetail) return [];
+    if (!viewCredDetail) return [];
 
-    return linkedGroup?.memberInfos.filter(
-      (item) => item.joinedCred === viewCredDetail.acdc.d
-    ) || [];
+    return linkedGroup?.memberInfos.filter(member => member.joined) || [];
+    // return linkedGroup?.memberInfos.filter(
+    //   (item) => item.joinedCred === viewCredDetail.acdc.d
+    // ) || [];
   }, [linkedGroup?.memberInfos, viewCredDetail]);
 
   const showCredMembers = useMemo(() => {
     if(!showMemberCred) return [];
 
-    return linkedGroup?.memberInfos.filter(
-      (item) => item.joinedCred === showMemberCred.acdc.d
-    ) || [];
+    return linkedGroup?.memberInfos.filter(member => member.joined) || [];
+    // return linkedGroup?.memberInfos.filter(
+    //   (item) => item.joinedCred === showMemberCred.acdc.d
+    // ) || [];
   }, [linkedGroup?.memberInfos, showMemberCred]);
 
   return (
@@ -321,12 +332,12 @@ const ChooseCredential = ({
           onRenderEndSlot={(data) => {
             return (
               <div className="item-action">
-                <JoinedMember
+                {/* <JoinedMember
                   members={linkedGroup?.memberInfos.filter(
-                    (item) => item.joinedCred === data.acdc.d
+                    () => item.joined === data.acdc.d
                   )}
                   onClick={() => setShowMemberCred(data)}
-                />
+                /> */}
                 <IonCheckbox
                   checked={selectedCred?.acdc?.d === data.acdc.d}
                   aria-label=""
@@ -369,7 +380,7 @@ const ChooseCredential = ({
         members={showCredMembers}
         credName={credName || ""}
         threshold={Number(linkedGroup?.threshold) || 0}
-        joinedMembers={linkedGroup?.joinedMembers || 0}
+        joinedMembers={showCredMembers.length}
       />
     </>
   );
