@@ -1195,6 +1195,7 @@
             "members": "Group member",
             "revokedalert": "This credential has been revoked by the issuer and is no longer available.",
             "relatedidentifier": "Related identifier",
+            "initiatoracceptedalert": "Your group is receiving a credential. Once the group initiator accepts it, you’ll be able to accept yours too.",
             "alert": {
               "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
             }
