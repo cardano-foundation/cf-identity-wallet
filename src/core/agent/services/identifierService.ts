@@ -230,6 +230,9 @@ class IdentifierService extends AgentService {
           pendingDeletion: false,
         }
       );
+      await this.props.signifyClient.identifiers().update(localMember.id, {
+        name: `XX-${randomSalt()}:${localMember.displayName}`,
+      });
       await this.deleteGroupLinkedConnections(
         localMember.groupMetadata!.groupId
       );
