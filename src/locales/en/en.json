@@ -1192,7 +1192,7 @@
             "from": "from",
             "credentialpending": "Credential pending",
             "credentialdetailbutton": "Credential details",
-            "members": "Group member",
+            "members": "Group members",
             "revokedalert": "This credential has been revoked by the issuer and is no longer available.",
             "relatedidentifier": "Related identifier",
             "initiatoracceptedalert": "Your group is receiving a credential. Once the group initiator accepts it, you’ll be able to accept yours too.",
