@@ -1036,6 +1036,10 @@
             "title": "Are you sure you want to view this with your other credentials?",
             "confirm": "Yes, restore credential",
             "cancel": "Cancel"
+          },
+          "missingissuer": {
+            "confirm": "OK",
+            "text": "This credential was issued through a connection that has since been deleted or is no longer accessible. As a result, the connection details cannot be displayed."
           }
         },
         "toast": {
@@ -1188,9 +1192,10 @@
             "from": "from",
             "credentialpending": "Credential pending",
             "credentialdetailbutton": "Credential details",
-            "members": "Group member",
+            "members": "Group members",
             "revokedalert": "This credential has been revoked by the issuer and is no longer available.",
             "relatedidentifier": "Related identifier",
+            "initiatoracceptedalert": "Your group is receiving a credential. Once the group initiator accepts it, you’ll be able to accept yours too.",
             "alert": {
               "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
             }
@@ -1205,7 +1210,11 @@
           "accepted": "Accepted",
           "threshold": "Threshold",
           "alert": {
-            "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
+            "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+            "missingissuer": {
+              "confirm": "OK",
+              "text": "This credential was issued through a connection that has since been deleted or is no longer accessible. As a result, the connection details cannot be displayed."
+            }
           },
           "errorpage": {
             "title": "Please review",
