@@ -355,6 +355,46 @@ describe("Single sig service of agent", () => {
     });
   });
 
+  test("cannot create a keri identifier if theme is not valid", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "newDisplayName";
+
+    await expect(
+      identifierService.createIdentifier({
+        displayName,
+        theme: 44,
+      })
+    ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
+    expect(createIdentifierMock).not.toBeCalled();
+  });
+
+  test("should throw an error if queuedDisplayNames is not an array when call create identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const newDisplayName = "newDisplayName";
+    const newTheme = 1;
+    basicStorage.findById.mockResolvedValueOnce(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: "invalidFormat",
+        },
+      })
+    );
+
+    await expect(
+      identifierService.createIdentifier({
+        displayName: newDisplayName,
+        theme: newTheme,
+      })
+    ).rejects.toThrowError(
+      IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT
+    );
+
+    expect(basicStorage.findById).toHaveBeenCalledWith(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
+    );
+  });
+
   test("can create a keri identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const aid = "newIdentifierAid";
@@ -374,20 +414,20 @@ describe("Single sig service of agent", () => {
     });
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
-      recordType: OperationPendingRecordType.Individual,
+      recordType: OperationPendingRecordType.Witness,
     });
 
     const existRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: [],
+        queuedDisplayNames: [],
       },
     });
 
     const updatedRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: ["0:newDisplayName"],
+        queuedDisplayNames: ["0:newDisplayName"],
       },
     });
 
@@ -429,14 +469,14 @@ describe("Single sig service of agent", () => {
     const existRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: [],
+        queuedDisplayNames: [],
       },
     });
 
     const updatedRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: ["0:newDisplayName"],
+        queuedDisplayNames: ["0:newDisplayName"],
       },
     });
 
@@ -496,14 +536,14 @@ describe("Single sig service of agent", () => {
     const existRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: [],
+        queuedDisplayNames: [],
       },
     });
 
     const updatedRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: ["0:newDisplayName"],
+        queuedDisplayNames: ["0:newDisplayName"],
       },
     });
 
@@ -532,14 +572,14 @@ describe("Single sig service of agent", () => {
     const existRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: [],
+        queuedDisplayNames: [],
       },
     });
 
     const updatedRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: ["0:newDisplayName"],
+        queuedDisplayNames: ["0:newDisplayName"],
       },
     });
 
@@ -566,7 +606,7 @@ describe("Single sig service of agent", () => {
     const existRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: ["0:newDisplayName"],
+        queuedDisplayNames: ["0:newDisplayName"],
       },
     });
 
@@ -600,14 +640,14 @@ describe("Single sig service of agent", () => {
     const existRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: [],
+        queuedDisplayNames: [],
       },
     });
 
     const updatedRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {
-        name: ["0:newDisplayName"],
+        queuedDisplayNames: ["0:newDisplayName"],
       },
     });
 
@@ -978,5 +1018,60 @@ describe("Single sig service of agent", () => {
 
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id1");
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id2");
+  });
+
+  test("should resolve group identifier metadata correctly", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    basicStorage.findById.mockResolvedValueOnce(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:newDisplayName"],
+        },
+      })
+    );
+    identifierService.createIdentifier = jest.fn().mockResolvedValueOnce({
+      identifier: "newIdentifier",
+      isPending: true,
+    });
+
+    await identifierService.resolvePendingIdentifier();
+
+    expect(identifierService.createIdentifier).toHaveBeenCalledWith(
+      {
+        theme: 0,
+        displayName: "newDisplayName",
+      },
+      true
+    );
+    expect(identifierService.createIdentifier).toHaveBeenCalledTimes(1);
+  });
+
+  test("should throw error if queued display name has invalid format", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    basicStorage.findById.mockResolvedValueOnce(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: "0:invalidFormat",
+        },
+      })
+    );
+
+    await expect(
+      identifierService.resolvePendingIdentifier()
+    ).rejects.toThrowError(
+      IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT
+    );
+  });
+
+  test("should gracefully exit if no pending identifiers", async () => {
+    basicStorage.findById.mockResolvedValueOnce(null);
+    await identifierService.resolvePendingIdentifier();
+
+    expect(basicStorage.findById).toHaveBeenCalledWith(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
+    );
+    expect(identifierService.createIdentifier).not.toHaveBeenCalled();
   });
 });

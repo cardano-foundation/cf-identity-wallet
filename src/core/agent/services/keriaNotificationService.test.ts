@@ -2167,57 +2167,7 @@ describe("Long running operation tracker", () => {
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
-
-  test("Should handle long operations with type indivisual", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const operationMock = {
-      metadata: {
-        said: "said",
-      },
-      done: true,
-      response: {
-        i: "id",
-        dt: new Date(),
-      },
-    };
-    operationsGetMock.mockResolvedValue(operationMock);
-    const operationRecord = {
-      type: "OperationPendingRecord",
-      id: "indivisual.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      createdAt: new Date("2024-08-01T10:36:17.814Z"),
-      recordType: "individual",
-      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-    } as OperationPendingRecord;
-
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
-      type: "IdentifierMetadataRecord",
-      id: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      displayName: "holder",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    await keriaNotificationService.processOperation(operationRecord);
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      {
-        isPending: false,
-      }
-    );
-    expect(identifiersAddEndRoleMock).toHaveBeenCalledWith(
-      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      "agent",
-      signifyClient.agent!.pre
-    );
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationComplete,
-      payload: {
-        opType: operationRecord.recordType,
-        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      },
-    });
-    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
-  });
-
+  
   test("Should handle long operations with type oobi", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const operationMock = {

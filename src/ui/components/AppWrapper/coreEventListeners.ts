@@ -8,8 +8,6 @@ import { OperationPendingRecordType } from "../../../core/agent/records/operatio
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { useAppDispatch } from "../../../store/hooks";
 import {
-  setIdentifiersCache,
-  setMultiSigGroupCache,
   updateIsPending,
   updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
@@ -42,11 +40,10 @@ const signifyOperationStateChangeHandler = async (
 ) => {
   switch (opType) {
   case OperationPendingRecordType.Witness:
-  case OperationPendingRecordType.Group:
     dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
-  case OperationPendingRecordType.Individual:
+  case OperationPendingRecordType.Group:
     dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
@@ -69,6 +66,8 @@ const identifierAddedHandler = async (
 
     if (identifier.groupMetadata) {
       newIdentifier.groupMetadata = identifier.groupMetadata;
+    }
+    if ( identifier.multisigManageAid) {
       newIdentifier.multisigManageAid = identifier.multisigManageAid;
     }
 

@@ -21,7 +21,6 @@ enum EventTypes {
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
-  PendingIdentifierCreationQueued = "PendingIdentifierCreationQueued",
   IdentifierRemoved = "IdentifierRemoved",
   IdentifierAdded = "IdentifierAdded",
 }

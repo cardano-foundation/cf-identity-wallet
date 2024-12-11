@@ -1,5 +1,9 @@
 import { HabState, Operation, Signer } from "signify-ts";
-import { IdentifierDetails, IdentifierShortDetails } from "./identifier.types";
+import {
+  CreateIdentifierResult,
+  IdentifierDetails,
+  IdentifierShortDetails,
+} from "./identifier.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -46,7 +50,8 @@ class IdentifierService extends AgentService {
     "No discoverable witnesses available on connected KERIA instance";
   static readonly MISCONFIGURED_AGENT_CONFIGURATION =
     "Misconfigured KERIA agent for this wallet type";
-
+  static readonly INVALID_QUEUED_DISPLAY_NAMES_FORMAT =
+    "Queued display names has invalid format";
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connections: ConnectionService;
@@ -157,16 +162,20 @@ class IdentifierService extends AgentService {
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
-    if (
-      pendingIdentifierCreation &&
-      Array.isArray(pendingIdentifierCreation?.content?.name)
-    ) {
-      for (const name of pendingIdentifierCreation.content.name) {
+    if (pendingIdentifierCreation) {
+      if (
+        !Array.isArray(pendingIdentifierCreation.content.queuedDisplayNames)
+      ) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      for (const queuedDisplayName of pendingIdentifierCreation.content
+        .queuedDisplayNames) {
         let metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">;
-        const [themeString, rest] = name.split(":");
+        const [themeString, rest] = queuedDisplayName.split(":");
         if (!rest) {
           throw new Error(
-            `${IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING}`
+            IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT
           );
         }
 
@@ -198,8 +207,8 @@ class IdentifierService extends AgentService {
   @OnlineOnly
   async createIdentifier(
     metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">,
-    isResolvePendingCration?: boolean
-  ): Promise<void> {
+    backgroundTask = false
+  ): Promise<CreateIdentifierResult> {
     if (!identifierTypeThemes.includes(metadata.theme)) {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
@@ -211,34 +220,22 @@ class IdentifierService extends AgentService {
     }
     let namesPendingCreation = [name];
 
-    const existRecord = await this.basicStorage.findById(
+    const pendingIdentifiersRecord = await this.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
-    if (
-      existRecord &&
-      Array.isArray(existRecord?.content?.name) &&
-      !isResolvePendingCration
-    ) {
-      const isNameExist = existRecord.content.name.includes(name);
-      namesPendingCreation = [...existRecord.content.name, name];
-
-      if (isNameExist) {
+    if (pendingIdentifiersRecord && !backgroundTask) {
+      if (!Array.isArray(pendingIdentifiersRecord.content.queuedDisplayNames)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+      if (pendingIdentifiersRecord.content.queuedDisplayNames.includes(name)) {
         throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
       }
+      namesPendingCreation = [
+        ...pendingIdentifiersRecord.content.queuedDisplayNames,
+        name,
+      ];
     }
-
-    await this.props.signifyClient
-      .identifiers()
-      .get(metadata.displayName)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return;
-        } else {
-          throw error;
-        }
-      });
 
     const witnesses = await this.getAvailableWitnesses();
     if (witnesses.length === 0) {
@@ -248,7 +245,7 @@ class IdentifierService extends AgentService {
     await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
-        content: { name: namesPendingCreation },
+        content: { queuedDisplayNames: namesPendingCreation },
       })
     );
 
@@ -276,13 +273,9 @@ class IdentifierService extends AgentService {
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
 
-    const recordType = op.done
-      ? OperationPendingRecordType.Individual
-      : OperationPendingRecordType.Witness;
-
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
-      recordType,
+      recordType: OperationPendingRecordType.Witness,
     });
 
     this.props.eventEmitter.emit<OperationAddedEvent>({
@@ -306,15 +299,15 @@ class IdentifierService extends AgentService {
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
-    if (updatedRecord && Array.isArray(updatedRecord?.content?.name)) {
-      const isExist = updatedRecord.content.name.includes(name);
-      if (isExist) {
-        updatedRecord.content.name = updatedRecord.content.name.filter(
-          (item: string) => item !== name
-        );
-        await this.basicStorage.update(updatedRecord);
+    if (updatedRecord) {
+      if (!Array.isArray(updatedRecord.content.queuedDisplayNames)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
       }
+
+      updatedRecord.content.queuedDisplayNames.shift();
+      await this.basicStorage.update(updatedRecord);
     }
+    return { identifier, isPending: true };
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
