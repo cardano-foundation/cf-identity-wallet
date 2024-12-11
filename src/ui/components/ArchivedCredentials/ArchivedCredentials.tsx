@@ -481,7 +481,7 @@ const ArchivedCredentialsContainer = forwardRef<
           "tabs.credentials.archived.alert.restorerevoked.title"
         )}
         confirmButtonText={`${i18n.t(
-          "credentials.archived.alert.restorerevoked.confirm"
+          "tabs.credentials.archived.alert.restorerevoked.confirm"
         )}`}
         actionConfirm={() => {
           setAlertRestoreRevoked(false);
