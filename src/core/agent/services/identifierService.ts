@@ -173,12 +173,6 @@ class IdentifierService extends AgentService {
         .queuedDisplayNames) {
         let metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">;
         const [themeString, rest] = queuedDisplayName.split(":");
-        if (!rest) {
-          throw new Error(
-            IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT
-          );
-        }
-
         const theme = Number(themeString);
         const groupMatch = rest.match(/^(\d)-(.+)-(.+)$/);
         if (groupMatch) {
@@ -304,7 +298,10 @@ class IdentifierService extends AgentService {
         throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
       }
 
-      updatedRecord.content.queuedDisplayNames.shift();
+      const index = updatedRecord.content.queuedDisplayNames.indexOf(name);
+      if (index !== -1) {
+        updatedRecord.content.queuedDisplayNames.splice(index, 1);
+      }
       await this.basicStorage.update(updatedRecord);
     }
     return { identifier, isPending: true };

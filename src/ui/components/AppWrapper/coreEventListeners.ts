@@ -40,9 +40,6 @@ const signifyOperationStateChangeHandler = async (
 ) => {
   switch (opType) {
   case OperationPendingRecordType.Witness:
-    dispatch(updateIsPending({ id: oid, isPending: false }));
-    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-    break;
   case OperationPendingRecordType.Group:
     dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
