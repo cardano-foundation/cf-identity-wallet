@@ -1388,6 +1388,15 @@ describe("Offer ACDC group actions", () => {
     expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
   });
+
+  test("Can retrieve the current offered credential SAID", async () => {
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
+
+    const result = await ipexCommunicationService.getOfferedCredentialSaid("current-said");
+    
+    expect(result).toEqual("EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT");
+    expect(getExchangeMock).toBeCalledWith("current-said");
+  });
 });
 
 describe("Offer ACDC group progress", () => {

@@ -1125,6 +1125,12 @@ class IpexCommunicationService extends AgentService {
       linkedGroupRequest: applyNoteRecord.linkedGroupRequest,
     }
   }
+
+  async getOfferedCredentialSaid(current: string): Promise<string> {
+    const multiSigExn = await this.props.signifyClient.exchanges().get(current);
+    const offerExn = multiSigExn.exn.e.exn;
+    return offerExn.e.acdc.d;
+  }
 }
 
 export { IpexCommunicationService };
