@@ -104,6 +104,7 @@ const offerForPresentingExnMessage = {
   },
 };
 
+// @TODO - foconnor: Agree must have valid p, and no embeds - but causing tests to fail right now.
 const agreeForPresentingExnMessage = {
   exn: {
     v: "KERI10JSON000516_",
@@ -543,7 +544,7 @@ const ipexOfferSig = [
   "AAAfM-MSYZSCt1WdeLWLwYsuTYgpMTwpTwGXEtHIcizCAKoDw4b8Gc725TSHRaKELr7B9PojuGx9OXT-Fulx_oEF",
 ];
 
-const ipexSubmitOfferSerder = {
+const multisigOfferSerder = {
   kind: "JSON",
   raw: "{\"v\":\"KERI10JSON0004f5_\",\"t\":\"exn\",\"d\":\"EARi8kQ1PkSSRyFEIPOFPdnsnv7P2QZYEQqnmr1Eo2N8\",\"i\":\"EAsQ-kwJwO8ug-S2dk1WGwpPlF4hT3q5TJi_OLZSFdEy\",\"rp\":\"EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd\",\"p\":\"\",\"dt\":\"2024-10-02T15:26:01.003000+00:00\",\"r\":\"/multisig/exn\",\"q\":{},\"a\":{\"i\":\"EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd\",\"gid\":\"EBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq4\"},\"e\":{\"exn\":{\"v\":\"KERI10JSON000340_\",\"t\":\"exn\",\"d\":\"EGfyfKc4tnZtigxgaw_55NEa13-5zpFXkheLv2jZiwI1\",\"i\":\"EBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq4\",\"rp\":\"EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd\",\"p\":\"ENdg2aG1gOXitYwI1xKZNch0VFAmZuFpvL0Xftliv0W9\",\"dt\":\"2024-10-02T15:23:50.210000+00:00\",\"r\":\"/ipex/offer\",\"q\":{},\"a\":{\"i\":\"EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd\",\"m\":\"\"},\"e\":{\"acdc\":{\"v\":\"ACDC10JSON00018e_\",\"d\":\"ELKa5OdxusflKLZBqmHI09vYgyiySh4ZM1CQcoS6Nabh\",\"i\":\"EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd\",\"ri\":\"EN1AomPsN0gmQS47DCaI3hz6rJovMz2aiLSfXDit_UrU\",\"s\":\"EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb\",\"a\":{\"d\":\"ENnh02JAwpkWVo8ExuuwgBGQB9fG8Zapg99H4dT6a_93\",\"i\":\"EBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq4\",\"attendeeName\":\"99\",\"dt\":\"2024-10-02T15:21:50.607000+00:00\"}},\"d\":\"ECc3mOk1p4QceI4bGBoVhv7cVX34n-UOlK73VSm7m_fS\"}},\"d\":\"EKNY8J1PflxKy72qqE05SKmej4SpEecFAGFA3cLSPTKj\"}}",
   ked: {
@@ -598,11 +599,11 @@ const ipexSubmitOfferSerder = {
   size: 1269,
 };
 
-const ipexSubmitOfferSig = [
+const multisigOfferSig = [
   "AABBRge2Ep77V-0IJqMRXkIY1D8xdk_OtHd-EcFWMzHyjXVAkMvfQtA6DTn5NOACCxmERr9vvmm7V5KeXRSPIqMB",
 ];
 
-const ipexSubmitOfferEnd =
+const multisigOfferEnd =
   "-LA35AACAA-e-exn-FABEBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq40AAAAAAAAAAAAAAAAAAAAAAAEBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq4-AABABCbsGn3CwRsUnzBhMitf8Mr6eHO5zv4-BNInB0rUTGhd86rIvz3kbzBqOBAAmbOOM4PwX08hzcgoomGk45cbxEO";
 
 const ipexAdmitSerder = {
@@ -728,9 +729,9 @@ export {
   credentialProps,
   ipexOfferSerder,
   ipexOfferSig,
-  ipexSubmitOfferSerder,
-  ipexSubmitOfferSig,
-  ipexSubmitOfferEnd,
+  multisigOfferSerder,
+  multisigOfferSig,
+  multisigOfferEnd,
   multisigParticipantsProps,
   ipexGrantSerder,
   ipexGrantSig,

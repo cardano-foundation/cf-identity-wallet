@@ -36,7 +36,7 @@ const CredentialRequest = ({
 
   const reachThreshold =
     linkedGroup &&
-    linkedGroup?.joinedMembers === Number(linkedGroup?.threshold);
+    linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
 
   const getMultisigInfo = useCallback(async () => {
     const linkedGroup =
@@ -44,41 +44,26 @@ const CredentialRequest = ({
           notificationDetails.id
         );
 
-    const credentials = Object.keys(linkedGroup.offer);
-
     const memberInfos = linkedGroup.members.map((member: string) => {
       const memberConnection = multisignConnectionsCache[member];
-
-      let name = memberConnection?.label || member;
-
-      if (!memberConnection?.label) {
-        name = userName;
+      if (!memberConnection) {
+        return {
+          aid: member,
+          name: userName,
+          joined: linkedGroup.linkedGroupRequest.accepted,
+        }
       }
-
-      const joinedCred = credentials.find((credId) =>
-        linkedGroup.offer[credId].membersJoined.includes(member)
-      );
 
       return {
         aid: member,
-        name,
-        joinedCred,
-      };
+        name: memberConnection.label || member,
+        joined: linkedGroup.othersJoined.includes(member)
+      }
     });
-
-    const joinedMembers = Object.values(linkedGroup.offer).reduce(
-      (result, next) => {
-        return next.membersJoined.length > result
-          ? next.membersJoined.length
-          : result;
-      },
-      0
-    );
 
     setLinkedGroup({
       ...linkedGroup,
-      memberInfos,
-      joinedMembers,
+      memberInfos
     });
   }, [multisignConnectionsCache, notificationDetails.id, userName]);
 

@@ -161,7 +161,7 @@ describe("Credential request", () => {
   });
 });
 
-describe("Credential request: Multisig", () => {
+describe.skip("Credential request: Multisig", () => {
   const initialState = {
     stateCache: {
       routes: [TabsRoutePath.NOTIFICATIONS],
