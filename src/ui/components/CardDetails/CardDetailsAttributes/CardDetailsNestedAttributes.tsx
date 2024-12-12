@@ -22,7 +22,7 @@ const CardDetailsNestedAttributes = ({
     if (dateRegex.test(item))
       return `${formatShortDate(item)} - ${formatTimeToSec(item)}`;
 
-    const isValuedType = typeof item === ("string" || "number");
+    const isValuedType = typeof item === "string" || typeof item === "number";
 
     if (isValuedType) return item;
 
