@@ -404,9 +404,9 @@ describe("Single sig service of agent", () => {
     eventEmitter.emit = jest.fn();
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     findOperationMock.mockResolvedValueOnce(null);
-    identifierStorage.getIdentifierMetadata = jest
+    identifierStorage.getAllIdentifierMetadata = jest
       .fn()
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValue([]);
     createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
@@ -480,6 +480,9 @@ describe("Single sig service of agent", () => {
     const displayName = "newDisplayName";
     eventEmitter.emit = jest.fn();
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    identifierStorage.getAllIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([]);
     const existRecord = new BasicRecord({
       id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
       content: {

@@ -290,8 +290,9 @@ class IdentifierService extends AgentService {
     }
 
     const isPending = true;
-    const identifierMetadataRecord =
-      await this.identifierStorage.getIdentifierMetadata(identifier);
+    const identifierMetadataRecord = (
+      await this.identifierStorage.getAllIdentifierMetadata()
+    ).some((record) => record.id === identifier);
     if (!(backgroundTask && identifierMetadataRecord)) {
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier,
