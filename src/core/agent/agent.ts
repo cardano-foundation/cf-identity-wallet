@@ -307,7 +307,7 @@ class Agent {
       bootUrl: "",
     });
     this.markAgentStatus(true);
-    
+
     await this.syncWithKeria();
   }
 
@@ -316,10 +316,12 @@ class Agent {
     await this.identifiers.syncKeriaIdentifiers();
     await this.credentials.syncACDCs();
 
-    // await this.basicStorage.save({
-    //   id: MiscRecordId.PROCESS_RECOVERING,
-    //   content: { value: true },
-    // });
+    await this.basicStorage.update(
+      new BasicRecord({
+        id: MiscRecordId.PROCESS_RECOVERING,
+        content: { value: false },
+      })
+    );
   }
 
   private async connectSignifyClient(): Promise<void> {
