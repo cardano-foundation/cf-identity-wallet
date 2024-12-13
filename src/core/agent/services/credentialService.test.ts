@@ -394,7 +394,7 @@ describe("Credential service of agent", () => {
         },
         schema: {
           $id: "id-1",
-          tile: "title1",
+          title: "title1",
         },
       },
       {
@@ -413,7 +413,7 @@ describe("Credential service of agent", () => {
         },
         schema: {
           $id: "id-2",
-          tile: "title2",
+          title: "title2",
         },
       },
     ]);
@@ -424,6 +424,35 @@ describe("Credential service of agent", () => {
     });
     await credentialService.syncACDCs();
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
+
+    expect(credentialStorage.saveCredentialMetadataRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X",
+        isArchived: false,
+        issuanceDate: "2023-11-29T02:13:34.858Z",
+        credentialType: "title1",
+        status: CredentialStatus.CONFIRMED,
+        connectionId: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+        schema: "id-1",
+        identifierId: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+        identifierType: IdentifierType.Individual,
+        createdAt: new Date("2023-11-29T02:13:34.858Z"),
+      }));
+
+    expect(credentialStorage.saveCredentialMetadataRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",
+        isArchived: false,
+        issuanceDate: "2023-11-29T02:12:35.716Z",
+        credentialType: "title2",
+        status: CredentialStatus.CONFIRMED,
+        connectionId: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+        schema: "id-2",
+        identifierId: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+        identifierType: IdentifierType.Individual,
+        createdAt: new Date("2023-11-29T02:12:35.716Z"),
+      })
+    );
   });
 
   test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {

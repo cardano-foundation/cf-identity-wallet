@@ -684,9 +684,9 @@ describe("Single sig service of agent", () => {
       .spyOn(signifyClient.operations(), "get")
       .mockResolvedValue(mockOperation);
       
-    getIdentifiersMock.mockResolvedValue({state: {
-      dt: "2024-12-10T07:28:18.217384+00:00"
-    }});
+    getIdentifiersMock.mockResolvedValue({
+      icp_dt: "2024-12-10T07:28:18.217384+00:00"
+    });
 
     // Call the function to test
     await identifierService.syncKeriaIdentifiers();
