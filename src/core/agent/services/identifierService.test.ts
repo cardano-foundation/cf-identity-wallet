@@ -16,6 +16,7 @@ const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
+const findOperationMock = jest.fn();
 const operationMock = jest.fn();
 const mockSigner = {
   _code: "A",
@@ -126,6 +127,7 @@ const identifierStorage = jest.mocked({
 
 const operationPendingStorage = jest.mocked({
   save: saveOperationPendingMock,
+  findById: findOperationMock,
 });
 
 const eventEmitter = new CoreEventEmitter();
@@ -401,6 +403,10 @@ describe("Single sig service of agent", () => {
     const displayName = "newDisplayName";
     eventEmitter.emit = jest.fn();
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    findOperationMock.mockResolvedValueOnce(null);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(undefined);
     createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
@@ -457,7 +463,15 @@ describe("Single sig service of agent", () => {
         },
       },
     });
-    expect(basicStorage.update).toHaveBeenLastCalledWith(existRecord);
+    expect(basicStorage.update).toHaveBeenLastCalledWith(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: [],
+        },
+        createdAt: expect.any(Date),
+      })
+    );
   });
 
   test("can create a keri identifier with pending operation", async () => {

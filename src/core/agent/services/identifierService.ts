@@ -205,7 +205,7 @@ class IdentifierService extends AgentService {
     backgroundTask = false
   ): Promise<CreateIdentifierResult> {
     if (!identifierTypeThemes.includes(metadata.theme)) {
-      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
+      throw new Error(IdentifierService.THEME_WAS_NOT_VALID);
     }
 
     let name = `${metadata.theme}:${metadata.displayName}`;
@@ -213,36 +213,41 @@ class IdentifierService extends AgentService {
       const initiatorFlag = metadata.groupMetadata.groupInitiator ? "1" : "0";
       name = `${metadata.theme}:${initiatorFlag}-${metadata.groupMetadata.groupId}:${metadata.displayName}`;
     }
-    let namesPendingCreation = [name];
 
     const pendingIdentifiersRecord = await this.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
     if (pendingIdentifiersRecord && !backgroundTask) {
-      if (!Array.isArray(pendingIdentifiersRecord.content.queuedDisplayNames)) {
+      const { queuedDisplayNames } = pendingIdentifiersRecord.content;
+
+      if (!Array.isArray(queuedDisplayNames)) {
         throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
       }
-      if (pendingIdentifiersRecord.content.queuedDisplayNames.includes(name)) {
+      if (queuedDisplayNames.includes(name)) {
         throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
       }
-      namesPendingCreation = [
-        ...pendingIdentifiersRecord.content.queuedDisplayNames,
-        name,
-      ];
+
+      queuedDisplayNames.push(name);
+      await this.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+          content: { queuedDisplayNames },
+        })
+      );
+    } else {
+      await this.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+          content: { queuedDisplayNames: [name] },
+        })
+      );
     }
 
     const witnesses = await this.getAvailableWitnesses();
     if (witnesses.length === 0) {
       throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE);
     }
-
-    await this.basicStorage.createOrUpdateBasicRecord(
-      new BasicRecord({
-        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
-        content: { queuedDisplayNames: namesPendingCreation },
-      })
-    );
 
     // @TODO - foconnor: Follow up ticket to pick a sane default for threshold. Right now max is too much.
     //   Must also enforce a minimum number of available witnesses.
@@ -254,8 +259,8 @@ class IdentifierService extends AgentService {
       });
 
     const op = await operation.op().catch((error) => {
-      const err = error.message.split(" - ");
-      if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
+      const [_, status, reason] = error.message.split(" - ");
+      if (/400/gi.test(status) && /already incepted/gi.test(reason)) {
         throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`, {
           cause: error,
         });
@@ -268,22 +273,32 @@ class IdentifierService extends AgentService {
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
 
-    const pendingOperation = await this.operationPendingStorage.save({
-      id: op.name,
-      recordType: OperationPendingRecordType.Witness,
-    });
+    const pendingOperationRecord = await this.operationPendingStorage.findById(
+      op.name
+    );
 
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
-    });
+    if (!(backgroundTask && pendingOperationRecord)) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Witness,
+      });
+
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
+        payload: { operation: pendingOperation },
+      });
+    }
 
     const isPending = true;
-    await this.identifierStorage.createIdentifierMetadataRecord({
-      id: identifier,
-      ...metadata,
-      isPending,
-    });
+    const identifierMetadataRecord =
+      await this.identifierStorage.getIdentifierMetadata(identifier);
+    if (!(backgroundTask && identifierMetadataRecord)) {
+      await this.identifierStorage.createIdentifierMetadataRecord({
+        id: identifier,
+        ...metadata,
+        isPending,
+      });
+    }
 
     this.props.eventEmitter.emit<IdentifierAddedEvent>({
       type: EventTypes.IdentifierAdded,
@@ -295,13 +310,14 @@ class IdentifierService extends AgentService {
     );
 
     if (updatedRecord) {
-      if (!Array.isArray(updatedRecord.content.queuedDisplayNames)) {
+      const { queuedDisplayNames } = updatedRecord.content;
+      if (!Array.isArray(queuedDisplayNames)) {
         throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
       }
 
-      const index = updatedRecord.content.queuedDisplayNames.indexOf(name);
+      const index = queuedDisplayNames.indexOf(name);
       if (index !== -1) {
-        updatedRecord.content.queuedDisplayNames.splice(index, 1);
+        queuedDisplayNames.splice(index, 1);
       }
       await this.basicStorage.update(updatedRecord);
     }
