@@ -85,6 +85,7 @@ type ExnMessage = {
     acdc?: string;
     iss?: string;
     anc?: string;
+    exn?: string;
   };
 };
 

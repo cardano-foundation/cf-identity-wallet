@@ -112,6 +112,7 @@ const CredentialDetailModule = ({
   const getCredDetails = useCallback(async () => {
     if (credDetail) {
       setCardData(credDetail);
+      getConnection(credDetail.i);
       return;
     }
 

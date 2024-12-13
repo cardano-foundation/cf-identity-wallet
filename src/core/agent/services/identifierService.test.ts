@@ -700,6 +700,15 @@ describe("Single sig service of agent", () => {
   });
 
   test("should delete the local member identifier for that multisig if deleting the multi-sig identifier", async () => {
+    const localMember = {
+      id: "aidLocalMember",
+      displayName: "Identifier Local",
+      createdAt: now,
+      theme: 0,
+      groupMetadata,
+      isPending: true,
+      multisigManageAid: "manageAid",
+    };
     identifierStorage.getIdentifierMetadata
       .mockReturnValueOnce({
         ...keriMetadataRecord,
@@ -707,11 +716,7 @@ describe("Single sig service of agent", () => {
         multisigManageAid: "manageAid",
         groupMetadata: undefined,
       })
-      .mockReturnValueOnce({
-        ...keriMetadataRecord,
-        isPending: true,
-        multisigManageAid: "manageAid",
-      });
+      .mockReturnValueOnce(localMember);
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
         id: "group-id",
@@ -725,7 +730,10 @@ describe("Single sig service of agent", () => {
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
-    jest.spyOn(utils, "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+    jest
+      .spyOn(utils, "randomSalt")
+      .mockReturnValueOnce("QOP7zdP-kJs8nlwVR290XfyAk")
+      .mockReturnValueOnce("0ADQpus-mQmmO4mgWcT3ekDz");
 
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
 
@@ -737,9 +745,13 @@ describe("Single sig service of agent", () => {
         pendingDeletion: false,
       }
     );
+    expect(updateIdentifierMock).toBeCalledWith(localMember.id, {
+      name: `XX-QOP7zdP-kJs8nlwVR290XfyAk:${localMember.groupMetadata.groupId}:${localMember.displayName}`,
+    });
     expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
       name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`,
     });
+    expect(updateIdentifierMock).toBeCalledTimes(2);
   });
 
   test("can update an identifier", async () => {

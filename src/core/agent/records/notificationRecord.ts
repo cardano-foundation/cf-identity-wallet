@@ -13,6 +13,7 @@ interface NotificationRecordStorageProps {
   multisigId?: string;
   connectionId: string;
   credentialId?: string;
+  linkedGroupRequest?: LinkedGroupRequest;
 }
 
 class NotificationRecord extends BaseRecord {
@@ -38,7 +39,7 @@ class NotificationRecord extends BaseRecord {
       this.multisigId = props.multisigId;
       this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
-      this.linkedGroupRequest = { accepted: false };
+      this.linkedGroupRequest = props.linkedGroupRequest ?? { accepted: false };
       this.credentialId = props.credentialId;
     }
   }

@@ -1,4 +1,3 @@
-import { Salter } from "signify-ts";
 import { Agent } from "../agent";
 import {
   ConnectionStatus,
@@ -34,8 +33,11 @@ import {
   agreeForPresentingExnMessage,
   credentialStateIssued,
   notificationIpexOfferProp,
+  notificationIpexAgreeProp,
+  groupIdentifierMetadataRecord,
 } from "../../__fixtures__/agent/keriaNotificationFixtures";
 import { ConnectionHistoryType } from "./connectionService.types";
+import { StorageMessage } from "../../storage/storage.types";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -332,7 +334,6 @@ describe("Signify notification service of agent", () => {
       ...credentialStateIssued,
       et: "rev",
     });
-    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [notificationIpexGrantProp];
     credentialStorage.getCredentialMetadata.mockResolvedValue(
@@ -843,7 +844,6 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit, ipex/offer, ipex/grant", async () => {
-    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [notificationMultisigExnProp];
 
@@ -852,7 +852,7 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValueOnce({ exn: { d: "d" } });
 
     identifierStorage.getIdentifierMetadata
-      .mockRejectedValueOnce(
+      .mockRejectedValue(
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       )
       .mockRejectedValueOnce(
@@ -865,29 +865,24 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
-  test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
-    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+  test("Should skip if notification route is /multisig/exn and the identifier is missing", async () => {
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps);
-
-    const notes = [notificationMultisigExnProp];
-
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnApplyForPresenting)
       .mockResolvedValueOnce({ exn: { d: "d" } });
-
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
 
+    const notes = [notificationMultisigExnProp];
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
-  test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
-    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+  test("Should skip if notification route is /multisig/exn and the credential exists", async () => {
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [notificationMultisigExnProp];
 
@@ -1008,473 +1003,6 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.update).not.toBeCalledWith();
     expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
-  });
-
-  test.skip("Original apply is linked to first received /multisig/exn offer message, and no notification record is created", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue(identifierMetadataRecordProps);
-
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnOfferForPresenting)
-      .mockResolvedValueOnce(applyForPresentingExnMessage);
-
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: "id",
-        createdAt: new Date("2024-04-29T11:01:04.903Z"),
-        a: {
-          r: NotificationRoute.ExnIpexApply,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexApply,
-        read: true,
-        linkedGroupRequest: {},
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: new Date("2024-04-29T11:01:04.903Z"),
-      },
-    ]);
-
-    await keriaNotificationService.processNotification(
-      notificationMultisigExnProp
-    );
-
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      createdAt: new Date("2024-04-29T11:01:04.903Z"),
-      a: {
-        r: NotificationRoute.ExnIpexApply,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: NotificationRoute.ExnIpexApply,
-      read: true,
-      linkedGroupRequest: {
-        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-          accepted: false,
-          saids: {
-            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-              ],
-            ],
-          },
-        },
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: new Date("2024-04-29T11:01:04.903Z"),
-    });
-    expect(markNotificationMock).not.toBeCalled();
-    expect(notificationStorage.save).toBeCalledTimes(0);
-  });
-
-  test.skip("Auto-joins /multisig/exn offer message and links to apply if we have joined a previous but different offer message, and no notification record is created", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue(identifierMetadataRecordProps);
-
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnOfferForPresenting)
-      .mockResolvedValueOnce(applyForPresentingExnMessage);
-
-    const dt = new Date().toISOString();
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: "id",
-        createdAt: dt,
-        a: {
-          r: NotificationRoute.ExnIpexApply,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexApply,
-        read: true,
-        linkedGroupRequest: {
-          EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-            accepted: true,
-            saids: {
-              EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H: [
-                [
-                  "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                  "ELlGAQaGU9yjcvsh2elQoWlxz3-cPBqIdf9u2T5OSIPL",
-                ],
-              ],
-            },
-          },
-        },
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: dt,
-      },
-    ]);
-
-    await keriaNotificationService.processNotification(
-      notificationMultisigExnProp
-    );
-
-    expect(ipexCommunications.joinMultisigOffer).toBeCalledWith(
-      "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO"
-    );
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      createdAt: dt,
-      a: {
-        r: NotificationRoute.ExnIpexApply,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: NotificationRoute.ExnIpexApply,
-      read: true,
-      linkedGroupRequest: {
-        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-          accepted: true,
-          saids: {
-            EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H: [
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELlGAQaGU9yjcvsh2elQoWlxz3-cPBqIdf9u2T5OSIPL",
-              ],
-            ],
-            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-              ],
-            ],
-          },
-        },
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: dt,
-    });
-    expect(markNotificationMock).not.toBeCalled();
-    expect(notificationStorage.save).toBeCalledTimes(0);
-  });
-
-  test.skip("Links /multisig/exn offer message to apply but does not join if offer by SAID already joined, and no notification record is created", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue(identifierMetadataRecordProps);
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnOfferForPresenting)
-      .mockResolvedValueOnce(applyForPresentingExnMessage);
-
-    const dt = new Date().toISOString();
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: "id",
-        createdAt: dt,
-        a: {
-          r: NotificationRoute.ExnIpexApply,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexApply,
-        read: true,
-        linkedGroupRequest: {
-          EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-            accepted: true,
-            saids: {
-              EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-                [
-                  "EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H",
-                  "EFUFE140pcdemyv5DZM3AuIuI_ye5Kd5dytdeIwpaVS1",
-                ],
-              ],
-            },
-          },
-        },
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: dt,
-      },
-    ]);
-
-    identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
-      id: "id",
-    });
-
-    await keriaNotificationService.processNotification(
-      notificationMultisigExnProp
-    );
-
-    expect(ipexCommunications.joinMultisigOffer).not.toBeCalled();
-
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      createdAt: dt,
-      a: {
-        r: NotificationRoute.ExnIpexApply,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: NotificationRoute.ExnIpexApply,
-      read: true,
-      linkedGroupRequest: {
-        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-          accepted: true,
-          saids: {
-            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-              [
-                "EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H",
-                "EFUFE140pcdemyv5DZM3AuIuI_ye5Kd5dytdeIwpaVS1",
-              ],
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-              ],
-            ],
-          },
-        },
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: dt,
-    });
-    expect(markNotificationMock).not.toBeCalled();
-    expect(notificationStorage.save).toBeCalledTimes(0);
-  });
-
-  test.skip("Original agree is linked to first received /multisig/exn grant message, and no notification record is created", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue(identifierMetadataRecordProps);
-
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnGrant)
-      .mockResolvedValueOnce(agreeForPresentingExnMessage);
-
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: "id",
-        createdAt: new Date("2024-04-29T11:01:04.903Z"),
-        a: {
-          r: NotificationRoute.ExnIpexAgree,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexAgree,
-        read: true,
-        linkedGroupRequest: {},
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: new Date("2024-04-29T11:01:04.903Z"),
-      },
-    ]);
-
-    await keriaNotificationService.processNotification(
-      notificationMultisigExnProp
-    );
-
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      createdAt: new Date("2024-04-29T11:01:04.903Z"),
-      a: {
-        r: NotificationRoute.ExnIpexAgree,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: NotificationRoute.ExnIpexAgree,
-      read: true,
-      linkedGroupRequest: {
-        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-          accepted: false,
-          saids: {
-            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-              ],
-            ],
-          },
-        },
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: new Date("2024-04-29T11:01:04.903Z"),
-    });
-    expect(markNotificationMock).not.toBeCalled();
-    expect(notificationStorage.save).toBeCalledTimes(0);
-  });
-
-  test.skip("Auto-joins /multisig/exn grant message and links to agree if we have joined a previous but different grant message, and no notification record is created", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue(identifierMetadataRecordProps);
-
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnGrant)
-      .mockResolvedValueOnce(agreeForPresentingExnMessage);
-
-    const dt = new Date().toISOString();
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: "id",
-        createdAt: dt,
-        a: {
-          r: NotificationRoute.ExnIpexAgree,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexAgree,
-        read: true,
-        linkedGroupRequest: {
-          EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-            accepted: true,
-            saids: {
-              EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H: [
-                [
-                  "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                  "ELlGAQaGU9yjcvsh2elQoWlxz3-cPBqIdf9u2T5OSIPL",
-                ],
-              ],
-            },
-          },
-        },
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: dt,
-      },
-    ]);
-
-    await keriaNotificationService.processNotification(
-      notificationMultisigExnProp
-    );
-
-    expect(ipexCommunications.joinMultisigGrant).toBeCalledWith(
-      "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO"
-    );
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      createdAt: dt,
-      a: {
-        r: NotificationRoute.ExnIpexAgree,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: NotificationRoute.ExnIpexAgree,
-      read: true,
-      linkedGroupRequest: {
-        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-          accepted: true,
-          saids: {
-            EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H: [
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELlGAQaGU9yjcvsh2elQoWlxz3-cPBqIdf9u2T5OSIPL",
-              ],
-            ],
-            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-              ],
-            ],
-          },
-        },
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: dt,
-    });
-    expect(markNotificationMock).not.toBeCalled();
-    expect(notificationStorage.save).toBeCalledTimes(0);
-  });
-
-  test.skip("Links /multisig/exn grant message to agree but does not join if grant by SAID already joined, and no notification record is created", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue(identifierMetadataRecordProps);
-
-    exchangesGetMock
-      .mockResolvedValueOnce(multisigExnGrant)
-      .mockResolvedValueOnce(agreeForPresentingExnMessage);
-
-    const dt = new Date().toISOString();
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: "id",
-        createdAt: dt,
-        a: {
-          r: NotificationRoute.ExnIpexAgree,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexAgree,
-        read: true,
-        linkedGroupRequest: {
-          EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-            accepted: true,
-            saids: {
-              EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-                [
-                  "EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H",
-                  "EFUFE140pcdemyv5DZM3AuIuI_ye5Kd5dytdeIwpaVS1",
-                ],
-              ],
-            },
-          },
-        },
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: dt,
-      },
-    ]);
-
-    identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
-      id: "id",
-    });
-
-    await keriaNotificationService.processNotification(
-      notificationMultisigExnProp
-    );
-
-    expect(ipexCommunications.joinMultisigGrant).not.toBeCalled();
-
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      createdAt: dt,
-      a: {
-        r: NotificationRoute.ExnIpexAgree,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: NotificationRoute.ExnIpexAgree,
-      read: true,
-      linkedGroupRequest: {
-        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
-          accepted: true,
-          saids: {
-            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
-              [
-                "EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H",
-                "EFUFE140pcdemyv5DZM3AuIuI_ye5Kd5dytdeIwpaVS1",
-              ],
-              [
-                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-              ],
-            ],
-          },
-        },
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: dt,
-    });
-    expect(markNotificationMock).not.toBeCalled();
-    expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
   test("Should return all notifications except those with notification route is /exn/ipex/agree", async () => {
@@ -1819,6 +1347,288 @@ describe("Signify notification service of agent", () => {
     await expect(
       keriaNotificationService.processNotification(notificationIpexOfferProp)
     ).rejects.toThrow(errorMessage);
+  });
+
+  test("Should store /ipex/agree notifications but emit no event, and for individual identifiers auto-grant in response", async () => {
+    exchangesGetMock.mockResolvedValue(agreeForPresentingExnMessage);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({
+        id: "id",
+      });
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+
+    const notes = [notificationIpexAgreeProp];
+    for (const notif of notes) {
+      await keriaNotificationService.processNotification(notif);
+    }
+
+    expect(notificationStorage.save).toBeCalledWith({
+      a: notificationIpexAgreeProp.a,
+      read: false,
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      credentialId: undefined,
+      id: notificationIpexAgreeProp.i,
+      route: NotificationRoute.ExnIpexAgree
+    });
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith("string");
+  });
+
+  test("Should auto-grant in response to agree even if the notification exists in the DB (allows retry on grant)", async () => {
+    exchangesGetMock.mockResolvedValue(agreeForPresentingExnMessage);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue({
+        id: "id",
+      });
+    notificationStorage.save.mockRejectedValue(new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} string`));
+
+    const notes = [notificationIpexAgreeProp];
+    for (const notif of notes) {
+      await keriaNotificationService.processNotification(notif);
+    }
+
+    expect(notificationStorage.save).toBeCalledWith({
+      a: notificationIpexAgreeProp.a,
+      read: false,
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      credentialId: undefined,
+      id: notificationIpexAgreeProp.i,
+      route: NotificationRoute.ExnIpexAgree
+    });
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith("string");
+  });
+});
+
+// @TODO - foconnor: Move remaining IPEX tests
+describe("Group IPEX presentation", () => {
+  test("Original apply is linked to received /multisig/exn offer message, and no notification record is created", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue(groupIdentifierMetadataRecord);
+    exchangesGetMock
+      .mockResolvedValueOnce(multisigExnOfferForPresenting)
+      .mockResolvedValueOnce(applyForPresentingExnMessage);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        type: "NotificationRecord",
+        id: "id",
+        createdAt: DATETIME,
+        a: {
+          r: NotificationRoute.ExnIpexApply,
+          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+        },
+        route: NotificationRoute.ExnIpexApply,
+        read: true,
+        linkedGroupRequest: { accepted: false },
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        updatedAt: DATETIME,
+      },
+    ]);
+
+    await keriaNotificationService.processNotification(
+      notificationMultisigExnProp
+    );
+
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id: "id",
+      route: NotificationRoute.ExnIpexApply,
+      linkedGroupRequest: {
+        accepted: false,
+        current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+      },
+    }));
+    expect(markNotificationMock).not.toBeCalled();
+    expect(notificationStorage.save).not.toBeCalled();
+  });
+
+
+  test("Out of order IPEX /multisig/exn offer messages error for re-processing", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue(groupIdentifierMetadataRecord);
+    exchangesGetMock
+      .mockResolvedValueOnce(multisigExnOfferForPresenting)
+      .mockResolvedValueOnce(applyForPresentingExnMessage);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+
+    await expect(keriaNotificationService.processNotification(
+      notificationMultisigExnProp
+    )).rejects.toThrowError(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+
+    expect(notificationStorage.update).not.toBeCalled();
+  }); 
+
+  test("Original agree is linked to /multisig/exn grant message and is auto-joined, and no notification record is created", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue(groupIdentifierMetadataRecord);
+    exchangesGetMock
+      .mockResolvedValueOnce(multisigExnGrant)
+      .mockResolvedValueOnce(agreeForPresentingExnMessage);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        type: "NotificationRecord",
+        id: "id",
+        createdAt: new Date("2024-04-29T11:01:04.903Z"),
+        a: {
+          r: NotificationRoute.ExnIpexAgree,
+          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+        },
+        route: NotificationRoute.ExnIpexAgree,
+        read: true,
+        linkedGroupRequest: { accepted: false },
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        updatedAt: new Date("2024-04-29T11:01:04.903Z"),
+      },
+    ]);
+
+    await keriaNotificationService.processNotification(
+      notificationMultisigExnProp
+    );
+
+    const updatedAgree = {
+      id: "id",
+      route: NotificationRoute.ExnIpexAgree,
+      linkedGroupRequest: {
+        accepted: false,
+        current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+      },
+    };
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining(updatedAgree));
+    expect(markNotificationMock).not.toBeCalled();
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(ipexCommunications.joinMultisigGrant).toBeCalledWith(multisigExnGrant, expect.objectContaining(updatedAgree));
+  });
+
+  test("Out of order IPEX /multisig/exn grant messages error for re-processing", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue(groupIdentifierMetadataRecord);
+    exchangesGetMock
+      .mockResolvedValueOnce(multisigExnGrant)
+      .mockResolvedValueOnce(agreeForPresentingExnMessage);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+
+    await expect(keriaNotificationService.processNotification(
+      notificationMultisigExnProp
+    )).rejects.toThrowError(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+
+    expect(notificationStorage.update).not.toBeCalled();
+  });
+
+  test("Should store /ipex/agree notifications but emit no event, and for group initiators auto-grant in response", async () => {
+    exchangesGetMock.mockResolvedValue(agreeForPresentingExnMessage);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue(groupIdentifierMetadataRecord);
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    identifiersMemberMock.mockResolvedValue({
+      signing: [
+        {
+          aid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+        },
+        {
+          aid: "memberB",
+        },
+        {
+          aid: "memberC"
+        }
+      ],
+    });
+
+    const notes = [notificationIpexAgreeProp];
+    for (const notif of notes) {
+      await keriaNotificationService.processNotification(notif);
+    }
+
+    expect(notificationStorage.save).toBeCalledWith({
+      a: notificationIpexAgreeProp.a,
+      read: false,
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      credentialId: undefined,
+      id: notificationIpexAgreeProp.i,
+      route: NotificationRoute.ExnIpexAgree
+    });
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(identifiersMemberMock).toBeCalledWith("EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli");
+    expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith("string");
+  });
+
+  test("Should store /ipex/agree notifications but emit no event, and do nothing else if not group initiator", async () => {
+    exchangesGetMock.mockResolvedValue(agreeForPresentingExnMessage);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValue(groupIdentifierMetadataRecord);
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    identifiersMemberMock.mockResolvedValue({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+        },
+        {
+          aid: "memberC"
+        }
+      ],
+    });
+
+    const notes = [notificationIpexAgreeProp];
+    for (const notif of notes) {
+      await keriaNotificationService.processNotification(notif);
+    }
+
+    expect(notificationStorage.save).toBeCalledWith({
+      a: notificationIpexAgreeProp.a,
+      read: false,
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      credentialId: undefined,
+      id: notificationIpexAgreeProp.i,
+      route: NotificationRoute.ExnIpexAgree
+    });
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(identifiersMemberMock).toBeCalledWith("EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli");
+    expect(ipexCommunications.grantAcdcFromAgree).not.toBeCalled();
+  });
+});
+
+describe("Failed notifications", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
   });
 
   test("Should create a new failed notification to basic record if processNotification throws any error", async () => {
@@ -2395,6 +2205,7 @@ describe("Long running operation tracker", () => {
     });
 
     await keriaNotificationService.processOperation(operationRecord);
+
     expect(credentialService.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
@@ -2568,12 +2379,12 @@ describe("Long running operation tracker", () => {
     ]);
 
     await keriaNotificationService.processOperation(operationRecord);
+
     expect(credentialService.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
     expect(notificationStorage.deleteById).toBeCalledWith("id");
-    expect(eventEmitter.emit).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.NotificationRemoved,
       payload: {
@@ -2652,8 +2463,8 @@ describe("Long running operation tracker", () => {
     ]);
 
     await keriaNotificationService.processOperation(operationRecord);
+
     expect(notificationStorage.deleteById).toBeCalledWith("id");
-    expect(eventEmitter.emit).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.NotificationRemoved,
       payload: {
@@ -2732,6 +2543,7 @@ describe("Long running operation tracker", () => {
     ]);
 
     await keriaNotificationService.processOperation(operationRecord);
+
     expect(notificationStorage.deleteById).toBeCalledWith("id");
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
     expect(markNotificationMock).toBeCalledWith("id");
@@ -2768,7 +2580,9 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.receivecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
+
     await keriaNotificationService.processOperation(operationRecord);
+
     expect(operationsGetMock).toBeCalledTimes(1);
     expect(credentialService.markAcdc).toBeCalledTimes(0);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
@@ -2789,11 +2603,13 @@ describe("Long running operation tracker", () => {
         updatedAt: new Date("2024-08-01T10:36:17.814Z"),
       },
     ]);
+
     try {
       await keriaNotificationService.pollLongOperations();
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
+
     expect(operationsGetMock).not.toBeCalled();
     expect(setTimeout).toHaveBeenCalledWith(
       keriaNotificationService.pollLongOperations,
@@ -2848,11 +2664,13 @@ describe("Long running operation tracker", () => {
         throw new Error("Break the while loop");
       }
     });
+
     try {
       await keriaNotificationService.pollNotifications();
     } catch (error) {
       expect((error as Error).message).toBe("Break the while loop");
     }
+    
     expect(basicStorage.createOrUpdateBasicRecord).toBeCalledTimes(2);
     expect(setTimeout).toHaveBeenCalledWith(
       keriaNotificationService.pollNotifications,

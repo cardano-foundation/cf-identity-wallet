@@ -50,7 +50,7 @@ import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
-import { LinkedGroupInfoGrant } from "../../../../../core/agent/services/ipexCommunicationService.types";
+import { LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
 
 const ANIMATION_DELAY = 2600;
 
@@ -75,7 +75,7 @@ const ReceiveCredential = ({
   const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [multisigMemberStatus, setMultisigMemberStatus] =
-    useState<LinkedGroupInfoGrant>({
+    useState<LinkedGroupInfo>({
       threshold: "0",
       members: [],
       othersJoined: [],
@@ -98,6 +98,14 @@ const ReceiveCredential = ({
     isMultisig &&
     (multisigMemberStatus.othersJoined.length + (multisigMemberStatus.linkedGroupRequest.accepted ? 1 : 0)) >=
       Number(multisigMemberStatus.threshold);
+
+  const identifier = useMemo(() => {
+    return identifiersData.find(item => item.id === credDetail?.identifierId)
+  }, [credDetail?.identifierId, identifiersData]);
+
+  const groupInitiatorAid = multisigMemberStatus.members[0] || "";
+  const isGroupInitiator = identifier?.multisigManageAid === groupInitiatorAid;
+  const displayInitiatorNotAcceptedAlert = isMultisig && !isRevoked && !isGroupInitiator && !multisigMemberStatus.othersJoined.includes(groupInitiatorAid);
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
@@ -130,6 +138,7 @@ const ReceiveCredential = ({
   const getAcdc = useCallback(async () => {
     try {
       setIsLoading(true);
+
       const credential =
         await Agent.agent.ipexCommunications.getAcdcFromIpexGrant(
           notificationDetails.a.d as string
@@ -184,14 +193,12 @@ const ReceiveCredential = ({
       const startTime = Date.now();
       setInitiateAnimation(true);
 
-      // @TODO - foconnor: Should be refined in the upcoming UI ticket
-      //   If multisigMemberStatus.members.length && multisigMemberStatus.members[0] === identifier?.multisigManageAid, we can call admitAcdc
-      //   Otherwise, can call joinMultisigAdmit IF multisigMemberStatus.linkedGroupRequest.current !== undefined
-      if (multisigMemberStatus.linkedGroupRequest.current) {
+      if(!isMultisig || (isMultisig && isGroupInitiator)) {
+        await Agent.agent.ipexCommunications.admitAcdcFromGrant(notificationDetails.id);
+      } else if(multisigMemberStatus.linkedGroupRequest.current) {
         await Agent.agent.ipexCommunications.joinMultisigAdmit(notificationDetails.id);
-      } else {
-        await Agent.agent.ipexCommunications.admitAcdc(notificationDetails.id);
       }
+
       const finishTime = Date.now();
 
       setTimeout(() => {
@@ -229,10 +236,6 @@ const ReceiveCredential = ({
     revoked: isRevoked,
   });
 
-  const identifier = useMemo(() => {
-    return identifiersData.find(item => item.id === credDetail?.identifierId)
-  }, [credDetail?.identifierId, identifiersData]);
-
   const getStatus = useCallback(
     (member: string): MemberAcceptStatus => {
       if (multisigMemberStatus.othersJoined.includes(member)) {
@@ -266,10 +269,27 @@ const ReceiveCredential = ({
   }, [multisigMemberStatus.members, multisignConnectionsCache, userName]);
 
   const handleConfirm = () => {
+    if(displayInitiatorNotAcceptedAlert) {
+      handleBack();
+      return;
+    }
+
     setVerifyIsOpen(true);
   };
 
   const closeAlert = () => setShowMissingIssuerModal(false);
+
+  const primaryButtonText = isRevoked ? undefined : `${i18n.t(
+    displayInitiatorNotAcceptedAlert ?  "tabs.notifications.details.buttons.ok" :
+      maxThreshold
+        ? "tabs.notifications.details.buttons.addcred"
+        : "tabs.notifications.details.buttons.accept"
+  )}`
+
+  const secondaryButtonText = maxThreshold || isRevoked || displayInitiatorNotAcceptedAlert
+    ? undefined
+    : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
+
 
   return (
     <>
@@ -294,19 +314,11 @@ const ReceiveCredential = ({
           !userAccepted && (
             <PageFooter
               pageId={pageId}
-              primaryButtonText={isRevoked ? undefined : `${i18n.t(
-                maxThreshold
-                  ? "tabs.notifications.details.buttons.addcred"
-                  : "tabs.notifications.details.buttons.accept"
-              )}`}
+              primaryButtonText={primaryButtonText}
               primaryButtonAction={handleConfirm}
-              secondaryButtonText={
-                maxThreshold || isRevoked
-                  ? undefined
-                  : `${i18n.t("tabs.notifications.details.buttons.decline")}`
-              }
+              secondaryButtonText={secondaryButtonText}
               secondaryButtonAction={
-                maxThreshold ? undefined : () => setAlertDeclineIsOpen(true)
+                maxThreshold || displayInitiatorNotAcceptedAlert ? undefined : () => setAlertDeclineIsOpen(true)
               }
               deleteButtonText={
                 isRevoked
@@ -318,8 +330,12 @@ const ReceiveCredential = ({
           )
         }
       >
-        {isRevoked && (
-          <InfoCard className="alert" content={i18n.t("tabs.notifications.details.credential.receive.revokedalert")} icon={alertCircleOutline}/>
+        {(isRevoked || displayInitiatorNotAcceptedAlert) && (
+          <InfoCard 
+            className="alert" 
+            content={i18n.t(`tabs.notifications.details.credential.receive.${isRevoked ? "revokedalert" : "initiatoracceptedalert"}`)} 
+            icon={isRevoked ? alertCircleOutline : undefined}
+          />
         )}
         <div className="request-animation-center">
           <div className="request-icons-row">

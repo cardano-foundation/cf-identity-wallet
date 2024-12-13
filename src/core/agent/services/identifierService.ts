@@ -52,6 +52,7 @@ class IdentifierService extends AgentService {
     "Misconfigured KERIA agent for this wallet type";
   static readonly INVALID_QUEUED_DISPLAY_NAMES_FORMAT =
     "Queued display names has invalid format";
+
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connections: ConnectionService;
@@ -326,6 +327,11 @@ class IdentifierService extends AgentService {
           pendingDeletion: false,
         }
       );
+      await this.props.signifyClient.identifiers().update(localMember.id, {
+        name: `XX-${randomSalt()}:${localMember.groupMetadata?.groupId}:${
+          localMember.displayName
+        }`,
+      });
       await this.deleteGroupLinkedConnections(
         localMember.groupMetadata!.groupId
       );
