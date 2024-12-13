@@ -1,6 +1,6 @@
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 import { mnemonicToEntropy } from "bip39";
-import { AgentUrls } from "./agent.types";
+import { AgentUrls, MiscRecordId } from "./agent.types";
 import { Agent } from "./agent";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { CoreEventEmitter } from "./event";
@@ -28,14 +28,20 @@ const getKeyStoreSpy = jest
   .mockResolvedValue(mockGetBranValue);
 const mockBasicStorageService = {
   save: jest.fn(),
+  update: jest.fn(),
 };
 
 const mockConnectionService = {
   removeConnectionsPendingDeletion: jest.fn(),
   resolvePendingConnections: jest.fn(),
+  syncKeriaContacts: jest.fn(),
 };
 const mockIdentifierService = {
   removeIdentifiersPendingDeletion: jest.fn(),
+  syncKeriaIdentifiers: jest.fn(),
+};
+const mockCredentialService = {
+  syncACDCs: jest.fn(),
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -56,6 +62,7 @@ describe("test cases of bootAndConnect function", () => {
     (agent as any).agentServicesProps = mockAgentServicesProps;
     (agent as any).connectionService = mockConnectionService;
     (agent as any).identifierService = mockIdentifierService;
+    (agent as any).credentialService = mockCredentialService;
 
     mockAgentUrls = {
       url: "http://127.0.0.1:3901",
@@ -277,12 +284,24 @@ describe("test cases of recoverKeriaAgent function", () => {
 
     await agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl);
 
+    const now = new Date();
     expect(SignifyClient).toHaveBeenCalledWith(
       mockConnectUrl,
       expectedBran,
       Tier.low
     );
+    expect(mockConnectionService.syncKeriaContacts).toHaveBeenCalled();
+    expect(mockIdentifierService.syncKeriaIdentifiers).toHaveBeenCalled();
+    expect(mockCredentialService.syncACDCs).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
+    expect(mockBasicStorageService.update).toHaveBeenCalledWith({
+      _tags: {},
+      content: { value: false },
+      createdAt: now,
+      id: MiscRecordId.PROCESS_RECOVERING,
+      type: "BasicRecord",
+      updatedAt: undefined,
+    });
     expect(SecureStorage.set).toHaveBeenCalledWith(
       KeyStoreKeys.SIGNIFY_BRAN,
       expectedBran

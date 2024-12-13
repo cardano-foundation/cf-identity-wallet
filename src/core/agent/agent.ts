@@ -311,7 +311,7 @@ class Agent {
     await this.syncWithKeria();
   }
 
-  private async syncWithKeria() {
+  async syncWithKeria() {
     await this.connections.syncKeriaContacts();
     await this.identifiers.syncKeriaIdentifiers();
     await this.credentials.syncACDCs();

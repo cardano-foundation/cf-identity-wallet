@@ -26,7 +26,6 @@ import { store } from "../../../store";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
-import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   setQueueIncomingRequest,
   setToastMsg,
@@ -65,6 +64,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+        onIdentifierStateChanged: jest.fn(),
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),
@@ -105,7 +105,7 @@ jest.mock("../../../core/agent/agent", () => ({
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
         onRemoveNotification: jest.fn(),
-        stopNotification: jest.fn()
+        stopNotification: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
