@@ -489,7 +489,7 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private async getAvailableWitnesses(): Promise<string[]> {
+  async getAvailableWitnesses(): Promise<string[]> {
     const config = await this.props.signifyClient.config().get();
     if (!config.iurls) {
       throw new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
