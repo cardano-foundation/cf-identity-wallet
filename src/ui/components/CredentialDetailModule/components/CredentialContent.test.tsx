@@ -116,6 +116,30 @@ describe("Creds content", () => {
     ).toBe(lastStatus);
   });
 
+  test("Show missing issuer modal", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={store}>
+        <CredentialContent
+          cardData={credsFixAcdc[0]}
+          joinedCredRequestMembers={[]}
+          connectionShortDetails={undefined}
+          setOpenConnectionlModal={jest.fn()}
+        />
+      </Provider>
+    );
+    
+    expect(
+      getByText(EN_TRANSLATIONS.connections.unknown)
+    ).toBeVisible();
+   
+    fireEvent.click(getByText(EN_TRANSLATIONS.connections.unknown));
+
+    await waitFor(() => {
+      expect(getByTestId("cred-missing-issuer-alert")).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.missingissuer.text)).toBeVisible();
+    })
+  });
+
   test("Open related identifier", async () => {
     const state = {
       stateCache: {
