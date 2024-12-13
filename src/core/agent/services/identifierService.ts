@@ -318,7 +318,10 @@ class IdentifierService extends AgentService {
 
       const index = queuedDisplayNames.indexOf(name);
       if (index !== -1) {
-        queuedDisplayNames.splice(index, 1);
+        updatedRecord.content.queuedDisplayNames = [
+          ...queuedDisplayNames.slice(0, index),
+          ...queuedDisplayNames.slice(index + 1),
+        ];
       }
       await this.basicStorage.update(updatedRecord);
     }
