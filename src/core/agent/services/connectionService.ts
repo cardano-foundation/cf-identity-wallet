@@ -444,6 +444,16 @@ class ConnectionService extends AgentService {
           groupId: contact.groupCreationId,
           createdAtUTC: contact.createdAt,
         });
+
+        this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+          type: EventTypes.ConnectionStateChanged,
+          payload: {
+            connectionId: contact.id,
+            status: ConnectionStatus.CONFIRMED,
+            url: contact.oobi,
+            label: contact.alias,
+          },
+        });
       }
     }
   }

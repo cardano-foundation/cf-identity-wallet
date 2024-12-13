@@ -180,7 +180,7 @@ class CredentialService extends AgentService {
           const identifier = await this.identifierStorage.getIdentifierMetadata(
             credential.sad.a.i
           );
-          await this.createMetadata({
+          const metadata = {
             id: credential.sad.d,
             isArchived: false,
             issuanceDate: new Date(credential.sad.a.dt).toISOString(),
@@ -192,6 +192,16 @@ class CredentialService extends AgentService {
             identifierType: identifier.multisigManageAid
               ? IdentifierType.Group
               : IdentifierType.Individual,
+          };
+
+          await this.createMetadata(metadata);
+
+          this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+            type: EventTypes.AcdcStateChanged,
+            payload: {
+              status: CredentialStatus.CONFIRMED,
+              credential: metadata,
+            },
           });
         } catch (error) {
           /* eslint-disable no-console */

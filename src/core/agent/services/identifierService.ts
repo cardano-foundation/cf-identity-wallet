@@ -20,6 +20,7 @@ import { ConnectionService } from "./connectionService";
 import {
   EventTypes,
   IdentifierRemovedEvent,
+  IdentifierStateChangedEvent,
   OperationAddedEvent,
 } from "../event.types";
 
@@ -41,8 +42,10 @@ class IdentifierService extends AgentService {
     "Identifier name has already been used on KERIA";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
-  static readonly NO_WITNESSES_AVAILABLE = "No discoverable witnesses available on connected KERIA instance";
-  static readonly MISCONFIGURED_AGENT_CONFIGURATION = "Misconfigured KERIA agent for this wallet type";
+  static readonly NO_WITNESSES_AVAILABLE =
+    "No discoverable witnesses available on connected KERIA instance";
+  static readonly MISCONFIGURED_AGENT_CONFIGURATION =
+    "Misconfigured KERIA agent for this wallet type";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
@@ -67,6 +70,12 @@ class IdentifierService extends AgentService {
         this.deleteIdentifier(data.payload.id!);
       }
     );
+  }
+
+  onIdentifierStateChanged(
+    callback: (event: IdentifierStateChangedEvent) => void
+  ) {
+    this.props.eventEmitter.on(EventTypes.IdentifierStateChanged, callback);
   }
 
   async getIdentifiers(): Promise<IdentifierShortDetails[]> {
@@ -345,7 +354,7 @@ class IdentifierService extends AgentService {
       (identifier: IdentifierResult) =>
         !storageIdentifiers.find((item) => identifier.prefix === item.id)
     );
-    
+
     const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [
       unSyncedData.filter((item: HabState) => item.group !== undefined),
       unSyncedData.filter((item: HabState) => item.group === undefined),
@@ -355,7 +364,7 @@ class IdentifierService extends AgentService {
       if (identifier.name.startsWith("XX")) {
         continue;
       }
- 
+
       const op: Operation = await this.props.signifyClient
         .operations()
         .get(`witness.${identifier.prefix}`)
@@ -370,7 +379,7 @@ class IdentifierService extends AgentService {
         });
       const isPending = !op.done;
 
-      if(isPending){
+      if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
@@ -385,7 +394,7 @@ class IdentifierService extends AgentService {
       const theme = parseInt(name[0], 10);
       const isMultiSig = name.length === 3;
 
-      if(isMultiSig){
+      if (isMultiSig) {
         const groupId = identifier.name.split(":")[1];
         const groupInitiator = groupId.split("-")[0] === "1";
 
@@ -396,19 +405,49 @@ class IdentifierService extends AgentService {
           groupMetadata: {
             groupId,
             groupCreated: false,
-            groupInitiator
+            groupInitiator,
           },
-          isPending
+          isPending,
         });
 
+        this.props.eventEmitter.emit<IdentifierStateChangedEvent>({
+          type: EventTypes.IdentifierStateChanged,
+          payload: {
+            identifier: {
+              id: identifier.prefix,
+              displayName: groupId,
+              theme,
+              groupMetadata: {
+                groupId,
+                groupCreated: false,
+                groupInitiator,
+              },
+              isPending,
+              createdAtUTC: new Date().toISOString(),
+            },
+          },
+        });
         continue;
       }
 
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier.prefix,
-        displayName: identifier.prefix,
+        displayName: identifier.name.split(":")[1],
         theme,
         isPending,
+      });
+
+      this.props.eventEmitter.emit<IdentifierStateChangedEvent>({
+        type: EventTypes.IdentifierStateChanged,
+        payload: {
+          identifier: {
+            id: identifier.prefix,
+            displayName: identifier.name.split(":")[1],
+            theme,
+            isPending,
+            createdAtUTC: new Date().toISOString(),
+          },
+        },
       });
     }
 
@@ -421,10 +460,12 @@ class IdentifierService extends AgentService {
       const groupId = identifier.group.mhab.name.split(":")[1];
       const theme = parseInt(identifier.name.split(":")[0], 10);
       const groupInitiator = groupId.split("-")[0] === "1";
-      const op = await this.props.signifyClient.operations().get(`group.${identifier.prefix}`)
+      const op = await this.props.signifyClient
+        .operations()
+        .get(`group.${identifier.prefix}`);
       const isPending = !op.done;
 
-      if(isPending){
+      if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Group,
@@ -439,17 +480,17 @@ class IdentifierService extends AgentService {
         groupMetadata: {
           groupId,
           groupCreated: true,
-          groupInitiator
-        }
+          groupInitiator,
+        },
       });
-        
+
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier.prefix,
         displayName: groupId,
         theme,
         multisigManageAid,
-        isPending
-      })
+        isPending,
+      });
     }
   }
 
@@ -472,12 +513,12 @@ class IdentifierService extends AgentService {
     if (!config.iurls) {
       throw new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
     }
-    
+
     const witnesses = [];
     for (const oobi of config.iurls) {
       const role = new URL(oobi).searchParams.get("role");
       if (role === "witness") {
-        witnesses.push(oobi.split("/oobi/")[1].split("/")[0]);  // EID - endpoint identifier
+        witnesses.push(oobi.split("/oobi/")[1].split("/")[0]); // EID - endpoint identifier
       }
     }
 

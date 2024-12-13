@@ -34,6 +34,7 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   setIdentifiersFilters,
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -75,6 +76,7 @@ import {
 import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
+  IdentifierStateChangedEvent,
 } from "../../../core/agent/event.types";
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
@@ -119,6 +121,15 @@ const acdcChangeHandler = async (
     dispatch(updateOrAddCredsCache(event.payload.credential));
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
   }
+};
+
+const identifierChangeHandler = async (
+  event: IdentifierStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const identifierRecord = event.payload.identifier;
+  
+  dispatch(updateOrAddIdentifiersCache(identifierRecord));
 };
 
 const peerConnectRequestSignChangeHandler = async (
@@ -488,6 +499,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
+    });
+
+    Agent.agent.identifiers.onIdentifierStateChanged((event) => {
+      identifierChangeHandler(event, dispatch);
     });
   };
 

@@ -296,12 +296,30 @@ class Agent {
     this.agentServicesProps.signifyClient = this.signifyClient;
     await this.connectSignifyClient();
 
+    await this.basicStorage.save({
+      id: MiscRecordId.PROCESS_RECOVERING,
+      content: { value: true },
+    });
+
     await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     await this.saveAgentUrls({
       url: connectUrl,
       bootUrl: "",
     });
     this.markAgentStatus(true);
+    
+    await this.syncWithKeria();
+  }
+
+  private async syncWithKeria() {
+    await this.connections.syncKeriaContacts();
+    await this.identifiers.syncKeriaIdentifiers();
+    await this.credentials.syncACDCs();
+
+    // await this.basicStorage.save({
+    //   id: MiscRecordId.PROCESS_RECOVERING,
+    //   content: { value: true },
+    // });
   }
 
   private async connectSignifyClient(): Promise<void> {
