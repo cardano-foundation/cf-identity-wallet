@@ -870,4 +870,25 @@ describe("Single sig service of agent", () => {
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id1");
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id2");
   });
+
+  test("cannot get available witnesses list if the config is misconfigured", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({});
+
+    await expect(
+      identifierService.getAvailableWitnesses()
+    ).rejects.toThrowError(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("can get available witnesses list", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [
+        "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller",
+        WITNESSES[1]
+      ],
+    });
+
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual([witnessEids[1]]);
+    expect(getAgentConfigMock).toBeCalled();
+  });
 });
