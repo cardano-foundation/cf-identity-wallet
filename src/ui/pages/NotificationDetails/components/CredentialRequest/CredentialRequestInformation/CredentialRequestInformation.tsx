@@ -68,7 +68,7 @@ const CredentialRequestInformation = ({
   };
 
   const getStatus = useCallback((member: MemberInfo): MemberAcceptStatus => {
-    if (member.joinedCred) {
+    if (member.joined) {
       return MemberAcceptStatus.Accepted;
     }
 
@@ -77,26 +77,11 @@ const CredentialRequestInformation = ({
 
   const reachThreshold =
     linkedGroup &&
-    linkedGroup?.joinedMembers === Number(linkedGroup?.threshold);
+    linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
 
   const showProvidedCred = () => {
     if (!linkedGroup) return;
-
-    let credId = "";
-    let maxJoinedMemebers = 0;
-
-    Object.keys(linkedGroup.offer).forEach((key) => {
-      const joinedMemebers = linkedGroup.offer[key].membersJoined.length;
-
-      if (maxJoinedMemebers < joinedMemebers) {
-        maxJoinedMemebers = joinedMemebers;
-        credId = key;
-      }
-    });
-
-    if (!credId) return;
-
-    setViewCredId(credId);
+    setViewCredId(linkedGroup.linkedGroupRequest.current);
   };
 
   const handleClose = () => setViewCredId(undefined);
@@ -222,7 +207,7 @@ const CredentialRequestInformation = ({
                     {linkedGroup.threshold}
                   </IonText>
                   <IonText className="requested-credential">
-                    {linkedGroup.joinedMembers}/{linkedGroup.threshold}
+                    {linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0)}/{linkedGroup.threshold}
                   </IonText>
                 </div>
               </CardDetailsBlock>
@@ -249,11 +234,7 @@ const CredentialRequestInformation = ({
         isOpen={!!viewCredId}
         setIsOpen={() => setViewCredId(undefined)}
         onClose={handleClose}
-        joinedCredRequestMembers={
-          linkedGroup?.memberInfos.filter(
-            (item) => item.joinedCred === viewCredId
-          ) || []
-        }
+        joinedCredRequestMembers={linkedGroup?.memberInfos}
         viewOnly
       />
       <AlertDecline

@@ -174,11 +174,13 @@ class IdentifierService extends AgentService {
 
     // @TODO - foconnor: Follow up ticket to pick a sane default for threshold. Right now max is too much.
     //   Must also enforce a minimum number of available witnesses.
-    const operation = await this.props.signifyClient.identifiers().create(name, {
-      toad: witnesses.length,
-      wits: witnesses,
-    });
-    
+    const operation = await this.props.signifyClient
+      .identifiers()
+      .create(name, {
+        toad: witnesses.length,
+        wits: witnesses,
+      });
+
     let op = await operation.op().catch((error) => {
       const err = error.message.split(" - ");
       if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
@@ -239,6 +241,11 @@ class IdentifierService extends AgentService {
           pendingDeletion: false,
         }
       );
+      await this.props.signifyClient.identifiers().update(localMember.id, {
+        name: `XX-${randomSalt()}:${localMember.groupMetadata?.groupId}:${
+          localMember.displayName
+        }`,
+      });
       await this.deleteGroupLinkedConnections(
         localMember.groupMetadata!.groupId
       );
