@@ -184,7 +184,10 @@ class IdentifierService extends AgentService {
       throw error;
     });
     const identifier = operation.serder.ked.i;
+
+    // @TODO - foconnor: Need update HabState interface on signify.
     const identifierDetail = await this.props.signifyClient.identifiers().get(identifier) as HabState & { icp_dt: string };
+
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
