@@ -1939,6 +1939,7 @@ describe("IPEX communication service of agent", () => {
       },
       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       read: true,
+      groupReplied: false,
     };
     schemaGetMock.mockResolvedValue(QVISchema);
     credentialStorage.getCredentialMetadatasById.mockResolvedValue([
@@ -2167,6 +2168,7 @@ describe("IPEX communication service of agent", () => {
       },
       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       read: true,
+      groupReplied: false,
     };
     schemaGetMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
@@ -2188,6 +2190,7 @@ describe("IPEX communication service of agent", () => {
       },
       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       read: true,
+      groupReplied: false,
     };
     await expect(
       ipexCommunicationService.offerAcdcFromApply(noti.id, {})

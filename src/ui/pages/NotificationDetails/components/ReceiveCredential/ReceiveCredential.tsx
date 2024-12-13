@@ -21,7 +21,7 @@ import {
 } from "../../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
-  deleteNotification,
+  deleteNotificationById,
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
@@ -181,7 +181,7 @@ const ReceiveCredential = ({
         notificationDetails.id,
         notificationDetails.a.r as NotificationRoute
       );
-      dispatch(deleteNotification(notificationDetails));
+      dispatch(deleteNotificationById(notificationDetails.id));
       handleBack();
     } catch (e) {
       showError("Unable to remove notification", e, dispatch);

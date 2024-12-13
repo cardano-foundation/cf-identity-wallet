@@ -59,7 +59,7 @@ jest.mock("../core/agent/agent", () => ({
       keriaNotifications: {
         pollNotifications: jest.fn(),
         pollLongOperations: jest.fn(),
-        getAllNotifications: jest.fn(),
+        getNotifications: jest.fn(),
         stopNotification: jest.fn(),
         startNotification: jest.fn(),
         onNewNotification: jest.fn(),

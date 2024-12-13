@@ -120,6 +120,7 @@ interface KeriaNotification {
   multisigId?: string;
   connectionId: string;
   read: boolean;
+  groupReplied: boolean;
 }
 
 enum KeriConnectionType {

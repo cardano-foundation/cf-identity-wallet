@@ -299,6 +299,7 @@ describe("Signify notification service of agent", () => {
       },
       connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
       read: false,
+      linkedGroupRequest: { accepted: false }
     });
 
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
@@ -322,6 +323,7 @@ describe("Signify notification service of agent", () => {
           id: "0AC0W27tnnd2WyHWUh-368EI",
           multisigId: undefined,
           read: false,
+          groupReplied: false,
         },
       },
     });
@@ -625,7 +627,7 @@ describe("Signify notification service of agent", () => {
     );
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
 
     await keriaNotificationService.processNotification(
       notificationIpexApplyProp
@@ -683,7 +685,7 @@ describe("Signify notification service of agent", () => {
     });
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
     credentialStorage.getCredentialMetadata.mockResolvedValue(
       credentialMetadataMock
     );
@@ -712,7 +714,7 @@ describe("Signify notification service of agent", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: false,
-      linkedGroupRequests: {},
+      linkedGroupRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     };
@@ -746,6 +748,7 @@ describe("Signify notification service of agent", () => {
           },
           read: false,
           connectionId: grantForIssuanceExnMessage.exn.i,
+          groupReplied: false,
         },
       },
     });
@@ -760,7 +763,7 @@ describe("Signify notification service of agent", () => {
     });
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
     credentialStorage.getCredentialMetadata.mockResolvedValue(undefined);
     const notification = {
       type: "NotificationRecord",
@@ -772,7 +775,7 @@ describe("Signify notification service of agent", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: false,
-      linkedGroupRequests: {},
+      linkedGroupRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     };
@@ -796,17 +799,11 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.deleteById).toBeCalledWith(notification.id);
     expect(credentialService.markAcdc).toBeCalledTimes(0);
     expect(markNotificationMock).toBeCalledTimes(1);
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
       type: EventTypes.NotificationRemoved,
       payload: {
-        keriaNotif: {
-          id: notification.id,
-          createdAt: notification.createdAt.toISOString(),
-          a: notification.a,
-          connectionId: notification.connectionId,
-          read: notification.read,
-        },
-      },
+        id: notification.id
+      }
     });
   });
 
@@ -902,7 +899,7 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
-  test("Original grant is linked to received /multisig/exn admit message, and no notification record is created", async () => {
+  test("Original grant is linked to received /multisig/exn admit message and refreshed, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps)
@@ -934,23 +931,40 @@ describe("Signify notification service of agent", () => {
       notificationMultisigExnProp
     );
 
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "id",
-      createdAt: DATETIME,
-      a: {
-        r: NotificationRoute.ExnIpexGrant,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
+      read: false,
       route: NotificationRoute.ExnIpexGrant,
-      read: true,
       linkedGroupRequest: {
         accepted: false,
         current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
       },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: DATETIME,
+    }));
+    expect(notificationStorage.update).not.toBeCalledWith(expect.objectContaining({
+      createdAt: DATETIME
+    }));
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
+      type: EventTypes.NotificationRemoved,
+      payload: {
+        id: "id"
+      }
     });
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: EventTypes.NotificationAdded,
+      payload: expect.objectContaining({
+        keriaNotif: expect.objectContaining({
+          id: "id"
+        }),
+      }),
+    }));
+    expect(eventEmitter.emit).not.toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: EventTypes.NotificationAdded,
+      payload: expect.objectContaining({
+        keriaNotif: expect.objectContaining({
+          createdAt: DATETIME,
+        }),
+      }),
+    }));
     expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
   });
@@ -1009,21 +1023,21 @@ describe("Signify notification service of agent", () => {
     const mockNotifications = [
       {
         id: "0AC0W27tnnd2WyHWUh-368EI",
-        createdAt: new Date("2024-04-29T11:01:04.903Z"),
+        createdAt: DATETIME,
         a: { r: NotificationRoute.ExnIpexGrant },
         multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
-        linkedGroupRequest: {},
+        linkedGroupRequest: { accepted: false },
       },
       {
         id: "0AC0W34tnnd2WyUCOy-790AY",
-        createdAt: new Date("2024-04-29T11:01:04.903Z"),
+        createdAt: DATETIME,
         a: { r: NotificationRoute.ExnIpexOffer },
         multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
-        linkedGroupRequest: {},
+        linkedGroupRequest: { accepted: false },
       },
     ];
 
@@ -1031,7 +1045,7 @@ describe("Signify notification service of agent", () => {
       .fn()
       .mockResolvedValue(mockNotifications);
 
-    const result = await keriaNotificationService.getAllNotifications();
+    const result = await keriaNotificationService.getNotifications();
 
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       $not: {
@@ -1041,26 +1055,83 @@ describe("Signify notification service of agent", () => {
     expect(result).toEqual([
       {
         id: "0AC0W27tnnd2WyHWUh-368EI",
-        createdAt: "2024-04-29T11:01:04.903Z",
+        createdAt: DATETIME.toISOString(),
         a: { r: NotificationRoute.ExnIpexGrant },
         multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+        groupReplied: false,
       },
       {
         id: "0AC0W34tnnd2WyUCOy-790AY",
-        createdAt: "2024-04-29T11:01:04.903Z",
+        createdAt: DATETIME.toISOString(),
         a: { r: NotificationRoute.ExnIpexOffer },
         multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
+        groupReplied: false,
+      },
+    ]);
+  });
+
+  test("Notifications should indiciate if there in a current response or proposal", async () => {
+    const mockNotifications = [
+      {
+        id: "0AC0W27tnnd2WyHWUh-368EI",
+        createdAt: DATETIME,
+        a: { r: NotificationRoute.ExnIpexGrant },
+        multisigId: "multisig1",
+        read: false,
+        connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+        linkedGroupRequest: { accepted: false },
+      },
+      {
+        id: "0AC0W34tnnd2WyUCOy-790AY",
+        createdAt: DATETIME,
+        a: { r: NotificationRoute.ExnIpexGrant },
+        multisigId: "multisig2",
+        read: false,
+        connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
+        linkedGroupRequest: { accepted: false, current: "current-admit-said" },
+      },
+    ];
+
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue(mockNotifications);
+
+    const result = await keriaNotificationService.getNotifications();
+
+    expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
+      $not: {
+        route: NotificationRoute.ExnIpexAgree,
+      },
+    });
+    expect(result).toEqual([
+      {
+        id: "0AC0W27tnnd2WyHWUh-368EI",
+        createdAt: DATETIME.toISOString(),
+        a: { r: NotificationRoute.ExnIpexGrant },
+        multisigId: "multisig1",
+        read: false,
+        connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+        groupReplied: false,
+      },
+      {
+        id: "0AC0W34tnnd2WyUCOy-790AY",
+        createdAt: DATETIME.toISOString(),
+        a: { r: NotificationRoute.ExnIpexGrant },
+        multisigId: "multisig2",
+        read: false,
+        connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
+        groupReplied: true,
       },
     ]);
   });
 
   test("Should return an empty list notification if no notifications are found", async () => {
     notificationStorage.findAllByQuery.mockResolvedValue([]);
-    const result = await keriaNotificationService.getAllNotifications();
+    const result = await keriaNotificationService.getNotifications();
 
     expect(result).toEqual([]);
   });
@@ -1256,7 +1327,7 @@ describe("Signify notification service of agent", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: {},
+        linkedGroupRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -1287,7 +1358,7 @@ describe("Signify notification service of agent", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: {},
+        linkedGroupRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -1361,7 +1432,7 @@ describe("Signify notification service of agent", () => {
       });
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
 
     const notes = [notificationIpexAgreeProp];
     for (const notif of notes) {
@@ -1414,7 +1485,7 @@ describe("Signify notification service of agent", () => {
 
 // @TODO - foconnor: Move remaining IPEX tests
 describe("Group IPEX presentation", () => {
-  test("Original apply is linked to received /multisig/exn offer message, and no notification record is created", async () => {
+  test("Original apply is linked to received /multisig/exn offer message and refreshed, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockRejectedValueOnce(
@@ -1452,6 +1523,33 @@ describe("Group IPEX presentation", () => {
         accepted: false,
         current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
       },
+      read: false,
+    }));
+    expect(notificationStorage.update).not.toBeCalledWith(expect.objectContaining({
+      createdAt: DATETIME,
+    }));
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
+      type: EventTypes.NotificationRemoved,
+      payload: {
+        id: "id"
+      }
+    });
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: EventTypes.NotificationAdded,
+      payload: expect.objectContaining({
+        keriaNotif: expect.objectContaining({
+          id: "id",
+          read: false,
+        }),
+      }),
+    }));
+    expect(eventEmitter.emit).not.toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: EventTypes.NotificationAdded,
+      payload: expect.objectContaining({
+        keriaNotif: expect.objectContaining({
+          createdAt: DATETIME,
+        }),
+      }),
     }));
     expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
@@ -1551,7 +1649,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValue(groupIdentifierMetadataRecord);
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
     identifiersMemberMock.mockResolvedValue({
       signing: [
         {
@@ -1595,7 +1693,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValue(groupIdentifierMetadataRecord);
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
     identifiersMemberMock.mockResolvedValue({
       signing: [
         {
@@ -2361,9 +2459,7 @@ describe("Long running operation tracker", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: {
-          "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
-        },
+        linkedGroupRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -2376,28 +2472,17 @@ describe("Long running operation tracker", () => {
       CredentialStatus.CONFIRMED
     );
     expect(notificationStorage.deleteById).toBeCalledWith("id");
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
       type: EventTypes.NotificationRemoved,
       payload: {
-        keriaNotif: {
-          a: {
-            d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-            r: NotificationRoute.ExnIpexGrant,
-          },
-          connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-          createdAt: "2024-08-01T10:36:17.814Z",
-          id: "id",
-          multisigId: undefined,
-          read: true,
-        },
-      },
+        id: "id"
+      }
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
     expect(markNotificationMock).toBeCalledWith("id");
   });
 
-  test("Should delete original apply notification when multi-sig offer operation completes", async () => {
-    const credentialIdMock = "credentialId";
+  test("Should refresh original apply notification when multi-sig offer operation completes", async () => {
     signifyClient
       .exchanges()
       .get.mockResolvedValueOnce({
@@ -2412,7 +2497,7 @@ describe("Long running operation tracker", () => {
           d: "d",
           e: {
             acdc: {
-              d: credentialIdMock,
+              d: "credential-said",
             },
           },
         },
@@ -2438,16 +2523,14 @@ describe("Long running operation tracker", () => {
       {
         type: "NotificationRecord",
         id: "id",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        createdAt: DATETIME,
         a: {
           r: NotificationRoute.ExnIpexApply,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
         },
         route: NotificationRoute.ExnIpexApply,
         read: true,
-        linkedGroupRequest: {
-          "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
-        },
+        linkedGroupRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -2455,25 +2538,36 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
-    expect(notificationStorage.deleteById).toBeCalledWith("id");
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
+    expect(notificationStorage.delete).not.toBeCalled();
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      read: false,
+    }));
+    expect(notificationStorage.update).not.toBeCalledWith(expect.objectContaining({
+      createdAt: DATETIME
+    }));
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
       type: EventTypes.NotificationRemoved,
       payload: {
-        keriaNotif: {
-          a: {
-            d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-            r: NotificationRoute.ExnIpexApply,
-          },
-          connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-          createdAt: "2024-08-01T10:36:17.814Z",
-          id: "id",
-          multisigId: undefined,
-          read: true,
-        },
-      },
+        id: "id"
+      }
     });
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: EventTypes.NotificationAdded,
+      payload: expect.objectContaining({
+        keriaNotif: expect.objectContaining({
+          id: "id"
+        }),
+      }),
+    }));
+    expect(eventEmitter.emit).not.toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: EventTypes.NotificationAdded,
+      payload: expect.objectContaining({
+        keriaNotif: expect.objectContaining({
+          createdAt: DATETIME,
+        }),
+      }),
+    }));
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
-    expect(markNotificationMock).toBeCalledWith("id");
   });
 
   test("Should delete original agree notification when multi-sig grant operation completes", async () => {
@@ -2525,9 +2619,7 @@ describe("Long running operation tracker", () => {
         },
         route: NotificationRoute.ExnIpexAgree,
         read: true,
-        linkedGroupRequest: {
-          "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
-        },
+        linkedGroupRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
