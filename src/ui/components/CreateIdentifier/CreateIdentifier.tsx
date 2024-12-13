@@ -138,7 +138,7 @@ const CreateIdentifier = ({
     }
     metadata.groupMetadata = groupMetadata;
     try {
-      const { identifier, isPending } =
+      const { identifier, isPending, createdAt } =
         await Agent.agent.identifiers.createIdentifier(metadata);
     
       if(!identifier) {
@@ -148,7 +148,7 @@ const CreateIdentifier = ({
       const newIdentifier: IdentifierShortDetails = {
         id: identifier,
         displayName: identifierData.displayName,
-        createdAtUTC: new Date().toISOString(),
+        createdAtUTC: createdAt,
         theme: selectedTheme,
         isPending: isPending,
       };

@@ -443,6 +443,7 @@ class IpexCommunicationService extends AgentService {
       identifierType: holder.multisigManageAid
         ? IdentifierType.Group
         : IdentifierType.Individual,
+      createdAt: new Date(dateTime),
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
