@@ -392,7 +392,7 @@ describe("Credential request information: multisig", () => {
 
     const back = jest.fn();
 
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, getAllByText } = render(
       <Provider store={storeMocked}>
         <CredentialRequestInformation
           pageId="multi-sign"
@@ -410,18 +410,17 @@ describe("Credential request information: multisig", () => {
 
     await waitFor(() => {
       expect(
-        getByText(
+        getAllByText(
           EN_TRANSLATIONS.tabs.notifications.details.credential.request
-            .information.title
-        )
-      ).toBeVisible();
+            .information.proposedcred
+        ).length
+      ).toBeGreaterThan(1);
     });
 
     expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.memberreviewcred)).toBeVisible();
     expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.threshold)).toBeVisible();
     expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.groupmember)).toBeVisible();
     expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.proposalfrom)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.proposedcred)).toBeVisible();
     expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)).toBeVisible();
     expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)).toBeVisible();
 
