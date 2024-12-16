@@ -35,4 +35,4 @@ jobs:
         run: open -a Simulator.app &
 
       - name: 🏃🏼 Run tests for iOS simulator
-        run: npm run wdio:ios:15promax -- --spec ./tests/features/onboarding.feature
+        run: npm run wdio:ios:16promax -- --spec ./tests/features/onboarding.feature
