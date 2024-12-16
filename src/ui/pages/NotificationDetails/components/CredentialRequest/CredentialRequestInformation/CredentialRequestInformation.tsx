@@ -191,6 +191,12 @@ const CredentialRequestInformation = ({
     }
   }
 
+  const closeAlert = () => setAlertDeclineIsOpen(false);
+
+  const title = `${i18n.t(
+    isGroup && !isGroupInitiator && isGroupInitiatorJoined ? "tabs.notifications.details.credential.request.information.proposedcred" :  "tabs.notifications.details.credential.request.information.title"
+  )}`;
+
   return (
     <>
       <ScrollablePageLayout
@@ -204,9 +210,7 @@ const CredentialRequestInformation = ({
             closeButtonLabel={`${i18n.t(
               "tabs.notifications.details.buttons.close"
             )}`}
-            title={`${i18n.t(
-              "tabs.notifications.details.credential.request.information.title"
-            )}`}
+            title={title}
           />
         }
         footer={
@@ -355,9 +359,9 @@ const CredentialRequestInformation = ({
         cancelButtonText={`${i18n.t(
           "tabs.notifications.details.buttons.cancel"
         )}`}
-        actionConfirm={() => handleDecline()}
-        actionCancel={() => setAlertDeclineIsOpen(false)}
-        actionDismiss={() => setAlertDeclineIsOpen(false)}
+        actionConfirm={handleDecline}
+        actionCancel={closeAlert}
+        actionDismiss={closeAlert}
       />
       {loading && (
         <div
