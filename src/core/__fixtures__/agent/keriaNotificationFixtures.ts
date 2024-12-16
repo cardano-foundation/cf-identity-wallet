@@ -298,7 +298,7 @@ const notificationIpexGrantProp = {
 
 const notificationIpexAgreeProp = {
   i: "string",
-  dt: "string",
+  dt: "2024-12-10T07:28:18.217384+00:00",
   r: false,
   a: {
     r: NotificationRoute.ExnIpexAgree,

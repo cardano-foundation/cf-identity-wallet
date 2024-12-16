@@ -192,6 +192,7 @@ class CredentialService extends AgentService {
             identifierType: identifier.multisigManageAid
               ? IdentifierType.Group
               : IdentifierType.Individual,
+            createdAt: new Date(credential.sad.a.dt),
           };
 
           await this.createMetadata(metadata);

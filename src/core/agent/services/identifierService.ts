@@ -191,6 +191,10 @@ class IdentifierService extends AgentService {
       throw error;
     });
     const identifier = operation.serder.ked.i;
+
+    // @TODO - foconnor: Need update HabState interface on signify.
+    const identifierDetail = await this.props.signifyClient.identifiers().get(identifier) as HabState & { icp_dt: string };
+
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
@@ -218,8 +222,9 @@ class IdentifierService extends AgentService {
       id: identifier,
       ...metadata,
       isPending: !op.done,
+      createdAt: new Date(identifierDetail.icp_dt)
     });
-    return { identifier, isPending: !op.done };
+    return { identifier, isPending: !op.done, createdAt: identifierDetail.icp_dt };
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
@@ -400,6 +405,7 @@ class IdentifierService extends AgentService {
       const name = identifier.name.split(":");
       const theme = parseInt(name[0], 10);
       const isMultiSig = name.length === 3;
+      const identifierDetail = await this.props.signifyClient.identifiers().get(identifier) as HabState & { icp_dt: string };
 
       if (isMultiSig) {
         const groupId = identifier.name.split(":")[1];
@@ -415,6 +421,7 @@ class IdentifierService extends AgentService {
             groupInitiator,
           },
           isPending,
+          createdAt: new Date(identifierDetail.icp_dt)
         });
 
         this.props.eventEmitter.emit<IdentifierStateChangedEvent>({
@@ -442,6 +449,7 @@ class IdentifierService extends AgentService {
         displayName: identifier.name.split(":")[1],
         theme,
         isPending,
+        createdAt: new Date(identifierDetail.icp_dt)
       });
 
       this.props.eventEmitter.emit<IdentifierStateChangedEvent>({
@@ -471,6 +479,7 @@ class IdentifierService extends AgentService {
         .operations()
         .get(`group.${identifier.prefix}`);
       const isPending = !op.done;
+      const identifierDetail = await this.props.signifyClient.identifiers().get(identifier) as HabState & { icp_dt: string };
 
       if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
@@ -497,7 +506,9 @@ class IdentifierService extends AgentService {
         theme,
         multisigManageAid,
         isPending,
-      });
+        createdAt: new Date(identifierDetail.icp_dt
+        )
+      })
     }
   }
 
@@ -515,7 +526,7 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private async getAvailableWitnesses(): Promise<string[]> {
+  async getAvailableWitnesses(): Promise<string[]> {
     const config = await this.props.signifyClient.config().get();
     if (!config.iurls) {
       throw new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);

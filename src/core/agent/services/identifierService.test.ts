@@ -360,6 +360,8 @@ describe("Single sig service of agent", () => {
       }),
     });
 
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+
     expect(
       await identifierService.createIdentifier({
         displayName,
@@ -404,6 +406,7 @@ describe("Single sig service of agent", () => {
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
 
     expect(
       await identifierService.createIdentifier({
@@ -681,6 +684,10 @@ describe("Single sig service of agent", () => {
       .spyOn(signifyClient.operations(), "get")
       .mockResolvedValue(mockOperation);
     eventEmitter.emit = jest.fn();
+      
+    getIdentifiersMock.mockResolvedValue({
+      icp_dt: "2024-12-10T07:28:18.217384+00:00"
+    });
 
     // Call the function to test
     await identifierService.syncKeriaIdentifiers();
@@ -698,6 +705,7 @@ describe("Single sig service of agent", () => {
         groupInitiator: true,
       },
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
     });
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -725,6 +733,7 @@ describe("Single sig service of agent", () => {
       displayName: "test2",
       theme: 33,
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
     });
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -760,6 +769,7 @@ describe("Single sig service of agent", () => {
       theme: 15,
       multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
     });
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -909,5 +919,26 @@ describe("Single sig service of agent", () => {
 
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id1");
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id2");
+  });
+
+  test("cannot get available witnesses list if the config is misconfigured", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({});
+
+    await expect(
+      identifierService.getAvailableWitnesses()
+    ).rejects.toThrowError(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("can get available witnesses list", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [
+        "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller",
+        WITNESSES[1]
+      ],
+    });
+
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual([witnessEids[1]]);
+    expect(getAgentConfigMock).toBeCalled();
   });
 });
