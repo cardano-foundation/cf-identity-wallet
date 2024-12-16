@@ -1,3 +1,4 @@
+import { create } from "domain";
 import { Agent } from "../agent";
 import {
   ConnectionStatus,
@@ -1374,7 +1375,8 @@ describe("Signify notification service of agent", () => {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
-      route: NotificationRoute.ExnIpexAgree
+      route: NotificationRoute.ExnIpexAgree,
+      createdAt: new Date(notificationIpexAgreeProp.dt)
     });
     expect(eventEmitter.emit).not.toBeCalled();
     expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith("string");
@@ -1403,7 +1405,8 @@ describe("Signify notification service of agent", () => {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
-      route: NotificationRoute.ExnIpexAgree
+      route: NotificationRoute.ExnIpexAgree,
+      createdAt: new Date(notificationIpexAgreeProp.dt)
     });
     expect(eventEmitter.emit).not.toBeCalled();
     expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith("string");
@@ -1575,7 +1578,8 @@ describe("Group IPEX presentation", () => {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
-      route: NotificationRoute.ExnIpexAgree
+      route: NotificationRoute.ExnIpexAgree,
+      createdAt: new Date(notificationIpexAgreeProp.dt)
     });
     expect(eventEmitter.emit).not.toBeCalled();
     expect(identifiersMemberMock).toBeCalledWith("EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli");
@@ -1618,7 +1622,8 @@ describe("Group IPEX presentation", () => {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
-      route: NotificationRoute.ExnIpexAgree
+      route: NotificationRoute.ExnIpexAgree,
+      createdAt: new Date(notificationIpexAgreeProp.dt)
     });
     expect(eventEmitter.emit).not.toBeCalled();
     expect(identifiersMemberMock).toBeCalledWith("EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli");

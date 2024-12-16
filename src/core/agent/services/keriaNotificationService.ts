@@ -737,6 +737,7 @@ class KeriaNotificationService extends AgentService {
       read: false,
       route: event.a.r as NotificationRoute,
       connectionId: exchange.exn.i,
+      createdAt: new Date(event.dt),
       credentialId: exchange.exn.e?.acdc?.d,
     };
 

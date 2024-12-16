@@ -45,6 +45,7 @@ interface MultiSigIcpRequestDetails {
 interface CreateIdentifierResult {
   identifier: string;
   isPending: boolean;
+  createdAt: string;
 }
 
 enum IdentifierType {
