@@ -296,7 +296,7 @@ describe("test cases of recoverKeriaAgent function", () => {
     expect(mockSignifyClient.connect).toHaveBeenCalled();
     expect(mockBasicStorageService.update).toHaveBeenCalledWith({
       _tags: {},
-      content: { value: false },
+      content: { syncing: false },
       createdAt: now,
       id: MiscRecordId.CLOUD_RECOVERY_STATUS,
       type: "BasicRecord",
