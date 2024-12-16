@@ -81,15 +81,22 @@ const CredentialRequestInformation = ({
   };
 
   const handleDecline = async () => {
+    const isRejectGroupRequest = isGroup && !(isGroupInitiator || (!isGroupInitiator && !isGroupInitiatorJoined) || isJoinGroup);
     try {
       await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notificationDetails.id,
         notificationDetails.a.r as NotificationRoute
       );
+
+      if(isRejectGroupRequest) {
+        dispatch(setToastMsg(ToastMsgType.PROPOSAL_CRED_REJECT));
+      }
+
       handleNotificationUpdate();
       onBack();
     } catch (e) {
-      showError("Unable to decline credential request", e, dispatch);
+      const toastMessage = isRejectGroupRequest ? ToastMsgType.PROPOSAL_CRED_FAIL : undefined;
+      showError("Unable to decline credential request", e, dispatch, toastMessage);
     }
   };
 

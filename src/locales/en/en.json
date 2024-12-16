@@ -1751,7 +1751,8 @@
     "groupidnotmatcherror": "Connection not part of this group",
     "unknownerror": "Something went wrong, try again",
     "proposalcredaccepted": "Credential proposal accepted",
-    "proposalcredreject": "Unable to record response"
+    "proposalcredreject": "Credential proposal rejected",
+    "proposalcredfailerror": "Unable to record response"
   },
   "request": {
     "sign": {
