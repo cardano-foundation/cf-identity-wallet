@@ -404,6 +404,9 @@ describe("Single sig service of agent", () => {
     eventEmitter.emit = jest.fn();
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     findOperationMock.mockResolvedValueOnce(null);
+    identifierStorage.createIdentifierMetadataRecord.mockResolvedValueOnce(
+      undefined
+    );
     identifierStorage.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([]);
@@ -480,6 +483,9 @@ describe("Single sig service of agent", () => {
     const displayName = "newDisplayName";
     eventEmitter.emit = jest.fn();
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    identifierStorage.createIdentifierMetadataRecord.mockResolvedValueOnce(
+      undefined
+    );
     identifierStorage.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([]);

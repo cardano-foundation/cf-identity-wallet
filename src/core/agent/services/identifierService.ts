@@ -218,30 +218,25 @@ class IdentifierService extends AgentService {
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
-    if (pendingIdentifiersRecord && !backgroundTask) {
+    let processingNames = [];
+    if (pendingIdentifiersRecord) {
       const { queuedDisplayNames } = pendingIdentifiersRecord.content;
 
       if (!Array.isArray(queuedDisplayNames)) {
         throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
       }
+      processingNames = queuedDisplayNames;
       if (queuedDisplayNames.includes(name)) {
-        throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`);
+        if (!backgroundTask) {
+          throw new Error(
+            `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`
+          );
+        }
+      } else {
+        processingNames.push(name);
       }
-
-      queuedDisplayNames.push(name);
-      await this.basicStorage.createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
-          content: { queuedDisplayNames },
-        })
-      );
     } else {
-      await this.basicStorage.createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
-          content: { queuedDisplayNames: [name] },
-        })
-      );
+      processingNames = [name];
     }
 
     const witnesses = await this.getAvailableWitnesses();
@@ -267,6 +262,13 @@ class IdentifierService extends AgentService {
       }
       throw error;
     });
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: { queuedDisplayNames: processingNames },
+      })
+    );
     const identifier = operation.serder.ked.i;
 
     // @TODO - foconnor: Need update HabState interface on signify.
@@ -279,16 +281,20 @@ class IdentifierService extends AgentService {
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
 
-    const pendingOperationRecord = await this.operationPendingStorage.findById(
-      op.name
-    );
-
-    if (!(backgroundTask && pendingOperationRecord)) {
-      const pendingOperation = await this.operationPendingStorage.save({
+    const pendingOperation = await this.operationPendingStorage
+      .save({
         id: op.name,
         recordType: OperationPendingRecordType.Witness,
+      })
+      .catch((error) => {
+        if (/Record already exists with id/gi.test(error.message)) {
+          return;
+        } else {
+          throw error;
+        }
       });
 
+    if (pendingOperation) {
       this.props.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
@@ -296,17 +302,20 @@ class IdentifierService extends AgentService {
     }
 
     const isPending = true;
-    const identifierMetadataRecord = (
-      await this.identifierStorage.getAllIdentifierMetadata()
-    ).some((record) => record.id === identifier);
-    if (!(backgroundTask && identifierMetadataRecord)) {
-      await this.identifierStorage.createIdentifierMetadataRecord({
+    await this.identifierStorage
+      .createIdentifierMetadataRecord({
         id: identifier,
         ...metadata,
         isPending,
         createdAt: new Date(identifierDetail.icp_dt),
+      })
+      .catch((error) => {
+        if (/Record already exists with id/gi.test(error.message)) {
+          return;
+        } else {
+          throw error;
+        }
       });
-    }
 
     this.props.eventEmitter.emit<IdentifierAddedEvent>({
       type: EventTypes.IdentifierAdded,
@@ -325,10 +334,7 @@ class IdentifierService extends AgentService {
 
       const index = queuedDisplayNames.indexOf(name);
       if (index !== -1) {
-        updatedRecord.content.queuedDisplayNames = [
-          ...queuedDisplayNames.slice(0, index),
-          ...queuedDisplayNames.slice(index + 1),
-        ];
+        queuedDisplayNames.splice(index, 1);
       }
       await this.basicStorage.update(updatedRecord);
     }
