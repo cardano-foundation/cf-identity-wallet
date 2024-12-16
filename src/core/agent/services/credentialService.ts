@@ -196,14 +196,6 @@ class CredentialService extends AgentService {
           };
 
           await this.createMetadata(metadata);
-
-          this.props.eventEmitter.emit<AcdcStateChangedEvent>({
-            type: EventTypes.AcdcStateChanged,
-            payload: {
-              status: CredentialStatus.CONFIRMED,
-              credential: metadata,
-            },
-          });
         } catch (error) {
           /* eslint-disable no-console */
           console.error(error);

@@ -123,15 +123,6 @@ const acdcChangeHandler = async (
   }
 };
 
-const identifierChangeHandler = async (
-  event: IdentifierStateChangedEvent,
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  const identifierRecord = event.payload.identifier;
-  
-  dispatch(updateOrAddIdentifiersCache(identifierRecord));
-};
-
 const peerConnectRequestSignChangeHandler = async (
   event: PeerConnectSigningEvent,
   dispatch: ReturnType<typeof useAppDispatch>
@@ -500,10 +491,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
     });
-
-    Agent.agent.identifiers.onIdentifierStateChanged((event) => {
-      identifierChangeHandler(event, dispatch);
-    });
   };
 
   const initApp = async () => {
@@ -534,6 +521,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     if (keriaConnectUrlRecord) {
       try {
+        if (keriaConnectUrlRecord?.content?.url) {
+          const recoveryStatus = await Agent.agent.basicStorage.findById(
+            MiscRecordId.CLOUD_RECOVERY_STATUS
+          );
+          if (recoveryStatus?.content?.syncing) {
+            Agent.agent.syncWithKeria();
+          }
+        }
+
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
       } catch (e) {
         const errorMessage = (e as Error).message;

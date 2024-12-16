@@ -708,24 +708,6 @@ describe("Single sig service of agent", () => {
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
     });
 
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.IdentifierStateChanged,
-      payload: {
-        identifier: {
-          id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-          displayName: "1-group1",
-          groupMetadata: {
-            groupId: "1-group1",
-            groupCreated: false,
-            groupInitiator: true,
-          },
-          theme: 0,
-          isPending: false,
-          createdAtUTC: expect.any(String),
-        },
-      },
-    });
-
     expect(
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
@@ -734,19 +716,6 @@ describe("Single sig service of agent", () => {
       theme: 33,
       isPending: false,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
-    });
-
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.IdentifierStateChanged,
-      payload: {
-        identifier: {
-          id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
-          displayName: "test2",
-          theme: 33,
-          isPending: false,
-          createdAtUTC: expect.any(String),
-        },
-      },
     });
 
     // sync data of group record
@@ -770,24 +739,6 @@ describe("Single sig service of agent", () => {
       multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       isPending: false,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00")
-    });
-
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.IdentifierStateChanged,
-      payload: {
-        identifier: {
-          id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-          displayName: "1-group1",
-          theme: 0,
-          groupMetadata: {
-            groupId: "1-group1",
-            groupCreated: false,
-            groupInitiator: true,
-          },
-          isPending: false,
-          createdAtUTC: expect.any(String),
-        },
-      },
     });
   });
 

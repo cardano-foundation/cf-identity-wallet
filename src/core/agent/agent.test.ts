@@ -298,7 +298,7 @@ describe("test cases of recoverKeriaAgent function", () => {
       _tags: {},
       content: { value: false },
       createdAt: now,
-      id: MiscRecordId.PROCESS_RECOVERING,
+      id: MiscRecordId.CLOUD_RECOVERY_STATUS,
       type: "BasicRecord",
       updatedAt: undefined,
     });
