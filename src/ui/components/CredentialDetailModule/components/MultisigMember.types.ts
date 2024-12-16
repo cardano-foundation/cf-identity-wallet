@@ -2,6 +2,7 @@ enum MemberAcceptStatus {
   Accepted,
   Waiting,
   Rejected,
+  None
 }
 
 interface MemberProps {

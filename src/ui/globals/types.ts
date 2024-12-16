@@ -87,6 +87,8 @@ enum ToastMsgType {
   PASSWORD_CREATED = "passwordcreated",
   SHARE_CRED_SUCCESS = "sharecredsuccess",
   SHARE_CRED_FAIL = "sharecrederror",
+  PROPOSAL_CRED_ACCEPTED = "proposalcredaccepted",
+  PROPOSAL_CRED_FAIL = "proposalcredreject",
   DELETE_CONNECTION_FAIL = "deleteconnectionerror",
   DELETE_CRED_FAIL = "deletecrederror",
   DELETE_IDENTIFIER_FAIL = "deleteidentifiererror",
