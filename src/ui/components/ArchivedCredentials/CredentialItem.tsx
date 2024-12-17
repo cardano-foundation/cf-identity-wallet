@@ -6,14 +6,13 @@ import {
   IonItemSliding,
   IonLabel,
 } from "@ionic/react";
-import { i18n } from "../../../i18n";
-import "./ArchivedCredentials.scss";
-import { formatShortDate } from "../../utils/formatters";
-import { CredentialItemProps } from "./ArchivedCredentials.types";
-import Minicred from "../../assets/images/minicred.jpg";
-import RareEvoBackground from "../../assets/images/rare-evo-bg.jpg";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
+import { i18n } from "../../../i18n";
+import { CREDENTIAL_BG } from "../../globals/types";
+import { formatShortDate } from "../../utils/formatters";
+import "./ArchivedCredentials.scss";
+import { CredentialItemProps } from "./ArchivedCredentials.types";
 
 const CredentialItem = ({
   credential,
@@ -28,7 +27,7 @@ const CredentialItem = ({
   const isRareEvo =
     credential.schema === IpexCommunicationService.SCHEMA_SAID_RARE_EVO_DEMO;
 
-  const image = isRareEvo ? RareEvoBackground : Minicred;
+  const image = isRareEvo ? CREDENTIAL_BG.RARE : CREDENTIAL_BG.KERI;
 
   return (
     <IonItemSliding>
