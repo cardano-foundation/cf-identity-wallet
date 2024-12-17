@@ -29,8 +29,8 @@
 
   --ion-color-primary-gradient: linear-gradient(
     94.29deg,
-    #92ffc0 20.19%,
-    #00a5e6 119.98%
+    var(--ion-color-light-green) 20.19%,
+    var(--ion-color-light-blue) 119.98%
   );
 
   --ion-color-secondary-gradient-light: linear-gradient(
@@ -41,19 +41,19 @@
   
   --ion-color-primary-gradient-light: linear-gradient(
     94.29deg,
-    #92ffc0 15%,
-    #00a5e6 15%
+    var(--ion-color-light-green) 15%,
+    var(--ion-color-light-blue) 15%
   );
 
   --ion-color-gradient-blue: linear-gradient(
     91.86deg,
-    #00a5e6 28.76%,
+    var(--ion-color-light-blue) 28.76%,
     #0075a3 119.14%
   );
 
   --ion-color-gradient-green: linear-gradient(
     91.86deg,
-    #92ffc0 28.76%,
+    var(--ion-color-light-green) 28.76%,
     #47ff94 119.14%
   );
 
@@ -67,7 +67,7 @@
 
   --ion-color-gradient-dark: linear-gradient(91.22deg, #222222 -5.14%, #697949 165.6%);
   --ion-color-gradient-brown: linear-gradient(90.04deg, #986c32 28.46%, #4c371a 165.71%);
-  --ion-color-secondary-gradient: linear-gradient(91.86deg, #363c4a 28.76%, #030321 119.14%);
+  --ion-color-secondary-gradient: linear-gradient(91.86deg, var(--ion-color-secondary) 28.76%, var(--ion-color-primary) 119.14%);
 }
 
 .ion-color-dark-grey {
