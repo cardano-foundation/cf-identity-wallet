@@ -11,7 +11,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getNotificationsCache,
-  setReadedNotification,
+  markNotificationAsRead,
 } from "../../../store/reducers/notificationsCache";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { CredentialDetailModal } from "../../components/CredentialDetailModule";
@@ -93,7 +93,7 @@ const Notifications = () => {
       await Agent.agent.keriaNotifications.readNotification(notification.id);
 
       dispatch(
-        setReadedNotification({
+        markNotificationAsRead({
           id: notification.id,
           read: !notification.read,
         })
