@@ -18,8 +18,10 @@ interface CredentialRequestProps {
   notificationDetails: KeriaNotification;
   credentialRequest: CredentialsMatchingApply;
   linkedGroup: LinkedGroup | null;
+  userAID?: string | null;
   onAccept: () => void;
   onBack: () => void;
+  onReloadData?: () => void;
 }
 
 interface ChooseCredentialProps {
