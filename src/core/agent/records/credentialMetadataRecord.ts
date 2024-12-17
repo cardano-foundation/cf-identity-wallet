@@ -5,7 +5,7 @@ import { IdentifierType } from "../services/identifier.types";
 
 class CredentialMetadataRecord extends BaseRecord {
   isArchived?: boolean;
-  isDeleted?: boolean;
+  pendingDeletion?: boolean;
   issuanceDate!: string;
   credentialType!: string;
   status!: CredentialStatus;
@@ -22,7 +22,7 @@ class CredentialMetadataRecord extends BaseRecord {
     if (props) {
       this.id = props.id;
       this.isArchived = props.isArchived ?? false;
-      this.isDeleted = props.isDeleted ?? false;
+      this.pendingDeletion = props.pendingDeletion ?? false;
       this.createdAt = props.createdAt ?? new Date();
       this.issuanceDate = props.issuanceDate;
       this.credentialType = props.credentialType;
@@ -38,7 +38,7 @@ class CredentialMetadataRecord extends BaseRecord {
     return {
       ...this._tags,
       isArchived: this.isArchived,
-      isDeleted: this.isDeleted,
+      isDeleted: this.pendingDeletion,
       connectionId: this.connectionId,
       id: this.id,
     };

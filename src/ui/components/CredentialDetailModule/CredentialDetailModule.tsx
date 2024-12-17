@@ -155,7 +155,7 @@ const CredentialDetailModule = ({
   const handleDeleteRevokedCred = async () => {
     try {
       await Agent.agent.credentials.archiveCredential(id);
-      await Agent.agent.credentials.deleteCredential(id);
+      await Agent.agent.credentials.markCredentialPendingDelete(id);
       const creds = credsCache.filter((item) => item.id !== id);
       if (isFavourite) {
         handleSetFavourite(id);
@@ -195,7 +195,7 @@ const CredentialDetailModule = ({
 
   const handleDeleteCredential = async () => {
     try {
-      await Agent.agent.credentials.deleteCredential(id);
+      await Agent.agent.credentials.markCredentialPendingDelete(id);
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
       await fetchArchivedCreds();
     } catch (e) {

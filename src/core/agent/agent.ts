@@ -447,6 +447,7 @@ class Agent {
     this.connections.onConnectionRemoved();
     this.connections.onConnectionAdded();
     this.identifiers.onIdentifierRemoved();
+    this.credentials.onCredentialRemoved();
   }
 
   async connect(retryInterval = 1000) {

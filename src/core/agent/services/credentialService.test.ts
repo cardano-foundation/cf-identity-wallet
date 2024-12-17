@@ -6,6 +6,7 @@ import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
 import { IdentifierType } from "./identifier.types";
 import { memberIdentifierRecord } from "../../__fixtures__/agent/multSigFixtures";
+import { EventTypes } from "../event.types";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -19,6 +20,7 @@ const groupGetRequestMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 let credentialListMock = jest.fn();
 let getCredentialMock = jest.fn();
+const revokeCredentialMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -68,6 +70,7 @@ const signifyClient = jest.mocked({
   credentials: () => ({
     get: getCredentialMock,
     list: credentialListMock,
+    revoke: revokeCredentialMock,
   }),
   exchanges: () => ({
     get: jest.fn(),
@@ -100,9 +103,10 @@ const credentialStorage = jest.mocked({
   updateCredentialMetadata: jest.fn(),
 });
 
+const eventEmitter = new CoreEventEmitter()
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventEmitter: new CoreEventEmitter(),
+  eventEmitter,
 };
 
 const notificationStorage = jest.mocked({
@@ -211,7 +215,7 @@ describe("Credential service of agent", () => {
     await credentialService.deleteCredential(credId);
     expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(credId, {
-      isDeleted: true,
+      pendingDeletion: true,
     });
   });
 
@@ -581,5 +585,118 @@ describe("Credential service of agent", () => {
         status: CredentialStatus.REVOKED,
       }
     );
+  });
+
+  test("Should mark credential is pending when start delete credential", async () => {
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValueOnce({id: "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", isArchived: true});
+    eventEmitter.emit = jest.fn();
+
+    await credentialService.markCredentialPendingDelete("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9");
+
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", {pendingDeletion: true });
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.CredentialRemovedEvent,
+      payload: {
+        credentialId:"EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9",
+      },
+    });
+  });
+
+  test("should revoke the credential and delete stale local credential if pendingDeletion is true", async () => {
+    const mockMetadata = {
+      identifierId: "test-identifier-id",
+      pendingDeletion: true,
+      id: "test-credential-id",
+    };
+
+    credentialService.deleteStaleLocalCredential = jest.fn()
+
+    const mockIdentifier = { name: "test-identifier-name" };
+
+    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
+    (identifiersGetMock).mockResolvedValueOnce(mockIdentifier);
+    (revokeCredentialMock).mockResolvedValueOnce(null);
+
+    await credentialService.deleteCredentialOnKeria("test-credential-id");
+
+    expect(identifiersGetMock).toHaveBeenCalledWith(mockMetadata.identifierId);
+    expect(revokeCredentialMock).toHaveBeenCalledWith(
+      mockIdentifier.name,
+      mockMetadata.id,
+    );
+    expect(credentialService.deleteStaleLocalCredential).toHaveBeenCalledWith("test-credential-id");
+  });
+
+  test("should delete stale local credential if revoke throws a 404 error", async () => {
+    const mockMetadata = {
+      identifierId: "test-identifier-id",
+      pendingDeletion: true,
+      id: "test-credential-id",
+    };
+
+    const mockIdentifier = { name: "test-identifier-name" };
+
+    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
+    (identifiersGetMock).mockResolvedValueOnce(mockIdentifier);
+    (revokeCredentialMock).mockRejectedValueOnce(
+      new Error("Request failed - 404 Not Found"),
+    );
+    credentialService.deleteStaleLocalCredential = jest.fn()
+
+    await credentialService.deleteCredentialOnKeria("test-credential-id");
+
+    expect(identifiersGetMock).toHaveBeenCalledWith(mockMetadata.identifierId);
+    expect(revokeCredentialMock).toHaveBeenCalledWith(
+      mockIdentifier.name,
+      mockMetadata.id,
+    );
+    expect(credentialService.deleteStaleLocalCredential).toHaveBeenCalledWith("test-credential-id");
+  });
+
+  test("should throw an error if revoke throws a non-404 error", async () => {
+    const mockMetadata = {
+      identifierId: "test-identifier-id",
+      pendingDeletion: true,
+      id: "test-credential-id",
+    };
+    credentialService.deleteStaleLocalCredential = jest.fn()
+    const mockIdentifier = { name: "test-identifier-name" };
+
+    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
+    (identifiersGetMock).mockResolvedValueOnce(mockIdentifier);
+    (revokeCredentialMock).mockRejectedValueOnce(
+      new Error("Request failed - 500 Internal Server Error"),
+    );
+
+    await expect(credentialService.deleteCredentialOnKeria("test-credential-id")).rejects.toThrow(
+      "Request failed - 500 Internal Server Error",
+    );
+
+    expect(identifiersGetMock).toHaveBeenCalledWith(mockMetadata.identifierId);
+    expect(revokeCredentialMock).toHaveBeenCalledWith(
+      mockIdentifier.name,
+      mockMetadata.id,
+    );
+    expect(credentialService.deleteStaleLocalCredential).not.toHaveBeenCalled();
+  });
+
+  test("should do nothing if pendingDeletion is false", async () => {
+    const mockMetadata = {
+      identifierId: "test-identifier-id",
+      pendingDeletion: false,
+      id: "test-credential-id",
+    };
+
+    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
+
+    await credentialService.deleteCredentialOnKeria("test-credential-id");
+
+    expect(revokeCredentialMock).not.toHaveBeenCalled();
+    
+    credentialService.deleteStaleLocalCredential = jest.fn()
+    expect(credentialService.deleteStaleLocalCredential).not.toHaveBeenCalled();
   });
 });
