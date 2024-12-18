@@ -15,6 +15,7 @@ import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
 
 const deleteCredentialsMock = jest.fn((id: string) => Promise.resolve(true));
 const deleteNotificationMock = jest.fn(() => Promise.resolve(true));
+const markCredentialPendingDeleteMock = jest.fn((id: string) => Promise.resolve(true));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -24,6 +25,7 @@ jest.mock("../../../core/agent/agent", () => ({
         deleteCredential: (id: string) => deleteCredentialsMock(id),
         getCredentials: jest.fn().mockResolvedValue([]),
         archiveCredential: jest.fn(),
+        markCredentialPendingDelete: (id: string) => markCredentialPendingDeleteMock(id),
       },
       keriaNotifications: {
         deleteNotificationRecordById: () => deleteNotificationMock(),
@@ -254,7 +256,7 @@ describe("Archived and revoked credentials", () => {
       await passcodeFiller(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
-        expect(deleteCredentialsMock).toBeCalled();
+        expect(markCredentialPendingDeleteMock).toBeCalled();
       });
     });
   });
@@ -351,7 +353,7 @@ describe("Archived and revoked credentials", () => {
       await passcodeFiller(getByText, getByTestId, "1", 6);
 
       await waitFor(() => {
-        expect(deleteCredentialsMock).toBeCalled();
+        expect(markCredentialPendingDeleteMock).toBeCalled();
         expect(deleteNotificationMock).toBeCalled();
       });
     });
