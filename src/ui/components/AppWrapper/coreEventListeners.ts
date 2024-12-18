@@ -13,12 +13,12 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
-  deleteNotification,
+  deleteNotificationById,
 } from "../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 
-const notificatiStateChanged = (
+const notificationStateChanged = (
   event: NotificationRemovedEvent | NotificationAddedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
@@ -27,7 +27,7 @@ const notificatiStateChanged = (
     dispatch(addNotification(event.payload.keriaNotif));
     break;
   case EventTypes.NotificationRemoved:
-    dispatch(deleteNotification(event.payload.keriaNotif));
+    dispatch(deleteNotificationById(event.payload.id));
     break;
   default:
     break;
@@ -64,7 +64,7 @@ const identifierAddedHandler = async (
     if (identifier.groupMetadata) {
       newIdentifier.groupMetadata = identifier.groupMetadata;
     }
-    if ( identifier.multisigManageAid) {
+    if (identifier.multisigManageAid) {
       newIdentifier.multisigManageAid = identifier.multisigManageAid;
     }
 
@@ -73,7 +73,7 @@ const identifierAddedHandler = async (
 };
 
 export {
-  notificatiStateChanged,
+  notificationStateChanged,
   signifyOperationStateChangeHandler,
   identifierAddedHandler,
 };
