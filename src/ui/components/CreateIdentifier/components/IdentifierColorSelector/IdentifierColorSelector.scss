@@ -57,23 +57,23 @@
       background: var(--ion-color-primary-gradient);
     }
 
-    &.green {
-      background: var(--ion-color-secondary-gradient-green);
+    &.card-theme-one {
+      background: var(--ion-color-card-theme-one);
     }
 
-    &.dark {
-      background: var(--ion-color-gradient-dark);
+    &.card-theme-two {
+      background: var(--ion-color-card-theme-two);
     }
 
-    &.brown {
-      background: var(--ion-color-gradient-brown);
+    &.card-theme-three {
+      background: var(--ion-color-card-theme-three);
     }
 
-    &.primary {
+    &.card-theme-primary {
       background: var(--ion-color-primary-gradient);
     }
 
-    &.secondary {
+    &.card-theme-secondary {
       background: var(--ion-color-secondary-gradient);
     }
   }

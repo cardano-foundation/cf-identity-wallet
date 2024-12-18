@@ -7,7 +7,7 @@ import {
 } from "./IdentifierColorSelector.types";
 import "./IdentifierColorSelector.scss";
 
-const ColorClassMapping = ["green", "dark", "brown", "primary", "secondary"];
+const ColorClassMapping = ["one", "two", "three", "primary", "secondary"];
 
 const ColorConfigs = [
   IdentifierColor.Green,
@@ -42,7 +42,7 @@ const IdentifierColorSelector = ({
       {ColorConfigs.map((color) => {
         const classes = combineClassNames(
           "color",
-          ColorClassMapping[color] || ColorClassMapping[0],
+          `card-theme-${ColorClassMapping[color] || ColorClassMapping[0]}`,
           {
             selected: value === color,
           }
