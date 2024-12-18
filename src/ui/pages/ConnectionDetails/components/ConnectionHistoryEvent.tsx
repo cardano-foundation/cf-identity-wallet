@@ -1,13 +1,13 @@
 import i18next from "i18next";
-import Minicred from "../../../assets/images/minicred.jpg";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
 } from "../../../../core/agent/agent.types";
-import { i18n } from "../../../../i18n";
 import { ConnectionHistoryType } from "../../../../core/agent/services/connectionService.types";
+import { i18n } from "../../../../i18n";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { CREDENTIAL_BG } from "../../../globals/types";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 
 const ConnectionHistoryEvent = ({
   index,
@@ -18,6 +18,11 @@ const ConnectionHistoryEvent = ({
   historyItem?: ConnectionHistoryItem;
   connectionDetails?: ConnectionDetails;
 }) => {
+
+  const isRareEvo = historyItem?.credentialType === "Rare EVO 2024 Attendee";
+
+  const image = isRareEvo ? CREDENTIAL_BG.RARE : CREDENTIAL_BG.KERI;
+
   return historyItem ? (
     <div
       className="connection-details-history-event"
@@ -33,7 +38,7 @@ const ConnectionHistoryEvent = ({
             />
           ) : (
             <img
-              src={Minicred}
+              src={image}
               alt="credential-miniature"
               className="credential-miniature"
             />
