@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Agent } from "../../../../core/agent/agent";
+import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,
   getMultiSigGroupCache,
-  setIdentifiersCache,
-  setScanGroupId,
+  removeIdentifierCache,
+  setScanGroupId
 } from "../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -17,15 +18,14 @@ import {
 } from "../../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { useOnlineStatusEffect } from "../../../hooks";
+import { showError } from "../../../utils/error";
 import { getTheme } from "../../../utils/theme";
 import { Alert } from "../../Alert";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
+import { Verification } from "../../Verification";
 import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnectionBodyInit } from "./SetupConnectionBodyInit";
 import { SetupConnectionBodyResume } from "./SetupConnectionBodyResume";
-import { showError } from "../../../utils/error";
-import { Verification } from "../../Verification";
-import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
 const SetupConnections = ({
   state,
@@ -147,14 +147,11 @@ const SetupConnections = ({
 
     try {
       setVerifyIsOpen(false);
-      const updatedIdentifiers = identifierData.filter(
-        (item) => item.id !== identifierId
-      );
 
       await Agent.agent.identifiers.markIdentifierPendingDelete(identifierId);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-      dispatch(setIdentifiersCache(updatedIdentifiers));
+      dispatch(removeIdentifierCache(identifierId));
       handleDone();
     } catch (e) {
       showError(

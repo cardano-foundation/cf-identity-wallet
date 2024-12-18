@@ -19,9 +19,9 @@ import {
 import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
 import { ListHeader } from "../../../components/ListHeader";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
-import { IdentifierContentProps } from "./IdentifierContent.types";
-import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierAttributeDetailModal } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal";
+import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
+import { IdentifierContentProps } from "./IdentifierContent.types";
 
 const DISPLAY_MEMBERS = 3;
 
@@ -42,7 +42,7 @@ const IdentifierContent = ({
   }, []);
 
   const isMultiSig = useMemo(() => {
-    const identifier = identifiersData.find((data) => data.id === cardData.id);
+    const identifier = identifiersData[cardData.id];
 
     return (
       cardData.multisigManageAid || (identifier && identifier.multisigManageAid)

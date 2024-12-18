@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../index";
 import { KeriaNotification } from "../../../core/agent/agent.types";
+import { RootState } from "../../index";
 import {
-  NotificationCacheState,
-  NotificationDetailCacheState,
+  NotificationCacheState
 } from "./notificationCache.types";
 
 const initialState: NotificationCacheState = {

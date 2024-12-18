@@ -31,7 +31,7 @@ const WalletConnectStageTwo = ({
   onClose,
 }: WalletConnectStageTwoProps) => {
   const dispatch = useDispatch();
-  const identifierCache = useAppSelector(getIdentifiersCache);
+  const identifierCache = Object.values(useAppSelector(getIdentifiersCache));
   const existingConnections = useAppSelector(getWalletConnectionsCache);
 
   const [selectedIdentifier, setSelectedIdentifier] =
