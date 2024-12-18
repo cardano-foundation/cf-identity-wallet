@@ -716,6 +716,13 @@ class KeriaNotificationService extends AgentService {
           id: notificationRecord.id,
         },
       });
+      const { multisigMembers, ourIdentifier } =
+          await this.multiSigs.getMultisigParticipants(exchange.exn.a.gid);
+
+      const initiatorAid = multisigMembers.map(
+        (member: any) => member.aid
+      )[0];
+
       this.props.eventEmitter.emit<NotificationAddedEvent>({
         type: EventTypes.NotificationAdded,
         payload: {
@@ -723,12 +730,14 @@ class KeriaNotificationService extends AgentService {
             id: notificationRecord.id,
             createdAt: notificationRecord.createdAt.toISOString(),
             a: notificationRecord.a,
-            multisigId: notificationRecord.multisigId,
+            multisigId: exchange.exn.a.gid,
             connectionId: notificationRecord.connectionId,
-            read: notificationRecord.read, 
+            read: notificationRecord.read,
             groupReplied: true,
-          }
-        }
+            initiatorAid,
+            groupInitiator: ourIdentifier.groupMetadata?.groupInitiator,
+          },
+        },
       });
 
       return false;

@@ -122,6 +122,8 @@ interface KeriaNotification {
   connectionId: string;
   read: boolean;
   groupReplied: boolean;
+  initiatorAid?: string;
+  groupInitiator?: boolean;
 }
 
 enum KeriConnectionType {
