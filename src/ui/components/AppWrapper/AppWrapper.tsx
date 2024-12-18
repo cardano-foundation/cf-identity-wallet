@@ -526,7 +526,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
             MiscRecordId.CLOUD_RECOVERY_STATUS
           );
           if (recoveryStatus?.content?.syncing) {
-            Agent.agent.syncWithKeria();
+            await Agent.agent.syncWithKeria();
+            await loadDatabase()
           }
         }
 
