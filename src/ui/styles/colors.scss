@@ -23,7 +23,7 @@
   --ion-color-green: #438f68;
   --ion-color-light-green: #92ffc0;
   --ion-color-light-green-rgb: 146, 255, 192;
-  --ion-color-alt-green: #47ff94
+  --ion-color-alt-green: #47ff94;
   --ion-color-action-blue: #0066cc;
   --ion-color-blue: #017eff;
   --ion-color-light-blue: #00a5e6;
@@ -61,7 +61,11 @@
     rgba(var(--ion-color-light-blue-rgb), 0.15) 119.14%
   );
 
-  --ion-color-secondary-gradient: linear-gradient(91.86deg, var(--ion-color-secondary) 28.76%, var(--ion-color-primary) 119.14%);
+  --ion-color-secondary-gradient: linear-gradient(
+    91.86deg,
+    var(--ion-color-secondary) 28.76%,
+    var(--ion-color-primary) 119.14%
+  );
 
   --ion-color-gradient-blue: linear-gradient(
     91.86deg,
@@ -84,10 +88,16 @@
   );
 
   --ion-color-card-theme-two: linear-gradient(
-    91.22deg, var(--ion-color-theme-two-color-one) -5.14%, var(--ion-color-theme-two-color-two) 165.6%);
+    91.22deg,
+    var(--ion-color-theme-two-color-one) -5.14%,
+    var(--ion-color-theme-two-color-two) 165.6%
+  );
 
   --ion-color-card-theme-three: linear-gradient(
-    90.04deg, var(--ion-color-theme-three-color-one) 28.46%, var(--ion-color-theme-three-color-two) 165.71%);
+    90.04deg,
+    var(--ion-color-theme-three-color-one) 28.46%,
+    var(--ion-color-theme-three-color-two) 165.71%
+  );
 }
 
 // ion-colors classes
