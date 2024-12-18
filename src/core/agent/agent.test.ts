@@ -35,6 +35,7 @@ const mockConnectionService = {
   resolvePendingConnections: jest.fn(),
 };
 const mockIdentifierService = {
+  resolvePendingIdentifier: jest.fn(),
   removeIdentifiersPendingDeletion: jest.fn(),
 };
 
@@ -158,6 +159,10 @@ describe("test cases of bootAndConnect function", () => {
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
+    mockIdentifierService.resolvePendingIdentifier = jest
+      .fn()
+      .mockReturnValue(undefined);
+
     await agent.bootAndConnect(mockAgentUrls);
 
     expect(signifyReady).toHaveBeenCalled();
@@ -272,6 +277,9 @@ describe("test cases of recoverKeriaAgent function", () => {
       .fn()
       .mockReturnValue(["id1", "id2"]);
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
+      .fn()
+      .mockReturnValue(undefined);
+    mockIdentifierService.resolvePendingIdentifier = jest
       .fn()
       .mockReturnValue(undefined);
 

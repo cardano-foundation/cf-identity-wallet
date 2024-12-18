@@ -956,6 +956,11 @@ class KeriaNotificationService extends AgentService {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           isPending: false,
         });
+
+        const individualIdentifier =
+          await this.identifierStorage.getIdentifierMetadata(recordId);
+        await this.props.signifyClient.identifiers()
+          .addEndRole(individualIdentifier.id, "agent", this.props.signifyClient.agent!.pre);
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
           payload: {

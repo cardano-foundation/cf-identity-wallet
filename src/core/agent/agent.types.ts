@@ -39,6 +39,7 @@ enum MiscRecordId {
   LOGIN_METADATA = "login-metadata",
   CAMERA_DIRECTION = "camera-direction",
   FAILED_NOTIFICATIONS = "failed-notifications",
+  IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
 }
 
 interface ConnectionShortDetails {
