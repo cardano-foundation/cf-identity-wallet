@@ -675,10 +675,10 @@ class KeriaNotificationService extends AgentService {
             a: notificationRecord.a,
             multisigId: notificationRecord.multisigId,
             connectionId: notificationRecord.connectionId,
-            read: notificationRecord.read, 
+            read: notificationRecord.read,
             groupReplied: true,
-          }
-        }
+          },
+        },
       });
 
       return false;
@@ -707,6 +707,18 @@ class KeriaNotificationService extends AgentService {
       };
       notificationRecord.createdAt = new Date();
       notificationRecord.read = false;
+      const { multisigMembers, ourIdentifier } =
+          await this.multiSigs.getMultisigParticipants(exchange.exn.a.gid);
+
+      const initiatorAid = multisigMembers.map(
+        (member: any) => member.aid
+      )[0];
+
+      notificationRecord.multisigId = exchange.exn.a.gid;
+      notificationRecord.groupReplied = true;
+      notificationRecord.initiatorAid = initiatorAid;
+      notificationRecord.groupInitiator =
+          ourIdentifier.groupMetadata?.groupInitiator;
 
       await this.notificationStorage.update(notificationRecord);
 
@@ -716,12 +728,6 @@ class KeriaNotificationService extends AgentService {
           id: notificationRecord.id,
         },
       });
-      const { multisigMembers, ourIdentifier } =
-          await this.multiSigs.getMultisigParticipants(exchange.exn.a.gid);
-
-      const initiatorAid = multisigMembers.map(
-        (member: any) => member.aid
-      )[0];
 
       this.props.eventEmitter.emit<NotificationAddedEvent>({
         type: EventTypes.NotificationAdded,
@@ -730,12 +736,12 @@ class KeriaNotificationService extends AgentService {
             id: notificationRecord.id,
             createdAt: notificationRecord.createdAt.toISOString(),
             a: notificationRecord.a,
-            multisigId: exchange.exn.a.gid,
+            multisigId: notificationRecord.multisigId,
             connectionId: notificationRecord.connectionId,
             read: notificationRecord.read,
-            groupReplied: true,
-            initiatorAid,
-            groupInitiator: ourIdentifier.groupMetadata?.groupInitiator,
+            groupReplied: notificationRecord.groupReplied,
+            initiatorAid: notificationRecord.initiatorAid,
+            groupInitiator: notificationRecord.groupInitiator,
           },
         },
       });
@@ -766,7 +772,10 @@ class KeriaNotificationService extends AgentService {
       };
 
       await this.notificationStorage.update(notificationRecord);
-      await this.ipexCommunications.joinMultisigGrant(exchange, notificationRecord);
+      await this.ipexCommunications.joinMultisigGrant(
+        exchange,
+        notificationRecord
+      );
       return false;
     }
     default:
@@ -859,7 +868,9 @@ class KeriaNotificationService extends AgentService {
         multisigId: notification.multisigId,
         connectionId: notification.connectionId,
         read: notification.read,
-        groupReplied: notification.linkedGroupRequest.current !== undefined
+        groupReplied: notification.linkedGroupRequest.current !== undefined,
+        groupInitiator: notification.groupInitiator,
+        initiatorAid: notification.initiatorAid,
       };
     });
   }
@@ -1036,7 +1047,7 @@ class KeriaNotificationService extends AgentService {
             .exchanges()
             .get(admitExchange.exn.p);
           const credentialId = grantExchange.exn.e.acdc.d;
-          
+
           const holder = await this.identifierStorage.getIdentifierMetadata(
             admitExchange.exn.i
           );
@@ -1090,6 +1101,21 @@ class KeriaNotificationService extends AgentService {
               // "Refresh" the notification so user is aware offer is successfully sent
               notification.createdAt = new Date();
               notification.read = false;
+
+              const { multisigMembers, ourIdentifier } =
+                  await this.multiSigs.getMultisigParticipants(
+                    applyExchange.exn.rp
+                  );
+
+              const initiatorAid = multisigMembers.map(
+                (member: any) => member.aid
+              )[0];
+
+              notification.groupReplied = true;
+              notification.initiatorAid = initiatorAid;
+              notification.groupInitiator =
+                  ourIdentifier.groupMetadata?.groupInitiator;
+
               await this.notificationStorage.update(notification);
 
               this.props.eventEmitter.emit<NotificationRemovedEvent>({
@@ -1108,10 +1134,12 @@ class KeriaNotificationService extends AgentService {
                     a: notification.a,
                     multisigId: notification.multisigId,
                     connectionId: notification.connectionId,
-                    read: notification.read, 
-                    groupReplied: true,
-                  }
-                }
+                    read: notification.read,
+                    groupReplied: notification.groupReplied,
+                    initiatorAid,
+                    groupInitiator: notification.groupInitiator,
+                  },
+                },
               });
             }
           }
@@ -1126,7 +1154,7 @@ class KeriaNotificationService extends AgentService {
           const agreeExchange = await this.props.signifyClient
             .exchanges()
             .get(grantExchange.exn.p);
-          
+
           const holder = await this.identifierStorage.getIdentifierMetadata(
             grantExchange.exn.i
           );
