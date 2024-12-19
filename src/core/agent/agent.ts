@@ -531,6 +531,49 @@ class Agent {
       throw error;
     }
   }
+
+  async completeWipeRecords() {
+    const basicRecords = await this.basicStorageService.getAll();
+    console.log("basicRecords", basicRecords);
+    for (const record of basicRecords) {
+      await this.basicStorageService.delete(record);
+    }
+
+    const identifierRecords =
+      await this.identifierStorage.getAllIdentifierMetadata();
+    for (const record of identifierRecords) {
+      await this.identifierStorage.deleteIdentifierMetadata(record.id);
+    }
+
+    const credentialsRecords =
+      await this.credentialStorage.getAllCredentialMetadata();
+    for (const record of credentialsRecords) {
+      await this.credentialStorage.deleteCredentialMetadata(record.id);
+    }
+
+    const connectionRecords = await this.connectionStorage.getAll();
+    for (const record of connectionRecords) {
+      await this.connectionStorage.delete(record);
+    }
+
+    const notificationRecords = await this.notificationStorage.getAll();
+    for (const record of notificationRecords) {
+      await this.notificationStorage.delete(record);
+    }
+
+    const peerConnectionRecords =
+      await this.peerConnectionStorage.getAllPeerConnectionMetadata();
+    for (const record of peerConnectionRecords) {
+      await this.peerConnectionStorage.deletePeerConnectionMetadataRecord(
+        record.id
+      );
+    }
+
+    const operationPendingRecords = await this.operationPendingStorage.getAll();
+    for (const record of operationPendingRecords) {
+      await this.operationPendingStorage.delete(record);
+    }
+  }
 }
 
 export { Agent };
