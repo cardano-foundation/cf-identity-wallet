@@ -57,30 +57,24 @@
       background: var(--ion-color-primary-gradient);
     }
 
-    &.green {
-      background: linear-gradient(
-        90.04deg,
-        #667745 28.46%,
-        #879e54 78.5%,
-        #a8c55f 123.53%,
-        #b9cf7c 165.71%
-      );
+    &.card-theme-one {
+      background: var(--ion-color-card-theme-one);
     }
 
-    &.dark {
-      background: linear-gradient(91.22deg, #222222 -5.14%, #697949 165.6%);
+    &.card-theme-two {
+      background: var(--ion-color-card-theme-two);
     }
 
-    &.brown {
-      background: linear-gradient(90.04deg, #986c32 28.46%, #4c371a 165.71%);
+    &.card-theme-three {
+      background: var(--ion-color-card-theme-three);
     }
 
-    &.primary {
-      background: linear-gradient(91.86deg, #92ffc0 28.76%, #00a5e6 119.14%);
+    &.card-theme-primary {
+      background: var(--ion-color-primary-gradient);
     }
 
-    &.secondary {
-      background: linear-gradient(91.86deg, #363c4a 28.76%, #030321 119.14%);
+    &.card-theme-secondary {
+      background: var(--ion-color-secondary-gradient);
     }
   }
 }

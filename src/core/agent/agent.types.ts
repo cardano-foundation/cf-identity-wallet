@@ -40,6 +40,7 @@ enum MiscRecordId {
   CAMERA_DIRECTION = "camera-direction",
   FAILED_NOTIFICATIONS = "failed-notifications",
   CLOUD_RECOVERY_STATUS = "cloud-recovery-status",
+  IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
 }
 
 interface ConnectionShortDetails {

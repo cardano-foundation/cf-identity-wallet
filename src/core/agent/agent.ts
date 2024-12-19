@@ -99,7 +99,8 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.connections
+        this.connections,
+        this.basicStorage
       );
     }
     return this.identifierService;
@@ -355,6 +356,7 @@ class Agent {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
       this.identifiers.removeIdentifiersPendingDeletion();
+      this.identifiers.resolvePendingIdentifier();
     }
 
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
