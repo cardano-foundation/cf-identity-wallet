@@ -539,6 +539,8 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
+
+    eventEmitter.emit = jest.fn();
     connectionStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
     expect(connectionStorage.save).toBeCalledTimes(2);

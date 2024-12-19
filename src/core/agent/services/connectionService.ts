@@ -168,17 +168,6 @@ class ConnectionService extends AgentService {
       }
       await this.createConnectionMetadata(connectionId, connectionMetadata);
     } else {
-      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-        type: EventTypes.ConnectionStateChanged,
-        payload: {
-          isMultiSigInvite: false,
-          connectionId,
-          status: ConnectionStatus.PENDING,
-          url,
-          label: alias,
-        },
-      });
-
       await this.createConnectionMetadata(connectionId, connectionMetadata);
     }
     return { type: KeriConnectionType.NORMAL, connection };

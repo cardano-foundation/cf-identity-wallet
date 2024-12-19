@@ -77,6 +77,7 @@ import {
 import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
+  IdentifierStateChangedEvent,
 } from "../../../core/agent/event.types";
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
@@ -543,7 +544,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await Agent.agent.devPreload();
     }
 
-    await loadDatabase();
     const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
 
     // Ensure online/offline callback setup before connecting to KERIA
@@ -551,6 +551,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     if (keriaConnectUrlRecord) {
       try {
+        if (keriaConnectUrlRecord?.content?.url) {
+          const recoveryStatus = await Agent.agent.basicStorage.findById(
+            MiscRecordId.CLOUD_RECOVERY_STATUS
+          );
+          if (recoveryStatus?.content?.syncing) {
+            await Agent.agent.syncWithKeria();
+          }
+        }
+        await loadDatabase();
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
       } catch (e) {
         const errorMessage = (e as Error).message;
