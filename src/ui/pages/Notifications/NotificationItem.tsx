@@ -39,7 +39,7 @@ const NotificationItem = ({
         connection: multisigConnectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
       });
     case NotificationRoute.ExnIpexApply: {
-      if(item.groupReplied && !item.groupInitiator) {
+      if(item.groupReplied && !item.groupInitiator && item.initiatorAid) {
         const initiator = item.initiatorAid ? multisigConnectionsCache[item.initiatorAid].label :  t("connections.unknown");
         return t("tabs.notifications.tab.labels.exnipexapplyproposed", {
           connection: connectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
