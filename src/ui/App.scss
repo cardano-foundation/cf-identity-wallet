@@ -236,7 +236,7 @@ p {
 ion-toast {
   --height: 3.25rem;
   --border-radius: 0.5rem;
-  --box-shadow: 3px 3px 10px 0 rgba(var(--ion-color-black-rgb), 0.2);
+  --box-shadow: none;
 
   &::part(message) {
     text-align: left;
