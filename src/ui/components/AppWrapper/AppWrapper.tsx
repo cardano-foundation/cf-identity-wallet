@@ -545,7 +545,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await Agent.agent.devPreload();
     }
 
-    await loadDatabase();
     const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
 
     // Ensure online/offline callback setup before connecting to KERIA
@@ -561,7 +560,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
             await Agent.agent.syncWithKeria();
           }
         }
-
+        await loadDatabase();
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
       } catch (e) {
         const errorMessage = (e as Error).message;
