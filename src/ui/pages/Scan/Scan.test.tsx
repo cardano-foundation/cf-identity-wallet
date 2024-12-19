@@ -142,7 +142,7 @@ describe("Scan Tab", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         scanGroupId: "72e2f089cef6",
       },
       connectionsCache: {
@@ -190,7 +190,7 @@ describe("Scan Tab", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",

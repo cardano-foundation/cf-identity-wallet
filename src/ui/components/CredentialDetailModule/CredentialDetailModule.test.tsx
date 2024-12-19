@@ -106,7 +106,7 @@ const initialStateNoPasswordCurrent = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
   },
 };
 
@@ -136,7 +136,7 @@ const initialStateNoPasswordArchived = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
   },
 };
 
@@ -355,7 +355,7 @@ describe("Cred Detail Module - current not archived credential", () => {
         notificationDetailCache: null,
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
 
@@ -421,7 +421,7 @@ describe("Cred Detail Module - current not archived credential", () => {
         })),
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       notificationsCache: {
         notificationDetailCache: null,
@@ -697,7 +697,7 @@ describe("Cred Detail Module - light mode", () => {
       enabled: false,
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
     },
     notificationsCache: {
       notificationDetailCache: {
@@ -763,7 +763,7 @@ describe("Cred detail - revoked", () => {
       bran: "bran",
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
     },
     credsCache: { creds: credsFixAcdc },
     credsArchivedCache: { creds: [] },
@@ -897,7 +897,7 @@ describe("Cred detail - view only", () => {
       enabled: false,
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
     },
     notificationsCache: {
       notificationDetailCache: {

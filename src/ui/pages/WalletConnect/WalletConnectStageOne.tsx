@@ -23,7 +23,7 @@ const WalletConnectStageOne = ({
 }: WalletConnectStageOneProps) => {
   const dispatch = useAppDispatch();
   const [openDeclineAlert, setOpenDeclineAlert] = useState(false);
-  const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
+  const defaultIdentifierCache = Object.values(useAppSelector(getIdentifiersCache)).filter(
     (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
   );
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =

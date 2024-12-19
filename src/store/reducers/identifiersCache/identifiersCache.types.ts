@@ -13,7 +13,7 @@ interface MultiSigGroup {
 }
 
 interface IdentifierCacheState {
-  identifiers: IdentifierShortDetails[];
+  identifiers: Record<string, IdentifierShortDetails>;
   favourites: FavouriteIdentifier[];
   filters: IdentifiersFilters;
   multiSigGroup: MultiSigGroup | undefined;

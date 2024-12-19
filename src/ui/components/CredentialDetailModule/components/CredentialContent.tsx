@@ -9,6 +9,7 @@ import { useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { Alert } from "../../Alert";
 import {
   CardBlock,
   CardDetailsBlock,
@@ -22,7 +23,6 @@ import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./Cr
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
-import { Alert } from "../../Alert";
 
 const CredentialContent = ({
   cardData,
@@ -36,7 +36,7 @@ const CredentialContent = ({
   const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
   const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
 
-  const identifier = identifiers.find(item => item.id === cardData.identifierId);
+  const identifier = identifiers[cardData.identifierId];
 
   const openConnection = () => {
     if(connectionShortDetails) {

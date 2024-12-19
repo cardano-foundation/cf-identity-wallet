@@ -177,7 +177,7 @@ const initialState = {
     bran: "",
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
     favourites: [],
     multiSigGroup: {
       groupId: "",
@@ -331,7 +331,7 @@ describe("App", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -463,7 +463,7 @@ describe("App", () => {
         bran: "",
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
