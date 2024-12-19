@@ -34,7 +34,6 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   setIdentifiersFilters,
-  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
