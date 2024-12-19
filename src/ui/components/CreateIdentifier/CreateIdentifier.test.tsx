@@ -9,6 +9,7 @@ import { ConnectionDetails } from "../../../core/agent/agent.types";
 import { IdentifierService } from "../../../core/agent/services";
 import EN_TRANSLATION from "../../../locales/en/en.json";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { showNoWitnessAlert } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -27,10 +28,7 @@ jest.mock("@ionic/react", () => ({
 const mockGetMultisigConnection = jest.fn((args: any) =>
   Promise.resolve([] as ConnectionDetails[])
 );
-const createIdentifierMock = jest.fn((args: unknown) => ({
-  identifier: "mock-id",
-  isPending: true,
-}));
+const createIdentifierMock = jest.fn();
 const markIdentifierPendingCreateMock = jest.fn((args: unknown) => ({}));
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -105,6 +103,10 @@ describe("Create Identifier modal", () => {
     mockGetMultisigConnection.mockImplementation((): any =>
       Promise.resolve([] as ConnectionDetails[])
     );
+    createIdentifierMock.mockImplementation((args: unknown) => ({
+      identifier: "mock-id",
+      isPending: true,
+    }));
   });
 
   const initialState = {
@@ -437,6 +439,72 @@ describe("Create Identifier modal", () => {
       expect(
         getByText(EN_TRANSLATION.createidentifier.aidinfo.title)
       ).toBeVisible();
+    });
+  });
+
+  test("No witness availability", async () => {
+    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.NO_WITNESSES_AVAILABLE)));
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateIdentifier
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+        />
+      </Provider>
+    );
+
+    const displayNameInput = getByTestId("display-name-input");
+
+    act(() => {
+      fireEvent.click(getByTestId("color-1"));
+      fireEvent.click(getByTestId("identifier-theme-selector-item-1"));
+      ionFireEvent.ionInput(displayNameInput, "Test");
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("color-1").classList.contains("selected"));
+    })
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
+    });
+  });
+
+  test("Misconfigured agent", async () => {
+    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)));
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateIdentifier
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+        />
+      </Provider>
+    );
+
+    const displayNameInput = getByTestId("display-name-input");
+
+    act(() => {
+      fireEvent.click(getByTestId("color-1"));
+      fireEvent.click(getByTestId("identifier-theme-selector-item-1"));
+      ionFireEvent.ionInput(displayNameInput, "Test");
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("color-1").classList.contains("selected"));
+    })
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
     });
   });
 });
