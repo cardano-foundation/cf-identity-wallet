@@ -55,6 +55,7 @@ import {
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
+  showNoWitnessAlert,
 } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -81,6 +82,7 @@ import {
 } from "../../../core/agent/event.types";
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
+import { IdentifierService } from "../../../core/agent/services";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -194,6 +196,30 @@ const AppWrapper = (props: { children: ReactNode }) => {
     },
     [dispatch]
   );
+
+  const checkWitness = useCallback(async () => {
+    if(!authentication.ssiAgentIsSet || !isOnline) return;
+
+    try {
+      const witness = await Agent.agent.identifiers.getAvailableWitnesses();
+
+      if (witness.length === 0)
+        throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE)
+
+    } catch(e) {
+      const errorMessage = (e as Error).message;
+      if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+        dispatch(showNoWitnessAlert(true));
+        return;
+      }
+
+      throw e;
+    }
+  }, [authentication.ssiAgentIsSet, dispatch, isOnline]);
+
+  useEffect(() => {
+    checkWitness();
+  }, [checkWitness])
 
   useEffect(() => {
     initApp();
