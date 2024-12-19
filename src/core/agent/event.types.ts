@@ -1,4 +1,5 @@
 import { ConnectionStatus, KeriaNotification } from "./agent.types";
+import { IdentifierMetadataRecordProps } from "./records";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import {
@@ -22,6 +23,7 @@ enum EventTypes {
   NotificationRemoved = "NotificationRemoved",
   IdentifierRemoved = "IdentifierRemoved",
   CredentialRemovedEvent = "CredentialRemovedEvent",
+  IdentifierAdded = "IdentifierAdded",
 }
 
 interface NotificationAddedEvent extends BaseEventEmitter {
@@ -82,7 +84,7 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
 interface NotificationRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.NotificationRemoved;
   payload: {
-    keriaNotif: KeriaNotification;
+    id: string;
   };
 }
 
@@ -99,6 +101,12 @@ interface CredentialRemovedEvent extends BaseEventEmitter {
     credentialId: string;
   };
 } 
+interface IdentifierAddedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.IdentifierAdded;
+  payload: {
+    identifier: IdentifierMetadataRecordProps;
+  };
+}
 
 export type {
   NotificationAddedEvent,
@@ -112,5 +120,6 @@ export type {
   ConnectionRemovedEvent,
   IdentifierRemovedEvent,
   CredentialRemovedEvent,
+  IdentifierAddedEvent,
 };
 export { EventTypes };

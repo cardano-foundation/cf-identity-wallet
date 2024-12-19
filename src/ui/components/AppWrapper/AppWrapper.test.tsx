@@ -65,6 +65,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+        onIdentifierAdded: jest.fn(),
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),
@@ -101,11 +102,11 @@ jest.mock("../../../core/agent/agent", () => ({
       keriaNotifications: {
         pollNotifications: jest.fn(),
         pollLongOperations: jest.fn(),
-        getAllNotifications: jest.fn(),
+        getNotifications: jest.fn(),
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
         onRemoveNotification: jest.fn(),
-        stopNotification: jest.fn()
+        stopNotification: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),

@@ -69,7 +69,8 @@ import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
-  notificatiStateChanged,
+  identifierAddedHandler,
+  notificationStateChanged,
   signifyOperationStateChangeHandler,
 } from "./coreEventListeners";
 import {
@@ -218,6 +219,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
+
     if (isOnline) {
       syncWithKeria();
     }
@@ -274,7 +276,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       const storedPeerConnections =
         await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
       const notifications =
-        await Agent.agent.keriaNotifications.getAllNotifications();
+        await Agent.agent.keriaNotifications.getNotifications();
 
       dispatch(setIdentifiersCache(storedIdentifiers));
       dispatch(setCredsCache(credsCache));
@@ -479,7 +481,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     );
     Agent.agent.keriaNotifications.onNewNotification((event) => {
-      notificatiStateChanged(event, dispatch);
+      notificationStateChanged(event, dispatch);
     });
 
     Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
@@ -487,7 +489,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
 
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
-      notificatiStateChanged(event, dispatch);
+      notificationStateChanged(event, dispatch);
+    });
+
+    Agent.agent.identifiers.onIdentifierAdded((event) => {
+      identifierAddedHandler(event, dispatch);
     });
   };
 
