@@ -559,7 +559,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
           );
           if (recoveryStatus?.content?.syncing) {
             await Agent.agent.syncWithKeria();
-            await loadDatabase()
           }
         }
 
