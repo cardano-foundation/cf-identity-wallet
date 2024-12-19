@@ -345,3 +345,113 @@ describe("test cases of recoverKeriaAgent function", () => {
     expect(SecureStorage.set).not.toHaveBeenCalled();
   });
 });
+
+describe("test case of completeWipeRecords function", () => {
+  let agent: Agent;
+  let mockBasicStorageService: any;
+  let mockIdentifierStorage: any;
+  let mockCredentialStorage: any;
+  let mockConnectionStorage: any;
+  let mockNotificationStorage: any;
+  let mockPeerConnectionStorage: any;
+  let mockOperationPendingStorage: any;
+
+  beforeEach(() => {
+    agent = Agent.agent;
+    mockBasicStorageService = {
+      getAll: jest.fn(),
+      delete: jest.fn(),
+    };
+    mockIdentifierStorage = {
+      getAllIdentifierMetadata: jest.fn(),
+      deleteIdentifierMetadata: jest.fn(),
+    };
+    mockCredentialStorage = {
+      getAllCredentialMetadata: jest.fn(),
+      deleteCredentialMetadata: jest.fn(),
+    };
+    mockConnectionStorage = {
+      getAll: jest.fn(),
+      delete: jest.fn(),
+    };
+    mockNotificationStorage = {
+      getAll: jest.fn(),
+      delete: jest.fn(),
+    };
+    mockPeerConnectionStorage = {
+      getAllPeerConnectionMetadata: jest.fn(),
+      deletePeerConnectionMetadataRecord: jest.fn(),
+    };
+    mockOperationPendingStorage = {
+      getAll: jest.fn(),
+      delete: jest.fn(),
+    };
+
+    (agent as any).basicStorageService = mockBasicStorageService;
+    (agent as any).identifierStorage = mockIdentifierStorage;
+    (agent as any).credentialStorage = mockCredentialStorage;
+    (agent as any).connectionStorage = mockConnectionStorage;
+    (agent as any).notificationStorage = mockNotificationStorage;
+    (agent as any).peerConnectionStorage = mockPeerConnectionStorage;
+    (agent as any).operationPendingStorage = mockOperationPendingStorage;
+  });
+
+  test("should delete all records from all storages", async () => {
+    const mockBasicRecords = [{ id: "basicId1" }, { id: "basicId2" }];
+    const mockIdentifierRecords = [{ id: "identifier" }];
+    const mockCredentialRecords = [{ id: "credential" }];
+    const mockConnectionRecords = [{ id: "connection" }];
+    const mockNotificationRecords = [{ id: "notification" }];
+    const mockPeerConnectionRecords = [{ id: "peerConnection" }];
+    const mockOperationPendingRecords = [{ id: "operationPending" }];
+
+    mockBasicStorageService.getAll.mockResolvedValue(mockBasicRecords);
+    mockIdentifierStorage.getAllIdentifierMetadata.mockResolvedValue(
+      mockIdentifierRecords
+    );
+    mockCredentialStorage.getAllCredentialMetadata.mockResolvedValue(
+      mockCredentialRecords
+    );
+    mockConnectionStorage.getAll.mockResolvedValue(mockConnectionRecords);
+    mockNotificationStorage.getAll.mockResolvedValue(mockNotificationRecords);
+    mockPeerConnectionStorage.getAllPeerConnectionMetadata.mockResolvedValue(
+      mockPeerConnectionRecords
+    );
+    mockOperationPendingStorage.getAll.mockResolvedValue(
+      mockOperationPendingRecords
+    );
+
+    await agent.completeWipeRecords();
+
+    expect(mockBasicStorageService.getAll).toHaveBeenCalled();
+    expect(mockBasicStorageService.delete).toHaveBeenCalledTimes(
+      mockBasicRecords.length
+    );
+    expect(mockIdentifierStorage.getAllIdentifierMetadata).toHaveBeenCalled();
+    expect(
+      mockIdentifierStorage.deleteIdentifierMetadata
+    ).toHaveBeenCalledTimes(mockIdentifierRecords.length);
+    expect(mockCredentialStorage.getAllCredentialMetadata).toHaveBeenCalled();
+    expect(
+      mockCredentialStorage.deleteCredentialMetadata
+    ).toHaveBeenCalledTimes(mockCredentialRecords.length);
+    expect(mockConnectionStorage.getAll).toHaveBeenCalled();
+    expect(mockConnectionStorage.delete).toHaveBeenCalledTimes(
+      mockConnectionRecords.length
+    );
+    expect(mockNotificationStorage.getAll).toHaveBeenCalled();
+    expect(mockNotificationStorage.delete).toHaveBeenCalledTimes(
+      mockNotificationRecords.length
+    );
+    expect(
+      mockPeerConnectionStorage.getAllPeerConnectionMetadata
+    ).toHaveBeenCalled();
+    expect(
+      mockPeerConnectionStorage.deletePeerConnectionMetadataRecord
+    ).toHaveBeenCalledTimes(mockPeerConnectionRecords.length);
+    expect(mockOperationPendingStorage.getAll).toHaveBeenCalled();
+    expect(mockOperationPendingStorage.delete).toHaveBeenCalledTimes(
+      mockOperationPendingRecords.length
+    );
+  });
+});
