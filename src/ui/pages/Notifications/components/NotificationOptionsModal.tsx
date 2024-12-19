@@ -9,8 +9,8 @@ import { Agent } from "../../../../core/agent/agent";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch } from "../../../../store/hooks";
 import {
-  deleteNotification,
-  setReadedNotification,
+  deleteNotificationById,
+  markNotificationAsRead,
 } from "../../../../store/reducers/notificationsCache";
 import { Alert } from "../../../components/Alert";
 import { OptionItem, OptionModal } from "../../../components/OptionsModal";
@@ -43,7 +43,7 @@ const NotificationOptionsModal = ({
       }
 
       dispatch(
-        setReadedNotification({
+        markNotificationAsRead({
           id: notification.id,
           read: !notification.read,
         })
@@ -60,7 +60,7 @@ const NotificationOptionsModal = ({
         notification.id,
         notification.a.r as NotificationRoute
       );
-      dispatch(deleteNotification(notification));
+      dispatch(deleteNotificationById(notification.id));
       closeModal();
     } catch (e) {
       showError("Unable to remove notification", e, dispatch);

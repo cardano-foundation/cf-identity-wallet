@@ -1,5 +1,5 @@
 import { IonSpinner } from "@ionic/react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { i18n } from "../../../../../i18n";
@@ -24,6 +24,7 @@ const CredentialRequest = ({
   handleBack,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
+  const identifiers = useAppSelector(getIdentifiersCache);
   const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
   const userName = useAppSelector(getAuthentication)?.userName;
   const [requestStage, setRequestStage] = useState(0);
@@ -37,6 +38,14 @@ const CredentialRequest = ({
   const reachThreshold =
     linkedGroup &&
     linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
+
+  const userAID = useMemo(() => {
+    if(!credentialRequest) return null;
+
+    const identifier = identifiers.find(item => item.id === credentialRequest.identifier);
+    
+    return identifier ? identifier.multisigManageAid : null;
+  }, [credentialRequest, identifiers]);
 
   const getMultisigInfo = useCallback(async () => {
     const linkedGroup =
@@ -139,6 +148,8 @@ const CredentialRequest = ({
           credentialRequest={credentialRequest}
           linkedGroup={linkedGroup}
           onBack={handleBack}
+          userAID={userAID}
+          onReloadData={getCrendetialRequest}
         />
       ) : (
         <ChooseCredential

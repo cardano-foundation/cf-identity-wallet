@@ -1,6 +1,6 @@
-import { IonButton, IonCard, IonIcon, IonText } from "@ionic/react";
-import { informationCircleOutline, idCardOutline } from "ionicons/icons";
-import { useCallback, useState } from "react";
+import { IonIcon, IonSpinner, IonText } from "@ionic/react";
+import { informationCircleOutline } from "ionicons/icons";
+import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../../core/agent/agent";
 import { NotificationRoute } from "../../../../../../core/agent/agent.types";
 import { i18n } from "../../../../../../i18n";
@@ -10,23 +10,27 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../../store/reducers/notificationsCache";
+import { setToastMsg } from "../../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
 import { Alert as AlertDecline } from "../../../../../components/Alert";
 import {
   CardDetailsAttributes,
   CardDetailsBlock,
 } from "../../../../../components/CardDetails";
-import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
-import { PageFooter } from "../../../../../components/PageFooter";
-import { PageHeader } from "../../../../../components/PageHeader";
-import { showError } from "../../../../../utils/error";
 import {
   MemberAcceptStatus,
   MultisigMember,
 } from "../../../../../components/CredentialDetailModule/components";
+import { InfoCard } from "../../../../../components/InfoCard";
+import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
+import { PageFooter } from "../../../../../components/PageFooter";
+import { PageHeader } from "../../../../../components/PageHeader";
+import { ToastMsgType } from "../../../../../globals/types";
+import { useOnlineStatusEffect } from "../../../../../hooks";
+import { showError } from "../../../../../utils/error";
 import { CredentialRequestProps, MemberInfo } from "../CredentialRequest.types";
-import "./CredentialRequestInformation.scss";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
+import "./CredentialRequestInformation.scss";
 
 const CredentialRequestInformation = ({
   pageId,
@@ -34,8 +38,10 @@ const CredentialRequestInformation = ({
   notificationDetails,
   credentialRequest,
   linkedGroup,
+  userAID,
   onBack,
   onAccept,
+  onReloadData
 }: CredentialRequestProps) => {
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
@@ -43,8 +49,28 @@ const CredentialRequestInformation = ({
   const [notifications, setNotifications] = useState(notificationsCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [viewCredId, setViewCredId] = useState<string>();
+  const [chooseCredId, setChooseCredId] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const connection = connectionsCache?.[notificationDetails.connectionId];
+
+  const isGroup = !!linkedGroup;
+  const isGroupInitiator = linkedGroup?.members[0] === userAID;
+  const isJoinGroup = linkedGroup?.memberInfos.some(item => item.aid === userAID && item.joined);
+  const isGroupInitiatorJoined = !!linkedGroup?.memberInfos.at(0)?.joined;
+
+  const getCred = useCallback(async () => {
+    if(!isGroupInitiatorJoined || !linkedGroup?.linkedGroupRequest.current) return;
+
+    try {
+      const id = await Agent.agent.ipexCommunications.getOfferedCredentialSaid(linkedGroup.linkedGroupRequest.current);
+      setChooseCredId(id);
+    } catch (error) {
+      showError("Unable to get choosen cred", error, dispatch);
+    }
+  }, [dispatch, isGroupInitiatorJoined, linkedGroup?.linkedGroupRequest]);
+
+  useOnlineStatusEffect(getCred);
 
   const handleNotificationUpdate = async () => {
     const updatedNotifications = notifications.filter(
@@ -55,15 +81,22 @@ const CredentialRequestInformation = ({
   };
 
   const handleDecline = async () => {
+    const isRejectGroupRequest = isGroup && !(isGroupInitiator || (!isGroupInitiator && !isGroupInitiatorJoined) || isJoinGroup);
     try {
       await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notificationDetails.id,
         notificationDetails.a.r as NotificationRoute
       );
+
+      if(isRejectGroupRequest) {
+        dispatch(setToastMsg(ToastMsgType.PROPOSAL_CRED_REJECT));
+      }
+
       handleNotificationUpdate();
       onBack();
     } catch (e) {
-      showError("Unable to decline credential request", e, dispatch);
+      const toastMessage = isRejectGroupRequest ? ToastMsgType.PROPOSAL_CRED_FAIL : undefined;
+      showError("Unable to decline credential request", e, dispatch, toastMessage);
     }
   };
 
@@ -72,19 +105,97 @@ const CredentialRequestInformation = ({
       return MemberAcceptStatus.Accepted;
     }
 
+    if(!isGroupInitiatorJoined) {
+      return MemberAcceptStatus.None;
+    }
+
     return MemberAcceptStatus.Waiting;
-  }, []);
+  }, [isGroupInitiatorJoined]);
 
   const reachThreshold =
     linkedGroup &&
     linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
 
   const showProvidedCred = () => {
-    if (!linkedGroup) return;
-    setViewCredId(linkedGroup.linkedGroupRequest.current);
+    setViewCredId(chooseCredId);
   };
 
   const handleClose = () => setViewCredId(undefined);
+
+  const headerAlertMessage = useMemo(() => {
+    if(!isGroup) return null;
+  
+    if(reachThreshold) {
+      return i18n.t(
+        "tabs.notifications.details.credential.request.information.reachthreshold"
+      );
+    }
+
+    if(isGroupInitiator && !isJoinGroup) {
+      return i18n.t("tabs.notifications.details.credential.request.information.initiatorselectcred");
+    }
+
+    if(isGroupInitiator && isJoinGroup) {
+      return i18n.t("tabs.notifications.details.credential.request.information.initiatorselectedcred");
+    }
+
+    if(!isGroupInitiator && !isJoinGroup && !isGroupInitiatorJoined) {
+      return i18n.t("tabs.notifications.details.credential.request.information.memberwaitingproposal");
+    }
+
+    if(!isGroupInitiator && !isJoinGroup) {
+      return i18n.t("tabs.notifications.details.credential.request.information.memberreviewcred");
+    }
+
+    if(!isGroupInitiator && isJoinGroup) {
+      return i18n.t("tabs.notifications.details.credential.request.information.memberjoined");
+    }
+
+    return null;
+  }, [isGroup, reachThreshold, isGroupInitiator, isJoinGroup, isGroupInitiatorJoined]);
+
+  const primaryButtonText = useMemo(() => {
+    if(!isGroupInitiator && isGroupInitiatorJoined && !isJoinGroup) return i18n.t("tabs.notifications.details.buttons.accept");
+
+    if(reachThreshold || isJoinGroup || !isGroupInitiator) return i18n.t("tabs.notifications.details.buttons.ok");
+    
+    return i18n.t("tabs.notifications.details.buttons.choosecredential");
+  }, [isGroupInitiator, isGroupInitiatorJoined, isJoinGroup, reachThreshold]);
+
+  const deleteButtonText = useMemo(() => {
+    return isGroupInitiator || (!isGroupInitiator && !isGroupInitiatorJoined) || isJoinGroup ? undefined : `${i18n.t("tabs.notifications.details.buttons.reject")}`
+  }, [isGroupInitiator, isGroupInitiatorJoined, isJoinGroup])
+
+  const decline = () => setAlertDeclineIsOpen(true);
+
+  const handleAcceptClick = async () => {
+    if((isGroupInitiator && !isJoinGroup) || !isGroup) {
+      onAccept();
+      return;
+    }
+
+    if(isJoinGroup || !isGroupInitiatorJoined || reachThreshold) {
+      onBack();
+      return; 
+    }
+
+    try {
+      setLoading(true);
+      await Agent.agent.ipexCommunications.joinMultisigOffer(notificationDetails.id);
+      dispatch(setToastMsg(ToastMsgType.PROPOSAL_CRED_ACCEPTED));
+      await onReloadData?.();
+    } catch (e) {
+      showError("Unable to proposal cred", e, dispatch, ToastMsgType.PROPOSAL_CRED_FAIL);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const closeAlert = () => setAlertDeclineIsOpen(false);
+
+  const title = `${i18n.t(
+    isGroup && !isGroupInitiator && isGroupInitiatorJoined ? "tabs.notifications.details.credential.request.information.proposedcred" :  "tabs.notifications.details.credential.request.information.title"
+  )}`;
 
   return (
     <>
@@ -99,62 +210,63 @@ const CredentialRequestInformation = ({
             closeButtonLabel={`${i18n.t(
               "tabs.notifications.details.buttons.close"
             )}`}
-            title={`${i18n.t(
-              "tabs.notifications.details.credential.request.information.title"
-            )}`}
+            title={title}
           />
         }
         footer={
           <PageFooter
             pageId={pageId}
             customClass="credential-request-footer"
-            primaryButtonText={`${i18n.t(
-              !reachThreshold
-                ? "tabs.notifications.details.buttons.choosecredential"
-                : "tabs.notifications.details.buttons.ok"
-            )}`}
-            primaryButtonAction={onAccept}
+            primaryButtonText={primaryButtonText}
+            primaryButtonAction={handleAcceptClick}
             secondaryButtonText={
-              reachThreshold
+              reachThreshold || isGroupInitiatorJoined || !isGroupInitiator
                 ? undefined
                 : `${i18n.t("tabs.notifications.details.buttons.decline")}`
             }
-            secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
+            secondaryButtonAction={decline}
+            deleteButtonAction={decline}
+            deleteButtonText={deleteButtonText}
           />
         }
       >
         <div className="credential-content">
-          {reachThreshold && (
-            <IonCard className="reach-threshold">
-              <div className="container">
-                <p>
-                  {i18n.t(
-                    "tabs.notifications.details.credential.request.information.reachthreshold"
-                  )}
-                </p>
-                <div className="alert-icon">
-                  <IonIcon
-                    icon={informationCircleOutline}
-                    slot="icon-only"
-                  />
-                </div>
+          {
+            headerAlertMessage && <InfoCard
+              className="alert" 
+              content={headerAlertMessage} 
+            />
+          }
+          {
+            !isGroupInitiator && isGroupInitiatorJoined && <CardDetailsBlock
+              className="request-from"
+              title={`${i18n.t(
+                "tabs.notifications.details.credential.request.information.proposalfrom"
+              )}`}
+            >
+              <div className="request-from-content">
+                <img src={KeriLogo} />
+                <p>{linkedGroup?.memberInfos.at(0)?.name || i18n.t("connections.unknown")}</p>
               </div>
-              <IonButton
-                fill="outline"
-                className="view-provided-cred-btn secondary-button"
-                data-testid="view-provided-credential"
-                onClick={showProvidedCred}
-              >
-                <IonIcon
-                  slot="start"
-                  icon={idCardOutline}
-                />
-                {i18n.t(
-                  "tabs.notifications.details.credential.request.information.providecredential"
-                )}
-              </IonButton>
-            </IonCard>
-          )}
+            </CardDetailsBlock>
+          }
+          {
+            linkedGroup?.linkedGroupRequest.current && <CardDetailsBlock
+              onClick={showProvidedCred}
+              className="proposed-cred"
+              title={`${i18n.t(
+                "tabs.notifications.details.credential.request.information.proposedcred"
+              )}`}
+            >
+              <div className="request-from-content">
+                <img src={KeriLogo} />
+                <p>{credentialRequest.schema.name || i18n.t("connections.unknown")}</p>
+              </div>
+              <IonIcon
+                icon={informationCircleOutline}
+              />
+            </CardDetailsBlock>
+          }
           <CardDetailsBlock
             className="request-from"
             title={`${i18n.t(
@@ -206,9 +318,6 @@ const CredentialRequestInformation = ({
                   <IonText className="requested-credential">
                     {linkedGroup.threshold}
                   </IonText>
-                  <IonText className="requested-credential">
-                    {linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0)}/{linkedGroup.threshold}
-                  </IonText>
                 </div>
               </CardDetailsBlock>
               <CardDetailsBlock
@@ -250,10 +359,18 @@ const CredentialRequestInformation = ({
         cancelButtonText={`${i18n.t(
           "tabs.notifications.details.buttons.cancel"
         )}`}
-        actionConfirm={() => handleDecline()}
-        actionCancel={() => setAlertDeclineIsOpen(false)}
-        actionDismiss={() => setAlertDeclineIsOpen(false)}
+        actionConfirm={handleDecline}
+        actionCancel={closeAlert}
+        actionDismiss={closeAlert}
       />
+      {loading && (
+        <div
+          className="cre-request-spinner-container"
+          data-testid="cre-request-spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      )}
     </>
   );
 };

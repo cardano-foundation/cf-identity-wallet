@@ -83,7 +83,7 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
 interface NotificationRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.NotificationRemoved;
   payload: {
-    keriaNotif: KeriaNotification;
+    id: string;
   };
 }
 

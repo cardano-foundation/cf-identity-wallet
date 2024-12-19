@@ -14,7 +14,7 @@ const notificationsCacheSlice = createSlice({
   name: "notificationsCache",
   initialState,
   reducers: {
-    setReadedNotification: (
+    markNotificationAsRead: (
       state,
       action: PayloadAction<{
         id: string;
@@ -30,9 +30,9 @@ const notificationsCacheSlice = createSlice({
         };
       });
     },
-    deleteNotification: (state, action: PayloadAction<KeriaNotification>) => {
+    deleteNotificationById: (state, action: PayloadAction<string>) => {
       state.notifications = state.notifications.filter(
-        (notification) => notification.id !== action.payload.id
+        (notification) => notification.id !== action.payload
       );
     },
     setNotificationsCache: (
@@ -51,8 +51,8 @@ export { initialState, notificationsCacheSlice };
 
 export const {
   setNotificationsCache,
-  setReadedNotification,
-  deleteNotification,
+  markNotificationAsRead,
+  deleteNotificationById,
   addNotification,
 } = notificationsCacheSlice.actions;
 
