@@ -23,6 +23,7 @@ enum EventTypes {
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
   IdentifierRemoved = "IdentifierRemoved",
+  CredentialRemovedEvent = "CredentialRemovedEvent",
   IdentifierStateChanged = "IdentifierStateChanged",
   IdentifierAdded = "IdentifierAdded",
 }
@@ -93,9 +94,15 @@ interface IdentifierRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.IdentifierRemoved;
   payload: {
     id: string;
-  };
+  }; 
 }
 
+interface CredentialRemovedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.CredentialRemovedEvent;
+  payload: {
+    credentialId: string;
+  };
+} 
 interface IdentifierStateChangedEvent extends BaseEventEmitter {
   type: typeof EventTypes.IdentifierStateChanged;
   payload: {
@@ -121,6 +128,7 @@ export type {
   NotificationRemovedEvent,
   ConnectionRemovedEvent,
   IdentifierRemovedEvent,
+  CredentialRemovedEvent,
   IdentifierStateChangedEvent,
   IdentifierAddedEvent,
 };

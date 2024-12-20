@@ -26,7 +26,7 @@ import { CredentialsFilters } from "./Credentials.types";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
-
+const markCredentialPendingDeleteMock = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -34,7 +34,8 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(),
         deleteCredential: () => deleteIdentifierMock(),
         archiveCredential: () => archiveIdentifierMock(),
-        getCredentials: jest.fn()
+        getCredentials: jest.fn(),
+        markCredentialPendingDelete: () => markCredentialPendingDeleteMock()
       },
       basicStorage: {
         findById: jest.fn(),
@@ -540,7 +541,7 @@ describe("Creds Tab", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
   
     await waitFor(() => {
-      expect(deleteIdentifierMock).toBeCalled();
+      expect(markCredentialPendingDeleteMock).toBeCalled();
       expect(archiveIdentifierMock).toBeCalled();
     });
   });
