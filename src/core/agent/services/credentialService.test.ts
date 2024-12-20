@@ -103,7 +103,7 @@ const credentialStorage = jest.mocked({
   updateCredentialMetadata: jest.fn(),
 });
 
-const eventEmitter = new CoreEventEmitter()
+const eventEmitter = new CoreEventEmitter();
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventEmitter,
@@ -426,6 +426,7 @@ describe("Credential service of agent", () => {
       ...memberIdentifierRecord,
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
     });
+    eventEmitter.emit = jest.fn();
     await credentialService.syncACDCs();
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
 

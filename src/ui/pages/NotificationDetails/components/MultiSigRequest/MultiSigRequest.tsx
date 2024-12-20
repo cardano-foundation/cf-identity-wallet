@@ -126,7 +126,7 @@ const MultiSigRequest = ({
           isPending: !!isPending,
           multisigManageAid,
         };
-        const filteredIdentifiersData = identifiersData.filter(
+        const filteredIdentifiersData = Object.values(identifiersData).filter(
           (item) => item.id !== multisigIcpDetails?.ourIdentifier.id
         );
         dispatch(

@@ -6,6 +6,7 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./services/credentialService.types";
+import { IdentifierShortDetails } from "./services/identifier.types";
 
 interface BaseEventEmitter {
   type: string;
@@ -23,6 +24,7 @@ enum EventTypes {
   NotificationRemoved = "NotificationRemoved",
   IdentifierRemoved = "IdentifierRemoved",
   CredentialRemovedEvent = "CredentialRemovedEvent",
+  IdentifierStateChanged = "IdentifierStateChanged",
   IdentifierAdded = "IdentifierAdded",
 }
 
@@ -101,6 +103,13 @@ interface CredentialRemovedEvent extends BaseEventEmitter {
     credentialId: string;
   };
 } 
+interface IdentifierStateChangedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.IdentifierStateChanged;
+  payload: {
+    identifier: IdentifierShortDetails;
+  };
+}
+
 interface IdentifierAddedEvent extends BaseEventEmitter {
   type: typeof EventTypes.IdentifierAdded;
   payload: {
@@ -120,6 +129,7 @@ export type {
   ConnectionRemovedEvent,
   IdentifierRemovedEvent,
   CredentialRemovedEvent,
+  IdentifierStateChangedEvent,
   IdentifierAddedEvent,
 };
 export { EventTypes };

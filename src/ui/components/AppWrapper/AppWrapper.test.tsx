@@ -26,7 +26,6 @@ import { store } from "../../../store";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
-import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   setQueueIncomingRequest,
   setToastMsg,
@@ -66,6 +65,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
         onIdentifierAdded: jest.fn(),
+        getAvailableWitnesses: jest.fn()
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),

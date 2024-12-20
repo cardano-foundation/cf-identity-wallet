@@ -222,7 +222,7 @@ class CredentialService extends AgentService {
           const identifier = await this.identifierStorage.getIdentifierMetadata(
             credential.sad.a.i
           );
-          await this.createMetadata({
+          const metadata = {
             id: credential.sad.d,
             isArchived: false,
             issuanceDate: new Date(credential.sad.a.dt).toISOString(),
@@ -235,7 +235,9 @@ class CredentialService extends AgentService {
               ? IdentifierType.Group
               : IdentifierType.Individual,
             createdAt: new Date(credential.sad.a.dt),
-          });
+          };
+
+          await this.createMetadata(metadata);
         } catch (error) {
           /* eslint-disable no-console */
           console.error(error);

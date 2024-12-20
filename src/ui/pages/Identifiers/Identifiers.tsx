@@ -15,9 +15,9 @@ import {
   getIdentifiersFilters,
   getMultiSigGroupCache,
   getOpenMultiSig,
-  setIdentifiersCache,
+  removeIdentifierCache,
   setIdentifiersFilters,
-  setOpenMultiSigId,
+  setOpenMultiSigId
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -87,7 +87,7 @@ const AdditionalButtons = ({
 const Identifiers = () => {
   const pageId = "identifiers-tab";
   const dispatch = useAppDispatch();
-  const identifiersData = useAppSelector(getIdentifiersCache);
+  const identifiersDataCache = useAppSelector(getIdentifiersCache);
   const multisigGroupCache = useAppSelector(getMultiSigGroupCache);
   const favouriteIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
@@ -126,6 +126,8 @@ const Identifiers = () => {
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
   const selectedFilter = identifiersFiltersCache ?? IdentifiersFilters.All;
+
+  const identifiersData = useMemo(() => Object.values(identifiersDataCache), [identifiersDataCache])
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -251,14 +253,10 @@ const Identifiers = () => {
     setDeletePendingItem(null);
 
     try {
-      const updatedIdentifiers = identifiersData.filter(
-        (item) => item.id !== deletedPendingItem.id
-      );
-
       await Agent.agent.identifiers.markIdentifierPendingDelete(deletedPendingItem.id);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-      dispatch(setIdentifiersCache(updatedIdentifiers));
+      dispatch(removeIdentifierCache(deletedPendingItem.id));
     } catch (e) {
       showError(
         "Unable to delete identifier",

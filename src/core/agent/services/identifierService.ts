@@ -25,6 +25,7 @@ import {
   EventTypes,
   IdentifierAddedEvent,
   IdentifierRemovedEvent,
+  IdentifierStateChangedEvent,
   OperationAddedEvent,
 } from "../event.types";
 
@@ -79,6 +80,12 @@ class IdentifierService extends AgentService {
         this.deleteIdentifier(data.payload.id!);
       }
     );
+  }
+
+  onIdentifierStateChanged(
+    callback: (event: IdentifierStateChangedEvent) => void
+  ) {
+    this.props.eventEmitter.on(EventTypes.IdentifierStateChanged, callback);
   }
 
   onIdentifierAdded(callback: (event: IdentifierAddedEvent) => void) {
@@ -521,15 +528,14 @@ class IdentifierService extends AgentService {
       const isMultiSig = name.length === 3;
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
-        .get(identifier)) as HabState & { icp_dt: string };
-
+        .get(identifier.prefix)) as HabState & { icp_dt: string };
       if (isMultiSig) {
         const groupId = identifier.name.split(":")[1];
         const groupInitiator = groupId.split("-")[0] === "1";
 
         await this.identifierStorage.createIdentifierMetadataRecord({
           id: identifier.prefix,
-          displayName: groupId,
+          displayName: identifier.name.split(":")[1],
           theme,
           groupMetadata: {
             groupId,
@@ -539,13 +545,12 @@ class IdentifierService extends AgentService {
           isPending,
           createdAt: new Date(identifierDetail.icp_dt),
         });
-
         continue;
       }
 
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier.prefix,
-        displayName: identifier.prefix,
+        displayName: identifier.name.split(":")[1],
         theme,
         isPending,
         createdAt: new Date(identifierDetail.icp_dt),

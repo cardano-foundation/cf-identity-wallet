@@ -875,7 +875,6 @@ describe("Single sig service of agent", () => {
     jest
       .spyOn(signifyClient.operations(), "get")
       .mockResolvedValue(mockOperation);
-
     getIdentifiersMock.mockResolvedValue({
       icp_dt: "2024-12-10T07:28:18.217384+00:00",
     });
@@ -903,7 +902,7 @@ describe("Single sig service of agent", () => {
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
-      displayName: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      displayName: "test2",
       theme: 33,
       isPending: false,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),

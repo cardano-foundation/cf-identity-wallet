@@ -5,7 +5,7 @@ import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { IdentifierOptions } from "./IdentifierOptions";
@@ -48,7 +48,7 @@ describe("Identifier Options modal", () => {
         },
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
     mockedStore = {
@@ -128,7 +128,7 @@ describe("Identifier Options function test", () => {
         },
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
     mockedStore = {

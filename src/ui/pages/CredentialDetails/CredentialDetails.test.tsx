@@ -92,7 +92,7 @@ const initialStateNoPasswordCurrent = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
   },
 };
 
@@ -122,7 +122,7 @@ const initialStateNoPasswordArchived = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
   },
 };
 
@@ -188,7 +188,7 @@ describe("Cred Details page - current not archived credential", () => {
         notificationDetailCache: null,
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
 

@@ -39,6 +39,7 @@ enum MiscRecordId {
   LOGIN_METADATA = "login-metadata",
   CAMERA_DIRECTION = "camera-direction",
   FAILED_NOTIFICATIONS = "failed-notifications",
+  CLOUD_RECOVERY_STATUS = "cloud-recovery-status",
   IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
 }
 
@@ -122,6 +123,8 @@ interface KeriaNotification {
   connectionId: string;
   read: boolean;
   groupReplied: boolean;
+  initiatorAid?: string;
+  groupInitiator?: boolean;
 }
 
 enum KeriConnectionType {

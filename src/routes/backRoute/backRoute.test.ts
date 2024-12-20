@@ -58,7 +58,7 @@ describe("getBackRoute", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -210,7 +210,7 @@ describe("getPreviousRoute", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",

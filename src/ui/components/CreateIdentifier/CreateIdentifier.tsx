@@ -18,16 +18,15 @@ import {
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks";
 import {
-  getIdentifiersCache,
-  setIdentifiersCache,
-  setMultiSigGroupCache,
+  setMultiSigGroupCache
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
   setCurrentOperation,
   setToastMsg,
+  showNoWitnessAlert,
 } from "../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
@@ -80,7 +79,6 @@ const CreateIdentifier = ({
     MultiSigGroup | undefined
   >();
 
-  const identifiersData = useAppSelector(getIdentifiersCache);
   const [openAIDInfo, setOpenAIDInfo] = useState(false);
 
   const [duplicateName, setDuplicateName] = useState(false);
@@ -190,10 +188,14 @@ const CreateIdentifier = ({
         )
       );
     } catch (e) {
-      if (
-        (e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)
-      ) {
+      const errorMessage = (e as Error).message;
+      if (errorMessage.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
         setDuplicateName(true);
+        return;
+      }
+
+      if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+        dispatch(showNoWitnessAlert(true));
         return;
       }
 

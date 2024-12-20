@@ -10,7 +10,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { showGenericError } from "../../../../../store/reducers/stateCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
-import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierMapFix, filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
@@ -98,7 +98,7 @@ const initialState = {
     notifications: notificationsFix,
   },
   identifiersCache: {
-    identifiers: filteredIdentifierFix,
+    identifiers: filteredIdentifierMapFix,
   },
 };
 
@@ -265,7 +265,7 @@ describe("Receive credential", () => {
         notifications: notificationsFix,
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
 
@@ -318,7 +318,7 @@ describe("Receive credential", () => {
         notifications: notificationsFix,
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
 
@@ -433,7 +433,7 @@ describe("Credential request: Multisig", () => {
       notifications: notificationsFix,
     },
     identifiersCache: {
-      identifiers: filteredIdentifierFix,
+      identifiers: filteredIdentifierMapFix,
     },
   };
 
