@@ -14,6 +14,9 @@ interface NotificationRecordStorageProps {
   connectionId: string;
   credentialId?: string;
   linkedRequest?: LinkedRequest;
+  groupReplied?: boolean,
+  initiatorAid?: string,
+  groupInitiator?: boolean,
 }
 
 class NotificationRecord extends BaseRecord {
@@ -24,6 +27,9 @@ class NotificationRecord extends BaseRecord {
   connectionId!: string;
   linkedRequest!: LinkedRequest;
   credentialId?: string;
+  groupReplied?: boolean;
+  initiatorAid?: string;
+  groupInitiator?: boolean;
 
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
@@ -41,6 +47,9 @@ class NotificationRecord extends BaseRecord {
       this._tags = props.tags ?? {};
       this.linkedRequest = props.linkedRequest ?? { accepted: false };
       this.credentialId = props.credentialId;
+      this.groupReplied = props.groupReplied;
+      this.initiatorAid = props.initiatorAid;
+      this.groupInitiator = props.groupInitiator;
     }
   }
 
@@ -51,6 +60,9 @@ class NotificationRecord extends BaseRecord {
       multisigId: this.multisigId,
       exnSaid: this.a.d,
       credentialId: this.credentialId,
+      groupReplied: this.groupReplied,
+      initiatorAid: this.initiatorAid,
+      groupInitiator: this.groupInitiator,
       ...this._tags,
     };
   }

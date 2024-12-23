@@ -3,14 +3,16 @@ import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { IdentifierService } from "../core/agent/services";
 import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
 import { store } from "../store";
-import { showGenericError } from "../store/reducers/stateCache";
+import { showGenericError, showNoWitnessAlert } from "../store/reducers/stateCache";
 import { App } from "./App";
 import { OperationType } from "./globals/types";
 
 const mockInitDatabase = jest.fn();
+const getAvailableWitnessesMock = jest.fn();
 
 jest.mock("../core/agent/agent", () => ({
   Agent: {
@@ -27,6 +29,7 @@ jest.mock("../core/agent/agent", () => ({
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
         onIdentifierAdded: jest.fn(),
+        getAvailableWitnesses: () => getAvailableWitnessesMock()
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -174,7 +177,7 @@ const initialState = {
     bran: "",
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
     favourites: [],
     multiSigGroup: {
       groupId: "",
@@ -224,6 +227,7 @@ describe("App", () => {
     isNativeMock.mockImplementation(() => false);
     mockInitDatabase.mockClear();
     getPlatformsMock.mockImplementation(() => ["android"]);
+    getAvailableWitnessesMock.mockClear();
   });
 
   test("Mobile header hidden when app not in preview mode", async () => {
@@ -327,7 +331,7 @@ describe("App", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -459,7 +463,7 @@ describe("App", () => {
         bran: "",
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -516,6 +520,192 @@ describe("App", () => {
       expect(
         getByText(Eng_Trans.inputrequest.title.username)
       ).toBeInTheDocument();
+    });
+  });
+});
+
+describe("Witness availability", () => {
+  test("No witness availability", async () => {
+    getAvailableWitnessesMock.mockImplementation(() => Promise.resolve([]));
+
+    const initialState = {
+      stateCache: {
+        isOnline: true,
+        routes: [{ path: TabsRoutePath.ROOT }],
+        authentication: {
+          loggedIn: true,
+          userName: "",
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        toastMsgs: [],
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <App />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
+    });
+  });
+
+  test("Throw error", async () => {
+    getAvailableWitnessesMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)));
+
+    const initialState = {
+      stateCache: {
+        isOnline: true,
+        routes: [{ path: TabsRoutePath.ROOT }],
+        authentication: {
+          loggedIn: true,
+          userName: "",
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        toastMsgs: [],
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <App />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
     });
   });
 });

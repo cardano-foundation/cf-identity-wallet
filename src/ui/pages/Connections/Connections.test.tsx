@@ -209,7 +209,7 @@ describe("Connections page", () => {
         connections: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
     const mockStore = configureStore();
@@ -309,7 +309,7 @@ describe("Connections page", () => {
       },
       seedPhraseCache: {},
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       viewTypeCache: {
         identifier: {
@@ -379,7 +379,7 @@ describe("Connections page", () => {
       },
       seedPhraseCache: {},
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       viewTypeCache: {
         identifier: {
@@ -478,7 +478,7 @@ describe("Connections page from Credentials tab", () => {
       },
       seedPhraseCache: {},
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       credsCache: {
         creds: [],

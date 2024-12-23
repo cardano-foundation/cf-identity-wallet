@@ -65,6 +65,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
         onIdentifierAdded: jest.fn(),
+        getAvailableWitnesses: jest.fn()
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),

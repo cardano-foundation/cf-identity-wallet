@@ -22,7 +22,7 @@ import {
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
 import { ToastStack } from "./components/CustomToast/ToastStack";
-import { GenericError } from "./components/Error";
+import { GenericError, NoWitnessAlert } from "./components/Error";
 import { InputRequest } from "./components/InputRequest";
 import { SidePage } from "./components/SidePage";
 import { OperationType } from "./globals/types";
@@ -140,6 +140,7 @@ const App = () => {
           <InputRequest />
           <SidePage />
           <GenericError />
+          <NoWitnessAlert />
           <ToastStack />
         </StrictMode>
       </AppWrapper>

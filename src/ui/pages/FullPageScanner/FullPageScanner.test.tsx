@@ -143,7 +143,7 @@ describe("Full page scanner", () => {
       toastMsgs: [],
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
       favourites: [],
       multiSigGroup: {
         groupId: "",
@@ -198,7 +198,7 @@ describe("Full page scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -254,7 +254,7 @@ describe("Full page scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -339,7 +339,7 @@ describe("Full page scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",

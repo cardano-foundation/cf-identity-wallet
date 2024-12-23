@@ -89,7 +89,7 @@ describe("Create group identifier - Setup Connection", () => {
       },
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
       favourites: [],
       multiSigGroup: {
         groupId: "b75838e5-98cb-46cf-9233-8bf3beca4cd3",
@@ -361,7 +361,7 @@ describe("Create group identifier - Setup Connection", () => {
         },
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "b75838e5-98cb-46cf-9233-8bf3beca4cd3",

@@ -213,6 +213,7 @@ const multiSigs = jest.mocked({
   joinAuthorization: jest.fn(),
   hasMultisig: jest.fn(),
   endRoleAuthorization: jest.fn(),
+  getMultisigParticipants: jest.fn(),
 });
 
 const ipexCommunications = jest.mocked({
@@ -1505,6 +1506,31 @@ describe("Group IPEX presentation", () => {
     exchangesGetMock
       .mockResolvedValueOnce(multisigExnOfferForPresenting)
       .mockResolvedValueOnce(applyForPresentingExnMessage);
+
+    multiSigs.getMultisigParticipants.mockResolvedValue({
+      ourIdentifier: {
+        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+        displayName: "Identifier 2",
+        createdAt: "2024-09-23T08:53:11.981Z",
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      },
+      multisigMembers: [
+        {
+          aid: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+          ends: [],
+        },
+        {
+          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+          ends: [],
+        },
+      ],
+    });
+
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
         type: "NotificationRecord",
@@ -1526,6 +1552,8 @@ describe("Group IPEX presentation", () => {
       notificationMultisigExnProp
     );
 
+    expect(multiSigs.getMultisigParticipants).toBeCalledWith("EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR");
+    
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "id",
       route: NotificationRoute.ExnIpexApply,
@@ -2556,8 +2584,35 @@ describe("Long running operation tracker", () => {
         linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
+        groupReplied: true,
+        initiatorAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+        groupInitiator: true,
       },
     ]);
+
+    multiSigs.getMultisigParticipants.mockResolvedValue({
+      ourIdentifier: {
+        id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+        displayName:"holder",
+        createdAt: "2024-09-23T08:53:11.981Z",
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      },
+      multisigMembers: [
+        {
+          aid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+          ends: [],
+        },
+        {
+          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+          ends: [],
+        },
+      ],
+    });
 
     await keriaNotificationService.processOperation(operationRecord);
 

@@ -1,21 +1,21 @@
 import { IonSpinner } from "@ionic/react";
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
+import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { i18n } from "../../../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
+import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import { Alert } from "../../../../components/Alert";
 import { useOnlineStatusEffect } from "../../../../hooks";
+import { showError } from "../../../../utils/error";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
-import { CredentialRequestInformation } from "./CredentialRequestInformation";
-import { showError } from "../../../../utils/error";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { LinkedGroup } from "./CredentialRequest.types";
-import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
-import { getAuthentication } from "../../../../../store/reducers/stateCache";
+import { CredentialRequestInformation } from "./CredentialRequestInformation";
 
 const CredentialRequest = ({
   pageId,
@@ -24,13 +24,12 @@ const CredentialRequest = ({
   handleBack,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
-  const identifiers = useAppSelector(getIdentifiersCache);
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
   const userName = useAppSelector(getAuthentication)?.userName;
   const [requestStage, setRequestStage] = useState(0);
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
-  const identifiersData = useAppSelector(getIdentifiersCache);
 
   const [linkedGroup, setLinkedGroup] = useState<LinkedGroup | null>(null);
   const [isOpenAlert, setIsOpenAlert] = useState(false);
@@ -42,10 +41,10 @@ const CredentialRequest = ({
   const userAID = useMemo(() => {
     if(!credentialRequest) return null;
 
-    const identifier = identifiers.find(item => item.id === credentialRequest.identifier);
+    const identifier = identifiersData[credentialRequest.identifier];
     
     return identifier ? identifier.multisigManageAid : null;
-  }, [credentialRequest, identifiers]);
+  }, [credentialRequest, identifiersData]);
 
   const getMultisigInfo = useCallback(async () => {
     const linkedGroup =
@@ -82,9 +81,7 @@ const CredentialRequest = ({
         notificationDetails
       );
 
-      const identifier = identifiersData.find(
-        (identifier) => identifier.id === request.identifier
-      );
+      const identifier = identifiersData[request.identifier];
 
       const identifierType =
         identifier?.multisigManageAid || identifier?.groupMetadata

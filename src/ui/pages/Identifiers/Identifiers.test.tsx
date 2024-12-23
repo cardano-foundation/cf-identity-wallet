@@ -521,7 +521,7 @@ describe("Identifiers Tab", () => {
       },
       seedPhraseCache: {},
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       viewTypeCache: {
         identifier: {
