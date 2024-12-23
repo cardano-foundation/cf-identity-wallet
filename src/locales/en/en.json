@@ -677,7 +677,7 @@
     "title": "Create password",
     "change": "New password",
     "cancel": "Cancel",
-    "description": "Set your operations password so you can access additional wallet features.",
+    "description": "Add an extra layer of security for sensitive actions in your wallet by creating an optional password.",
     "input": {
       "first": {
         "symbolguide": "Symbol guide",
