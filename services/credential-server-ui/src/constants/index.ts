@@ -3,11 +3,6 @@ export enum CredentialType {
   GLEIF = "Qualified vLEI Issuer",
   LE = "Legal Entity",
 }
-export const SCHEMA_SAID = {
-  [CredentialType.RARE_EVO]: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
-  [CredentialType.GLEIF]: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-  [CredentialType.LE]: "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY",
-};
 
 export const Attributes = {
   [CredentialType.RARE_EVO]: [

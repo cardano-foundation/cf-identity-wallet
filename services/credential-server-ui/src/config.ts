@@ -36,6 +36,10 @@ const config = {
     resolveOobi: "/resolveOobi",
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
+    saveSchema: "/saveSchema",
+    schemaList: "/schemaList",
+    schemaCustomFields: "/schemaCustomFields",
+    deleteSchema: "/deleteSchema",
   },
 };
 

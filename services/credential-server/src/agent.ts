@@ -3,16 +3,16 @@ import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
 import { readFile, writeFile } from "fs/promises";
-import { existsSync, mkdir, mkdirSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import path from "path";
+import { SCHEMAS_KEY } from "./types/schema.type";
+import lmdb from "./utils/lmdb";
 
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
   static readonly HOLDER_AID_NAME = "holder";
   static readonly QVI_SCHEMA_SAID =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  static readonly RARE_EVO_DEMO_SCHEMA_SAID =
-    "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
   static readonly LE_SCHEMA_SAID =
     "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
 
@@ -263,6 +263,20 @@ class Agent {
       this.issuerAid.prefix
     );
     await this.signifyApi.deleteNotification(grantNotification.i);
+  }
+
+  async saveSchema(schema: any, label?: string): Promise<void> {
+    const { saidifiedSchema, customizableKeys } =
+      await this.signifyApi.saidifySchema(schema, label);
+    let schemas = await lmdb.get(SCHEMAS_KEY);
+    if (schemas === undefined) {
+      schemas = {};
+    }
+    schemas[saidifiedSchema.$id] = {
+      schema: saidifiedSchema,
+      customizableKeys,
+    };
+    await lmdb.put(SCHEMAS_KEY, schemas);
   }
 }
 

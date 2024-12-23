@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
-import { ACDC_SCHEMAS } from "../utils/schemas";
 import { log } from "../log";
 import { SignifyApi } from "../modules/signify";
+import lmdb from "../utils/lmdb";
+import { SCHEMAS_KEY } from "../types/schema.type";
 
 async function issueAcdcCredential(
   req: Request,
@@ -12,7 +13,7 @@ async function issueAcdcCredential(
   next: NextFunction
 ): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
-  if (!ACDC_SCHEMAS[schemaSaid]) {
+  if (!(await lmdb.get(SCHEMAS_KEY))[schemaSaid]) {
     const response: ResponseData<string> = {
       statusCode: 409,
       success: false,
