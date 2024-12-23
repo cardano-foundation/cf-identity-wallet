@@ -93,8 +93,15 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
+    if (grantNoteRecord.linkedRequest) {
+      await this.operationPendingStorage.save({
+        id: grantNoteRecord.linkedRequest.current,
+        recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+      });
+    }
+
     // For groups only
-    if (grantNoteRecord.linkedGroupRequest.accepted) {
+    if (grantNoteRecord.linkedRequest.accepted) {
       throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
     }
 
@@ -149,8 +156,8 @@ class IpexCommunicationService extends AgentService {
         allSchemaSaids
       );
       op = opMultisigAdmit;
-      grantNoteRecord.linkedGroupRequest = {
-        ...grantNoteRecord.linkedGroupRequest,
+      grantNoteRecord.linkedRequest = {
+        ...grantNoteRecord.linkedRequest,
         accepted: true,
         current: exnSaid,
       };
@@ -198,8 +205,15 @@ class IpexCommunicationService extends AgentService {
       );
     }
     
+    if (applyNoteRecord.linkedRequest) {
+      await this.operationPendingStorage.save({
+        id: applyNoteRecord.linkedRequest.current,
+        recordType: OperationPendingRecordType.ExchangeOfferCredential,
+      });
+    }
+
     // For groups only
-    if (applyNoteRecord.linkedGroupRequest.accepted) {
+    if (applyNoteRecord.linkedRequest.accepted) {
       throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
     }
 
@@ -221,8 +235,8 @@ class IpexCommunicationService extends AgentService {
         applyExn.exn.i
       );
       op = opMultisigOffer;
-      applyNoteRecord.linkedGroupRequest = {
-        ...applyNoteRecord.linkedGroupRequest,
+      applyNoteRecord.linkedRequest = {
+        ...applyNoteRecord.linkedRequest,
         accepted: true,
         current: exnSaid,
       };
@@ -268,8 +282,15 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
+    if (agreeNoteRecord.linkedRequest) {
+      await this.operationPendingStorage.save({
+        id: agreeNoteRecord.linkedRequest.current,
+        recordType: OperationPendingRecordType.ExchangePresentCredential,
+      });
+    }
+
     // For groups only
-    if (agreeNoteRecord.linkedGroupRequest.accepted) {
+    if (agreeNoteRecord.linkedRequest.accepted) {
       throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
     }
 
@@ -313,8 +334,8 @@ class IpexCommunicationService extends AgentService {
       );
       op = opMultisigGrant;
 
-      agreeNoteRecord.linkedGroupRequest = {
-        ...agreeNoteRecord.linkedGroupRequest,
+      agreeNoteRecord.linkedRequest = {
+        ...agreeNoteRecord.linkedRequest,
         accepted: true,
         current: exnSaid,
       };
@@ -543,11 +564,11 @@ class IpexCommunicationService extends AgentService {
       );
     }
     
-    if (grantNoteRecord.linkedGroupRequest.accepted) {
+    if (grantNoteRecord.linkedRequest.accepted) {
       throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
     }
 
-    const multiSigExnSaid = grantNoteRecord.linkedGroupRequest.current;
+    const multiSigExnSaid = grantNoteRecord.linkedRequest.current;
     if (!multiSigExnSaid) {
       throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
     }
@@ -613,8 +634,8 @@ class IpexCommunicationService extends AgentService {
       payload: { operation: pendingOperation },
     });
 
-    grantNoteRecord.linkedGroupRequest = {
-      ...grantNoteRecord.linkedGroupRequest,
+    grantNoteRecord.linkedRequest = {
+      ...grantNoteRecord.linkedRequest,
       accepted: true,
     };
     await this.notificationStorage.update(grantNoteRecord);
@@ -628,11 +649,11 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    if (applyNoteRecord.linkedGroupRequest.accepted) {
+    if (applyNoteRecord.linkedRequest.accepted) {
       throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
     }
 
-    const multiSigExnSaid = applyNoteRecord.linkedGroupRequest.current;
+    const multiSigExnSaid = applyNoteRecord.linkedRequest.current;
     if (!multiSigExnSaid) {
       throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
     }
@@ -658,19 +679,19 @@ class IpexCommunicationService extends AgentService {
       payload: { operation: pendingOperation },
     });
 
-    applyNoteRecord.linkedGroupRequest = {
-      ...applyNoteRecord.linkedGroupRequest,
+    applyNoteRecord.linkedRequest = {
+      ...applyNoteRecord.linkedRequest,
       accepted: true,
     };
     await this.notificationStorage.update(applyNoteRecord);
   }
 
   async joinMultisigGrant(multiSigExn: ExnMessage, agreeNoteRecord: NotificationRecord): Promise<void> {
-    if (agreeNoteRecord.linkedGroupRequest.accepted) {
+    if (agreeNoteRecord.linkedRequest.accepted) {
       throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
     }
     
-    if (!agreeNoteRecord.linkedGroupRequest.current) {
+    if (!agreeNoteRecord.linkedRequest.current) {
       throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
     }
 
@@ -696,8 +717,8 @@ class IpexCommunicationService extends AgentService {
       payload: { operation: pendingOperation },
     });
 
-    agreeNoteRecord.linkedGroupRequest = {
-      ...agreeNoteRecord.linkedGroupRequest,
+    agreeNoteRecord.linkedRequest = {
+      ...agreeNoteRecord.linkedRequest,
       accepted: true,
     };
     await this.notificationStorage.update(agreeNoteRecord);
@@ -1078,8 +1099,8 @@ class IpexCommunicationService extends AgentService {
     const memberAids = members.signing.map((member: any) => member.aid);
 
     const othersJoined: string[] = [];
-    if (grantNoteRecord.linkedGroupRequest.current) {
-      for (const signal of (await this.props.signifyClient.groups().getRequest(grantNoteRecord.linkedGroupRequest.current))) {
+    if (grantNoteRecord.linkedRequest.current) {
+      for (const signal of (await this.props.signifyClient.groups().getRequest(grantNoteRecord.linkedRequest.current))) {
         othersJoined.push(signal.exn.i);
       }
     }
@@ -1088,7 +1109,7 @@ class IpexCommunicationService extends AgentService {
       threshold: multisigAid.state.kt,
       members: memberAids,
       othersJoined: othersJoined,
-      linkedGroupRequest: grantNoteRecord.linkedGroupRequest,
+      linkedRequest: grantNoteRecord.linkedRequest,
     }
   }
 
@@ -1113,8 +1134,8 @@ class IpexCommunicationService extends AgentService {
     const memberAids = members.signing.map((member: any) => member.aid);
 
     const othersJoined: string[] = [];
-    if (applyNoteRecord.linkedGroupRequest.current) {
-      for (const signal of (await this.props.signifyClient.groups().getRequest(applyNoteRecord.linkedGroupRequest.current))) {
+    if (applyNoteRecord.linkedRequest.current) {
+      for (const signal of (await this.props.signifyClient.groups().getRequest(applyNoteRecord.linkedRequest.current))) {
         othersJoined.push(signal.exn.i);
       }
     }
@@ -1123,7 +1144,7 @@ class IpexCommunicationService extends AgentService {
       threshold: multisigAid.state.kt,
       members: memberAids,
       othersJoined: othersJoined,
-      linkedGroupRequest: applyNoteRecord.linkedGroupRequest,
+      linkedRequest: applyNoteRecord.linkedRequest,
     }
   }
 

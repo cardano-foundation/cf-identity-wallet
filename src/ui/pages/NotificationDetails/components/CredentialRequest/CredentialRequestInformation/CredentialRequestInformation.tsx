@@ -60,15 +60,15 @@ const CredentialRequestInformation = ({
   const isGroupInitiatorJoined = !!linkedGroup?.memberInfos.at(0)?.joined;
 
   const getCred = useCallback(async () => {
-    if(!isGroupInitiatorJoined || !linkedGroup?.linkedGroupRequest.current) return;
+    if(!isGroupInitiatorJoined || !linkedGroup?.linkedRequest.current) return;
 
     try {
-      const id = await Agent.agent.ipexCommunications.getOfferedCredentialSaid(linkedGroup.linkedGroupRequest.current);
+      const id = await Agent.agent.ipexCommunications.getOfferedCredentialSaid(linkedGroup.linkedRequest.current);
       setChooseCredId(id);
     } catch (error) {
       showError("Unable to get choosen cred", error, dispatch);
     }
-  }, [dispatch, isGroupInitiatorJoined, linkedGroup?.linkedGroupRequest]);
+  }, [dispatch, isGroupInitiatorJoined, linkedGroup?.linkedRequest]);
 
   useOnlineStatusEffect(getCred);
 
@@ -114,7 +114,7 @@ const CredentialRequestInformation = ({
 
   const reachThreshold =
     linkedGroup &&
-    linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
+    linkedGroup.othersJoined.length + (linkedGroup.linkedRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
 
   const showProvidedCred = () => {
     setViewCredId(chooseCredId);
@@ -251,7 +251,7 @@ const CredentialRequestInformation = ({
             </CardDetailsBlock>
           }
           {
-            linkedGroup?.linkedGroupRequest.current && <CardDetailsBlock
+            linkedGroup?.linkedRequest.current && <CardDetailsBlock
               onClick={showProvidedCred}
               className="proposed-cred"
               title={`${i18n.t(

@@ -498,24 +498,30 @@ class IdentifierService extends AgentService {
         continue;
       }
 
+      let recordType = OperationPendingRecordType.Witness;
+
       const op: Operation = await this.props.signifyClient
         .operations()
         .get(`witness.${identifier.prefix}`)
         .catch(async (error) => {
           const status = error.message.split(" - ")[1];
+
           if (/404/gi.test(status)) {
+            recordType = OperationPendingRecordType.Done
             return await this.props.signifyClient
               .operations()
               .get(`done.${identifier.prefix}`);
           }
+          
           throw error;
         });
+
       const isPending = !op.done;
 
       if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
-          recordType: OperationPendingRecordType.Witness,
+          recordType,
         });
         this.props.eventEmitter.emit<OperationAddedEvent>({
           type: EventTypes.OperationAdded,

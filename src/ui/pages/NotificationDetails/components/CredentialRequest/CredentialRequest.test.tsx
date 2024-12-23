@@ -217,7 +217,7 @@ describe("Credential request: Multisig", () => {
   beforeEach(() => {
     getLinkedGroupFromIpexApplyMock.mockImplementation(() =>
       Promise.resolve({
-        linkedGroupRequest: {
+        linkedRequest: {
           accepted: true,
           current: "",
           previous: undefined,

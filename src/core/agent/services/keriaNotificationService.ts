@@ -286,8 +286,24 @@ class KeriaNotificationService extends AgentService {
 
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
+      const applyNoteRecord = await this.notificationStorage.findById(notif.a.d);
+
+      if (applyNoteRecord?.linkedRequest) {
+        await this.operationPendingStorage.save({
+          id: applyNoteRecord?.linkedRequest.current,
+          recordType: OperationPendingRecordType.ExchangeOfferCredential,
+        });
+      }
       shouldCreateRecord = await this.processExnIpexApplyNotification(exn);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
+      const grantNoteRecord = await this.notificationStorage.findById(notif.a.d);
+
+      if (grantNoteRecord?.linkedRequest) {
+        await this.operationPendingStorage.save({
+          id: grantNoteRecord?.linkedRequest.current,
+          recordType: OperationPendingRecordType.ExchangePresentCredential,
+        });
+      }
       shouldCreateRecord = await this.processExnIpexGrantNotification(
         notif,
         exn
@@ -651,8 +667,8 @@ class KeriaNotificationService extends AgentService {
 
       // Refresh the date and read status for UI, and link
       const notificationRecord = grantNotificationRecords[0];
-      notificationRecord.linkedGroupRequest = {
-        ...notificationRecord.linkedGroupRequest,
+      notificationRecord.linkedRequest = {
+        ...notificationRecord.linkedRequest,
         current: exchange.exn.d,
       };
       notificationRecord.createdAt = new Date();
@@ -701,8 +717,8 @@ class KeriaNotificationService extends AgentService {
 
       // Refresh the date and read status for UI, and link
       const notificationRecord = applyNotificationRecords[0];
-      notificationRecord.linkedGroupRequest = {
-        ...notificationRecord.linkedGroupRequest,
+      notificationRecord.linkedRequest = {
+        ...notificationRecord.linkedRequest,
         current: exchange.exn.d,
       };
       notificationRecord.createdAt = new Date();
@@ -751,8 +767,8 @@ class KeriaNotificationService extends AgentService {
 
       // @TODO - foconnor: Could be optimised to only update record once but deviates from the other IPEX messages - OK for now.
       const notificationRecord = agreeNotificationRecords[0];
-      notificationRecord.linkedGroupRequest = {
-        ...notificationRecord.linkedGroupRequest,
+      notificationRecord.linkedRequest = {
+        ...notificationRecord.linkedRequest,
         current: exchange.exn.d,
       };
 
@@ -810,7 +826,7 @@ class KeriaNotificationService extends AgentService {
       multisigId: result.multisigId,
       connectionId: result.connectionId,
       read: result.read,
-      groupReplied: result.linkedGroupRequest.current !== undefined,
+      groupReplied: result.linkedRequest.current !== undefined,
     };
   }
 
@@ -850,7 +866,7 @@ class KeriaNotificationService extends AgentService {
         multisigId: notification.multisigId,
         connectionId: notification.connectionId,
         read: notification.read,
-        groupReplied: notification.linkedGroupRequest.current !== undefined
+        groupReplied: notification.linkedRequest.current !== undefined
       };
     });
   }

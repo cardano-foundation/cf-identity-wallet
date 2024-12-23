@@ -1,4 +1,5 @@
 import { create } from "domain";
+import { current } from "@reduxjs/toolkit";
 import { Agent } from "../agent";
 import {
   ConnectionStatus,
@@ -300,7 +301,7 @@ describe("Signify notification service of agent", () => {
       },
       connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
       read: false,
-      linkedGroupRequest: { accepted: false }
+      linkedRequest: { accepted: false }
     });
 
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
@@ -338,6 +339,8 @@ describe("Signify notification service of agent", () => {
       et: "rev",
     });
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
+
     const notes = [notificationIpexGrantProp];
     credentialStorage.getCredentialMetadata.mockResolvedValue(
       credentialMetadataMock
@@ -628,7 +631,8 @@ describe("Signify notification service of agent", () => {
     );
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedRequest: { accepted: false } });
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
 
     await keriaNotificationService.processNotification(
       notificationIpexApplyProp
@@ -668,6 +672,7 @@ describe("Signify notification service of agent", () => {
       done: true,
     });
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
 
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
@@ -686,7 +691,7 @@ describe("Signify notification service of agent", () => {
     });
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedRequest: { accepted: false } });
     credentialStorage.getCredentialMetadata.mockResolvedValue(
       credentialMetadataMock
     );
@@ -715,11 +720,12 @@ describe("Signify notification service of agent", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: false,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     };
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([notification]);
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
 
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
@@ -764,7 +770,7 @@ describe("Signify notification service of agent", () => {
     });
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedRequest: { accepted: false } });
     credentialStorage.getCredentialMetadata.mockResolvedValue(undefined);
     const notification = {
       type: "NotificationRecord",
@@ -776,7 +782,7 @@ describe("Signify notification service of agent", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: false,
-      linkedGroupRequest: { accepted: false },
+      linkedGlinkedRequestroupRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     };
@@ -792,6 +798,7 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue({
         id: "id",
       });
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
 
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
@@ -830,7 +837,8 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue({
         id: "id",
       });
-
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
+  
     await expect(keriaNotificationService.processNotification(
       notificationIpexGrantProp
     )).rejects.toThrowError(KeriaNotificationService.DUPLICATE_ISSUANCE);
@@ -921,7 +929,7 @@ describe("Signify notification service of agent", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: DATETIME,
       },
@@ -936,7 +944,7 @@ describe("Signify notification service of agent", () => {
       id: "id",
       read: false,
       route: NotificationRoute.ExnIpexGrant,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
         current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
       },
@@ -1029,7 +1037,7 @@ describe("Signify notification service of agent", () => {
         multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
       },
       {
         id: "0AC0W34tnnd2WyUCOy-790AY",
@@ -1038,7 +1046,7 @@ describe("Signify notification service of agent", () => {
         multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
       },
     ];
 
@@ -1084,7 +1092,7 @@ describe("Signify notification service of agent", () => {
         multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
       },
       {
         id: "0AC0W34tnnd2WyUCOy-790AY",
@@ -1093,7 +1101,7 @@ describe("Signify notification service of agent", () => {
         multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
-        linkedGroupRequest: { accepted: false, current: "current-admit-said" },
+        linkedRequest: { accepted: false, current: "current-admit-said" },
       },
     ];
 
@@ -1276,7 +1284,8 @@ describe("Signify notification service of agent", () => {
       .mockRejectedValueOnce(
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       );
-
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
+  
     jest.useRealTimers();
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
@@ -1328,7 +1337,7 @@ describe("Signify notification service of agent", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -1359,7 +1368,7 @@ describe("Signify notification service of agent", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -1433,7 +1442,7 @@ describe("Signify notification service of agent", () => {
       });
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedRequest: { accepted: false } });
 
     const notes = [notificationIpexAgreeProp];
     for (const notif of notes) {
@@ -1507,7 +1516,7 @@ describe("Group IPEX presentation", () => {
         },
         route: NotificationRoute.ExnIpexApply,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: DATETIME,
       },
@@ -1520,7 +1529,7 @@ describe("Group IPEX presentation", () => {
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "id",
       route: NotificationRoute.ExnIpexApply,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
         current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
       },
@@ -1597,7 +1606,7 @@ describe("Group IPEX presentation", () => {
         },
         route: NotificationRoute.ExnIpexAgree,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date("2024-04-29T11:01:04.903Z"),
       },
@@ -1610,7 +1619,7 @@ describe("Group IPEX presentation", () => {
     const updatedAgree = {
       id: "id",
       route: NotificationRoute.ExnIpexAgree,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
         current: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
       },
@@ -1650,7 +1659,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValue(groupIdentifierMetadataRecord);
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedRequest: { accepted: false } });
     identifiersMemberMock.mockResolvedValue({
       signing: [
         {
@@ -1694,7 +1703,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValue(groupIdentifierMetadataRecord);
     notificationStorage.save = jest
       .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), linkedGroupRequest: { accepted: false } });
+      .mockReturnValue({ id: "id", createdAt: new Date(), linkedRequest: { accepted: false } });
     identifiersMemberMock.mockResolvedValue({
       signing: [
         {
@@ -2473,7 +2482,7 @@ describe("Long running operation tracker", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -2544,7 +2553,7 @@ describe("Long running operation tracker", () => {
         },
         route: NotificationRoute.ExnIpexApply,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
@@ -2633,7 +2642,7 @@ describe("Long running operation tracker", () => {
         },
         route: NotificationRoute.ExnIpexAgree,
         read: true,
-        linkedGroupRequest: { accepted: false },
+        linkedRequest: { accepted: false },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },

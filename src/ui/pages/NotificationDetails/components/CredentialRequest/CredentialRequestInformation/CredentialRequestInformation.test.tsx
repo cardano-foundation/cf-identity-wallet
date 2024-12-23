@@ -111,7 +111,7 @@ describe("Credential request information", () => {
 
 describe("Credential request information: multisig", () => {
   const linkedGroup = {
-    linkedGroupRequest:{
+    linkedRequest:{
       accepted: false,
       current: "",
       previous: undefined,
@@ -184,7 +184,7 @@ describe("Credential request information: multisig", () => {
 
   test("Initiator chosen cred", async () => {
     const linkedGroup = {
-      linkedGroupRequest:{
+      linkedRequest:{
         accepted: true,
         current: "cred-id",
         previous: undefined,
@@ -257,7 +257,7 @@ describe("Credential request information: multisig", () => {
 
   test("Member open cred", async () => {
     const linkedGroup = {
-      linkedGroupRequest:{
+      linkedRequest:{
         accepted: false,
         current: "cred-id",
         previous: undefined,
@@ -344,7 +344,7 @@ describe("Credential request information: multisig", () => {
 
   test("Member open cred after initiator chosen cred", async () => {
     const linkedGroup = {
-      linkedGroupRequest:{
+      linkedRequest:{
         accepted: true,
         current: "cred-id",
         previous: undefined,
