@@ -2341,6 +2341,15 @@ describe("Long running operation tracker", () => {
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
+    expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
+      {
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      },
+      ConnectionHistoryType.CREDENTIAL_ADMITTED
+    );
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });

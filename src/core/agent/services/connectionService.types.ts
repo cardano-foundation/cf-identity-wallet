@@ -19,6 +19,7 @@ enum ConnectionHistoryType {
   CREDENTIAL_REQUEST_PRESENT,
   CREDENTIAL_REVOKED,
   CREDENTIAL_PRESENTED,
+  CREDENTIAL_ADMITTED,
 }
 
 export { ConnectionHistoryType, KeriaContactKeyPrefix };

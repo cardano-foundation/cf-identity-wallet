@@ -34,6 +34,7 @@ import {
   ipexSubmitAdmitEnd,
   credentialStateIssued,
   credentialStateRevoked,
+  admitForIssuanceExnMessage,
 } from "../../__fixtures__/agent/ipexCommunicationFixtures";
 import { NotificationRoute } from "../agent.types";
 import {
@@ -2117,6 +2118,31 @@ describe("IPEX communication service of agent", () => {
             credentialType: QVISchema.title,
             connectionId: grantForIssuanceExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
+          }),
+      }
+    );
+    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(connections.resolveOobi).toBeCalledTimes(1);
+  });
+
+  test("Can create linked ipex message record with history type is credential admitted", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(admitForIssuanceExnMessage);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      admitForIssuanceExnMessage,
+      ConnectionHistoryType.CREDENTIAL_ADMITTED
+    );
+
+    expect(updateContactMock).toBeCalledWith(
+      admitForIssuanceExnMessage.exn.rp,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${admitForIssuanceExnMessage.exn.d}`]:
+          JSON.stringify({
+            id: admitForIssuanceExnMessage.exn.d,
+            dt: admitForIssuanceExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: admitForIssuanceExnMessage.exn.rp,
+            historyType: ConnectionHistoryType.CREDENTIAL_ADMITTED,
           }),
       }
     );

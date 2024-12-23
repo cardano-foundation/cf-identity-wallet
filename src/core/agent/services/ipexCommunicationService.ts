@@ -486,14 +486,18 @@ class IpexCommunicationService extends AgentService {
   ): Promise<void> {
     let schemaSaid;
     const connectionId =
-      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED
+      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
+      historyType === ConnectionHistoryType.CREDENTIAL_ADMITTED
         ? message.exn.rp
         : message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
       schemaSaid = message.exn.a.s;
-    } else if (message.exn.r === ExchangeRoute.IpexAgree) {
+    } else if (
+      message.exn.r === ExchangeRoute.IpexAgree ||
+      message.exn.r === ExchangeRoute.IpexAdmit
+    ) {
       const previousExchange = await this.props.signifyClient
         .exchanges()
         .get(message.exn.p);
@@ -515,6 +519,7 @@ class IpexCommunicationService extends AgentService {
     case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
     case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
     case ConnectionHistoryType.CREDENTIAL_PRESENTED:
+    case ConnectionHistoryType.CREDENTIAL_ADMITTED:
       prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
       key = message.exn.d;
       break;

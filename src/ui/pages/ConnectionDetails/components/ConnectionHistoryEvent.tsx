@@ -54,6 +54,14 @@ const ConnectionHistoryEvent = ({
                 .replace(/(\d)/g, "$1")
                 .replace(/ {2,}/g, " "),
             })}
+          {historyItem.type === ConnectionHistoryType.CREDENTIAL_ADMITTED &&
+            i18next.t("connections.details.admitted", {
+              credential: historyItem.credentialType
+                ?.replace(/([A-Z][a-z])/g, " $1")
+                .replace(/^ /, "")
+                .replace(/(\d)/g, "$1")
+                .replace(/ {2,}/g, " "),
+            })}
           {historyItem.type ===
             ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT &&
             i18next.t("connections.details.requestpresent", {
