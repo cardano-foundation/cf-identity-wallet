@@ -26,7 +26,7 @@ const CardDetailsExpandAttributes = ({
           slot="header"
         >
           <span>
-            {i18n.t("tabs.credentials.details.attributes.fullaccess")}
+            {i18n.t("tabs.credentials.details.attributes.title")}
           </span>
         </IonItem>
         <div slot="content" className="nested-list-item container-nested-list-item">

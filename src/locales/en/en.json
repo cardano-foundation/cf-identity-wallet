@@ -1041,7 +1041,7 @@
           "about": "About {{ type }}"
         },
         "attributes": {
-          "fullaccess": "Full access",
+          "title": "Credential Details",
           "label": "Attributes",
           "description": "Essential details shared by the issuer, which verify and describe key information in this credential.",
           "details": "Attribute details",
