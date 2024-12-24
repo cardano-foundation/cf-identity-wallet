@@ -445,13 +445,10 @@ describe("Receive individual ACDC actions", () => {
       IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY
     );
 
-    expect(operationPendingStorage.save).toBeCalledWith({ 
-      id: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
-      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-    })
     expect(ipexAdmitMock).not.toBeCalled();
     expect(ipexSubmitAdmitMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
   });
 });
@@ -649,13 +646,9 @@ describe("Receive group ACDC actions", () => {
 
     await expect(ipexCommunicationService.admitAcdcFromGrant(id)).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      recordType: OperationPendingRecordType.ExchangeReceiveCredential
-    });
-
     expect(ipexAdmitMock).not.toBeCalled();
     expect(ipexSubmitAdmitMock).not.toBeCalled();
+    expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
   });
 
@@ -1092,7 +1085,7 @@ describe("Offer ACDC individual actions", () => {
     await ipexCommunicationService.offerAcdcFromApply(id, grantForIssuanceExnMessage.exn.e.acdc);
 
     expect(operationPendingStorage.save).toBeCalledWith({
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
@@ -1114,8 +1107,15 @@ describe("Offer ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    expect(eventEmitter.emit).toBeCalledTimes(1);
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeOfferCredential,
+        },
+      },
+    });    expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
   test("Cannot offer ACDC if the apply notification is missing in the DB", async () => {
@@ -1213,8 +1213,15 @@ describe("Offer ACDC group actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    expect(eventEmitter.emit).toBeCalledTimes(1);
-    expect(markNotificationMock).not.toBeCalled();
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeOfferCredential,
+        },
+      },
+    });    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.deleteById).not.toBeCalled();
   });
 
@@ -1231,13 +1238,10 @@ describe("Offer ACDC group actions", () => {
 
     await expect(ipexCommunicationService.offerAcdcFromApply("id", grantForIssuanceExnMessage.exn.e.acdc)).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "currentsaid",
-      recordType: OperationPendingRecordType.ExchangeOfferCredential,
-    });
     expect(ipexOfferMock).not.toBeCalled();
     expect(ipexSubmitOfferMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
   });
 
@@ -1547,11 +1551,6 @@ describe("Grant ACDC individual actions", () => {
 
     await ipexCommunicationService.grantAcdcFromAgree("agree-note-id");
 
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "current-grant-said",
-      recordType: OperationPendingRecordType.ExchangePresentCredential,
-    });
-
     expect(ipexGrantMock).toBeCalledWith({
       acdc: new Serder(credentialProps.sad),
       acdcAttachment: credentialProps.atc,
@@ -1568,7 +1567,15 @@ describe("Grant ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangePresentCredential,
+        },
+      },
+    });
     expect(eventEmitter.emit).toBeCalledTimes(1);
     expect(notificationStorage.deleteById).toBeCalledWith("agree-note-id");
   });
@@ -1617,14 +1624,11 @@ describe("Grant ACDC individual actions", () => {
     await expect(ipexCommunicationService.grantAcdcFromAgree("id")).rejects.toThrowError(
       IpexCommunicationService.CREDENTIAL_NOT_FOUND
     );
-    
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "current-grant-said",
-      recordType: OperationPendingRecordType.ExchangePresentCredential,
-    });
+
     expect(ipexGrantMock).not.toBeCalled();
     expect(ipexSubmitGrantMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
   });
 
@@ -1770,12 +1774,9 @@ describe("Grant ACDC group actions", () => {
 
     await expect(ipexCommunicationService.admitAcdcFromGrant("id")).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "current-grant-said",
-      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-    });
     expect(ipexGrantMock).not.toBeCalled();
     expect(ipexSubmitGrantMock).not.toBeCalled();
+    expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
   });
 

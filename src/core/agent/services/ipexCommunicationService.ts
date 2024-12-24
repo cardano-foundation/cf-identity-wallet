@@ -93,13 +93,6 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    if (grantNoteRecord.linkedRequest) {
-      await this.operationPendingStorage.save({
-        id: grantNoteRecord.linkedRequest.current,
-        recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-      });
-    }
-
     // For groups only
     if (grantNoteRecord.linkedRequest.accepted) {
       throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
@@ -204,13 +197,6 @@ class IpexCommunicationService extends AgentService {
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
       );
     }
-    
-    if (applyNoteRecord.linkedRequest) {
-      await this.operationPendingStorage.save({
-        id: applyNoteRecord.linkedRequest.current,
-        recordType: OperationPendingRecordType.ExchangeOfferCredential,
-      });
-    }
 
     // For groups only
     if (applyNoteRecord.linkedRequest.accepted) {
@@ -280,13 +266,6 @@ class IpexCommunicationService extends AgentService {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
       );
-    }
-
-    if (agreeNoteRecord.linkedRequest) {
-      await this.operationPendingStorage.save({
-        id: agreeNoteRecord.linkedRequest.current,
-        recordType: OperationPendingRecordType.ExchangePresentCredential,
-      });
     }
 
     // For groups only
