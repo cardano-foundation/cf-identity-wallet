@@ -166,10 +166,12 @@ class ConnectionService extends AgentService {
           connection,
         };
       }
-      await this.createConnectionMetadata(connectionId, connectionMetadata);
     } else {
-      await this.createConnectionMetadata(connectionId, connectionMetadata);
+      await this.resolveOobi(url, multiSigInvite);
+      connectionMetadata.pending = false;
+      connectionMetadata.status = ConnectionStatus.CONFIRMED;
     }
+    await this.createConnectionMetadata(connectionId, connectionMetadata);
     return { type: KeriConnectionType.NORMAL, connection };
   }
 
