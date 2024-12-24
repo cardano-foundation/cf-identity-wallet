@@ -1,6 +1,6 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { wordlists } from "bip39";
-import { closeOutline } from "ionicons/icons";
+import { closeOutline, refreshOutline } from "ionicons/icons";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
@@ -11,8 +11,8 @@ import { Alert as AlertFail } from "../Alert";
 import { PageFooter } from "../PageFooter";
 import { SeedPhraseModule } from "../SeedPhraseModule";
 import { SeedPhraseModuleRef } from "../SeedPhraseModule/SeedPhraseModule.types";
-import { SwitchOnboardingMode } from "../SwitchOnboardingMode";
-import { OnboardingMode } from "../SwitchOnboardingMode/SwitchOnboardingMode.types";
+import { SwitchOnboardingModeModal } from "../SwitchOnboardingModeModal";
+import { OnboardingMode } from "../SwitchOnboardingModeModal/SwitchOnboardingModeModal.types";
 import "./RecoverySeedPhraseModule.scss";
 import {
   RecoverySeedPhraseModuleProps,
@@ -44,7 +44,7 @@ const RecoverySeedPhraseModule = forwardRef<
 
     const [alertIsOpen, setAlertIsOpen] = useState(false);
     const [clearAlertOpen, setClearAlertOpen] = useState(false);
-
+    const [showSwitchModeModal, setSwitchModeModal] = useState(false);
     const [seedPhraseInfo, setSeedPhraseInfo] = useState<SeedPhraseInfo[]>([
       {
         value: "",
@@ -289,9 +289,6 @@ const RecoverySeedPhraseModule = forwardRef<
                 {i18n.t("verifyrecoveryseedphrase.button.clear")}
               </IonButton>
             )}
-            {displaySwitchModeButton && (
-              <SwitchOnboardingMode mode={OnboardingMode.Create} />
-            )}
           </div>
           <PageFooter
             pageId={testId}
@@ -302,6 +299,9 @@ const RecoverySeedPhraseModule = forwardRef<
               displaySuggestionError ||
               !isMatchAllSuggestion
             }
+            tertiaryButtonText={displaySwitchModeButton ? `${i18n.t("verifyrecoveryseedphrase.button.switch")}` : undefined}
+            tertiaryButtonAction={() => setSwitchModeModal(true)}
+            tertiaryButtonIcon={refreshOutline}
           />
         </div>
         <AlertFail
@@ -332,6 +332,7 @@ const RecoverySeedPhraseModule = forwardRef<
           actionCancel={closeClearAlert}
           actionDismiss={closeClearAlert}
         />
+        <SwitchOnboardingModeModal mode={OnboardingMode.Create} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
       </>
     );
   }
