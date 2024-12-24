@@ -3,8 +3,8 @@ import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { SwitchOnboardingMode } from "./SwitchOnboardingMode";
-import { OnboardingMode } from "./SwitchOnboardingMode.types";
+import { SwitchOnboardingModeModal } from "./SwitchOnboardingModeModal";
+import { OnboardingMode } from "./SwitchOnboardingModeModal.types";
 
 const deleteById = jest.fn();
 const createNew = jest.fn();
@@ -68,19 +68,9 @@ describe("Switch onboarding mode", () => {
     require("@ionic/react");
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <SwitchOnboardingMode mode={OnboardingMode.Create} />
+        <SwitchOnboardingModeModal isOpen={true} setOpen={jest.fn()} mode={OnboardingMode.Create} />
       </Provider>
     );
-
-    expect(
-      getByText(EN_TRANSLATIONS.verifyrecoveryseedphrase.button.switch)
-    ).toBeInTheDocument();
-
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.verifyrecoveryseedphrase.button.switch)
-      );
-    });
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();
@@ -129,19 +119,9 @@ describe("Switch onboarding mode", () => {
     require("@ionic/react");
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <SwitchOnboardingMode mode={OnboardingMode.Recovery} />
+        <SwitchOnboardingModeModal isOpen={true} setOpen={jest.fn()} mode={OnboardingMode.Recovery} />
       </Provider>
     );
-
-    expect(
-      getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)
-    ).toBeInTheDocument();
-
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)
-      );
-    });
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();

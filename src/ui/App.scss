@@ -181,6 +181,10 @@ p {
 .tertiary-button {
   --color: var(--ion-color-primary);
   --background: transparent;
+
+  ion-icon {
+    margin-right: 0.5rem;
+  }
 }
 
 .delete-button,
