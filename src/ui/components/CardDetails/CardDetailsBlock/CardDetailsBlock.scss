@@ -3,7 +3,7 @@
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.375rem;
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-neutral-700);
   }
 
   .card-details-info-block-inner {
@@ -28,7 +28,7 @@
       padding-right: 1.25rem;
       --background: transparent;
       --box-shadow: none;
-      --color: var(--ion-color-secondary);
+      --color: var(--ion-color-neutral-700);
       --background-activated: var(--ion-color-light-grey);
 
       h4 {
@@ -111,7 +111,7 @@
         align-items: start;
 
         .card-details-info-content {
-          color: var(--ion-color-primary);
+          color: var(--ion-color-neutral-800);
         }
 
         .card-details-info-block-key {

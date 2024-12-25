@@ -52,7 +52,7 @@
 
       & > span {
         font-weight: 500;
-        color: var(--ion-color-secondary);
+        color: var(--ion-color-neutral-700);
       }
 
       & > ion-icon {
@@ -65,7 +65,7 @@
     .pending-chip {
       margin: 1.25rem 0 1.5rem;
       border-radius: 0.25rem;
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
       background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
 
       & > span {

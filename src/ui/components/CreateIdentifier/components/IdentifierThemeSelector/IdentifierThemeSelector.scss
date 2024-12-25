@@ -23,7 +23,7 @@
       }
 
       &.selected-theme {
-        border: 1px solid var(--ion-color-secondary) !important;
+        border: 1px solid var(--ion-color-neutral-700) !important;
         background: var(--ion-color-medium-grey);
       }
 
@@ -34,7 +34,7 @@
         --background: var(--ion-color-light);
         --inner-border-width: 0;
         border: 1px solid var(--ion-color-dark-grey);
-        color: var(--ion-color-secondary);
+        color: var(--ion-color-neutral-700);
         box-shadow: none;
 
         .unselected-theme-circle,

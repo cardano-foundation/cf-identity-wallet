@@ -22,7 +22,7 @@
       width: 2rem;
       height: 2rem;
       border-radius: 2rem;
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -32,7 +32,7 @@
       }
 
       &.active {
-        background-color: var(--ion-color-secondary);
+        background-color: var(--ion-color-neutral-700);
 
         ion-icon {
           color: var(--ion-color-light);

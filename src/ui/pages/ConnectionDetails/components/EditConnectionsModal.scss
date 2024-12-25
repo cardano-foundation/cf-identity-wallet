@@ -22,7 +22,7 @@
   }
 
   .close-button-label {
-    color: var(--ion-color-secondary) !important;
+    color: var(--ion-color-neutral-700) !important;
   }
 
   .action-button-label {
@@ -34,13 +34,13 @@
   .connection-details-info-block {
     margin-top: 1.5rem;
     padding-bottom: 10rem;
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-neutral-700);
 
     h3 {
       margin-bottom: 2.94rem;
       margin-left: 1.25rem;
       font-weight: 500;
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
     }
 
     .connection-details-info-block-nonotes {
@@ -107,7 +107,7 @@
       }
 
       &.has-focus {
-        border-color: var(--ion-color-secondary);
+        border-color: var(--ion-color-neutral-700);
       }
     }
 
@@ -150,7 +150,7 @@
 .edit-connections-modal {
   ion-toolbar ion-buttons {
     ion-button {
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
       --opacity: 1;
     }
 

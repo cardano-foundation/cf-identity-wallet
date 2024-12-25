@@ -43,7 +43,7 @@ ion-modal.create-group-identifier-modal {
         ion-icon {
           width: 1.5rem;
           height: 1.5rem;
-          color: var(--ion-color-secondary);
+          color: var(--ion-color-neutral-700);
         }
       }
     }
@@ -100,7 +100,7 @@ ion-modal.create-group-identifier-modal {
     .multisig-share-qr-code-blur-overlay-container {
       position: absolute;
       left: calc(50% - 35vw);
-      box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary), 0.2);
+      box-shadow: 0px 2px 4px rgba(var(--ion-color-neutral-700), 0.2);
 
       .multisig-share-qr-code-blur-overlay-inner {
         display: none;
@@ -249,13 +249,13 @@ ion-modal.create-group-identifier-modal {
             --background: var(--ion-color-light);
             --inner-border-width: 0;
             border: 1px solid var(--ion-color-dark-grey);
-            color: var(--ion-color-secondary);
+            color: var(--ion-color-neutral-700);
             border-radius: 0.5rem;
             height: 3.125rem;
           }
 
           &.selected-type {
-            border: 1px solid var(--ion-color-secondary) !important;
+            border: 1px solid var(--ion-color-neutral-700) !important;
             background: var(--ion-color-medium-grey);
           }
 
@@ -370,7 +370,7 @@ ion-modal.create-group-identifier-modal {
           border-radius: 2rem;
 
           &::part(native) {
-            color: var(--ion-color-secondary);
+            color: var(--ion-color-neutral-700);
             --background-activated: var(--ion-color-medium-grey);
           }
 
@@ -413,7 +413,7 @@ ion-modal.create-group-identifier-modal {
         ion-label {
           margin: 0.813rem 0;
           font-weight: 500;
-          color: var(--ion-color-secondary);
+          color: var(--ion-color-neutral-700);
 
           img {
             width: 1.5rem;
@@ -433,7 +433,7 @@ ion-modal.create-group-identifier-modal {
 
         ion-icon {
           font-size: 1.5rem;
-          color: var(--ion-color-secondary);
+          color: var(--ion-color-neutral-700);
           opacity: 0.5;
         }
       }

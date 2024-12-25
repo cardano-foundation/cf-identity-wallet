@@ -10,12 +10,12 @@ ion-grid.qr-code-scanner {
   }
 
   &.scan-unavailable {
-    background: var(--ion-color-secondary);
+    background: var(--ion-color-neutral-700);
   }
 
   &.no-permission,
   &.scan-unavailable {
-    background: var(--ion-color-secondary);
+    background: var(--ion-color-neutral-700);
 
     .qr-code-scanner-text {
       opacity: 0.25;

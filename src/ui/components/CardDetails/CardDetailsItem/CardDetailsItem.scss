@@ -13,7 +13,7 @@
     margin: 0;
     --background: transparent;
     --box-shadow: none;
-    --color: var(--ion-color-secondary);
+    --color: var(--ion-color-neutral-400);
     --background-activated: var(--ion-color-light-grey);
 
     ion-icon {
@@ -37,7 +37,7 @@
     width: 100%;
     font-size: 1rem;
     font-weight: 500;
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-neutral-700);
 
     .card-details-info-block-subtext {
       font-weight: 400;

@@ -54,9 +54,9 @@ body {
     > div:last-child {
       display: block;
       z-index: -10;
-      --background: var(--ion-color-secondary) !important;
-      --ion-background-color: var(--ion-color-secondary) !important;
-      background-color: var(--ion-color-secondary) !important;
+      --background: var(--ion-color-neutral-700) !important;
+      --ion-background-color: var(--ion-color-neutral-700) !important;
+      background-color: var(--ion-color-neutral-700) !important;
 
       &.hide {
         display: none;
@@ -127,7 +127,7 @@ p {
   margin: 0.5rem 0;
   padding-inline: 0;
   line-height: 1.375rem;
-  color: var(--ion-color-secondary);
+  color: var(--ion-color-neutral-700);
 }
 
 @media screen and (min-width: 250px) and (max-width: 370px) {

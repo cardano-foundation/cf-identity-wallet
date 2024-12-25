@@ -11,7 +11,7 @@ ion-tab-bar {
     --ripple-color: transparent;
 
     &:not(.tab-selected) {
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
 
       > *:not(.notifications-counter) {
         opacity: 70%;

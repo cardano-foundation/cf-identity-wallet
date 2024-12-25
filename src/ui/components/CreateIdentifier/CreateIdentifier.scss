@@ -138,13 +138,13 @@ ion-modal.create-identifier-modal {
             --background: var(--ion-color-light);
             --inner-border-width: 0;
             border: 1px solid var(--ion-color-dark-grey);
-            color: var(--ion-color-secondary);
+            color: var(--ion-color-neutral-700);
             border-radius: 0.5rem;
             height: 3.125rem;
           }
 
           &.selected-type {
-            border: 1px solid var(--ion-color-secondary) !important;
+            border: 1px solid var(--ion-color-neutral-700) !important;
             background: var(--ion-color-medium-grey);
           }
 
