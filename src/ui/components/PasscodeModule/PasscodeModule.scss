@@ -59,7 +59,7 @@
       cursor: pointer;
       font-size: 11.28vw;
       font-weight: 500;
-      color: var(--ion-color-primary);
+      color: var(--ion-color-neutral-800);
 
       .passcode-module-number-labels {
         display: flex;
@@ -77,7 +77,7 @@
   }
 
   .passcode-module-backspace-button {
-    --background: var(--ion-color-primary);
+    --background: var(--ion-color-neutral-800);
     --color: var(--ion-color-light);
 
     .passcode-module-backspace-icon {
@@ -88,7 +88,7 @@
   .passcode-module-fingerprint-icon {
     width: 3.125rem;
     height: 3.125rem;
-    color: var(--ion-color-primary);
+    color: var(--ion-color-neutral-800);
   }
 }
 

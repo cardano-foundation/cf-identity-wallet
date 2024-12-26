@@ -197,82 +197,6 @@ ion-modal.create-group-identifier-modal {
       padding-left: 1.25rem;
     }
 
-    div.identifier-name {
-      margin-bottom: 0.56rem;
-
-      &.identifier-name-error ion-item.custom-input .input-line {
-        border-color: var(--ion-color-danger);
-      }
-
-      ion-item.custom-input {
-        margin-bottom: 0;
-
-        .input-line ion-input,
-        .input-line ion-input input::placeholder,
-        .identifier-type {
-          font-size: 1rem;
-          font-weight: 400;
-        }
-
-        .input-line ion-input input::placeholder {
-          color: rgba(var(--ion-color-secondary-rgb), 0.75);
-        }
-      }
-
-      .error-message-container {
-        height: 1rem;
-
-        p {
-          font-size: 0.875rem;
-          margin: 0 auto;
-          text-align: left;
-        }
-      }
-    }
-
-    .identifier-type-selector,
-    .aid-type-selector {
-      ion-col {
-        padding: 0;
-        margin: 0 0.3rem;
-
-        &:first-of-type {
-          margin-left: 0;
-        }
-
-        &:last-of-type {
-          margin-right: 0;
-        }
-
-        ion-card {
-          &.type-input {
-            --background: var(--ion-color-light);
-            --inner-border-width: 0;
-            border: 1px solid var(--ion-color-dark-grey);
-            color: var(--ion-color-neutral-700);
-            border-radius: 0.5rem;
-            height: 3.125rem;
-          }
-
-          &.selected-type {
-            border: 1px solid var(--ion-color-neutral-700) !important;
-            background: var(--ion-color-medium-grey);
-          }
-
-          &::part(native) {
-            min-height: 3.125rem;
-            border-radius: 0.5rem;
-          }
-
-          span {
-            width: 100%;
-            text-align: center;
-            font-weight: 400;
-          }
-        }
-      }
-    }
-
     .multisig-share-note {
       text-align: center;
       padding: 0 2.5rem;
@@ -311,8 +235,8 @@ ion-modal.create-group-identifier-modal {
             margin: 0 0 0 0.375rem;
 
             &.checkbox-checked {
-              --checkbox-background-checked: var(--ion-color-primary-gradient);
-              --checkmark-color: var(--ion-color-primary);
+              --checkbox-background-checked: var(--ion-color-primary-700);
+              --checkmark-color: var(--ion-color-primary-100);
 
               &::part(container) {
                 border: 0;

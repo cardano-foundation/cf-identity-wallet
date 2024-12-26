@@ -40,7 +40,7 @@
     .show-ealier-btn {
       --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
       --border-radius: 0.5rem;
-      color: var(--ion-color-primary);
+      color: var(--ion-color-neutral-800);
       width: calc(100vw - 2.5rem);
       margin: 0.75rem auto 2.25rem;
       display: block;
@@ -113,7 +113,7 @@
         }
 
         .notifications-tab-item-fallback-logo {
-          background-color: var(--ion-color-primary);
+          background-color: var(--ion-color-neutral-800);
           display: var(--display-fallback);
           justify-content: center;
           align-items: center;

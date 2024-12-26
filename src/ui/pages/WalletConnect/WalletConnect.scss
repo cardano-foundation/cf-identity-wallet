@@ -29,7 +29,7 @@
 
         .request-user-logo {
           border-radius: 5rem;
-          background-color: var(--ion-color-primary);
+          background-color: var(--ion-color-neutral-700);
           width: 4.875rem;
           height: 4.875rem;
 
@@ -79,8 +79,8 @@
     .identifier-list {
       .checkbox {
         width: fit-content;
-        --checkbox-background-checked: var(--ion-color-primary-gradient);
-        --checkmark-color: var(--ion-color-primary);
+        --checkbox-background-checked: var(--ion-color-primary-700);
+        --checkmark-color: var(--ion-color-primary-100);
         --border-width: 0.115rem;
 
         &.checkbox-checked {

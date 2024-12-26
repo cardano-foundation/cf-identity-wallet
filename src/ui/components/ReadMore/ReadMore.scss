@@ -24,10 +24,10 @@
   ion-button {
     margin: 0;
     border-radius: 0.5rem;
-    --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
-    --background-activated: rgba(var(--ion-color-dark-grey-rgb), 0.5);
-    --background-focused: rgba(var(--ion-color-dark-grey-rgb), 0.5);
-    color: var(--ion-color-primary);
+    --background: var(--ion-color-neutral-300);
+    --background-activated: var(--ion-color-neutral-300);
+    --background-focused: var(--ion-color-neutral-300);
+    color: var(--ion-color-neutral-800);
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {

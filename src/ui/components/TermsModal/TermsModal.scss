@@ -43,8 +43,8 @@ ion-modal.terms-modal {
 
     &.ion-activated {
       --ion-toolbar-color: var(--ion-color-light);
-      --ion-toolbar-background: var(--ion-color-primary);
-      --color-activated: var(--ion-color-primary);
+      --ion-toolbar-background: var(--ion-color-neutral-700);
+      --color-activated: var(--ion-color-neutral-700);
     }
 
     @media screen and (min-width: 250px) and (max-width: 370px) {

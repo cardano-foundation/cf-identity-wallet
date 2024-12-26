@@ -65,7 +65,7 @@
       .toggle-button {
         width: fit-content;
         &.toggle-checked {
-          --track-background-checked: var(--ion-color-primary-gradient);
+          --track-background-checked: var(--ion-color-primary-700);
 
           &.md {
             --handle-background-checked: var(--ion-color-white);

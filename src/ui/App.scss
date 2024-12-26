@@ -108,7 +108,7 @@ h1,
 h2,
 h3,
 h4 {
-  color: var(--ion-color-primary);
+  color: var(--ion-color-neutral-800);
 }
 
 h2,
@@ -164,12 +164,16 @@ p {
 }
 
 .primary-button {
-  --color: var(--ion-color-primary);
-  --background: var(--ion-color-primary-gradient);
+  --color: var(--ion-color-neutral-100);
+  --background: var(--ion-color-primary-700);
+
+  ion-icon {
+    color: var(--ion-color-neutral-100) !important;
+  }
 }
 
 .secondary-button {
-  --color: var(--ion-color-primary);
+  --color: var(--ion-color-neutral-700);
   --background: var(--ion-color-light);
   --border-color: var(--ion-color-dark-grey);
 
@@ -179,8 +183,9 @@ p {
 }
 
 .tertiary-button {
-  --color: var(--ion-color-primary);
+  --color: var(--ion-color-neutral-700);
   --background: transparent;
+  font-weight: 500;
 
   ion-icon {
     margin-right: 0.5rem;
@@ -272,7 +277,7 @@ ion-segment {
   ion-segment-button {
     &.segment-button-checked {
       &::part(indicator-background) {
-        background: var(--ion-color-primary-gradient);
+        background: var(--ion-color-primary-700);
       }
     }
   }
