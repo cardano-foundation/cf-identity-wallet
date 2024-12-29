@@ -347,6 +347,7 @@ describe("Receive individual ACDC actions", () => {
           JSON.stringify(connectionNote),
       })
     );
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await ipexCommunicationService.admitAcdcFromGrant(id);
 
@@ -1078,6 +1079,7 @@ describe("Offer ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await ipexCommunicationService.offerAcdcFromApply(id, grantForIssuanceExnMessage.exn.e.acdc);
 
@@ -1542,6 +1544,7 @@ describe("Grant ACDC individual actions", () => {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
     ipexGrantMock.mockResolvedValue(["grant", "sigs", "gend"]);
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await ipexCommunicationService.grantAcdcFromAgree("agree-note-id");
 
