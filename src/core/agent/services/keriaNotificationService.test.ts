@@ -2354,7 +2354,7 @@ describe("Long running operation tracker", () => {
           p: "p",
         },
       },
-      ConnectionHistoryType.CREDENTIAL_ADMITTED
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);

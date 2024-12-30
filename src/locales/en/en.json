@@ -1503,7 +1503,6 @@
       "history": "Connection History",
       "connectedwith": "Connected with “{{ issuer }}“",
       "issuance": "Received a “{{ credential }}“",
-      "admitted": "Admitted “{{ credential }}“ credential",
       "requestpresent": "“{{ issuer }}“ has requested a credential presentation",
       "update": "“{{ credential }}“ has been revoked",
       "presented": "Presented “{{ credentialType }}“ credential",

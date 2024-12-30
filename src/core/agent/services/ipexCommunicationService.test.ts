@@ -384,15 +384,6 @@ describe("Receive individual ACDC actions", () => {
       "aend",
       ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
     );
-    expect(signifyClient.contacts().update).toBeCalledWith("EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x", {
-      [`${KeriaContactKeyPrefix.HISTORY_IPEX}EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL`]: JSON.stringify({
-        id: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
-        dt: "2024-07-30T04:19:55.801000+00:00",
-        credentialType: "Qualified vLEI Issuer Credential",
-        connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        historyType: 0
-      })
-    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -596,15 +587,6 @@ describe("Receive group ACDC actions", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
-    expect(signifyClient.contacts().update).toBeCalledWith("EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x", {
-      [`${KeriaContactKeyPrefix.HISTORY_IPEX}EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL`]: JSON.stringify({
-        id: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
-        dt: "2024-07-30T04:19:55.801000+00:00",
-        credentialType: "Qualified vLEI Issuer Credential",
-        connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        historyType: 0
-      })
-    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -772,15 +754,6 @@ describe("Receive group ACDC actions", () => {
         current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
       },
     }));
-    expect(signifyClient.contacts().update).toBeCalledWith("EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x", {
-      [`${KeriaContactKeyPrefix.HISTORY_IPEX}EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL`]: JSON.stringify({
-        id: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
-        dt: "2024-07-30T04:19:55.801000+00:00",
-        credentialType: "Qualified vLEI Issuer Credential",
-        connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        historyType: 0
-      })
-    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -1989,13 +1962,13 @@ describe("IPEX communication service of agent", () => {
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
 
-    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
           dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
-          connectionId: grantForIssuanceExnMessage.exn.i,
+          connectionId: grantForIssuanceExnMessage.exn.rp,
           historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
         }),
     });
@@ -2039,14 +2012,14 @@ describe("IPEX communication service of agent", () => {
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
     expect(updateContactMock).toBeCalledWith(
-      applyForPresentingExnMessage.exn.i,
+      applyForPresentingExnMessage.exn.rp,
       {
         [`${KeriaContactKeyPrefix.HISTORY_IPEX}${applyForPresentingExnMessage.exn.d}`]:
           JSON.stringify({
             id: applyForPresentingExnMessage.exn.d,
             dt: applyForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
-            connectionId: applyForPresentingExnMessage.exn.i,
+            connectionId: applyForPresentingExnMessage.exn.rp,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
           }),
       }
@@ -2087,14 +2060,14 @@ describe("IPEX communication service of agent", () => {
     );
 
     expect(updateContactMock).toBeCalledWith(
-      agreeForPresentingExnMessage.exn.i,
+      agreeForPresentingExnMessage.exn.rp,
       {
         [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeForPresentingExnMessage.exn.d}`]:
           JSON.stringify({
             id: agreeForPresentingExnMessage.exn.d,
             dt: agreeForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
-            connectionId: agreeForPresentingExnMessage.exn.i,
+            connectionId: agreeForPresentingExnMessage.exn.rp,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
           }),
       }
@@ -2133,7 +2106,7 @@ describe("IPEX communication service of agent", () => {
     getExchangeMock.mockResolvedValueOnce(admitForIssuanceExnMessage);
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       admitForIssuanceExnMessage,
-      ConnectionHistoryType.CREDENTIAL_ADMITTED
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
 
     expect(updateContactMock).toBeCalledWith(
@@ -2145,7 +2118,7 @@ describe("IPEX communication service of agent", () => {
             dt: admitForIssuanceExnMessage.exn.dt,
             credentialType: QVISchema.title,
             connectionId: admitForIssuanceExnMessage.exn.rp,
-            historyType: ConnectionHistoryType.CREDENTIAL_ADMITTED,
+            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
           }),
       }
     );

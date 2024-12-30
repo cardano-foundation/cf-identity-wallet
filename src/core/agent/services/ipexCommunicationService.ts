@@ -163,12 +163,6 @@ class IpexCommunicationService extends AgentService {
         allSchemaSaids
       );
     }
-    
-    await this.createLinkedIpexMessageRecord(
-      grantExn,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -483,11 +477,11 @@ class IpexCommunicationService extends AgentService {
   async createLinkedIpexMessageRecord(
     message: ExnMessage,
     historyType: ConnectionHistoryType
-  ): Promise<void> {
+  ): Promise<void> {  
     let schemaSaid;
     const connectionId =
       historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
-      historyType === ConnectionHistoryType.CREDENTIAL_ADMITTED
+      historyType === ConnectionHistoryType.CREDENTIAL_ISSUANCE
         ? message.exn.rp
         : message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
@@ -519,7 +513,6 @@ class IpexCommunicationService extends AgentService {
     case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
     case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
     case ConnectionHistoryType.CREDENTIAL_PRESENTED:
-    case ConnectionHistoryType.CREDENTIAL_ADMITTED:
       prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
       key = message.exn.d;
       break;
@@ -602,11 +595,6 @@ class IpexCommunicationService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-    
-    await this.createLinkedIpexMessageRecord(
-      grantExn,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,

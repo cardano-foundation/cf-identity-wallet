@@ -1075,7 +1075,7 @@ class KeriaNotificationService extends AgentService {
 
           await this.ipexCommunications.createLinkedIpexMessageRecord(
             admitExchange,
-            ConnectionHistoryType.CREDENTIAL_ADMITTED
+            ConnectionHistoryType.CREDENTIAL_ISSUANCE
           );
 
           await this.credentialService.markAcdc(
