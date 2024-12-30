@@ -1,8 +1,12 @@
-import { ConnectionStatus, NotificationRoute } from "../agent.types";
+import {
+  ConnectionStatus,
+  MiscRecordId,
+  NotificationRoute,
+} from "../agent.types";
 import { Agent } from "../agent";
 import { CoreEventEmitter } from "../event";
 import { MultiSigService } from "./multiSigService";
-import { IdentifierStorage } from "../records";
+import { BasicRecord, IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import {
   getMultisigIdentifierResponse,
@@ -153,13 +157,22 @@ const identifiers = jest.mocked({
   rotateIdentifier: jest.fn(),
 });
 
+const basicStorage = jest.mocked({
+  findById: jest.fn(),
+  save: jest.fn(),
+  createOrUpdateBasicRecord: jest.fn(),
+  update: jest.fn(),
+  deleteById: jest.fn(),
+});
+
 const multiSigService = new MultiSigService(
   agentServicesProps,
   identifierStorage as any,
   operationPendingStorage as any,
   notificationStorage as any,
   connections as any,
-  identifiers as any
+  identifiers as any,
+  basicStorage as any
 );
 
 const now = new Date();
@@ -173,35 +186,37 @@ beforeEach(async () => {
 });
 
 describe("Oobi/endrole", () => {
-  test("Should call endRoleAuthorization when the multisig creation operation is done", async () => {
+  test("Should resolve oobi when the multisig creation operation is done", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    identifiersMemberMock = jest.fn().mockResolvedValue({
+    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
       signing: [{ ends: { agent: { [memberMetadataRecord.id]: "" } } }],
     });
-    addEndRoleMock.mockResolvedValue({
-      op: jest.fn(),
-      serder: { size: 1 },
-      sigs: [],
-    });
-
-    identifiersGetMock.mockResolvedValue(getMemberIdentifierResponse);
+    identifiersGetMock
+      .mockResolvedValueOnce(getMemberIdentifierResponse)
+      .mockResolvedValueOnce(getMemberIdentifierResponse);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(memberMetadataRecord);
-    connections.resolveOobi.mockResolvedValue(resolvedOobiOpResponse);
+      .mockResolvedValueOnce(memberMetadataRecord);
+    connections.resolveOobi.mockResolvedValueOnce(resolvedOobiOpResponse);
+    identifierStorage.createIdentifierMetadataRecord.mockResolvedValueOnce(
+      undefined
+    );
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: `group.${multisigIdentifier}`,
+      recordType: OperationPendingRecordType.Group,
+    });
 
-    identifiersCreateMock.mockImplementation((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}`, done: true };
-        },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
+    identifiersCreateMock.mockResolvedValueOnce({
+      op: jest.fn().mockResolvedValueOnce({
+        name: `group.${multisigIdentifier}`,
+        done: true,
+      }),
+      serder: {
+        ked: { i: "i" },
+      },
+      sigs: [
+        "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+      ],
     });
     const otherIdentifiers = [
       {
@@ -213,31 +228,66 @@ describe("Oobi/endrole", () => {
         groupId: "group-id",
       },
     ];
+
+    const existRecord = new BasicRecord({
+      id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION,
+      content: {
+        queuedTasks: [],
+      },
+    });
+
+    const updatedRecord = new BasicRecord({
+      id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION,
+      content: {
+        queuedTasks: [{ id: "0", displayName: "newDisplayName" }],
+      },
+    });
+
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValueOnce(existRecord)
+      .mockResolvedValueOnce(updatedRecord);
+    eventEmitter.emit = jest.fn();
+
     await multiSigService.createMultisig(
       creatorIdentifier,
       otherIdentifiers,
       otherIdentifiers.length + 1
     );
-    expect(addEndRoleMock).toBeCalledTimes(1);
-    (memberMetadataRecord.groupMetadata as any).groupCreated = false;
 
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      {
-        id: "newMultisigIdentifierAid",
-        displayName: "Identifier 2",
-        theme: 0,
-        isPending: false,
-        multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839894+00:00")
-      }
-    )
+    for (const identifier of otherIdentifiers) {
+      expect(connections.resolveOobi).toHaveBeenCalledWith(identifier.oobi);
+    }
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith({
+      id: "newMultisigIdentifierAid",
+      displayName: "Identifier 2",
+      theme: 0,
+      isPending: true,
+      multisigManageAid: "creatorIdentifier",
+      createdAt: new Date("2024-08-09T07:23:52.839894+00:00"),
+    });
+    expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
+    expect(basicStorage.update).toHaveBeenLastCalledWith(
+      new BasicRecord({
+        id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedTasks: [
+            {
+              displayName: "newDisplayName",
+              id: "0",
+            },
+          ],
+        },
+        createdAt: expect.any(Date),
+      })
+    );
   });
 
   test("Can add end role authorization", async () => {
     identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(memberIdentifierRecord);
+      .mockResolvedValueOnce(memberIdentifierRecord);
     identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
     addEndRoleMock.mockResolvedValue({
       op: jest.fn(),
@@ -251,7 +301,7 @@ describe("Oobi/endrole", () => {
   });
 
   test("Can join end role authorization", async () => {
-    identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
+    identifiersMemberMock.mockResolvedValueOnce(getMultisigMembersResponse);
     const mockRequestExn = {
       a: {
         gid: "EFPEKHhywRg2Naa-Gx0jiAAXYnQ5y92vDniHAk8beEA_",
@@ -272,14 +322,14 @@ describe("Oobi/endrole", () => {
         d: "EFme1_S0eHc-C6HpcaWpFZnKJGX4f91IBCDmiM6vBQOR",
       },
     };
-    groupGetRequestMock.mockResolvedValue([
+    groupGetRequestMock.mockResolvedValueOnce([
       {
         exn: {
           ...mockRequestExn,
         },
       },
     ]);
-    getExchangesMock.mockResolvedValue({
+    getExchangesMock.mockResolvedValueOnce({
       exn: {
         a: {
           gid: "gid",
@@ -288,7 +338,8 @@ describe("Oobi/endrole", () => {
     });
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(memberIdentifierRecord);
+      .mockResolvedValueOnce(memberIdentifierRecord)
+      .mockResolvedValueOnce(memberIdentifierRecord);
     identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
     addEndRoleMock.mockResolvedValue({
       op: jest.fn(),
@@ -303,7 +354,7 @@ describe("Oobi/endrole", () => {
 describe("Usage of multi-sig", () => {
   test("Should return true if there is a multisig with the provided multisigId", async () => {
     const multisigId = "multisig-id";
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
       id: multisigId,
       displayName: "Multisig",
       multisigManageAid: "aid",
@@ -337,7 +388,7 @@ describe("Usage of multi-sig", () => {
   test("Can get participants with a multi-sig identifier", async () => {
     identifiersMemberMock = jest
       .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
+      .mockResolvedValueOnce(getMultisigMembersResponse);
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
       ...memberMetadataRecordProps,
@@ -353,43 +404,64 @@ describe("Usage of multi-sig", () => {
       getMultisigMembersResponse.signing[0].aid
     );
   });
-
-  test("Can not get participants with a multi-sig identifier if not exist our identifier", async () => {
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
-
-    await expect(
-      multiSigService.getMultisigParticipants("id")
-    ).rejects.toThrowError(MultiSigService.MEMBER_AID_NOT_FOUND);
-  });
 });
 
 describe("Creation of multi-sig", () => {
   test("Can create a multisig identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifiersGetMock.mockResolvedValue(getMemberIdentifierResponse);
+    connections.resolveOobi.mockResolvedValue(resolvedOobiOpResponse);
+    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
+      signing: [{ ends: { agent: { [memberMetadataRecord.id]: "" } } }],
+    });
+    identifiersGetMock
+      .mockResolvedValueOnce(getMemberIdentifierResponse)
+      .mockResolvedValueOnce(getMemberIdentifierResponse);
+
+    (memberMetadataRecord.groupMetadata as any).groupCreated = false;
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(memberMetadataRecord);
-    connections.resolveOobi.mockResolvedValue(resolvedOobiOpResponse);
+      .mockResolvedValueOnce(memberMetadataRecord);
+    identifierStorage.createIdentifierMetadataRecord.mockResolvedValueOnce(
+      undefined
+    );
 
-    identifiersCreateMock.mockImplementation((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}`, done: false };
-        },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: `group.${multisigIdentifier}`,
+      recordType: OperationPendingRecordType.Group,
     });
+
+    identifiersCreateMock.mockResolvedValueOnce({
+      op: jest.fn().mockResolvedValueOnce({
+        name: `group.${multisigIdentifier}`,
+        done: true,
+      }),
+      serder: {
+        ked: { i: "i" },
+      },
+      sigs: [
+        "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+      ],
+    });
+
+    const existRecord = new BasicRecord({
+      id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION,
+      content: {
+        queuedTasks: [],
+      },
+    });
+
+    const updatedRecord = new BasicRecord({
+      id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION,
+      content: {
+        queuedTasks: [{ id: "0", displayName: "newDisplayName" }],
+      },
+    });
+
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValueOnce(existRecord)
+      .mockResolvedValueOnce(updatedRecord);
     const otherIdentifiers = [
       {
         id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
@@ -406,24 +478,19 @@ describe("Creation of multi-sig", () => {
       recordType: OperationPendingRecordType.Group,
     });
 
-    expect(
-      await multiSigService.createMultisig(
-        creatorIdentifier,
-        otherIdentifiers,
-        otherIdentifiers.length + 1
-      )
-    ).toEqual({
-      identifier: multisigIdentifier,
-      isPending: true,
-    });
+    await multiSigService.createMultisig(
+      creatorIdentifier,
+      otherIdentifiers,
+      otherIdentifiers.length + 1
+    );
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({ 
+      expect.objectContaining({
         id: multisigIdentifier,
         displayName: "Identifier 2",
         theme: 0,
         isPending: true,
         multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839Z") 
+        createdAt: new Date("2024-08-09T07:23:52.839Z"),
       })
     );
 
@@ -436,79 +503,29 @@ describe("Creation of multi-sig", () => {
         },
       },
     });
-
-    (memberMetadataRecord.groupMetadata as any).groupCreated = false;
-    identifiersCreateMock.mockImplementation((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}1`, done: false };
+    expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
+    expect(basicStorage.update).toHaveBeenLastCalledWith(
+      new BasicRecord({
+        id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedTasks: [
+            {
+              displayName: "newDisplayName",
+              id: "0",
+            },
+          ],
         },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
-    });
-    expect(
-      await multiSigService.createMultisig(
-        creatorIdentifier,
-        otherIdentifiers,
-        1
-      )
-    ).toEqual({
-      identifier: `${multisigIdentifier}1`,
-      isPending: true,
-    });
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({
-        id: `${multisigIdentifier}1`,
-        displayName: "Identifier 2",
-        theme: 0,
-        isPending: true,
-        multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839Z")
+        createdAt: expect.any(Date),
       })
     );
+  });
 
+  test("Cannot create a keri multisig if the group identifier not linked contacts", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     (memberMetadataRecord.groupMetadata as any).groupCreated = false;
-    identifiersCreateMock.mockImplementation((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}2`, done: false };
-        },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
-    });
-
-    expect(
-      await multiSigService.createMultisig(
-        creatorIdentifier,
-        otherIdentifiers,
-        2
-      )
-    ).toEqual({
-      identifier: `${multisigIdentifier}2`,
-      isPending: true,
-    });
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({
-        id: `${multisigIdentifier}2`,
-        displayName: "Identifier 2",
-        theme: 0,
-        isPending: true,
-        multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839Z")
-      })
-    );
-
-    (memberMetadataRecord.groupMetadata as any).groupCreated = false;
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberMetadataRecord);
     const invalidOtherIdentifiers = [
       {
         id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
@@ -523,7 +540,7 @@ describe("Creation of multi-sig", () => {
         invalidOtherIdentifiers,
         invalidOtherIdentifiers.length + 1
       )
-    ).rejects.toThrowError();
+    ).rejects.toThrowError(MultiSigService.ONLY_ALLOW_LINKED_CONTACTS);
   });
 
   test("Cannot create a keri multisig if the threshold is invalid", async () => {
@@ -551,7 +568,10 @@ describe("Creation of multi-sig", () => {
 
   test("Can join the multisig inception", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
+    groupGetRequestMock = jest
+      .fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([getRequestMultisigIcp]);
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMemberIdentifierResponse);
@@ -563,46 +583,82 @@ describe("Creation of multi-sig", () => {
       .fn()
       .mockResolvedValue([resolvedOobiOpResponse]);
     notificationStorage.deleteById = jest.fn().mockResolvedValue("id");
-    identifiersCreateMock.mockImplementationOnce((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}`, done: false };
-        },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: `group.${multisigIdentifier}`,
+      recordType: OperationPendingRecordType.Group,
     });
+
+    identifiersCreateMock.mockResolvedValueOnce({
+      op: jest.fn().mockResolvedValueOnce({
+        name: `group.${multisigIdentifier}`,
+        done: true,
+      }),
+      serder: {
+        ked: { i: "i" },
+      },
+      sigs: [
+        "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+      ],
+    });
+
+    const existRecord = new BasicRecord({
+      id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN,
+      content: {
+        queuedTasks: [],
+      },
+    });
+
+    const updatedRecord = new BasicRecord({
+      id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN,
+      content: {
+        queuedTasks: [
+          {
+            notificationId: "id",
+            notificationRoute: NotificationRoute.MultiSigIcp,
+            notificationSaid: "d",
+            meta: {
+              theme: 0,
+              displayName: "Multisig",
+            },
+          },
+        ],
+      },
+    });
+
+    identifierStorage.createIdentifierMetadataRecord.mockResolvedValueOnce(
+      undefined
+    );
+
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValueOnce(existRecord)
+      .mockResolvedValueOnce(updatedRecord);
 
     eventEmitter.emit = jest.fn();
     saveOperationPendingMock.mockResolvedValueOnce({
       id: `group.${multisigIdentifier}`,
       recordType: OperationPendingRecordType.Group,
     });
-    markNotificationMock.mockResolvedValueOnce({status: "done"});
-    expect(
-      await multiSigService.joinMultisig(
-        "id",
-        NotificationRoute.MultiSigIcp,
-        "d",
-        {
-          theme: 0,
-          displayName: "Multisig",
-        }
-      )
-    ).toEqual({
-      identifier: multisigIdentifier,
-      isPending: true,
-
-      multisigManageAid: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-    });
-
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({ id: multisigIdentifier, isPending: true })
+    markNotificationMock.mockResolvedValueOnce({ status: "done" });
+    await multiSigService.joinMultisig(
+      "id",
+      NotificationRoute.MultiSigIcp,
+      "d",
+      {
+        theme: 0,
+        displayName: "Multisig",
+      }
     );
+
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith({
+      id: "newMultisigIdentifierAid",
+      displayName: "Multisig",
+      theme: 0,
+      isPending: true,
+      multisigManageAid: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+      createdAt: new Date("2024-08-09T07:23:52.839894+00:00"),
+    });
 
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       memberIdentifierRecord.id,
@@ -618,48 +674,34 @@ describe("Creation of multi-sig", () => {
         },
       },
     });
-
-    identifiersCreateMock.mockImplementationOnce((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}`, done: true };
+    expect(basicStorage.createOrUpdateBasicRecord).toHaveBeenLastCalledWith(
+      new BasicRecord({
+        id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN,
+        content: {
+          queuedTasks: [
+            {
+              notificationId: "id",
+              notificationRoute: NotificationRoute.MultiSigIcp,
+              notificationSaid: "d",
+              meta: {
+                theme: 0,
+                displayName: "Multisig",
+              },
+            },
+          ],
         },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
-    });
-    identifiersMemberMock = jest.fn().mockResolvedValue({
-      signing: [getMultisigMembersResponse.signing[0]],
-    });
-    addEndRoleMock.mockResolvedValue({
-      op: jest.fn(),
-      serder: { size: 1 },
-      sigs: [],
-    });
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
-      ...memberMetadataRecordProps,
-      groupMetadata: {
-        ...memberMetadataRecordProps.groupMetadata,
-        groupCreated: true,
-      },
-    });
-
-    markNotificationMock.mockResolvedValueOnce({status: "done"});
-
-    await multiSigService.joinMultisig(
-      "id",
-      NotificationRoute.MultiSigIcp,
-      "d",
-      {
-        theme: 0,
-        displayName: "Multisig",
-      }
+        createdAt: expect.any(Date),
+      })
     );
-    expect(addEndRoleMock).toBeCalledTimes(1);
+    expect(basicStorage.update).toHaveBeenLastCalledWith(
+      new BasicRecord({
+        id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN,
+        content: {
+          queuedTasks: [],
+        },
+        createdAt: expect.any(Date),
+      })
+    );
   });
 
   test("Cannot join multisig by notification if exn messages are missing", async () => {

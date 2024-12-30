@@ -41,6 +41,8 @@ enum MiscRecordId {
   FAILED_NOTIFICATIONS = "failed-notifications",
   CLOUD_RECOVERY_STATUS = "cloud-recovery-status",
   IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
+  GROUP_IDENTIFIERS_PENDING_CREATION = "group-identifiers-pending-creation",
+  GROUP_IDENTIFIERS_PENDING_JOIN = "group-identifiers-pending-join",
 }
 
 interface ConnectionShortDetails {

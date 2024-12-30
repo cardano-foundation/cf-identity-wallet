@@ -12,12 +12,15 @@ import {
   NotificationRoute,
   CreateIdentifierResult,
   AgentServicesProps,
+  MiscRecordId,
 } from "../agent.types";
 import type {
   ConnectionShortDetails,
   AuthorizationRequestExn,
 } from "../agent.types";
 import {
+  BasicRecord,
+  BasicStorage,
   IdentifierMetadataRecordProps,
   IdentifierStorage,
   NotificationStorage,
@@ -31,12 +34,13 @@ import {
   AuthorizationExnPayload,
   InceptMultiSigExnMessage,
 } from "./multiSig.types";
-import {
-  deleteNotificationRecordById,
-  OnlineOnly,
-} from "./utils";
+import { deleteNotificationRecordById, OnlineOnly } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { OperationAddedEvent, EventTypes } from "../event.types";
+import {
+  OperationAddedEvent,
+  EventTypes,
+  IdentifierAddedEvent,
+} from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { IdentifierService } from "./identifierService";
 
@@ -69,6 +73,7 @@ class MultiSigService extends AgentService {
   protected readonly notificationStorage: NotificationStorage;
   protected readonly connections: ConnectionService;
   protected readonly identifiers: IdentifierService;
+  protected readonly basicStorage: BasicStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -76,7 +81,8 @@ class MultiSigService extends AgentService {
     operationPendingStorage: OperationPendingStorage,
     notificationStorage: NotificationStorage,
     connections: ConnectionService,
-    identifiers: IdentifierService
+    identifiers: IdentifierService,
+    basicStorage: BasicStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
@@ -84,13 +90,66 @@ class MultiSigService extends AgentService {
     this.notificationStorage = notificationStorage;
     this.connections = connections;
     this.identifiers = identifiers;
+    this.basicStorage = basicStorage;
+  }
+
+  async resolvePendingGroupIdentifier() {
+    const pendingIdentifierCreation = await this.basicStorage.findById(
+      MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION
+    );
+
+    if (pendingIdentifierCreation) {
+      if (!Array.isArray(pendingIdentifierCreation.content.queuedTasks)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      for (const queuedTasks of pendingIdentifierCreation.content.queuedTasks) {
+        const { name, otherIdentifierContacts, threshold } = queuedTasks;
+
+        await this.createMultisig(
+          name,
+          otherIdentifierContacts,
+          threshold,
+          true
+        );
+      }
+    }
+  }
+
+  async resolvePendingJoinGroupIdentifier() {
+    const pendingIdentifierCreation = await this.basicStorage.findById(
+      MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN
+    );
+
+    if (pendingIdentifierCreation) {
+      if (!Array.isArray(pendingIdentifierCreation.content.queuedTasks)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      for (const queuedTasks of pendingIdentifierCreation.content.queuedTasks) {
+        const {
+          notificationId,
+          notificationRoute,
+          prefnotificationSaidix,
+          meta,
+        } = queuedTasks;
+        await this.joinMultisig(
+          notificationId,
+          notificationRoute,
+          prefnotificationSaidix,
+          meta,
+          true
+        );
+      }
+    }
   }
 
   @OnlineOnly
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
-    threshold: number
+    threshold: number,
+    backgroundTask = false
   ): Promise<CreateIdentifierResult> {
     if (threshold < 1 || threshold > otherIdentifierContacts.length + 1) {
       throw new Error(MultiSigService.INVALID_THRESHOLD);
@@ -125,46 +184,124 @@ class MultiSigService extends AgentService {
       })
     );
     const name = `${ourMetadata.theme}:${ourMetadata.displayName}`;
+    const pendingGroupIdentifiersRecord = await this.basicStorage.findById(
+      MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION
+    );
+    let processingTasks: {
+      name: string;
+      otherIdentifierContacts: ConnectionShortDetails[];
+      threshold: number;
+    }[] = [];
+    if (pendingGroupIdentifiersRecord) {
+      const { queuedTasks } = pendingGroupIdentifiersRecord.content;
+
+      if (!Array.isArray(queuedTasks)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      processingTasks = queuedTasks;
+
+      const existingEntry = queuedTasks.find((item) => item.name === name);
+      if (existingEntry) {
+        if (!backgroundTask) {
+          throw new Error(
+            `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`
+          );
+        }
+      } else {
+        processingTasks.push({ name, otherIdentifierContacts, threshold });
+      }
+    } else {
+      processingTasks = [{ name, otherIdentifierContacts, threshold }];
+    }
+
     const result = await this.createAidMultisig(
       ourAid,
       otherAids,
       name,
       threshold
     );
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION,
+        content: { queuedTasks: processingTasks },
+      })
+    );
+
     const op = result.op;
     const multisigId = op.name.split(".")[1];
-    const isPending = !op.done;
+    const isPending = true;
 
-    const multisigDetail = await this.props.signifyClient
+    const multisigDetail = (await this.props.signifyClient
       .identifiers()
-      .get(multisigId as string) as HabState & { icp_dt: string };
+      .get(multisigId as string)) as HabState & { icp_dt: string };
 
-    await this.identifierStorage.createIdentifierMetadataRecord({
-      id: multisigId,
-      displayName: ourMetadata.displayName,
-      theme: ourMetadata.theme,
-      isPending,
-      multisigManageAid: ourIdentifier,
-      createdAt: new Date(multisigDetail.icp_dt)
-    });
+    await this.identifierStorage
+      .createIdentifierMetadataRecord({
+        id: multisigId,
+        displayName: ourMetadata.displayName,
+        theme: ourMetadata.theme,
+        isPending,
+        multisigManageAid: ourIdentifier,
+        createdAt: new Date(multisigDetail.icp_dt),
+      })
+      .catch((error) => {
+        if (/Record already exists with id/gi.test(error.message)) {
+          return;
+        } else {
+          throw error;
+        }
+      });
+
     ourMetadata.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(
       ourMetadata.id,
       ourMetadata
     );
-    if (isPending) {
-      const pendingOperation = await this.operationPendingStorage.save({
+
+    this.props.eventEmitter.emit<IdentifierAddedEvent>({
+      type: EventTypes.IdentifierAdded,
+      payload: { identifier: { ...ourMetadata, isPending } },
+    });
+
+    const pendingOperation = await this.operationPendingStorage
+      .save({
         id: op.name,
         recordType: OperationPendingRecordType.Group,
+      })
+      .catch((error) => {
+        if (/Record already exists with id/gi.test(error.message)) {
+          return;
+        } else {
+          throw error;
+        }
       });
 
+    if (pendingOperation) {
       this.props.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
-    } else {
-      // Trigger the end role authorization if the operation is done
-      await this.endRoleAuthorization(multisigId);
+    }
+
+    const updatedRecord = await this.basicStorage.findById(
+      MiscRecordId.GROUP_IDENTIFIERS_PENDING_CREATION
+    );
+
+    if (updatedRecord) {
+      const { queuedTasks } = updatedRecord.content;
+
+      if (!Array.isArray(queuedTasks)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      const index = queuedTasks.findIndex((item) => item.name === name);
+      if (index !== -1) {
+        queuedTasks.splice(index, 1);
+      }
+
+      await this.basicStorage.update(updatedRecord);
     }
     return { identifier: multisigId, isPending };
   }
@@ -190,7 +327,20 @@ class MultiSigService extends AgentService {
       states: states,
       rstates: states,
     });
-    const op = await icp.op();
+
+    const op = await icp.op().catch((error) => {
+      const [_, status, reason] = error.message.split(" - ");
+      if (/400/gi.test(status) && /already incepted/gi.test(reason)) {
+        throw new Error(
+          `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${prefix}`,
+          {
+            cause: error,
+          }
+        );
+      }
+      throw error;
+    });
+
     const serder = icp.serder;
 
     const sigs = icp.sigs;
@@ -319,7 +469,8 @@ class MultiSigService extends AgentService {
     notificationId: string,
     notificationRoute: NotificationRoute,
     notificationSaid: string,
-    meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
+    meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">,
+    backgroundTask = false
   ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
@@ -369,41 +520,102 @@ class MultiSigService extends AgentService {
       .get(identifier?.id);
 
     const name = `${meta.theme}:${meta.displayName}`;
+    const pendingGroupIdentifiersJoinRecord = await this.basicStorage.findById(
+      MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN
+    );
+    let processingTasks: {
+      notificationId: string;
+      notificationRoute: NotificationRoute;
+      notificationSaid: string;
+      meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">;
+    }[] = [];
+    if (pendingGroupIdentifiersJoinRecord) {
+      const { queuedTasks } = pendingGroupIdentifiersJoinRecord.content;
+
+      if (!Array.isArray(queuedTasks)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      processingTasks = queuedTasks;
+      const existingEntry = queuedTasks.find(
+        (item) => `${item.meta.theme}:${item.meta.displayName}` === name
+      );
+      if (existingEntry) {
+        if (!backgroundTask) {
+          throw new Error(
+            `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`
+          );
+        }
+      } else {
+        processingTasks.push({
+          notificationId,
+          notificationRoute,
+          notificationSaid,
+          meta,
+        });
+      }
+    } else {
+      processingTasks = [
+        { notificationId, notificationRoute, notificationSaid, meta },
+      ];
+    }
+
     const res = await this.joinMultisigKeri(exn, aid, name);
     const op = res.op;
     const multisigId = op.name.split(".")[1];
-    const isPending = !op.done;
-    const multisigDetail = await this.props.signifyClient
+    const isPending = true;
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN,
+        content: { queuedTasks: processingTasks },
+      })
+    );
+
+    const multisigDetail = (await this.props.signifyClient
       .identifiers()
-      .get(multisigId) as HabState & { icp_dt: string };
-    
-    await this.identifierStorage.createIdentifierMetadataRecord({
-      id: multisigId,
-      displayName: meta.displayName,
-      theme: meta.theme,
-      isPending,
-      multisigManageAid: identifier.id,
-      createdAt: new Date(multisigDetail.icp_dt)
-    });
+      .get(multisigId)) as HabState & { icp_dt: string };
+
+    await this.identifierStorage
+      .createIdentifierMetadataRecord({
+        id: multisigId,
+        displayName: meta.displayName,
+        theme: meta.theme,
+        isPending,
+        multisigManageAid: identifier.id,
+        createdAt: new Date(multisigDetail.icp_dt),
+      })
+      .catch((error) => {
+        if (/Record already exists with id/gi.test(error.message)) {
+          return;
+        } else {
+          throw error;
+        }
+      });
     identifier.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(
       identifier.id,
       identifier
     );
 
-    if (isPending) {
-      const pendingOperation = await this.operationPendingStorage.save({
+    const pendingOperation = await this.operationPendingStorage
+      .save({
         id: op.name,
         recordType: OperationPendingRecordType.Group,
+      })
+      .catch((error) => {
+        if (/Record already exists with id/gi.test(error.message)) {
+          return;
+        } else {
+          throw error;
+        }
       });
 
+    if (pendingOperation) {
       this.props.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
-    } else {
-      // Trigger the end role authorization if the operation is done
-      await this.endRoleAuthorization(multisigId);
     }
     await deleteNotificationRecordById(
       this.props.signifyClient,
@@ -411,6 +623,26 @@ class MultiSigService extends AgentService {
       notificationId,
       notificationRoute
     );
+
+    const updatedRecord = await this.basicStorage.findById(
+      MiscRecordId.GROUP_IDENTIFIERS_PENDING_JOIN
+    );
+
+    if (updatedRecord) {
+      const { queuedTasks } = updatedRecord.content;
+      if (!Array.isArray(queuedTasks)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      const index = queuedTasks.findIndex(
+        (item) => `${item.meta.theme}:${item.meta.displayName}` === name
+      );
+      if (index !== -1) {
+        queuedTasks.splice(index, 1);
+      }
+
+      await this.basicStorage.update(updatedRecord);
+    }
     return {
       identifier: multisigId,
       multisigManageAid: identifier.id,
@@ -476,7 +708,20 @@ class MultiSigService extends AgentService {
         states,
         rstates,
       });
-    const op = await icpResult.op();
+
+    const op = await icpResult.op().catch((error) => {
+      const [_, status, reason] = error.message.split(" - ");
+      if (/400/gi.test(status) && /already incepted/gi.test(reason)) {
+        throw new Error(
+          `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${prefix}`,
+          {
+            cause: error,
+          }
+        );
+      }
+      throw error;
+    });
+
     const serder = icpResult.serder;
     const sigs = icpResult.sigs;
     const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
