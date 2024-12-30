@@ -96,13 +96,6 @@ interface IdentifierRemovedEvent extends BaseEventEmitter {
   };
 }
 
-interface IdentifierStateChangedEvent extends BaseEventEmitter {
-  type: typeof EventTypes.IdentifierStateChanged;
-  payload: {
-    identifier: IdentifierShortDetails;
-  };
-}
-
 interface IdentifierAddedEvent extends BaseEventEmitter {
   type: typeof EventTypes.IdentifierAdded;
   payload: {
@@ -121,7 +114,6 @@ export type {
   NotificationRemovedEvent,
   ConnectionRemovedEvent,
   IdentifierRemovedEvent,
-  IdentifierStateChangedEvent,
   IdentifierAddedEvent,
 };
 export { EventTypes };

@@ -25,7 +25,6 @@ import {
   EventTypes,
   IdentifierAddedEvent,
   IdentifierRemovedEvent,
-  IdentifierStateChangedEvent,
   OperationAddedEvent,
 } from "../event.types";
 
@@ -80,12 +79,6 @@ class IdentifierService extends AgentService {
         this.deleteIdentifier(data.payload.id!);
       }
     );
-  }
-
-  onIdentifierStateChanged(
-    callback: (event: IdentifierStateChangedEvent) => void
-  ) {
-    this.props.eventEmitter.on(EventTypes.IdentifierStateChanged, callback);
   }
 
   onIdentifierAdded(callback: (event: IdentifierAddedEvent) => void) {
