@@ -150,7 +150,7 @@ interface AgentServicesProps {
   eventEmitter: CoreEventEmitter;
 }
 
-interface CreateIdentifierResult {
+interface CreateGroupIdentifierResult {
   identifier: string;
   multisigManageAid?: string;
   isPending?: boolean;
@@ -227,7 +227,7 @@ export type {
   OobiScan,
   KeriaNotificationMarker,
   AgentServicesProps,
-  CreateIdentifierResult,
+  CreateGroupIdentifierResult,
   IdentifierResult,
   AgentUrls,
   BranAndMnemonic,

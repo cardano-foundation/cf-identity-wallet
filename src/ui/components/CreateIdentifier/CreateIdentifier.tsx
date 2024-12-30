@@ -163,7 +163,7 @@ const CreateIdentifier = ({
     }
     metadata.groupMetadata = groupMetadata;
     try {
-      await Agent.agent.identifiers.createIdentifier(metadata);
+      const { identifier, createdAt } = await Agent.agent.identifiers.createIdentifier(metadata);
       if (multiSigGroup) {
         const connections =
           await Agent.agent.connections.getMultisigLinkedContacts(
@@ -176,7 +176,14 @@ const CreateIdentifier = ({
         dispatch(setMultiSigGroupCache(newMultiSigGroup));
       }
 
-      resetModal();
+      resetModal({
+        id: identifier,
+        isPending: true,
+        createdAtUTC: createdAt,
+        theme: selectedTheme,
+        displayName: identifierData.displayName,
+        groupMetadata,
+      });
 
       dispatch(
         setToastMsg(
