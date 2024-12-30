@@ -114,7 +114,8 @@ class Agent {
         this.operationPendingStorage,
         this.notificationStorage,
         this.connections,
-        this.identifierService
+        this.identifierService,
+        this.basicStorage
       );
     }
     return this.multiSigService;
@@ -357,6 +358,8 @@ class Agent {
       this.connections.resolvePendingConnections();
       this.identifiers.removeIdentifiersPendingDeletion();
       this.identifiers.resolvePendingIdentifier();
+      this.multiSigs.resolvePendingGroupIdentifier();
+      this.multiSigs.resolvePendingJoinGroupIdentifier();
     }
 
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({

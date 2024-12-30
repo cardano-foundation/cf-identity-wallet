@@ -29,6 +29,7 @@ const getKeyStoreSpy = jest
 const mockBasicStorageService = {
   save: jest.fn(),
   update: jest.fn(),
+  findById: jest.fn(),
 };
 
 const mockConnectionService = {
@@ -43,6 +44,11 @@ const mockIdentifierService = {
 };
 const mockCredentialService = {
   syncACDCs: jest.fn(),
+};
+
+const mockMultisigService = {
+  resolvePendingGroupIdentifier: jest.fn(),
+  resolvePendingJoinGroupIdentifier: jest.fn(),
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -64,6 +70,7 @@ describe("test cases of bootAndConnect function", () => {
     (agent as any).connectionService = mockConnectionService;
     (agent as any).identifierService = mockIdentifierService;
     (agent as any).credentialService = mockCredentialService;
+    (agent as any).multisigService = mockMultisigService;
 
     mockAgentUrls = {
       url: "http://127.0.0.1:3901",
@@ -167,6 +174,12 @@ describe("test cases of bootAndConnect function", () => {
       .fn()
       .mockReturnValue(undefined);
     mockIdentifierService.resolvePendingIdentifier = jest
+      .fn()
+      .mockReturnValue(undefined);
+    mockMultisigService.resolvePendingGroupIdentifier = jest
+      .fn()
+      .mockReturnValue(undefined);
+    mockMultisigService.resolvePendingJoinGroupIdentifier = jest
       .fn()
       .mockReturnValue(undefined);
 
@@ -287,6 +300,12 @@ describe("test cases of recoverKeriaAgent function", () => {
       .fn()
       .mockReturnValue(undefined);
     mockIdentifierService.resolvePendingIdentifier = jest
+      .fn()
+      .mockReturnValue(undefined);
+    mockMultisigService.resolvePendingGroupIdentifier = jest
+      .fn()
+      .mockReturnValue(undefined);
+    mockMultisigService.resolvePendingJoinGroupIdentifier = jest
       .fn()
       .mockReturnValue(undefined);
 
