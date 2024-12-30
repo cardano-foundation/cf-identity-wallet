@@ -48,7 +48,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const dispatch = useAppDispatch();
     const toastMsgs = useAppSelector(getToastMsgs);
     const pendingConnection = useAppSelector(getPendingConnection);
-    const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
+    const defaultIdentifierCache = Object.values(useAppSelector(getIdentifiersCache)).filter(
       (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
     );
     const connections = useAppSelector(getWalletConnectionsCache);

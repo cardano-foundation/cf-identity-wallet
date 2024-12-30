@@ -13,6 +13,7 @@ import {
   ACDCDetails
 } from "../../../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
+import { LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
@@ -34,6 +35,7 @@ import {
   MemberAcceptStatus,
   MultisigMember,
 } from "../../../../components/CredentialDetailModule/components";
+import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
 import { InfoCard } from "../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
@@ -49,8 +51,6 @@ import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
-import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
-import { LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
 
 const ANIMATION_DELAY = 2600;
 
@@ -100,7 +100,7 @@ const ReceiveCredential = ({
       Number(multisigMemberStatus.threshold);
 
   const identifier = useMemo(() => {
-    return identifiersData.find(item => item.id === credDetail?.identifierId)
+    return identifiersData[credDetail?.identifierId || ""]
   }, [credDetail?.identifierId, identifiersData]);
 
   const groupInitiatorAid = multisigMemberStatus.members[0] || "";
@@ -144,9 +144,7 @@ const ReceiveCredential = ({
           notificationDetails.a.d as string
         );
 
-      const identifier = identifiersData.find(
-        (identifier) => identifier.id === credential.identifierId
-      );
+      const identifier = identifiersData[credential.identifierId];
 
       // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
       const identifierType =

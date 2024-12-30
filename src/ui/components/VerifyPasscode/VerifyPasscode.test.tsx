@@ -60,7 +60,7 @@ const initialStateNoPassword = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
   },
 };
 

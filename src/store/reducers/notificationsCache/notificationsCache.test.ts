@@ -135,7 +135,7 @@ describe("Notifications cache", () => {
         bran: "",
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",

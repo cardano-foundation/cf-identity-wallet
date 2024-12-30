@@ -597,8 +597,8 @@ describe("Group Identifier details page", () => {
       bran: "bran",
     },
     identifiersCache: {
-      identifiers: [
-        {
+      identifiers: {
+        "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut" : {
           displayName: "GG",
           id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
           createdAtUTC: "2024-10-14T13:11:52.963Z",
@@ -606,7 +606,7 @@ describe("Group Identifier details page", () => {
           isPending: false,
           multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
         },
-      ],
+      },
       favourites: [],
     },
     connectionsCache: {
@@ -670,8 +670,8 @@ describe("Group Identifier details page", () => {
         bran: "bran",
       },
       identifiersCache: {
-        identifiers: [
-          {
+        identifiers: {
+          "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut" : {
             displayName: "GG",
             id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
             createdAtUTC: "2024-10-14T13:11:52.963Z",
@@ -679,7 +679,7 @@ describe("Group Identifier details page", () => {
             isPending: false,
             multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
           },
-        ],
+        },
         favourites: [],
       },
       connectionsCache: {
@@ -1038,7 +1038,9 @@ describe("Group Identifier details page", () => {
         bran: "bran",
       },
       identifiersCache: {
-        identifiers: [filteredIdentifierFix[2]],
+        identifiers: {
+          [filteredIdentifierFix[2].id]: filteredIdentifierFix[2]
+        },
         favourites: [],
       },
       connectionsCache: {

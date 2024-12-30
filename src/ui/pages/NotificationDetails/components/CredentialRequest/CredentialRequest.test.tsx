@@ -180,11 +180,13 @@ describe("Credential request: Multisig", () => {
       notifications: notificationsFix,
     },
     identifiersCache: {
-      identifiers: [{
-        ...multisignIdentifierFix[0],
-        multisigManageAid: "member-1",
-        id: "id"
-      }],
+      identifiers: {
+        "id": {
+          ...multisignIdentifierFix[0],
+          multisigManageAid: "member-1",
+          id: "id"
+        }
+      },
       favourites: [],
     },
     connectionsCache: {

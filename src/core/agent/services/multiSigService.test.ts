@@ -582,7 +582,7 @@ describe("Creation of multi-sig", () => {
       id: `group.${multisigIdentifier}`,
       recordType: OperationPendingRecordType.Group,
     });
-
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
     expect(
       await multiSigService.joinMultisig(
         "id",
@@ -647,6 +647,9 @@ describe("Creation of multi-sig", () => {
         groupCreated: true,
       },
     });
+
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
+
     await multiSigService.joinMultisig(
       "id",
       NotificationRoute.MultiSigIcp,
