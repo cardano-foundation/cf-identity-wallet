@@ -64,7 +64,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.GENERATE_SEED_PHRASE);
 
-    const { getByTestId, queryByText, getByText, findByText } = render(
+    const { getByTestId, queryByText, findByText } = render(
       <Provider store={storeMocked}>
         <IonReactMemoryRouter
           history={history}
@@ -473,5 +473,22 @@ describe("Verify Seed Phrase Page", () => {
       );
       expect(seedNumberElements.length).toBe(0);
     });
+  });
+  test("Show switch onboarding modal", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <IonReactRouter history={history}>
+          <VerifySeedPhrase />
+        </IonReactRouter>
+      </Provider>
+    );
+
+    fireEvent.click(getByTestId("tertiary-button-verify-seed-phrase"));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();
+    })
   });
 });
