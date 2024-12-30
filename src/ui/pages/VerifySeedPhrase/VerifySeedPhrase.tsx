@@ -1,5 +1,5 @@
 import { IonButton, IonIcon } from "@ionic/react";
-import { closeOutline } from "ionicons/icons";
+import { closeOutline, refreshOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
@@ -15,12 +15,12 @@ import { Alert as AlertFail } from "../../components/Alert";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
-import { SwitchOnboardingMode } from "../../components/SwitchOnboardingMode";
-import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnboardingMode.types";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import "./VerifySeedPhrase.scss";
 import { showError } from "../../utils/error";
+import { SwitchOnboardingModeModal } from "../../components/SwitchOnboardingModeModal";
+import { OnboardingMode } from "../../components/SwitchOnboardingModeModal/SwitchOnboardingModeModal.types";
 
 const VerifySeedPhrase = () => {
   const pageId = "verify-seed-phrase";
@@ -32,6 +32,7 @@ const VerifySeedPhrase = () => {
   const [clearAlertOpen, setClearAlertOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const ionRouter = useAppIonRouter();
+  const [showSwitchModeModal, setSwitchModeModal] = useState(false);
 
   const originalSeedPhrase = useMemo(
     () => seedPhraseStore.seedPhrase.split(" "),
@@ -211,7 +212,6 @@ const VerifySeedPhrase = () => {
               {i18n.t("verifyseedphrase.onboarding.button.clear")}
             </IonButton>
           )}
-          <SwitchOnboardingMode mode={OnboardingMode.Recovery} />
         </div>
         <PageFooter
           pageId={pageId}
@@ -222,6 +222,9 @@ const VerifySeedPhrase = () => {
           primaryButtonDisabled={
             !(originalSeedPhrase.length == seedPhraseSelected.length)
           }
+          tertiaryButtonText={`${i18n.t("generateseedphrase.onboarding.button.switch")}`}
+          tertiaryButtonAction={() => setSwitchModeModal(true)}
+          tertiaryButtonIcon={refreshOutline}
         />
       </div>
       <AlertFail
@@ -249,6 +252,7 @@ const VerifySeedPhrase = () => {
         actionCancel={() => setClearAlertOpen(false)}
         actionDismiss={() => setClearAlertOpen(false)}
       />
+      <SwitchOnboardingModeModal mode={OnboardingMode.Recovery} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
     </ScrollablePageLayout>
   );
 };

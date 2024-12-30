@@ -74,7 +74,13 @@ export const deleteNotificationRecordById = async (
   route: NotificationRoute
 ): Promise<void> => {
   if (!/^\/local/.test(route)) {
-    await client.notifications().mark(id);
+    await client.notifications().mark(id)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (!/404/gi.test(status)) {
+          throw error;
+        }
+      });
   }
   await notificationStorage.deleteById(id);
 };

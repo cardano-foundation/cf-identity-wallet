@@ -407,6 +407,8 @@ describe("Signify notification service of agent", () => {
 
   test("should call delete keri notification when trigger deleteNotificationRecordById", async () => {
     const id = "uuid";
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
+
     await keriaNotificationService.deleteNotificationRecordById(
       id,
       NotificationRoute.ExnIpexAgree
@@ -421,6 +423,8 @@ describe("Signify notification service of agent", () => {
     const notificationStorage = new NotificationStorage(
       agentServicesProps.signifyClient
     );
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
+
     notificationStorage.deleteById = jest.fn();
     await deleteNotificationRecordById(
       agentServicesProps.signifyClient,
@@ -721,6 +725,7 @@ describe("Signify notification service of agent", () => {
       updatedAt: new Date(),
     };
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([notification]);
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
@@ -793,6 +798,7 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue({
         id: "id",
       });
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await keriaNotificationService.processNotification(
       notificationIpexGrantProp
@@ -2515,6 +2521,7 @@ describe("Long running operation tracker", () => {
         updatedAt: new Date(),
       },
     ]);
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await keriaNotificationService.processOperation(operationRecord);
 
@@ -2702,6 +2709,7 @@ describe("Long running operation tracker", () => {
         updatedAt: new Date(),
       },
     ]);
+    markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await keriaNotificationService.processOperation(operationRecord);
 

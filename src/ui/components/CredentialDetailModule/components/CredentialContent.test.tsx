@@ -250,7 +250,7 @@ describe("Creds content", () => {
 
     await waitFor(() => {
       expect(getByTestId("credential-attribute-details-modal")).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.fullaccess)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.title)).toBeVisible();
     });
   });
 });
