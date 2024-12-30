@@ -21,6 +21,7 @@ const queryKeyStateMock = jest.fn();
 let credentialListMock = jest.fn();
 let getCredentialMock = jest.fn();
 const revokeCredentialMock = jest.fn();
+const deleteCredentialMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -71,6 +72,7 @@ const signifyClient = jest.mocked({
     get: getCredentialMock,
     list: credentialListMock,
     revoke: revokeCredentialMock,
+    delete: deleteCredentialMock,
   }),
   exchanges: () => ({
     get: jest.fn(),
@@ -205,42 +207,6 @@ describe("Credential service of agent", () => {
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(credId, {
       isArchived: true,
     });
-  });
-
-  test("can delete an archived credential (cred and metadata record)", async () => {
-    credentialStorage.getCredentialMetadata = jest
-      .fn()
-      .mockResolvedValue(archivedMetadataRecord);
-    const credId = "credId1";
-    await credentialService.deleteCredential(credId);
-    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(credId, {
-      pendingDeletion: true,
-    });
-  });
-
-  test("cannot delete a non-archived credential", async () => {
-    credentialStorage.getCredentialMetadata = jest
-      .fn()
-      .mockResolvedValue(credentialMetadataRecordA);
-    const credId = "credId1";
-    await expect(
-      credentialService.deleteCredential(credId)
-    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_ARCHIVED);
-    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
-    expect(credentialStorage.deleteCredentialMetadata).not.toBeCalled();
-  });
-
-  test("cannot delete a credential without a metadata record", async () => {
-    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    const credId = "credId1";
-    await expect(
-      credentialService.deleteCredential(credId)
-    ).rejects.toThrowError(
-      CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-    );
-    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
-    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
   });
 
   test("can restore an archived credential", async () => {
@@ -606,98 +572,62 @@ describe("Credential service of agent", () => {
     });
   });
 
-  test("should revoke the credential and delete stale local credential if pendingDeletion is true", async () => {
+  test("should delele the credential and delete credential", async () => {
     const mockMetadata = {
       identifierId: "test-identifier-id",
       pendingDeletion: true,
       id: "test-credential-id",
-    };
+    }; 
 
     credentialService.deleteStaleLocalCredential = jest.fn()
+    deleteCredentialMock.mockResolvedValueOnce(null);
 
-    const mockIdentifier = { name: "test-identifier-name" };
+    await credentialService.deleteCredential("test-credential-id");
 
-    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
-    (identifiersGetMock).mockResolvedValueOnce(mockIdentifier);
-    (revokeCredentialMock).mockResolvedValueOnce(null);
-
-    await credentialService.deleteCredentialOnKeria("test-credential-id");
-
-    expect(identifiersGetMock).toHaveBeenCalledWith(mockMetadata.identifierId);
-    expect(revokeCredentialMock).toHaveBeenCalledWith(
-      mockIdentifier.name,
+    expect(deleteCredentialMock).toHaveBeenCalledWith(
       mockMetadata.id,
     );
-    expect(credentialService.deleteStaleLocalCredential).toHaveBeenCalledWith("test-credential-id");
+    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith("test-credential-id");
   });
 
-  test("should delete stale local credential if revoke throws a 404 error", async () => {
+  test("should delete local credential if delete from signify throws a 404 error", async () => {
     const mockMetadata = {
       identifierId: "test-identifier-id",
       pendingDeletion: true,
       id: "test-credential-id",
     };
 
-    const mockIdentifier = { name: "test-identifier-name" };
-
-    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
-    (identifiersGetMock).mockResolvedValueOnce(mockIdentifier);
-    (revokeCredentialMock).mockRejectedValueOnce(
+    (deleteCredentialMock).mockRejectedValueOnce(
       new Error("Request failed - 404 Not Found"),
     );
     credentialService.deleteStaleLocalCredential = jest.fn()
 
-    await credentialService.deleteCredentialOnKeria("test-credential-id");
+    await credentialService.deleteCredential("test-credential-id");
 
-    expect(identifiersGetMock).toHaveBeenCalledWith(mockMetadata.identifierId);
-    expect(revokeCredentialMock).toHaveBeenCalledWith(
-      mockIdentifier.name,
+    expect(deleteCredentialMock).toHaveBeenCalledWith(
       mockMetadata.id,
     );
-    expect(credentialService.deleteStaleLocalCredential).toHaveBeenCalledWith("test-credential-id");
+    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith("test-credential-id");
   });
 
-  test("should throw an error if revoke throws a non-404 error", async () => {
+  test("should throw an error if delete from signify throws a non-404 error", async () => {
     const mockMetadata = {
       identifierId: "test-identifier-id",
       pendingDeletion: true,
       id: "test-credential-id",
     };
-    credentialService.deleteStaleLocalCredential = jest.fn()
-    const mockIdentifier = { name: "test-identifier-name" };
 
-    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
-    (identifiersGetMock).mockResolvedValueOnce(mockIdentifier);
-    (revokeCredentialMock).mockRejectedValueOnce(
+    (deleteCredentialMock).mockRejectedValueOnce(
       new Error("Request failed - 500 Internal Server Error"),
     );
 
-    await expect(credentialService.deleteCredentialOnKeria("test-credential-id")).rejects.toThrow(
+    await expect(credentialService.deleteCredential("test-credential-id")).rejects.toThrow(
       "Request failed - 500 Internal Server Error",
     );
 
-    expect(identifiersGetMock).toHaveBeenCalledWith(mockMetadata.identifierId);
-    expect(revokeCredentialMock).toHaveBeenCalledWith(
-      mockIdentifier.name,
+    expect(deleteCredentialMock).toHaveBeenCalledWith(
       mockMetadata.id,
     );
-    expect(credentialService.deleteStaleLocalCredential).not.toHaveBeenCalled();
-  });
-
-  test("should do nothing if pendingDeletion is false", async () => {
-    const mockMetadata = {
-      identifierId: "test-identifier-id",
-      pendingDeletion: false,
-      id: "test-credential-id",
-    };
-
-    (credentialStorage.getCredentialMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
-
-    await credentialService.deleteCredentialOnKeria("test-credential-id");
-
-    expect(revokeCredentialMock).not.toHaveBeenCalled();
-    
-    credentialService.deleteStaleLocalCredential = jest.fn()
-    expect(credentialService.deleteStaleLocalCredential).not.toHaveBeenCalled();
+    expect(credentialStorage.deleteCredentialMetadata).not.toHaveBeenCalled();
   });
 });

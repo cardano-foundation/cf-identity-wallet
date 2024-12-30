@@ -47,7 +47,7 @@ class CredentialService extends AgentService {
     this.props.eventEmitter.on(
       EventTypes.CredentialRemovedEvent,
       (data: CredentialRemovedEvent) =>
-        this.deleteCredentialOnKeria(data.payload.credentialId!)
+        this.deleteCredential(data.payload.credentialId!)
     );
   }
 
@@ -132,44 +132,34 @@ class CredentialService extends AgentService {
     });
   }
 
+  async deleteStaleLocalCredential(id: string): Promise<void> {
+    await this.credentialStorage.deleteCredentialMetadata(id);
+  }
+
   async deleteCredential(id: string): Promise<void> {
+
+    await this.props.signifyClient
+      .credentials()
+      .delete(id)
+      .catch(async (error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return  await this.credentialStorage.deleteCredentialMetadata(id)
+        } else {
+          throw error;
+        }
+      });
+
+    await this.credentialStorage.deleteCredentialMetadata(id)
+  }
+
+  async markCredentialPendingDelete(id: string) {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
 
     await this.credentialStorage.updateCredentialMetadata(id, {
       pendingDeletion: true,
     });
-  }
-
-  async deleteStaleLocalCredential(id: string): Promise<void> {
-    await this.credentialStorage.deleteCredentialMetadata(id);
-  }
-
-  async deleteCredentialOnKeria(id: string): Promise<void> {
-    const metadata = await this.getMetadataById(id);
-    const identifier = await this.props.signifyClient
-      .identifiers()
-      .get(metadata.identifierId);
-
-    if(metadata.pendingDeletion == true){
-      await this.props.signifyClient
-        .credentials()
-        .revoke(identifier.name, metadata.id)
-        .catch(async (error) => {
-          const status = error.message.split(" - ")[1];
-          if (/404/gi.test(status)) {
-            return  await this.deleteStaleLocalCredential(id)
-          } else {
-            throw error;
-          }
-        });
-
-      await this.deleteStaleLocalCredential(id)
-    }
-  }
-
-  async markCredentialPendingDelete(id: string) {
-    await this.deleteCredential(id);
 
     this.props.eventEmitter.emit<CredentialRemovedEvent>({
       type: EventTypes.CredentialRemovedEvent,
@@ -177,6 +167,15 @@ class CredentialService extends AgentService {
         credentialId: id,
       },
     })
+  }
+
+  async removeCredentialsPendingDeletion(id: string) {
+    const metadata = await this.getMetadataById(id);
+    this.validArchivedCredential(metadata);
+
+    await this.credentialStorage.updateCredentialMetadata(id, {
+      pendingDeletion: false,
+    });
   }
 
   async restoreCredential(id: string): Promise<void> {

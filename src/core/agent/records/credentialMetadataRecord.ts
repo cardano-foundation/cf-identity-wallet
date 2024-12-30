@@ -22,7 +22,6 @@ class CredentialMetadataRecord extends BaseRecord {
     if (props) {
       this.id = props.id;
       this.isArchived = props.isArchived ?? false;
-      this.pendingDeletion = props.pendingDeletion ?? false;
       this.createdAt = props.createdAt ?? new Date();
       this.issuanceDate = props.issuanceDate;
       this.credentialType = props.credentialType;
