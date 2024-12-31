@@ -43,8 +43,6 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
-  static readonly IDENTIFIER_NAME_TAKEN = // @TODO - foconnor: Can be removed after UI PR
-    "Identifier name has already been used on KERIA";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
   static readonly NO_WITNESSES_AVAILABLE =

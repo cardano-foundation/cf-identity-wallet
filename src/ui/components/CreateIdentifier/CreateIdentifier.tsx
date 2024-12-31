@@ -196,10 +196,6 @@ const CreateIdentifier = ({
       );
     } catch (e) {
       const errorMessage = (e as Error).message;
-      if (errorMessage.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
-        setDuplicateName(true);
-        return;
-      }
 
       if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
         dispatch(showNoWitnessAlert(true));
