@@ -469,10 +469,10 @@ class IdentifierService extends AgentService {
     }
   }
 
-  async syncKeriaIdentifiers() {
+  async syncKeriaIdentifiers(start?: number, end?: number) {
     const { aids: signifyIdentifiers } = await this.props.signifyClient
       .identifiers()
-      .list();
+      .list(start, end);
     const storageIdentifiers =
       await this.identifierStorage.getKeriIdentifiersMetadata();
     const unSyncedData = signifyIdentifiers.filter(
