@@ -21,7 +21,7 @@ const queryKeyStateMock = jest.fn();
 let credentialListMock = jest.fn();
 let getCredentialMock = jest.fn();
 const revokeCredentialMock = jest.fn();
-const deleteCredentialMock = jest.fn();
+let deleteCredentialMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -103,6 +103,7 @@ const credentialStorage = jest.mocked({
   getCredentialMetadataByConnectionId: jest.fn(),
   saveCredentialMetadataRecord: jest.fn(),
   updateCredentialMetadata: jest.fn(),
+  getCredentialsPendingDeletion: jest.fn(),
 });
 
 const eventEmitter = new CoreEventEmitter();
@@ -629,5 +630,28 @@ describe("Credential service of agent", () => {
       mockMetadata.id,
     );
     expect(credentialStorage.deleteCredentialMetadata).not.toHaveBeenCalled();
+  });
+
+  test("Should retrieve pending deletions and delete each by ID", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    credentialStorage.deleteCredentialMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+    deleteCredentialMock = jest
+      .fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null);
+    credentialService.deleteCredential= jest
+      .fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null)
+    credentialStorage.getCredentialsPendingDeletion.mockResolvedValueOnce([
+      { id: "id1" },
+      { id: "id2" },
+    ]);
+    await credentialService.removeCredentialsPendingDeletion();
+
+    expect(credentialService.deleteCredential).toHaveBeenCalledTimes(2)
   });
 });

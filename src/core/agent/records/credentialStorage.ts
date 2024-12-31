@@ -73,6 +73,15 @@ class CredentialStorage {
       CredentialMetadataRecord
     );
   }
+
+  async getCredentialsPendingDeletion(): Promise<CredentialMetadataRecord[]> {
+    return this.storageService.findAllByQuery(
+      {
+        pendingDeletion: true,
+      },
+      CredentialMetadataRecord
+    );
+  }
 }
 
 export { CredentialStorage };

@@ -169,13 +169,13 @@ class CredentialService extends AgentService {
     })
   }
 
-  async removeCredentialsPendingDeletion(id: string) {
-    const metadata = await this.getMetadataById(id);
-    this.validArchivedCredential(metadata);
+  async removeCredentialsPendingDeletion() {
+    const pendingCredentialDeletions =
+    await this.credentialStorage.getCredentialsPendingDeletion();
 
-    await this.credentialStorage.updateCredentialMetadata(id, {
-      pendingDeletion: false,
-    });
+    for (const credential of pendingCredentialDeletions) {
+      await this.deleteCredential(credential.id);
+    }
   }
 
   async restoreCredential(id: string): Promise<void> {

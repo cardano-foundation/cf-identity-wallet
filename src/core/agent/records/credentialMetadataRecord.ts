@@ -5,7 +5,7 @@ import { IdentifierType } from "../services/identifier.types";
 
 class CredentialMetadataRecord extends BaseRecord {
   isArchived?: boolean;
-  pendingDeletion?: boolean;
+  pendingDeletion = false;
   issuanceDate!: string;
   credentialType!: string;
   status!: CredentialStatus;
