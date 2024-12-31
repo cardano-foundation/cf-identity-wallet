@@ -559,6 +559,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
             await Agent.agent.syncWithKeria();
           }
         }
+        if (!Agent.isOnline) {
+          Agent.agent.markAgentStatus(true);
+        }
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
