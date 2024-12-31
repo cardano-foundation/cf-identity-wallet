@@ -43,6 +43,7 @@ const mockIdentifierService = {
 };
 const mockCredentialService = {
   syncACDCs: jest.fn(),
+  removeCredentialsPendingDeletion: jest.fn(),
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -169,7 +170,10 @@ describe("test cases of bootAndConnect function", () => {
     mockIdentifierService.resolvePendingIdentifier = jest
       .fn()
       .mockReturnValue(undefined);
-
+    mockCredentialService.removeCredentialsPendingDeletion = jest
+      .fn()
+      .mockReturnValue(undefined);
+    
     await agent.bootAndConnect(mockAgentUrls);
 
     expect(signifyReady).toHaveBeenCalled();
