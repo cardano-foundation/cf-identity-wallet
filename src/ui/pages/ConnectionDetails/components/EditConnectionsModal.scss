@@ -1,6 +1,6 @@
 .edit-connections-modal {
   .scrollable-page-layout {
-    background: var(--ion-color-light-grey);
+    background: var(--ion-color-neutral-200);
   }
 
   .page-header {
@@ -27,7 +27,7 @@
 
   .action-button-label {
     & > p {
-      color: var(--ion-color-action-blue) !important;
+      color: var(--ion-color-primary-700) !important;
     }
   }
 
@@ -55,7 +55,7 @@
     margin-bottom: 2.94rem;
     padding: 1.25rem;
     border-radius: 1rem;
-    background-color: var(--ion-color-white);
+    background-color: var(--ion-color-neutral-100);
 
     .connection-details-delete-note {
       position: absolute;
@@ -66,6 +66,7 @@
         width: 3rem;
         height: 3rem;
         border-radius: 1.875rem;
+        --ion-color-danger-contrast: var(--ion-color-error-100);
 
         &::part(native) {
           padding: 0;
@@ -95,7 +96,7 @@
     ion-input,
     ion-textarea {
       border-radius: 0.5rem;
-      border: 1px solid var(--ion-color-dark-grey);
+      border: 1px solid var(--ion-color-neutral-400);
       margin-top: 0.5rem;
       min-height: 1.25rem;
 
@@ -139,6 +140,10 @@
         padding: 0.875rem 0.84375rem 1rem 1.03125rem;
       }
 
+      &.add-note-button {
+        --background: var(--ion-color-primary-600);
+      }
+
       ion-icon {
         width: 1.5rem;
         height: 1.5rem;
@@ -155,7 +160,7 @@
     }
 
     .action-button {
-      background: var(--ion-color-white);
+      background: var(--ion-color-neutral-100);
     }
 
     .close-button-label,

@@ -1,5 +1,4 @@
 .verify-recovery-seed-phrase-module {
-  --background: var(--ion-color-light);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -15,7 +14,7 @@
   }
 
   .seed-phrase-module:nth-of-type(1) {
-    background: var(--ion-color-light-grey);
+    background: var(--ion-color-neutral-100);
   }
 
   .page-title {

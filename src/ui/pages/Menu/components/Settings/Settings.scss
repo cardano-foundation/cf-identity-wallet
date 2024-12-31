@@ -1,6 +1,7 @@
 .settings-content,
 .nested-content {
   margin-top: 2rem;
+  --ion-item-background: var(--ion-color-neutral-100);
 
   .settings-section-title {
     margin: 0.625rem 1.25rem;
@@ -13,7 +14,7 @@
   ion-card {
     margin: 0;
     display: flex;
-    background: var(--ion-color-white);
+    background: var(--ion-color-neutral-100);
     border-radius: 1rem;
     flex-direction: column;
     justify-content: space-evenly;
@@ -42,7 +43,7 @@
         }
 
         &:last-child {
-          color: var(--ion-color-dark-grey);
+          color: var(--ion-color-neutral-400);
         }
       }
 
@@ -68,7 +69,7 @@
           --track-background-checked: var(--ion-color-primary-700);
 
           &.md {
-            --handle-background-checked: var(--ion-color-white);
+            --handle-background-checked: var(--ion-color-neutral-100);
           }
         }
       }

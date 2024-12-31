@@ -36,7 +36,7 @@
       width: 2.75rem;
       height: 2.75rem;
       border-radius: 1.5rem;
-      background: var(--ion-color-light-grey);
+      background: var(--ion-color-neutral-300);
 
       &:not(:first-child) {
         margin-left: 0.5rem;
@@ -52,8 +52,7 @@
       font-size: 1rem;
       font-weight: 700;
       --opacity: 1;
-      color: var(--ion-color-action-blue) !important;
-      background: var(--ion-color-light-grey);
+      color: var(--ion-color-primary-700) !important;
 
       &::part(native) {
         padding: 0;
@@ -109,8 +108,7 @@
         font-size: 1rem;
         font-weight: 700;
         --opacity: 1;
-        color: var(--ion-color-action-blue) !important;
-        background: var(--ion-color-light-grey);
+        color: var(--ion-color-primary-700) !important;
 
         &::part(native) {
           padding: 0;

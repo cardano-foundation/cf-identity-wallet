@@ -35,7 +35,7 @@ ion-grid.qr-code-scanner {
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
-        color: var(--ion-color-light);
+        color: var(--ion-color-neutral-100);
         font-weight: 500;
       }
     }
@@ -50,7 +50,7 @@ ion-grid.qr-code-scanner {
       display: block;
       text-align: center;
       width: 100%;
-      color: var(--ion-color-light);
+      color: var(--ion-color-neutral-100);
       padding-inline: 20vw;
     }
 
@@ -101,7 +101,7 @@ ion-grid.qr-code-scanner {
 
       .action-button-label {
         & > p {
-          color: var(--ion-color-action-blue);
+          color: var(--ion-color-primary-700);
         }
       }
     }

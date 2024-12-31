@@ -23,6 +23,7 @@ import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./Cr
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
+import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
 
 const CredentialContent = ({
   cardData,
@@ -37,6 +38,7 @@ const CredentialContent = ({
   const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
 
   const identifier = identifiers[cardData.identifierId];
+  const theme = IDENTIFIER_BG_MAPPING[identifier.theme] as string;
 
   const openConnection = () => {
     if(connectionShortDetails) {
@@ -171,7 +173,7 @@ const CredentialContent = ({
       >
         <CardDetailsItem
           info={identifier?.displayName || ""}
-          customIcon={KeriLogo}
+          customIcon={theme}
           className="related-identifier"
           testId="related-identifier-name"
         />

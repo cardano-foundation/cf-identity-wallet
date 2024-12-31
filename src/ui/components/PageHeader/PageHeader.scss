@@ -47,7 +47,7 @@
         width: 2.75rem;
         height: 2.75rem;
         border-radius: 1.5rem;
-        background: var(--ion-color-light-grey);
+        background: var(--ion-color-neutral-200);
       }
 
       &.close-button-label,
@@ -79,7 +79,7 @@
 
       &[disabled],
       &.button-disabled > p {
-        color: var(--ion-color-dark-grey) !important;
+        color: var(--ion-color-neutral-300) !important;
         opacity: 1;
       }
     }

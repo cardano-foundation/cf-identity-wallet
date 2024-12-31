@@ -79,7 +79,7 @@ ion-modal.create-group-identifier-modal {
     text-align: center;
 
     #react-qrcode-logo {
-      background-color: var(--ion-color-white);
+      background-color: var(--ion-color-neutral-100);
       box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary-rgb), 0.2);
     }
 
@@ -88,8 +88,8 @@ ion-modal.create-group-identifier-modal {
       margin: 0 auto;
 
       &::part(native) {
-        background-color: var(--ion-color-white);
-        border-color: var(--ion-color-light);
+        background-color: var(--ion-color-neutral-100);
+        border-color: var(--ion-color-neutral-100);
       }
 
       ion-icon {
@@ -141,7 +141,7 @@ ion-modal.create-group-identifier-modal {
   }
 
   ion-toolbar {
-    --background: var(--ion-color-light);
+    --background: var(--ion-color-neutral-200);
 
     &.page-footer {
       z-index: 1000;
@@ -211,7 +211,7 @@ ion-modal.create-group-identifier-modal {
 
         &::part(native) {
           padding: 0;
-          background: var(--ion-color-light);
+          background: var(--ion-color-neutral-200);
         }
 
         &:last-of-type {
@@ -274,7 +274,7 @@ ion-modal.create-group-identifier-modal {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        border: 1px solid var(--ion-color-dark-grey);
+        border: 1px solid var(--ion-color-neutral-400);
         border-radius: 0.5rem;
         height: 3.125rem;
         padding-left: 1.25rem;
@@ -295,7 +295,7 @@ ion-modal.create-group-identifier-modal {
 
           &::part(native) {
             color: var(--ion-color-neutral-700);
-            --background-activated: var(--ion-color-medium-grey);
+            --background-activated: var(--ion-color-neutral-100);
           }
 
           ion-icon {
@@ -304,11 +304,11 @@ ion-modal.create-group-identifier-modal {
         }
 
         .decrease-threshold-button::part(native) {
-          background: var(--ion-color-light);
-          border: 1px solid var(--ion-color-dark-grey);
+          background: var(--ion-color-neutral-100);
+          border: 1px solid var(--ion-color-neutral-400);
         }
         .increase-threshold-button::part(native) {
-          background: var(--ion-color-dark-grey);
+          background: var(--ion-color-neutral-400);
         }
       }
     }
@@ -316,7 +316,7 @@ ion-modal.create-group-identifier-modal {
     ion-card {
       margin: 0;
       display: flex;
-      background: var(--ion-color-white);
+      background: var(--ion-color-neutral-100);
       border-radius: 1rem;
       flex-direction: column;
       justify-content: space-evenly;

@@ -40,8 +40,6 @@ ion-modal.create-identifier-modal {
   }
 
   ion-toolbar {
-    --background: var(--ion-color-light);
-
     &.page-footer {
       z-index: 1000;
       bottom: calc(-100vh + 5rem);
@@ -135,9 +133,9 @@ ion-modal.create-identifier-modal {
 
         ion-card {
           &.type-input {
-            --background: var(--ion-color-light);
+            --background: var(--ion-color-neutral-100);
             --inner-border-width: 0;
-            border: 1px solid var(--ion-color-dark-grey);
+            border: 1px solid var(--ion-color-neutral-400);
             color: var(--ion-color-neutral-700);
             border-radius: 0.5rem;
             height: 3.125rem;
@@ -145,7 +143,7 @@ ion-modal.create-identifier-modal {
 
           &.selected-type {
             border: 1px solid var(--ion-color-neutral-700) !important;
-            background: var(--ion-color-medium-grey);
+            background: var(--ion-color-neutral-300);
           }
 
           &::part(native) {

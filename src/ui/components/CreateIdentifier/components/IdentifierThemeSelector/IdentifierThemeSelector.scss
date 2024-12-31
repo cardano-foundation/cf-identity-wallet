@@ -15,8 +15,8 @@
       padding: 0.5rem;
       margin: 0;
       border-radius: 0.5rem;
-      border: 1px solid var(--ion-color-dark-grey);
-      background: var(--ion-color-light);
+      border: 1px solid var(--ion-color-neutral-400);
+      background: var(--ion-color-neutral-100);
 
       &:first-of-type {
         margin-right: 0.75rem;
@@ -24,16 +24,16 @@
 
       &.selected-theme {
         border: 1px solid var(--ion-color-neutral-700) !important;
-        background: var(--ion-color-medium-grey);
+        background: var(--ion-color-neutral-300);
       }
 
       .theme-input {
         margin: 0;
         height: 100%;
         border-radius: 0.5rem;
-        --background: var(--ion-color-light);
+        --background: var(--ion-color-neutral-100);
         --inner-border-width: 0;
-        border: 1px solid var(--ion-color-dark-grey);
+        border: 1px solid var(--ion-color-neutral-400);
         color: var(--ion-color-neutral-700);
         box-shadow: none;
 
@@ -63,8 +63,8 @@
         }
 
         .unselected-theme-circle {
-          background: var(--ion-color-light);
-          border: 1px solid var(--ion-color-dark-grey);
+          background: var(--ion-color-neutral-100);
+          border: 1px solid var(--ion-color-neutral-300);
         }
 
         &::part(native) {

@@ -17,13 +17,14 @@
       }
   
       p {
-        color: var(--ion-color-action-blue);
+        color: var(--ion-color-primary-700);
         font-size: 1rem;
         line-height: 1.375rem;
       }
     }
   
     .accordion-group {
+      --ion-background-color: var(--ion-color-neutral-100);
       margin-bottom: 0;
   
       .accordion {
@@ -120,7 +121,7 @@
   
       p,
       ion-icon {
-        color: var(--ion-color-action-blue);
+        color: var(--ion-color-primary-700);
       }
     }
   

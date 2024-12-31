@@ -2,13 +2,13 @@
   background: transparent;
 
   &:not(:last-child) {
-    border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    border-bottom: 1px solid var(--ion-color-neutral-300);
   }
 
   ion-item.card-item {
     --inner-padding-end: 0;
     --padding-start: 0;
-    --background: var(--ion-color-light);
+    --background: transparent;
     --title-font-size: 1rem;
     --logo-border-radius: 0.25rem;
     --display-fallback: flex;

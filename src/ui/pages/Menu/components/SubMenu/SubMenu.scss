@@ -1,10 +1,6 @@
 .sub-menu {
   display: flex !important;
 
-  &:not(.edit-profile) {
-    background: var(--ion-color-light-grey);
-  }
-
   &.show {
     transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;
@@ -22,10 +18,10 @@
   }
 
   ion-toolbar ion-buttons ion-button.button-has-icon-only {
-    --background-activated: var(--ion-color-light);
-    --background-focused: var(--ion-color-light);
-    --background-hover: var(--ion-color-light);
-    background: var(--ion-color-light);
+    --background-activated: var(--ion-color-neutral-300);
+    --background-focused: var(--ion-color-neutral-300);
+    --background-hover: var(--ion-color-neutral-300);
+    background: var(--ion-color-neutral-300);
   }
 
   &.connections .cards-placeholder-container {
@@ -41,7 +37,7 @@
   }
 
   &.connect-wallet {
-    background: var(--ion-color-light);
+    background: var(--ion-color-neutral-200);
 
     ion-header ion-toolbar {
       --background: transparent;
@@ -52,19 +48,19 @@
     }
 
     ion-toolbar ion-buttons ion-button.close-button {
-      --background-activated: var(--ion-color-light-grey);
-      --background-focused: var(--ion-color-light-grey);
-      --background-hover: var(--ion-color-light-grey);
-      background: var(--ion-color-light-grey);
+      --background-activated: var(--ion-color-neutral-300);
+      --background-focused: var(--ion-color-neutral-300);
+      --background-hover: var(--ion-color-neutral-300);
+      background: var(--ion-color-neutral-300);
     }
 
     ion-toolbar ion-buttons ion-button.connect-wallet-button {
       --padding-start: 0.5rem;
       --padding-end: 0.5rem;
-      --background-activated: var(--ion-color-light-grey);
-      --background-focused: var(--ion-color-light-grey);
-      --background-hover: var(--ion-color-light-grey);
-      background: var(--ion-color-light-grey);
+      --background-activated: var(--ion-color-neutral-300);
+      --background-focused: var(--ion-color-neutral-300);
+      --background-hover: var(--ion-color-neutral-300);
+      background: var(--ion-color-neutral-300);
     }
   }
 

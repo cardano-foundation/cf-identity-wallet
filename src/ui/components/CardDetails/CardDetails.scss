@@ -1,5 +1,5 @@
 .card-details {
-  background: var(--ion-color-light-grey);
+  background: var(--ion-color-neutral-200);
 
   .spinner-container {
     display: flex;
@@ -34,14 +34,14 @@
   }
 
   ion-header ion-toolbar {
-    --background: var(--ion-color-light-grey);
+    --background: var(--ion-color-neutral-200);
 
     ion-button:not(.close-button-label),
     ion-button.md:not(.close-button-label) {
       width: 2.75rem;
       height: 2.75rem;
       border-radius: 1.5rem;
-      background: var(--ion-color-light);
+      background: var(--ion-color-neutral-100);
 
       &:not(:first-child) {
         margin-left: 0.5rem;

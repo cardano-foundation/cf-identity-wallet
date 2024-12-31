@@ -52,7 +52,7 @@
   .page-indicator,
   .page-indicator-active {
     margin: 0 0.25rem;
-    background: var(--ion-color-dark-grey);
+    background: var(--ion-color-neutral-400);
     opacity: 0.5;
     width: 1rem;
     height: 1rem;
@@ -63,7 +63,7 @@
     right: 1.26rem;
   }
   .play-indicator {
-    color: var(--ion-color-dark-grey);
+    color: var(--ion-color-neutral-400);
     width: 2.0625rem;
     height: 2.0625rem;
     transition: transform 0.3s ease-out;

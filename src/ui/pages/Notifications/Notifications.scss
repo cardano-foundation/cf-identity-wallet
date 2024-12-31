@@ -15,7 +15,7 @@
 
   .notification-empty {
     text-align: center;
-    color: rgba(var(--ion-color-secondary-rgb), 0.5);
+    color: var(--ion-color-neutral-500);
     font-size: 0.875rem;
     line-height: 1.25rem;
     margin: 1rem 0;
@@ -65,13 +65,10 @@
         height: 4.5rem;
         display: flex;
         justify-content: space-between;
-        background: var(--ion-color-light);
+        background: transparent;
 
         &.unread {
-          background: var(
-            --primary-gradient-light,
-            var(--ion-color-secondary-gradient-light)
-          );
+          background: var(--ion-color-primary-200);
         }
 
         &::part(native) {
@@ -92,7 +89,7 @@
             height: 0.85rem;
             border-radius: 0.625rem;
             padding: 0.25rem;
-            background-color: var(--ion-color-light-grey);
+            background-color: var(--ion-color-neutral-300);
           }
         }
 

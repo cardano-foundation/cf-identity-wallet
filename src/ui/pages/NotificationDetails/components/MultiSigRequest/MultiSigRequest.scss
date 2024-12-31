@@ -6,7 +6,7 @@
 
   ion-header ion-toolbar {
     margin-top: 0.625rem;
-    --background: var(--ion-color-light);
+    --background: var(--ion-color-neutral-200);
   }
 
   h2 {
@@ -27,7 +27,7 @@
     ion-card {
       margin: 0;
       display: flex;
-      background: var(--ion-color-white);
+      background: var(--ion-color-neutral-100);
       border-radius: 1rem;
       flex-direction: column;
       justify-content: space-evenly;

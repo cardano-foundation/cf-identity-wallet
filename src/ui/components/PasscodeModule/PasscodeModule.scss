@@ -40,14 +40,14 @@
       width: 22.57vw;
       height: 22.57vw;
       --border-radius: 22.57vw;
-      --background-activated: var(--ion-color-dark-grey);
-      --background-focused: var(--ion-color-dark-grey);
-      --background-hover: var(--ion-color-dark-grey);
+      --background-activated: var(--ion-color-neutral-400);
+      --background-focused: var(--ion-color-neutral-400);
+      --background-hover: var(--ion-color-neutral-400);
     }
   }
 
   .passcode-module-number-button {
-    --background: var(--ion-color-medium-grey);
+    --background: var(--ion-color-neutral-300);
 
     .passcode-module-number-button-inner {
       display: flex;
@@ -78,7 +78,7 @@
 
   .passcode-module-backspace-button {
     --background: var(--ion-color-neutral-800);
-    --color: var(--ion-color-light);
+    --color: var(--ion-color-neutral-100);
 
     .passcode-module-backspace-icon {
       width: 3.125rem;

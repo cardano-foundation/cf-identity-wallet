@@ -3,6 +3,7 @@
   padding: 1.56rem 1.25rem;
   border-radius: 1rem !important;
   --width: 100%;
+  --ion-text-color: var(--ion-color-neutral-700);
 
   .alert-title.sc-ion-alert-md {
     text-align: center;
@@ -66,7 +67,7 @@ button.alert-button {
     font-weight: 500 !important;
     line-height: 1.375rem;
     text-transform: none !important;
-    border: solid var(--ion-color-medium-grey) 2px !important;
+    border: solid var(--ion-color-neutral-400) 2px !important;
     border-radius: 20px !important;
 
     &:first-child {

@@ -9,7 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 500;
-  background-color: var(--ion-color-light);
+  background-color: var(--ion-color-neutral-200);
 
   .max-zindex {
     z-index: 2147483647 !important; // max value
@@ -174,11 +174,11 @@ p {
 
 .secondary-button {
   --color: var(--ion-color-neutral-700);
-  --background: var(--ion-color-light);
-  --border-color: var(--ion-color-dark-grey);
+  --background: var(--ion-color-neutral-200);
+  --border-color: var(--ion-color-neutral-400);
 
   &::part(native) {
-    border: 1px solid var(--ion-color-dark-grey);
+    border: 1px solid var(--ion-color-neutral-400);
   }
 }
 
@@ -194,20 +194,20 @@ p {
 
 .delete-button,
 .archive-button {
-  --color: var(--ion-color-white);
+  --color: var(--ion-color-neutral-100);
 
   ion-icon {
     margin-right: 0.5rem;
-    --ion-color-base: var(--ion-color-white) !important;
+    --ion-color-base: var(--ion-color-neutral-100) !important;
   }
 }
 
 .delete-button {
-  --background: var(--ion-color-danger);
+  --background: var(--ion-color-error-800);
 }
 
 .archive-button {
-  --background: var(--ion-color-action-blue);
+  --background: var(--ion-color-archive-400);
 }
 
 .primary-button,
@@ -217,10 +217,11 @@ p {
 .archive-button {
   font-size: 1rem;
   height: 3.25rem;
-  --background-activated: var(--ion-color-medium-grey);
+  --background-activated: var(--ion-color-neutral-400);
 
   &.button-disabled {
-    --background: var(--ion-color-dark-grey);
+    --background: var(--ion-color-neutral-400);
+    --color: var(--ion-color-neutral-800);
   }
 }
 
@@ -254,7 +255,7 @@ ion-toast {
 
   &.confirmation-toast {
     &::part(message) {
-      color: var(--ion-color-light);
+      color: var(--ion-color-neutral-100);
     }
   }
 
@@ -272,10 +273,11 @@ ion-router-outlet.blur {
 }
 
 ion-segment {
-  --background: var(--ion-color-dark-grey);
+  --background: var(--ion-color-neutral-400);
 
   ion-segment-button {
     &.segment-button-checked {
+      --color-checked: var(--ion-color-neutral-100);
       &::part(indicator-background) {
         background: var(--ion-color-primary-700);
       }
