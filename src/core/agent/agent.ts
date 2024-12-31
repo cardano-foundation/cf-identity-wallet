@@ -311,10 +311,11 @@ class Agent {
   }
 
   async syncWithKeria() {
-    this.markAgentStatus(true);
     await this.connections.syncKeriaContacts();
     await this.identifiers.syncKeriaIdentifiers();
     await this.credentials.syncACDCs();
+
+    this.markAgentStatus(true);
 
     await this.basicStorage.update(
       new BasicRecord({
@@ -322,6 +323,7 @@ class Agent {
         content: { syncing: false },
       })
     );
+    
   }
 
   private async connectSignifyClient(): Promise<void> {

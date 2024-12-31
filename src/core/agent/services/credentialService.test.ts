@@ -372,12 +372,8 @@ describe("Credential service of agent", () => {
     await expect(
       credentialService.getCredentialDetailsById("not-found-id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(credentialService.syncACDCs()).rejects.toThrowError(
-      Agent.KERIA_CONNECTION_BROKEN
-    );
   });
   test("Should call saveCredentialMetadataRecord when there are un-synced KERI credentials", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     credentialListMock.mockReturnValue([
       {
         sad: {

@@ -833,9 +833,6 @@ describe("Single sig service of agent", () => {
   });
 
   test("Should correctly sync KERI identifiers, handling both group and non-group cases", async () => {
-    // Mock the online status of the agent
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-
     // Mock the list of identifiers returned by signifyClient
     listIdentifiersMock.mockReturnValue({
       aids: [
@@ -969,9 +966,6 @@ describe("Single sig service of agent", () => {
   test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
-      Agent.KERIA_CONNECTION_BROKEN
-    );
-    await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
     await expect(identifierService.getSigner("id")).rejects.toThrowError(

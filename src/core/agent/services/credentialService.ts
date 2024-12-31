@@ -161,7 +161,6 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  @OnlineOnly
   async syncACDCs() {
     const signifyCredentials = await this.props.signifyClient
       .credentials()

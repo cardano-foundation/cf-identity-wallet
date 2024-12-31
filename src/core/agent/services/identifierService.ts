@@ -469,7 +469,6 @@ class IdentifierService extends AgentService {
     }
   }
 
-  @OnlineOnly
   async syncKeriaIdentifiers() {
     const { aids: signifyIdentifiers } = await this.props.signifyClient
       .identifiers()
@@ -565,7 +564,7 @@ class IdentifierService extends AgentService {
       const isPending = !op.done;
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
-        .get(identifier)) as HabState & { icp_dt: string };
+        .get(identifier.prefix)) as HabState & { icp_dt: string };
 
       if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({

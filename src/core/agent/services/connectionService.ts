@@ -428,7 +428,6 @@ class ConnectionService extends AgentService {
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
-  @OnlineOnly
   async syncKeriaContacts() {
     const signifyContacts = await this.props.signifyClient.contacts().list();
     const storageContacts = await this.connectionStorage.getAll();
