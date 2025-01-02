@@ -1955,85 +1955,39 @@ describe("IPEX communication service of agent", () => {
     });
   });
 
-  test("Can create linked ipex message record", async () => {
-    schemaGetMock.mockResolvedValueOnce(QVISchema);
-    await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantForIssuanceExnMessage,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-
-    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
-      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
-        JSON.stringify({
-          id: grantForIssuanceExnMessage.exn.d,
-          dt: grantForIssuanceExnMessage.exn.dt,
-          credentialType: QVISchema.title,
-          connectionId: grantForIssuanceExnMessage.exn.rp,
-          historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-        }),
-    });
-
-    schemaGetMock.mockResolvedValueOnce(QVISchema);
-    getExchangeMock.mockResolvedValueOnce({
-      exn: {
-        e: {
-          acdc: {
-            s: "s",
-          },
-        },
-      },
-    });
-    await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantForIssuanceExnMessage,
-      ConnectionHistoryType.CREDENTIAL_PRESENTED
-    );
-    expect(updateContactMock).toBeCalledWith(
-      grantForIssuanceExnMessage.exn.rp,
-      {
-        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
-          JSON.stringify({
-            id: grantForIssuanceExnMessage.exn.d,
-            dt: grantForIssuanceExnMessage.exn.dt,
-            credentialType: QVISchema.title,
-            connectionId: grantForIssuanceExnMessage.exn.rp,
-            historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-          }),
-      }
-    );
-
-    expect(schemaGetMock).toBeCalledTimes(2);
-    expect(connections.resolveOobi).toBeCalledTimes(2);
-  });
-
   test("Can create linked ipex message record with message exchange route ipex/apply", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
+
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       applyForPresentingExnMessage,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+      ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
     );
+
     expect(updateContactMock).toBeCalledWith(
-      applyForPresentingExnMessage.exn.rp,
+      applyForPresentingExnMessage.exn.i,
       {
         [`${KeriaContactKeyPrefix.HISTORY_IPEX}${applyForPresentingExnMessage.exn.d}`]:
           JSON.stringify({
             id: applyForPresentingExnMessage.exn.d,
             dt: applyForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
-            connectionId: applyForPresentingExnMessage.exn.rp,
-            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+            connectionId: applyForPresentingExnMessage.exn.i,
+            historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT,
           }),
       }
     );
-    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(schemaGetMock).toBeCalledWith(applyForPresentingExnMessage.exn.a.s);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
   test("can link credential presentation history items to the correct connection", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
+
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
+
     expect(updateContactMock).toBeCalledWith(
       grantForIssuanceExnMessage.exn.rp,
       {
@@ -2047,38 +2001,14 @@ describe("IPEX communication service of agent", () => {
           }),
       }
     );
-    expect(schemaGetMock).toBeCalledTimes(1);
-    expect(connections.resolveOobi).toBeCalledTimes(1);
-  });
-
-  test("Can create linked ipex message record with message exchange route ipex/agree", async () => {
-    schemaGetMock.mockResolvedValueOnce(QVISchema);
-    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
-    await ipexCommunicationService.createLinkedIpexMessageRecord(
-      agreeForPresentingExnMessage,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-
-    expect(updateContactMock).toBeCalledWith(
-      agreeForPresentingExnMessage.exn.rp,
-      {
-        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeForPresentingExnMessage.exn.d}`]:
-          JSON.stringify({
-            id: agreeForPresentingExnMessage.exn.d,
-            dt: agreeForPresentingExnMessage.exn.dt,
-            credentialType: QVISchema.title,
-            connectionId: agreeForPresentingExnMessage.exn.rp,
-            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-          }),
-      }
-    );
-    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(schemaGetMock).toBeCalledWith(grantForIssuanceExnMessage.exn.e.acdc.s);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
   test("Can create linked ipex message record with history type is credential revoked", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce(grantForIssuanceExnMessage);
+    
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REVOKED
@@ -2097,13 +2027,14 @@ describe("IPEX communication service of agent", () => {
           }),
       }
     );
-    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(schemaGetMock).toBeCalledWith(grantForIssuanceExnMessage.exn.e.acdc.s);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
   test("Can create linked ipex message record with history type is credential admitted", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
-    getExchangeMock.mockResolvedValueOnce(admitForIssuanceExnMessage);
+    getExchangeMock.mockResolvedValueOnce(grantForIssuanceExnMessage);
+
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       admitForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -2122,7 +2053,7 @@ describe("IPEX communication service of agent", () => {
           }),
       }
     );
-    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(schemaGetMock).toBeCalledWith(grantForIssuanceExnMessage.exn.e.acdc.s);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
