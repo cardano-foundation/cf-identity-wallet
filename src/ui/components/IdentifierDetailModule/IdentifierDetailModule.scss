@@ -41,7 +41,7 @@
   }
 
   .view-more-members {
-    --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    --background: var(--ion-color-neutral-300);
     --border-radius: 0.5rem;
     color: var(--ion-color-neutral-800);
     width: 100%;
@@ -51,7 +51,7 @@
     --padding-top: 0.625rem;
     --padding-bottom: 0.625rem;
     font-size: 1rem;
-    --background-activated: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    --background-activated: var(--ion-color-neutral-400);
 
     &::part(native) {
       border: none;

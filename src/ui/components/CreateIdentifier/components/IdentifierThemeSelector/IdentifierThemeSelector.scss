@@ -55,11 +55,15 @@
             height: 1.125rem;
             margin: auto;
             border-radius: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
         }
 
         .selected-theme-checkmark {
-          background: var(--ion-color-primary-gradient);
+          background: var(--ion-color-primary-700);
+          color: var(--ion-color-neutral-100);
         }
 
         .unselected-theme-circle {

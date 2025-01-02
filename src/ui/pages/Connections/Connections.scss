@@ -136,7 +136,7 @@
     ion-item-divider {
       --inner-padding-end: 0;
       --background: transparent;
-      border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
+      border-bottom: 1px solid var(--ion-color-neutral-300);
 
       &::part(native) {
         padding: 0;

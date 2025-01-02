@@ -137,11 +137,6 @@
       margin-bottom: 0.75rem;
     }
   
-    .spinner-container {
-      background: rgba(var(--ion-color-white-rgb), 0.5);
-      z-index: 100;
-    }
-  
     @media screen and (min-width: 250px) and (max-width: 370px) {
       .attribute-description {
         h2 {

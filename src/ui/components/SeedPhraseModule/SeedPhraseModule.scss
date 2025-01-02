@@ -50,7 +50,7 @@
       padding-inline: 0.625rem;
       font-size: 1rem;
 
-      &:focus-within {
+      &:focus-within, &.empty-word:focus-within {
         border: 1px dashed var(--ion-color-neutral-700);
         background-color: transparent;
       }
