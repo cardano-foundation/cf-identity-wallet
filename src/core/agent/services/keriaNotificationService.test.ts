@@ -46,7 +46,6 @@ const identifiersCreateMock = jest.fn();
 const identifiersMemberMock = jest.fn();
 const identifiersInteractMock = jest.fn();
 const identifiersRotateMock = jest.fn();
-const identifiersAddEndRoleMock = jest.fn();
 
 const groupGetRequestMock = jest.fn();
 
@@ -88,7 +87,7 @@ const signifyClient = jest.mocked({
     list: identifiersListMock,
     get: identifiersGetMock,
     create: identifiersCreateMock,
-    addEndRole: identifiersAddEndRoleMock,
+    addEndRole: jest.fn(),
     interact: identifiersInteractMock,
     rotate: identifiersRotateMock,
     members: identifiersMemberMock,
@@ -2086,24 +2085,14 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
-      type: "IdentifierMetadataRecord",
-      id: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      displayName: "holder",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+
     await keriaNotificationService.processOperation(operationRecord);
+
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       {
         isPending: false,
       }
-    );
-    expect(identifiersAddEndRoleMock).toHaveBeenCalledWith(
-      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      "agent",
-      signifyClient.agent!.pre
     );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,

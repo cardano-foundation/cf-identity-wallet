@@ -5,7 +5,6 @@ import {
   NotificationRemovedEvent,
 } from "../../../core/agent/event.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { useAppDispatch } from "../../../store/hooks";
 import {
   updateIsPending,
@@ -51,25 +50,7 @@ const identifierAddedHandler = async (
   event: IdentifierAddedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  const identifier = event.payload.identifier;
-  if (identifier) {
-    const newIdentifier: IdentifierShortDetails = {
-      id: identifier.id,
-      displayName: identifier.displayName,
-      createdAtUTC: new Date().toISOString(),
-      theme: identifier.theme,
-      isPending: true,
-    };
-
-    if (identifier.groupMetadata) {
-      newIdentifier.groupMetadata = identifier.groupMetadata;
-    }
-    if (identifier.multisigManageAid) {
-      newIdentifier.multisigManageAid = identifier.multisigManageAid;
-    }
-
-    dispatch(updateOrAddIdentifiersCache(newIdentifier));
-  }
+  dispatch(updateOrAddIdentifiersCache(event.payload.identifier));
 };
 
 export {

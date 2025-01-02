@@ -77,7 +77,6 @@ import {
 import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
-  IdentifierStateChangedEvent,
 } from "../../../core/agent/event.types";
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
