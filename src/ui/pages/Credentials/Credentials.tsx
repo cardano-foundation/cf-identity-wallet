@@ -237,7 +237,7 @@ const Credentials = () => {
 
     try {
       await Agent.agent.credentials.archiveCredential(deletedPendingItem.id);
-      await Agent.agent.credentials.deleteCredential(deletedPendingItem.id);
+      await Agent.agent.credentials.markCredentialPendingDeletion(deletedPendingItem.id);
 
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
 

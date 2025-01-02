@@ -6,6 +6,7 @@ import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
 import { IdentifierType } from "./identifier.types";
 import { memberIdentifierRecord } from "../../__fixtures__/agent/multSigFixtures";
+import { EventTypes } from "../event.types";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -19,6 +20,8 @@ const groupGetRequestMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 let credentialListMock = jest.fn();
 let getCredentialMock = jest.fn();
+const revokeCredentialMock = jest.fn();
+let deleteCredentialMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -68,6 +71,8 @@ const signifyClient = jest.mocked({
   credentials: () => ({
     get: getCredentialMock,
     list: credentialListMock,
+    revoke: revokeCredentialMock,
+    delete: deleteCredentialMock,
   }),
   exchanges: () => ({
     get: jest.fn(),
@@ -98,6 +103,7 @@ const credentialStorage = jest.mocked({
   getCredentialMetadataByConnectionId: jest.fn(),
   saveCredentialMetadataRecord: jest.fn(),
   updateCredentialMetadata: jest.fn(),
+  getCredentialsPendingDeletion: jest.fn(),
 });
 
 const eventEmitter = new CoreEventEmitter();
@@ -202,42 +208,6 @@ describe("Credential service of agent", () => {
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(credId, {
       isArchived: true,
     });
-  });
-
-  test("can delete an archived credential (cred and metadata record)", async () => {
-    credentialStorage.getCredentialMetadata = jest
-      .fn()
-      .mockResolvedValue(archivedMetadataRecord);
-    const credId = "credId1";
-    await credentialService.deleteCredential(credId);
-    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(credId, {
-      isDeleted: true,
-    });
-  });
-
-  test("cannot delete a non-archived credential", async () => {
-    credentialStorage.getCredentialMetadata = jest
-      .fn()
-      .mockResolvedValue(credentialMetadataRecordA);
-    const credId = "credId1";
-    await expect(
-      credentialService.deleteCredential(credId)
-    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_ARCHIVED);
-    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
-    expect(credentialStorage.deleteCredentialMetadata).not.toBeCalled();
-  });
-
-  test("cannot delete a credential without a metadata record", async () => {
-    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    const credId = "credId1";
-    await expect(
-      credentialService.deleteCredential(credId)
-    ).rejects.toThrowError(
-      CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-    );
-    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
-    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
   });
 
   test("can restore an archived credential", async () => {
@@ -580,5 +550,117 @@ describe("Credential service of agent", () => {
         status: CredentialStatus.REVOKED,
       }
     );
+  });
+
+  test("Should mark credential is pending when start delete credential", async () => {
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValueOnce({id: "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", isArchived: true});
+    eventEmitter.emit = jest.fn();
+
+    await credentialService.markCredentialPendingDeletion("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9");
+
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", { pendingDeletion: true });
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.CredentialRemovedEvent,
+      payload: {
+        credentialId:"EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9",
+      },
+    });
+  });
+
+  test("cannot mark a non-archived credential as pending deletion", async () => {
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(credentialMetadataRecordA);
+    const credId = "credId1";
+
+    await expect(
+      credentialService.markCredentialPendingDeletion(credId)
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_ARCHIVED);
+
+    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
+    expect(credentialStorage.deleteCredentialMetadata).not.toBeCalled();
+  });
+
+  test("should delele the credential and delete credential", async () => {
+    const mockMetadata = {
+      identifierId: "test-identifier-id",
+      pendingDeletion: true,
+      id: "test-credential-id",
+    }; 
+    credentialService.deleteStaleLocalCredential = jest.fn()
+    deleteCredentialMock.mockResolvedValueOnce(null);
+
+    await credentialService.deleteCredential("test-credential-id");
+
+    expect(deleteCredentialMock).toHaveBeenCalledWith(
+      mockMetadata.id,
+    );
+    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith("test-credential-id");
+  });
+
+  test("should delete local credential if delete from signify throws a 404 error", async () => {
+    const mockMetadata = {
+      identifierId: "test-identifier-id",
+      pendingDeletion: true,
+      id: "test-credential-id",
+    };
+    (deleteCredentialMock).mockRejectedValueOnce(
+      new Error("Request failed - 404 Not Found"),
+    );
+    credentialService.deleteStaleLocalCredential = jest.fn();
+
+    await credentialService.deleteCredential("test-credential-id");
+
+    expect(deleteCredentialMock).toHaveBeenCalledWith(
+      mockMetadata.id,
+    );
+    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith("test-credential-id");
+  });
+
+  test("should throw an error if delete from signify throws a non-404 error", async () => {
+    const mockMetadata = {
+      identifierId: "test-identifier-id",
+      pendingDeletion: true,
+      id: "test-credential-id",
+    };
+    (deleteCredentialMock).mockRejectedValueOnce(
+      new Error("Request failed - 500 Internal Server Error"),
+    );
+
+    await expect(credentialService.deleteCredential("test-credential-id")).rejects.toThrow(
+      "Request failed - 500 Internal Server Error",
+    );
+
+    expect(deleteCredentialMock).toHaveBeenCalledWith(
+      mockMetadata.id,
+    );
+    expect(credentialStorage.deleteCredentialMetadata).not.toHaveBeenCalled();
+  });
+
+  test("Should retrieve pending deletions and delete each by ID", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    credentialStorage.deleteCredentialMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+    deleteCredentialMock = jest
+      .fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null);
+    credentialService.deleteCredential= jest
+      .fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null)
+    credentialStorage.getCredentialsPendingDeletion.mockResolvedValueOnce([
+      { id: "id1" },
+      { id: "id2" },
+    ]);
+
+    await credentialService.removeCredentialsPendingDeletion();
+
+    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(1, "id1");
+    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(2, "id2");
   });
 });
