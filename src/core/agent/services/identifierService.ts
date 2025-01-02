@@ -633,7 +633,7 @@ class IdentifierService extends AgentService {
     let iteration = 0;
 
     while (returned !== 0) {
-      const result = await this.props.signifyClient.identifiers().list(0 + (iteration * (24 + 1)), 24 + (iteration * (24 + 1)));
+      const result = await this.props.signifyClient.identifiers().list(iteration * (24 + 1), 24 + (iteration * (24 + 1)));
       for (const identifier of result.aids) {
         if (identifier.name === name) return identifier;
       }
