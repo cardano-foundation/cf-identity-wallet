@@ -286,24 +286,8 @@ class KeriaNotificationService extends AgentService {
 
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
-      const applyNoteRecord = await this.notificationStorage.findById(notif.a.d);
-
-      if (applyNoteRecord?.linkedRequest) {
-        await this.operationPendingStorage.save({
-          id: applyNoteRecord?.linkedRequest.current,
-          recordType: OperationPendingRecordType.ExchangeOfferCredential,
-        });
-      }
       shouldCreateRecord = await this.processExnIpexApplyNotification(exn);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
-      const grantNoteRecord = await this.notificationStorage.findById(notif.a.d);
-
-      if (grantNoteRecord?.linkedRequest) {
-        await this.operationPendingStorage.save({
-          id: grantNoteRecord?.linkedRequest.current,
-          recordType: OperationPendingRecordType.ExchangePresentCredential,
-        });
-      }
       shouldCreateRecord = await this.processExnIpexGrantNotification(
         notif,
         exn
@@ -324,13 +308,13 @@ class KeriaNotificationService extends AgentService {
     }
 
     try {
-      const keriaNotif = await this.createNotificationRecord(notif);
+      const note = await this.createNotificationRecord(notif);
       if (notif.a.r !== NotificationRoute.ExnIpexAgree) {
         // Hidden from UI, so don't emit
         this.props.eventEmitter.emit<NotificationAddedEvent>({
           type: EventTypes.NotificationAdded,
           payload: {
-            keriaNotif,
+            note,
           },
         });
       }
@@ -536,7 +520,7 @@ class KeriaNotificationService extends AgentService {
         this.props.eventEmitter.emit<NotificationAddedEvent>({
           type: EventTypes.NotificationAdded,
           payload: {
-            keriaNotif: {
+            note: {
               id: notificationRecord.id,
               createdAt: new Date().toISOString(),
               a: {
@@ -685,7 +669,7 @@ class KeriaNotificationService extends AgentService {
       this.props.eventEmitter.emit<NotificationAddedEvent>({
         type: EventTypes.NotificationAdded,
         payload: {
-          keriaNotif: {
+          note: {
             id: notificationRecord.id,
             createdAt: notificationRecord.createdAt.toISOString(),
             a: notificationRecord.a,
@@ -748,7 +732,7 @@ class KeriaNotificationService extends AgentService {
       this.props.eventEmitter.emit<NotificationAddedEvent>({
         type: EventTypes.NotificationAdded,
         payload: {
-          keriaNotif: {
+          note: {
             id: notificationRecord.id,
             createdAt: notificationRecord.createdAt.toISOString(),
             a: notificationRecord.a,
@@ -875,7 +859,9 @@ class KeriaNotificationService extends AgentService {
       $not: {
         route: NotificationRoute.ExnIpexAgree,
       },
+      hidden: false,
     });
+
     return notifications.map((notification) => {
       return {
         id: notification.id,
@@ -900,6 +886,38 @@ class KeriaNotificationService extends AgentService {
       multisigId,
     });
     return notificationRecord;
+  }
+
+  async syncIPEXReplyOperations(): Promise<void> {
+    const records = await this.notificationStorage.findAllByQuery({
+      $not: {
+        currentLinkedRequest: undefined,
+      },
+    });
+
+    for (const record of records) {
+      if (!record.linkedRequest.current) continue;
+      
+      let recordType;
+      switch (record.route) {
+      case NotificationRoute.ExnIpexApply:
+        recordType = OperationPendingRecordType.ExchangeOfferCredential;
+        break;
+      case NotificationRoute.ExnIpexAgree:
+        recordType = OperationPendingRecordType.ExchangePresentCredential;
+        break;
+      case NotificationRoute.ExnIpexGrant:
+        recordType = OperationPendingRecordType.ExchangeReceiveCredential;
+        break;
+      default:
+        continue;
+      }
+
+      await this.operationPendingStorage.save({
+        id: `exchange.${record.linkedRequest.current}`,
+        recordType,
+      });
+    }
   }
 
   async pollLongOperations() {
@@ -1060,29 +1078,24 @@ class KeriaNotificationService extends AgentService {
             .get(admitExchange.exn.p);
           const credentialId = grantExchange.exn.e.acdc.d;
 
-          const holder = await this.identifierStorage.getIdentifierMetadata(
-            admitExchange.exn.i
-          );
-          if (holder.multisigManageAid) {
-            const notifications =
-                await this.notificationStorage.findAllByQuery({
-                  exnSaid: grantExchange.exn.d,
-                });
-            for (const notification of notifications) {
-              await deleteNotificationRecordById(
-                this.props.signifyClient,
-                this.notificationStorage,
-                notification.id,
-                  notification.a.r as NotificationRoute
-              );
-
-              this.props.eventEmitter.emit<NotificationRemovedEvent>({
-                type: EventTypes.NotificationRemoved,
-                payload: {
-                  id: notification.id,
-                },
+          const notifications =
+              await this.notificationStorage.findAllByQuery({
+                exnSaid: grantExchange.exn.d,
               });
-            }
+          for (const notification of notifications) {
+            await deleteNotificationRecordById(
+              this.props.signifyClient,
+              this.notificationStorage,
+              notification.id,
+                notification.a.r as NotificationRoute
+            );
+
+            this.props.eventEmitter.emit<NotificationRemovedEvent>({
+              type: EventTypes.NotificationRemoved,
+              payload: {
+                id: notification.id,
+              },
+            });
           }
 
           await this.credentialService.markAcdc(
@@ -1110,56 +1123,56 @@ class KeriaNotificationService extends AgentService {
           const holder = await this.identifierStorage.getIdentifierMetadata(
             offerExchange.exn.i
           );
-          if (holder.multisigManageAid) {
-            const notifications =
-                await this.notificationStorage.findAllByQuery({
-                  exnSaid: applyExchange.exn.d,
-                });
-            for (const notification of notifications) {
-              // "Refresh" the notification so user is aware offer is successfully sent
-              notification.createdAt = new Date();
-              notification.read = false;
-
-              const { multisigMembers, ourIdentifier } =
-                  await this.multiSigs.getMultisigParticipants(
-                    applyExchange.exn.rp
-                  );
-
-              const initiatorAid = multisigMembers.map(
-                (member: any) => member.aid
-              )[0];
-
-              notification.groupReplied = true;
-              notification.initiatorAid = initiatorAid;
-              notification.groupInitiator =
-                  ourIdentifier.groupMetadata?.groupInitiator;
-
-              await this.notificationStorage.update(notification);
-
-              this.props.eventEmitter.emit<NotificationRemovedEvent>({
-                type: EventTypes.NotificationRemoved,
-                payload: {
-                  id: notification.id,
-                },
+          const notifications =
+              await this.notificationStorage.findAllByQuery({
+                exnSaid: applyExchange.exn.d,
               });
-
-              this.props.eventEmitter.emit<NotificationAddedEvent>({
-                type: EventTypes.NotificationAdded,
-                payload: {
-                  keriaNotif: {
-                    id: notification.id,
-                    createdAt: notification.createdAt.toISOString(),
-                    a: notification.a,
-                    multisigId: notification.multisigId,
-                    connectionId: notification.connectionId,
-                    read: notification.read,
-                    groupReplied: notification.groupReplied,
-                    initiatorAid,
-                    groupInitiator: notification.groupInitiator,
-                  },
-                },
-              });
+          
+          for (const notification of notifications) {
+            if (!holder.multisigManageAid) {
+              await deleteNotificationRecordById(this.props.signifyClient, this.notificationStorage, notification.id, notification.a.r as NotificationRoute);
+              continue;
             }
+
+            // "Refresh" the notification so user is aware offer is successfully sent
+            notification.createdAt = new Date();
+            notification.read = false;
+
+            const { multisigMembers, ourIdentifier } =
+                await this.multiSigs.getMultisigParticipants(
+                  applyExchange.exn.rp
+                );
+
+            notification.groupReplied = true;
+            notification.initiatorAid = multisigMembers[0].aid;
+            notification.groupInitiator =
+                ourIdentifier.groupMetadata?.groupInitiator;
+
+            await this.notificationStorage.update(notification);
+
+            this.props.eventEmitter.emit<NotificationRemovedEvent>({
+              type: EventTypes.NotificationRemoved,
+              payload: {
+                id: notification.id,
+              },
+            });
+
+            this.props.eventEmitter.emit<NotificationAddedEvent>({
+              type: EventTypes.NotificationAdded,
+              payload: {
+                note: {
+                  id: notification.id,
+                  createdAt: notification.createdAt.toISOString(),
+                  a: notification.a,
+                  multisigId: notification.multisigId,
+                  connectionId: notification.connectionId,
+                  read: notification.read,
+                  groupReplied: notification.groupReplied,
+                  initiatorAid: notification.initiatorAid,
+                  groupInitiator: notification.groupInitiator,
+                },
+              },
+            });
           }
         }
         break;
@@ -1173,23 +1186,19 @@ class KeriaNotificationService extends AgentService {
             .exchanges()
             .get(grantExchange.exn.p);
 
-          const holder = await this.identifierStorage.getIdentifierMetadata(
-            grantExchange.exn.i
-          );
-          if (holder.multisigManageAid) {
-            const notifications =
-                await this.notificationStorage.findAllByQuery({
-                  exnSaid: agreeExchange.exn.d,
-                });
-            for (const notification of notifications) {
-              await deleteNotificationRecordById(
-                this.props.signifyClient,
-                this.notificationStorage,
-                notification.id,
-                  notification.a.r as NotificationRoute
-              );
-            }
+          const notifications =
+              await this.notificationStorage.findAllByQuery({
+                exnSaid: agreeExchange.exn.d,
+              });
+          for (const notification of notifications) {
+            await deleteNotificationRecordById(
+              this.props.signifyClient,
+              this.notificationStorage,
+              notification.id,
+                notification.a.r as NotificationRoute
+            );
           }
+          
           await this.ipexCommunications.createLinkedIpexMessageRecord(
             grantExchange,
             ConnectionHistoryType.CREDENTIAL_PRESENTED

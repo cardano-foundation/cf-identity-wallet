@@ -34,7 +34,6 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   setIdentifiersFilters,
-  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -540,7 +539,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
             await Agent.agent.syncWithKeria();
           }
         }
-        Agent.agent.markAgentStatus(true);
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
@@ -554,6 +552,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         }
       } finally {
         await loadDatabase();
+        Agent.agent.markAgentStatus(true);
       }
     }
 

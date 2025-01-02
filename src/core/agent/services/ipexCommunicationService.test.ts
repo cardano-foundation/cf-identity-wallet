@@ -333,7 +333,7 @@ describe("Receive individual ACDC actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]);
+    ipexAdmitMock.mockResolvedValue([{ ked: { d: "admit-said" } }, "sigs", "aend"]);
 
     const connectionNote = {
       id: "note:id",
@@ -380,7 +380,7 @@ describe("Receive individual ACDC actions", () => {
     });
     expect(ipexSubmitAdmitMock).toBeCalledWith(
       "identifierId",
-      "admit",
+      { ked: { d: "admit-said" } },
       "sigs",
       "aend",
       ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
@@ -398,7 +398,15 @@ describe("Receive individual ACDC actions", () => {
         },
       },
     });
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id,
+      route: NotificationRoute.ExnIpexGrant,
+      linkedRequest: {
+        accepted: true,
+        current: "admit-said",
+      },
+      hidden: true,
+    }));
   });
 
   test("Cannot accept ACDC if the notification is missing in the DB", async () => {
@@ -1050,7 +1058,7 @@ describe("Offer ACDC individual actions", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
       id: "abc123",
     });
-    ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
+    ipexOfferMock.mockResolvedValue([{ ked: { d: "offer-said" } }, "sigs", "gend"]);
     ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true });
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "opName",
@@ -1064,7 +1072,6 @@ describe("Offer ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
       recipient: "i",
@@ -1073,12 +1080,11 @@ describe("Offer ACDC individual actions", () => {
     });
     expect(ipexSubmitOfferMock).toBeCalledWith(
       "abc123",
-      "offer",
+      { ked: { d: "offer-said" } },
       "sigs",
       "gend",
       ["i"]
     );
-    expect(markNotificationMock).toBeCalledWith(id);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
@@ -1091,7 +1097,16 @@ describe("Offer ACDC individual actions", () => {
           recordType: OperationPendingRecordType.ExchangeOfferCredential,
         },
       },
-    });    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    });
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id,
+      route: NotificationRoute.ExnIpexApply,
+      linkedRequest: {
+        accepted: true,
+        current: "offer-said",
+      },
+      hidden: true,
+    }));
   });
 
   test("Cannot offer ACDC if the apply notification is missing in the DB", async () => {
@@ -1510,7 +1525,7 @@ describe("Grant ACDC individual actions", () => {
       },
       route: NotificationRoute.ExnIpexAgree,
       read: true,
-      linkedRequest: { accepted: false, current: "current-grant-said" },
+      linkedRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1523,7 +1538,7 @@ describe("Grant ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    ipexGrantMock.mockResolvedValue(["grant", "sigs", "gend"]);
+    ipexGrantMock.mockResolvedValue([{ ked: { d: "grant-said" } }, "sigs", "gend"]);
     markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await ipexCommunicationService.grantAcdcFromAgree("agree-note-id");
@@ -1539,7 +1554,15 @@ describe("Grant ACDC individual actions", () => {
       senderName: "abc123",
       agreeSaid: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
     });
-    expect(ipexSubmitGrantMock).toBeCalledWith("abc123", "grant", "sigs", "gend", ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]);
+    expect(ipexSubmitGrantMock).toBeCalledWith("abc123", { ked: { d: "grant-said" } }, "sigs", "gend", ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]);
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id: "note-id",
+      route: NotificationRoute.ExnIpexAgree,
+      linkedRequest: {
+        accepted: true,
+        current: "grant-said",
+      },
+    }));
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
@@ -1554,7 +1577,11 @@ describe("Grant ACDC individual actions", () => {
       },
     });
     expect(eventEmitter.emit).toBeCalledTimes(1);
-    expect(notificationStorage.deleteById).toBeCalledWith("agree-note-id");
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id: "note-id",
+      hidden: true,
+      linkedRequest: { accepted: true, current: "grant-said" }
+    }));
   });
 
   test("Cannot present ACDC if the notification is missing in the DB", async () => {

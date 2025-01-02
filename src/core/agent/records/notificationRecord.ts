@@ -30,6 +30,7 @@ class NotificationRecord extends BaseRecord {
   groupReplied?: boolean;
   initiatorAid?: string;
   groupInitiator?: boolean;
+  hidden = false;  // Hide from UI but don't delete (used for reliability while recovering IPEX long running operations)
 
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
@@ -55,6 +56,7 @@ class NotificationRecord extends BaseRecord {
 
   getTags() {
     return {
+      ...this._tags,
       route: this.route,
       read: this.read,
       multisigId: this.multisigId,
@@ -63,7 +65,8 @@ class NotificationRecord extends BaseRecord {
       groupReplied: this.groupReplied,
       initiatorAid: this.initiatorAid,
       groupInitiator: this.groupInitiator,
-      ...this._tags,
+      currentLinkedRequest: this.linkedRequest.current,
+      hidden: this.hidden,
     };
   }
 }

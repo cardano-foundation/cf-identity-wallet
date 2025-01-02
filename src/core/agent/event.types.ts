@@ -28,7 +28,7 @@ enum EventTypes {
 interface NotificationAddedEvent extends BaseEventEmitter {
   type: typeof EventTypes.NotificationAdded;
   payload: {
-    keriaNotif: KeriaNotification;
+    note: KeriaNotification;
   };
 }
 

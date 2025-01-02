@@ -500,30 +500,15 @@ class IdentifierService extends AgentService {
         continue;
       }
 
-      let recordType = OperationPendingRecordType.Witness;
-
       const op: Operation = await this.props.signifyClient
         .operations()
-        .get(`witness.${identifier.prefix}`)
-        .catch(async (error) => {
-          const status = error.message.split(" - ")[1];
-
-          if (/404/gi.test(status)) {
-            recordType = OperationPendingRecordType.Done
-            return await this.props.signifyClient
-              .operations()
-              .get(`done.${identifier.prefix}`);
-          }
-          
-          throw error;
-        });
-
+        .get(`witness.${identifier.prefix}`);
+      
       const isPending = !op.done;
-
       if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
-          recordType,
+          recordType: OperationPendingRecordType.Witness,
         });
         this.props.eventEmitter.emit<OperationAddedEvent>({
           type: EventTypes.OperationAdded,
@@ -537,6 +522,7 @@ class IdentifierService extends AgentService {
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
         .get(identifier.prefix)) as HabState & { icp_dt: string };
+      
       if (isMultiSig) {
         const groupId = identifier.name.split(":")[1];
         const groupInitiator = groupId.split("-")[0] === "1";
@@ -569,19 +555,21 @@ class IdentifierService extends AgentService {
       if (identifier.name.startsWith("XX")) {
         continue;
       }
+      
+      const identifierDetail = (await this.props.signifyClient
+        .identifiers()
+        .get(identifier.prefix)) as HabState & { icp_dt: string };
 
       const multisigManageAid = identifier.group.mhab.prefix;
       const groupId = identifier.group.mhab.name.split(":")[1];
       const theme = parseInt(identifier.name.split(":")[0], 10);
       const groupInitiator = groupId.split("-")[0] === "1";
+      
       const op = await this.props.signifyClient
         .operations()
         .get(`group.${identifier.prefix}`);
+      
       const isPending = !op.done;
-      const identifierDetail = (await this.props.signifyClient
-        .identifiers()
-        .get(identifier.prefix)) as HabState & { icp_dt: string };
-
       if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,

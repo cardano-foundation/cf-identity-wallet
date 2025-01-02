@@ -23,7 +23,7 @@ const notificationStateChanged = (
 ) => {
   switch (event.type) {
   case EventTypes.NotificationAdded:
-    dispatch(addNotification(event.payload.keriaNotif));
+    dispatch(addNotification(event.payload.note));
     break;
   case EventTypes.NotificationRemoved:
     dispatch(deleteNotificationById(event.payload.id));
