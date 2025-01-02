@@ -23,12 +23,13 @@ const mockAgentServicesProps = {
 };
 
 const mockGetBranValue = "AEsI_2YqNsQlf8brzDJaP";
-const getKeyStoreSpy = jest
+jest
   .spyOn(SecureStorage, "get")
   .mockResolvedValue(mockGetBranValue);
 const mockBasicStorageService = {
   save: jest.fn(),
   update: jest.fn(),
+  createOrUpdateBasicRecord: jest.fn(),
 };
 
 const mockConnectionService = {
@@ -37,12 +38,12 @@ const mockConnectionService = {
   syncKeriaContacts: jest.fn(),
 };
 const mockIdentifierService = {
-  resolvePendingIdentifier: jest.fn(),
+  resolvePendingIdentifiers: jest.fn(),
   removeIdentifiersPendingDeletion: jest.fn(),
   syncKeriaIdentifiers: jest.fn(),
 };
 const mockCredentialService = {
-  syncACDCs: jest.fn(),
+  syncKeriaCredentials: jest.fn(),
   removeCredentialsPendingDeletion: jest.fn(),
 };
 
@@ -167,7 +168,7 @@ describe("test cases of bootAndConnect function", () => {
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
-    mockIdentifierService.resolvePendingIdentifier = jest
+    mockIdentifierService.resolvePendingIdentifiers = jest
       .fn()
       .mockReturnValue(undefined);
     mockCredentialService.removeCredentialsPendingDeletion = jest
@@ -290,7 +291,7 @@ describe("test cases of recoverKeriaAgent function", () => {
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
-    mockIdentifierService.resolvePendingIdentifier = jest
+    mockIdentifierService.resolvePendingIdentifiers = jest
       .fn()
       .mockReturnValue(undefined);
 
@@ -304,9 +305,9 @@ describe("test cases of recoverKeriaAgent function", () => {
     );
     expect(mockConnectionService.syncKeriaContacts).toHaveBeenCalled();
     expect(mockIdentifierService.syncKeriaIdentifiers).toHaveBeenCalled();
-    expect(mockCredentialService.syncACDCs).toHaveBeenCalled();
+    expect(mockCredentialService.syncKeriaCredentials).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
-    expect(mockBasicStorageService.update).toHaveBeenCalledWith({
+    expect(mockBasicStorageService.createOrUpdateBasicRecord).toHaveBeenCalledWith({
       _tags: {},
       content: { syncing: false },
       createdAt: now,

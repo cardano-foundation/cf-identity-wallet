@@ -104,6 +104,25 @@ const offerForPresentingExnMessage = {
   },
 };
 
+const admitForIssuanceExnMessage = {
+  "exn": {
+    "v": "KERI10JSON000178_",
+    "t": "exn",
+    "d": "EEqJBi-JmK5IG-rU4wnn5cplcnmAk6exhAwE2GkAG895",
+    "i": "EJHe0vp6WOPgBNjJEakNTW2xVPwKNRJfZ1q4DhoXem3D",
+    "rp": "EI6lgpgvnVbl6hdfJNWCxlWEz9il1S1mu89XBBjvUBwK",
+    "p": "EFYtFiqA6l2xlCtTwKksHpWtTSvIilwQGamB_qFvPuER",
+    "dt": "2024-12-23T07:42:34.448000+00:00",
+    "r": ExchangeRoute.IpexAdmit,
+    "q": {},
+    "a": {
+      "i": "EI6lgpgvnVbl6hdfJNWCxlWEz9il1S1mu89XBBjvUBwK",
+      "m": ""
+    },
+    "e": {}
+  },
+  "pathed": {}
+}
 // @TODO - foconnor: Agree must have valid p, and no embeds - but causing tests to fail right now.
 const agreeForPresentingExnMessage = {
   exn: {
@@ -720,6 +739,7 @@ export {
   applyForPresentingExnMessage,
   offerForPresentingExnMessage,
   agreeForPresentingExnMessage,
+  admitForIssuanceExnMessage,
   groupIdentifierMetadataRecord,
   multisigExnOfferForPresenting,
   multisigExnAdmitForIssuance,

@@ -228,7 +228,6 @@ class Agent {
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
       await this.connectSignifyClient();
-      this.markAgentStatus(true);
     }
   }
 
@@ -312,17 +311,18 @@ class Agent {
   }
 
   async syncWithKeria() {
-    this.markAgentStatus(true);
     await this.connections.syncKeriaContacts();
     await this.identifiers.syncKeriaIdentifiers();
-    await this.credentials.syncACDCs();
+    await this.credentials.syncKeriaCredentials();
 
-    await this.basicStorage.update(
+    await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.CLOUD_RECOVERY_STATUS,
         content: { syncing: false },
       })
     );
+
+    this.markAgentStatus(true);
   }
 
   private async connectSignifyClient(): Promise<void> {
@@ -356,7 +356,7 @@ class Agent {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
       this.identifiers.removeIdentifiersPendingDeletion();
-      this.identifiers.resolvePendingIdentifier();
+      this.identifiers.resolvePendingIdentifiers();
       this.credentials.removeCredentialsPendingDeletion();
     }
 

@@ -977,10 +977,6 @@ class KeriaNotificationService extends AgentService {
           isPending: false,
         });
 
-        const individualIdentifier =
-          await this.identifierStorage.getIdentifierMetadata(recordId);
-        await this.props.signifyClient.identifiers()
-          .addEndRole(individualIdentifier.id, "agent", this.props.signifyClient.agent!.pre);
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
           payload: {
@@ -1072,9 +1068,15 @@ class KeriaNotificationService extends AgentService {
               });
             }
           }
+
           await this.credentialService.markAcdc(
             credentialId,
             CredentialStatus.CONFIRMED
+          );
+          
+          await this.ipexCommunications.createLinkedIpexMessageRecord(
+            admitExchange,
+            ConnectionHistoryType.CREDENTIAL_ISSUANCE
           );
         }
         break;
