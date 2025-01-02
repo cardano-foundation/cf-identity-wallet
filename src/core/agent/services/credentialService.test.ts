@@ -558,10 +558,9 @@ describe("Credential service of agent", () => {
       .mockResolvedValueOnce({id: "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", isArchived: true});
     eventEmitter.emit = jest.fn();
 
-    await credentialService.markCredentialPendingDelete("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9");
+    await credentialService.markCredentialPendingDeletion("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9");
 
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", {pendingDeletion: true });
-
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", { pendingDeletion: true });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.CredentialRemovedEvent,
       payload: {
@@ -570,13 +569,26 @@ describe("Credential service of agent", () => {
     });
   });
 
+  test("cannot mark a non-archived credential as pending deletion", async () => {
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(credentialMetadataRecordA);
+    const credId = "credId1";
+
+    await expect(
+      credentialService.markCredentialPendingDeletion(credId)
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_ARCHIVED);
+
+    expect(credentialStorage.getCredentialMetadata).toBeCalledWith(credId);
+    expect(credentialStorage.deleteCredentialMetadata).not.toBeCalled();
+  });
+
   test("should delele the credential and delete credential", async () => {
     const mockMetadata = {
       identifierId: "test-identifier-id",
       pendingDeletion: true,
       id: "test-credential-id",
     }; 
-
     credentialService.deleteStaleLocalCredential = jest.fn()
     deleteCredentialMock.mockResolvedValueOnce(null);
 
@@ -594,11 +606,10 @@ describe("Credential service of agent", () => {
       pendingDeletion: true,
       id: "test-credential-id",
     };
-
     (deleteCredentialMock).mockRejectedValueOnce(
       new Error("Request failed - 404 Not Found"),
     );
-    credentialService.deleteStaleLocalCredential = jest.fn()
+    credentialService.deleteStaleLocalCredential = jest.fn();
 
     await credentialService.deleteCredential("test-credential-id");
 
@@ -614,7 +625,6 @@ describe("Credential service of agent", () => {
       pendingDeletion: true,
       id: "test-credential-id",
     };
-
     (deleteCredentialMock).mockRejectedValueOnce(
       new Error("Request failed - 500 Internal Server Error"),
     );
@@ -647,8 +657,10 @@ describe("Credential service of agent", () => {
       { id: "id1" },
       { id: "id2" },
     ]);
+
     await credentialService.removeCredentialsPendingDeletion();
 
-    expect(credentialService.deleteCredential).toHaveBeenCalledTimes(2)
+    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(1, "id1");
+    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(2, "id2");
   });
 });

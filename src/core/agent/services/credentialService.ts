@@ -138,7 +138,6 @@ class CredentialService extends AgentService {
   }
 
   async deleteCredential(id: string): Promise<void> {
-
     await this.props.signifyClient
       .credentials()
       .delete(id)
@@ -154,7 +153,7 @@ class CredentialService extends AgentService {
     await this.credentialStorage.deleteCredentialMetadata(id)
   }
 
-  async markCredentialPendingDelete(id: string) {
+  async markCredentialPendingDeletion(id: string) {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
 
