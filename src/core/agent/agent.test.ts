@@ -23,12 +23,13 @@ const mockAgentServicesProps = {
 };
 
 const mockGetBranValue = "AEsI_2YqNsQlf8brzDJaP";
-const getKeyStoreSpy = jest
+jest
   .spyOn(SecureStorage, "get")
   .mockResolvedValue(mockGetBranValue);
 const mockBasicStorageService = {
   save: jest.fn(),
   update: jest.fn(),
+  createOrUpdateBasicRecord: jest.fn(),
 };
 
 const mockConnectionService = {
@@ -42,7 +43,7 @@ const mockIdentifierService = {
   syncKeriaIdentifiers: jest.fn(),
 };
 const mockCredentialService = {
-  syncACDCs: jest.fn(),
+  syncKeriaCredentials: jest.fn(),
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -300,9 +301,9 @@ describe("test cases of recoverKeriaAgent function", () => {
     );
     expect(mockConnectionService.syncKeriaContacts).toHaveBeenCalled();
     expect(mockIdentifierService.syncKeriaIdentifiers).toHaveBeenCalled();
-    expect(mockCredentialService.syncACDCs).toHaveBeenCalled();
+    expect(mockCredentialService.syncKeriaCredentials).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
-    expect(mockBasicStorageService.update).toHaveBeenCalledWith({
+    expect(mockBasicStorageService.createOrUpdateBasicRecord).toHaveBeenCalledWith({
       _tags: {},
       content: { syncing: false },
       createdAt: now,

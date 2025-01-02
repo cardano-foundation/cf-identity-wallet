@@ -832,9 +832,9 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("Should correctly sync KERI identifiers, handling both group and non-group cases", async () => {
+  test("Should correctly sync identifiers from cloud, handling both group and non-group cases", async () => {
     // Mock the list of identifiers returned by signifyClient
-    listIdentifiersMock.mockReturnValue({
+    listIdentifiersMock.mockReturnValueOnce({
       aids: [
         {
           name: "0:1-group1:test1",
@@ -855,7 +855,7 @@ describe("Single sig service of agent", () => {
           prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
         },
       ],
-    });
+    }).mockReturnValue({ aids: [] });
 
     // Mock the identifier storage
     identifierStorage.getKeriIdentifiersMetadata = jest

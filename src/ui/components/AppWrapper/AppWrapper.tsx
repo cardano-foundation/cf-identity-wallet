@@ -232,26 +232,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, [isOnline, authentication.loggedIn, dispatch]);
 
   useEffect(() => {
-    const syncWithKeria = async () => {
-      // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-      //
-      // TODO: This got uncommented when we were redoing that by accident.
-      // Right now if you delete a connection, it will re-appear after 2 reloads
-      // because we haven’t updated Signify in a bit.
-      // The issue was fixed in Signify main repo but we’re on a fork…
-      // await Promise.all([
-      // Agent.agent.identifiers.syncKeriaIdentifiers(),
-      // Agent.agent.connections.syncKeriaContacts(),
-      // Agent.agent.credentials.syncACDCs(),
-      // ]);
-    };
-
-    if (isOnline) {
-      syncWithKeria();
-    }
-  }, [isOnline, dispatch]);
-
-  useEffect(() => {
     if (initAppSuccess) {
       if (authentication.loggedIn) {
         Agent.agent.keriaNotifications.startNotification();
@@ -559,9 +539,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
             await Agent.agent.syncWithKeria();
           }
         }
-        if (!Agent.isOnline) {
-          Agent.agent.markAgentStatus(true);
-        }
+        Agent.agent.markAgentStatus(true);
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured

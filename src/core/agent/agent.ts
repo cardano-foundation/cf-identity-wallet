@@ -313,17 +313,16 @@ class Agent {
   async syncWithKeria() {
     await this.connections.syncKeriaContacts();
     await this.identifiers.syncKeriaIdentifiers();
-    await this.credentials.syncACDCs();
+    await this.credentials.syncKeriaCredentials();
 
-    this.markAgentStatus(true);
-
-    await this.basicStorage.update(
+    await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.CLOUD_RECOVERY_STATUS,
         content: { syncing: false },
       })
     );
-    
+
+    this.markAgentStatus(true);
   }
 
   private async connectSignifyClient(): Promise<void> {

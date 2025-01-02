@@ -162,45 +162,50 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  async syncACDCs(filter?: CredentialFilter) {
-    const signifyCredentials = await this.props.signifyClient
-      .credentials()
-      .list(filter);
+  async syncKeriaCredentials() {
+    const cloudCredentials: any[] = [];
+    let returned = -1;
+    let iteration = 0;
 
-    const storedCredentials =
+    while (returned !== 0) {
+      const result = await this.props.signifyClient.credentials().list({
+        skip: iteration * 24,
+        limit: 24 + (iteration * 24)
+      });
+      cloudCredentials.push(...result);
+
+      returned = result.length;
+      iteration += 1;
+    }
+
+    const localCredentials =
       await this.credentialStorage.getAllCredentialMetadata();
-    const unSyncedData = signifyCredentials.filter(
+    
+    const unSyncedData = cloudCredentials.filter(
       (credential: any) =>
-        !storedCredentials.find((item) => credential.sad.d === item.id)
+        !localCredentials.find((item) => credential.sad.d === item.id)
     );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      for (const credential of unSyncedData) {
-        try {
-          const identifier = await this.identifierStorage.getIdentifierMetadata(
-            credential.sad.a.i
-          );
-          const metadata = {
-            id: credential.sad.d,
-            isArchived: false,
-            issuanceDate: new Date(credential.sad.a.dt).toISOString(),
-            credentialType: credential.schema.title,
-            status: CredentialStatus.CONFIRMED,
-            connectionId: credential.sad.i,
-            schema: credential.schema.$id,
-            identifierId: credential.sad.a.i,
-            identifierType: identifier.multisigManageAid
-              ? IdentifierType.Group
-              : IdentifierType.Individual,
-            createdAt: new Date(credential.sad.a.dt),
-          };
 
-          await this.createMetadata(metadata);
-        } catch (error) {
-          /* eslint-disable no-console */
-          console.error(error);
-        }
-      }
+    for (const credential of unSyncedData) {
+      const identifier = await this.identifierStorage.getIdentifierMetadata(
+        credential.sad.a.i
+      );
+      const metadata = {
+        id: credential.sad.d,
+        isArchived: false,
+        issuanceDate: new Date(credential.sad.a.dt).toISOString(),
+        credentialType: credential.schema.title,
+        status: CredentialStatus.CONFIRMED,
+        connectionId: credential.sad.i,
+        schema: credential.schema.$id,
+        identifierId: credential.sad.a.i,
+        identifierType: identifier.multisigManageAid
+          ? IdentifierType.Group
+          : IdentifierType.Individual,
+        createdAt: new Date(credential.sad.a.dt),
+      };
+
+      await this.createMetadata(metadata);
     }
   }
 

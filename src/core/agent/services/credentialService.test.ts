@@ -373,8 +373,9 @@ describe("Credential service of agent", () => {
       credentialService.getCredentialDetailsById("not-found-id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
-  test("Should call saveCredentialMetadataRecord when there are un-synced KERI credentials", async () => {
-    credentialListMock.mockReturnValue([
+
+  test("Can sync ACDCs from KERIA to local", async () => {
+    credentialListMock.mockReturnValueOnce([
       {
         sad: {
           v: "ACDC10JSON000197_",
@@ -413,16 +414,17 @@ describe("Credential service of agent", () => {
           title: "title2",
         },
       },
-    ]);
+    ]).mockResolvedValue([]);
     credentialStorage.getAllCredentialMetadata = jest.fn().mockReturnValue([]);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...memberIdentifierRecord,
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
     });
     eventEmitter.emit = jest.fn();
-    await credentialService.syncACDCs();
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
 
+    await credentialService.syncKeriaCredentials();
+
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
     expect(credentialStorage.saveCredentialMetadataRecord).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X",
@@ -436,7 +438,6 @@ describe("Credential service of agent", () => {
         identifierType: IdentifierType.Individual,
         createdAt: new Date("2023-11-29T02:13:34.858Z"),
       }));
-
     expect(credentialStorage.saveCredentialMetadataRecord).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",

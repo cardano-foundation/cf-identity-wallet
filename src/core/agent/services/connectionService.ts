@@ -166,22 +166,23 @@ class ConnectionService extends AgentService {
           connection,
         };
       }
-    } else {
-      await this.resolveOobi(url, multiSigInvite);
-      connectionMetadata.pending = false;
-      connectionMetadata.status = ConnectionStatus.CONFIRMED;
     }
-    this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-      type: EventTypes.ConnectionStateChanged,
-      payload: {
-        isMultiSigInvite: false,
-        connectionId,
-        status: ConnectionStatus.PENDING,
-        url,
-        label: alias,
-      },
-    });
+    
     await this.createConnectionMetadata(connectionId, connectionMetadata);
+
+    if (!multiSigInvite) {
+      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+        type: EventTypes.ConnectionStateChanged,
+        payload: {
+          isMultiSigInvite: false,
+          connectionId,
+          status: ConnectionStatus.PENDING,
+          url,
+          label: alias,
+        },
+      });
+    }
+
     return { type: KeriConnectionType.NORMAL, connection };
   }
 
@@ -429,22 +430,21 @@ class ConnectionService extends AgentService {
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
   async syncKeriaContacts() {
-    const signifyContacts = await this.props.signifyClient.contacts().list();
-    const storageContacts = await this.connectionStorage.getAll();
-    const unSyncedData = signifyContacts.filter(
+    const cloudContacts = await this.props.signifyClient.contacts().list();
+    const localContacts = await this.connectionStorage.getAll();
+
+    const unSyncedData = cloudContacts.filter(
       (contact: Contact) =>
-        !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
+        !localContacts.find((item: ConnectionRecord) => contact.id == item.id)
     );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      for (const contact of unSyncedData) {
-        await this.createConnectionMetadata(contact.id, {
-          alias: contact.alias,
-          oobi: contact.oobi,
-          groupId: contact.groupCreationId,
-          createdAtUTC: contact.createdAt,
-        });
-      }
+
+    for (const contact of unSyncedData) {
+      await this.createConnectionMetadata(contact.id, {
+        alias: contact.alias,
+        oobi: contact.oobi,
+        groupId: contact.groupCreationId,
+        createdAtUTC: contact.createdAt,
+      });
     }
   }
 

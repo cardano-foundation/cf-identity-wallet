@@ -463,21 +463,31 @@ class IdentifierService extends AgentService {
 
     const manager = this.props.signifyClient.manager;
     if (manager) {
-      return (await manager.get(aid)).signers[0];
+      return (manager.get(aid)).signers[0];
     } else {
       throw new Error(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
     }
   }
 
-  async syncKeriaIdentifiers(start?: number, end?: number) {
-    const { aids: signifyIdentifiers } = await this.props.signifyClient
-      .identifiers()
-      .list(start, end);
-    const storageIdentifiers =
+  async syncKeriaIdentifiers() {
+    const cloudIdentifiers: any[] = [];
+    let returned = -1;
+    let iteration = 0;
+
+    while (returned !== 0) {
+      const result = await this.props.signifyClient.identifiers().list(iteration * (24 + 1), 24 + (iteration * (24 + 1)));
+      cloudIdentifiers.push(...result.aids);
+
+      returned = result.aids.length;
+      iteration += 1;
+    }
+    
+    const localIdentifiers =
       await this.identifierStorage.getKeriIdentifiersMetadata();
-    const unSyncedData = signifyIdentifiers.filter(
+    
+    const unSyncedData = cloudIdentifiers.filter(
       (identifier: IdentifierResult) =>
-        !storageIdentifiers.find((item) => identifier.prefix === item.id)
+        !localIdentifiers.find((item) => identifier.prefix === item.id)
     );
 
     const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [

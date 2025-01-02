@@ -93,7 +93,7 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         onAcdcStateChanged: jest.fn(),
-        syncACDCs: jest.fn(),
+        syncKeriaCredentials: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
