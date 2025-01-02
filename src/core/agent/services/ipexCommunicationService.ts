@@ -175,7 +175,6 @@ class IpexCommunicationService extends AgentService {
       grantNoteRecord.hidden = true;
     }
 
-    // fixme can I save these multiple times? probably not, then this isn't fully idempotent. maybe easier to change the storage layer
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
