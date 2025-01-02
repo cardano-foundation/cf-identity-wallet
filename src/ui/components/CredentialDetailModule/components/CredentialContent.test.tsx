@@ -1,18 +1,18 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { ACDCDetails, CredentialStatus } from "../../../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../../../core/agent/services/identifier.types";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { store } from "../../../../store";
 import {
   connectionDetailsFix,
   credsFixAcdc,
 } from "../../../__fixtures__/credsFix";
-import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierMapFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../__fixtures__/identifierFix";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { CredentialContent } from "./CredentialContent";
-import { ACDCDetails, CredentialStatus } from "../../../../core/agent/services/credentialService.types";
-import { IdentifierType } from "../../../../core/agent/services/identifier.types";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -154,7 +154,7 @@ describe("Creds content", () => {
       credsCache: { creds: credsFixAcdc, favourites: [] },
       credsArchivedCache: { creds: credsFixAcdc },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
 
@@ -250,7 +250,7 @@ describe("Creds content", () => {
 
     await waitFor(() => {
       expect(getByTestId("credential-attribute-details-modal")).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.fullaccess)).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.title)).toBeVisible();
     });
   });
 });

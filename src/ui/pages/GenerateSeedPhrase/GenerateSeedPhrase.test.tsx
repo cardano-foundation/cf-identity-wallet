@@ -228,4 +228,70 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       expect(seedNumberElements.length).toBe(18);
     });
   });
+
+  test("Show switch onboarding modal", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+    };
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked(initialState)}>
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    expect(getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)).toBeVisible();
+
+    fireEvent.click(getByTestId("tertiary-button-generate-seed-phrase"));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();
+    })
+  });
+
+  test("Show recovery docs", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+    };
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked(initialState)}>
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    fireEvent.click(getByTestId("recovery-phrase-docs-btn"));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.recoveryseedphrasedocs.title)).toBeVisible();
+    })
+  });
 });

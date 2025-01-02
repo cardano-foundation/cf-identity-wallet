@@ -5,6 +5,7 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./services/credentialService.types";
+import { IdentifierShortDetails } from "./services/identifier.types";
 
 interface BaseEventEmitter {
   type: string;
@@ -21,6 +22,8 @@ enum EventTypes {
   KeriaStatusChanged = "KeriaStatusChanged",
   NotificationRemoved = "NotificationRemoved",
   IdentifierRemoved = "IdentifierRemoved",
+  CredentialRemovedEvent = "CredentialRemovedEvent",
+  IdentifierAdded = "IdentifierAdded",
 }
 
 interface NotificationAddedEvent extends BaseEventEmitter {
@@ -81,7 +84,7 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
 interface NotificationRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.NotificationRemoved;
   payload: {
-    keriaNotif: KeriaNotification;
+    id: string;
   };
 }
 
@@ -89,6 +92,20 @@ interface IdentifierRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.IdentifierRemoved;
   payload: {
     id: string;
+  }; 
+}
+
+interface CredentialRemovedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.CredentialRemovedEvent;
+  payload: {
+    credentialId: string;
+  };
+}
+
+interface IdentifierAddedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.IdentifierAdded;
+  payload: {
+    identifier: IdentifierShortDetails;
   };
 }
 
@@ -103,5 +120,7 @@ export type {
   NotificationRemovedEvent,
   ConnectionRemovedEvent,
   IdentifierRemovedEvent,
+  CredentialRemovedEvent,
+  IdentifierAddedEvent,
 };
 export { EventTypes };

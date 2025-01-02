@@ -1,6 +1,6 @@
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 import { mnemonicToEntropy } from "bip39";
-import { AgentUrls } from "./agent.types";
+import { AgentUrls, MiscRecordId } from "./agent.types";
 import { Agent } from "./agent";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { CoreEventEmitter } from "./event";
@@ -23,19 +23,28 @@ const mockAgentServicesProps = {
 };
 
 const mockGetBranValue = "AEsI_2YqNsQlf8brzDJaP";
-const getKeyStoreSpy = jest
+jest
   .spyOn(SecureStorage, "get")
   .mockResolvedValue(mockGetBranValue);
 const mockBasicStorageService = {
   save: jest.fn(),
+  update: jest.fn(),
+  createOrUpdateBasicRecord: jest.fn(),
 };
 
 const mockConnectionService = {
   removeConnectionsPendingDeletion: jest.fn(),
   resolvePendingConnections: jest.fn(),
+  syncKeriaContacts: jest.fn(),
 };
 const mockIdentifierService = {
+  resolvePendingIdentifiers: jest.fn(),
   removeIdentifiersPendingDeletion: jest.fn(),
+  syncKeriaIdentifiers: jest.fn(),
+};
+const mockCredentialService = {
+  syncKeriaCredentials: jest.fn(),
+  removeCredentialsPendingDeletion: jest.fn(),
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -56,6 +65,7 @@ describe("test cases of bootAndConnect function", () => {
     (agent as any).agentServicesProps = mockAgentServicesProps;
     (agent as any).connectionService = mockConnectionService;
     (agent as any).identifierService = mockIdentifierService;
+    (agent as any).credentialService = mockCredentialService;
 
     mockAgentUrls = {
       url: "http://127.0.0.1:3901",
@@ -158,6 +168,13 @@ describe("test cases of bootAndConnect function", () => {
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
+    mockIdentifierService.resolvePendingIdentifiers = jest
+      .fn()
+      .mockReturnValue(undefined);
+    mockCredentialService.removeCredentialsPendingDeletion = jest
+      .fn()
+      .mockReturnValue(undefined);
+    
     await agent.bootAndConnect(mockAgentUrls);
 
     expect(signifyReady).toHaveBeenCalled();
@@ -274,15 +291,30 @@ describe("test cases of recoverKeriaAgent function", () => {
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
+    mockIdentifierService.resolvePendingIdentifiers = jest
+      .fn()
+      .mockReturnValue(undefined);
 
     await agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl);
 
+    const now = new Date();
     expect(SignifyClient).toHaveBeenCalledWith(
       mockConnectUrl,
       expectedBran,
       Tier.low
     );
+    expect(mockConnectionService.syncKeriaContacts).toHaveBeenCalled();
+    expect(mockIdentifierService.syncKeriaIdentifiers).toHaveBeenCalled();
+    expect(mockCredentialService.syncKeriaCredentials).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
+    expect(mockBasicStorageService.createOrUpdateBasicRecord).toHaveBeenCalledWith({
+      _tags: {},
+      content: { syncing: false },
+      createdAt: now,
+      id: MiscRecordId.CLOUD_RECOVERY_STATUS,
+      type: "BasicRecord",
+      updatedAt: undefined,
+    });
     expect(SecureStorage.set).toHaveBeenCalledWith(
       KeyStoreKeys.SIGNIFY_BRAN,
       expectedBran

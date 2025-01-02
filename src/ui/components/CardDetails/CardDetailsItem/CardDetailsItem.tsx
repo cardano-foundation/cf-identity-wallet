@@ -37,7 +37,7 @@ const CardDetailsItem = ({
   });
 
   const copy = () => {
-    writeToClipboard(copyContent || info);
+    writeToClipboard(String(copyContent ?? info ?? ""));
     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
   };
 

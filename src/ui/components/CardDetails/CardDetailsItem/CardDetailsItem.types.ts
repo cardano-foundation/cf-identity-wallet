@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 export interface CardDetailsItemProps {
-  info: string;
+  info: string | number | null;
   copyButton?: boolean;
   icon?: string;
   customIcon?: string;

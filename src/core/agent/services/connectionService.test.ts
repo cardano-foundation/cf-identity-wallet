@@ -518,7 +518,6 @@ describe("Connection service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     contactListMock.mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
@@ -539,6 +538,8 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
+
+    eventEmitter.emit = jest.fn();
     connectionStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
     expect(connectionStorage.save).toBeCalledTimes(2);
@@ -630,9 +631,6 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.getConnectionById("id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(connectionService.syncKeriaContacts()).rejects.toThrowError(
-      Agent.KERIA_CONNECTION_BROKEN
-    );
     await expect(
       connectionService.deleteConnectionById("id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);

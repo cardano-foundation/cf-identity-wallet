@@ -15,6 +15,7 @@ import { i18n } from "../../../../../../i18n";
 import { useAppSelector } from "../../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../../store/reducers/connectionsCache";
 import { getCredsCache } from "../../../../../../store/reducers/credsCache";
+import { getNotificationsCache, setNotificationsCache } from "../../../../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../../../../components/CardDetails";
@@ -33,11 +34,8 @@ import {
   ChooseCredentialProps,
   RequestCredential,
 } from "../CredentialRequest.types";
-import { JoinedMember } from "../JoinedMember";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
-import { MembersModal } from "../MembersModal";
 import "./ChooseCredential.scss";
-import { getNotificationsCache, setNotificationsCache } from "../../../../../../store/reducers/notificationsCache";
 
 const CRED_EMPTY = "Credential is empty";
 
@@ -63,8 +61,6 @@ const ChooseCredential = ({
   const [viewCredDetail, setViewCredDetail] =
     useState<RequestCredential | null>(null);
   const [segmentValue, setSegmentValue] = useState("active");
-  const [showMemberCred, setShowMemberCred] =
-    useState<RequestCredential | null>(null);
 
   const mappedCredentials = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
@@ -147,6 +143,7 @@ const ChooseCredential = ({
       }
 
       setLoading(true);
+
       await Agent.agent.ipexCommunications.offerAcdcFromApply(
         notificationDetails.id,
         selectedCred.acdc
@@ -169,29 +166,15 @@ const ChooseCredential = ({
     onBack();
   };
 
-  const credName = useMemo(
-    () =>
-      showMemberCred && connections
-        ? connections[showMemberCred?.connectionId]?.label
-        : "",
-    [connections, showMemberCred]
-  );
-
+  // @TODO - foconnor: joinedCredMembers and showCredMembers of these will default to all joined members, this UI will change.
   const joinedCredMembers = useMemo(() => {
-    if(!viewCredDetail) return [];
+    if (!viewCredDetail) return [];
 
-    return linkedGroup?.memberInfos.filter(
-      (item) => item.joinedCred === viewCredDetail.acdc.d
-    ) || [];
+    return linkedGroup?.memberInfos.filter(member => member.joined) || [];
+    // return linkedGroup?.memberInfos.filter(
+    //   (item) => item.joinedCred === viewCredDetail.acdc.d
+    // ) || [];
   }, [linkedGroup?.memberInfos, viewCredDetail]);
-
-  const showCredMembers = useMemo(() => {
-    if(!showMemberCred) return [];
-
-    return linkedGroup?.memberInfos.filter(
-      (item) => item.joinedCred === showMemberCred.acdc.d
-    ) || [];
-  }, [linkedGroup?.memberInfos, showMemberCred]);
 
   return (
     <>
@@ -321,12 +304,6 @@ const ChooseCredential = ({
           onRenderEndSlot={(data) => {
             return (
               <div className="item-action">
-                <JoinedMember
-                  members={linkedGroup?.memberInfos.filter(
-                    (item) => item.joinedCred === data.acdc.d
-                  )}
-                  onClick={() => setShowMemberCred(data)}
-                />
                 <IonCheckbox
                   checked={selectedCred?.acdc?.d === data.acdc.d}
                   aria-label=""
@@ -362,14 +339,6 @@ const ChooseCredential = ({
         setIsOpen={() => setViewCredDetail(null)}
         onClose={handleSelectCredOnModal}
         joinedCredRequestMembers={joinedCredMembers}
-      />
-      <MembersModal
-        isOpen={!!showMemberCred}
-        onClose={() => setShowMemberCred(null)}
-        members={showCredMembers}
-        credName={credName || ""}
-        threshold={Number(linkedGroup?.threshold) || 0}
-        joinedMembers={linkedGroup?.joinedMembers || 0}
       />
     </>
   );

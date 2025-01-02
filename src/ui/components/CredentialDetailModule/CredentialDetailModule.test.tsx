@@ -23,7 +23,7 @@ const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 const archiveCredential = jest.fn();
 const deleteCredential = jest.fn();
 const deleteNotificationRecordById = jest.fn();
-
+const markCredentialPendingDeletion = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -34,6 +34,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentials: jest.fn(() => Promise.resolve(true)),
         archiveCredential: () => archiveCredential(),
         deleteCredential: () => deleteCredential(),
+        markCredentialPendingDeletion:() => markCredentialPendingDeletion(),
       },
       connections: {
         getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
@@ -106,7 +107,7 @@ const initialStateNoPasswordCurrent = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
   },
 };
 
@@ -136,7 +137,7 @@ const initialStateNoPasswordArchived = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
   },
 };
 
@@ -355,7 +356,7 @@ describe("Cred Detail Module - current not archived credential", () => {
         notificationDetailCache: null,
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
 
@@ -421,7 +422,7 @@ describe("Cred Detail Module - current not archived credential", () => {
         })),
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       notificationsCache: {
         notificationDetailCache: null,
@@ -657,7 +658,7 @@ describe("Cred Detail Module - archived", () => {
     passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(deleteCredential).toBeCalled();
+      expect(markCredentialPendingDeletion).toBeCalled();
     });
 
     fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
@@ -697,7 +698,7 @@ describe("Cred Detail Module - light mode", () => {
       enabled: false,
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
     },
     notificationsCache: {
       notificationDetailCache: {
@@ -763,7 +764,7 @@ describe("Cred detail - revoked", () => {
       bran: "bran",
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
     },
     credsCache: { creds: credsFixAcdc },
     credsArchivedCache: { creds: [] },
@@ -864,7 +865,7 @@ describe("Cred detail - revoked", () => {
 
     await waitFor(() => {
       expect(archiveCredential).toBeCalled();
-      expect(deleteCredential).toBeCalled();
+      expect(markCredentialPendingDeletion).toBeCalled();
       expect(deleteNotificationRecordById).toBeCalled();
     });
   });
@@ -897,7 +898,7 @@ describe("Cred detail - view only", () => {
       enabled: false,
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
     },
     notificationsCache: {
       notificationDetailCache: {

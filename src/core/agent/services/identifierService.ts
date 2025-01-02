@@ -10,8 +10,12 @@ import {
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
-import { AgentServicesProps, IdentifierResult } from "../agent.types";
-import { IdentifierStorage } from "../records";
+import {
+  AgentServicesProps,
+  IdentifierResult,
+  MiscRecordId,
+} from "../agent.types";
+import { BasicRecord, BasicStorage, IdentifierStorage } from "../records";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
@@ -19,9 +23,11 @@ import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { ConnectionService } from "./connectionService";
 import {
   EventTypes,
+  IdentifierAddedEvent,
   IdentifierRemovedEvent,
   OperationAddedEvent,
 } from "../event.types";
+import { StorageMessage } from "../../storage/storage.types";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -37,27 +43,33 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
-  static readonly IDENTIFIER_NAME_TAKEN =
-    "Identifier name has already been used on KERIA";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
-  static readonly NO_WITNESSES_AVAILABLE = "No discoverable witnesses available on connected KERIA instance";
-  static readonly MISCONFIGURED_AGENT_CONFIGURATION = "Misconfigured KERIA agent for this wallet type";
+  static readonly NO_WITNESSES_AVAILABLE =
+    "No discoverable witnesses available on connected KERIA instance";
+  static readonly MISCONFIGURED_AGENT_CONFIGURATION =
+    "Misconfigured KERIA agent for this wallet type";
+  static readonly INVALID_QUEUED_DISPLAY_NAMES_FORMAT =
+    "Queued display names has invalid format";
+  static readonly CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH = "Identifier name taken on KERIA, but cannot be found when iterating over identifier list";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connections: ConnectionService;
+  protected readonly basicStorage: BasicStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
-    connections: ConnectionService
+    connections: ConnectionService,
+    basicStorage: BasicStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connections = connections;
+    this.basicStorage = basicStorage;
   }
 
   onIdentifierRemoved() {
@@ -67,6 +79,10 @@ class IdentifierService extends AgentService {
         this.deleteIdentifier(data.payload.id!);
       }
     );
+  }
+
+  onIdentifierAdded(callback: (event: IdentifierAddedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.IdentifierAdded, callback);
   }
 
   async getIdentifiers(): Promise<IdentifierShortDetails[]> {
@@ -100,6 +116,7 @@ class IdentifierService extends AgentService {
     if (metadata.isPending) {
       throw new Error(IdentifierService.IDENTIFIER_IS_PENDING);
     }
+
     const aid = await this.props.signifyClient
       .identifiers()
       .get(identifier)
@@ -142,73 +159,186 @@ class IdentifierService extends AgentService {
     };
   }
 
-  @OnlineOnly
-  async createIdentifier(
-    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
-  ): Promise<CreateIdentifierResult> {
-    const startTime = Date.now();
+  async resolvePendingIdentifiers() {
+    const pendingIdentifierCreation = await this.basicStorage.findById(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
+    );
 
-    if (!identifierTypeThemes.includes(metadata.theme)) {
-      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
+    if (!pendingIdentifierCreation) return;
+
+    if (
+      !Array.isArray(pendingIdentifierCreation.content.queuedDisplayNames)
+    ) {
+      throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
     }
 
+    for (const queuedDisplayName of pendingIdentifierCreation.content
+      .queuedDisplayNames) {
+      let metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">;
+      const [themeString, rest] = queuedDisplayName.split(":");
+      const theme = Number(themeString);
+      const groupMatch = rest.match(/^(\d)-(.+)-(.+)$/);
+      if (groupMatch) {
+        const [, initiatorFlag, groupId, displayName] = groupMatch;
+        metadata = {
+          theme,
+          displayName,
+          groupMetadata: {
+            groupId,
+            groupInitiator: initiatorFlag === "1",
+            groupCreated: false,
+          },
+        };
+      } else {
+        metadata = {
+          theme,
+          displayName: rest,
+        };
+      }
+
+      await this.createIdentifier(metadata, true);
+    }
+  }
+
+  @OnlineOnly
+  async createIdentifier(
+    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">,
+    backgroundTask = false,
+  ): Promise<CreateIdentifierResult> {
     const witnesses = await this.getAvailableWitnesses();
     if (witnesses.length === 0) {
       throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE);
     }
 
+    if (!identifierTypeThemes.includes(metadata.theme)) {
+      throw new Error(IdentifierService.THEME_WAS_NOT_VALID);
+    }
+
+    // For simplicity, it's up to the UI to provide a unique name
     let name = `${metadata.theme}:${metadata.displayName}`;
     if (metadata.groupMetadata) {
       const initiatorFlag = metadata.groupMetadata.groupInitiator ? "1" : "0";
       name = `${metadata.theme}:${initiatorFlag}-${metadata.groupMetadata.groupId}:${metadata.displayName}`;
     }
 
-    // @TODO - foconnor: Follow up ticket to pick a sane default for threshold. Right now max is too much.
-    //   Must also enforce a minimum number of available witnesses.
-    const operation = await this.props.signifyClient.identifiers().create(name, {
-      toad: witnesses.length,
-      wits: witnesses,
-    });
-    
-    let op = await operation.op().catch((error) => {
-      const err = error.message.split(" - ");
-      if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {
-        throw new Error(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${name}`, {
-          cause: error,
-        });
+    // For distributed reliability, store name so we can re-try on start-up
+    // Hence much of this function will ignore duplicate errors
+    if (!backgroundTask) {
+      let processingNames = [];
+      const pendingIdentifiersRecord = await this.basicStorage.findById(
+        MiscRecordId.IDENTIFIERS_PENDING_CREATION
+      );
+      if (pendingIdentifiersRecord) {
+        const { queuedDisplayNames } = pendingIdentifiersRecord.content;
+        if (!Array.isArray(queuedDisplayNames)) {
+          throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+        }
+        processingNames = queuedDisplayNames;
       }
-      throw error;
-    });
-    const identifier = operation.serder.ked.i;
+      processingNames.push(name);
+      
+      await this.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+          content: { queuedDisplayNames: processingNames },
+        })
+      );
+    }
+
+    let identifier;
+    try {
+      // @TODO - foconnor: Follow up ticket to pick a sane default for threshold. Right now max is too much.
+      //   Must also enforce a minimum number of available witnesses.
+      const result = await this.props.signifyClient
+        .identifiers()
+        .create(name, {
+          toad: witnesses.length,
+          wits: witnesses,
+        });
+      await result.op();  // @TODO - foconnor: Update Signify to await the POST before returning so error thrown predicably
+      identifier = result.serder.ked.i;
+    } catch (error) {
+      if (!(error instanceof Error)) throw error;
+
+      const [_, status, reason] = error.message.split(" - ");
+      if (!(/400/gi.test(status) && /already incepted/gi.test(reason))) {
+        throw error;
+      }
+
+      // @TODO - foconnor: Should have a way in KERIA to search by name
+      //  Encoding the name in the URL is problematic, and will be changed to identifier only.
+      //  But here we don't know what the identifier is, so we have to manually search.
+      const details = await this.searchByName(name);
+      if (!details) {
+        throw new Error(IdentifierService.CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH);
+      }
+      identifier = details.prefix;
+    }
+
+    // @TODO - foconnor: Need update HabState interface on signify.
+    const identifierDetail = (await this.props.signifyClient
+      .identifiers()
+      .get(identifier)) as HabState & { icp_dt: string };
+
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
 
-    const isPending = !op.done;
-    if (isPending) {
-      op = await waitAndGetDoneOp(
-        this.props.signifyClient,
-        op,
-        2000 - (Date.now() - startTime)
-      );
-      if (!op.done) {
-        const pendingOperation = await this.operationPendingStorage.save({
-          id: op.name,
-          recordType: OperationPendingRecordType.Witness,
+    const isPending = true;
+    try {
+      await this.identifierStorage
+        .createIdentifierMetadataRecord({
+          id: identifier,
+          ...metadata,
+          isPending,
+          createdAt: new Date(identifierDetail.icp_dt),
         });
-        this.props.eventEmitter.emit<OperationAddedEvent>({
-          type: EventTypes.OperationAdded,
-          payload: { operation: pendingOperation },
-        });
+      
+      this.props.eventEmitter.emit<IdentifierAddedEvent>({
+        type: EventTypes.IdentifierAdded,
+        payload: { identifier: { id: identifier, ...metadata, isPending, createdAtUTC: new Date(identifierDetail.icp_dt).toISOString() } },
+      });
+    } catch (error) {
+      if (!(error instanceof Error && error.message.startsWith(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG))) {
+        throw error;
       }
     }
-    await this.identifierStorage.createIdentifierMetadataRecord({
-      id: identifier,
-      ...metadata,
-      isPending: !op.done,
-    });
-    return { identifier, isPending: !op.done };
+
+    try {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: `witness.${identifier}`,
+        recordType: OperationPendingRecordType.Witness,
+      });
+      
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
+        payload: { operation: pendingOperation },
+      }); 
+    } catch (error) {
+      if (!(error instanceof Error && error.message.startsWith(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG))) {
+        throw error;
+      }
+    }
+    
+    // Finally, remove from the re-try record
+    const updatedRecord = await this.basicStorage.findById(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
+    );
+
+    if (updatedRecord) {
+      const { queuedDisplayNames } = updatedRecord.content;
+      if (!Array.isArray(queuedDisplayNames)) {
+        throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+      }
+
+      const index = queuedDisplayNames.indexOf(name);
+      if (index !== -1) {
+        queuedDisplayNames.splice(index, 1);
+      }
+      await this.basicStorage.update(updatedRecord);
+    }
+    return { identifier, createdAt: identifierDetail.icp_dt };
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
@@ -230,6 +360,11 @@ class IdentifierService extends AgentService {
           pendingDeletion: false,
         }
       );
+      await this.props.signifyClient.identifiers().update(localMember.id, {
+        name: `XX-${randomSalt()}:${localMember.groupMetadata?.groupId}:${
+          localMember.displayName
+        }`,
+      });
       await this.deleteGroupLinkedConnections(
         localMember.groupMetadata!.groupId
       );
@@ -328,24 +463,33 @@ class IdentifierService extends AgentService {
 
     const manager = this.props.signifyClient.manager;
     if (manager) {
-      return (await manager.get(aid)).signers[0];
+      return (manager.get(aid)).signers[0];
     } else {
       throw new Error(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
     }
   }
 
-  @OnlineOnly
   async syncKeriaIdentifiers() {
-    const { aids: signifyIdentifiers } = await this.props.signifyClient
-      .identifiers()
-      .list();
-    const storageIdentifiers =
-      await this.identifierStorage.getKeriIdentifiersMetadata();
-    const unSyncedData = signifyIdentifiers.filter(
-      (identifier: IdentifierResult) =>
-        !storageIdentifiers.find((item) => identifier.prefix === item.id)
-    );
+    const cloudIdentifiers: any[] = [];
+    let returned = -1;
+    let iteration = 0;
+
+    while (returned !== 0) {
+      const result = await this.props.signifyClient.identifiers().list(iteration * (24 + 1), 24 + (iteration * (24 + 1)));
+      cloudIdentifiers.push(...result.aids);
+
+      returned = result.aids.length;
+      iteration += 1;
+    }
     
+    const localIdentifiers =
+      await this.identifierStorage.getKeriIdentifiersMetadata();
+    
+    const unSyncedData = cloudIdentifiers.filter(
+      (identifier: IdentifierResult) =>
+        !localIdentifiers.find((item) => identifier.prefix === item.id)
+    );
+
     const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [
       unSyncedData.filter((item: HabState) => item.group !== undefined),
       unSyncedData.filter((item: HabState) => item.group === undefined),
@@ -355,7 +499,7 @@ class IdentifierService extends AgentService {
       if (identifier.name.startsWith("XX")) {
         continue;
       }
- 
+
       const op: Operation = await this.props.signifyClient
         .operations()
         .get(`witness.${identifier.prefix}`)
@@ -370,7 +514,7 @@ class IdentifierService extends AgentService {
         });
       const isPending = !op.done;
 
-      if(isPending){
+      if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
@@ -384,31 +528,34 @@ class IdentifierService extends AgentService {
       const name = identifier.name.split(":");
       const theme = parseInt(name[0], 10);
       const isMultiSig = name.length === 3;
-
-      if(isMultiSig){
+      const identifierDetail = (await this.props.signifyClient
+        .identifiers()
+        .get(identifier.prefix)) as HabState & { icp_dt: string };
+      if (isMultiSig) {
         const groupId = identifier.name.split(":")[1];
         const groupInitiator = groupId.split("-")[0] === "1";
 
         await this.identifierStorage.createIdentifierMetadataRecord({
           id: identifier.prefix,
-          displayName: groupId,
+          displayName: identifier.name.split(":")[1],
           theme,
           groupMetadata: {
             groupId,
             groupCreated: false,
-            groupInitiator
+            groupInitiator,
           },
-          isPending
+          isPending,
+          createdAt: new Date(identifierDetail.icp_dt),
         });
-
         continue;
       }
 
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier.prefix,
-        displayName: identifier.prefix,
+        displayName: identifier.name.split(":")[1],
         theme,
         isPending,
+        createdAt: new Date(identifierDetail.icp_dt),
       });
     }
 
@@ -421,10 +568,15 @@ class IdentifierService extends AgentService {
       const groupId = identifier.group.mhab.name.split(":")[1];
       const theme = parseInt(identifier.name.split(":")[0], 10);
       const groupInitiator = groupId.split("-")[0] === "1";
-      const op = await this.props.signifyClient.operations().get(`group.${identifier.prefix}`)
+      const op = await this.props.signifyClient
+        .operations()
+        .get(`group.${identifier.prefix}`);
       const isPending = !op.done;
+      const identifierDetail = (await this.props.signifyClient
+        .identifiers()
+        .get(identifier.prefix)) as HabState & { icp_dt: string };
 
-      if(isPending){
+      if (isPending) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Group,
@@ -439,17 +591,18 @@ class IdentifierService extends AgentService {
         groupMetadata: {
           groupId,
           groupCreated: true,
-          groupInitiator
-        }
+          groupInitiator,
+        },
       });
-        
+
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier.prefix,
         displayName: groupId,
         theme,
         multisigManageAid,
-        isPending
-      })
+        isPending,
+        createdAt: new Date(identifierDetail.icp_dt),
+      });
     }
   }
 
@@ -467,21 +620,36 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private async getAvailableWitnesses(): Promise<string[]> {
+  async getAvailableWitnesses(): Promise<string[]> {
     const config = await this.props.signifyClient.config().get();
     if (!config.iurls) {
       throw new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
     }
-    
+
     const witnesses = [];
     for (const oobi of config.iurls) {
       const role = new URL(oobi).searchParams.get("role");
       if (role === "witness") {
-        witnesses.push(oobi.split("/oobi/")[1].split("/")[0]);  // EID - endpoint identifier
+        witnesses.push(oobi.split("/oobi/")[1].split("/")[0]); // EID - endpoint identifier
       }
     }
 
     return witnesses;
+  }
+
+  private async searchByName(name: string): Promise<HabState & { icp_dt: string } | undefined> {
+    let returned = -1;
+    let iteration = 0;
+
+    while (returned !== 0) {
+      const result = await this.props.signifyClient.identifiers().list(iteration * (24 + 1), 24 + (iteration * (24 + 1)));
+      for (const identifier of result.aids) {
+        if (identifier.name === name) return identifier;
+      }
+
+      returned = result.aids.length;
+      iteration += 1;
+    }
   }
 }
 

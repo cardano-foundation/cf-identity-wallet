@@ -54,6 +54,7 @@ import {
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
+  showNoWitnessAlert,
 } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -69,7 +70,8 @@ import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
-  notificatiStateChanged,
+  identifierAddedHandler,
+  notificationStateChanged,
   signifyOperationStateChangeHandler,
 } from "./coreEventListeners";
 import {
@@ -78,6 +80,7 @@ import {
 } from "../../../core/agent/event.types";
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
+import { IdentifierService } from "../../../core/agent/services";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -192,6 +195,30 @@ const AppWrapper = (props: { children: ReactNode }) => {
     [dispatch]
   );
 
+  const checkWitness = useCallback(async () => {
+    if(!authentication.ssiAgentIsSet || !isOnline) return;
+
+    try {
+      const witness = await Agent.agent.identifiers.getAvailableWitnesses();
+
+      if (witness.length === 0)
+        throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE)
+
+    } catch(e) {
+      const errorMessage = (e as Error).message;
+      if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+        dispatch(showNoWitnessAlert(true));
+        return;
+      }
+
+      throw e;
+    }
+  }, [authentication.ssiAgentIsSet, dispatch, isOnline]);
+
+  useEffect(() => {
+    checkWitness();
+  }, [checkWitness])
+
   useEffect(() => {
     initApp();
   }, []);
@@ -203,25 +230,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setPauseQueueIncomingRequest(true));
     }
   }, [isOnline, authentication.loggedIn, dispatch]);
-
-  useEffect(() => {
-    const syncWithKeria = async () => {
-      // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-      //
-      // TODO: This got uncommented when we were redoing that by accident.
-      // Right now if you delete a connection, it will re-appear after 2 reloads
-      // because we haven’t updated Signify in a bit.
-      // The issue was fixed in Signify main repo but we’re on a fork…
-      // await Promise.all([
-      // Agent.agent.identifiers.syncKeriaIdentifiers(),
-      // Agent.agent.connections.syncKeriaContacts(),
-      // Agent.agent.credentials.syncACDCs(),
-      // ]);
-    };
-    if (isOnline) {
-      syncWithKeria();
-    }
-  }, [isOnline, dispatch]);
 
   useEffect(() => {
     if (initAppSuccess) {
@@ -274,7 +282,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       const storedPeerConnections =
         await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
       const notifications =
-        await Agent.agent.keriaNotifications.getAllNotifications();
+        await Agent.agent.keriaNotifications.getNotifications();
 
       dispatch(setIdentifiersCache(storedIdentifiers));
       dispatch(setCredsCache(credsCache));
@@ -479,7 +487,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     );
     Agent.agent.keriaNotifications.onNewNotification((event) => {
-      notificatiStateChanged(event, dispatch);
+      notificationStateChanged(event, dispatch);
     });
 
     Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
@@ -487,7 +495,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
 
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
-      notificatiStateChanged(event, dispatch);
+      notificationStateChanged(event, dispatch);
+    });
+
+    Agent.agent.identifiers.onIdentifierAdded((event) => {
+      identifierAddedHandler(event, dispatch);
     });
   };
 
@@ -511,7 +523,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await Agent.agent.devPreload();
     }
 
-    await loadDatabase();
     const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
 
     // Ensure online/offline callback setup before connecting to KERIA
@@ -520,6 +531,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (keriaConnectUrlRecord) {
       try {
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
+        if (keriaConnectUrlRecord?.content?.url) {
+          const recoveryStatus = await Agent.agent.basicStorage.findById(
+            MiscRecordId.CLOUD_RECOVERY_STATUS
+          );
+          if (recoveryStatus?.content?.syncing) {
+            await Agent.agent.syncWithKeria();
+          }
+        }
+        Agent.agent.markAgentStatus(true);
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
@@ -531,6 +551,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
         } else {
           throw e;
         }
+      } finally {
+        await loadDatabase();
       }
     }
 

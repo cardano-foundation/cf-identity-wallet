@@ -48,20 +48,65 @@
   },
   "generateseedphrase": {
     "onboarding": {
-      "title": "Generate recovery phrase",
+      "title": "Your recovery phrase",
       "paragraph": {
-        "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
-        "bottom": "It's important to keep these words safe and sound! Store them in a secure location and remember to never share them with anyone."
+        "bottom": "Keep these words safe! Store them securely and never share them with anyone."
       },
       "button": {
-        "continue": "Generate",
-        "switch": "Switch to recover a wallet"
+        "continue": "Continue",
+        "switch": "Switch to recover a wallet",
+        "recoverydocumentation": "What’s a recovery phrase?"
+      },
+      "recoveryseedphrasedocs": {
+        "title": "Recovery phrase",
+        "button": {
+          "done": "Done"
+        },
+        "alert": "We can’t recover your wallet if you lose your recovery phrase. Keeping it safe means keeping your identity safe.",
+        "content": {
+          "what": {
+            "title": "What is a recovery phrase?",
+            "content": [
+              {
+                "text": "Your recovery phrase is like a master key for your wallet. It’s a unique set of 18 words that lets you securely access your identity wallet—even if you lose your phone or need to restore it on a new device."
+              }
+            ]
+          },
+          "why": {
+            "title": "Why is it so important?",
+            "content": [
+              {
+                "text": "<strong>Your wallet, your control:</strong> Unlike traditional accounts, no one—not even us—can reset your wallet for you. This keeps your identity and data secure and fully under your control."
+              },
+              {
+                "text": "<strong>One-of-a-kind key:</strong> The recovery phrase is the only way to restore your wallet if something happens to your device. Without it, you could permanently lose access to your identity."
+              },
+              {
+                "text": "<strong>Stay protected:</strong> Think of it like a spare key to your house. If you lose it, no one can unlock the door—even you!"
+              }
+            ]
+          },
+          "how": {
+            "title": "How to keep it safe:",
+            "content": [
+              {
+                "text": "<strong>Write it down:</strong> Store it somewhere secure, like a locked drawer or safe."
+              },
+              {
+                "text": "<strong>Don’t share it:</strong> Anyone with your recovery phrase can access your wallet. Keep it private."
+              },
+              {
+                "text": "<strong>No screenshots:</strong> Don’t save it on your phone or in the cloud—this protects it from hackers."
+              }
+            ]
+          }
+        }
       }
     },
     "segment": "{{length}} words",
     "privacy": {
       "overlay": {
-        "text": "Press the ‘view’ button when you’re ready to see your recovery phrase. Remember to make sure nobody is looking!",
+        "text": "Press the ‘view recovery phrase’ button when you’re ready to see your recovery phrase. Remember to make sure nobody is looking!",
         "button": "View Recovery Phrase"
       }
     },
@@ -677,7 +722,7 @@
     "title": "Create password",
     "change": "New password",
     "cancel": "Cancel",
-    "description": "Set your operations password so you can access additional wallet features.",
+    "description": "Add an extra layer of security for sensitive actions in your wallet by creating an optional password.",
     "input": {
       "first": {
         "symbolguide": "Symbol guide",
@@ -996,7 +1041,7 @@
           "about": "About {{ type }}"
         },
         "attributes": {
-          "fullaccess": "Full access",
+          "title": "Credential Details",
           "label": "Attributes",
           "description": "Essential details shared by the issuer, which verify and describe key information in this credential.",
           "details": "Attribute details",
@@ -1139,7 +1184,8 @@
           "exnipexgrant": "<strong>{{connection}}</strong> wants to issue you a credential",
           "multisigicp": "<strong>{{connection}}</strong> is requesting to create a group identifier with you",
           "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you",
-          "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked"
+          "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
+          "exnipexapplyproposed": "<strong>{{initiator}}</strong>  has proposed a credential for the <strong>{{connection}}’s</strong> request"
         }
       },
       "details": {
@@ -1154,7 +1200,8 @@
           "addcred": "Add Credential",
           "done": "Done",
           "ok": "Ok",
-          "delete": "Delete"
+          "delete": "Delete",
+          "reject": "Reject"
         },
         "credential": {
           "request": {
@@ -1164,6 +1211,8 @@
             },
             "information": {
               "title": "Credential request",
+              "proposalfrom": "Proposal from",
+              "proposedcred": "Proposed credential",
               "requestfrom": "Request from",
               "requestedcredential": "Requested credential",
               "informationrequired": "Information required",
@@ -1173,7 +1222,12 @@
               },
               "groupmember": "Group members",
               "joinedmembers": "Joined members",
-              "reachthreshold": "The threshold has been met and your group has already chosen a credential to provide.",
+              "reachthreshold": "The threshold has been met, and your group has agreed to your proposed credential presentation.",
+              "initiatorselectcred": "As the group initiator, you'll select the credential to present. Once chosen, the rest of the group will be notified and asked to approve or decline the selection.",
+              "initiatorselectedcred": "You've already proposed a credential for this request. It will be sent once the group’s threshold is met.",
+              "memberreviewcred": "The group initiator has proposed a credential to present for a recent request. Please review the proposal and choose to accept or reject it.",
+              "memberwaitingproposal": "The group initiator will propose a credential to present. Once chosen, the you and the rest of the group will be notified and asked to approve or decline the selection.",
+              "memberjoined": "Your response has been recorded. Please check back for updates.",
               "providecredential": "Provided credential"
             },
             "choosecredential": {
@@ -1192,9 +1246,10 @@
             "from": "from",
             "credentialpending": "Credential pending",
             "credentialdetailbutton": "Credential details",
-            "members": "Group member",
+            "members": "Group members",
             "revokedalert": "This credential has been revoked by the issuer and is no longer available.",
             "relatedidentifier": "Related identifier",
+            "initiatoracceptedalert": "Your group is receiving a credential. Once the group initiator accepts it, you’ll be able to accept yours too.",
             "alert": {
               "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
             }
@@ -1728,8 +1783,8 @@
     "passwordupdated": "Password updated successfully",
     "passworddisabled": "Password turned off",
     "passwordcreated": "Password created successfully",
-    "sharecredsuccess": "Credential shared successfully",
-    "sharecrederror": "Unable to share credential",
+    "sharecredsuccess": "Credential proposed to group",
+    "sharecrederror": "Unable to propose credential",
     "deleteconnectionerror": "Unable to delete connection",
     "deletecrederror": "Unable to delete credential",
     "deleteidentifiererror": "Unable to delete identifier",
@@ -1740,7 +1795,10 @@
     "failedupdateconnectionerror": "Failed to update connection",
     "duplicateconnectionerror": "Connection already established",
     "groupidnotmatcherror": "Connection not part of this group",
-    "unknownerror": "Something went wrong, try again"
+    "unknownerror": "Something went wrong, try again",
+    "proposalcredaccepted": "Credential proposal accepted",
+    "proposalcredreject": "Credential proposal rejected",
+    "proposalcredfailerror": "Unable to record response"
   },
   "request": {
     "sign": {
@@ -1796,6 +1854,10 @@
   },
   "genericerror": {
     "text": "Something went wrong. Please try again.",
+    "button": "OK"
+  },
+  "nowitnesserror": {
+    "text": "Your SSI agent is misconfigured. For additional information, contact your SSI Cloud Agent provider.",
     "button": "OK"
   },
   "readmore": {

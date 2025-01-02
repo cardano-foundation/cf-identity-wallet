@@ -255,7 +255,7 @@ describe("Credential request - choose request", () => {
         ],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
 

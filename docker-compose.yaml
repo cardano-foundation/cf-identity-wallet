@@ -3,9 +3,7 @@ services:
   keria:
     container_name: idw-keria
     restart: unless-stopped
-    build:
-      context: https://github.com/WebOfTrust/keria.git#e36521703ebc62856e6b25e21ed6b21110467be4
-      dockerfile: ./images/keria.dockerfile
+    image: weboftrust/keria:0.2.0-dev6
     environment:
       - KERI_AGENT_CORS=true
     volumes:

@@ -1,19 +1,23 @@
 import {
   EventTypes,
+  IdentifierAddedEvent,
   NotificationAddedEvent,
   NotificationRemovedEvent,
 } from "../../../core/agent/event.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { useAppDispatch } from "../../../store/hooks";
-import { updateIsPending } from "../../../store/reducers/identifiersCache";
+import {
+  updateIsPending,
+  updateOrAddIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
-  deleteNotification,
+  deleteNotificationById,
 } from "../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 
-const notificatiStateChanged = (
+const notificationStateChanged = (
   event: NotificationRemovedEvent | NotificationAddedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
@@ -22,7 +26,7 @@ const notificatiStateChanged = (
     dispatch(addNotification(event.payload.keriaNotif));
     break;
   case EventTypes.NotificationRemoved:
-    dispatch(deleteNotification(event.payload.keriaNotif));
+    dispatch(deleteNotificationById(event.payload.id));
     break;
   default:
     break;
@@ -41,4 +45,16 @@ const signifyOperationStateChangeHandler = async (
     break;
   }
 };
-export { notificatiStateChanged, signifyOperationStateChangeHandler };
+
+const identifierAddedHandler = async (
+  event: IdentifierAddedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(updateOrAddIdentifiersCache(event.payload.identifier));
+};
+
+export {
+  notificationStateChanged,
+  signifyOperationStateChangeHandler,
+  identifierAddedHandler,
+};

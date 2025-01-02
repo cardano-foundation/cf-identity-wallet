@@ -211,7 +211,7 @@ describe("Wallet Connect Stage One", () => {
         pendingConnection: walletConnectionsFix[0],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
 

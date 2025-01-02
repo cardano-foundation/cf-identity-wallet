@@ -57,6 +57,7 @@ interface StateCacheProps {
   queueIncomingRequest: QueueProps<IncomingRequestProps>;
   cameraDirection?: LensFacing;
   showGenericError?: boolean;
+  showNoWitnessAlert?: boolean;
   showConnections: boolean;
   toastMsgs: ToastStackItem[];
 }

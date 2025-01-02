@@ -44,7 +44,7 @@
     .confirm-modal-id {
       margin: 0 0 1.5rem;
       padding: 1rem 1.5rem;
-      background-color: #fff;
+      background-color: var(--ion-color-white);
       border-radius: 1.875rem;
 
       display: flex;
@@ -92,7 +92,7 @@
       background: var(--ion-color-danger) !important;
 
       & > ion-icon {
-        --ion-color-base: #fff !important;
+        --ion-color-base: var(--ion-color-white) !important;
         width: 1.5rem;
         height: 1.5rem;
       }

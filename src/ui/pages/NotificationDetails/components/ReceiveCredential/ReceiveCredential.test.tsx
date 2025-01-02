@@ -10,7 +10,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { showGenericError } from "../../../../../store/reducers/stateCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
-import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierMapFix, filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
@@ -28,7 +28,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 }));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const admitAcdcMock = jest.fn(
+const admitAcdcFromGrantMock = jest.fn(
   (id: string) =>
     new Promise((res) => {
       setTimeout(() => {
@@ -48,7 +48,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
           deleteNotificationMock(id),
       },
       ipexCommunications: {
-        admitAcdc: (id: string) => admitAcdcMock(id),
+        admitAcdcFromGrant: (id: string) => admitAcdcFromGrantMock(id),
         getAcdcFromIpexGrant: () => getAcdcFromIpexGrantMock(),
         getLinkedGroupFromIpexGrant: () => getLinkedGroupFromIpexGrantMock(),
       },
@@ -98,7 +98,7 @@ const initialState = {
     notifications: notificationsFix,
   },
   identifiersCache: {
-    identifiers: filteredIdentifierFix,
+    identifiers: filteredIdentifierMapFix,
   },
 };
 
@@ -109,7 +109,7 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
-describe("Credential request", () => {
+describe("Receive credential", () => {
   beforeEach(() => {
     getAcdcFromIpexGrantMock.mockImplementation(() =>
       Promise.resolve({
@@ -208,7 +208,7 @@ describe("Credential request", () => {
     });
 
     await waitFor(() => {
-      expect(admitAcdcMock).toBeCalledWith(notificationsFix[0].id);
+      expect(admitAcdcFromGrantMock).toBeCalledWith(notificationsFix[0].id);
     });
   }, 10000);
 
@@ -265,7 +265,7 @@ describe("Credential request", () => {
         notifications: notificationsFix,
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
 
@@ -318,7 +318,7 @@ describe("Credential request", () => {
         notifications: notificationsFix,
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
 
@@ -433,7 +433,7 @@ describe("Credential request: Multisig", () => {
       notifications: notificationsFix,
     },
     identifiersCache: {
-      identifiers: filteredIdentifierFix,
+      identifiers: filteredIdentifierMapFix,
     },
   };
 
@@ -482,6 +482,71 @@ describe("Credential request: Multisig", () => {
 
       expect(getByText("Member 2")).toBeVisible();
     });
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.initiatoracceptedalert
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.buttons.ok
+      )
+    ).toBeVisible();
+  });
+
+  test("Hide alert when group initiator accept cred", async () => {
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const backMock = jest.fn();
+
+    getAcdcFromIpexGrantMock.mockResolvedValue({
+      ...credsFixAcdc[0],
+      identifierType: IdentifierType.Group,
+      identifierId: filteredIdentifierFix[2].id,
+    });
+
+    getLinkedGroupFromIpexGrantMock.mockResolvedValue({
+      threshold: "2",
+      members: ["member-1", "member-2"],
+      othersJoined: ["member-1"],
+      linkedGroupRequest: {
+        accepted: false,
+      }
+    });
+
+    const { getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.receive.members
+        )
+      ).toBeVisible();
+
+      expect(getByText("Member 1")).toBeVisible();
+
+      expect(getByText("Member 2")).toBeVisible();
+    });
+
+    expect(
+      queryByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.initiatoracceptedalert
+      )
+    ).toBeNull();
   });
 
   test("Multisig credential request: max threshold", async () => {

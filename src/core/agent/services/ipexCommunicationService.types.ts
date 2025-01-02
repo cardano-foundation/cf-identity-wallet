@@ -13,11 +13,11 @@ interface CredentialsMatchingApply {
   identifier: string;
 }
 
-interface LinkedGroupInfoGrant {
+interface LinkedGroupInfo {
   threshold: string | string[];
   members: string[];
   othersJoined: string[];
   linkedGroupRequest: LinkedGroupRequest;
 }
 
-export type { CredentialsMatchingApply, LinkedGroupInfoGrant };
+export type { CredentialsMatchingApply, LinkedGroupInfo };

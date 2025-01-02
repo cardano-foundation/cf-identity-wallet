@@ -2,17 +2,17 @@ import { IonReactMemoryRouter } from "@ionic/react-router";
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { act } from "react";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
-import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { CredentialRequest } from "./CredentialRequest";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
 import { filteredIdentifierFix, multisignIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
+import { CredentialRequest } from "./CredentialRequest";
 
 mockIonicReact();
 
@@ -25,6 +25,8 @@ jest.mock("../../../../../core/agent/agent", () => ({
       ipexCommunications: {
         getIpexApplyDetails: () => getIpexApplyDetailsMock(),
         getLinkedGroupFromIpexApply: () => getLinkedGroupFromIpexApplyMock(),
+        joinMultisigOffer: jest.fn(),
+        getOfferedCredentialSaid: jest.fn()
       },
     },
   },
@@ -178,10 +180,13 @@ describe("Credential request: Multisig", () => {
       notifications: notificationsFix,
     },
     identifiersCache: {
-      identifiers: [{
-        ...multisignIdentifierFix[0],
-        id: "id"
-      }],
+      identifiers: {
+        "id": {
+          ...multisignIdentifierFix[0],
+          multisigManageAid: "member-1",
+          id: "id"
+        }
+      },
       favourites: [],
     },
     connectionsCache: {
@@ -198,6 +203,9 @@ describe("Credential request: Multisig", () => {
         },
         "member-4": {
           label: "Member 4"
+        },
+        "member-5": {
+          label: "Member 5"
         }
       },
     },
@@ -211,18 +219,14 @@ describe("Credential request: Multisig", () => {
   beforeEach(() => {
     getLinkedGroupFromIpexApplyMock.mockImplementation(() =>
       Promise.resolve({
-        threshold: "5",
-        members: ["member-1", "member-2", "member-3",  "member-4"],
-        offer: {
-          "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv": {
-            accepted: false,
-            membersJoined: ["member-1", "member-2", "member-3",  "member-4"],
-          },
-          "EOT8OgwrwwNnBc-FzHPUBzsFQHOGXfifKqzfT5HwOVyb": {
-            accepted: false,
-            membersJoined: [],
-          },
+        linkedGroupRequest: {
+          accepted: true,
+          current: "",
+          previous: undefined,
         },
+        threshold: "5",
+        members: ["member-1", "member-2", "member-3",  "member-4", "member-5"],
+        othersJoined: [],
       })
     );
   });
@@ -234,7 +238,7 @@ describe("Credential request: Multisig", () => {
 
     const history = createMemoryHistory();
 
-    const { getByText, getByTestId, queryByTestId, queryAllByTestId } = render(
+    const { getByText, getByTestId, queryByTestId, getAllByText } = render(
       <Provider store={storeMocked}>
         <IonReactMemoryRouter history={history}>
           <CredentialRequest
@@ -275,9 +279,9 @@ describe("Credential request: Multisig", () => {
           .information.threshold
       )
     ).toBeVisible();
-    expect(getByText("4/5")).toBeVisible();
-    expect(getByText("Member 1")).toBeVisible();
-    expect(getByText("Member 2")).toBeVisible();
+    expect(getByText("5")).toBeVisible();
+    expect(getAllByText("Member 1")[0]).toBeVisible();
+    expect(getAllByText("Member 2")[0]).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
@@ -291,73 +295,5 @@ describe("Credential request: Multisig", () => {
         )
       ).toBeVisible();
     });
-
-    expect(queryAllByTestId("joined-member").length).toBeGreaterThan(0);
-
-    fireEvent.click(queryAllByTestId("joined-member")[0])
-
-    await waitFor(() => {
-      expect(
-        getByTestId("members-modal")
-      ).toBeVisible();
-    });
-  });
-
-  test("Reach threshold", async () => {
-    const history = createMemoryHistory();
-
-    getLinkedGroupFromIpexApplyMock.mockImplementation(() =>
-      Promise.resolve({
-        threshold: "1",
-        members: ["member-1", "member-2"],
-        offer: {
-          "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv": {
-            accepted: false,
-            membersJoined: ["member-1"],
-          },
-          "EOT8OgwrwwNnBc-FzHPUBzsFQHOGXfifKqzfT5HwOVyb": {
-            accepted: false,
-            membersJoined: [],
-          },
-        },
-      })
-    );
-
-    const { getByText, getByTestId, queryByTestId } = render(
-      <Provider store={storeMocked}>
-        <IonReactMemoryRouter history={history}>
-          <CredentialRequest
-            pageId="multi-sign"
-            activeStatus
-            handleBack={jest.fn()}
-            notificationDetails={{
-              ...notificationsFix[4],
-              multisigId: "multisig-id",
-            }}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-
-    expect(getByTestId("cre-request-spinner-container")).toBeVisible();
-
-    await waitFor(() => {
-      expect(queryByTestId("cre-request-spinner-container")).toBe(null);
-
-      expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.notifications.details.credential.request
-            .information.title
-        )
-      ).toBeVisible();
-    });
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.credential.request
-          .information.reachthreshold
-      )
-    ).toBeVisible();
-    
   });
 });

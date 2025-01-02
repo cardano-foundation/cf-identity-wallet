@@ -1,17 +1,33 @@
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
-import { IonCol, IonGrid, IonIcon, IonModal, IonRow, IonSpinner } from "@ionic/react";
+import {
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonModal,
+  IonRow,
+  IonSpinner,
+} from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useState } from "react";
 import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
 import { IdentifierService } from "../../../core/agent/services";
-import { CreateIdentifierInputs, IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import {
+  CreateIdentifierInputs,
+  IdentifierShortDetails,
+} from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getIdentifiersCache, setIdentifiersCache, setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { useAppDispatch } from "../../../store/hooks";
+import {
+  setMultiSigGroupCache
+} from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { setCurrentOperation, setToastMsg } from "../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  setToastMsg,
+  showNoWitnessAlert,
+} from "../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
@@ -24,13 +40,16 @@ import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
 import { IADTypeInfoModal } from "./components/AIDTypeInfoModal";
-import { IdentifierColor, IdentifierColorSelector } from "./components/IdentifierColorSelector";
+import {
+  IdentifierColor,
+  IdentifierColorSelector,
+} from "./components/IdentifierColorSelector";
 import { IdentifierThemeSelector } from "./components/IdentifierThemeSelector";
 import { TypeItem } from "./components/TypeItem";
 import "./CreateIdentifier.scss";
 import {
   CreateIdentifierProps,
-  IdentifierModel
+  IdentifierModel,
 } from "./CreateIdentifier.types";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
@@ -39,7 +58,7 @@ const CreateIdentifier = ({
   modalIsOpen,
   setModalIsOpen,
   onClose,
-  groupId
+  groupId,
 }: CreateIdentifierProps) => {
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const componentId = "create-identifier-modal";
@@ -52,18 +71,21 @@ const CreateIdentifier = ({
     color: IdentifierColor.Green,
   };
 
-  const [identifierData, setIdentifierData] = useState<IdentifierModel>({...initalState});
+  const [identifierData, setIdentifierData] = useState<IdentifierModel>({
+    ...initalState,
+  });
   const [blur, setBlur] = useState(false);
   const [multiSigGroup, setMultiSigGroup] = useState<
     MultiSigGroup | undefined
   >();
 
-  const identifiersData = useAppSelector(getIdentifiersCache);
   const [openAIDInfo, setOpenAIDInfo] = useState(false);
 
   const [duplicateName, setDuplicateName] = useState(false);
   const [inputChange, setInputChange] = useState(false);
-  const localValidateMessage = inputChange ? nameChecker.getError(identifierData.displayName) : undefined;
+  const localValidateMessage = inputChange
+    ? nameChecker.getError(identifierData.displayName)
+    : undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -110,13 +132,16 @@ const CreateIdentifier = ({
     onClose?.(identiferData);
     setMultiSigGroup && setMultiSigGroup(undefined);
     dispatch(setMultiSigGroupCache(undefined));
-    setIdentifierData({...initalState});
+    setIdentifierData({ ...initalState });
     setInputChange(false);
     setDuplicateName(false);
   };
 
   const handleCreateIdentifier = async () => {
-    const selectedTheme = createThemeValue(identifierData.color, identifierData.selectedTheme);
+    const selectedTheme = createThemeValue(
+      identifierData.color,
+      identifierData.selectedTheme
+    );
 
     const metadata: CreateIdentifierInputs = {
       displayName: identifierData.displayName,
@@ -138,31 +163,12 @@ const CreateIdentifier = ({
     }
     metadata.groupMetadata = groupMetadata;
     try {
-      const { identifier, isPending } =
-        await Agent.agent.identifiers.createIdentifier(metadata);
-    
-      if(!identifier) {
-        throw new Error("Cannot create identifier");
-      }
-
-      const newIdentifier: IdentifierShortDetails = {
-        id: identifier,
-        displayName: identifierData.displayName,
-        createdAtUTC: new Date().toISOString(),
-        theme: selectedTheme,
-        isPending: isPending,
-      };
-
-      if (groupMetadata) {
-        newIdentifier.groupMetadata = groupMetadata;
-      }
-
-      dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+      const { identifier, createdAt } = await Agent.agent.identifiers.createIdentifier(metadata);
       if (multiSigGroup) {
         const connections =
-            await Agent.agent.connections.getMultisigLinkedContacts(
-              multiSigGroup.groupId
-            );
+          await Agent.agent.connections.getMultisigLinkedContacts(
+            multiSigGroup.groupId
+          );
         const newMultiSigGroup: MultiSigGroup = {
           groupId: multiSigGroup.groupId,
           connections,
@@ -170,7 +176,14 @@ const CreateIdentifier = ({
         dispatch(setMultiSigGroupCache(newMultiSigGroup));
       }
 
-      resetModal(newIdentifier);
+      resetModal({
+        id: identifier,
+        isPending: true,
+        createdAtUTC: createdAt,
+        theme: selectedTheme,
+        displayName: identifierData.displayName,
+        groupMetadata,
+      });
 
       dispatch(
         setToastMsg(
@@ -182,8 +195,10 @@ const CreateIdentifier = ({
         )
       );
     } catch (e) {
-      if ((e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
-        setDuplicateName(true);
+      const errorMessage = (e as Error).message;
+
+      if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+        dispatch(showNoWitnessAlert(true));
         return;
       }
 
@@ -207,18 +222,18 @@ const CreateIdentifier = ({
   const setDisplayName = (value: string) => {
     setIdentifierData((prev) => ({
       ...prev,
-      displayName: value
+      displayName: value,
     }));
     setInputChange(true);
     setDuplicateName(false);
-  }
+  };
 
   const setTheme = (value: number) => {
     setIdentifierData((prev) => ({
       ...prev,
-      selectedTheme: value
+      selectedTheme: value,
     }));
-  }
+  };
 
   const setAIDType = (index: number) =>
     setIdentifierData((prevState) => ({
@@ -227,11 +242,12 @@ const CreateIdentifier = ({
     }));
 
   const hasError = localValidateMessage || duplicateName;
-  const errorMessage = localValidateMessage || `${i18n.t("nameerror.duplicatename")}`;
+  const errorMessage =
+    localValidateMessage || `${i18n.t("nameerror.duplicatename")}`;
 
   const inputContainerClass = combineClassNames("identifier-name", {
-    "identifier-name-error": !!hasError
-  })
+    "identifier-name-error": !!hasError,
+  });
 
   return (
     <>
@@ -272,9 +288,7 @@ const CreateIdentifier = ({
             />
           }
         >
-          <div
-            className={inputContainerClass}
-          >
+          <div className={inputContainerClass}>
             <CustomInput
               dataTestId="display-name-input"
               title={`${i18n.t("createidentifier.displayname.title")}`}
@@ -286,11 +300,7 @@ const CreateIdentifier = ({
               value={identifierData.displayName}
             />
             <div className="error-message-container">
-              {hasError && (
-                <ErrorMessage
-                  message={errorMessage}
-                />
-              )}
+              {hasError && <ErrorMessage message={errorMessage} />}
             </div>
           </div>
           {!multiSigGroup && (
@@ -335,7 +345,9 @@ const CreateIdentifier = ({
                       <TypeItem
                         dataTestId="identifier-aidtype-delegated"
                         index={2}
-                        text={i18n.t("createidentifier.aidtype.delegated.label")}
+                        text={i18n.t(
+                          "createidentifier.aidtype.delegated.label"
+                        )}
                         clickEvent={setAIDType}
                         disabled
                         selectedType={identifierData.selectedAidType}
@@ -382,13 +394,16 @@ const CreateIdentifier = ({
               : "createidentifier.add.confirmbutton"
           )}`}
           primaryButtonAction={handleContinue}
-          primaryButtonDisabled={identifierData.displayName.length === 0 || !!localValidateMessage}
+          primaryButtonDisabled={
+            identifierData.displayName.length === 0 || !!localValidateMessage
+          }
         />
       </IonModal>
       <IADTypeInfoModal
         isOpen={openAIDInfo}
         setOpen={setOpenAIDInfo}
-      /></>
+      />
+    </>
   );
 };
 

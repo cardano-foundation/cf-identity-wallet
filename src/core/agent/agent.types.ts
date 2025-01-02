@@ -39,6 +39,8 @@ enum MiscRecordId {
   LOGIN_METADATA = "login-metadata",
   CAMERA_DIRECTION = "camera-direction",
   FAILED_NOTIFICATIONS = "failed-notifications",
+  CLOUD_RECOVERY_STATUS = "cloud-recovery-status",
+  IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
 }
 
 interface ConnectionShortDetails {
@@ -84,6 +86,7 @@ type ExnMessage = {
     acdc?: string;
     iss?: string;
     anc?: string;
+    exn?: string;
   };
 };
 
@@ -119,6 +122,9 @@ interface KeriaNotification {
   multisigId?: string;
   connectionId: string;
   read: boolean;
+  groupReplied: boolean;
+  initiatorAid?: string;
+  groupInitiator?: boolean;
 }
 
 enum KeriConnectionType {
@@ -144,7 +150,7 @@ interface AgentServicesProps {
   eventEmitter: CoreEventEmitter;
 }
 
-interface CreateIdentifierResult {
+interface CreateGroupIdentifierResult {
   identifier: string;
   multisigManageAid?: string;
   isPending?: boolean;
@@ -221,7 +227,7 @@ export type {
   OobiScan,
   KeriaNotificationMarker,
   AgentServicesProps,
-  CreateIdentifierResult,
+  CreateGroupIdentifierResult,
   IdentifierResult,
   AgentUrls,
   BranAndMnemonic,

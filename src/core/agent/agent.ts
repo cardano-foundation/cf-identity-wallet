@@ -99,7 +99,8 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.connections
+        this.connections,
+        this.basicStorage
       );
     }
     return this.identifierService;
@@ -227,7 +228,6 @@ class Agent {
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
       await this.connectSignifyClient();
-      this.markAgentStatus(true);
     }
   }
 
@@ -296,11 +296,32 @@ class Agent {
     this.agentServicesProps.signifyClient = this.signifyClient;
     await this.connectSignifyClient();
 
+    await this.basicStorage.save({
+      id: MiscRecordId.CLOUD_RECOVERY_STATUS,
+      content: { syncing: true },
+    });
+
     await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     await this.saveAgentUrls({
       url: connectUrl,
       bootUrl: "",
     });
+
+    await this.syncWithKeria();
+  }
+
+  async syncWithKeria() {
+    await this.connections.syncKeriaContacts();
+    await this.identifiers.syncKeriaIdentifiers();
+    await this.credentials.syncKeriaCredentials();
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.CLOUD_RECOVERY_STATUS,
+        content: { syncing: false },
+      })
+    );
+
     this.markAgentStatus(true);
   }
 
@@ -335,6 +356,8 @@ class Agent {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
       this.identifiers.removeIdentifiersPendingDeletion();
+      this.identifiers.resolvePendingIdentifiers();
+      this.credentials.removeCredentialsPendingDeletion();
     }
 
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
@@ -447,6 +470,7 @@ class Agent {
     this.connections.onConnectionRemoved();
     this.connections.onConnectionAdded();
     this.identifiers.onIdentifierRemoved();
+    this.credentials.onCredentialRemoved();
   }
 
   async connect(retryInterval = 1000) {

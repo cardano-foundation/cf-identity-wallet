@@ -22,12 +22,13 @@ import {
   NotificationStorage,
   OperationPendingStorage,
   IdentifierMetadataRecord,
+  NotificationRecord,
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
 import { OnlineOnly, deleteNotificationRecordById } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
-import { CredentialsMatchingApply, LinkedGroupInfoGrant } from "./ipexCommunicationService.types";
+import { CredentialsMatchingApply, LinkedGroupInfo } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
@@ -50,10 +51,10 @@ class IpexCommunicationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
     "Credential not found with this schema";
-  static readonly CREDENTIAL_NOT_FOUND = "Credential not found";
+  static readonly CREDENTIAL_NOT_FOUND = "Credential not found to present";
   static readonly SCHEMA_NOT_FOUND = "Schema not found";
-  static readonly ACDC_ALREADY_ADMITTED = "ACDC has already been accepted";
-  static readonly NO_ADMIT_TO_JOIN = "Cannot admit grant as there is no current admit exn to join";
+  static readonly IPEX_ALREADY_REPLIED = "IPEX message has already been responded to or proposed to group";
+  static readonly NO_CURRENT_IPEX_MSG_TO_JOIN = "Cannot join IPEX message as there is no current exn to join from the group leader";
 
   static readonly SCHEMA_SAID_RARE_EVO_DEMO =
     "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
@@ -84,7 +85,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async admitAcdc(notificationId: string): Promise<void> {
+  async admitAcdcFromGrant(notificationId: string): Promise<void> {
     const grantNoteRecord = await this.notificationStorage.findById(notificationId);
     if (!grantNoteRecord) {
       throw new Error(
@@ -94,7 +95,7 @@ class IpexCommunicationService extends AgentService {
 
     // For groups only
     if (grantNoteRecord.linkedGroupRequest.accepted) {
-      throw new Error(`${IpexCommunicationService.ACDC_ALREADY_ADMITTED} ${notificationId}`);
+      throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
     }
 
     const grantExn = await this.props.signifyClient
@@ -142,7 +143,7 @@ class IpexCommunicationService extends AgentService {
       const {
         op: opMultisigAdmit,
         exnSaid,
-      } = await this.multisigAdmit(
+      } = await this.submitMultisigAdmit(
         holder.id,
         grantExn,
         allSchemaSaids
@@ -162,12 +163,6 @@ class IpexCommunicationService extends AgentService {
         allSchemaSaids
       );
     }
-    
-    await this.createLinkedIpexMessageRecord(
-      grantExn,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -189,31 +184,18 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async offerAcdcFromApply(id: string, acdc: any) {
-    const applyNoteRecord = await this.notificationStorage.findById(id);
-
+  async offerAcdcFromApply(notificationId: string, acdc: any) {
+    const applyNoteRecord = await this.notificationStorage.findById(notificationId);
     if (!applyNoteRecord) {
       throw new Error(
-        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
       );
     }
-
-    // if (Object.keys(applyNoteRecord.linkedGroupRequests).length) {
-    //   const linkedGroupRequestDetails =
-    //     applyNoteRecord.linkedGroupRequests[acdc.d];
-    //   if (linkedGroupRequestDetails) {
-    //     if (!linkedGroupRequestDetails.accepted) {
-    //       // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
-    //       for (const [, msSaids] of Object.entries(
-    //         linkedGroupRequestDetails.saids
-    //       )) {
-    //         if (!msSaids.length) continue; // Should never happen
-    //         await this.joinMultisigOffer(msSaids[0][1]); // Join the first received for this particular /ipex/apply, skip the rest
-    //       }
-    //     }
-    //     return; // Only return here if there are linked requests for this credential ID!
-    //   }
-    // }
+    
+    // For groups only
+    if (applyNoteRecord.linkedGroupRequest.accepted) {
+      throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
+    }
 
     const msgSaid = applyNoteRecord.a.d as string;
     const applyExn = await this.props.signifyClient.exchanges().get(msgSaid);
@@ -223,28 +205,22 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (discloser.multisigManageAid) {
-      const acdcSaid = acdc.d as string;
       const {
         op: opMultisigOffer,
         exnSaid,
-        ipexOfferSaid,
-        member,
-      } = await this.multisigOfferAcdcFromApply(
+      } = await this.submitMultisigOffer(
         discloser.id,
         msgSaid,
         acdc,
         applyExn.exn.i
       );
       op = opMultisigOffer;
-      // applyNoteRecord.linkedGroupRequests = {
-      //   [acdcSaid]: {
-      //     accepted: true,
-      //     saids: {
-      //       [ipexOfferSaid]: [[member, exnSaid]],
-      //     },
-      //   },
-      // };
-      // await this.notificationStorage.update(applyNoteRecord);
+      applyNoteRecord.linkedGroupRequest = {
+        ...applyNoteRecord.linkedGroupRequest,
+        accepted: true,
+        current: exnSaid,
+      };
+      await this.notificationStorage.update(applyNoteRecord);
     } else {
       const [offer, sigs, end] = await this.props.signifyClient.ipex().offer({
         senderName: discloser.id,
@@ -271,19 +247,24 @@ class IpexCommunicationService extends AgentService {
       await deleteNotificationRecordById(
         this.props.signifyClient,
         this.notificationStorage,
-        id,
+        notificationId,
         applyNoteRecord.a.r as NotificationRoute
       );
     }
   }
 
   @OnlineOnly
-  async grantAcdcFromAgree(id: string) {
-    const agreeNoteRecord = await this.notificationStorage.findById(id);
+  async grantAcdcFromAgree(notificationId: string) {
+    const agreeNoteRecord = await this.notificationStorage.findById(notificationId);
     if (!agreeNoteRecord) {
       throw new Error(
-        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
       );
+    }
+
+    // For groups only
+    if (agreeNoteRecord.linkedGroupRequest.accepted) {
+      throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
     }
 
     const msgSaid = agreeNoteRecord.a.d as string;
@@ -293,25 +274,6 @@ class IpexCommunicationService extends AgentService {
       .get(agreeExn.exn.p);
     const acdcSaid = offerExn.exn.e.acdc.d;
 
-    // if (Object.keys(agreeNoteRecord.linkedGroupRequests).length) {
-    //   const linkedGroupRequestDetails =
-    //     agreeNoteRecord.linkedGroupRequests[acdcSaid];
-
-    //   if (linkedGroupRequestDetails) {
-    //     if (!linkedGroupRequestDetails.accepted) {
-    //       // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
-    //       for (const [, msSaids] of Object.entries(
-    //         linkedGroupRequestDetails.saids
-    //       )) {
-    //         if (!msSaids.length) continue; // Should never happen
-    //         await this.joinMultisigGrant(msSaids[0][1]); // Join the first received for this particular /ipex/agree, skip the rest
-    //       }
-    //     }
-    //     return; // Only return here if there are linked requests for this credential ID!
-    //   }
-    // }
-
-    //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
       .get(acdcSaid)
@@ -337,9 +299,7 @@ class IpexCommunicationService extends AgentService {
       const {
         op: opMultisigGrant,
         exnSaid,
-        ipexGrantSaid,
-        member,
-      } = await this.multisigGrantAcdcFromAgree(
+      } = await this.submitMultisigGrant(
         discloser.id,
         agreeExn.exn.i,
         agreeExn.exn.d,
@@ -347,16 +307,12 @@ class IpexCommunicationService extends AgentService {
       );
       op = opMultisigGrant;
 
-      const credentialSaid = pickedCred.sad.d as string;
-      // agreeNoteRecord.linkedGroupRequests = {
-      //   [credentialSaid]: {
-      //     accepted: true,
-      //     saids: {
-      //       [ipexGrantSaid]: [[member, exnSaid]],
-      //     },
-      //   },
-      // };
-      // await this.notificationStorage.update(agreeNoteRecord);
+      agreeNoteRecord.linkedGroupRequest = {
+        ...agreeNoteRecord.linkedGroupRequest,
+        accepted: true,
+        current: exnSaid,
+      };
+      await this.notificationStorage.update(agreeNoteRecord);
     } else {
       const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
         senderName: discloser.id,
@@ -388,7 +344,7 @@ class IpexCommunicationService extends AgentService {
       await deleteNotificationRecordById(
         this.props.signifyClient,
         this.notificationStorage,
-        id,
+        notificationId,
         agreeNoteRecord.a.r as NotificationRoute
       );
     }
@@ -481,6 +437,7 @@ class IpexCommunicationService extends AgentService {
       identifierType: holder.multisigManageAid
         ? IdentifierType.Group
         : IdentifierType.Individual,
+      createdAt: new Date(dateTime),
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -520,17 +477,21 @@ class IpexCommunicationService extends AgentService {
   async createLinkedIpexMessageRecord(
     message: ExnMessage,
     historyType: ConnectionHistoryType
-  ): Promise<void> {
+  ): Promise<void> {  
     let schemaSaid;
     const connectionId =
-      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED
+      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
+      historyType === ConnectionHistoryType.CREDENTIAL_ISSUANCE
         ? message.exn.rp
         : message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
       schemaSaid = message.exn.a.s;
-    } else if (message.exn.r === ExchangeRoute.IpexAgree) {
+    } else if (
+      message.exn.r === ExchangeRoute.IpexAgree ||
+      message.exn.r === ExchangeRoute.IpexAdmit
+    ) {
       const previousExchange = await this.props.signifyClient
         .exchanges()
         .get(message.exn.p);
@@ -579,14 +540,17 @@ class IpexCommunicationService extends AgentService {
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${grantNotificationId}`
       );
     }
+    
+    if (grantNoteRecord.linkedGroupRequest.accepted) {
+      throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
+    }
 
     const multiSigExnSaid = grantNoteRecord.linkedGroupRequest.current;
     if (!multiSigExnSaid) {
-      throw new Error(IpexCommunicationService.NO_ADMIT_TO_JOIN);
+      throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
     }
 
     const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
-
     const admitExn = exn.exn.e.exn;
     const grantExn = await this.props.signifyClient.exchanges().get(admitExn.p);
 
@@ -607,7 +571,7 @@ class IpexCommunicationService extends AgentService {
     );
     allSchemaSaids.push(schemaSaid);
 
-    const { op } = await this.multisigAdmit(
+    const { op } = await this.submitMultisigAdmit(
       holder.id,
       grantExn,
       allSchemaSaids,
@@ -631,11 +595,6 @@ class IpexCommunicationService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-    
-    await this.createLinkedIpexMessageRecord(
-      grantExn,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
@@ -651,30 +610,34 @@ class IpexCommunicationService extends AgentService {
       ...grantNoteRecord.linkedGroupRequest,
       accepted: true,
     };
-
     await this.notificationStorage.update(grantNoteRecord);
   }
 
-  async joinMultisigOffer(multisigExnSaid: string): Promise<void> {
-    const exn = await this.props.signifyClient.exchanges().get(multisigExnSaid);
-    const offerExn = exn.exn.e.exn;
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      offerExn.i
-    );
-
-    if (!holder) {
-      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+  async joinMultisigOffer(applyNotificationId: string): Promise<void> {
+    const applyNoteRecord = await this.notificationStorage.findById(applyNotificationId);
+    if (!applyNoteRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${applyNotificationId}`
+      );
     }
 
-    const issuerPrefix = offerExn.a.i;
-    const credential = offerExn.e.acdc;
-    const applySaid = offerExn.p;
+    if (applyNoteRecord.linkedGroupRequest.accepted) {
+      throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
+    }
 
-    const { op } = await this.multisigOfferAcdcFromApply(
-      holder.id,
-      applySaid as string,
-      credential,
-      issuerPrefix,
+    const multiSigExnSaid = applyNoteRecord.linkedGroupRequest.current;
+    if (!multiSigExnSaid) {
+      throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
+    }
+
+    const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
+    const offerExn = exn.exn.e.exn;
+
+    const { op } = await this.submitMultisigOffer(
+      offerExn.i,
+      offerExn.p,
+      offerExn.e.acdc,
+      offerExn.a.i,
       offerExn
     );
 
@@ -688,44 +651,31 @@ class IpexCommunicationService extends AgentService {
       payload: { operation: pendingOperation },
     });
 
-    const notifications = await this.notificationStorage.findAllByQuery({
-      exnSaid: offerExn.p,
-    });
-
-    // // @TODO - foconnor: Similarly called in keriaNotificationService too - need to refactor in case of reliability issues
-    // if (notifications.length) {
-    //   const acdcSaid = credential.d as string;
-    //   const notificationRecord = notifications[0];
-    //   notificationRecord.linkedGroupRequests[acdcSaid] = {
-    //     ...notificationRecord.linkedGroupRequests[acdcSaid],
-    //     accepted: true,
-    //   };
-
-    //   await this.notificationStorage.update(notificationRecord);
-    // }
+    applyNoteRecord.linkedGroupRequest = {
+      ...applyNoteRecord.linkedGroupRequest,
+      accepted: true,
+    };
+    await this.notificationStorage.update(applyNoteRecord);
   }
 
-  async joinMultisigGrant(multisigExnSaid: string): Promise<void> {
-    const exn = await this.props.signifyClient.exchanges().get(multisigExnSaid);
-
-    const grantExn = exn.exn.e.exn;
-    const credential = grantExn.e.acdc;
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      exn.exn.e.exn.i
-    );
-
-    if (!holder) {
-      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+  async joinMultisigGrant(multiSigExn: ExnMessage, agreeNoteRecord: NotificationRecord): Promise<void> {
+    if (agreeNoteRecord.linkedGroupRequest.accepted) {
+      throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
+    }
+    
+    if (!agreeNoteRecord.linkedGroupRequest.current) {
+      throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
     }
 
-    const { op } = await this.multisigGrantAcdcFromAgree(
-      holder.id,
-      credential.i,
+    const grantExn = multiSigExn.exn.e.exn;
+    const { op } = await this.submitMultisigGrant(
+      multiSigExn.exn.e.exn.i,
+      grantExn.e.acdc.i,
       grantExn.p,
-      credential,
+      grantExn.e.acdc,
       {
         grantExn,
-        atc: exn.pathed.exn,
+        atc: multiSigExn.pathed.exn!,
       }
     );
 
@@ -739,23 +689,14 @@ class IpexCommunicationService extends AgentService {
       payload: { operation: pendingOperation },
     });
 
-    const notifications = await this.notificationStorage.findAllByQuery({
-      exnSaid: exn?.exn.e.exn.p,
-    });
-
-    // if (notifications.length) {
-    //   const acdcSaid = credential.d as string;
-    //   const notificationRecord = notifications[0];
-    //   notificationRecord.linkedGroupRequests[acdcSaid] = {
-    //     ...notificationRecord.linkedGroupRequests[acdcSaid],
-    //     accepted: true,
-    //   };
-
-    //   await this.notificationStorage.update(notificationRecord);
-    // }
+    agreeNoteRecord.linkedGroupRequest = {
+      ...agreeNoteRecord.linkedGroupRequest,
+      accepted: true,
+    };
+    await this.notificationStorage.update(agreeNoteRecord);
   }
 
-  async multisigOfferAcdcFromApply(
+  private async submitMultisigOffer(
     multisigId: string,
     notificationSaid: string,
     acdcDetail: any,
@@ -764,8 +705,7 @@ class IpexCommunicationService extends AgentService {
   ) {
     let exn: Serder;
     let sigsMes: string[];
-    let dtime: string;
-    let ipexOfferSaid: string;
+    let mend: string;
 
     const { ourIdentifier, multisigMembers } =
       await this.multisigService.getMultisigParticipants(multisigId);
@@ -804,7 +744,7 @@ class IpexCommunicationService extends AgentService {
         exn: [offer, atc],
       };
 
-      [exn, sigsMes, dtime] = await this.props.signifyClient
+      [exn, sigsMes, mend] = await this.props.signifyClient
         .exchanges()
         .createExchangeMessage(
           mHab,
@@ -813,7 +753,6 @@ class IpexCommunicationService extends AgentService {
           gembeds,
           discloseePrefix
         );
-      ipexOfferSaid = offer.ked.d;
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const applySaid = notificationSaid;
@@ -843,7 +782,7 @@ class IpexCommunicationService extends AgentService {
         exn: [offer, atc],
       };
 
-      [exn, sigsMes, dtime] = await this.props.signifyClient
+      [exn, sigsMes, mend] = await this.props.signifyClient
         .exchanges()
         .createExchangeMessage(
           mHab,
@@ -852,17 +791,16 @@ class IpexCommunicationService extends AgentService {
           gembeds,
           recp[0]
         );
-      ipexOfferSaid = offer.ked.d;
     }
 
     const op = await this.props.signifyClient
       .ipex()
-      .submitOffer(multisigId, exn, sigsMes, dtime, recp);
+      .submitOffer(multisigId, exn, sigsMes, mend, recp);
 
-    return { op, exnSaid: exn.ked.d, ipexOfferSaid, member: ourIdentifier.id };
+    return { op, exnSaid: exn.ked.d };
   }
 
-  async multisigGrantAcdcFromAgree(
+  private async submitMultisigGrant(
     multisigId: string,
     discloseePrefix: string,
     agreeSaid: string,
@@ -871,8 +809,7 @@ class IpexCommunicationService extends AgentService {
   ) {
     let exn: Serder;
     let sigsMes: string[];
-    let dtime: string;
-    let ipexGrantSaid: string;
+    let mend: string;
 
     const { ourIdentifier, multisigMembers } =
       await this.multisigService.getMultisigParticipants(multisigId);
@@ -912,7 +849,7 @@ class IpexCommunicationService extends AgentService {
         exn: [grant, newAtc],
       };
 
-      [exn, sigsMes, dtime] = await this.props.signifyClient
+      [exn, sigsMes, mend] = await this.props.signifyClient
         .exchanges()
         .createExchangeMessage(
           mHab,
@@ -921,8 +858,6 @@ class IpexCommunicationService extends AgentService {
           gembeds,
           recp[0]
         );
-
-      ipexGrantSaid = grant.ked.d;
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
@@ -952,7 +887,7 @@ class IpexCommunicationService extends AgentService {
         exn: [grant, atc],
       };
 
-      [exn, sigsMes, dtime] = await this.props.signifyClient
+      [exn, sigsMes, mend] = await this.props.signifyClient
         .exchanges()
         .createExchangeMessage(
           mHab,
@@ -961,15 +896,13 @@ class IpexCommunicationService extends AgentService {
           gembeds,
           recp[0]
         );
-
-      ipexGrantSaid = grant.ked.d;
     }
 
     const op = await this.props.signifyClient
       .ipex()
-      .submitGrant(multisigId, exn, sigsMes, dtime, recp);
+      .submitGrant(multisigId, exn, sigsMes, mend, recp);
 
-    return { op, exnSaid: exn.ked.d, ipexGrantSaid, member: ourIdentifier.id };
+    return { op, exnSaid: exn.ked.d };
   }
 
   async getAcdcFromIpexGrant(
@@ -1013,7 +946,7 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-  private async multisigAdmit(
+  private async submitMultisigAdmit(
     multisigId: string,
     grantExn: ExnMessage,
     schemaSaids: string[],
@@ -1021,7 +954,7 @@ class IpexCommunicationService extends AgentService {
   ) {
     let exn: Serder;
     let sigsMes: string[];
-    let dtime: string;
+    let mend: string;
 
     await Promise.all(
       schemaSaids.map(
@@ -1066,7 +999,7 @@ class IpexCommunicationService extends AgentService {
       const gembeds = {
         exn: [admit, atc],
       };
-      [exn, sigsMes, dtime] = await this.props.signifyClient
+      [exn, sigsMes, mend] = await this.props.signifyClient
         .exchanges()
         .createExchangeMessage(
           mHab,
@@ -1099,7 +1032,7 @@ class IpexCommunicationService extends AgentService {
         exn: [admit, atc],
       };
 
-      [exn, sigsMes, dtime] = await this.props.signifyClient
+      [exn, sigsMes, mend] = await this.props.signifyClient
         .exchanges()
         .createExchangeMessage(
           mHab,
@@ -1112,14 +1045,13 @@ class IpexCommunicationService extends AgentService {
 
     const op = await this.props.signifyClient
       .ipex()
-      .submitAdmit(multisigId, exn, sigsMes, dtime, recp);
+      .submitAdmit(multisigId, exn, sigsMes, mend, recp);
 
     return { op, exnSaid: exn.ked.d };
   }
 
-  async getLinkedGroupFromIpexGrant(id: string): Promise<LinkedGroupInfoGrant> {
+  async getLinkedGroupFromIpexGrant(id: string): Promise<LinkedGroupInfo> {
     const grantNoteRecord = await this.notificationStorage.findById(id);
-
     if (!grantNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
@@ -1153,66 +1085,45 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  async getLinkedGroupFromIpexApply(id: string) {
+  async getLinkedGroupFromIpexApply(id: string): Promise<LinkedGroupInfo> {
     const applyNoteRecord = await this.notificationStorage.findById(id);
-
     if (!applyNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
       );
     }
 
-    const linkedGroupRequest = applyNoteRecord.linkedGroupRequest;
-    const exchange = await this.props.signifyClient
+    const applyExn = await this.props.signifyClient
       .exchanges()
       .get(applyNoteRecord.a.d as string);
 
     const multisigAid = await this.props.signifyClient
       .identifiers()
-      .get(exchange.exn.a.i);
+      .get(applyExn.exn.a.i);
     const members = await this.props.signifyClient
       .identifiers()
-      .members(exchange.exn.a.i);
+      .members(applyExn.exn.a.i);
     const memberAids = members.signing.map((member: any) => member.aid);
 
-    const result: Record<
-      string,
-      { accepted: boolean; membersJoined: string[] }
-    > = {};
-
-    if (Object.keys(linkedGroupRequest).length === 0) {
-      return {
-        threshold: multisigAid.state.kt,
-        members: memberAids,
-        offer: {},
-      };
+    const othersJoined: string[] = [];
+    if (applyNoteRecord.linkedGroupRequest.current) {
+      for (const signal of (await this.props.signifyClient.groups().getRequest(applyNoteRecord.linkedGroupRequest.current))) {
+        othersJoined.push(signal.exn.i);
+      }
     }
-
-    // for (const credentialSaid in linkedGroupRequest) {
-    //   const saids = linkedGroupRequest[credentialSaid].saids;
-    //   const membersJoined: Set<string> = new Set();
-
-    //   for (const offerSaid in saids) {
-    //     const memberDetails = saids[offerSaid];
-
-    //     for (const memberInfo of memberDetails) {
-    //       if (memberInfo.length > 0) {
-    //         membersJoined.add(memberInfo[0]);
-    //       }
-    //     }
-    //   }
-
-    //   result[credentialSaid] = {
-    //     accepted: linkedGroupRequest[credentialSaid].accepted,
-    //     membersJoined: Array.from(membersJoined),
-    //   };
-    // }
 
     return {
       threshold: multisigAid.state.kt,
       members: memberAids,
-      offer: result,
-    };
+      othersJoined: othersJoined,
+      linkedGroupRequest: applyNoteRecord.linkedGroupRequest,
+    }
+  }
+
+  async getOfferedCredentialSaid(current: string): Promise<string> {
+    const multiSigExn = await this.props.signifyClient.exchanges().get(current);
+    const offerExn = multiSigExn.exn.e.exn;
+    return offerExn.e.acdc.d;
   }
 }
 

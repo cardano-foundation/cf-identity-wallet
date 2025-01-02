@@ -30,7 +30,7 @@ import { i18n } from "../../../../../i18n";
 import { PageFooter } from "../../../../components/PageFooter";
 import "./MultiSigRequest.scss";
 import {
-  CreateIdentifierResult,
+  CreateGroupIdentifierResult,
   NotificationRoute,
 } from "../../../../../core/agent/agent.types";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
@@ -115,7 +115,7 @@ const MultiSigRequest = ({
             theme: multisigIcpDetails.ourIdentifier.theme,
             displayName: multisigIcpDetails.ourIdentifier.displayName,
           }
-        )) as CreateIdentifierResult;
+        )) as CreateGroupIdentifierResult;
 
       if (identifier) {
         const newIdentifier: IdentifierShortDetails = {
@@ -126,7 +126,7 @@ const MultiSigRequest = ({
           isPending: !!isPending,
           multisigManageAid,
         };
-        const filteredIdentifiersData = identifiersData.filter(
+        const filteredIdentifiersData = Object.values(identifiersData).filter(
           (item) => item.id !== multisigIcpDetails?.ourIdentifier.id
         );
         dispatch(
