@@ -10,7 +10,7 @@ import {
 import {
   IdentifierResult,
   NotificationRoute,
-  CreateIdentifierResult,
+  CreateGroupIdentifierResult,
   AgentServicesProps,
 } from "../agent.types";
 import type {
@@ -91,7 +91,7 @@ class MultiSigService extends AgentService {
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
     threshold: number
-  ): Promise<CreateIdentifierResult> {
+  ): Promise<CreateGroupIdentifierResult> {
     if (threshold < 1 || threshold > otherIdentifierContacts.length + 1) {
       throw new Error(MultiSigService.INVALID_THRESHOLD);
     }
@@ -320,7 +320,7 @@ class MultiSigService extends AgentService {
     notificationRoute: NotificationRoute,
     notificationSaid: string,
     meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
-  ): Promise<CreateIdentifierResult | undefined> {
+  ): Promise<CreateGroupIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {

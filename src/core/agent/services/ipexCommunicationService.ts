@@ -163,12 +163,6 @@ class IpexCommunicationService extends AgentService {
         allSchemaSaids
       );
     }
-    
-    await this.createLinkedIpexMessageRecord(
-      grantExn,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -483,17 +477,21 @@ class IpexCommunicationService extends AgentService {
   async createLinkedIpexMessageRecord(
     message: ExnMessage,
     historyType: ConnectionHistoryType
-  ): Promise<void> {
+  ): Promise<void> {  
     let schemaSaid;
     const connectionId =
-      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED
+      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
+      historyType === ConnectionHistoryType.CREDENTIAL_ISSUANCE
         ? message.exn.rp
         : message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
       schemaSaid = message.exn.a.s;
-    } else if (message.exn.r === ExchangeRoute.IpexAgree) {
+    } else if (
+      message.exn.r === ExchangeRoute.IpexAgree ||
+      message.exn.r === ExchangeRoute.IpexAdmit
+    ) {
       const previousExchange = await this.props.signifyClient
         .exchanges()
         .get(message.exn.p);
@@ -597,11 +595,6 @@ class IpexCommunicationService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-    
-    await this.createLinkedIpexMessageRecord(
-      grantExn,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,

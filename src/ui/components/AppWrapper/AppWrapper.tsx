@@ -78,7 +78,6 @@ import {
 import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
-  IdentifierStateChangedEvent,
 } from "../../../core/agent/event.types";
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
@@ -232,26 +231,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setPauseQueueIncomingRequest(true));
     }
   }, [isOnline, authentication.loggedIn, dispatch]);
-
-  useEffect(() => {
-    const syncWithKeria = async () => {
-      // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-      //
-      // TODO: This got uncommented when we were redoing that by accident.
-      // Right now if you delete a connection, it will re-appear after 2 reloads
-      // because we haven’t updated Signify in a bit.
-      // The issue was fixed in Signify main repo but we’re on a fork…
-      // await Promise.all([
-      // Agent.agent.identifiers.syncKeriaIdentifiers(),
-      // Agent.agent.connections.syncKeriaContacts(),
-      // Agent.agent.credentials.syncACDCs(),
-      // ]);
-    };
-
-    if (isOnline) {
-      syncWithKeria();
-    }
-  }, [isOnline, dispatch]);
 
   useEffect(() => {
     if (initAppSuccess) {
@@ -552,6 +531,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     if (keriaConnectUrlRecord) {
       try {
+        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
         if (keriaConnectUrlRecord?.content?.url) {
           const recoveryStatus = await Agent.agent.basicStorage.findById(
             MiscRecordId.CLOUD_RECOVERY_STATUS
@@ -560,8 +540,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
             await Agent.agent.syncWithKeria();
           }
         }
-        await loadDatabase();
-        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
+        Agent.agent.markAgentStatus(true);
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
@@ -573,6 +552,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
         } else {
           throw e;
         }
+      } finally {
+        await loadDatabase();
       }
     }
 
