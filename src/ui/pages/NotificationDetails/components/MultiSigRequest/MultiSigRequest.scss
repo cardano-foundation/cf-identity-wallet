@@ -1,7 +1,6 @@
 .notification-details-multi-sig-request {
   &.setup-identifier.blur {
     filter: blur(0.1rem);
-    --background: rgba(var(--ion-color-primary-rgb), 0);
   }
 
   ion-header ion-toolbar {

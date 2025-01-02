@@ -37,6 +37,7 @@
 
     ion-buttons ion-button {
       color: var(--ion-color-neutral-700);
+      --ion-toolbar-color: var(--ion-color-neutral-700);
 
       &.md {
         --ripple-color: transparent;

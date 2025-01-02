@@ -74,6 +74,13 @@ ion-content {
   }
 }
 
+ion-icon {
+  --ion-color-primary: var(--ion-color-neutral-700);
+  --ion-tab-bar-color-selected: var(--ion-color-neutral-700);
+  --ion-color-primary-shade: var(--ion-color-neutral-700);
+  --ion-color-primary-tint: var(--ion-color-neutral-700);
+}
+
 ion-list {
   &.md {
     padding: 0;
@@ -218,6 +225,7 @@ p {
   font-size: 1rem;
   height: 3.25rem;
   --background-activated: var(--ion-color-neutral-400);
+  --border-radius: 1rem;
 
   &.button-disabled {
     --background: var(--ion-color-neutral-400);

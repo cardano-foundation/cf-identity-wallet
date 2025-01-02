@@ -32,17 +32,17 @@
 
   --ion-color-archive-400: #531FAD;
 
-  --ion-color-secondary: var(--ion-color-neutral-700);
-  --ion-color-primary: var(--ion-color-neutral-800);
+  --ion-color-primary: var(--ion-color-primary-700);
+  --ion-color-secondary: var(--ion-color-neutral-500);
   --ion-color-danger: var(--ion-color-error-800);
   --ion-color-danger-contrast: var(--ion-color-neutral-100);
+  --ion-item-background: var(--ion-color-neutral-100);
 
-  --ion-color-primary-rgb: 3, 3, 33;
+  --ion-color-primary-rgb: 0, 86, 179;
+  --ion-color-secondary-rgb: 108, 117, 128;
 
   // Old colors
-  --ion-color-secondary-rgb: 54, 60, 74;
   --ion-color-transparent: transparent;
-  --ion-color-danger-rgb: 212, 24, 48;
   
   --ion-color-dark-green: #377657;
   --ion-color-green: #438f68;

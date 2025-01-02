@@ -52,10 +52,10 @@ ion-tab-bar {
     }
 
     &.tab-selected {
-      color: var(--ion-color-neutral-800);
+      color: var(--ion-color-primary-700);
 
       .border-top {
-        border-color: var(--ion-color-neutral-800);
+        border-color: var(--ion-color-primary-700);
       }
 
       .notifications-counter {
