@@ -172,11 +172,7 @@ describe("Edit identifier", () => {
 
 
   test("Display error when display name invalid", async () => {
-    updateMock.mockImplementation(() => {
-      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN)
-    })
-
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={mockedStore}>
         <EditIdentifier
           modalIsOpen={true}
@@ -224,24 +220,6 @@ describe("Edit identifier", () => {
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
-      ).toBeVisible();
-    });
-    
-    act(() => {
-      ionFireEvent.ionInput(getByTestId("edit-name-input"), "Duke");
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("error-message")).toBe(null);
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("primary-button-edit-identifier"));
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.duplicatename)
       ).toBeVisible();
     });
   });

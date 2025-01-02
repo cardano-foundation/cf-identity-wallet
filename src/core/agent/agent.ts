@@ -356,7 +356,7 @@ class Agent {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
       this.identifiers.removeIdentifiersPendingDeletion();
-      this.identifiers.resolvePendingIdentifier();
+      this.identifiers.resolvePendingIdentifiers();
     }
 
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
