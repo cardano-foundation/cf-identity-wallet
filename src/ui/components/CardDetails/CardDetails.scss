@@ -52,7 +52,7 @@
       }
 
       &.heart-button-favourite {
-        background: rgba(var(--ion-color-danger-rgb), 0.15) !important;
+        background: var(--ion-color-error-100);
 
         .heart-icon-favourite {
           color: var(--ion-color-danger);

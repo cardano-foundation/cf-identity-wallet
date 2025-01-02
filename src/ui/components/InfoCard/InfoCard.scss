@@ -8,7 +8,7 @@
 
     &.danger {
         &.info-card {
-          background: rgba(var(--ion-color-danger-rgb), 0.1);
+          background: var(--ion-color-error-100);
   
           .alert-icon {
             ion-icon {
