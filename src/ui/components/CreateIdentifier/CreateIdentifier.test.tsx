@@ -316,11 +316,7 @@ describe("Create Identifier modal", () => {
   });
 
   test("Display error when display name invalid", async () => {
-    createIdentifierMock.mockImplementation(() => {
-      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN);
-    });
-
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
           modalIsOpen={true}
@@ -362,22 +358,6 @@ describe("Create Identifier modal", () => {
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATION.nameerror.hasspecialchar)).toBeVisible();
-    });
-
-    act(() => {
-      ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke");
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("error-message")).toBe(null);
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
-    });
-
-    await waitFor(() => {
-      expect(getByText(EN_TRANSLATION.nameerror.duplicatename)).toBeVisible();
     });
   });
 

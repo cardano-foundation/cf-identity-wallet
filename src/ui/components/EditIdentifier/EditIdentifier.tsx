@@ -3,7 +3,6 @@ import { Keyboard } from "@capacitor/keyboard";
 import { IonModal, IonSpinner } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { IdentifierService } from "../../../core/agent/services";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -111,11 +110,6 @@ const EditIdentifier = ({
       dispatch(updateOrAddIdentifiersCache(updatedIdentifier));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     } catch (e) {
-      if((e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
-        setDuplicateName(true);
-        return;
-      }
-
       showError(
         "Unable to edit identifier",
         e,
