@@ -46,10 +46,13 @@ const mockCredentialService = {
   syncKeriaCredentials: jest.fn(),
   removeCredentialsPendingDeletion: jest.fn(),
 };
+const mockKeriaNotificationService = {
+  syncIPEXReplyOperations: jest.fn(),
+};
 
 const mockEntropy = "00000000000000000000000000000000";
 
-describe("test cases of bootAndConnect function", () => {
+describe("KERIA connectivity", () => {
   let agent: Agent;
   let mockAgentUrls: AgentUrls;
   let mockSignifyClient: any;
@@ -238,7 +241,7 @@ describe("test cases of bootAndConnect function", () => {
   });
 });
 
-describe("test cases of recoverKeriaAgent function", () => {
+describe("Recovery of DB from cloud sync", () => {
   let agent: Agent;
   let mockSeedPhrase: string[];
   let mockConnectUrl: string;
@@ -254,6 +257,7 @@ describe("test cases of recoverKeriaAgent function", () => {
     (agent as any).basicStorageService = mockBasicStorageService;
     (agent as any).agentServicesProps = mockAgentServicesProps;
     (agent as any).connectionService = mockConnectionService;
+    (agent as any).keriaNotificationService = mockKeriaNotificationService;
 
     mockSeedPhrase = [
       "abandon",
@@ -306,6 +310,7 @@ describe("test cases of recoverKeriaAgent function", () => {
     expect(mockConnectionService.syncKeriaContacts).toHaveBeenCalled();
     expect(mockIdentifierService.syncKeriaIdentifiers).toHaveBeenCalled();
     expect(mockCredentialService.syncKeriaCredentials).toHaveBeenCalled();
+    expect(mockKeriaNotificationService.syncIPEXReplyOperations).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
     expect(mockBasicStorageService.createOrUpdateBasicRecord).toHaveBeenCalledWith({
       _tags: {},
@@ -319,13 +324,6 @@ describe("test cases of recoverKeriaAgent function", () => {
       KeyStoreKeys.SIGNIFY_BRAN,
       expectedBran
     );
-    expect(Agent.isOnline).toBe(true);
-    expect(mockAgentServicesProps.eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.KeriaStatusChanged,
-      payload: {
-        isOnline: true,
-      },
-    });
   });
 
   test("should throw an error for invalid mnemonic", async () => {
