@@ -131,20 +131,6 @@
     "workbox-webpack-plugin": "^6.5.4",
     "yaml-loader": "^0.8.0"
   },
-  "overrides": {
-    "appium-safari-driver": {
-      "archiver-utils": {
-        "glob": {
-          "foreground-child": {
-            "cross-spawn": "^7.0.5"
-          }
-        }
-      }
-    },
-    "express": {
-      "path-to-regexp": "0.1.12"
-    }
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
