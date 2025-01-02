@@ -37,7 +37,7 @@ class CredentialMetadataRecord extends BaseRecord {
     return {
       ...this._tags,
       isArchived: this.isArchived,
-      isDeleted: this.pendingDeletion,
+      pendingDeletion: this.pendingDeletion,
       connectionId: this.connectionId,
       id: this.id,
     };
