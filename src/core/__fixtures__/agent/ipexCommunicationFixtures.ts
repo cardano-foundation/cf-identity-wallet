@@ -169,7 +169,7 @@ const credentialMetadataRecord = {
   type: "CredentialMetadataRecord",
   id: "EJuFvMGiT3uhEXtd7UQlkAm4N_MymeHfhkgnOgPhK0cJ",
   isArchived: false,
-  isDeleted: false,
+  pendingDeletion: false,
   createdAt: "2024-08-09T04:21:18.311Z",
   issuanceDate: "2024-08-09T04:21:12.575Z",
   credentialType: "Qualified vLEI Issuer Credential",

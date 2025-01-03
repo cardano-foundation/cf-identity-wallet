@@ -626,7 +626,7 @@ describe("Signify notification service of agent", () => {
     expect(multiSigs.joinAuthorization).toBeCalledTimes(1);
   });
 
-  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
+  test("Can process incoming presentation requests and log in connection history", async () => {
     exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
       new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
@@ -639,49 +639,13 @@ describe("Signify notification service of agent", () => {
     await keriaNotificationService.processNotification(
       notificationIpexApplyProp
     );
+
     expect(
       ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
     );
-  });
-
-  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REVOKED", async () => {
-    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
-    credentialStateMock.mockResolvedValueOnce({
-      ...credentialStateIssued,
-      et: "rev",
-    });
-    notificationStorage.save = jest
-      .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
-    credentialStorage.getCredentialMetadata.mockResolvedValue(
-      credentialMetadataMock
-    );
-    admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
-    getCredentialMock.mockResolvedValue(getCredentialResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValueOnce(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      )
-      .mockResolvedValue({
-        id: "id",
-      });
-    submitAdmitMock.mockResolvedValueOnce({
-      name: "name",
-      done: true,
-    });
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    notificationStorage.findById = jest.fn().mockResolvedValueOnce({linkedRequest: {current: "current_id"}});
-
-    await keriaNotificationService.processNotification(
-      notificationIpexGrantProp
-    );
-
-    expect(markNotificationMock).toBeCalledTimes(1);
-    expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(grantForIssuanceExnMessage, ConnectionHistoryType.CREDENTIAL_REVOKED);
   });
 
   test("Should call createLinkedIpexMessageRecord with TEL status is revoked and exists locally", async () => {
