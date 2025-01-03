@@ -85,6 +85,9 @@ ion-modal.create-group-identifier-modal {
     ion-button.copy-button {
       width: 70vw !important;
       margin: 0 auto;
+      --border-radius: 4rem;
+      --background-activated: var(--ion-color-neutral-100);
+      --color-activated: var(--ion-color-neutral-700);
 
       &::part(native) {
         background-color: var(--ion-color-neutral-100);
