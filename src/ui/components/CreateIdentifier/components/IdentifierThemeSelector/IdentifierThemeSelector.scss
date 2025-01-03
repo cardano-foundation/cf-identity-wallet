@@ -75,7 +75,6 @@
 @media screen and (min-width: 250px) and (max-width: 425px) {
   .identifier-theme-selector .identifier-theme-input ion-col {
     height: calc(8.5rem * 200 / 350);
-    padding: 0.35rem;
 
     &:first-of-type {
       margin-right: 0.6rem;
@@ -87,8 +86,6 @@
     .selected-theme-checkmark {
       width: 1.2rem;
       height: 1.2rem;
-      top: 0.2rem;
-      right: 0.2rem;
 
       .selected-theme-checkmark-inner {
         width: 0.9rem;
@@ -105,7 +102,6 @@
   @media screen and (min-width: 371px) and (max-width: 425px) {
     .identifier-theme-selector .identifier-theme-input ion-col {
       height: 5.2rem;
-      padding: 0.4rem;
     }
   }
 }
