@@ -15,7 +15,8 @@
     "wdio:ios:15promax": "npx wdio tests/config/wdio.sim.ios.iphone15ProMax.config.ts --watch",
     "wdio:ios:16promax": "npx wdio tests/config/wdio.sim.ios.iphone16ProMax.config.ts --watch",
     "prepare": "husky install",
-    "audit": "npm audit --json > audit-results.json; node scripts/audit-filter.js"
+    "audit": "better-npm-audit audit --production",
+    "audit:dev": "better-npm-audit audit"
   },
   "dependencies": {
     "@aparajita/capacitor-biometric-auth": "^8.0.0",
@@ -39,6 +40,7 @@
     "@ionic/react-router": "^7.5.4",
     "@ionic/storage": "^3.0.6",
     "@reduxjs/toolkit": "^1.9.5",
+    "better-npm-audit": "^3.11.0",
     "bip39": "^3.0.4",
     "capacitor-native-settings": "^6.0.1",
     "dotenv": "^16.4.7",
