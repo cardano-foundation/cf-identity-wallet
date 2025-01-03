@@ -85,6 +85,7 @@ enum ToastMsgType {
   PASSWORD_UPDATED = "passwordupdated",
   PASSWORD_DISABLED = "passworddisabled",
   PASSWORD_CREATED = "passwordcreated",
+  PROPOSED_CRED_SUCCESS = "proposedcredsuccess",
   SHARE_CRED_SUCCESS = "sharecredsuccess",
   SHARE_CRED_FAIL = "sharecrederror",
   PROPOSAL_CRED_ACCEPTED = "proposalcredaccepted",
