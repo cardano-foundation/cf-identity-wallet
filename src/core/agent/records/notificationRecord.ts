@@ -1,6 +1,6 @@
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
-import { LinkedGroupRequest } from "./notificationRecord.types";
+import { LinkedRequest } from "./notificationRecord.types";
 import { randomSalt } from "../services/utils";
 
 interface NotificationRecordStorageProps {
@@ -13,7 +13,7 @@ interface NotificationRecordStorageProps {
   multisigId?: string;
   connectionId: string;
   credentialId?: string;
-  linkedGroupRequest?: LinkedGroupRequest;
+  linkedRequest?: LinkedRequest;
   groupReplied?: boolean,
   initiatorAid?: string,
   groupInitiator?: boolean,
@@ -25,11 +25,12 @@ class NotificationRecord extends BaseRecord {
   read!: boolean;
   multisigId?: string;
   connectionId!: string;
-  linkedGroupRequest!: LinkedGroupRequest;
+  linkedRequest!: LinkedRequest;
   credentialId?: string;
   groupReplied?: boolean;
   initiatorAid?: string;
   groupInitiator?: boolean;
+  hidden = false;  // Hide from UI but don't delete (used for reliability while recovering IPEX long running operations)
 
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
@@ -45,7 +46,7 @@ class NotificationRecord extends BaseRecord {
       this.multisigId = props.multisigId;
       this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
-      this.linkedGroupRequest = props.linkedGroupRequest ?? { accepted: false };
+      this.linkedRequest = props.linkedRequest ?? { accepted: false };
       this.credentialId = props.credentialId;
       this.groupReplied = props.groupReplied;
       this.initiatorAid = props.initiatorAid;
@@ -55,6 +56,7 @@ class NotificationRecord extends BaseRecord {
 
   getTags() {
     return {
+      ...this._tags,
       route: this.route,
       read: this.read,
       multisigId: this.multisigId,
@@ -63,7 +65,8 @@ class NotificationRecord extends BaseRecord {
       groupReplied: this.groupReplied,
       initiatorAid: this.initiatorAid,
       groupInitiator: this.groupInitiator,
-      ...this._tags,
+      currentLinkedRequest: this.linkedRequest.current,
+      hidden: this.hidden,
     };
   }
 }

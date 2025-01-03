@@ -36,7 +36,7 @@ const CredentialRequest = ({
 
   const reachThreshold =
     linkedGroup &&
-    linkedGroup.othersJoined.length + (linkedGroup.linkedGroupRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
+    linkedGroup.othersJoined.length + (linkedGroup.linkedRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
 
   const userAID = useMemo(() => {
     if(!credentialRequest) return null;
@@ -58,7 +58,7 @@ const CredentialRequest = ({
         return {
           aid: member,
           name: userName,
-          joined: linkedGroup.linkedGroupRequest.accepted,
+          joined: linkedGroup.linkedRequest.accepted,
         }
       }
 

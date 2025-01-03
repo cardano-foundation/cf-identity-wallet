@@ -79,7 +79,7 @@ const ReceiveCredential = ({
       threshold: "0",
       members: [],
       othersJoined: [],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       }
     });
@@ -93,10 +93,10 @@ const ReceiveCredential = ({
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
 
-  const userAccepted = multisigMemberStatus.linkedGroupRequest.accepted;
+  const userAccepted = multisigMemberStatus.linkedRequest.accepted;
   const maxThreshold =
     isMultisig &&
-    (multisigMemberStatus.othersJoined.length + (multisigMemberStatus.linkedGroupRequest.accepted ? 1 : 0)) >=
+    (multisigMemberStatus.othersJoined.length + (multisigMemberStatus.linkedRequest.accepted ? 1 : 0)) >=
       Number(multisigMemberStatus.threshold);
 
   const identifier = useMemo(() => {
@@ -193,7 +193,7 @@ const ReceiveCredential = ({
 
       if(!isMultisig || (isMultisig && isGroupInitiator)) {
         await Agent.agent.ipexCommunications.admitAcdcFromGrant(notificationDetails.id);
-      } else if(multisigMemberStatus.linkedGroupRequest.current) {
+      } else if(multisigMemberStatus.linkedRequest.current) {
         await Agent.agent.ipexCommunications.joinMultisigAdmit(notificationDetails.id);
       }
 
@@ -240,13 +240,13 @@ const ReceiveCredential = ({
         return MemberAcceptStatus.Accepted;
       }
 
-      if (multisigMemberStatus.linkedGroupRequest.accepted && identifier?.multisigManageAid === member) {
+      if (multisigMemberStatus.linkedRequest.accepted && identifier?.multisigManageAid === member) {
         return MemberAcceptStatus.Accepted;
       }
 
       return MemberAcceptStatus.Waiting;
     },
-    [multisigMemberStatus.othersJoined, multisigMemberStatus.linkedGroupRequest, identifier]
+    [multisigMemberStatus.othersJoined, multisigMemberStatus.linkedRequest, identifier]
   );
 
   const members = useMemo(() => {

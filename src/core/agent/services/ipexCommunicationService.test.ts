@@ -1,4 +1,5 @@
 import { Saider, Serder } from "signify-ts";
+import { current } from "@reduxjs/toolkit";
 import { CoreEventEmitter } from "../event";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
@@ -315,7 +316,7 @@ describe("Receive individual ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -332,7 +333,7 @@ describe("Receive individual ACDC actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]);
+    ipexAdmitMock.mockResolvedValue([{ ked: { d: "admit-said" } }, "sigs", "aend"]);
 
     const connectionNote = {
       id: "note:id",
@@ -379,7 +380,7 @@ describe("Receive individual ACDC actions", () => {
     });
     expect(ipexSubmitAdmitMock).toBeCalledWith(
       "identifierId",
-      "admit",
+      { ked: { d: "admit-said" } },
       "sigs",
       "aend",
       ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
@@ -397,7 +398,15 @@ describe("Receive individual ACDC actions", () => {
         },
       },
     });
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id,
+      route: NotificationRoute.ExnIpexGrant,
+      linkedRequest: {
+        accepted: true,
+        current: "admit-said",
+      },
+      hidden: true,
+    }));
   });
 
   test("Cannot accept ACDC if the notification is missing in the DB", async () => {
@@ -425,7 +434,9 @@ describe("Receive individual ACDC actions", () => {
       a: {
         d: "saidForUuid",
       },
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: {         
+        current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
+        accepted: false },
     });
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -462,7 +473,7 @@ describe("Receive group ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -526,7 +537,7 @@ describe("Receive group ACDC actions", () => {
         },
         route: NotificationRoute.ExnIpexGrant,
         read: true,
-        linkedGroupRequest: {
+        linkedRequest: {
           "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
         },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -580,7 +591,7 @@ describe("Receive group ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         "accepted": true,
         "current": "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
       },
@@ -617,7 +628,7 @@ describe("Receive group ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR"
       },
@@ -646,7 +657,7 @@ describe("Receive group ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
         current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
       },
@@ -749,7 +760,7 @@ describe("Receive group ACDC actions", () => {
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "id",
       route: NotificationRoute.ExnIpexGrant,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
       },
@@ -800,7 +811,7 @@ describe("Receive group ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "current-admit-said"
       },
@@ -832,7 +843,7 @@ describe("Receive group ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -863,7 +874,7 @@ describe("Receive group ACDC actions", () => {
       },
       route: NotificationRoute.ExnIpexGrant,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
         current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
       },
@@ -891,7 +902,7 @@ describe("Receive group ACDC progress", () => {
     await new ConfigurationService().start();
   });
 
-  test("Cannot get linkedGroupRequest from ipex/grant if the notification is missing in the DB", async () => {
+  test("Cannot get linkedRequest from ipex/grant if the notification is missing in the DB", async () => {
     const id = "uuid";
     const date = DATETIME.toISOString();
     const notification = {
@@ -914,7 +925,7 @@ describe("Receive group ACDC progress", () => {
 
   test("Should return the current progress of an admit linked to a grant", async () => {
     const grantNoteRecord = {
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "currentsaid"
       },
@@ -959,7 +970,7 @@ describe("Receive group ACDC progress", () => {
       members: ["memberA", "memberB", "memberC"],
       threshold: "2",
       othersJoined: ["memberB", "memberC"],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "currentsaid"
       }
@@ -968,7 +979,7 @@ describe("Receive group ACDC progress", () => {
 
   test("Should return the defaults when there is no admit linked to a grant", async () => {
     const grantNoteRecord = {
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       a: { d: "d" },
     };
 
@@ -1005,7 +1016,7 @@ describe("Receive group ACDC progress", () => {
       members: ["memberA", "memberB", "memberC"],
       threshold: "2",
       othersJoined: [],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       }
     });
@@ -1031,7 +1042,7 @@ describe("Offer ACDC individual actions", () => {
       },
       route: NotificationRoute.ExnIpexApply,
       read: true,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { current: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR", accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1047,7 +1058,7 @@ describe("Offer ACDC individual actions", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
       id: "abc123",
     });
-    ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
+    ipexOfferMock.mockResolvedValue([{ ked: { d: "offer-said" } }, "sigs", "gend"]);
     ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true });
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "opName",
@@ -1057,6 +1068,10 @@ describe("Offer ACDC individual actions", () => {
 
     await ipexCommunicationService.offerAcdcFromApply(id, grantForIssuanceExnMessage.exn.e.acdc);
 
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
+    });
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
       recipient: "i",
@@ -1065,12 +1080,11 @@ describe("Offer ACDC individual actions", () => {
     });
     expect(ipexSubmitOfferMock).toBeCalledWith(
       "abc123",
-      "offer",
+      { ked: { d: "offer-said" } },
       "sigs",
       "gend",
       ["i"]
     );
-    expect(markNotificationMock).toBeCalledWith(id);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
@@ -1084,7 +1098,15 @@ describe("Offer ACDC individual actions", () => {
         },
       },
     });
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id,
+      route: NotificationRoute.ExnIpexApply,
+      linkedRequest: {
+        accepted: true,
+        current: "offer-said",
+      },
+      hidden: true,
+    }));
   });
 
   test("Cannot offer ACDC if the apply notification is missing in the DB", async () => {
@@ -1127,7 +1149,7 @@ describe("Offer ACDC group actions", () => {
       },
       route: NotificationRoute.ExnIpexApply,
       read: true,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1173,7 +1195,7 @@ describe("Offer ACDC group actions", () => {
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id,
       route: NotificationRoute.ExnIpexApply,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "EARi8kQ1PkSSRyFEIPOFPdnsnv7P2QZYEQqnmr1Eo2N8",
       },
@@ -1190,8 +1212,7 @@ describe("Offer ACDC group actions", () => {
           recordType: OperationPendingRecordType.ExchangeOfferCredential,
         },
       },
-    });
-    expect(markNotificationMock).not.toBeCalled();
+    });    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.deleteById).not.toBeCalled();
   });
 
@@ -1199,7 +1220,7 @@ describe("Offer ACDC group actions", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     eventEmitter.emit = jest.fn();
     const applyNoteRecord = {
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "currentsaid"
       },
@@ -1226,7 +1247,7 @@ describe("Offer ACDC group actions", () => {
       },
       route: NotificationRoute.ExnIpexApply,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
         current: "current-offer-said"
       },
@@ -1296,7 +1317,7 @@ describe("Offer ACDC group actions", () => {
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "id",
       route: NotificationRoute.ExnIpexApply,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "current-offer-said",
       },
@@ -1326,7 +1347,7 @@ describe("Offer ACDC group actions", () => {
       },
       route: NotificationRoute.ExnIpexApply,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "current-offer-said"
       },
@@ -1354,7 +1375,7 @@ describe("Offer ACDC group actions", () => {
       },
       route: NotificationRoute.ExnIpexApply,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1398,7 +1419,7 @@ describe("Offer ACDC group progress", () => {
 
   test("Should return the current progress of a group offer", async () => {
     const applyNoteRecord = {
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "current-offer-said"
       },
@@ -1438,7 +1459,7 @@ describe("Offer ACDC group progress", () => {
     expect(result).toEqual({
       members: ["memberA", "memberB", "memberC"],
       threshold: "2",
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "current-offer-said",
       },
@@ -1448,7 +1469,7 @@ describe("Offer ACDC group progress", () => {
 
   test("Should return the defaults when there is no offer linked to the apply", async () => {
     const applyNoteRecord = {
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       },
       a: { d: "d" },
@@ -1480,7 +1501,7 @@ describe("Offer ACDC group progress", () => {
     expect(result).toEqual({
       members: ["memberA", "memberB"],
       threshold: "2",
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       othersJoined: [],
     });
   });
@@ -1504,7 +1525,7 @@ describe("Grant ACDC individual actions", () => {
       },
       route: NotificationRoute.ExnIpexAgree,
       read: true,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1517,7 +1538,7 @@ describe("Grant ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    ipexGrantMock.mockResolvedValue(["grant", "sigs", "gend"]);
+    ipexGrantMock.mockResolvedValue([{ ked: { d: "grant-said" } }, "sigs", "gend"]);
     markNotificationMock.mockResolvedValueOnce({status: "done"});
 
     await ipexCommunicationService.grantAcdcFromAgree("agree-note-id");
@@ -1533,7 +1554,15 @@ describe("Grant ACDC individual actions", () => {
       senderName: "abc123",
       agreeSaid: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
     });
-    expect(ipexSubmitGrantMock).toBeCalledWith("abc123", "grant", "sigs", "gend", ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]);
+    expect(ipexSubmitGrantMock).toBeCalledWith("abc123", { ked: { d: "grant-said" } }, "sigs", "gend", ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]);
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id: "note-id",
+      route: NotificationRoute.ExnIpexAgree,
+      linkedRequest: {
+        accepted: true,
+        current: "grant-said",
+      },
+    }));
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
@@ -1547,7 +1576,12 @@ describe("Grant ACDC individual actions", () => {
         },
       },
     });
-    expect(notificationStorage.deleteById).toBeCalledWith("agree-note-id");
+    expect(eventEmitter.emit).toBeCalledTimes(1);
+    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
+      id: "note-id",
+      hidden: true,
+      linkedRequest: { accepted: true, current: "grant-said" }
+    }));
   });
 
   test("Cannot present ACDC if the notification is missing in the DB", async () => {
@@ -1569,7 +1603,7 @@ describe("Grant ACDC individual actions", () => {
   test("Cannot present non existing ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     eventEmitter.emit = jest.fn();
-    notificationStorage.findById = jest.fn().mockResolvedValue({
+    notificationStorage.findById = jest.fn().mockResolvedValueOnce({
       type: "NotificationRecord",
       id: "note-id",
       createdAt: DATETIME,
@@ -1579,7 +1613,7 @@ describe("Grant ACDC individual actions", () => {
       },
       route: NotificationRoute.ExnIpexAgree,
       read: true,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false, current: "current-grant-said" },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1594,7 +1628,7 @@ describe("Grant ACDC individual actions", () => {
     await expect(ipexCommunicationService.grantAcdcFromAgree("id")).rejects.toThrowError(
       IpexCommunicationService.CREDENTIAL_NOT_FOUND
     );
-    
+
     expect(ipexGrantMock).not.toBeCalled();
     expect(ipexSubmitGrantMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
@@ -1615,7 +1649,7 @@ describe("Grant ACDC individual actions", () => {
       },
       route: NotificationRoute.ExnIpexAgree,
       read: true,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1646,7 +1680,7 @@ describe("Grant ACDC group actions", () => {
       },
       route: NotificationRoute.ExnIpexAgree,
       read: true,
-      linkedGroupRequest: { accepted: false },
+      linkedRequest: { accepted: false },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1704,7 +1738,7 @@ describe("Grant ACDC group actions", () => {
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "note-id",
       route: NotificationRoute.ExnIpexAgree,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "EEpfEHR6EedLnEzleK7mM3AKJSoPWuSQeREC8xjyq3pa",
       },
@@ -1737,7 +1771,7 @@ describe("Grant ACDC group actions", () => {
       },
       route: NotificationRoute.ExnIpexAgree,
       read: true,
-      linkedGroupRequest: { accepted: true, current: "current-grant-said" },
+      linkedRequest: { accepted: true, current: "current-grant-said" },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1790,7 +1824,7 @@ describe("Grant ACDC group actions", () => {
       },
       route: NotificationRoute.ExnIpexAgree,
       read: true,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
         current: "current-grant-said"
       },
@@ -1827,7 +1861,7 @@ describe("Grant ACDC group actions", () => {
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "note-id",
       route: NotificationRoute.ExnIpexAgree,
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "current-grant-said",
       },
@@ -1845,7 +1879,7 @@ describe("Grant ACDC group actions", () => {
         },
         route: NotificationRoute.ExnIpexAgree,
         read: true,
-        linkedGroupRequest: {
+        linkedRequest: {
           accepted: true,
           current: "current-grant-said"
         },
@@ -1869,7 +1903,7 @@ describe("Grant ACDC group actions", () => {
         },
         route: NotificationRoute.ExnIpexApply,
         read: true,
-        linkedGroupRequest: {
+        linkedRequest: {
           accepted: false,
         },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",

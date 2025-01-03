@@ -455,7 +455,7 @@ describe("Credential request: Multisig", () => {
       threshold: "2",
       members: ["member-1", "member-2"],
       othersJoined: [],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       }
     });
@@ -514,7 +514,7 @@ describe("Credential request: Multisig", () => {
       threshold: "2",
       members: ["member-1", "member-2"],
       othersJoined: ["member-1"],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       }
     });
@@ -562,7 +562,7 @@ describe("Credential request: Multisig", () => {
       threshold: "2",
       members: ["member-1", "member-2", "member-3"],
       othersJoined: ["member-1", "member-2"],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       }
     });
@@ -604,7 +604,7 @@ describe("Credential request: Multisig", () => {
       threshold: "2",
       members: ["member-1", "member-2"],
       othersJoined: ["member-1"],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "currentadmitsaid"
       }

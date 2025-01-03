@@ -314,6 +314,7 @@ class Agent {
     await this.connections.syncKeriaContacts();
     await this.identifiers.syncKeriaIdentifiers();
     await this.credentials.syncKeriaCredentials();
+    await this.keriaNotifications.syncIPEXReplyOperations();
 
     await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
@@ -321,8 +322,6 @@ class Agent {
         content: { syncing: false },
       })
     );
-
-    this.markAgentStatus(true);
   }
 
   private async connectSignifyClient(): Promise<void> {
@@ -349,6 +348,7 @@ class Agent {
     });
   }
 
+  // For now this is called by UI/AppWrapper to not prematurely mark online while mid-recovery
   markAgentStatus(online: boolean) {
     Agent.isOnline = online;
 
