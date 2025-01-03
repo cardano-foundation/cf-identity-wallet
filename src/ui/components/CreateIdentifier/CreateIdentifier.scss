@@ -21,7 +21,7 @@ ion-modal.create-identifier-modal {
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(var(--ion-color-primary-rgb), 0.2);
+    background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
   }
 
   .scrollable-page-layout {
@@ -100,8 +100,16 @@ ion-modal.create-identifier-modal {
           font-weight: 400;
         }
 
+        ion-input {
+          --background: var(--ion-color-neutral-100);
+
+          .input-wrapper {
+            border-radius: 0.5rem;
+          }
+        }
+
         .input-line ion-input input::placeholder {
-          color: rgba(var(--ion-color-secondary-rgb), 0.75);
+          color: rgba(var(--ion-color-neutral-500-rgb), 0.75);
         }
       }
 
@@ -141,8 +149,8 @@ ion-modal.create-identifier-modal {
           }
 
           &.selected-type {
-            border: 1px solid var(--ion-color-neutral-700) !important;
-            background: var(--ion-color-neutral-300);
+            border: 2px solid var(--ion-color-primary-700) !important;
+            background: var(--ion-color-primary-100);
           }
 
           &::part(native) {

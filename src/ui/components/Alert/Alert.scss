@@ -4,6 +4,7 @@
   border-radius: 1rem !important;
   --width: 100%;
   --ion-text-color: var(--ion-color-neutral-700);
+  box-shadow: 4px 4px 8px 0px rgba(var(--ion-color-neutral-600-rgb), 0.2) !important;
 
   .alert-title.sc-ion-alert-md {
     text-align: center;
@@ -67,11 +68,10 @@ button.alert-button {
     font-weight: 500 !important;
     line-height: 1.375rem;
     text-transform: none !important;
-    border: solid var(--ion-color-neutral-400) 2px !important;
-    border-radius: 20px !important;
+    border-radius: 1rem !important;
+    border: none;
 
     &:first-child {
-      border: none !important;
       background: var(--ion-color-primary-700) !important;
       color: var(--ion-color-neutral-100);
       margin-bottom: 0.5rem;

@@ -1728,7 +1728,7 @@
       }
     },
     "theme": {
-      "title": "Choose a theme"
+      "title": "Choose card style"
     },
     "error": {
       "maxlength": "Must be less than 32 characters long"

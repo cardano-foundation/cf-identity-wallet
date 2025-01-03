@@ -18,10 +18,10 @@
   }
 
   ion-toolbar ion-buttons ion-button.button-has-icon-only {
-    --background-activated: var(--ion-color-neutral-300);
-    --background-focused: var(--ion-color-neutral-300);
-    --background-hover: var(--ion-color-neutral-300);
-    background: var(--ion-color-neutral-300);
+    --background-activated: var(--ion-color-neutral-100);
+    --background-focused: var(--ion-color-neutral-100);
+    --background-hover: var(--ion-color-neutral-100);
+    background: var(--ion-color-neutral-100);
   }
 
   &.connections .cards-placeholder-container {
@@ -48,19 +48,19 @@
     }
 
     ion-toolbar ion-buttons ion-button.close-button {
-      --background-activated: var(--ion-color-neutral-300);
-      --background-focused: var(--ion-color-neutral-300);
-      --background-hover: var(--ion-color-neutral-300);
-      background: var(--ion-color-neutral-300);
+      --background-activated: var(--ion-color-neutral-100);
+      --background-focused: var(--ion-color-neutral-100);
+      --background-hover: var(--ion-color-neutral-100);
+      background: var(--ion-color-neutral-100);
     }
 
     ion-toolbar ion-buttons ion-button.connect-wallet-button {
       --padding-start: 0.5rem;
       --padding-end: 0.5rem;
-      --background-activated: var(--ion-color-neutral-300);
-      --background-focused: var(--ion-color-neutral-300);
-      --background-hover: var(--ion-color-neutral-300);
-      background: var(--ion-color-neutral-300);
+      --background-activated: var(--ion-color-neutral-100);
+      --background-focused: var(--ion-color-neutral-100);
+      --background-hover: var(--ion-color-neutral-100);
+      background: var(--ion-color-neutral-100);
     }
   }
 

@@ -37,7 +37,8 @@
     }
 
     &.accepted {
-      background: var(--ion-color-primary-gradient);
+      background: var(--ion-color-card-theme-one);
+      color: var(--ion-color-neutral-100);
     }
 
     &.rejected {

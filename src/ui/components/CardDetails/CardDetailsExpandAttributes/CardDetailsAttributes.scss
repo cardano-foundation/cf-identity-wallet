@@ -2,6 +2,7 @@
   margin-bottom: 0;
 
   .accordion {
+    --ion-background-color: var(--ion-color-neutral-100);
     ion-item {
       --min-height: auto;
 

@@ -21,7 +21,7 @@ ion-modal.create-group-identifier-modal {
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(var(--ion-color-primary-rgb), 0.2);
+    background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
   }
 
   .responsive-page-content {
@@ -79,7 +79,7 @@ ion-modal.create-group-identifier-modal {
 
     #react-qrcode-logo {
       background-color: var(--ion-color-neutral-100);
-      box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary-rgb), 0.2);
+      box-shadow: 0px 2px 4px rgba(var(--ion-color-neutral-500-rgb), 0.2);
     }
 
     ion-button.copy-button {

@@ -75,11 +75,12 @@
   
       .user-label {
         padding: 0.25rem 0.5rem;
-        background: var(--ion-color-primary-gradient);
+        background: var(--ion-color-card-theme-one);
         border-radius: 0.25rem;
         display: flex;
         align-items: center;
         margin-left: 0.5rem;
+        color: var(--ion-color-neutral-100);
   
         &.hidden {
           visibility: hidden;

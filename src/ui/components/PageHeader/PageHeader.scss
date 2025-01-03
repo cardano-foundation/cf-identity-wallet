@@ -94,6 +94,9 @@
       ion-progress-bar::part(progress) {
         height: 0.5rem;
         border-radius: 0.5rem;
+
+        --progress-background: var(--ion-color-neutral-800);
+        --buffer-background: var(--ion-color-neutral-400);
       }
     }
   }

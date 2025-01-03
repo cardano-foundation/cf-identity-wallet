@@ -19,7 +19,7 @@
         left: calc(50% - 7rem);
         top: calc(50% - 7rem);
         background: var(--ion-color-primary-300);
-        box-shadow: 0 0.25rem 0.25rem rgba(var(--ion-color-secondary-rgb), 0.2);
+        box-shadow: 0 0.25rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
         transform: rotate(-10deg);
       }
 
@@ -27,7 +27,7 @@
         left: calc(50% - 2rem);
         top: calc(50% - 8.5rem);
         background: var(--ion-color-primary-600);
-        box-shadow: 0 0.25rem 0.25rem rgba(var(--ion-color-secondary-rgb), 0.2);
+        box-shadow: 0 0.25rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
         transform: rotate(10deg);
       }
     }
@@ -58,7 +58,7 @@
           left: calc(50% - 5.95rem);
           top: calc(50% - 5.95rem);
           box-shadow: 0 0.213rem 0.213rem
-            rgba(var(--ion-color-secondary-rgb), 0.2);
+            rgba(var(--ion-color-neutral-500-rgb), 0.2);
           transform: rotate(-10deg);
         }
 
@@ -66,7 +66,7 @@
           left: calc(50% - 1.7rem);
           top: calc(50% - 7.225rem);
           box-shadow: 0 0.213rem 0.213rem
-            rgba(var(--ion-color-secondary-rgb), 0.2);
+            rgba(var(--ion-color-neutral-500-rgb), 0.2);
           transform: rotate(10deg);
         }
       }

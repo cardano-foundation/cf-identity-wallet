@@ -1,11 +1,13 @@
 .custom-toast {
   transition: transform 200ms;
+  --ion-color-secondary: var(--ion-color-neutral-700) !important;
 
   &::part(button cancel) {
     min-height: auto;
-    border-left: 1px solid rgba(246, 246, 246, 0.5);
+    border-left: 1px solid var(--ion-color-neutral-400);
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+    color: var(--ion-color-neutral-100);
   }
 
   &.md {

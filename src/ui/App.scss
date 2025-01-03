@@ -40,7 +40,7 @@ body {
       width: 100%;
       align-items: center;
       justify-content: center;
-      background: rgba(var(--ion-color-primary-rgb), 0.2);
+      background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
     }
   }
 
@@ -72,13 +72,6 @@ ion-content {
   &::-webkit-scrollbar {
     display: none;
   }
-}
-
-ion-icon {
-  --ion-color-primary: var(--ion-color-neutral-700);
-  --ion-tab-bar-color-selected: var(--ion-color-neutral-700);
-  --ion-color-primary-shade: var(--ion-color-neutral-700);
-  --ion-color-primary-tint: var(--ion-color-neutral-700);
 }
 
 ion-list {

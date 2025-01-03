@@ -11,7 +11,7 @@
     position: relative;
 
     &.selected {
-      border: 1px solid var(--ion-color-neutral-700);
+      border: 2px solid var(--ion-color-primary-700);
     }
 
     .selected-theme-checkmark {
@@ -59,6 +59,7 @@
     .selected-theme-checkmark {
       background: var(--ion-color-primary-700);
       color: var(--ion-color-neutral-100);
+      border: 1px solid var(--ion-color-neutral-100);
     }
 
     &.card-theme-one {
@@ -74,11 +75,11 @@
     }
 
     &.card-theme-primary {
-      background: var(--ion-color-primary-gradient);
+      background: var(--ion-color-card-theme-four);
     }
 
     &.card-theme-secondary {
-      background: var(--ion-color-secondary-gradient);
+      background: var(--ion-color-card-theme-five);
     }
   }
 }
