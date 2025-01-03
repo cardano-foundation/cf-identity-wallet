@@ -40,7 +40,6 @@
     "@ionic/react-router": "^7.5.4",
     "@ionic/storage": "^3.0.6",
     "@reduxjs/toolkit": "^1.9.5",
-    "better-npm-audit": "^3.11.0",
     "bip39": "^3.0.4",
     "capacitor-native-settings": "^6.0.1",
     "dotenv": "^16.4.7",
@@ -131,7 +130,8 @@
     "webpack-dev-server": "^4.13.1",
     "webpack-merge": "^5.8.0",
     "workbox-webpack-plugin": "^6.5.4",
-    "yaml-loader": "^0.8.0"
+    "yaml-loader": "^0.8.0",
+    "better-npm-audit": "^3.11.0"
   },
   "eslintConfig": {
     "extends": [
