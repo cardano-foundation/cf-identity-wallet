@@ -355,29 +355,25 @@ class IpexCommunicationService extends AgentService {
   async getIpexApplyDetails(
     notification: KeriaNotification
   ): Promise<CredentialsMatchingApply> {
-    const msgSaid = notification.a.d as string;
-    const msg = await this.props.signifyClient.exchanges().get(msgSaid);
-    const schemaSaid = msg.exn.a.s;
-    const attributes = msg.exn.a.a;
-    const recipient = msg.exn.rp;
-    const schemaKeri = await this.props.signifyClient
+    const exchange = await this.props.signifyClient.exchanges().get(notification.a.d as string);
+    
+    const schemaSaid = exchange.exn.a.s;
+    const schema = await this.props.signifyClient
       .schemas()
       .get(schemaSaid)
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
-          return undefined;
+          throw new Error(IpexCommunicationService.SCHEMA_NOT_FOUND);
         } else {
           throw error;
         }
       });
-    if (!schemaKeri) {
-      throw new Error(IpexCommunicationService.SCHEMA_NOT_FOUND);
-    }
 
+    const attributes = exchange.exn.a.a;
     const filter = {
       "-s": { $eq: schemaSaid },
-      "-a-i": recipient,
+      "-a-i": exchange.exn.rp,
       ...(Object.keys(attributes).length > 0
         ? {
           ...Object.fromEntries(
@@ -390,31 +386,31 @@ class IpexCommunicationService extends AgentService {
         : {}),
     };
 
-    const creds = await this.props.signifyClient.credentials().list({
+    const filtered = await this.props.signifyClient.credentials().list({
       filter,
     });
-
-    const credentialMetadatas =
+    const localFiltered =
       await this.credentialStorage.getCredentialMetadatasById(
-        creds.map((cred: any) => cred.sad.d),
+        filtered.map((cred: any) => cred.sad.d),
         {
-          $and: [{ isDeleted: false }, { isArchived: false }],
+          $and: [{ pendingDeletion: false }, { isArchived: false }],
         }
       );
+    
     return {
       schema: {
-        name: schemaKeri.title,
-        description: schemaKeri.description,
+        name: schema.title,
+        description: schema.description,
       },
-      credentials: credentialMetadatas.map((cr) => {
-        const credKeri = creds.find((cred: any) => cred.sad.d === cr.id);
+      credentials: localFiltered.map((cr) => {
+        const credKeri = filtered.find((cred: any) => cred.sad.d === cr.id);
         return {
           connectionId: cr.connectionId,
           acdc: credKeri.sad,
         };
       }),
       attributes: attributes,
-      identifier: msg.exn.a.i,
+      identifier: exchange.exn.a.i,
     };
   }
 

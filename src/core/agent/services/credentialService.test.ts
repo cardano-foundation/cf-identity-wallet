@@ -309,7 +309,7 @@ describe("Credential service of agent", () => {
       status: CredentialStatus.CONFIRMED,
       credentialType,
       issuanceDate: nowISO,
-      isDeleted: false,
+      pendingDeletion: false,
       connectionId: undefined,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
