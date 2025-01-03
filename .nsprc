@@ -3,5 +3,17 @@
     "active": true,
     "notes": "Ignored since there is not any patch available",
     "expiry": "2025-03-31"
+  },
+  "1101081": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1100267": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1101088": {
+    "active": true,
+    "notes": "Ignored since is related to nodemon server from dev dep"
   }
 }
