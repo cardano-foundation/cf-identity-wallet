@@ -135,7 +135,7 @@
     ion-item,
     ion-item-divider {
       --inner-padding-end: 0;
-      --background: transparent;
+      --background: var(--ion-color-neutral-200);
       border-bottom: 1px solid var(--ion-color-neutral-300);
 
       &::part(native) {

@@ -1,6 +1,4 @@
 .card-list {
-  background: transparent;
-
   &:not(:last-child) {
     border-bottom: 1px solid var(--ion-color-neutral-300);
   }
@@ -136,4 +134,8 @@
       font-size: 0.8rem;
     }
   }
+}
+
+ion-list.card-list {
+  background: var(--ion-color-neutral-200);
 }
