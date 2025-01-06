@@ -18,7 +18,7 @@
 
   &:not(:first-child) {
     margin-top: -45%;
-    box-shadow: 4px 4px 8px 0px rgba(var(--ion-color-neutral-500-rgb), 0.2);
+    box-shadow: 0.25rem 0.25rem 0.5rem 0rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
   }
 
   .identifier-card-template-inner {
