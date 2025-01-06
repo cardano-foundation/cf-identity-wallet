@@ -7,7 +7,7 @@ const SettingsItem = ({ item, handleOptionClick }: SettingsItemProps) => {
     <IonItem
       onClick={() => handleOptionClick(item)}
       className="settings-item"
-      data-testid={`settings-item-${item.index}`}
+      data-testid={`settings-item-${item.label.replace(/\s+/g, "-").toLowerCase()}`}
     >
       <IonIcon
         aria-hidden="true"
