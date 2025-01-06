@@ -3,23 +3,23 @@ import { expect } from "expect-webdriverio";
 export class MenuScreen {
 
   get cardanoConnectItem() {
-    return $("[data-testid=\"menu-input-item-Cardano connect\"]");
+    return $("[data-testid=\"menu-input-item-4\"]");
   }
 
   get chatItem() {
-    return $("[data-testid=\"menu-input-item-Chat\"]");
+    return $("[data-testid=\"menu-input-item-5\"]");
   }
 
   get connectionsItem() {
-    return $("[data-testid=\"menu-input-item-Connections\"]");
+    return $("[data-testid=\"menu-input-item-3\"]");
   }
 
   get cryptoItem() {
-    return $("[data-testid=\"menu-input-item-Crypto\"]");
+    return $("[data-testid=\"menu-input-item-2\"]");
   }
 
   get profileItem() {
-    return $("[data-testid=\"menu-input-item-Profile\"]");
+    return $("[data-testid=\"menu-input-item-1\"]");
   }
 
   get settingsButton() {

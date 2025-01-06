@@ -12,7 +12,7 @@ const MenuItem = ({
     <IonCol size="6">
       <IonCard
         onClick={() => onClick(itemKey)}
-        data-testid={`menu-input-item-${label}`}
+        data-testid={`menu-input-item-${itemKey}`}
         className="menu-input"
       >
         <div className="menu-item-icon">

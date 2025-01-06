@@ -3,35 +3,35 @@ import { expect } from "expect-webdriverio";
 export class MenuSettingsScreen {
 
   get appVersionItem() {
-    return $("[data-testid=\"settings-item-app-version\"]");
+    return $("[data-testid=\"settings-item-7\"]");
   }
 
   get biometricAuthenticationItem() {
-    return $("[data-testid=\"settings-item-biometric-authentication\"]");
+    return $("[data-testid=\"settings-item-0\"]");
   }
 
   get changePasscodeItem() {
-    return $("[data-testid=\"settings-item-change-passcode\"]");
+    return $("[data-testid=\"settings-item-1\"]");
   }
 
   get connectViaDiscordItem() {
-    return $("[data-testid=\"settings-item-connect-via-discord\"]");
+    return $("[data-testid=\"settings-item-6\"]");
   }
 
   get learnMoreItem() {
-    return $("[data-testid=\"settings-item-learn-more-about-cardano-idw\"]");
+    return $("[data-testid=\"settings-item-4\"]");
   }
 
   get manageOperationsPasswordItem() {
-    return $("[data-testid=\"settings-item-manage-operations-password\"]");
+    return $("[data-testid=\"settings-item-2\"]");
   }
 
   get recoveryPhraseItem() {
-    return $("[data-testid=\"settings-item-recovery-phrase\"]");
+    return $("[data-testid=\"settings-item-3\"]");
   }
 
   get termsAndPrivacyPolicyItem() {
-    return $("[data-testid=\"settings-item-terms-and-privacy-policy\"]");
+    return $("[data-testid=\"settings-item-5\"]");
   }
 
   async loads() {
