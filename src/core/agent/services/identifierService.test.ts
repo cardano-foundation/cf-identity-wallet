@@ -445,7 +445,7 @@ describe("Single sig service of agent", () => {
       content: { queuedDisplayNames: ["0:displayName"] },
     }));
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
+      toad: 4,
       wits: witnessEids,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
@@ -520,7 +520,7 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
+      toad: 4,
       wits: witnessEids,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
@@ -590,7 +590,7 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
+      toad: 4,
       wits: witnessEids,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
@@ -660,7 +660,7 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
+      toad: 4,
       wits: witnessEids,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).not.toBeCalled();
@@ -706,7 +706,7 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
+      toad: 4,
       wits: witnessEids,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
@@ -768,7 +768,7 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
+      toad: 4,
       wits: witnessEids,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
@@ -813,7 +813,7 @@ describe("Single sig service of agent", () => {
         displayName: "newDisplayName",
         theme: 0,
       })
-    ).rejects.toThrowError(IdentifierService.NO_WITNESSES_AVAILABLE);
+    ).rejects.toThrowError(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
 
     expect(createIdentifierMock).not.toBeCalled();
   });
@@ -1231,6 +1231,7 @@ describe("Single sig service of agent", () => {
     );
     expect(identifierService.createIdentifier).not.toHaveBeenCalled();
   });
+
   test("cannot get available witnesses list if the config is misconfigured", async () => {
     getAgentConfigMock.mockResolvedValueOnce({});
 
@@ -1244,13 +1245,57 @@ describe("Single sig service of agent", () => {
     getAgentConfigMock.mockResolvedValueOnce({
       iurls: [
         "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller",
-        WITNESSES[1],
+        ...WITNESSES
       ],
     });
 
-    expect(await identifierService.getAvailableWitnesses()).toStrictEqual([
-      witnessEids[1],
-    ]);
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 4, witnesses: [...witnessEids] });
     expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("available witness list must be at least 6", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 5),
+    });
+
+    await expect(identifierService.getAvailableWitnesses()).rejects.toThrowError(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("different witness list sizes", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES, ...WITNESSES.slice(0, 1)],
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 5, witnesses: [...witnessEids, ...witnessEids.slice(0, 1)] });
+    
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES, ...WITNESSES.slice(0, 2)],
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 5, witnesses: [...witnessEids, ...witnessEids.slice(0, 1)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES, ...WITNESSES.slice(0, 3)],
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 6, witnesses: [...witnessEids, ...witnessEids.slice(0, 3)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES, ...WITNESSES.slice(0, 4)],
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 7, witnesses: [...witnessEids, ...witnessEids.slice(0, 4)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES, ...WITNESSES.slice(0, 5)],
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 7, witnesses: [...witnessEids, ...witnessEids.slice(0, 4)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES, ...WITNESSES.slice(0, 6)],
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 8, witnesses: [...witnessEids, ...witnessEids.slice(0, 6)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES, ...WITNESSES, ...WITNESSES],
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 8, witnesses: [...witnessEids, ...witnessEids.slice(0, 6)] });
   });
 });

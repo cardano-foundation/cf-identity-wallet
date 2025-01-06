@@ -423,7 +423,7 @@ describe("Create Identifier modal", () => {
   });
 
   test("No witness availability", async () => {
-    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.NO_WITNESSES_AVAILABLE)));
+    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE)));
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>
