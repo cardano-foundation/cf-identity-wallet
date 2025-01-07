@@ -32,7 +32,7 @@ import {
   NotificationRemovedEvent,
   ConnectionStateChangedEvent,
 } from "../event.types";
-import { deleteNotificationRecordById, randomSalt } from "./utils";
+import { deleteNotificationRecordById, isNetworkError, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
@@ -150,12 +150,13 @@ class KeriaNotificationService extends AgentService {
           .notifications()
           .list(startFetchingIndex, startFetchingIndex + 24);
       } catch (error) {
-        const errorMessage = (error as Error).message;
-        const onlineStatus = this.getKeriaOnlineStatus();
+        if (!(error instanceof Error)) {
+          throw error;
+        }
+
         if (
-          (/Failed to fetch/gi.test(errorMessage) ||
-            /Load failed/gi.test(errorMessage)) &&
-            onlineStatus
+          this.getKeriaOnlineStatus() &&
+          isNetworkError(error) 
         ) {
           // Possible that bootAndConnect is called from @OnlineOnly in between loops,
           // so check if its gone down to avoid having 2 bootAndConnect loops
@@ -966,10 +967,12 @@ class KeriaNotificationService extends AgentService {
         .operations()
         .get(operationRecord.id);
     } catch (error) {
-      const errorMessage = (error as Error).message;
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+
       if (
-        (/Failed to fetch/gi.test(errorMessage) ||
-          /Load failed/gi.test(errorMessage)) &&
+        isNetworkError(error) &&
         this.getKeriaOnlineStatus()
       ) {
         this.markAgentStatus(false);

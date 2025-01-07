@@ -45,6 +45,7 @@ import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
+import { isNetworkError } from "./services/utils";
 
 const walletId = "idw";
 class Agent {
@@ -330,10 +331,7 @@ class Agent {
         throw error;
       }
 
-      if (
-        /Failed to fetch/gi.test(error.message) ||
-        /Load failed/gi.test(error.message)
-      ) {
+      if (isNetworkError(error)) {
         throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK, {
           cause: error,
         });
