@@ -33,14 +33,13 @@ function getCredentialShortDetails(
 }
 
 export const OnlineOnly = (
-  target: any,
-  propertyKey: string,
+  _target: any,
+  _propertyKey: string,
   descriptor: PropertyDescriptor
 ) => {
   const originalMethod = descriptor.value;
   descriptor.value = async function (...args: any[]) {
-    const isKeriOnline = Agent.agent.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
+    if (!Agent.agent.getKeriaOnlineStatus()) {
       throw new Error(Agent.KERIA_CONNECTION_BROKEN);
     }
     // Call the original method
@@ -49,8 +48,6 @@ export const OnlineOnly = (
       return executeResult;
     } catch (error) {
       const errorMessage = (error as Error).message;
-      /** If the error is failed to fetch with signify,
-       * we retry until the connection is secured*/
       if (
         /Failed to fetch/gi.test(errorMessage) ||
         /Load failed/gi.test(errorMessage)
@@ -86,8 +83,7 @@ export const deleteNotificationRecordById = async (
 };
 
 function randomSalt(): string {
-  const salt = new Salter({}).qb64;
-  return salt;
+  return new Salter({}).qb64;
 }
 
 export { waitAndGetDoneOp, getCredentialShortDetails, randomSalt };

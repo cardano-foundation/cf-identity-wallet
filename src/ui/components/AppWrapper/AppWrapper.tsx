@@ -196,7 +196,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   );
 
   const checkWitness = useCallback(async () => {
-    if(!authentication.ssiAgentIsSet || !isOnline) return;
+    if (!authentication.ssiAgentIsSet || !isOnline) return;
 
     try {
       const witness = await Agent.agent.identifiers.getAvailableWitnesses();
@@ -204,9 +204,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       if (witness.length === 0)
         throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE)
 
-    } catch(e) {
-      const errorMessage = (e as Error).message;
-      if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+    } catch (e) {
+      if (e instanceof Error && (e.message.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || e.message.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION))) {
         dispatch(showNoWitnessAlert(true));
         return;
       }
@@ -538,21 +537,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
           if (recoveryStatus?.content?.syncing) {
             await Agent.agent.syncWithKeria();
           }
+          await loadDatabase();
+          Agent.agent.markAgentStatus(true);
         }
       } catch (e) {
-        const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /Failed to fetch/gi.test(errorMessage) ||
-          /Load failed/gi.test(errorMessage)
-        ) {
+        if (e instanceof Error && e.message === Agent.KERIA_CONNECT_FAILED_BAD_NETWORK) {
+          await loadDatabase();
           Agent.agent.connect(); // No await, background this task and continue initializing
         } else {
           throw e;
         }
-      } finally {
-        await loadDatabase();
-        Agent.agent.markAgentStatus(true);
       }
     }
 

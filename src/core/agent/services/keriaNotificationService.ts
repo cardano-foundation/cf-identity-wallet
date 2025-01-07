@@ -151,12 +151,11 @@ class KeriaNotificationService extends AgentService {
           .list(startFetchingIndex, startFetchingIndex + 24);
       } catch (error) {
         const errorMessage = (error as Error).message;
-        /** If the error is failed to fetch with signify,
-         * we retry until the connection is secured*/
+        const onlineStatus = this.getKeriaOnlineStatus();
         if (
           (/Failed to fetch/gi.test(errorMessage) ||
             /Load failed/gi.test(errorMessage)) &&
-          this.getKeriaOnlineStatus()
+            onlineStatus
         ) {
           // Possible that bootAndConnect is called from @OnlineOnly in between loops,
           // so check if its gone down to avoid having 2 bootAndConnect loops
@@ -968,8 +967,6 @@ class KeriaNotificationService extends AgentService {
         .get(operationRecord.id);
     } catch (error) {
       const errorMessage = (error as Error).message;
-      /** If the error is failed to fetch with signify,
-       * we retry until the connection is secured*/
       if (
         (/Failed to fetch/gi.test(errorMessage) ||
           /Load failed/gi.test(errorMessage)) &&
