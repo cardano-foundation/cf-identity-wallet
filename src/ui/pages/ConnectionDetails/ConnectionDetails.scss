@@ -65,6 +65,11 @@
       width: 15%;
       align-self: center;
 
+      svg {
+        width: 2.75rem;
+        border-radius: 0.25rem;
+      }
+
       img {
         width: 2.75rem;
         border-radius: 2.5rem;
@@ -136,6 +141,12 @@
             border-radius: 0.2rem;
           }
         }
+
+        svg {
+          width: 2.2rem;
+          border-radius: 0.25rem;
+        }
+  
       }
     }
   }

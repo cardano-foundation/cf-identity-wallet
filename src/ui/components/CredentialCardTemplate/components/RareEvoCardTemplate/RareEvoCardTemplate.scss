@@ -7,6 +7,7 @@
   line-height: 1.375rem;
   overflow: hidden;
   text-shadow: 0rem 0.125rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.5);
+  box-shadow: 0.25rem 0.25rem 0.5rem 0rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
 
   &.active:not(:first-child).picked-card {
     transition: transform 0.25s;
@@ -20,7 +21,6 @@
 
   &:not(:first-child) {
     margin-top: -45%;
-    box-shadow: 0.25rem 0.25rem 0.5rem 0rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
   }
 
   .rare-card-template-inner {

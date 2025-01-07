@@ -9,10 +9,11 @@ import {
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
 import { i18n } from "../../../i18n";
-import { CREDENTIAL_BG } from "../../globals/types";
 import { formatShortDate } from "../../utils/formatters";
+import { CardTheme } from "../CardTheme";
 import "./ArchivedCredentials.scss";
 import { CredentialItemProps } from "./ArchivedCredentials.types";
+import BackgroundRAREVO from "../../assets/images/rare-evo-bg.jpg";
 
 const CredentialItem = ({
   credential,
@@ -26,8 +27,6 @@ const CredentialItem = ({
   const isRevoked = credential.status === CredentialStatus.REVOKED;
   const isRareEvo =
     credential.schema === IpexCommunicationService.SCHEMA_SAID_RARE_EVO_DEMO;
-
-  const image = isRareEvo ? CREDENTIAL_BG.RARE : CREDENTIAL_BG.KERI;
 
   return (
     <IonItemSliding>
@@ -46,11 +45,19 @@ const CredentialItem = ({
               aria-label=""
             />
           )}
-          <img
-            src={image}
-            alt="credential-miniature"
-            className="credential-miniature"
-          />
+          {
+            isRareEvo ? (
+              <img
+                src={BackgroundRAREVO}
+                alt="credential-miniature"
+                className="credential-miniature"
+              />
+            ) : (
+              <div className="credential-miniature">
+                <CardTheme />
+              </div>
+            )
+          }
           <div className="credential-info">
             <div
               data-testid={`credential-name-${credential.id}`}

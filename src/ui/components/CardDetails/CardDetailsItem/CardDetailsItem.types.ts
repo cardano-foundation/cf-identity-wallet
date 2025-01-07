@@ -13,4 +13,5 @@ export interface CardDetailsItemProps {
   fullText?: boolean;
   endSlot?: ReactNode;
   copyContent?: string;
+  startSlot?: ReactNode;
 }

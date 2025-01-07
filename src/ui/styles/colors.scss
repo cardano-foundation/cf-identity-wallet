@@ -8,6 +8,17 @@
   --ion-color-primary-700: #0056B3;
   --ion-color-primary-800: #004289;
 
+  --ion-color-theme-one-primary: var(--ion-color-primary-700);
+  --ion-color-theme-one-secondary: var(--ion-color-primary-800);
+  --ion-color-theme-two-primary: var(--ion-color-primary-400);
+  --ion-color-theme-two-secondary: var(--ion-color-primary-500);
+  --ion-color-theme-three-primary: #28C196;
+  --ion-color-theme-three-secondary: #008A63;
+  --ion-color-theme-four-primary: #614200;
+  --ion-color-theme-four-secondary: #3D2A00;
+  --ion-color-theme-five-primary: var(--ion-color-neutral-600);
+  --ion-color-theme-five-secondary: var(--ion-color-neutral-700);
+
   --ion-color-neutral-100: #F9FAFB;
   --ion-color-neutral-200: #EEEFF2;
   --ion-color-neutral-300: #CED3DA;
@@ -44,14 +55,9 @@
   --ion-color-neutral-500-rgb: 108, 117, 128;
   --ion-color-error-800-rgb: 163, 0, 0;
 
-  --ion-color-theme-green-one: #28C196;
-  --ion-color-theme-green-two: #008A63;
-  --ion-color-theme-brown-one: #614200;
-  --ion-color-theme-brown-two: #3D2A00;
-
-  --ion-color-card-theme-one: linear-gradient(90.04deg, var(--ion-color-primary-700) 28.46%, var(--ion-color-primary-800) 165.71%);
-  --ion-color-card-theme-two: linear-gradient(90.04deg, var(--ion-color-primary-400) 28.46%, var(--ion-color-primary-500) 165.71%);
-  --ion-color-card-theme-three: linear-gradient(90.04deg, var(--ion-color-theme-green-one) 28.46%, var(--ion-color-theme-green-two) 165.71%);
-  --ion-color-card-theme-four: linear-gradient(90.04deg, var(--ion-color-theme-brown-one) 28.46%, var(--ion-color-theme-brown-two) 165.71%);
-  --ion-color-card-theme-five: linear-gradient(90.04deg, var(--ion-color-neutral-600) 28.46%, var(--ion-color-neutral-700) 165.71%);
+  --ion-color-card-theme-one: linear-gradient(90.04deg, var(--ion-color-theme-one-primary) 28.46%, var(--ion-color-theme-one-secondary) 165.71%);
+  --ion-color-card-theme-two: linear-gradient(90.04deg, var(--ion-color-theme-two-primary) 28.46%, var(--ion-color-theme-two-secondary) 165.71%);
+  --ion-color-card-theme-three: linear-gradient(90.04deg, var(--ion-color-theme-three-primary) 28.46%, var(--ion-color-theme-three-secondary) 165.71%);
+  --ion-color-card-theme-four: linear-gradient(90.04deg, var(--ion-color-theme-four-primary) 28.46%, var(--ion-color-theme-four-secondary) 165.71%);
+  --ion-color-card-theme-five: linear-gradient(90.04deg, var(--ion-color-theme-five-primary) 28.46%, var(--ion-color-theme-five-secondary) 165.71%);
 }

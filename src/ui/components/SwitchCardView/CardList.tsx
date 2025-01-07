@@ -1,15 +1,17 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import {
   CardType,
-  CREDENTIAL_BG,
-  IDENTIFIER_BG_MAPPING,
 } from "../../globals/types";
 import { formatShortDate } from "../../utils/formatters";
 import { CardItem, CardList as BaseCardList } from "../CardList";
 import "./SwitchCardView.scss";
 import { CardListProps } from "./SwitchCardView.types";
+import { CardTheme } from "../CardTheme";
+import BackgroundRAREVO from "../../assets/images/rare-evo-bg.jpg";
+import { getTheme } from "../../utils/theme";
+
 
 const CardList = ({
   cardsData,
@@ -28,7 +30,6 @@ const CardList = ({
             title: identifier.displayName,
             subtitle: formatShortDate(identifier.createdAtUTC),
             data: identifier,
-            image: IDENTIFIER_BG_MAPPING[identifier.theme] as string,
           };
         }
 
@@ -37,15 +38,28 @@ const CardList = ({
           id: item.id,
           title: cred.credentialType,
           subtitle: formatShortDate(cred.issuanceDate),
-          data: cred,
-          image:
-            cred.credentialType === "Rare EVO 2024 Attendee"
-              ? CREDENTIAL_BG.RARE
-              : CREDENTIAL_BG.KERI,
+          data: cred
         };
       }
     );
   }, [cardsData, cardTypes]);
+
+  const renderStartSlot = useCallback((data: IdentifierShortDetails | CredentialShortDetails) => {
+    if(cardTypes === CardType.CREDENTIALS) {
+      const card = data as CredentialShortDetails;
+
+      return card.credentialType === "Rare EVO 2024 Attendee" ? (
+        <img
+          src={BackgroundRAREVO}
+          alt="rare-evo"
+          className="card-logo"
+          data-testid="card-logo"
+        />
+      ) : <CardTheme className="card-logo" layout={0} color={0}/>
+    }
+
+    return <CardTheme {...getTheme((data as IdentifierShortDetails).theme)} className="card-logo" />
+  }, [cardTypes]);
 
   return (
     <BaseCardList
@@ -54,6 +68,7 @@ const CardList = ({
       onCardClick={onCardClick}
       rounded={false}
       testId={testId}
+      onRenderStartSlot={renderStartSlot}
     />
   );
 };
