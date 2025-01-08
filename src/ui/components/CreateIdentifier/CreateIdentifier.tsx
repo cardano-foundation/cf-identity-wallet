@@ -9,7 +9,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
 import { IdentifierService } from "../../../core/agent/services";
@@ -28,7 +28,7 @@ import {
   setToastMsg,
   showNoWitnessAlert,
 } from "../../../store/reducers/stateCache";
-import { OperationType, ToastMsgType } from "../../globals/types";
+import { BackEventPriorityType, OperationType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 import { nameChecker } from "../../utils/nameChecker";
@@ -249,6 +249,10 @@ const CreateIdentifier = ({
     "identifier-name-error": !!hasError,
   });
 
+  const hardwareBackButtonConfig = useMemo(() => ({
+    priority: BackEventPriorityType.Modal
+  }), []);
+
   return (
     <>
       <IonModal
@@ -275,6 +279,7 @@ const CreateIdentifier = ({
             <PageHeader
               closeButton={true}
               closeButtonAction={resetModal}
+              hardwareBackButtonConfig={hardwareBackButtonConfig}
               closeButtonLabel={`${i18n.t(
                 multiSigGroup
                   ? "createidentifier.back"
