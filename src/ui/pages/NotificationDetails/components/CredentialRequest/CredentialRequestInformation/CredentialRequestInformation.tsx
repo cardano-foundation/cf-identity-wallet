@@ -31,6 +31,7 @@ import { showError } from "../../../../../utils/error";
 import { CredentialRequestProps, MemberInfo } from "../CredentialRequest.types";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
 import "./CredentialRequestInformation.scss";
+import { Verification } from "../../../../../components/Verification";
 
 const CredentialRequestInformation = ({
   pageId,
@@ -51,6 +52,7 @@ const CredentialRequestInformation = ({
   const [viewCredId, setViewCredId] = useState<string>();
   const [chooseCredId, setChooseCredId] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
 
   const connection = connectionsCache?.[notificationDetails.connectionId];
 
@@ -168,6 +170,19 @@ const CredentialRequestInformation = ({
 
   const decline = () => setAlertDeclineIsOpen(true);
 
+  const acceptRequest = async () => {
+    try {
+      setLoading(true);
+      await Agent.agent.ipexCommunications.joinMultisigOffer(notificationDetails.id);
+      dispatch(setToastMsg(ToastMsgType.PROPOSAL_CRED_ACCEPTED));
+      await onReloadData?.();
+    } catch (e) {
+      showError("Unable to proposal cred", e, dispatch, ToastMsgType.PROPOSAL_CRED_FAIL);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const handleAcceptClick = async () => {
     if((isGroupInitiator && !isJoinGroup) || !isGroup) {
       onAccept();
@@ -179,16 +194,7 @@ const CredentialRequestInformation = ({
       return; 
     }
 
-    try {
-      setLoading(true);
-      await Agent.agent.ipexCommunications.joinMultisigOffer(notificationDetails.id);
-      dispatch(setToastMsg(ToastMsgType.PROPOSAL_CRED_ACCEPTED));
-      await onReloadData?.();
-    } catch (e) {
-      showError("Unable to proposal cred", e, dispatch, ToastMsgType.PROPOSAL_CRED_FAIL);
-    } finally {
-      setLoading(false);
-    }
+    setVerifyIsOpen(true);
   }
 
   const closeAlert = () => setAlertDeclineIsOpen(false);
@@ -362,6 +368,11 @@ const CredentialRequestInformation = ({
         actionConfirm={handleDecline}
         actionCancel={closeAlert}
         actionDismiss={closeAlert}
+      />
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={acceptRequest}
       />
       {loading && (
         <div
