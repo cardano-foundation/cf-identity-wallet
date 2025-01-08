@@ -48,11 +48,11 @@
       }
     }
 
-    &.nested-attribute.accordion-expanding>[slot=header] .ion-accordion-toggle-icon {
+    &.nested-attribute.accordion-expanding > [slot=header] .ion-accordion-toggle-icon {
       transform: rotate(90deg);
     }
 
-    &.nested-attribute.accordion-expanded>[slot=header] .ion-accordion-toggle-icon {
+    &.nested-attribute.accordion-expanded > [slot=header] .ion-accordion-toggle-icon {
       transform: rotate(90deg);
     }
   }
