@@ -69,15 +69,15 @@ const RareEvoCardTemplate = ({
               <span>{CredentialStatus.PENDING}</span>
             </IonChip>
           ) : (
-            <span className="credential-type">{cardData.credentialType}</span>
+            <span className="credential-type card-text">{cardData.credentialType}</span>
           )}
         </div>
         <div className="card-footer">
           <div className="card-footer-column">
-            <span className="card-footer-column-label">
+            <span className="card-footer-column-label card-text">
               {i18n.t("tabs.credentials.layout.issued")}
             </span>
-            <span className="card-footer-column-value">
+            <span className="card-footer-column-value card-text">
               {cardData.status === CredentialStatus.CONFIRMED ? (
                 formatShortDate(cardData.issuanceDate)
               ) : (

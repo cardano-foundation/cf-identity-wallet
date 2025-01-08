@@ -47,7 +47,6 @@ const PageFooter = ({
                 slot="icon-only"
                 size="small"
                 icon={primaryButtonIcon}
-                color="primary"
               />
             )}
             {primaryButtonText}

@@ -6,8 +6,9 @@ import {
 import { ConnectionHistoryType } from "../../../../core/agent/services/connectionService.types";
 import { i18n } from "../../../../i18n";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { CREDENTIAL_BG } from "../../../globals/types";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import BackgroundRAREVO from "../../../assets/images/rare-evo-bg.jpg";
+import { CardTheme } from "../../../components/CardTheme";
 
 const ConnectionHistoryEvent = ({
   index,
@@ -21,8 +22,6 @@ const ConnectionHistoryEvent = ({
 
   const isRareEvo = historyItem?.credentialType === "Rare EVO 2024 Attendee";
 
-  const image = isRareEvo ? CREDENTIAL_BG.RARE : CREDENTIAL_BG.KERI;
-
   return historyItem ? (
     <div
       className="connection-details-history-event"
@@ -31,17 +30,17 @@ const ConnectionHistoryEvent = ({
     >
       <div className="connection-details-logo">
         {historyItem.type ===
-        ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
+          ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
             <img
               src={connectionDetails?.logo || KeriLogo}
               alt="connection-logo"
             />
           ) : (
-            <img
-              src={image}
+            isRareEvo ? (<img
+              src={BackgroundRAREVO}
               alt="credential-miniature"
               className="credential-miniature"
-            />
+            />) : <CardTheme />
           )}
       </div>
       <p className="connection-details-history-event-info">

@@ -20,6 +20,7 @@ const CardDetailsItem = ({
   fullText = false,
   mask = true,
   endSlot,
+  startSlot
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
 
@@ -62,6 +63,12 @@ const CardDetailsItem = ({
           alt="keri"
         />
       )}
+      {startSlot && (
+        <div slot="start" className="card-details-info-block-line-start-icon">
+          {startSlot}
+        </div>
+      )
+      }
       <div className={contentClass}>
         <IonText className={textClass}>
           {keyValue && (

@@ -3,7 +3,6 @@ ion-modal.create-identifier-modal {
     .create-identifier-modal-content > *:not(.spinner-container),
     ion-toolbar.page-footer {
       filter: blur(0.1rem);
-      --background: rgba(var(--ion-color-primary-rgb), 0);
     }
 
     ion-toolbar.page-footer {
@@ -22,7 +21,7 @@ ion-modal.create-identifier-modal {
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(var(--ion-color-primary-rgb), 0.2);
+    background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
   }
 
   .scrollable-page-layout {
@@ -40,8 +39,6 @@ ion-modal.create-identifier-modal {
   }
 
   ion-toolbar {
-    --background: var(--ion-color-light);
-
     &.page-footer {
       z-index: 1000;
       bottom: calc(-100vh + 5rem);
@@ -103,8 +100,16 @@ ion-modal.create-identifier-modal {
           font-weight: 400;
         }
 
+        ion-input {
+          --background: var(--ion-color-neutral-100);
+
+          .input-wrapper {
+            border-radius: 0.5rem;
+          }
+        }
+
         .input-line ion-input input::placeholder {
-          color: rgba(var(--ion-color-secondary-rgb), 0.75);
+          color: rgba(var(--ion-color-neutral-500-rgb), 0.75);
         }
       }
 
@@ -135,17 +140,17 @@ ion-modal.create-identifier-modal {
 
         ion-card {
           &.type-input {
-            --background: var(--ion-color-light);
+            --background: var(--ion-color-neutral-100);
             --inner-border-width: 0;
-            border: 1px solid var(--ion-color-dark-grey);
-            color: var(--ion-color-secondary);
+            border: 1px solid var(--ion-color-neutral-400);
+            color: var(--ion-color-neutral-700);
             border-radius: 0.5rem;
             height: 3.125rem;
           }
 
           &.selected-type {
-            border: 1px solid var(--ion-color-secondary) !important;
-            background: var(--ion-color-medium-grey);
+            border: 2px solid var(--ion-color-primary-700) !important;
+            background: var(--ion-color-primary-100);
           }
 
           &::part(native) {
@@ -263,8 +268,6 @@ ion-modal.create-identifier-modal {
       }
 
       ion-card {
-        padding: 0.4rem 1rem;
-
         ion-item.identifier-list-item {
           --min-height: 2.4rem;
 

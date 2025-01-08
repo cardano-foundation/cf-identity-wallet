@@ -21,13 +21,13 @@
     .card-details-info-block-data {
       font-size: 0.875rem;
       font-weight: 500;
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
       white-space: nowrap;
 
       .card-details-info-block-key {
         display: block;
         font-size: 1rem;
-        color: var(--ion-color-primary);
+        color: var(--ion-color-neutral-700);
       }
     }
   }
@@ -41,9 +41,9 @@
   }
 
   .view-more-members {
-    --background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    --background: var(--ion-color-neutral-300);
     --border-radius: 0.5rem;
-    color: var(--ion-color-primary);
+    color: var(--ion-color-neutral-800);
     width: 100%;
     display: block;
     margin-top: 1.25rem;
@@ -51,7 +51,7 @@
     --padding-top: 0.625rem;
     --padding-bottom: 0.625rem;
     font-size: 1rem;
-    --background-activated: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    --background-activated: var(--ion-color-neutral-400);
 
     &::part(native) {
       border: none;
@@ -87,7 +87,7 @@
 
     p,
     ion-icon {
-      color: var(--ion-color-action-blue);
+      color: var(--ion-color-primary-700);
     }
   }
 

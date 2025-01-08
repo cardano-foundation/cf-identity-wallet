@@ -30,6 +30,7 @@ import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { Alert, Alert as AlertDecline } from "../../../../components/Alert";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
+import { CardTheme } from "../../../../components/CardTheme";
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
 import {
   MemberAcceptStatus,
@@ -42,13 +43,14 @@ import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { Spinner } from "../../../../components/Spinner";
 import { Verification } from "../../../../components/Verification";
-import { BackEventPriorityType, IDENTIFIER_BG_MAPPING } from "../../../../globals/types";
+import { BackEventPriorityType } from "../../../../globals/types";
 import {
   useIonHardwareBackButton,
   useOnlineStatusEffect,
 } from "../../../../hooks";
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
+import { getTheme } from "../../../../utils/theme";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 
@@ -288,6 +290,7 @@ const ReceiveCredential = ({
     ? undefined
     : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
 
+  const theme = getTheme(identifier?.theme || 0);
 
   return (
     <>
@@ -441,12 +444,11 @@ const ReceiveCredential = ({
               onClick={() => setOpenIdentifierDetail(true)}
               data-testid="related-identifier-detail"
             >
-              <img
-                className="theme"
-                slot="start"
-                src={IDENTIFIER_BG_MAPPING[identifier.theme] as string}
-                alt="theme"
-              />
+              <div slot="start" className="theme">
+                <CardTheme 
+                  {...theme} 
+                />
+              </div>
               <IonText
                 slot="start"
                 className="identifier-name"

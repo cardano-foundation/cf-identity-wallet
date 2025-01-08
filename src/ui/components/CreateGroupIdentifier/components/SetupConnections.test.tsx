@@ -119,7 +119,7 @@ describe("Create group identifier - Setup Connection", () => {
         groupCreated: true,
       },
     },
-    color: IdentifierColor.Green,
+    color: IdentifierColor.One,
   };
 
   const dispatchMock = jest.fn();
@@ -173,7 +173,7 @@ describe("Create group identifier - Setup Connection", () => {
     });
 
     expect(innerSetState).toBeCalledWith({
-      color: IdentifierColor.Green,
+      color: IdentifierColor.One,
       scannedConections: [connectionsFix[3]],
       displayNameValue: stage1State.displayNameValue,
       ourIdentifier: stage1State.ourIdentifier,
@@ -206,7 +206,7 @@ describe("Create group identifier - Setup Connection", () => {
           groupCreated: true,
         },
       },
-      color: IdentifierColor.Green,
+      color: IdentifierColor.One,
     };
 
     const dispatchMock = jest.fn();
@@ -391,7 +391,7 @@ describe("Create group identifier - Setup Connection", () => {
           groupCreated: true,
         },
       },
-      color: IdentifierColor.Green,
+      color: IdentifierColor.One,
     };
 
     const dispatchMock = jest.fn();

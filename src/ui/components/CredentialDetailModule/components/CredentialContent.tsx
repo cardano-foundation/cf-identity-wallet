@@ -23,6 +23,8 @@ import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./Cr
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
+import { CardTheme } from "../../CardTheme";
+import { getTheme } from "../../../utils/theme";
 
 const CredentialContent = ({
   cardData,
@@ -171,9 +173,9 @@ const CredentialContent = ({
       >
         <CardDetailsItem
           info={identifier?.displayName || ""}
-          customIcon={KeriLogo}
           className="related-identifier"
           testId="related-identifier-name"
+          startSlot={<CardTheme {...getTheme(identifier.theme || 0)} />}
         />
       </CardBlock>}
       <IdentifierDetailModal

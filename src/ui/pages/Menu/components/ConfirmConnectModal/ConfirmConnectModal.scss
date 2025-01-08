@@ -16,7 +16,7 @@
     }
 
     .wallet-connect-fallback-logo {
-      background-color: var(--ion-color-primary);
+      background-color: var(--ion-color-neutral-800);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -44,7 +44,7 @@
     .confirm-modal-id {
       margin: 0 0 1.5rem;
       padding: 1rem 1.5rem;
-      background-color: var(--ion-color-white);
+      background-color: var(--ion-color-neutral-100);
       border-radius: 1.875rem;
 
       display: flex;
@@ -52,7 +52,7 @@
 
       & > span {
         font-weight: 500;
-        color: var(--ion-color-secondary);
+        color: var(--ion-color-neutral-700);
       }
 
       & > ion-icon {
@@ -65,8 +65,8 @@
     .pending-chip {
       margin: 1.25rem 0 1.5rem;
       border-radius: 0.25rem;
-      color: var(--ion-color-secondary);
-      background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+      color: var(--ion-color-neutral-700);
+      background: var(--ion-color-neutral-300);
 
       & > span {
         font-size: 0.75rem;
@@ -92,7 +92,7 @@
       background: var(--ion-color-danger) !important;
 
       & > ion-icon {
-        --ion-color-base: var(--ion-color-white) !important;
+        --ion-color-base: var(--ion-color-neutral-100) !important;
         width: 1.5rem;
         height: 1.5rem;
       }

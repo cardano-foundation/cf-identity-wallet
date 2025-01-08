@@ -11,7 +11,7 @@
     position: relative;
 
     &.selected {
-      border: 1px solid var(--ion-color-secondary);
+      border: 2px solid var(--ion-color-primary-700);
     }
 
     .selected-theme-checkmark {
@@ -31,6 +31,9 @@
         height: 1.125rem;
         margin: auto;
         border-radius: 1.125rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
 
@@ -54,27 +57,29 @@
     }
 
     .selected-theme-checkmark {
-      background: var(--ion-color-primary-gradient);
+      background: var(--ion-color-primary-700);
+      color: var(--ion-color-neutral-100);
+      border: 1px solid var(--ion-color-neutral-100);
     }
 
-    &.card-theme-one {
+    &.card-theme-0 {
       background: var(--ion-color-card-theme-one);
     }
 
-    &.card-theme-two {
+    &.card-theme-1 {
       background: var(--ion-color-card-theme-two);
     }
 
-    &.card-theme-three {
+    &.card-theme-2 {
       background: var(--ion-color-card-theme-three);
     }
 
-    &.card-theme-primary {
-      background: var(--ion-color-primary-gradient);
+    &.card-theme-3 {
+      background: var(--ion-color-card-theme-four);
     }
 
-    &.card-theme-secondary {
-      background: var(--ion-color-secondary-gradient);
+    &.card-theme-4 {
+      background: var(--ion-color-card-theme-five);
     }
   }
 }

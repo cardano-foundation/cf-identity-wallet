@@ -10,12 +10,12 @@
   max-width: 1.563rem;
   max-height: 1.563rem;
   border-radius: 50%;
-  border: 1px solid var(--ion-color-secondary);
+  border: 1px solid var(--ion-color-neutral-700);
   margin: 0 0.5rem;
 }
 
 .passcode-module-circle-fill {
-  background: var(--ion-color-secondary);
+  background: var(--ion-color-neutral-700);
 }
 
 .passcode-module-container {
@@ -40,14 +40,14 @@
       width: 22.57vw;
       height: 22.57vw;
       --border-radius: 22.57vw;
-      --background-activated: var(--ion-color-dark-grey);
-      --background-focused: var(--ion-color-dark-grey);
-      --background-hover: var(--ion-color-dark-grey);
+      --background-activated: var(--ion-color-neutral-400);
+      --background-focused: var(--ion-color-neutral-400);
+      --background-hover: var(--ion-color-neutral-400);
     }
   }
 
   .passcode-module-number-button {
-    --background: var(--ion-color-medium-grey);
+    --background: var(--ion-color-neutral-300);
 
     .passcode-module-number-button-inner {
       display: flex;
@@ -59,7 +59,7 @@
       cursor: pointer;
       font-size: 11.28vw;
       font-weight: 500;
-      color: var(--ion-color-primary);
+      color: var(--ion-color-neutral-800);
 
       .passcode-module-number-labels {
         display: flex;
@@ -77,8 +77,8 @@
   }
 
   .passcode-module-backspace-button {
-    --background: var(--ion-color-primary);
-    --color: var(--ion-color-light);
+    --background: var(--ion-color-neutral-800);
+    --color: var(--ion-color-neutral-100);
 
     .passcode-module-backspace-icon {
       width: 3.125rem;
@@ -88,7 +88,7 @@
   .passcode-module-fingerprint-icon {
     width: 3.125rem;
     height: 3.125rem;
-    color: var(--ion-color-primary);
+    color: var(--ion-color-neutral-800);
   }
 }
 

@@ -1,9 +1,8 @@
-import { IonCard, IonIcon } from "@ionic/react";
-import { informationCircleOutline } from "ionicons/icons";
-import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
-import { CloudErrorProps } from "./CloudError.types";
-import "./CloudError.scss";
 import { i18n } from "../../../i18n";
+import { InfoCard } from "../InfoCard";
+import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
+import "./CloudError.scss";
+import { CloudErrorProps } from "./CloudError.types";
 
 const CloudError = ({ pageId, header, children }: CloudErrorProps) => {
   const getMessage = (pageId: string) => {
@@ -26,15 +25,7 @@ const CloudError = ({ pageId, header, children }: CloudErrorProps) => {
       activeStatus={true}
       customClass={"cloud-error"}
     >
-      <IonCard>
-        <p>{getMessage(pageId)}</p>
-        <div className="alert-icon">
-          <IonIcon
-            icon={informationCircleOutline}
-            slot="icon-only"
-          />
-        </div>
-      </IonCard>
+      <InfoCard content={getMessage(pageId)} />
       {children}
     </ResponsivePageLayout>
   );

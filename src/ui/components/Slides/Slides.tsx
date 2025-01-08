@@ -56,7 +56,7 @@ const Slides = ({ items }: SlideProps) => {
                 <img
                   src={slide.image}
                   alt={slide.title}
-                  className={activeIndex === index ? "text-fadein-down" : ""}
+                  className={`image ${activeIndex === index ? "text-fadein-down" : ""}`}
                 />
               )}
               <h2 className={activeIndex === index ? "text-fadein" : ""}>
