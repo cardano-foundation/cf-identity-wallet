@@ -1,8 +1,8 @@
-import { randomSalt } from "../../../core/agent/services/utils";
+import { generateElementId } from "../../utils/string";
 import { CardThemeBaseProps } from "./CardTheme.types";
 
 const CardThemeThree = ({ className }: CardThemeBaseProps) => {
-  const fillId = randomSalt();
+  const fillId = generateElementId();
   
   return (
     <svg className={className} width="350" height="200" viewBox="0 0 350 200" fill="none" xmlns="http://www.w3.org/2000/svg">
