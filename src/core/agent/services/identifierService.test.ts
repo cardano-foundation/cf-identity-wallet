@@ -244,6 +244,18 @@ const WITNESSES = [
   "http://witnesess:5645/oobi/BM35JN8XeJSEfpxopjn5jr7tAHCE5749f0OobhMLCorE/controller?role=witness",
   "http://witnesess:5646/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHP/controller?role=witness",
   "http://witnesess:5647/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsM/controller?role=witness",
+  "http://witnesess:5648/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2HA/controller?role=witness",
+  "http://witnesess:5649/oobi/BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapA/controller?role=witness",
+  "http://witnesess:5650/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfA/controller?role=witness",
+  "http://witnesess:5651/oobi/BM35JN8XeJSEfpxopjn5jr7tAHCE5749f0OobhMLCorA/controller?role=witness",
+  "http://witnesess:5652/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHA/controller?role=witness",
+  "http://witnesess:5653/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsB/controller?role=witness",
+  "http://witnesess:5654/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2HB/controller?role=witness",
+  "http://witnesess:5655/oobi/BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapB/controller?role=witness",
+  "http://witnesess:5656/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfB/controller?role=witness",
+  "http://witnesess:5657/oobi/BM35JN8XeJSEfpxopjn5jr7tAHCE5749f0OobhMLCorB/controller?role=witness",
+  "http://witnesess:5658/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHB/controller?role=witness",
+  "http://witnesess:5659/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsB/controller?role=witness",
 ];
 const witnessEids = WITNESSES.map(
   (oobi: string) => oobi.split("/oobi/")[1].split("/")[0]
@@ -254,7 +266,7 @@ describe("Single sig service of agent", () => {
     jest.resetAllMocks();
 
     getAgentConfigMock.mockResolvedValue({
-      iurls: WITNESSES,
+      iurls: WITNESSES.slice(0, 6),
     });
   });
 
@@ -445,8 +457,8 @@ describe("Single sig service of agent", () => {
       content: { queuedDisplayNames: ["0:displayName"] },
     }));
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
-      wits: witnessEids,
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
@@ -520,8 +532,8 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
-      wits: witnessEids,
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
@@ -590,8 +602,8 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
-      wits: witnessEids,
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
@@ -660,8 +672,8 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
-      wits: witnessEids,
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
@@ -706,8 +718,8 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
-      wits: witnessEids,
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
@@ -768,8 +780,8 @@ describe("Single sig service of agent", () => {
 
     expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
     expect(createIdentifierMock).toBeCalledWith("0:displayName", {
-      toad: WITNESSES.length,
-      wits: witnessEids,
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
@@ -813,7 +825,7 @@ describe("Single sig service of agent", () => {
         displayName: "newDisplayName",
         theme: 0,
       })
-    ).rejects.toThrowError(IdentifierService.NO_WITNESSES_AVAILABLE);
+    ).rejects.toThrowError(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
 
     expect(createIdentifierMock).not.toBeCalled();
   });
@@ -1231,6 +1243,7 @@ describe("Single sig service of agent", () => {
     );
     expect(identifierService.createIdentifier).not.toHaveBeenCalled();
   });
+
   test("cannot get available witnesses list if the config is misconfigured", async () => {
     getAgentConfigMock.mockResolvedValueOnce({});
 
@@ -1244,13 +1257,66 @@ describe("Single sig service of agent", () => {
     getAgentConfigMock.mockResolvedValueOnce({
       iurls: [
         "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller",
-        WITNESSES[1],
+        ...WITNESSES.slice(0, 6)
       ],
     });
 
-    expect(await identifierService.getAvailableWitnesses()).toStrictEqual([
-      witnessEids[1],
-    ]);
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 4, witnesses: [...witnessEids.slice(0, 6)] });
     expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("available witness list must be at least 6", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 5),
+    });
+
+    await expect(identifierService.getAvailableWitnesses()).rejects.toThrowError(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("duplicate witnesses are ignored", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES.slice(0, 6), ...WITNESSES.slice(0, 6)] 
+    });
+
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 4, witnesses: [...witnessEids.slice(0, 6)] }); 
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("different witness list sizes", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 7),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 5, witnesses: [...witnessEids.slice(0, 7)] });
+    
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 8),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 5, witnesses: [...witnessEids.slice(0, 7)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 9),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 6, witnesses: [...witnessEids.slice(0, 9)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 10),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 7, witnesses: [...witnessEids.slice(0, 10)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 11),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 7, witnesses: [...witnessEids.slice(0, 10)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 12),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 8, witnesses: [...witnessEids.slice(0, 12)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 8, witnesses: [...witnessEids.slice(0, 12)] });
   });
 });

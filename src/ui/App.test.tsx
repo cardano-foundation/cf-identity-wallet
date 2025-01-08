@@ -526,7 +526,7 @@ describe("App", () => {
 
 describe("Witness availability", () => {
   test("No witness availability", async () => {
-    getAvailableWitnessesMock.mockImplementation(() => Promise.resolve([]));
+    getAvailableWitnessesMock.mockRejectedValue(new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE));
 
     const initialState = {
       stateCache: {
@@ -618,7 +618,7 @@ describe("Witness availability", () => {
   });
 
   test("Throw error", async () => {
-    getAvailableWitnessesMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)));
+    getAvailableWitnessesMock.mockRejectedValue(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION));
 
     const initialState = {
       stateCache: {

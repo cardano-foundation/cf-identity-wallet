@@ -199,14 +199,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if(!authentication.ssiAgentIsSet || !isOnline) return;
 
     try {
-      const witness = await Agent.agent.identifiers.getAvailableWitnesses();
-
-      if (witness.length === 0)
-        throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE)
-
+      await Agent.agent.identifiers.getAvailableWitnesses();
     } catch(e) {
       const errorMessage = (e as Error).message;
-      if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+      if(errorMessage.includes(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
         dispatch(showNoWitnessAlert(true));
         return;
       }
