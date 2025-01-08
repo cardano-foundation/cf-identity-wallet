@@ -102,7 +102,7 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
         setCloudError(true);
       } else {
         handleDone?.(false);
-        showError("Unable to get connection details", error, dispatch);
+        showError("Unable to get identifier details", error, dispatch);
       }
     }
   }, [identifierDetailId, handleDone, dispatch]);

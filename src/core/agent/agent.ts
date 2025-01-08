@@ -45,6 +45,7 @@ import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
+import { isNetworkError } from "./services/utils";
 
 const walletId = "idw";
 class Agent {
@@ -181,9 +182,9 @@ class Agent {
         this.multiSigs,
         this.ipexCommunications,
         this.credentialService,
-        this.getKeriaOnlineStatus,
-        this.markAgentStatus,
-        this.connect
+        this.getKeriaOnlineStatus.bind(this),
+        this.markAgentStatus.bind(this),
+        this.connect.bind(this)
       );
     }
     return this.keriaNotificationService;
@@ -329,19 +330,20 @@ class Agent {
       if (!(error instanceof Error)) {
         throw error;
       }
-      /* eslint-disable no-console */
-      console.error(error);
-      const status = error.message.split(" - ")[1];
-      if (error.message === "Failed to fetch") {
+
+      if (isNetworkError(error)) {
         throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK, {
           cause: error,
         });
       }
+      
+      const status = error.message.split(" - ")[1];
       if (/404/gi.test(status)) {
         throw new Error(Agent.KERIA_NOT_BOOTED, {
           cause: error,
         });
       }
+
       throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT, {
         cause: error,
       });
@@ -485,13 +487,7 @@ class Agent {
         });
       }
       await this.signifyClient.connect();
-      Agent.isOnline = true;
-      this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
-        type: EventTypes.KeriaStatusChanged,
-        payload: {
-          isOnline: true,
-        },
-      });
+      this.markAgentStatus(true);
     } catch (error) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
       await this.connect(retryInterval);

@@ -33,14 +33,13 @@ function getCredentialShortDetails(
 }
 
 export const OnlineOnly = (
-  target: any,
-  propertyKey: string,
+  _target: any,
+  _propertyKey: string,
   descriptor: PropertyDescriptor
 ) => {
   const originalMethod = descriptor.value;
   descriptor.value = async function (...args: any[]) {
-    const isKeriOnline = Agent.agent.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
+    if (!Agent.agent.getKeriaOnlineStatus()) {
       throw new Error(Agent.KERIA_CONNECTION_BROKEN);
     }
     // Call the original method
@@ -48,13 +47,11 @@ export const OnlineOnly = (
       const executeResult = await originalMethod.apply(this, args);
       return executeResult;
     } catch (error) {
-      const errorMessage = (error as Error).message;
-      /** If the error is failed to fetch with signify,
-       * we retry until the connection is secured*/
-      if (
-        /Failed to fetch/gi.test(errorMessage) ||
-        /Load failed/gi.test(errorMessage)
-      ) {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+
+      if (isNetworkError(error)) {
         Agent.agent.markAgentStatus(false);
         Agent.agent.connect(1000);
         throw new Error(Agent.KERIA_CONNECTION_BROKEN, {
@@ -86,8 +83,22 @@ export const deleteNotificationRecordById = async (
 };
 
 function randomSalt(): string {
-  const salt = new Salter({}).qb64;
-  return salt;
+  return new Salter({}).qb64;
 }
 
-export { waitAndGetDoneOp, getCredentialShortDetails, randomSalt };
+function isNetworkError(error: Error): boolean {
+  if (
+    /Failed to fetch/gi.test(error.message) ||
+    /network error/gi.test(error.message) ||
+    /Load failed/gi.test(error.message) ||
+    /NetworkError when attempting to fetch resource./gi.test(error.message) ||
+    /The Internet connection appears to be offline./gi.test(error.message) ||
+    /504/gi.test(error.message.split(" - ")[1])  // Gateway timeout
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+export { waitAndGetDoneOp, getCredentialShortDetails, randomSalt, isNetworkError };
