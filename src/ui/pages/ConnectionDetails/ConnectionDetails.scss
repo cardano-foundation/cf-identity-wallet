@@ -1,8 +1,8 @@
 .connection-details {
-  background: var(--ion-color-light-grey);
+  background: var(--ion-color-neutral-200);
 
   ion-header ion-toolbar {
-    --background: var(--ion-color-light-grey);
+    --background: var(--ion-color-neutral-200);
     margin-top: 0.625rem;
 
     ion-button:not(.close-button-label),
@@ -10,7 +10,7 @@
       width: 2.75rem;
       height: 2.75rem;
       border-radius: 1.5rem;
-      background: var(--ion-color-light);
+      background: var(--ion-color-neutral-100);
 
       &:not(:first-child) {
         margin-left: 0.5rem;
@@ -55,7 +55,7 @@
     flex-direction: row;
     padding: 0.813rem 1rem;
     border-radius: 0.75rem;
-    background-color: var(--ion-color-light-grey);
+    background-color: var(--ion-color-neutral-200);
 
     &:not(:last-of-type) {
       margin-bottom: 1rem;
@@ -64,6 +64,11 @@
     .connection-details-logo {
       width: 15%;
       align-self: center;
+
+      svg {
+        width: 2.75rem;
+        border-radius: 0.25rem;
+      }
 
       img {
         width: 2.75rem;
@@ -136,6 +141,12 @@
             border-radius: 0.2rem;
           }
         }
+
+        svg {
+          width: 2.2rem;
+          border-radius: 0.25rem;
+        }
+  
       }
     }
   }

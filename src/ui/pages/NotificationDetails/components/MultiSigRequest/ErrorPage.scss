@@ -12,7 +12,7 @@
     margin-bottom: 1.75rem;
 
     .card-details-info-block-inner {
-      background: rgba(var(--ion-color-danger-rgb), 0.1);
+      background: rgba(var(--ion-color-error-800-rgb), 0.1);
       padding: 1rem 1.25rem;
       display: flex;
 
@@ -32,11 +32,11 @@
     font-weight: 700;
     line-height: 1.5rem;
     margin-bottom: 0.5rem;
-    color: var(--ion-color-primary);
+    color: var(--ion-color-neutral-800);
   }
 
   .detail-text {
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-neutral-700);
     font-size: 1rem;
     line-height: 1.375rem;
   }

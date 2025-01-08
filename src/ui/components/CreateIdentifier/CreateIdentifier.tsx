@@ -68,7 +68,7 @@ const CreateIdentifier = ({
     displayName: "",
     selectedAidType: groupId ? 1 : 0,
     selectedTheme: 0,
-    color: IdentifierColor.Green,
+    color: IdentifierColor.One,
   };
 
   const [identifierData, setIdentifierData] = useState<IdentifierModel>({
@@ -197,7 +197,7 @@ const CreateIdentifier = ({
     } catch (e) {
       const errorMessage = (e as Error).message;
 
-      if(errorMessage.includes(IdentifierService.NO_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+      if(errorMessage.includes(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
         dispatch(showNoWitnessAlert(true));
         return;
       }

@@ -10,11 +10,11 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
+import introImg0 from "../../assets/images/intro-0.png";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
 import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
-import introImg0 from "../../assets/lottie/wallet.json";
 import { PageFooter } from "../../components/PageFooter";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
@@ -40,8 +40,7 @@ const Onboarding = () => {
     {
       title: i18n.t("onboarding.slides.0.title"),
       description: i18n.t("onboarding.slides.0.description"),
-      image: "",
-      lottie: introImg0,
+      image: introImg0,
     },
     {
       title: i18n.t("onboarding.slides.1.title"),

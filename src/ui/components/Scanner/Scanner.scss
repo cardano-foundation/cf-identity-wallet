@@ -10,12 +10,12 @@ ion-grid.qr-code-scanner {
   }
 
   &.scan-unavailable {
-    background: var(--ion-color-secondary);
+    background: var(--ion-color-neutral-700);
   }
 
   &.no-permission,
   &.scan-unavailable {
-    background: var(--ion-color-secondary);
+    background: var(--ion-color-neutral-700);
 
     .qr-code-scanner-text {
       opacity: 0.25;
@@ -35,7 +35,7 @@ ion-grid.qr-code-scanner {
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
-        color: var(--ion-color-light);
+        color: var(--ion-color-neutral-100);
         font-weight: 500;
       }
     }
@@ -50,7 +50,7 @@ ion-grid.qr-code-scanner {
       display: block;
       text-align: center;
       width: 100%;
-      color: var(--ion-color-light);
+      color: var(--ion-color-neutral-100);
       padding-inline: 20vw;
     }
 
@@ -76,7 +76,7 @@ ion-grid.qr-code-scanner {
     width: 100%;
     align-items: center;
     justify-content: center;
-    background: rgba(var(--ion-color-primary-rgb), 0.2);
+    background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
   }
 
   .page-footer .secondary-button {
@@ -101,7 +101,7 @@ ion-grid.qr-code-scanner {
 
       .action-button-label {
         & > p {
-          color: var(--ion-color-action-blue);
+          color: var(--ion-color-primary-700);
         }
       }
     }

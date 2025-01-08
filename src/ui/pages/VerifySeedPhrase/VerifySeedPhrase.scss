@@ -1,6 +1,4 @@
 .verify-seed-phrase {
-  --background: var(--ion-color-light);
-
   .title {
     margin-top: 1rem;
   }
@@ -13,7 +11,7 @@
   }
 
   .seed-phrase-module:nth-of-type(1) {
-    background: var(--ion-color-light-grey);
+    background: var(--ion-color-neutral-200);
   }
 
   .page-header {

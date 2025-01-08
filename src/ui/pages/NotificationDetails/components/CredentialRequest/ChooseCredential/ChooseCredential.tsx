@@ -153,7 +153,7 @@ const ChooseCredential = ({
         handleNotificationUpdate();
       }
 
-      dispatch(setToastMsg(ToastMsgType.SHARE_CRED_SUCCESS));
+      dispatch(setToastMsg(!linkedGroup ? ToastMsgType.SHARE_CRED_SUCCESS : ToastMsgType.PROPOSED_CRED_SUCCESS));
       onClose();
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.SHARE_CRED_FAIL));

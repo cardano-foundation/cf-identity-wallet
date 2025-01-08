@@ -1,7 +1,8 @@
 import { i18n } from "../../../i18n";
 import KERILogo from "../../../ui/assets/images/keri-aid.svg";
-import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
 import { formatShortDate } from "../../utils/formatters";
+import { getTheme } from "../../utils/theme";
+import { CardTheme } from "../CardTheme";
 import "./IdentifierCardTemplate.scss";
 import { IdentifierCardTemplateProps } from "./IdentifierCardTemplate.types";
 import { useCardOffsetTop } from "./cardOffsetTopHook";
@@ -17,8 +18,6 @@ const IdentifierCardTemplate = ({
   const { getCardOffsetTop, cardRef } = useCardOffsetTop();
 
   const identifierCardTemplateStyles = {
-    backgroundImage: `url(${IDENTIFIER_BG_MAPPING[cardData.theme]})`,
-    backgroundSize: "cover",
     zIndex: index,
     transform: pickedCard
       ? `translateY(${-getCardOffsetTop() * index}px)`
@@ -44,6 +43,9 @@ const IdentifierCardTemplate = ({
       onClick={() => handleCardClick()}
       style={identifierCardTemplateStyles}
     >
+      <div className="big-card-theme">
+        <CardTheme {...getTheme(cardData.theme)}/>
+      </div>
       <div className="identifier-card-template-inner">
         <div className="card-header">
           <span
@@ -55,7 +57,7 @@ const IdentifierCardTemplate = ({
               alt="card-logo"
             />
           </span>
-          <span data-testid={`card-display-name-${index}`}>
+          <span className="card-text" data-testid={`card-display-name-${index}`}>
             {cardData.displayName}
           </span>
         </div>
@@ -64,18 +66,18 @@ const IdentifierCardTemplate = ({
         </div>
         <div className="card-footer">
           <span className="card-footer-column">
-            <span className="card-footer-column-label">
+            <span className="card-footer-column-label card-text">
               {i18n.t("tabs.identifiers.layout.created")}
             </span>
             <span
-              className="card-footer-column-info"
+              className="card-footer-column-info card-text time"
               data-testid={`card-created-${index}`}
             >
               {formatShortDate(cardData.createdAtUTC)}
             </span>
           </span>
           <span className="card-footer-column">
-            <span className="card-footer-column-info">
+            <span className="card-footer-column-info card-text">
               {cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
             </span>
           </span>

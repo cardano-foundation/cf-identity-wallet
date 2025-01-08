@@ -1,8 +1,7 @@
 .seed-phrase-module {
   position: relative;
-  border: 1px solid var(--ion-color-dark-grey);
+  border: 1px solid var(--ion-color-neutral-400);
   border-radius: 1rem;
-  --background: var(--ion-color-light-grey);
   box-shadow: none;
 
   .overlay {
@@ -11,7 +10,7 @@
 
     p,
     ion-icon {
-      color: var(--ion-color-light);
+      color: var(--ion-color-neutral-100);
       margin: 0;
     }
 
@@ -25,8 +24,8 @@
       font-size: 1rem;
       height: 3.25rem;
       margin: 0 auto;
-      color: var(--ion-color-light);
-      --border-color: var(--ion-color-light);
+      color: var(--ion-color-neutral-100);
+      --border-color: var(--ion-color-neutral-100);
     }
 
     @media screen and (min-width: 250px) and (max-width: 425px) {
@@ -41,6 +40,7 @@
     padding: 0.5rem;
     display: grid;
     grid-template-columns: 50% 50%;
+    border-radius: 1rem;
 
     ion-chip {
       border-radius: 0.5rem;
@@ -49,9 +49,11 @@
       margin: 0.3rem auto;
       padding-inline: 0.625rem;
       font-size: 1rem;
+      --background: var(--ion-color-neutral-300);
+      --color: var(--ion-color-neutral-700);
 
-      &:focus-within {
-        border: 1px dashed var(--ion-color-secondary);
+      &:focus-within, &.empty-word:focus-within {
+        border: 1px dashed var(--ion-color-neutral-700);
         background-color: transparent;
       }
 
@@ -64,11 +66,11 @@
       }
 
       &.empty-word {
-        border: 1px dashed var(--ion-color-dark-grey);
+        border: 1px dashed var(--ion-color-neutral-300);
         background-color: transparent;
 
         &.error {
-          border-color: var(--ion-color-danger);
+          border-color: var(--ion-color-error-800);
         }
       }
 
@@ -121,7 +123,8 @@
       z-index: 2;
       height: 100%;
       text-align: center;
-      background: rgba(var(--ion-color-primary-rgb), 0.65);
+      background: rgba(var(--ion-color-neutral-800-rgb), 0.8);
+      backdrop-filter: blur(1.25rem)
     }
 
     .seed-phrase-container {

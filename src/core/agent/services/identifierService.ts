@@ -29,7 +29,7 @@ import {
 } from "../event.types";
 import { StorageMessage } from "../../storage/storage.types";
 
-const identifierTypeThemes = [
+const UI_THEMES = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
 ];
 
@@ -45,8 +45,8 @@ class IdentifierService extends AgentService {
     "Failed to obtain key manager for given AID";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
-  static readonly NO_WITNESSES_AVAILABLE =
-    "No discoverable witnesses available on connected KERIA instance";
+  static readonly INSUFFICIENT_WITNESSES_AVAILABLE =
+    "An insufficient number of discoverable witnesses are available on connected KERIA instance";
   static readonly MISCONFIGURED_AGENT_CONFIGURATION =
     "Misconfigured KERIA agent for this wallet type";
   static readonly INVALID_QUEUED_DISPLAY_NAMES_FORMAT =
@@ -205,12 +205,9 @@ class IdentifierService extends AgentService {
     metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">,
     backgroundTask = false,
   ): Promise<CreateIdentifierResult> {
-    const witnesses = await this.getAvailableWitnesses();
-    if (witnesses.length === 0) {
-      throw new Error(IdentifierService.NO_WITNESSES_AVAILABLE);
-    }
+    const { toad, witnesses } = await this.getAvailableWitnesses();
 
-    if (!identifierTypeThemes.includes(metadata.theme)) {
+    if (!UI_THEMES.includes(metadata.theme)) {
       throw new Error(IdentifierService.THEME_WAS_NOT_VALID);
     }
 
@@ -247,12 +244,10 @@ class IdentifierService extends AgentService {
 
     let identifier;
     try {
-      // @TODO - foconnor: Follow up ticket to pick a sane default for threshold. Right now max is too much.
-      //   Must also enforce a minimum number of available witnesses.
       const result = await this.props.signifyClient
         .identifiers()
         .create(name, {
-          toad: witnesses.length,
+          toad,
           wits: witnesses,
         });
       await result.op();  // @TODO - foconnor: Update Signify to await the POST before returning so error thrown predicably
@@ -614,7 +609,7 @@ class IdentifierService extends AgentService {
     }
   }
 
-  async getAvailableWitnesses(): Promise<string[]> {
+  async getAvailableWitnesses(): Promise<{ toad: number, witnesses: string[] }> {
     const config = await this.props.signifyClient.config().get();
     if (!config.iurls) {
       throw new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
@@ -628,7 +623,14 @@ class IdentifierService extends AgentService {
       }
     }
 
-    return witnesses;
+    const uniquew = [...new Set(witnesses)];
+    if (uniquew.length >= 12) return { toad: 8, witnesses: uniquew.slice(0, 12) };
+    if (uniquew.length >= 10) return { toad: 7, witnesses: uniquew.slice(0, 10) };
+    if (uniquew.length >= 9) return { toad: 6, witnesses: uniquew.slice(0, 9) };
+    if (uniquew.length >= 7) return { toad: 5, witnesses: uniquew.slice(0, 7) };
+    if (uniquew.length >= 6) return { toad: 4, witnesses: uniquew.slice(0, 6) };
+
+    throw new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
   }
 
   private async searchByName(name: string): Promise<HabState & { icp_dt: string } | undefined> {

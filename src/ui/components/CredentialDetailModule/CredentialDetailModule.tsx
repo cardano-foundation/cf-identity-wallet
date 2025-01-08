@@ -451,8 +451,8 @@ const CredentialDetailModule = ({
                 closeButton
                 closeButtonLabel={`${i18n.t("tabs.credentials.details.done")}`}
                 closeButtonAction={() => onClose?.(BackReason.CLOSE)}
-                additionalButtons={!isInactiveCred && <AdditionalButtons />}
-                actionButton={isInactiveCred}
+                additionalButtons={(isLightMode || !isInactiveCred) && <AdditionalButtons />}
+                actionButton={!isLightMode && isInactiveCred}
                 actionButtonAction={action}
                 actionButtonLabel={`${actionButtonLabel}`}
                 hardwareBackButtonConfig={hardwareBackButtonConfig}
