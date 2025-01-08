@@ -40,7 +40,7 @@ const initialState: IdentifierStageStateProps = {
     theme: 0,
     isPending: false,
   },
-  color: IdentifierColor.Green
+  color: IdentifierColor.One
 };
 
 const CreateGroupIdentifier = ({

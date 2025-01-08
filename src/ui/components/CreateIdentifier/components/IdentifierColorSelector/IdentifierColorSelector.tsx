@@ -8,11 +8,11 @@ import {
 import "./IdentifierColorSelector.scss";
 
 const ColorConfigs = [
-  IdentifierColor.Green,
-  IdentifierColor.Dark,
-  IdentifierColor.Brown,
-  IdentifierColor.Primary,
-  IdentifierColor.Secondary,
+  IdentifierColor.One,
+  IdentifierColor.Two,
+  IdentifierColor.Three,
+  IdentifierColor.Four,
+  IdentifierColor.Five,
 ];
 
 const Checkmark = () => {

@@ -6,6 +6,10 @@
 
 .card-switch-view-list {
   &.card-list {
+    .card-fallback-logo {
+      --display-fallback: none;
+    }
+
     .card-item {
       &:last-child {
         --inner-border-width: 0;

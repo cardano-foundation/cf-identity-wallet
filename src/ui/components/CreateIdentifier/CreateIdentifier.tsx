@@ -68,7 +68,7 @@ const CreateIdentifier = ({
     displayName: "",
     selectedAidType: groupId ? 1 : 0,
     selectedTheme: 0,
-    color: IdentifierColor.Green,
+    color: IdentifierColor.One,
   };
 
   const [identifierData, setIdentifierData] = useState<IdentifierModel>({
