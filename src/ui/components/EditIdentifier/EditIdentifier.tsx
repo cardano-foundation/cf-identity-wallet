@@ -85,7 +85,7 @@ const EditIdentifier = ({
 
   const handleSubmit = async () => {
     try {
-      if(Object.values(identifiersData).some(item => item.displayName === newDisplayName)) {
+      if(newDisplayName.trim() !== cardData.displayName.trim() && Object.values(identifiersData).some(item => item.displayName === newDisplayName)) {
         throw new Error(DUPLICATED_NAME);
       }
       
