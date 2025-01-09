@@ -26,6 +26,7 @@ import "./EditIdentifier.scss";
 import { EditIdentifierProps } from "./EditIdentifier.types";
 
 const IDENTIFIER_NOT_EXIST = "Identifier not existed. id: ";
+const DUPLICATED_NAME = "Identifier name is duplicated";
 
 const EditIdentifier = ({
   modalIsOpen,
@@ -68,7 +69,7 @@ const EditIdentifier = ({
   const verifyDisplayName =
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
-    (newDisplayName !== cardData.displayName ||
+    (newDisplayName.trim() !== cardData.displayName.trim() ||
       createThemeValue(newSelectedColor, newSelectedTheme) !== cardData.theme);
 
   useEffect(() => {
@@ -84,6 +85,10 @@ const EditIdentifier = ({
 
   const handleSubmit = async () => {
     try {
+      if(Object.values(identifiersData).some(item => item.displayName === newDisplayName)) {
+        throw new Error(DUPLICATED_NAME);
+      }
+      
       setLoading(true);
       const currentIdentifier = identifiersData[cardData.id];
 
@@ -110,6 +115,11 @@ const EditIdentifier = ({
       dispatch(updateOrAddIdentifiersCache(updatedIdentifier));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     } catch (e) {
+      if((e as Error).message === DUPLICATED_NAME) {
+        setDuplicateName(true);
+        return;
+      }
+
       showError(
         "Unable to edit identifier",
         e,
