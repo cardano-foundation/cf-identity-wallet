@@ -54,7 +54,7 @@ import {
 } from "./CreateIdentifier.types";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
-const DUPLICATED_NAME = "Identifier name is duplicated";
+const DUPLICATE_NAME = "Identifier name is a duplicate";
 
 const CreateIdentifier = ({
   modalIsOpen,
@@ -167,7 +167,7 @@ const CreateIdentifier = ({
     metadata.groupMetadata = groupMetadata;
     try {
       if(Object.values(identifiers).some(item => item.displayName.trim() === identifierData.displayName.trim())) {
-        throw new Error(DUPLICATED_NAME);
+        throw new Error(DUPLICATE_NAME);
         return;
       }
   
@@ -205,7 +205,7 @@ const CreateIdentifier = ({
     } catch (e) {
       const errorMessage = (e as Error).message;
 
-      if(errorMessage === DUPLICATED_NAME) {
+      if(errorMessage === DUPLICATE_NAME) {
         setDuplicateName(true);
         return;
       }

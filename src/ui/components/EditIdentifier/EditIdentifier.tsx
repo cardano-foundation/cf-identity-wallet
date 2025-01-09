@@ -26,7 +26,7 @@ import "./EditIdentifier.scss";
 import { EditIdentifierProps } from "./EditIdentifier.types";
 
 const IDENTIFIER_NOT_EXIST = "Identifier not existed. id: ";
-const DUPLICATED_NAME = "Identifier name is duplicated";
+const DUPLICATE_NAME = "Identifier name is a duplicate";
 
 const EditIdentifier = ({
   modalIsOpen,
@@ -86,7 +86,7 @@ const EditIdentifier = ({
   const handleSubmit = async () => {
     try {
       if(newDisplayName.trim() !== cardData.displayName.trim() && Object.values(identifiersData).some(item => item.displayName === newDisplayName)) {
-        throw new Error(DUPLICATED_NAME);
+        throw new Error(DUPLICATE_NAME);
       }
       
       setLoading(true);
@@ -115,7 +115,7 @@ const EditIdentifier = ({
       dispatch(updateOrAddIdentifiersCache(updatedIdentifier));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     } catch (e) {
-      if((e as Error).message === DUPLICATED_NAME) {
+      if((e as Error).message === DUPLICATE_NAME) {
         setDuplicateName(true);
         return;
       }
