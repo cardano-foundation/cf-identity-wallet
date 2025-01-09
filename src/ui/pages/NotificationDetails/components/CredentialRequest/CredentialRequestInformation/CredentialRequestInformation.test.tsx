@@ -1,16 +1,27 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { mockIonicReact } from "@ionic/react-test-utils";
-import { act } from "react";
-import { TabsRoutePath } from "../../../../../../routes/paths";
-import { CredentialRequestInformation } from "./CredentialRequestInformation";
-import { notificationsFix } from "../../../../../__fixtures__/notificationsFix";
-import { connectionsForNotifications } from "../../../../../__fixtures__/connectionsFix";
 import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../../../../routes/paths";
+import { connectionsForNotifications } from "../../../../../__fixtures__/connectionsFix";
 import { credRequestFix } from "../../../../../__fixtures__/credRequestFix";
+import { notificationsFix } from "../../../../../__fixtures__/notificationsFix";
+import { passcodeFiller } from "../../../../../utils/passcodeFiller";
+import { CredentialRequestInformation } from "./CredentialRequestInformation";
 
-mockIonicReact();
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+}));
+
+jest.mock("../../../../../../core/storage", () => ({
+  ...jest.requireActual("../../../../../../core/storage"),
+  SecureStorage: {
+    get: () => "111111",
+  },
+}));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const joinMultisigOfferMock = jest.fn();
@@ -428,7 +439,16 @@ describe("Credential request information: multisig", () => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
     });
 
-    expect(joinMultisigOfferMock).toBeCalled();
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    await passcodeFiller(getByText, getByTestId, "1", 6);
+    
+    await waitFor(() => {
+      expect(joinMultisigOfferMock).toBeCalled();
+    })
 
     act(() => {
       fireEvent.click(getByTestId("delete-button-multi-sign"));

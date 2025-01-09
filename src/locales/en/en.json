@@ -766,7 +766,7 @@
         "strong": "Strong"
       },
       "acceptcriteria": {
-        "text": "Must be between <strong>8-64 characters</strong>, contain an <strong>lowercase</strong> and <strong>uppercase</strong> letter, a <strong>number</strong>, and a <strong>symbol</strong>."
+        "text": "Must be between <strong>8-64 characters</strong>, contain a <strong>lowercase</strong> and <strong>uppercase</strong> letter, a <strong>number</strong>, and a <strong>symbol</strong>."
       }
     },
     "symbolmodal": {

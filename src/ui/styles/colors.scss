@@ -18,6 +18,11 @@
   --ion-color-neutral-800: #1F242B;
   --ion-color-neutral-900: #0D0F12;
 
+  --ion-color-neutral-500-rgb: 108, 117, 128;
+  --ion-color-neutral-600-rgb: 78, 86, 97;
+  --ion-color-neutral-700-rgb: 52, 59, 69;
+  --ion-color-neutral-800-rgb: 31, 36, 43;
+
   --ion-color-theme-one-primary: var(--ion-color-primary-700);
   --ion-color-theme-one-secondary: var(--ion-color-primary-800);
   --ion-color-theme-two-primary: var(--ion-color-primary-400);
@@ -41,6 +46,8 @@
   --ion-color-error-400: #FF6B6B;
   --ion-color-error-800: #A30000;
 
+  --ion-color-error-800-rgb: 163, 0, 0;
+
   --ion-color-archive-400: #531FAD;
 
   --ion-color-primary: var(--ion-color-neutral-700);
@@ -48,12 +55,6 @@
   --ion-color-danger: var(--ion-color-error-800);
   --ion-color-danger-contrast: var(--ion-color-neutral-100);
   --ion-item-background: var(--ion-color-neutral-100);
-
-  --ion-color-neutral-800-rgb: 31, 36, 43;
-  --ion-color-neutral-700-rgb: 52, 59, 69;
-  --ion-color-neutral-600-rgb: 78, 86, 97;
-  --ion-color-neutral-500-rgb: 108, 117, 128;
-  --ion-color-error-800-rgb: 163, 0, 0;
 
   --ion-color-card-theme-one: linear-gradient(90.04deg, var(--ion-color-theme-one-primary) 28.46%, var(--ion-color-theme-one-secondary) 165.71%);
   --ion-color-card-theme-two: linear-gradient(90.04deg, var(--ion-color-theme-two-primary) 28.46%, var(--ion-color-theme-two-secondary) 165.71%);

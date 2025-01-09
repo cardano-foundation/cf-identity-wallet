@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
@@ -8,16 +9,11 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
-import { Capacitor } from "@capacitor/core";
-import { RoutePath, Routes } from "../routes";
-import { PublicRoutes } from "../routes/paths";
+import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-  getAuthentication,
   getCurrentOperation,
-  getCurrentRoute,
-  getIsInitialized,
-  getIsOnline,
+  getIsInitialized
 } from "../store/reducers/stateCache";
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
@@ -38,9 +34,6 @@ setupIonicReact();
 
 const App = () => {
   const initialized = useAppSelector(getIsInitialized);
-  const isOnline = useAppSelector(getIsOnline);
-  const authentication = useAppSelector(getAuthentication);
-  const currentRoute = useAppSelector(getCurrentRoute);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
   const dispatch = useAppDispatch();
@@ -97,42 +90,32 @@ const App = () => {
     }
   }, []);
 
-  const renderApp = () => {
-    return (
-      <IonReactRouter>
-        {showScan ? (
-          <FullPageScanner
-            showScan={showScan}
-            setShowScan={setShowScan}
-          />
-        ) : (
-          <div
-            className="app-spinner-container"
-            data-testid="app-spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        )}
-        <div className={showScan ? "ion-hide" : ""}>
-          <Routes />
-        </div>
-      </IonReactRouter>
-    );
-  };
-
-  const isPublicPage = PublicRoutes.includes(currentRoute?.path as RoutePath);
-
   return (
     <IonApp>
       <AppWrapper>
         <StrictMode>
           {initialized ? (
             <>
-              {renderApp()}
-              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
-              {authentication.ssiAgentIsSet && !isOnline ? (
-                <AppOffline />
-              ) : null}
+              <IonReactRouter>
+                {showScan ? (
+                  <FullPageScanner
+                    showScan={showScan}
+                    setShowScan={setShowScan}
+                  />
+                ) : (
+                  <div
+                    className="app-spinner-container"
+                    data-testid="app-spinner-container"
+                  >
+                    <IonSpinner name="circular" />
+                  </div>
+                )}
+                <div className={showScan ? "ion-hide" : ""}>
+                  <Routes />
+                </div>
+              </IonReactRouter>
+              <LockPage />
+              <AppOffline />
             </>
           ) : (
             <LoadingPage />
