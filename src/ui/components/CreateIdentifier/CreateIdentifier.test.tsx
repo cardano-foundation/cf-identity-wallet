@@ -11,6 +11,7 @@ import EN_TRANSLATION from "../../../locales/en/en.json";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { showNoWitnessAlert } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierFix";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CreateIdentifier } from "./CreateIdentifier";
@@ -316,6 +317,33 @@ describe("Create Identifier modal", () => {
   });
 
   test("Display error when display name invalid", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+        isOnline: true,
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierMapFix,
+      },
+    };
+  
+    const dispatchMock = jest.fn();
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
@@ -358,6 +386,18 @@ describe("Create Identifier modal", () => {
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATION.nameerror.hasspecialchar)).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("display-name-input"), "Professional ID");
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+    
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATION.nameerror.duplicatename)).toBeVisible();
     });
   });
 

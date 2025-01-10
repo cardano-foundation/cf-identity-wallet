@@ -168,7 +168,6 @@ const CreateIdentifier = ({
     try {
       if(Object.values(identifiers).some(item => item.displayName.trim() === identifierData.displayName.trim())) {
         throw new Error(DUPLICATE_NAME);
-        return;
       }
   
       const { identifier, createdAt } = await Agent.agent.identifiers.createIdentifier(metadata);
