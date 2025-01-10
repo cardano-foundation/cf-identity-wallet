@@ -1,27 +1,9 @@
 ion-modal.create-group-identifier-modal {
-  &.blur {
-    .create-identifier-modal-content > *:not(.spinner-container),
-    ion-toolbar.page-footer {
-      filter: blur(0.1rem);
-    }
-
-    ion-toolbar.page-footer {
-      background: transparent !important;
-    }
-  }
-
   .spinner-container {
     z-index: 1000;
     position: absolute;
     top: 0;
     left: 0;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
   }
 
   .responsive-page-content {
@@ -146,7 +128,7 @@ ion-modal.create-group-identifier-modal {
     --background: var(--ion-color-neutral-200);
 
     &.page-footer {
-      z-index: 1000;
+      z-index: 500;
       bottom: calc(-100vh + 5rem);
       padding-inline: 0.9rem;
 

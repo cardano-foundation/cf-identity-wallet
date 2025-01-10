@@ -18,8 +18,9 @@ import {
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  getIdentifiersCache,
   setMultiSigGroupCache
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
@@ -53,6 +54,7 @@ import {
 } from "./CreateIdentifier.types";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
+const DUPLICATE_NAME = "Identifier name is a duplicate";
 
 const CreateIdentifier = ({
   modalIsOpen,
@@ -60,6 +62,7 @@ const CreateIdentifier = ({
   onClose,
   groupId,
 }: CreateIdentifierProps) => {
+  const identifiers = useAppSelector(getIdentifiersCache);
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const componentId = "create-identifier-modal";
   const dispatch = useAppDispatch();
@@ -163,6 +166,10 @@ const CreateIdentifier = ({
     }
     metadata.groupMetadata = groupMetadata;
     try {
+      if(Object.values(identifiers).some(item => item.displayName.trim() === identifierData.displayName.trim())) {
+        throw new Error(DUPLICATE_NAME);
+      }
+  
       const { identifier, createdAt } = await Agent.agent.identifiers.createIdentifier(metadata);
       if (multiSigGroup) {
         const connections =
@@ -196,6 +203,11 @@ const CreateIdentifier = ({
       );
     } catch (e) {
       const errorMessage = (e as Error).message;
+
+      if(errorMessage === DUPLICATE_NAME) {
+        setDuplicateName(true);
+        return;
+      }
 
       if(errorMessage.includes(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
         dispatch(showNoWitnessAlert(true));
