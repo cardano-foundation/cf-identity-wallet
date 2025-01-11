@@ -16,7 +16,7 @@ ARG --global KERIA_GIT_REPO_URL="https://github.com/WebOfTrust/keria.git"
 ARG --global KERIA_GIT_REF=""
 
 ARG --global KERI_DOCKER_IMAGE_REPO=weboftrust/keri
-ARG --global KERI_DOCKER_IMAGE_TAG=1.1.6
+ARG --global KERI_DOCKER_IMAGE_TAG=1.1.26
 
 all:
   LOCALLY
