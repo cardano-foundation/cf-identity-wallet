@@ -10,8 +10,10 @@ ARG --global DOCKER_REGISTRIES=""
 ARG --global RELEASE_TAG=""
 ARG --global PUSH=false
 
+ARG --global KERIA_DOCKER_IMAGE_REPO=weboftrust/keria
+ARG --global KERIA_DOCKER_IMAGE_TAG=0.2.0-dev6
 ARG --global KERIA_GIT_REPO_URL="https://github.com/WebOfTrust/keria.git"
-ARG --global KERIA_GIT_REF=736947191069cfc1617a43f63dbc64210c351b5c
+ARG --global KERIA_GIT_REF=""
 
 ARG --global KERI_DOCKER_IMAGE_REPO=weboftrust/keri
 ARG --global KERI_DOCKER_IMAGE_TAG=1.1.6
@@ -37,28 +39,42 @@ idw-keria:
   ARG DOCKER_IMAGES_EXTRA_TAGS
   ARG FORCE_BUILD=false
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET KERIA_UPSTREAM_TAG=""
+
+  IF [ "${KERIA_GIT_REF}" != "" ]
+      SET KERIA_UPSTREAM_TAG=${KERIA_GIT_REF}
+  ELSE
+      SET KERIA_UPSTREAM_TAG=${KERIA_DOCKER_IMAGE_TAG}
+  END
 
   LOCALLY
   IF [ "${FORCE_BUILD}" = "false" ]
-    ARG REGISTRY_IMAGE_EXISTS=$( ( docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keria-${KERIA_GIT_REF} 2>/dev/null | grep -q layers ) || echo false)
+    ARG REGISTRY_IMAGE_EXISTS=$( ( docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keria-${KERIA_UPSTREAM_TAG} 2>/dev/null | grep -q layers ) || echo false)
   ELSE
     ARG REGISTRY_IMAGE_EXISTS=false
   END
 
   IF [ "${REGISTRY_IMAGE_EXISTS}" = "false" ]
     WAIT
-      FROM DOCKERFILE -f +keria-src/keria/images/keria.dockerfile +keria-src/keria/*
+
+      IF [ "${KERIA_GIT_REF}" != "" ]
+          FROM DOCKERFILE -f +keria-src/keria/images/keria.dockerfile +keria-src/keria/*
+      ELSE
+          FROM ${KERIA_DOCKER_IMAGE_REPO}:${KERIA_DOCKER_IMAGE_TAG}
+      END
+
       RUN apk add --no-cache jq envsubst
       ENTRYPOINT keria start --config-file backer-oobis --config-dir ./scripts
+
     END
-    WAIT
-      SAVE IMAGE ${DOCKER_IMAGE_NAME}:$KERIA_GIT_REF
-      SAVE IMAGE ${DOCKER_IMAGE_NAME}:latest
-    END
+
+    SAVE IMAGE ${DOCKER_IMAGE_NAME}:${KERIA_UPSTREAM_TAG}
+    SAVE IMAGE ${DOCKER_IMAGE_NAME}:latest
+
     DO functions+DOCKER_TAG_N_PUSH \
        --PUSH=$PUSH \
        --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
-       --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keria-${KERIA_GIT_REF}"
+       --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keria-${KERIA_UPSTREAM_TAG}"
   END
 
 idw-witness:
