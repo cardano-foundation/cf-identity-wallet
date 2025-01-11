@@ -41,13 +41,14 @@ idw-keria:
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
   LET KERIA_UPSTREAM_TAG=""
 
+  LOCALLY
+
   IF [ "${KERIA_GIT_REF}" != "" ]
       SET KERIA_UPSTREAM_TAG=${KERIA_GIT_REF}
   ELSE
       SET KERIA_UPSTREAM_TAG=${KERIA_DOCKER_IMAGE_TAG}
   END
 
-  LOCALLY
   IF [ "${FORCE_BUILD}" = "false" ]
     ARG REGISTRY_IMAGE_EXISTS=$( ( docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keria-${KERIA_UPSTREAM_TAG} 2>/dev/null | grep -q layers ) || echo false)
   ELSE
