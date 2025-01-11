@@ -89,6 +89,7 @@ jobs:
               --PUSH=true \
               --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
               --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}" \
+              --DOCKER_IMAGES_LABELS="${DOCKER_METADATA_OUTPUT_LABELS_COMMA_SEPARATED}" \
               --DOCKER_IMAGES_TARGETS="${DOCKER_IMAGES_TARGETS}"
             else
               echo "[+] No changes on any known target-related file, skipping earthly build..."
@@ -99,5 +100,6 @@ jobs:
             ${FORCE_BUILD} \
             --PUSH=true \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
+            --DOCKER_IMAGES_LABELS="${DOCKER_METADATA_OUTPUT_LABELS_COMMA_SEPARATED}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           fi

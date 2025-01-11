@@ -6,6 +6,7 @@ ARG --global DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-iss
 
 ARG --global DOCKER_IMAGES_PREFIX="cf"
 ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
+ARG --global DOCKER_IMAGES_LABELS=""
 ARG --global DOCKER_REGISTRIES=""
 ARG --global RELEASE_TAG=""
 ARG --global PUSH=false
@@ -70,6 +71,7 @@ idw-keria:
     END
 
     WAIT
+      DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"
       SAVE IMAGE ${DOCKER_IMAGE_NAME}:${KERIA_UPSTREAM_TAG}
       SAVE IMAGE ${DOCKER_IMAGE_NAME}:latest
     END
@@ -102,6 +104,7 @@ idw-witness:
       ENTRYPOINT kli witness demo
     END
     WAIT
+      DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"
       SAVE IMAGE ${DOCKER_IMAGE_NAME}:keri-${KERI_DOCKER_IMAGE_TAG}
       SAVE IMAGE ${DOCKER_IMAGE_NAME}:latest
     END
@@ -119,6 +122,7 @@ cred-issuance:
     FROM DOCKERFILE ./services/credential-server
   END
   WAIT
+    DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
   DO functions+DOCKER_TAG_N_PUSH \
@@ -134,6 +138,7 @@ cred-issuance-ui:
     FROM DOCKERFILE ./services/credential-server-ui
   END
   WAIT
+    DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
   DO functions+DOCKER_TAG_N_PUSH \
