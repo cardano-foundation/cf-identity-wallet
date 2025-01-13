@@ -5,12 +5,11 @@ import {
   CardType,
 } from "../../globals/types";
 import { formatShortDate } from "../../utils/formatters";
-import { CardItem, CardList as BaseCardList } from "../CardList";
+import { getTheme } from "../../utils/theme";
+import { CardList as BaseCardList, CardItem } from "../CardList";
+import { CardTheme } from "../CardTheme";
 import "./SwitchCardView.scss";
 import { CardListProps } from "./SwitchCardView.types";
-import { CardTheme } from "../CardTheme";
-import BackgroundRAREVO from "../../assets/images/rare-evo-bg.jpg";
-import { getTheme } from "../../utils/theme";
 
 
 const CardList = ({
@@ -46,16 +45,7 @@ const CardList = ({
 
   const renderStartSlot = useCallback((data: IdentifierShortDetails | CredentialShortDetails) => {
     if(cardTypes === CardType.CREDENTIALS) {
-      const card = data as CredentialShortDetails;
-
-      return card.credentialType === "Rare EVO 2024 Attendee" ? (
-        <img
-          src={BackgroundRAREVO}
-          alt="rare-evo"
-          className="card-logo"
-          data-testid="card-logo"
-        />
-      ) : <CardTheme className="card-logo" layout={0} color={0}/>
+      return <CardTheme className="card-logo" layout={0} color={0}/>;
     }
 
     return <CardTheme {...getTheme((data as IdentifierShortDetails).theme)} className="card-logo" />

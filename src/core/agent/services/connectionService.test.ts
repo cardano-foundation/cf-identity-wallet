@@ -812,7 +812,7 @@ describe("Connection service of agent", () => {
     };
     const mockHistoryIpexMessage = {
       id: "id",
-      credentialType: "rare evo",
+      credentialType: "lei",
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       dt: new Date().toISOString(),
@@ -820,7 +820,7 @@ describe("Connection service of agent", () => {
     };
     const mockHistoryRevokeMessage = {
       id: "id",
-      credentialType: "rare evo",
+      credentialType: "lei",
       historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
       type: ConnectionHistoryType.CREDENTIAL_REVOKED,
       dt: new Date().toISOString(),

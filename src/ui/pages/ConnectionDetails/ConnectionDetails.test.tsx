@@ -134,7 +134,7 @@ describe("ConnectionDetails Page", () => {
             {
               type: 3,
               timestamp: "2024-08-07T15:33:18.204Z",
-              credentialType: "Rare EVO 2024 Attendee",
+              credentialType: "Qualified vLEI Issuer Credential",
             },
           ],
           serviceEndpoints: [],
@@ -447,7 +447,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
             {
               type: 1,
               timestamp: "2017-01-14T19:23:24Z",
-              credentialType: "Rare EVO 2024 Attendee",
+              credentialType: "Qualified vLEI Issuer Credential",
             },
           ],
           serviceEndpoints: [],
@@ -494,22 +494,22 @@ describe("Checking the Connection Details Page when notes are available", () => 
       {
         type: 3,
         timestamp: "2024-08-07T15:33:18.204Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
       {
         type: 2,
         timestamp: "2024-08-07T15:32:26.006Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
       {
         type: 1,
         timestamp: "2024-08-07T15:32:13.597Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
       {
         type: 0,
         timestamp: "2024-08-07T15:31:17.382Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
     ];
     const connectionDetails = {

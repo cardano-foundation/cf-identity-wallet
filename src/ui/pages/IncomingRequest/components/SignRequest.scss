@@ -19,6 +19,11 @@
 
   .sign-footer {
     padding: 1rem 0;
+
+    .secondary-button::part(native) {
+      border: none;
+      color: var(--ion-color-error-800);
+    }
   }
 
   .sign-header {

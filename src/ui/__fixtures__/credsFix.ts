@@ -58,7 +58,7 @@ const pendingCredFixs: ACDCDetails[] = [
       LEI: "5493001KJTIIGC8Y1R17",
     },
     s: {
-      title: "Rare EVO 2024 Attendee",
+      title: "Qualified vLEI Issuer Credential",
       description:
         "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials",
       version: "1.0.0",
@@ -85,7 +85,7 @@ const revokedCredFixs: ACDCDetails[] = [
       LEI: "5493001KJTIIGC8Y1R17",
     },
     s: {
-      title: "Rare EVO 2024 Attendee",
+      title: "Qualified vLEI Issuer Credential",
       description:
         "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials",
       version: "1.0.0",
