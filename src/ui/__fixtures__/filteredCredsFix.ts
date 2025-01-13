@@ -36,9 +36,9 @@ const filteredCredsFix: CredentialShortDetails[] = [
   {
     id: "EAzzrBvrVEYt3kvlXTZgulQhFq4CtkO8zA61eg6JtlMj",
     issuanceDate: "2024-10-21T12:35:26.597Z",
-    credentialType: "Rare EVO 2024 Attendee",
+    credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.CONFIRMED,
-    schema: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+    schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Group,
     identifierId: "EIRdVIgcPYj6LbN4DdxzJFnsvELV-7eWDBQ4a-VsRDQb",
   },

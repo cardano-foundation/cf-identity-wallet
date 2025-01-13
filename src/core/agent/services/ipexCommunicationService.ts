@@ -56,9 +56,6 @@ class IpexCommunicationService extends AgentService {
   static readonly IPEX_ALREADY_REPLIED = "IPEX message has already been responded to or proposed to group";
   static readonly NO_CURRENT_IPEX_MSG_TO_JOIN = "Cannot join IPEX message as there is no current exn to join from the group leader";
 
-  static readonly SCHEMA_SAID_RARE_EVO_DEMO =
-    "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
-
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;

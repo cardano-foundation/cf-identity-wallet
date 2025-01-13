@@ -25,7 +25,7 @@ const connectionsFix: ConnectionDetails[] = [
       {
         type: 1,
         timestamp: "2017-01-14T19:23:24Z",
-        credentialType: "Rare EVO Attendee",
+        credentialType: "Cardano Foundation",
       },
     ],
   },

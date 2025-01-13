@@ -7,13 +7,11 @@ import {
   IonLabel,
 } from "@ionic/react";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
-import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 import { CardTheme } from "../CardTheme";
 import "./ArchivedCredentials.scss";
 import { CredentialItemProps } from "./ArchivedCredentials.types";
-import BackgroundRAREVO from "../../assets/images/rare-evo-bg.jpg";
 
 const CredentialItem = ({
   credential,
@@ -25,8 +23,6 @@ const CredentialItem = ({
   onRestore,
 }: CredentialItemProps) => {
   const isRevoked = credential.status === CredentialStatus.REVOKED;
-  const isRareEvo =
-    credential.schema === IpexCommunicationService.SCHEMA_SAID_RARE_EVO_DEMO;
 
   return (
     <IonItemSliding>
@@ -45,19 +41,9 @@ const CredentialItem = ({
               aria-label=""
             />
           )}
-          {
-            isRareEvo ? (
-              <img
-                src={BackgroundRAREVO}
-                alt="credential-miniature"
-                className="credential-miniature"
-              />
-            ) : (
-              <div className="credential-miniature">
-                <CardTheme />
-              </div>
-            )
-          }
+          <div className="credential-miniature">
+            <CardTheme />
+          </div>
           <div className="credential-info">
             <div
               data-testid={`credential-name-${credential.id}`}
