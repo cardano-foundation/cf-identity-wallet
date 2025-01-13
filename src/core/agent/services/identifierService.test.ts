@@ -304,6 +304,7 @@ describe("Single sig service of agent", () => {
     await expect(
       identifierService.getIdentifier(keriMetadataRecord.id)
     ).rejects.toMatchObject(
+      // @ts-ignore
       new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${keriMetadataRecord.id}`, {
         cause: "request - 404 - SignifyClient message",
       })

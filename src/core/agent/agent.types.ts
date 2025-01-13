@@ -203,10 +203,15 @@ type OperationCallback = ({
 }) => void;
 
 export const OOBI_RE =
+  // @ts-ignore
   /^\/oobi\/(?<cid>[^/]+)\/(?<role>[^/]+)(?:\/(?<eid>[^/]+))?$/i;
+
 export const OOBI_AGENT_ONLY_RE =
+  // @ts-ignore
   /^\/oobi\/(?<cid>[^/]+)\/agent(?:\/(?<eid>[^/]+))?$/i;
+// @ts-ignore
 export const DOOBI_RE = /^\/oobi\/(?<said>[^/]+)$/i;
+// @ts-ignore
 export const WOOBI_RE = /^\/\.well-known\/keri\/oobi\/(?<cid>[^/]+)$/;
 
 export {

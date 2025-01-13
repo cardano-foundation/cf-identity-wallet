@@ -54,6 +54,7 @@ export const OnlineOnly = (
       if (isNetworkError(error)) {
         Agent.agent.markAgentStatus(false);
         Agent.agent.connect(1000);
+        // @ts-ignore
         throw new Error(Agent.KERIA_CONNECTION_BROKEN, {
           cause: error,
         });

@@ -81,6 +81,7 @@ import {
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 import { IdentifierService } from "../../../core/agent/services";
+import SecureStorageExample from "../../pages/SecureStorageExample/SecureStorageExample";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -555,7 +556,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   return (
     <>
-      {props.children}
+      <SecureStorageExample />
       <Alert
         isOpen={isAlertPeerBrokenOpen}
         setIsOpen={setIsAlertPeerBrokenOpen}

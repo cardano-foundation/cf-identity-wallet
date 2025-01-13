@@ -123,6 +123,7 @@ class IdentifierService extends AgentService {
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
+          // @ts-ignore
           throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${metadata.id}`, {
             cause: error,
           });
@@ -623,6 +624,7 @@ class IdentifierService extends AgentService {
       }
     }
 
+    // @ts-ignore
     const uniquew = [...new Set(witnesses)];
     if (uniquew.length >= 12) return { toad: 8, witnesses: uniquew.slice(0, 12) };
     if (uniquew.length >= 10) return { toad: 7, witnesses: uniquew.slice(0, 10) };

@@ -250,6 +250,7 @@ class ConnectionService extends AgentService {
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
+          // @ts-ignore
           throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`, {
             cause: error,
           });

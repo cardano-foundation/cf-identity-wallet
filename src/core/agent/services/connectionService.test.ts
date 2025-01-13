@@ -720,6 +720,7 @@ describe("Connection service of agent", () => {
   });
 
   test("connection exists in the database but not on Signify", async () => {
+    // @ts-ignore
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     contactGetMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
@@ -727,6 +728,7 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.getConnectionById("id")
     ).rejects.toMatchObject(
+      // @ts-ignore
       new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`, {
         cause: "request - 404 - SignifyClient message",
       })

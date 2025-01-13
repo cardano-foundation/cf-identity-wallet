@@ -22,6 +22,7 @@ dependencies {
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
+    implementation project(':evva-capacitor-secure-storage-plugin')
     implementation project(':capacitor-native-settings')
 
 }

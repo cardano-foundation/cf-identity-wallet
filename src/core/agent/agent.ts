@@ -247,10 +247,12 @@ class Agent {
         /* eslint-disable no-console */
         console.error(e);
         if (e.message === "Failed to fetch") {
+          // @ts-ignore
           throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK, {
             cause: e,
           });
         }
+        // @ts-ignore
         throw new Error(Agent.KERIA_BOOT_FAILED, {
           cause: e,
         });
@@ -286,6 +288,7 @@ class Agent {
       bran = branBuffer.toString("utf-8");
     } catch (error) {
       if (error instanceof Error && error.message === "Invalid mnemonic") {
+        // @ts-ignore
         throw new Error(Agent.INVALID_MNEMONIC, {
           cause: error,
         });
@@ -332,6 +335,7 @@ class Agent {
       }
 
       if (isNetworkError(error)) {
+        // @ts-ignore
         throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK, {
           cause: error,
         });
@@ -339,11 +343,13 @@ class Agent {
       
       const status = error.message.split(" - ")[1];
       if (/404/gi.test(status)) {
+        // @ts-ignore
         throw new Error(Agent.KERIA_NOT_BOOTED, {
           cause: error,
         });
       }
 
+      // @ts-ignore
       throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT, {
         cause: error,
       });

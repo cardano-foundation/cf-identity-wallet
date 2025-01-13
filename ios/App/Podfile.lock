@@ -34,6 +34,9 @@ PODS:
     - Capacitor
   - CapacitorStatusBar (6.0.1):
     - Capacitor
+  - EvvaCapacitorSecureStoragePlugin (3.0.1):
+    - Capacitor
+    - SimpleKeychain
   - GoogleDataTransport (9.4.1):
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30911.0, >= 2.30908.0)
@@ -93,6 +96,7 @@ PODS:
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
   - PromisesObjC (2.4.0)
+  - SimpleKeychain (1.2.0)
   - SQLCipher (4.5.5):
     - SQLCipher/standard (= 4.5.5)
   - SQLCipher/common (4.5.5)
@@ -117,6 +121,7 @@ DEPENDENCIES:
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+  - EvvaCapacitorSecureStoragePlugin (from `../../../capacitor-secure-storage-plugin`)
 
 SPEC REPOS:
   trunk:
@@ -133,6 +138,7 @@ SPEC REPOS:
     - MLKitVision
     - nanopb
     - PromisesObjC
+    - SimpleKeychain
     - SQLCipher
     - ZIPFoundation
 
@@ -169,6 +175,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
+  EvvaCapacitorSecureStoragePlugin:
+    :path: "../../../capacitor-secure-storage-plugin"
 
 SPEC CHECKSUMS:
   AparajitaCapacitorBiometricAuth: 3057403ee3e9e390e57bfb92b576f439157951b8
@@ -187,6 +195,7 @@ SPEC CHECKSUMS:
   CapacitorShare: 591ae4693d85686ceb590db8e8b44aa014ec6490
   CapacitorSplashScreen: 250df9ef8014fac5c7c1fd231f0f8b1d8f0b5624
   CapacitorStatusBar: b81d4fb5d4e0064c712018071b3ab4b810b39a63
+  EvvaCapacitorSecureStoragePlugin: 0e6f996852dffbc86e4689b0b2d0bd72cf839fe7
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleMLKit: 90ba06e028795a50261f29500d238d6061538711
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
@@ -200,9 +209,10 @@ SPEC CHECKSUMS:
   MLKitVision: 90922bca854014a856f8b649d1f1f04f63fd9c79
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 3d984c226b41598bd9ba6e349fdb4a7ae11e20f7
+PODFILE CHECKSUM: 34f162bfd829f98876a2746bd05727ed10d4094e
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
