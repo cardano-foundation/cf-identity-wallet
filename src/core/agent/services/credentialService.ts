@@ -74,6 +74,7 @@ class CredentialService extends AgentService {
       schema: metadata.schema,
       identifierType: metadata.identifierType,
       identifierId: metadata.identifierId,
+      connectionId: metadata.connectionId
     };
   }
 
@@ -108,6 +109,7 @@ class CredentialService extends AgentService {
       status: credentialShortDetails.status,
       identifierId: credentialShortDetails.identifierId,
       identifierType: credentialShortDetails.identifierType,
+      connectionId: credentialShortDetails.connectionId,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {

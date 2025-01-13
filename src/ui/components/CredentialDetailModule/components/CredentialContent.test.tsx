@@ -195,6 +195,7 @@ describe("Creds content", () => {
       "identifierId": "EJ4gagUf2XU8lA6ELmihpwD-zLjw9_PKK1opUCPtjim-",
       "identifierType": IdentifierType.Individual,
       "i": "EEvIrB8ix_2MAe0uvhk8dDWrTw_URbQolBvW8rd9uYtT",
+      "connectionId": "ebfeb1ebc6f1c276ef71212ec20",
       "a": {
         "d": "EB3N-LFRXiF5zpSWLWqzovQ2vz2zWEkHo5OC4lVwlKhJ",
         "i": "EJ4gagUf2XU8lA6ELmihpwD-zLjw9_PKK1opUCPtjim-",

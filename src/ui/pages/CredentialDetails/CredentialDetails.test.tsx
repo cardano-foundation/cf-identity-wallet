@@ -23,6 +23,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialDetails } from "./CredentialDetails";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -94,6 +95,9 @@ const initialStateNoPasswordCurrent = {
   identifiersCache: {
     identifiers: {},
   },
+  connectionsCache: {
+    connections: connectionsMapFix,
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -123,6 +127,9 @@ const initialStateNoPasswordArchived = {
   },
   identifiersCache: {
     identifiers: {},
+  },
+  connectionsCache: {
+    connections: connectionsMapFix,
   },
 };
 

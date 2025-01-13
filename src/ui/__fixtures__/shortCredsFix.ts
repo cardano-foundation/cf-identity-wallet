@@ -15,6 +15,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     credentialType: "AccessPassCredential",
@@ -24,7 +25,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -36,6 +37,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -45,6 +47,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -54,6 +57,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF2-ghumzCJ6nv",
@@ -63,6 +67,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF3-ghumzCJ6nv",
@@ -72,6 +77,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
 ];
 

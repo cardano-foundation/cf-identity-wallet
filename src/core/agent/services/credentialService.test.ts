@@ -181,6 +181,7 @@ describe("Credential service of agent", () => {
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierId: memberIdentifierRecord.id,
         identifierType: IdentifierType.Individual,
+        connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
       },
       {
         id: id2,
@@ -190,6 +191,7 @@ describe("Credential service of agent", () => {
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierId: memberIdentifierRecord.id,
         identifierType: IdentifierType.Individual,
+        connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
       },
     ]);
   });
@@ -282,6 +284,7 @@ describe("Credential service of agent", () => {
     await expect(
       credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
     ).resolves.toStrictEqual({
+      connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
       id: credentialMetadataRecordA.id,
       status: CredentialStatus.CONFIRMED,
       i: acdc.sad.i,
@@ -325,6 +328,7 @@ describe("Credential service of agent", () => {
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierId: memberIdentifierRecord.id,
       identifierType: IdentifierType.Individual,
+      connectionId: undefined,
     });
   });
 

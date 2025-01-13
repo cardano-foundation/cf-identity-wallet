@@ -10,6 +10,8 @@ import { useCardOffsetTop } from "../../../IdentifierCardTemplate";
 import { CredentialCardTemplateProps } from "../../CredentialCardTemplate.types";
 import "./KeriCardTemplate.scss";
 import { CardTheme } from "../../../CardTheme";
+import { useAppSelector } from "../../../../../store/hooks";
+import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 
 const KeriCardTemplate = ({
   name = "default",
@@ -19,6 +21,7 @@ const KeriCardTemplate = ({
   onHandleShowCardDetails,
   pickedCard,
 }: CredentialCardTemplateProps) => {
+  const connections = useAppSelector(getConnectionsCache);
   const { getCardOffsetTop, cardRef } = useCardOffsetTop();
 
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -37,6 +40,8 @@ const KeriCardTemplate = ({
       onHandleShowCardDetails(index);
     }
   };
+
+  const connection = connections[cardData.connectionId];
 
   return (
     <div
@@ -77,9 +82,17 @@ const KeriCardTemplate = ({
         <div className="card-footer">
           <div className="card-footer-column">
             <span className="card-footer-column-label card-text">
-              {i18n.t("tabs.credentials.layout.issued")}
+              {i18n.t("tabs.credentials.layout.issuer")}
             </span>
             <span className="card-footer-column-value card-text">
+              {connection?.label}
+            </span>
+          </div>
+          <div className="card-footer-column">
+            <span className="card-footer-column-label card-text">
+              {i18n.t("tabs.credentials.layout.issued")}
+            </span>
+            <span className="card-footer-column-value card-text issued">
               {cardData.status === CredentialStatus.CONFIRMED ? (
                 formatShortDate(cardData.issuanceDate)
               ) : (

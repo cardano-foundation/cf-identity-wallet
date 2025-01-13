@@ -43,10 +43,7 @@ ion-modal.create-identifier-modal {
       z-index: 1000;
       bottom: calc(-100vh + 5rem);
       padding-inline: 0.9rem;
-
-      &.identifier-stage-3 {
-        bottom: calc(-100vh + 8.5rem);
-      }
+      --background: var(--ion-color-neutral-200);
     }
   }
 
@@ -319,9 +316,10 @@ ion-modal.create-identifier-modal {
 
     ion-toolbar.page-footer {
       bottom: calc(-100vh + 3.5rem);
+      padding-top: 0.1rem;
 
-      &.identifier-stage-3 {
-        bottom: calc(-100vh + 6.25rem);
+      ion-button {
+        margin: 0.25rem 0 0;
       }
     }
   }

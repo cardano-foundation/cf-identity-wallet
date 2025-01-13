@@ -43,6 +43,7 @@ const credsFixAcdc: ACDCDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
 ];
 
@@ -70,6 +71,7 @@ const pendingCredFixs: ACDCDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
 ];
 
@@ -97,6 +99,7 @@ const revokedCredFixs: ACDCDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
 ];
 

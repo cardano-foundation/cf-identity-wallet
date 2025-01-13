@@ -935,6 +935,7 @@ class IpexCommunicationService extends AgentService {
       },
       status: CredentialStatus.PENDING,
       identifierId: exchange.exn.a.i,
+      connectionId: exchange.exn.i
     };
   }
 

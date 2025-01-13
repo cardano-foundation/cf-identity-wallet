@@ -10,6 +10,7 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { CredentialDetails } from "../../pages/CredentialDetails";
 import { VerifyPasscode } from "./VerifyPasscode";
+import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -62,6 +63,9 @@ const initialStateNoPassword = {
   identifiersCache: {
     identifiers: {},
   },
+  connectionsCache: {
+    connections: connectionsMapFix,
+  },
 };
 
 describe("Verify Passcode on Cards Details page", () => {
@@ -107,7 +111,6 @@ describe("Verify Passcode on Cards Details page", () => {
       findByTestId,
       getAllByText,
       getAllByTestId,
-      getByText,
       findByText,
     } = render(
       <Provider store={storeMocked}>
