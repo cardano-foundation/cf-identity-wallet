@@ -143,6 +143,9 @@ You can discover how to run the application in an emulator by following this [li
 ## End-to-End (E2E) Testing
 You can gain additional insights into end-to-end testing by visiting the provided [link](docs/Testing.md).
 
+## Additional Tutorials
+- [Customizing Splash Screens and Icons](docs/Customizing-Splash-and-Icons.md)
+
 # Contributing
 
 All contributions are welcome! Please feel free to open a new thread on the issue tracker or submit a new pull request.
