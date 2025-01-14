@@ -2257,6 +2257,7 @@ describe("IPEX communication service of agent", () => {
       lastStatus: { s: "0", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
     });
   });
 
@@ -2287,6 +2288,7 @@ describe("IPEX communication service of agent", () => {
       lastStatus: { s: "0", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
     });
     expect(connections.resolveOobi).toBeCalledWith("http://cred-issuance:3001/oobi/EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu");
   });
@@ -2330,6 +2332,7 @@ describe("IPEX communication service of agent", () => {
       lastStatus: { s: "1", dt: "2024-11-07T08:32:34.943Z" },
       status: "pending",
       identifierId: memberIdentifierRecord.id,
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
     });
   });
 });

@@ -11,6 +11,7 @@ import {
   removeFavouritesCredsCache,
 } from "../../../store/reducers/credsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
+import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
 import { credsFixAcdc, revokedCredFixs } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { ToastMsgType } from "../../globals/types";
@@ -109,6 +110,9 @@ const initialStateNoPasswordCurrent = {
   identifiersCache: {
     identifiers: {},
   },
+  connectionsCache: {
+    connections: connectionsMapFix,
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -138,6 +142,9 @@ const initialStateNoPasswordArchived = {
   },
   identifiersCache: {
     identifiers: {},
+  },
+  connectionsCache: {
+    connections: connectionsMapFix,
   },
 };
 
@@ -358,6 +365,9 @@ describe("Cred Detail Module - current not archived credential", () => {
       identifiersCache: {
         identifiers: {},
       },
+      connectionsCache: {
+        connections: connectionsMapFix,
+      },
     };
 
     const storeMocked = {
@@ -426,6 +436,9 @@ describe("Cred Detail Module - current not archived credential", () => {
       },
       notificationsCache: {
         notificationDetailCache: null,
+      },
+      connectionsCache: {
+        connections: connectionsMapFix,
       },
     };
 
@@ -707,6 +720,9 @@ describe("Cred Detail Module - light mode", () => {
         step: 0,
       },
     },
+    connectionsCache: {
+      connections: connectionsMapFix,
+    },
   };
 
   beforeAll(() => {
@@ -786,6 +802,9 @@ describe("Cred detail - revoked", () => {
           },
         },
       ],
+    },
+    connectionsCache: {
+      connections: connectionsMapFix,
     },
   };
 
@@ -906,6 +925,9 @@ describe("Cred detail - view only", () => {
         viewCred: "test-cred",
         step: 0,
       },
+    },
+    connectionsCache: {
+      connections: connectionsMapFix,
     },
   };
 

@@ -10,7 +10,8 @@ import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { NotificationRoute } from "../../../../../core/agent/agent.types";
 import {
-  ACDCDetails
+  ACDCDetails,
+  CredentialStatus
 } from "../../../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
@@ -154,7 +155,7 @@ const ReceiveCredential = ({
           ? IdentifierType.Group
           : IdentifierType.Individual;
 
-      setCredDetail({ ...credential, identifierType });
+      setCredDetail({ ...credential, identifierType, status: CredentialStatus.CONFIRMED });
 
       if(credential.lastStatus.s === "1") {
         setIsRevoked(true);

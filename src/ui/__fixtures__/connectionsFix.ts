@@ -90,6 +90,13 @@ const connectionsFix: ConnectionDetails[] = [
   },
 ];
 
+const connectionsMapFix = connectionsFix.reduce((result, next) => {
+  return {
+    ...result,
+    [next.id]: next
+  }
+}, {})
+
 const connectionRequestPlaceholder = {
   label: "",
   goal_code: "",
@@ -185,4 +192,5 @@ export {
   connectionRequestPlaceholder,
   credentialRequestData,
   connectionsForNotifications,
+  connectionsMapFix
 };

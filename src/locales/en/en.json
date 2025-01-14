@@ -1024,7 +1024,8 @@
         }
       },
       "layout": {
-        "issued": "Issued"
+        "issued": "Issued",
+        "issuer": "Issuer"
       },
       "details": {
         "joinedmember": "Joined members",
