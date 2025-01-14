@@ -19,6 +19,8 @@ PODS:
     - SQLCipher
     - ZIPFoundation
   - CapacitorCordova (6.1.2)
+  - CapacitorDevice (6.0.2):
+    - Capacitor
   - CapacitorKeyboard (6.0.2):
     - Capacitor
   - CapacitorMlkitBarcodeScanning (6.2.0):
@@ -110,6 +112,7 @@ DEPENDENCIES:
   - "CapacitorCommunityPrivacyScreen (from `../../node_modules/@capacitor-community/privacy-screen`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
   - CapacitorNativeSettings (from `../../node_modules/capacitor-native-settings`)
@@ -155,6 +158,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/sqlite"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorDevice:
+    :path: "../../node_modules/@capacitor/device"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorMlkitBarcodeScanning:
@@ -180,6 +185,7 @@ SPEC CHECKSUMS:
   CapacitorCommunityPrivacyScreen: 8f34f8c4d47193f637bda6d28371e01aa677dafc
   CapacitorCommunitySqlite: d0b543e12a06ee6fd0dc287c389e6b435ec4acdf
   CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
+  CapacitorDevice: 1a215717f0b5061503b21a03508b0ec458a57d78
   CapacitorKeyboard: 2700f9b18687be021e28b5a09b59eb151a46d5e0
   CapacitorMlkitBarcodeScanning: 178fb57424ec688b6a2fceee506ecc1ea00d1c8d
   CapacitorNativeSettings: 1ce5585ff07b161616cd0a795702637316677af2
@@ -203,6 +209,6 @@ SPEC CHECKSUMS:
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 3d984c226b41598bd9ba6e349fdb4a7ae11e20f7
+PODFILE CHECKSUM: 49fdcdd1abdd8b4ef1a195a7bf97733bb8d1ef37
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3

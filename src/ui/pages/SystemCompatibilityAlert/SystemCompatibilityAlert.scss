@@ -1,0 +1,33 @@
+.system-comp-alert-page {
+  .alert-container {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .alert-container h2 {
+    color: #000;
+    margin-top: 16px;
+  }
+
+  .alert-container p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .alert-container ion-button {
+    margin-top: 12px;
+  }
+
+  .contact-button {
+    width: 350px;
+    height: 52px;
+    padding: 15px 25px 15px 25px;
+    gap: 10px;
+    border: 50px red;
+    border-radius: 30px;
+    background-color: #F6F6F6;
+    --background: var(--ion-color-dark-grey);
+  }
+}
+
