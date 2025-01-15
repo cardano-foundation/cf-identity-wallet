@@ -10,7 +10,9 @@ const CardBlock = ({ children, title, onClick, testId, flatBorder, className, co
     "flat-border-bot": flatBorder === FlatBorderType.BOT,
     "flat-border-top": flatBorder === FlatBorderType.TOP,
     "has-content": !!children
-  })
+  });
+
+  const buttonTestId = testId ? `${testId}-nav-button` : undefined;
 
   return (
     <CardDetailsBlock onClick={!copyContent ? onClick : undefined} className={classes}>
@@ -19,7 +21,7 @@ const CardBlock = ({ children, title, onClick, testId, flatBorder, className, co
           slot="end"
           shape="round"
           className="action-button"
-          data-testid={`${testId}-nav-button`}
+          data-testid={buttonTestId}
         >
           <IonIcon icon={chevronForwardOutline} />
         </IonButton>

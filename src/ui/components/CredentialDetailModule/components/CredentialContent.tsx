@@ -56,10 +56,11 @@ const CredentialContent = ({
       <CardBlock
         flatBorder={FlatBorderType.BOT}
         title={i18n.t("tabs.credentials.details.type")}
+        testId="credential-details-type-block"
       >
         <CardDetailsItem
           info={cardData.s.title}
-          testId={"credential-details-type-block"}
+          testId="credential-details-type"
           icon={informationCircleOutline}
           mask={false}
           fullText={false}
@@ -68,6 +69,7 @@ const CredentialContent = ({
       <CardBlock
         className={"credential-details-read-more-block"}
         flatBorder={FlatBorderType.TOP}
+        testId="readmore-block"
       >
         <ReadMore content={cardData.s.description} />
       </CardBlock>
@@ -87,6 +89,7 @@ const CredentialContent = ({
       <CardBlock
         title={i18n.t("tabs.credentials.details.attributes.label")}
         onClick={() => setOpenDetailModal(true)}
+        testId="attribute-label"
       />
       <ListHeader
         title={i18n.t("tabs.credentials.details.credentialdetails")}
@@ -108,6 +111,7 @@ const CredentialContent = ({
       <CardBlock
         title={i18n.t("tabs.credentials.details.issuer")}
         onClick={openConnection}
+        testId="issuer"
       >
         <CardDetailsItem
           info={connectionShortDetails ? connectionShortDetails.label : i18n.t("connections.unknown")}
@@ -130,7 +134,7 @@ const CredentialContent = ({
             mask={false}
           />
         </CardBlock>
-        <CardBlock title={i18n.t("tabs.credentials.details.schemaversion")}>
+        <CardBlock title={i18n.t("tabs.credentials.details.schemaversion")} testId="schema-version">
           <h2 data-testid="credential-details-schema-version">
             {cardData.s.version}
           </h2>

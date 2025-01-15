@@ -147,6 +147,7 @@ const Advanced = ({ data, currentUserIndex }: AdvancedProps) => {
           title={i18n.t(
             "tabs.identifiers.details.keyrotation.sequencenumber.title"
           )}
+          testId="sequence-number-block"
         >
           <CardDetailsContent
             testId="sequence-number"
