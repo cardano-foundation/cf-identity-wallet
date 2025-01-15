@@ -11,7 +11,7 @@ export const SigningThreshold = ({ data }: SigningThresholdProps) => {
           "tabs.identifiers.details.detailmodal.signingthreshold.threshold.title"
         )}
       />
-      <CardBlock>
+      <CardBlock testId="signing-threshold-block">
         <CardDetailsItem
           info={i18n.t(
             "tabs.identifiers.details.detailmodal.signingthreshold.threshold.text",
