@@ -12,7 +12,6 @@ import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
   ExnMessage,
-  NotificationRoute,
   type AgentServicesProps,
   type KeriaNotification,
 } from "../agent.types";
@@ -26,7 +25,7 @@ import {
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
-import { OnlineOnly, deleteNotificationRecordById } from "./utils";
+import { OnlineOnly } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
 import { CredentialsMatchingApply, LinkedGroupInfo } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";

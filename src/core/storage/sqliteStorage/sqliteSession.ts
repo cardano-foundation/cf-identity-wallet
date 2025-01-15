@@ -8,7 +8,6 @@ import { randomPasscode } from "signify-ts";
 import { versionCompare } from "./utils";
 import { MIGRATIONS } from "./migrations";
 import { MigrationType } from "./migrations/migrations.types";
-import { Agent } from "../../agent/agent";
 import { KeyStoreKeys, SecureStorage } from "../secureStorage";
 
 class SqliteSession {
