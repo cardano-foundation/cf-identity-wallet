@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { IonIcon } from "@ionic/react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
-import { Autoplay } from "swiper/modules";
-import { Swiper as SwiperClass } from "swiper/types";
+import { pauseCircleOutline, playCircleOutline } from "ionicons/icons";
 import Lottie from "lottie-react";
-import { SlideProps } from "./Slides.types";
+import { useState } from "react";
+import { Autoplay } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper as SwiperClass } from "swiper/types";
 import "./Slides.scss";
+import { SlideProps } from "./Slides.types";
 
 const Slides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
@@ -56,37 +56,50 @@ const Slides = ({ items }: SlideProps) => {
                 <img
                   src={slide.image}
                   alt={slide.title}
-                  className={`image ${activeIndex === index ? "text-fadein-down" : ""}`}
+                  className={`image ${
+                    activeIndex === index ? "text-fadein-down" : ""
+                  }`}
                 />
               )}
-              <h2 className={activeIndex === index ? "text-fadein" : ""}>
-                {slide.title}
-              </h2>
-              <p className={activeIndex === index ? "text-fadein" : ""}>
-                {slide.description}
-              </p>
+              {slide.title && (
+                <h2 className={activeIndex === index ? "text-fadein" : ""}>
+                  {slide.title}
+                </h2>
+              )}
+              {slide.description && (
+                <p className={activeIndex === index ? "text-fadein" : ""}>
+                  {slide.description}
+                </p>
+              )}
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
-      <div className="pagination">
-        {items.map((_, index) => (
-          <div
-            key={index}
-            className={
-              activeIndex === index ? "page-indicator-active" : "page-indicator"
-            }
-          />
-        ))}
-        <div className="play-container">
-          <IonIcon
-            data-testid="play-indicator"
-            className={`play-indicator ${autoplayIsClicked ? "clicked" : ""}`}
-            icon={autoplay ? pauseCircleOutline : playCircleOutline}
-            onClick={handleAutoplay}
-          />
+      {items.length > 1 && (
+        <div
+          data-testid="slide-controls"
+          className="pagination"
+        >
+          {items.map((_, index) => (
+            <div
+              key={index}
+              className={
+                activeIndex === index
+                  ? "page-indicator-active"
+                  : "page-indicator"
+              }
+            />
+          ))}
+          <div className="play-container">
+            <IonIcon
+              data-testid="play-indicator"
+              className={`play-indicator ${autoplayIsClicked ? "clicked" : ""}`}
+              icon={autoplay ? pauseCircleOutline : playCircleOutline}
+              onClick={handleAutoplay}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

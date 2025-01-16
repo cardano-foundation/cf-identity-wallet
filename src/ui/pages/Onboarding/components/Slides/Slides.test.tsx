@@ -63,4 +63,9 @@ describe("handleAutoplay function for slides", () => {
 
     expect(playIcon).toHaveAttribute("icon", pauseCircleOutline);
   });
+
+  test("Hide slide controls when item length less than 1", () => {
+    const { queryByTestId } = render(<Slides items={[items[0]]} />);
+    expect(queryByTestId("slide-controls")).toBeNull();
+  });
 });
