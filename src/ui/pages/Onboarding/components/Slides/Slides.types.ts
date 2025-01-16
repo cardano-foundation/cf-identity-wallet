@@ -1,9 +1,9 @@
-import { IntroImg0Type } from "../../pages/Onboarding";
+import { IntroImg0Type } from "../../Onboarding";
 
 interface SlideItem {
   image: string;
-  description: string;
-  title: string;
+  description?: string;
+  title?: string;
   lottie?: IntroImg0Type;
 }
 
