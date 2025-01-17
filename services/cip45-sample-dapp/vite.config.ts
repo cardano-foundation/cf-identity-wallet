@@ -17,10 +17,5 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-  },
-  resolve: {
-    alias: {
-      $bgImgs: resolve("./src/assets")
-    }
   }
 });
