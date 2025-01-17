@@ -5,7 +5,11 @@ import "./SystemCompatibilityAlert.scss";
 import { DeviceInfo } from "@capacitor/device";
 import { SecureStorage } from "../../../core/storage";
 
-const SystemCompatibilityAlert = ({ deviceInfo }: DeviceInfo) => {
+interface SystemCompatibilityAlertProps {
+  deviceInfo: DeviceInfo | null;
+}
+
+const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({ deviceInfo }) => {
   const [isKeyStoreSupported, setIsKeyStoreSupported] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
@@ -16,13 +20,13 @@ const SystemCompatibilityAlert = ({ deviceInfo }: DeviceInfo) => {
   }, [])
   const getRequirementsList = () => {
     if (deviceInfo) {
-      const androidMinOs = process.env.ANDROID_MIN_VERSION;
-      const webViewMinVersion = process.env.WEBVIEW_MIN_VERSION;
-      const iosMinVersion = process.env.IOS_MIN_VERSION;
+      const androidMinOs = process.env.ANDROID_MIN_VERSION || "29";
+      const webViewMinVersion = process.env.WEBVIEW_MIN_VERSION || "79";
+      const iosMinVersion = process.env.IOS_MIN_VERSION || "13";
 
-      const isAndroidOsMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.osVersion) >= androidMinOs;
-      const isWebViewMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.webViewVersion) >= webViewMinVersion;
-      const isIosMet = deviceInfo.platform === "ios" && parseFloat(deviceInfo.osVersion) >= iosMinVersion;
+      const isAndroidOsMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.osVersion) >= parseFloat(androidMinOs);
+      const isWebViewMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.webViewVersion) >= parseFloat(webViewMinVersion);
+      const isIosMet = deviceInfo.platform === "ios" && parseFloat(deviceInfo.osVersion) >= parseFloat(iosMinVersion);
 
       if (deviceInfo.platform === "android") {
         return (

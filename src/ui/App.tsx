@@ -40,7 +40,7 @@ const App = () => {
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
   const [isCompatible, setIsCompatible] = useState(true);
-  const [deviceInfo, setDeviceInfo] = useState<undefined | DeviceInfo>(undefined);
+  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
