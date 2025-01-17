@@ -4,6 +4,7 @@ import { warningOutline } from "ionicons/icons";
 import "./SystemCompatibilityAlert.scss";
 import { DeviceInfo } from "@capacitor/device";
 import { SecureStorage } from "../../../core/storage";
+import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "../../globals/constants";
 
 interface SystemCompatibilityAlertProps {
   deviceInfo: DeviceInfo | null;
@@ -20,13 +21,13 @@ const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({ dev
   }, [])
   const getRequirementsList = () => {
     if (deviceInfo) {
-      const androidMinOs = process.env.ANDROID_MIN_VERSION || "29";
-      const webViewMinVersion = process.env.WEBVIEW_MIN_VERSION || "79";
-      const iosMinVersion = process.env.IOS_MIN_VERSION || "13";
+      const androidMinOs = ANDROID_MIN_VERSION;
+      const webViewMinVersion = WEBVIEW_MIN_VERSION;
+      const iosMinVersion = IOS_MIN_VERSION;
 
-      const isAndroidOsMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.osVersion) >= parseFloat(androidMinOs);
-      const isWebViewMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.webViewVersion) >= parseFloat(webViewMinVersion);
-      const isIosMet = deviceInfo.platform === "ios" && parseFloat(deviceInfo.osVersion) >= parseFloat(iosMinVersion);
+      const isAndroidOsMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.osVersion) >= androidMinOs;
+      const isWebViewMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.webViewVersion) >= webViewMinVersion;
+      const isIosMet = deviceInfo.platform === "ios" && parseFloat(deviceInfo.osVersion) >= iosMinVersion;
 
       if (deviceInfo.platform === "android") {
         return (
