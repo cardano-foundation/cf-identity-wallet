@@ -81,7 +81,7 @@ const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({ dev
     <IonPage className={pageId}>
       <IonContent>
         <div className="alert-container">
-          <IonIcon icon={warningOutline} style={{ fontSize: "52px", color: "#d10000" }} />
+          <IonIcon icon={warningOutline} className="warning-icon" />
           <h2>Operating system outdated</h2>
           <p>Your device's operating system does not meet the minimum requirements for secure data storage. To protect your information, update is required.</p>
           <IonList lines="full">

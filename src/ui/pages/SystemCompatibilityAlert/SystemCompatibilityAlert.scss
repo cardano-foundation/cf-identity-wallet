@@ -29,4 +29,8 @@
     background-color: var(--ion-color-light-grey, #F6F6F6);
     --background: var(--ion-color-dark-grey);
   }
+  .warning-icon {
+    font-size: 3.25rem;
+    color: var(--ion-color-danger, #d10000);
+  }
 }
