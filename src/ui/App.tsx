@@ -31,6 +31,7 @@ import "./styles/style.scss";
 import "./App.scss";
 import { showError } from "./utils/error";
 import SystemCompatibilityAlert from "./pages/SystemCompatibilityAlert/SystemCompatibilityAlert";
+import { SecureStorage } from "../core/storage";
 
 setupIonicReact();
 
@@ -94,6 +95,7 @@ const App = () => {
     }
   }, []);
 
+
   useEffect(() => {
     const checkCompatibility = async () => {
       if (Capacitor.isNativePlatform()) {
@@ -103,13 +105,17 @@ const App = () => {
         if (info.platform === "android") {
           const androidVersion = parseFloat(info.osVersion);
           const webViewVersion = parseFloat(info.webViewVersion);
-          if (androidVersion < 10.0 || webViewVersion < 79) {
+          const notSupportedOS = androidVersion < 10.0 || webViewVersion < 79;
+          const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
+          if (notSupportedOS || !isKeyStoreSupported) {
             setIsCompatible(false);
             return;
           }
         } else if (info.platform === "ios") {
           const iosVersion = parseFloat(info.osVersion);
-          if (iosVersion < 13) {
+          const notSupportedOS = iosVersion < 13;
+          const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
+          if (notSupportedOS || !isKeyStoreSupported) {
             setIsCompatible(false);
             return;
           }

@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IonPage, IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel } from "@ionic/react";
 import { warningOutline } from "ionicons/icons";
 import "./SystemCompatibilityAlert.scss";
 import { DeviceInfo } from "@capacitor/device";
+import { SecureStorage } from "../../../core/storage";
 
-const SystemCompatibilityAlert = ({ deviceInfo }: { deviceInfo: undefined | DeviceInfo }) => {
+const SystemCompatibilityAlert = ({ deviceInfo }: DeviceInfo) => {
+  const [isKeyStoreSupported, setIsKeyStoreSupported] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    SecureStorage.isKeyStoreSupported().then(isKeyStoreSup => {
+      setIsKeyStoreSupported(isKeyStoreSup)
+    });
+
+  }, [])
   const getRequirementsList = () => {
     if (deviceInfo) {
-      const androidMinOs = 10.0;
-      const webViewMinVersion = 79;
-      const iosMinVersion = 13;
+      const androidMinOs = process.env.ANDROID_MIN_VERSION;
+      const webViewMinVersion = process.env.WEBVIEW_MIN_VERSION;
+      const iosMinVersion = process.env.IOS_MIN_VERSION;
 
       const isAndroidOsMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.osVersion) >= androidMinOs;
       const isWebViewMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.webViewVersion) >= webViewMinVersion;
@@ -36,7 +45,7 @@ const SystemCompatibilityAlert = ({ deviceInfo }: { deviceInfo: undefined | Devi
             </IonItem>
             <IonItem>
               <IonLabel>Secure Storage:</IonLabel>
-              <IonLabel slot="end" color={"primary"}>N/A</IonLabel>
+              <IonLabel slot="end" color={"primary"}>{isKeyStoreSupported === undefined ? "N/A" : isKeyStoreSupported ? "Yes": "No"}</IonLabel>
             </IonItem>
           </>
         );
@@ -53,7 +62,7 @@ const SystemCompatibilityAlert = ({ deviceInfo }: { deviceInfo: undefined | Devi
             </IonItem>
             <IonItem>
               <IonLabel>Secure Storage:</IonLabel>
-              <IonLabel slot="end" color={"primary"}>N/A</IonLabel>
+              <IonLabel slot="end" color={"primary"}>{isKeyStoreSupported === undefined ? "N/A" : isKeyStoreSupported ? "Yes": "No"}</IonLabel>
             </IonItem>
           </>
         );
