@@ -171,22 +171,22 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  AparajitaCapacitorBiometricAuth: 3057403ee3e9e390e57bfb92b576f439157951b8
-  AparajitaCapacitorSecureStorage: 265982fd6a2686f9a0820f55c039623b2c4a34c1
-  Capacitor: 679f9673fdf30597493a6362a5d5bf233d46abc2
-  CapacitorApp: 0bc633b4eae40a1f32cd2834788fad3bc42da6a1
-  CapacitorBrowser: 83ec661a9ccd56c28a6851e4dd1ac33b181227ec
-  CapacitorClipboard: 756cd7e83e8d5d19b0c74f40b57517c287bd5fe2
-  CapacitorCommunityPrivacyScreen: 8f34f8c4d47193f637bda6d28371e01aa677dafc
-  CapacitorCommunitySqlite: d0b543e12a06ee6fd0dc287c389e6b435ec4acdf
+  AparajitaCapacitorBiometricAuth: c058563fe00160e12b022341e11b3181357ea93a
+  AparajitaCapacitorSecureStorage: 18190f233b0531422af8c1caa51804686d940ee0
+  Capacitor: 69c7f687aabb8d85e543497411e40638b5cc08c0
+  CapacitorApp: f51c08c64df914fc934239fd1b3fc809d62a02f6
+  CapacitorBrowser: 80345fe3b83664d2f953e9fe102a996df73ec809
+  CapacitorClipboard: 0ceeee488e55bef7cced5c8097d97f330c109f61
+  CapacitorCommunityPrivacyScreen: 5ac93e09bbd78884ca9c8f3c0a9084ec2cc9a4fe
+  CapacitorCommunitySqlite: 5fa19977b8e399b2e318ce748f7dc77a8e5b5496
   CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
-  CapacitorKeyboard: 2700f9b18687be021e28b5a09b59eb151a46d5e0
-  CapacitorMlkitBarcodeScanning: 178fb57424ec688b6a2fceee506ecc1ea00d1c8d
-  CapacitorNativeSettings: 1ce5585ff07b161616cd0a795702637316677af2
-  CapacitorScreenOrientation: 6039dc2ea4a8596b79316709d5727e8bb7e32845
-  CapacitorShare: 591ae4693d85686ceb590db8e8b44aa014ec6490
-  CapacitorSplashScreen: 250df9ef8014fac5c7c1fd231f0f8b1d8f0b5624
-  CapacitorStatusBar: b81d4fb5d4e0064c712018071b3ab4b810b39a63
+  CapacitorKeyboard: 5bf4458dd989b56a60ea15c92cbca5fbfae6e9f9
+  CapacitorMlkitBarcodeScanning: 7652be9c7922f39203a361de735d340ae37e134e
+  CapacitorNativeSettings: 7669610adda7b2747fecab7c5e1b6329520d8914
+  CapacitorScreenOrientation: d0947c3ef3ff3a0852f8721fa0b19a31d4967cae
+  CapacitorShare: 5d49f1b220e991372b4d5d34be9a6080a042bae4
+  CapacitorSplashScreen: b46e61cc4345d73d510530b0c845a30e3602db40
+  CapacitorStatusBar: 9ed7f06318fd436917072a9bf60fda56d12c8bdb
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleMLKit: 90ba06e028795a50261f29500d238d6061538711
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
@@ -205,4 +205,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 3d984c226b41598bd9ba6e349fdb4a7ae11e20f7
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
