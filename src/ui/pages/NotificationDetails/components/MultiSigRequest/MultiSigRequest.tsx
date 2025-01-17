@@ -46,6 +46,7 @@ import { MultiSigService } from "../../../../../core/agent/services/multiSigServ
 import { ErrorPage } from "./ErrorPage";
 import { Verification } from "../../../../components/Verification";
 import { showError } from "../../../../utils/error";
+import { Spinner } from "../../../../components/Spinner";
 
 const MultiSigRequest = ({
   pageId,
@@ -56,7 +57,7 @@ const MultiSigRequest = ({
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
   const [notifications, setNotifications] = useState(notificationsCache);
-  const [spinner, setSpinner] = useState(false);
+  const [spinner, setSpinner] = useState(true);
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [multisigIcpDetails, setMultisigIcpDetails] =
@@ -178,23 +179,14 @@ const MultiSigRequest = ({
   }
 
   if (!multisigIcpDetails) {
-    return (
-      <div
-        className="multisig-request-spinner-container"
-        data-testid="multisig-request-spinner-container"
-      >
-        <IonSpinner name="circular" />
-      </div>
-    );
+    return <Spinner show={true}/>;
   }
 
   return (
     <>
       <ScrollablePageLayout
         pageId={`${pageId}-multi-sig-request`}
-        customClass={`${pageId}-multi-sig-request setup-identifier ${
-          spinner ? "blur" : ""
-        }`}
+        customClass={`${pageId}-multi-sig-request setup-identifier`}
         activeStatus={activeStatus}
         header={
           <PageHeader
@@ -336,14 +328,7 @@ const MultiSigRequest = ({
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
       />
-      {spinner && (
-        <div
-          className="multisig-spinner-container"
-          data-testid="multisig-spinner-container"
-        >
-          <IonSpinner name="circular" />
-        </div>
-      )}
+      <Spinner show={spinner}/>
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}
