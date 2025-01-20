@@ -238,6 +238,18 @@ describe("App", () => {
     mockInitDatabase.mockClear();
     getPlatformsMock.mockImplementation(() => ["android"]);
     getAvailableWitnessesMock.mockClear();
+
+    const deviceInfo = {
+      platform: "ios",
+      osVersion: "18.0",
+      model: "",
+      operatingSystem: "ios",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
   });
 
   test("Mobile header hidden when app not in preview mode", async () => {
