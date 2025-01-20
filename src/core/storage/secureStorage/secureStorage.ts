@@ -30,6 +30,17 @@ class SecureStorage {
   static async delete(key: string) {
     await CapacitorSecureStorage.remove(key);
   }
+
+  static async isKeyStoreSupported() {
+    try {
+      await this.set("testKey", "testValue");
+      await this.delete("testKey");
+      return true;
+    } catch (e) {
+      return false;
+    }
+
+  }
 }
 
 // This is just to allow us to make change libs if needed without refactoring other code.

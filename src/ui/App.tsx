@@ -1,4 +1,5 @@
 import { Capacitor } from "@capacitor/core";
+import { Device, DeviceInfo } from "@capacitor/device";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
@@ -29,6 +30,8 @@ import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
 import { showError } from "./utils/error";
+import SystemCompatibilityAlert from "./pages/SystemCompatibilityAlert/SystemCompatibilityAlert";
+import { SecureStorage } from "../core/storage";
 
 setupIonicReact();
 
@@ -36,6 +39,8 @@ const App = () => {
   const initialized = useAppSelector(getIsInitialized);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
+  const [isCompatible, setIsCompatible] = useState(true);
+  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -90,8 +95,42 @@ const App = () => {
     }
   }, []);
 
-  return (
-    <IonApp>
+
+  useEffect(() => {
+    const checkCompatibility = async () => {
+      if (Capacitor.isNativePlatform()) {
+        const info = await Device.getInfo();
+        setDeviceInfo(info);
+
+        if (info.platform === "android") {
+          const androidVersion = parseFloat(info.osVersion);
+          const webViewVersion = parseFloat(info.webViewVersion);
+          const notSupportedOS = androidVersion < 10.0 || webViewVersion < 79;
+          const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
+          if (notSupportedOS || !isKeyStoreSupported) {
+            setIsCompatible(false);
+            return;
+          }
+        } else if (info.platform === "ios") {
+          const iosVersion = parseFloat(info.osVersion);
+          const notSupportedOS = iosVersion < 13;
+          const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
+          if (notSupportedOS || !isKeyStoreSupported) {
+            setIsCompatible(false);
+            return;
+          }
+        }
+      }
+      setIsCompatible(true);
+    };
+
+    checkCompatibility();
+  }, []);
+
+
+
+  const renderApp = () => {
+    return <>
       <AppWrapper>
         <StrictMode>
           {initialized ? (
@@ -127,6 +166,15 @@ const App = () => {
           <ToastStack />
         </StrictMode>
       </AppWrapper>
+    </>
+  }
+  return (
+    <IonApp>
+      {isCompatible ? (
+        renderApp()
+      ) : (
+        <SystemCompatibilityAlert deviceInfo={deviceInfo} />
+      )}
     </IonApp>
   );
 };
