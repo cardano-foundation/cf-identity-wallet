@@ -16,6 +16,7 @@ import { Summary } from "./components/Summary";
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 import { IdentifierColor } from "../CreateIdentifier/components/IdentifierColorSelector";
+import { Spinner } from "../Spinner";
 
 const stages = [
   SetupConnections,
@@ -104,14 +105,7 @@ const CreateGroupIdentifier = ({
       className={`${componentId} full-page-modal ${blur ? "blur" : ""}`}
       data-testid={componentId}
     >
-      {blur && (
-        <div
-          className="spinner-container"
-          data-testid="spinner-container"
-        >
-          <IonSpinner name="circular" />
-        </div>
-      )}
+      <Spinner show={blur} />
       {modalIsOpen && CurrentStage && (
         <CurrentStage
           state={state}
