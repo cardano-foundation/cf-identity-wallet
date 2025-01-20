@@ -1,52 +1,51 @@
 import {
   IonCard,
-  IonList,
-  IonItem,
-  IonGrid,
-  IonRow,
   IonCol,
-  IonLabel,
+  IonGrid,
   IonIcon,
-  IonSpinner,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonRow
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
 import { useCallback, useState } from "react";
-import { Alert as AlertDecline } from "../../../../components/Alert";
-import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { Agent } from "../../../../../core/agent/agent";
+import {
+  CreateGroupIdentifierResult,
+  NotificationRoute,
+} from "../../../../../core/agent/agent.types";
+import {
+  IdentifierShortDetails,
+  MultiSigIcpRequestDetails,
+} from "../../../../../core/agent/services/identifier.types";
+import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
+import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../../../store/reducers/identifiersCache";
-import { Agent } from "../../../../../core/agent/agent";
-import {
-  IdentifierShortDetails,
-  MultiSigIcpRequestDetails,
-} from "../../../../../core/agent/services/identifier.types";
-import { BackEventPriorityType, ToastMsgType } from "../../../../globals/types";
-import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../../../components/PageHeader";
-import { i18n } from "../../../../../i18n";
-import { PageFooter } from "../../../../components/PageFooter";
-import "./MultiSigRequest.scss";
-import {
-  CreateGroupIdentifierResult,
-  NotificationRoute,
-} from "../../../../../core/agent/agent.types";
-import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
+import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { Alert as AlertDecline } from "../../../../components/Alert";
+import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
+import { PageFooter } from "../../../../components/PageFooter";
+import { PageHeader } from "../../../../components/PageHeader";
+import { Spinner } from "../../../../components/Spinner";
+import { Verification } from "../../../../components/Verification";
+import { BackEventPriorityType, ToastMsgType } from "../../../../globals/types";
 import {
   useIonHardwareBackButton,
   useOnlineStatusEffect,
 } from "../../../../hooks";
-import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
-import { ErrorPage } from "./ErrorPage";
-import { Verification } from "../../../../components/Verification";
 import { showError } from "../../../../utils/error";
-import { Spinner } from "../../../../components/Spinner";
+import { NotificationDetailsProps } from "../../NotificationDetails.types";
+import { ErrorPage } from "./ErrorPage";
+import "./MultiSigRequest.scss";
 
 const MultiSigRequest = ({
   pageId,
@@ -57,7 +56,7 @@ const MultiSigRequest = ({
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
   const [notifications, setNotifications] = useState(notificationsCache);
-  const [spinner, setSpinner] = useState(true);
+  const [spinner, setSpinner] = useState(false);
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [multisigIcpDetails, setMultisigIcpDetails] =
@@ -98,7 +97,6 @@ const MultiSigRequest = ({
   };
 
   const actionAccept = async () => {
-    document?.querySelector("ion-router-outlet")?.classList.add("blur");
     setSpinner(true);
     try {
       if (!multisigIcpDetails) {
@@ -138,11 +136,11 @@ const MultiSigRequest = ({
           : ToastMsgType.IDENTIFIER_REQUESTED;
       }
       handleNotificationUpdate();
-      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
-      setSpinner(false);
       handleBack();
     } catch (e) {
       showError("Unable to join multi-sig", e, dispatch);
+    } finally {
+      setSpinner(false);
     }
   };
 

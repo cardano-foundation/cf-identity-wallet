@@ -184,5 +184,10 @@
 ion-toolbar.multisig-request-footer {
   &.page-footer {
     padding-bottom: 0.5rem;
+
+    .secondary-button::part(native) {
+      border: none;
+      color: var(--ion-color-error-800);
+    }
   }
 }
