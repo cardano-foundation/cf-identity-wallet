@@ -19,7 +19,7 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div {...props}>{children}</div> : null,
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   SecureStorage: {
     get: () => {
       return "111111";

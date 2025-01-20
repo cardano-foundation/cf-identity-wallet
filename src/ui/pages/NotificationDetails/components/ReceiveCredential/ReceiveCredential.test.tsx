@@ -20,7 +20,7 @@ jest.useFakeTimers();
 
 const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   SecureStorage: {
     get: (key: string) => mockGet(key),
     set: jest.fn(),

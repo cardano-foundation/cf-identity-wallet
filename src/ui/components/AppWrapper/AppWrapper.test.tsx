@@ -123,7 +123,7 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   SecureStorage: {
     set: jest.fn(),
     get: jest.fn(),

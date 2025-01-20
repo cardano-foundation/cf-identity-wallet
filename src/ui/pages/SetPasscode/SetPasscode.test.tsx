@@ -14,7 +14,7 @@ import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "./SetPasscode";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 
-const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
+const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue({ value: true });
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {

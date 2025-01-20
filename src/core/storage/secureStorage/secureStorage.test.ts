@@ -1,11 +1,10 @@
-import { DataType } from "@aparajita/capacitor-secure-storage";
 import { SecureStorage } from "./secureStorage";
 
 const EXISTING_KEY = "keythatexists";
 const NON_EXISTING_KEY = "keythatdoesnotexist";
-const EXISTING_VALUE: DataType = "valuethatexists";
+const EXISTING_VALUE = "valuethatexists";
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("@jimcase/capacitor-secure-storage", () => ({
   SecureStorage: {
     get: (key: string) => {
       if (key === EXISTING_KEY) {

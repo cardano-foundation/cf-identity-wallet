@@ -12,7 +12,7 @@ import { store } from "../../../../../../../store";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { ChangePin } from "./ChangePin";
 
-const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
+const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue({ value: true });
 const mockSetIsOpen = jest.fn();
 
 jest.mock("../../../../../../../core/agent/agent", () => ({
