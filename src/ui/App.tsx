@@ -32,6 +32,8 @@ import "./App.scss";
 import { showError } from "./utils/error";
 import SystemCompatibilityAlert from "./pages/SystemCompatibilityAlert/SystemCompatibilityAlert";
 import { SecureStorage } from "../core/storage";
+import { compareVersion } from "./utils/version";
+import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "./globals/constants";
 
 setupIonicReact();
 
@@ -103,17 +105,14 @@ const App = () => {
         setDeviceInfo(info);
 
         if (info.platform === "android") {
-          const androidVersion = parseFloat(info.osVersion);
-          const webViewVersion = parseFloat(info.webViewVersion);
-          const notSupportedOS = androidVersion < 10.0 || webViewVersion < 79;
+          const notSupportedOS = compareVersion(info.osVersion, `${ANDROID_MIN_VERSION}`) < 0 || compareVersion(info.webViewVersion, `${WEBVIEW_MIN_VERSION}`) < 0;
           const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
           if (notSupportedOS || !isKeyStoreSupported) {
             setIsCompatible(false);
             return;
           }
         } else if (info.platform === "ios") {
-          const iosVersion = parseFloat(info.osVersion);
-          const notSupportedOS = iosVersion < 13;
+          const notSupportedOS = compareVersion(info.osVersion, `${IOS_MIN_VERSION}`) < 0;
           const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
           if (notSupportedOS || !isKeyStoreSupported) {
             setIsCompatible(false);
