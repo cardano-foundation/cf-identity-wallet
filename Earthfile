@@ -149,6 +149,7 @@ cred-issuance-ui:
 cip45-sample-dapp:
   ARG EARTHLY_TARGET_NAME
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
+  ARG DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES// hub.docker.com})"
 
   WAIT
     FROM DOCKERFILE ./services/cip45-sample-dapp
@@ -159,6 +160,6 @@ cip45-sample-dapp:
   END
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
-     --DOCKER_REGISTRIES=$(echo ${DOCKER_REGISTRIES// hub.docker.com}) \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
