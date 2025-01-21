@@ -60,6 +60,7 @@ class Agent {
     "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
+  static readonly MISSING_BRAN_SECURE_STORAGE = "Bran not in secure storage";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
@@ -488,7 +489,7 @@ class Agent {
   private async getBran(): Promise<string> {
     const bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
     if (!bran){
-      throw new Error("Bran not in SecureStorage");
+      throw new Error(Agent.MISSING_BRAN_SECURE_STORAGE);
     }
     return bran as string;
   }
