@@ -1,10 +1,9 @@
 import { IConnectMessage } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IdentityWalletConnect } from "./identityWalletConnect";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
-import { KeyStoreKeys } from "../../storage";
+import {KeyStoreKeys, SecureStorage} from "../../storage";
 import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,

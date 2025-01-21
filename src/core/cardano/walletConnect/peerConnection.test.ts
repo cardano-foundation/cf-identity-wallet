@@ -1,4 +1,3 @@
-import { DataType, SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IdentityWalletConnect } from "./identityWalletConnect";
 import { Agent } from "../../agent/agent";
 import {
@@ -6,7 +5,7 @@ import {
   PeerConnectionStorage,
 } from "../../agent/records";
 import { PeerConnection } from "./peerConnection";
-import { KeyStoreKeys } from "../../storage";
+import {KeyStoreKeys, SecureStorage} from "../../storage";
 require("fake-indexeddb/auto");
 
 jest.mock("../../agent/agent", () => ({
@@ -30,18 +29,21 @@ jest.mock("../../agent/agent", () => ({
   },
 }));
 const EXISTING_KEY = "keythatexists";
-const NON_EXISTING_KEY = "keythatdoesnotexist";
-const EXISTING_VALUE: DataType = "valuethatexists";
+const EXISTING_VALUE = "valuethatexists";
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("../../storage", () => ({
   SecureStorage: {
-    get: (key: string) => {
-      if (key === EXISTING_KEY) {
-        return EXISTING_VALUE;
+    get: jest.fn((options: { key: string }) => {
+      if (options.key === EXISTING_KEY) {
+        return Promise.resolve({ value: EXISTING_VALUE });
       }
-      return null;
-    },
-    set: jest.fn(),
+      return Promise.resolve({ value: null });
+    }),
+    set: jest.fn(() => Promise.resolve({ value: true })),
+    remove: jest.fn(() => Promise.resolve({ value: true })),
+  },
+  KeyStoreKeys: {
+    MEERKAT_SEED: "app-meerkat-seed"
   },
 }));
 

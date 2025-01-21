@@ -1,7 +1,6 @@
-import {
-  SecureStorage as CapacitorSecureStorage,
-  DataType,
-} from "@aparajita/capacitor-secure-storage";
+import { SecureStoragePlugin } from "@jimcase/capacitor-secure-storage-plugin";
+
+export type DataType = string | number | boolean | Record<string, unknown> | unknown[] | Date;
 
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
@@ -15,20 +14,26 @@ class SecureStorage {
   static readonly KEY_NOT_FOUND =
     "Secure Storage does not contain an item with specified key";
 
-  static async get(key: string): Promise<DataType | null> {
-    const item = await CapacitorSecureStorage.get(key);
-    if (item === null) {
+  static async get(key: string): Promise<string> {
+    const result = await SecureStoragePlugin.get({ key });
+    if (!result || result.value === null) {
       throw new Error(`${SecureStorage.KEY_NOT_FOUND} ${key}`);
     }
-    return item;
+    return result.value;
   }
 
   static async set(key: string, value: string): Promise<void> {
-    await CapacitorSecureStorage.set(key, value, true, false);
+    await SecureStoragePlugin.set({key, value});
   }
 
   static async delete(key: string) {
-    await CapacitorSecureStorage.remove(key);
+    try {
+      await SecureStoragePlugin.remove({ key });
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes("Item with given key does not exist")) {
+        throw error;
+      }
+    }
   }
 
   static async isKeyStoreSupported() {
@@ -39,7 +44,6 @@ class SecureStorage {
     } catch (e) {
       return false;
     }
-
   }
 }
 

@@ -90,11 +90,13 @@ jest.mock("../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    set: jest.fn(),
-    get: jest.fn(),
-    remove: jest.fn(),
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: jest.fn((options: { key: string }) => {
+      return Promise.resolve({ value: "value" });
+    }),
+    set: jest.fn(() => Promise.resolve({ value: true })),
+    remove: jest.fn(() => Promise.resolve({ value: true })),
   },
 }));
 
