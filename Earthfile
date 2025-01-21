@@ -151,7 +151,7 @@ cip45-sample-dapp:
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
   LOCALLY
   # do not push this image to the public docker hub
-  LET DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES// hub.docker.com})"
+  LET DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES//hub.docker.com})"
 
   WAIT
     FROM DOCKERFILE ./services/cip45-sample-dapp
