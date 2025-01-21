@@ -393,25 +393,21 @@ class Agent {
       console.error("Unexpected error when checking SIGNIFY_BRAN:", typedError);
     }
 
-    try {
-      await this.basicStorage.createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_ALREADY_INIT,
-          content: {
-            initialized: true,
-          },
-        })
-      );
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+    );
 
-      await this.basicStorage.createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_PASSWORD_SKIPPED,
-          content: { value: true },
-        })
-      );
-    } catch (error) {
-      console.error("Error setting initialization records in dev mode:", error);
-    }
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_PASSWORD_SKIPPED,
+        content: { value: true },
+      })
+    );
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {

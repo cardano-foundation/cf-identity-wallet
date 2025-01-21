@@ -128,8 +128,8 @@ jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
     get: jest.fn((options: { key: string }) => {
       return Promise.resolve({ value: "value" });
     }),
-    set: jest.fn(() => Promise.resolve({ value: true })),
-    remove: jest.fn(() => Promise.resolve({ value: true })),
+    set: jest.fn(),
+    remove: jest.fn(),
   },
 }));
 
