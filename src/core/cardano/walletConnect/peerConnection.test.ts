@@ -5,7 +5,7 @@ import {
   PeerConnectionStorage,
 } from "../../agent/records";
 import { PeerConnection } from "./peerConnection";
-import {KeyStoreKeys, SecureStorage} from "../../storage";
+import { KeyStoreKeys, SecureStorage } from "../../storage";
 require("fake-indexeddb/auto");
 
 jest.mock("../../agent/agent", () => ({
