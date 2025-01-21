@@ -28,13 +28,6 @@ jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   },
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: (key: string) => mockGet(key),
-    set: jest.fn(),
-  },
-}));
-
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const admitAcdcFromGrantMock = jest.fn(
   (id: string) =>
