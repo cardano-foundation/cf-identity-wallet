@@ -21,7 +21,7 @@ class SecureStorage {
     } catch (e) {
       const error = e as { message?: string };
       if (!error.message?.includes(SecureStorage.KEY_NOT_FOUND)) {
-        throw new Error(JSON.stringify(e));
+        throw e;
       }
       return null;
     }

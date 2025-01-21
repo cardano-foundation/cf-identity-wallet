@@ -80,15 +80,11 @@ class PeerConnection {
   }
 
   async start(selectedAid: string) {
-    let meerkatSeed = null;
 
-    try {
-      meerkatSeed = (await SecureStorage.get(
-        KeyStoreKeys.MEERKAT_SEED
-      )) as string;
-    } catch {
-      meerkatSeed = null;
-    }
+    const meerkatSeed = await SecureStorage.get(
+      KeyStoreKeys.MEERKAT_SEED
+    );
+
     if (
       this.identityWalletConnect &&
       this.connectedDAppAddress.trim().length !== 0

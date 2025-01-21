@@ -371,30 +371,26 @@ class Agent {
   }
 
   async devPreload() {
-
-    console.log("devPreload")
     const APP_PASSSCODE_DEV_MODE = "111111";
 
     try {
-      await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+      const appPasscode = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+      if (!appPasscode) {
+        await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
+      }
     } catch (error) {
       const typedError = error as Error;
-      if (typedError.message.includes(`${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`)) {
-        await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
-      } else {
-        console.error("Unexpected error when checking APP_PASSCODE:", typedError);
-      }
+      console.error("Unexpected error when checking APP_PASSCODE:", typedError);
     }
 
     try {
-      await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+      const appSignifyBran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+      if (!appSignifyBran) {
+        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
+      }
     } catch (error) {
       const typedError = error as Error;
-      if (typedError.message.includes(`${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`)) {
-        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
-      } else {
-        console.error("Unexpected error when checking SIGNIFY_BRAN:", typedError);
-      }
+      console.error("Unexpected error when checking SIGNIFY_BRAN:", typedError);
     }
 
     try {
@@ -494,7 +490,11 @@ class Agent {
   }
 
   private async getBran(): Promise<string> {
-    return (await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN)) as string;
+    const bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    if (!bran){
+      throw new Error("Bran not in SecureStorage");
+    }
+    return bran as string;
   }
 
   private getStorageService<T extends BaseRecord>(
