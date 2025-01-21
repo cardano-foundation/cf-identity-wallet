@@ -30,7 +30,7 @@
       --min-height: auto;
     
       .name {
-        width: 50%;
+        width: 64%;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -53,8 +53,8 @@
       .status {
         border-radius: 50%;
         padding: 0.3125rem;
-        width: 0.875rem;
-        height: 0.875rem;
+        width: 0.75rem;
+        height: 0.75rem;
         color: var(--ion-color-neutral-100);
         margin-left: 0.5rem;
     
@@ -82,11 +82,11 @@
     
         .status {
           padding: 0.125rem;
-          width: 0.675rem;
-          height: 0.675rem;
+          width: 0.75rem;
+          height: 0.75rem;
     
           &.md {
-            margin-inline-start: 0;
+            margin-inline-start: 0.5rem;
           }
         }
       }
