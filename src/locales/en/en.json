@@ -1869,9 +1869,6 @@
   "systemcompatibility": {
     "title": "Operating system outdated",
     "description": "Your device's operating system does not meet the minimum requirements for secure data storage. To protect your information, update is required.",
-    "button": {
-      "contact": "Help?"
-    },
     "ios": {
       "os": "Required iOS",
       "youros": "Your iOS",
