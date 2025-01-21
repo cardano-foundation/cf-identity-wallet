@@ -63,21 +63,6 @@ class ConfigurationService {
       return this.invalid("Missing top-level KERI object");
     }
 
-    // CREDENTIALS config
-    if (typeof keri.credentials !== "object") {
-      return this.invalid("Missing credentials config");
-    }
-
-    if (typeof keri.credentials.testServer !== "object") {
-      return this.invalid("Missing credential issuance test server config");
-    }
-
-    if (typeof keri.credentials.testServer.urlInt !== "string") {
-      return this.invalid(
-        "Invalid credential issuance test server config (urlInt)"
-      );
-    }
-
     return { success: true };
   }
 

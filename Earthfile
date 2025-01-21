@@ -13,8 +13,8 @@ ARG --global PUSH=false
 
 ARG --global KERIA_DOCKER_IMAGE_REPO=weboftrust/keria
 ARG --global KERIA_DOCKER_IMAGE_TAG=0.2.0-rc1
-ARG --global KERIA_GIT_REPO_URL="https://github.com/WebOfTrust/keria.git"
-ARG --global KERIA_GIT_REF=""
+ARG --global KERIA_GIT_REPO_URL="https://github.com/cardano-foundation/keria.git"
+ARG --global KERIA_GIT_REF="a1e7e6e16ae8d795b1b620870a9e4fac7bf18694"
 
 ARG --global KERI_DOCKER_IMAGE_REPO=weboftrust/keri
 ARG --global KERI_DOCKER_IMAGE_TAG=1.1.26

@@ -33,7 +33,7 @@ function getCredentialShortDetails(
   };
 }
 
-export const OnlineOnly = (
+const OnlineOnly = (
   _target: any,
   _propertyKey: string,
   descriptor: PropertyDescriptor
@@ -102,4 +102,4 @@ function isNetworkError(error: Error): boolean {
   return false;
 }
 
-export { waitAndGetDoneOp, getCredentialShortDetails, randomSalt, isNetworkError };
+export { OnlineOnly, waitAndGetDoneOp, getCredentialShortDetails, randomSalt, isNetworkError };

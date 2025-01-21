@@ -207,6 +207,7 @@ class Agent {
       await this.signifyApi
         .createIdentifier(Agent.HOLDER_AID_NAME)
         .catch((e) => console.error(e));
+      await this.signifyApi.addIndexerRole(Agent.HOLDER_AID_NAME);
       this.keriRegistryRegk = await this.signifyApi
         .createRegistry(Agent.HOLDER_AID_NAME)
         .catch((e) => console.error(e));

@@ -3,16 +3,9 @@ interface KeriaConfig {
   bootUrl?: string;
 }
 
-interface CredentialsConfig {
-  testServer: {
-    urlInt: string;
-  };
-}
-
 interface Configuration {
   keri: {
     keria?: KeriaConfig;
-    credentials: CredentialsConfig;
   };
 }
 

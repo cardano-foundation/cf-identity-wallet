@@ -97,6 +97,7 @@ interface ConnectionDetails extends ConnectionShortDetails {
   notes: ConnectionNoteDetails[];
   historyItems: ConnectionHistoryItem[];
 }
+
 interface NotificationRpy {
   a: {
     cid: string;
