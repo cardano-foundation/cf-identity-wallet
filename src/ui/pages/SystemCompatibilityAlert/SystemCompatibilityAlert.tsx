@@ -1,97 +1,196 @@
-import React, { useEffect, useState } from "react";
-import { IonPage, IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel } from "@ionic/react";
-import { warningOutline } from "ionicons/icons";
-import "./SystemCompatibilityAlert.scss";
-import { DeviceInfo } from "@capacitor/device";
+import { IonIcon, IonItem, IonText } from "@ionic/react";
+import { alertCircleOutline, checkmark, closeOutline } from "ionicons/icons";
+import React, { useEffect, useMemo, useState } from "react";
 import { SecureStorage } from "../../../core/storage";
-import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "../../globals/constants";
+import { i18n } from "../../../i18n";
+import { CardDetailsBlock } from "../../components/CardDetails";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import {
+  ANDROID_MIN_VERSION,
+  IOS_MIN_VERSION,
+  WEBVIEW_MIN_VERSION,
+} from "../../globals/constants";
+import { combineClassNames } from "../../utils/style";
+import { compareVersion } from "../../utils/version";
+import "./SystemCompatibilityAlert.scss";
+import {
+  MetRequirementStatus,
+  RequirementItemProps,
+  SystemCompatibilityAlertProps,
+} from "./SystemCompatibilityAlert.types";
 
-interface SystemCompatibilityAlertProps {
-  deviceInfo: DeviceInfo | null;
-}
+const RequirementItem = ({ name, value, status }: RequirementItemProps) => {
+  const statusClasses = combineClassNames("status", {
+    met: status === MetRequirementStatus.MetRequirement,
+    "not-met": status === MetRequirementStatus.NotMetRequirement,
+  });
 
-const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({ deviceInfo }) => {
-  const [isKeyStoreSupported, setIsKeyStoreSupported] = useState<boolean | undefined>(undefined);
+  const icon = useMemo(() => {
+    switch (status) {
+    case MetRequirementStatus.MetRequirement:
+      return checkmark;
+    case MetRequirementStatus.NotMetRequirement:
+      return closeOutline;
+    default:
+      return null;
+    }
+  }, [status]);
+
+  return (
+    <IonItem
+      lines="none"
+      className="requirement"
+    >
+      <IonText
+        slot="start"
+        className="name"
+        data-testid="name"
+      >
+        {name}
+      </IonText>
+      <IonText
+        className="requirement-value"
+        slot="end"
+        data-testid="requirement-value"
+      >
+        {value}
+        {status !== undefined && icon && (
+          <IonIcon
+            data-testid={status}
+            icon={icon}
+            className={statusClasses}
+          />
+        )}
+      </IonText>
+    </IonItem>
+  );
+};
+
+const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({
+  deviceInfo,
+}) => {
+  const [isKeyStoreSupported, setIsKeyStoreSupported] = useState<
+    boolean | undefined
+  >(undefined);
 
   useEffect(() => {
-    SecureStorage.isKeyStoreSupported().then(isKeyStoreSup => {
-      setIsKeyStoreSupported(isKeyStoreSup)
+    SecureStorage.isKeyStoreSupported().then((isKeyStoreSup) => {
+      setIsKeyStoreSupported(isKeyStoreSup);
     });
+  }, []);
 
-  }, [])
   const getRequirementsList = () => {
     if (deviceInfo) {
-      const androidMinOs = ANDROID_MIN_VERSION;
-      const webViewMinVersion = WEBVIEW_MIN_VERSION;
-      const iosMinVersion = IOS_MIN_VERSION;
-
-      const isAndroidOsMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.osVersion) >= androidMinOs;
-      const isWebViewMet = deviceInfo.platform === "android" && parseFloat(deviceInfo.webViewVersion) >= webViewMinVersion;
-      const isIosMet = deviceInfo.platform === "ios" && parseFloat(deviceInfo.osVersion) >= iosMinVersion;
+      const isAndroidOsMet =
+        deviceInfo.platform === "android" &&
+        compareVersion(deviceInfo.osVersion, `${ANDROID_MIN_VERSION}`) >= 0;
+      const isWebViewMet =
+        deviceInfo.platform === "android" &&
+        compareVersion(deviceInfo.webViewVersion, `${WEBVIEW_MIN_VERSION}`) >=
+          0;
+      const isIosMet =
+        deviceInfo.platform === "ios" &&
+        compareVersion(deviceInfo.osVersion, `${IOS_MIN_VERSION}`) >= 0;
 
       if (deviceInfo.platform === "android") {
         return (
           <>
-            <IonItem>
-              <IonLabel>Required Android OS:</IonLabel>
-              <IonLabel slot="end" color={isAndroidOsMet ? "success" : "danger"}>{androidMinOs}+</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Your Android OS:</IonLabel>
-              <IonLabel slot="end" color={"primary"}>{deviceInfo.osVersion}</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Required WebView:</IonLabel>
-              <IonLabel slot="end" color={isWebViewMet ? "success" : "danger"}>{webViewMinVersion}+</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Your WebView:</IonLabel>
-              <IonLabel slot="end" color={"primary"}>{deviceInfo.webViewVersion}</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Secure Storage:</IonLabel>
-              <IonLabel slot="end" color={"primary"}>{isKeyStoreSupported === undefined ? "N/A" : isKeyStoreSupported ? "Yes": "No"}</IonLabel>
-            </IonItem>
+            <RequirementItem
+              name={i18n.t("systemcompatibility.android.os")}
+              value={`${ANDROID_MIN_VERSION}+`}
+            />
+            <RequirementItem
+              name={i18n.t("systemcompatibility.android.youros")}
+              value={`${deviceInfo.osVersion}`}
+              status={
+                isAndroidOsMet
+                  ? MetRequirementStatus.MetRequirement
+                  : MetRequirementStatus.NotMetRequirement
+              }
+            />
+            <RequirementItem
+              name={i18n.t("systemcompatibility.android.webview")}
+              value={`${WEBVIEW_MIN_VERSION}+`}
+            />
+            <RequirementItem
+              name={i18n.t("systemcompatibility.android.yourwebview")}
+              value={`${deviceInfo.webViewVersion}`}
+              status={
+                isWebViewMet
+                  ? MetRequirementStatus.MetRequirement
+                  : MetRequirementStatus.NotMetRequirement
+              }
+            />
+            <RequirementItem
+              name={i18n.t("systemcompatibility.android.storage")}
+              value={
+                isKeyStoreSupported === undefined
+                  ? "N/A"
+                  : isKeyStoreSupported
+                    ? "Yes"
+                    : "No"
+              }
+            />
           </>
         );
-      } else if (deviceInfo.platform === "ios") {
+      }
+
+      if (deviceInfo.platform === "ios") {
         return (
           <>
-            <IonItem>
-              <IonLabel>Required iOS:</IonLabel>
-              <IonLabel slot="end" color={isIosMet ? "success" : "danger"}>{iosMinVersion}+</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Your iOS:</IonLabel>
-              <IonLabel slot="end" color={isIosMet ? "success" : "danger"}>{deviceInfo.osVersion}</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Secure Storage:</IonLabel>
-              <IonLabel slot="end" color={"primary"}>{isKeyStoreSupported === undefined ? "N/A" : isKeyStoreSupported ? "Yes": "No"}</IonLabel>
-            </IonItem>
+            <RequirementItem
+              name={i18n.t("systemcompatibility.ios.os")}
+              value={`${IOS_MIN_VERSION}+`}
+            />
+            <RequirementItem
+              name={i18n.t("systemcompatibility.ios.youros")}
+              value={`${deviceInfo.osVersion}`}
+              status={
+                isIosMet
+                  ? MetRequirementStatus.MetRequirement
+                  : MetRequirementStatus.NotMetRequirement
+              }
+            />
+            <RequirementItem
+              name={i18n.t("systemcompatibility.ios.storage")}
+              value={
+                isKeyStoreSupported === undefined
+                  ? "N/A"
+                  : isKeyStoreSupported
+                    ? "Yes"
+                    : "No"
+              }
+            />
           </>
         );
       }
     }
-    return <IonItem><IonLabel>No device information available.</IonLabel></IonItem>;
+
+    return (
+      <p className="no-info">{i18n.t("systemcompatibility.noinfo")}</p>
+    );
   };
 
   const pageId = "system-comp-alert-page";
   return (
-    <IonPage className={pageId}>
-      <IonContent>
-        <div className="alert-container">
-          <IonIcon icon={warningOutline} className="warning-icon" />
-          <h2>Operating system outdated</h2>
-          <p>Your device's operating system does not meet the minimum requirements for secure data storage. To protect your information, update is required.</p>
-          <IonList lines="full">
-            {getRequirementsList()}
-          </IonList>
-          <p>Please consider updating your device's OS for the best security experience.</p>
-          <IonButton expand="block" color="light">Contact</IonButton>
-        </div>
-      </IonContent>
-    </IonPage>
+    <ScrollablePageLayout
+      activeStatus
+      pageId={pageId}
+    >
+      <div className="alert-container">
+        <IonIcon
+          icon={alertCircleOutline}
+          className="warning-icon"
+        />
+        <h2 className="title">{i18n.t("systemcompatibility.title")}</h2>
+        <p className="description">
+          {i18n.t("systemcompatibility.description")}
+        </p>
+        <CardDetailsBlock className="system-requirements">
+          {getRequirementsList()}
+        </CardDetailsBlock>
+      </div>
+    </ScrollablePageLayout>
   );
 };
 

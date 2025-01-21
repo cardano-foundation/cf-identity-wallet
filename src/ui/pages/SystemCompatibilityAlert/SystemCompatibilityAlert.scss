@@ -1,36 +1,109 @@
 .system-comp-alert-page {
   .alert-container {
     text-align: center;
-    padding: 1.25rem;
+    min-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
-  .alert-container h2 {
-    color: var(--ion-text-color, #000);
+  .title {
+    color: var(--ion-color-neutral-800);
+    margin-top: 1.5rem;
+  }
+
+  .description {
+    color: var(--ion-color-neutral-700);
     margin-top: 1rem;
   }
 
-  .alert-container p {
-    color: var(--ion-text-color-secondary, #666);
-    font-size: 0.875rem;
-    line-height: 1.5;
-  }
+  .system-requirements {
+    width: 100%;
+    margin-top: 1.5rem;
 
-  .alert-container ion-button {
-    margin-top: 0.75rem;
+    .requirement {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      --padding-top: 0.75rem;
+      --padding-bottom: 0.75rem;
+      --min-height: auto;
+    
+      .name {
+        width: 64%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--ion-color-neutral-700);
+    
+        &.md {
+          margin-inline-end: 0;
+        }
+      }
+
+      .requirement-value {
+        color: var(--ion-color-neutral-500);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+      }
+    
+      .status {
+        border-radius: 50%;
+        padding: 0.3125rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        color: var(--ion-color-neutral-100);
+        margin-left: 0.5rem;
+    
+        &.md {
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+    
+        &.met {
+          background: var(--ion-color-card-theme-one);
+        }
+    
+        &.not-met {
+          background: var(--ion-color-error-800);
+        }
+      }
+    
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        --padding-top: 0.5rem;
+        --padding-bottom: 0.5rem;
+    
+        .name {
+          font-size: 0.875rem;
+        }
+    
+        .status {
+          padding: 0.125rem;
+          width: 0.75rem;
+          height: 0.75rem;
+    
+          &.md {
+            margin-inline-start: 0.5rem;
+          }
+        }
+      }
+    }
   }
 
   .contact-button {
-    width: 21.875rem;
-    height: 3.25rem;
-    padding: 0.9375rem 1.5625rem;
-    gap: 0.625rem;
-    border: 50px red;
-    border-radius: 1.875rem;
-    background-color: var(--ion-color-light-grey, #F6F6F6);
-    --background: var(--ion-color-dark-grey);
+    margin-top: 1.5rem;
+    width: 100%;
   }
+
   .warning-icon {
     font-size: 3.25rem;
-    color: var(--ion-color-danger, #d10000);
+    color: var(--ion-color-danger);
+  }
+
+  .no-info {
+    color: var(--ion-color-neutral-500);
   }
 }
