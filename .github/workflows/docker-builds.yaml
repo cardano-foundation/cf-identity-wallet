@@ -55,7 +55,7 @@ jobs:
             set +e
             DOCKER_IMAGES_TARGETS="$( \
               ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
-              ( git log --patch -n1 Earthfile | grep -q "ARG.*global.*KERIA_GIT" ) && \
+              ( git log --patch -n1 Earthfile | grep -q "ARG.*global.*KERIA_" ) && \
               echo idw-keria
             )"
             DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
@@ -70,6 +70,10 @@ jobs:
             DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
                 ( git log --pretty=format:'%h' -n 1 services/credential-server-ui | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
                 echo cred-issuance-ui
+            )"
+            DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
+                ( git log --pretty=format:'%h' -n 1 services/cip45-sample-dapp | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
+                echo cip45-sample-dapp
             )"
             set -e
             STRIPPED_DOCKER_IMAGES_TARGETS=$(echo $DOCKER_IMAGES_TARGETS | tr -s ' ' | sed -e 's|^ ||' -e 's| $||')
@@ -95,7 +99,9 @@ jobs:
               echo "[+] No changes on any known target-related file, skipping earthly build..."
             fi
           else
+            # if the workflow was triggered manually, we force the build
             if [ ${{github.event_name}} == "workflow_dispatch" ]; then FORCE_BUILD="--FORCE_BUILD=true"; fi
+
             earthly +docker-publish \
             ${FORCE_BUILD} \
             --PUSH=true \
