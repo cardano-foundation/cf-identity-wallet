@@ -371,6 +371,8 @@ class Agent {
   }
 
   async devPreload() {
+
+    console.log("devPreload")
     const APP_PASSSCODE_DEV_MODE = "111111";
 
     try {

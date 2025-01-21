@@ -20,8 +20,6 @@ jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
 describe("Secure storage service (secure enclave/TEE)", () => {
   test("will throw if an item is missing from the secure storage or return the value if not", async () => {
     await expect(SecureStorage.get(EXISTING_KEY)).resolves.toEqual(EXISTING_VALUE);
-    await expect(SecureStorage.get(NON_EXISTING_KEY)).rejects.toThrow(
-      `${SecureStorage.KEY_NOT_FOUND} ${NON_EXISTING_KEY}`
-    );
+    await expect(SecureStorage.get(NON_EXISTING_KEY)).resolves.toBeNull()
   });
 });

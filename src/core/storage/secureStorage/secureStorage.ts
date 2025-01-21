@@ -12,14 +12,19 @@ enum KeyStoreKeys {
 
 class SecureStorage {
   static readonly KEY_NOT_FOUND =
-    "Secure Storage does not contain an item with specified key";
+    "Item with given key does not exist";
 
-  static async get(key: string): Promise<string> {
-    const result = await SecureStoragePlugin.get({ key });
-    if (!result || result.value === null) {
-      throw new Error(`${SecureStorage.KEY_NOT_FOUND} ${key}`);
+  static async get(key: string): Promise<string | null> {
+    try {
+      const result = await SecureStoragePlugin.get({ key });
+      return result.value;
+    } catch (e) {
+      const error = e as { message?: string };
+      if (!error.message?.includes(SecureStorage.KEY_NOT_FOUND)) {
+        throw new Error(JSON.stringify(e));
+      }
+      return null;
     }
-    return result.value;
   }
 
   static async set(key: string, value: string): Promise<void> {
@@ -27,8 +32,8 @@ class SecureStorage {
   }
 
   static async delete(key: string) {
-    const result = await SecureStoragePlugin.get({ key });
-    if (result && result.value !== null) {
+    const result = await this.get(key);
+    if (result) {
       await SecureStoragePlugin.remove({ key });
     }
   }
@@ -44,6 +49,4 @@ class SecureStorage {
   }
 }
 
-// This is just to allow us to make change libs if needed without refactoring other code.
-export type { DataType as SecureStorageItem };
 export { SecureStorage, KeyStoreKeys };
