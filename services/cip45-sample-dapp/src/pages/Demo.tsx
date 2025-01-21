@@ -24,10 +24,11 @@ const Demo: React.FC = () => {
     IWalletInfoExtended
     >(defautlWallet);
 
+  // @ts-ignore: TS6133
   const [onPeerConnectAccept, setOnPeerConnectAccept] = useState(() => () => {
     /*TODO */
   });
-  // @ts-ignore
+  // @ts-ignore: TS6133
   const [onPeerConnectReject, setOnPeerConnectReject] = useState(() => () => {
     /*TODO */
   });
@@ -92,6 +93,7 @@ const Demo: React.FC = () => {
     }
   }, []);
 
+  // @ts-ignore: TS6133
   const onAcceptConnection = async () => {
     setError('');
   }
