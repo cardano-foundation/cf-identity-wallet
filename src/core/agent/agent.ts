@@ -374,24 +374,14 @@ class Agent {
   async devPreload() {
     const APP_PASSSCODE_DEV_MODE = "111111";
 
-    try {
-      const appPasscode = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-      if (!appPasscode) {
-        await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
-      }
-    } catch (error) {
-      const typedError = error as Error;
-      console.error("Unexpected error when checking APP_PASSCODE:", typedError);
+    const appPasscode = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+    if (!appPasscode) {
+      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
     }
 
-    try {
-      const appSignifyBran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
-      if (!appSignifyBran) {
-        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
-      }
-    } catch (error) {
-      const typedError = error as Error;
-      console.error("Unexpected error when checking SIGNIFY_BRAN:", typedError);
+    const appSignifyBran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    if (!appSignifyBran) {
+      await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
     }
 
     await this.basicStorage.createOrUpdateBasicRecord(
