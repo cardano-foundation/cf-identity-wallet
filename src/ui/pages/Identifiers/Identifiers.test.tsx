@@ -134,7 +134,7 @@ describe("Identifiers Tab", () => {
     store.dispatch(setIdentifiersFilters(IdentifiersFilters.All));
   });
 
-  test.skip("Renders favourites in Identifiers", () => {
+  test("Renders favourites in Identifiers", () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={mockedStore}>
@@ -169,7 +169,7 @@ describe("Identifiers Tab", () => {
     ).toBeInTheDocument();
   });
 
-  test.skip("Renders Identifiers Filters", () => {
+  test("Renders Identifiers Filters", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={mockedStore}>

@@ -1,14 +1,14 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { Alert } from "./Alert";
 
-describe("ConnectionDetails Page", () => {
+describe("Render alert", () => {
   const isOpen = true;
   const setIsOpen = jest.fn();
   const actionConfirm = jest.fn();
   const actionCancel = jest.fn();
   const actionDismiss = jest.fn();
 
-  test.skip("Open and close ConnectionDetails", async () => {
+  test("Render", async () => {
     const { getByText } = render(
       <Alert
         isOpen={isOpen}
@@ -23,7 +23,9 @@ describe("ConnectionDetails Page", () => {
       />
     );
 
-    expect(getByText("Header")).toBeVisible();
+    await waitFor(() => {
+      expect(getByText("Header")).toBeVisible();
+    })
     expect(getByText("Confirm")).toBeVisible();
     expect(getByText("Cancel")).toBeVisible();
   });
