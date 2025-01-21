@@ -2,7 +2,7 @@ VERSION 0.8
 
 IMPORT --allow-privileged github.com/cardano-foundation/cf-gha-workflows/./earthfiles/functions:main AS functions
 
-ARG --global DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui"
+ARG --global DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui cip45-sample-dapp"
 
 ARG --global DOCKER_IMAGES_PREFIX="cf"
 ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
@@ -78,6 +78,7 @@ idw-keria:
 
     DO functions+DOCKER_TAG_N_PUSH \
        --PUSH=$PUSH \
+       --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
        --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
        --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keria-${KERIA_UPSTREAM_TAG}"
   END
@@ -110,6 +111,7 @@ idw-witness:
     END
     DO functions+DOCKER_TAG_N_PUSH \
        --PUSH=$PUSH \
+       --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
        --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
        --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keri-${KERI_DOCKER_IMAGE_TAG}"
   END
@@ -127,6 +129,7 @@ cred-issuance:
   END
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
@@ -143,5 +146,26 @@ cred-issuance-ui:
   END
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
+     --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
+
+cip45-sample-dapp:
+  ARG EARTHLY_TARGET_NAME
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
+  LOCALLY
+  # do not push this image to the public docker hub
+  LET DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES} | sed 's|hub.docker.com||g')"
+
+  WAIT
+    FROM DOCKERFILE ./services/cip45-sample-dapp
+  END
+  WAIT
+    DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"
+    SAVE IMAGE ${DOCKER_IMAGE_NAME}
+  END
+  DO functions+DOCKER_TAG_N_PUSH \
+     --PUSH=$PUSH \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"

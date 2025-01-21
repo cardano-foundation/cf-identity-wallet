@@ -10,6 +10,7 @@ import { store } from "../store";
 import { showGenericError, showNoWitnessAlert } from "../store/reducers/stateCache";
 import { App } from "./App";
 import { OperationType } from "./globals/types";
+import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "./globals/constants";
 
 const mockInitDatabase = jest.fn();
 const getAvailableWitnessesMock = jest.fn();
@@ -87,6 +88,15 @@ jest.mock("../core/agent/agent", () => ({
         ),
       },
     },
+  },
+}));
+
+const getDeviceInfo = jest.fn();
+
+jest.mock("@capacitor/device", () => ({
+  ...jest.requireActual("@capacitor/device"),
+  Device: {
+    getInfo: () => getDeviceInfo()
   },
 }));
 
@@ -230,6 +240,18 @@ describe("App", () => {
     mockInitDatabase.mockClear();
     getPlatformsMock.mockImplementation(() => ["android"]);
     getAvailableWitnessesMock.mockClear();
+
+    const deviceInfo = {
+      platform: "ios",
+      osVersion: "18.0",
+      model: "",
+      operatingSystem: "ios",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
   });
 
   test("Mobile header hidden when app not in preview mode", async () => {
@@ -711,3 +733,91 @@ describe("Witness availability", () => {
     });
   });
 });
+
+describe("System copatibility alert", () => {
+  beforeEach(() => {
+    isNativeMock.mockImplementation(() => true);
+    mockInitDatabase.mockClear();
+    getPlatformsMock.mockImplementation(() => ["android"]);
+    getAvailableWitnessesMock.mockClear();
+  });
+
+  afterEach(() => {
+    getDeviceInfo.mockClear();
+  })
+
+  test("Android", async () => {
+    const deviceInfo = {
+      platform: "android",
+      osVersion: "9.0",
+      model: "",
+      operatingSystem: "android",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
+
+    const {getByTestId, getByText} = render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getDeviceInfo).toBeCalled();
+    })
+
+    expect(getByText(Eng_Trans.systemcompatibility.title)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.os)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.youros)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.webview)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.yourwebview)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.storage)).toBeVisible();
+
+    expect(getByText("9.0")).toBeVisible();
+    expect(getByText("131.0.6778.260")).toBeVisible();
+    expect(getByText(`${ANDROID_MIN_VERSION}+`)).toBeVisible();
+    expect(getByText(`${WEBVIEW_MIN_VERSION}+`)).toBeVisible();
+    expect(getByText("N/A")).toBeVisible();
+
+    expect(getByTestId("met")).toBeVisible();
+    expect(getByTestId("not-met")).toBeVisible();
+  });
+
+  test("Ios", async () => {
+    const deviceInfo = {
+      platform: "ios",
+      osVersion: "11.0",
+      model: "",
+      operatingSystem: "ios",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
+
+    const {getByTestId, getByText} = render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getDeviceInfo).toBeCalled();
+    })
+
+    expect(getByText(Eng_Trans.systemcompatibility.title)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.ios.os)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.ios.youros)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.ios.storage)).toBeVisible();
+
+    expect(getByText("11.0")).toBeVisible();
+    expect(getByText(`${IOS_MIN_VERSION}+`)).toBeVisible();
+    expect(getByText("N/A")).toBeVisible();
+
+    expect(getByTestId("not-met")).toBeVisible();
+  });
+})

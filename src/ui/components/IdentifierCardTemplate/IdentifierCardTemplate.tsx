@@ -1,5 +1,5 @@
 import { i18n } from "../../../i18n";
-import KERILogo from "../../../ui/assets/images/keri-aid.svg";
+import KERILogo from "../../../ui/assets/images/keri-aid.png";
 import { formatShortDate } from "../../utils/formatters";
 import { getTheme } from "../../utils/theme";
 import { CardTheme } from "../CardTheme";
