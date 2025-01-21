@@ -23,8 +23,7 @@ const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => mockGet(options.key),
-    set: jest.fn(() => Promise.resolve({ value: true })),
-    remove: jest.fn(() => Promise.resolve({ value: true })),
+    set: jest.fn(() => Promise.resolve({ value: true }))
   },
 }));
 

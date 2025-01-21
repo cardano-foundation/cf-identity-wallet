@@ -27,15 +27,12 @@ mockIonicReact();
 jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: jest.fn((options: { key: string }) => {
-
       if (options.key === KeyStoreKeys.APP_PASSCODE) {
         return { value: "111111" };
       }
-
       return null;
     }),
-    set: jest.fn(() => Promise.resolve({ value: true })),
-    remove: jest.fn(() => Promise.resolve({ value: true })),
+    set: jest.fn(() => Promise.resolve({ value: true }))
   },
 }));
 

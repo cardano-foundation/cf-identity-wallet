@@ -1,7 +1,5 @@
 import { SecureStoragePlugin } from "@jimcase/capacitor-secure-storage-plugin";
 
-export type DataType = string | number | boolean | Record<string, unknown> | unknown[] | Date;
-
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
   APP_OP_PASSWORD = "app-operations-password",

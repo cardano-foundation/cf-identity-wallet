@@ -80,16 +80,6 @@ jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   },
 }));
 
-/*
-const getMock = jest.fn();
-
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: () => getMock(),
-    remove: jest.fn(),
-  },
-}));
-*/
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialStateFull = {

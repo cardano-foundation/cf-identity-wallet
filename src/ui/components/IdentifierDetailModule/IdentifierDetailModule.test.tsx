@@ -57,9 +57,7 @@ const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 
 jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
-    get: (options: { key: string }) => getMock(options.key),
-    set: jest.fn(() => Promise.resolve({ value: true })),
-    remove: jest.fn(() => Promise.resolve({ value: true })),
+    get: (options: { key: string }) => getMock(options.key)
   },
 }));
 
