@@ -1,9 +1,6 @@
 PODS:
   - AparajitaCapacitorBiometricAuth (8.0.2):
     - Capacitor
-  - AparajitaCapacitorSecureStorage (6.0.1):
-    - Capacitor
-    - KeychainSwift (~> 21.0)
   - Capacitor (6.1.2):
     - CapacitorCordova
   - CapacitorApp (6.0.1):
@@ -70,7 +67,9 @@ PODS:
   - GoogleUtilitiesComponents (1.1.0):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (3.5.0)
-  - KeychainSwift (21.0.0)
+  - JimcaseCapacitorSecureStoragePlugin (3.1.4):
+    - Capacitor
+    - SimpleKeychain
   - MLImage (1.0.0-beta5)
   - MLKitBarcodeScanning (4.0.0):
     - MLKitCommon (~> 10.0)
@@ -95,6 +94,7 @@ PODS:
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
   - PromisesObjC (2.4.0)
+  - SimpleKeychain (1.2.0)
   - SQLCipher (4.5.5):
     - SQLCipher/standard (= 4.5.5)
   - SQLCipher/common (4.5.5)
@@ -104,7 +104,6 @@ PODS:
 
 DEPENDENCIES:
   - "AparajitaCapacitorBiometricAuth (from `../../node_modules/@aparajita/capacitor-biometric-auth`)"
-  - "AparajitaCapacitorSecureStorage (from `../../node_modules/@aparajita/capacitor-secure-storage`)"
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
@@ -120,6 +119,7 @@ DEPENDENCIES:
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+  - "JimcaseCapacitorSecureStoragePlugin (from `../../node_modules/@jimcase/capacitor-secure-storage-plugin`)"
 
 SPEC REPOS:
   trunk:
@@ -129,21 +129,19 @@ SPEC REPOS:
     - GoogleUtilities
     - GoogleUtilitiesComponents
     - GTMSessionFetcher
-    - KeychainSwift
     - MLImage
     - MLKitBarcodeScanning
     - MLKitCommon
     - MLKitVision
     - nanopb
     - PromisesObjC
+    - SimpleKeychain
     - SQLCipher
     - ZIPFoundation
 
 EXTERNAL SOURCES:
   AparajitaCapacitorBiometricAuth:
     :path: "../../node_modules/@aparajita/capacitor-biometric-auth"
-  AparajitaCapacitorSecureStorage:
-    :path: "../../node_modules/@aparajita/capacitor-secure-storage"
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorApp:
@@ -174,10 +172,11 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
+  JimcaseCapacitorSecureStoragePlugin:
+    :path: "../../node_modules/@jimcase/capacitor-secure-storage-plugin"
 
 SPEC CHECKSUMS:
   AparajitaCapacitorBiometricAuth: c058563fe00160e12b022341e11b3181357ea93a
-  AparajitaCapacitorSecureStorage: 18190f233b0531422af8c1caa51804686d940ee0
   Capacitor: 69c7f687aabb8d85e543497411e40638b5cc08c0
   CapacitorApp: f51c08c64df914fc934239fd1b3fc809d62a02f6
   CapacitorBrowser: 80345fe3b83664d2f953e9fe102a996df73ec809
@@ -199,16 +198,17 @@ SPEC CHECKSUMS:
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  KeychainSwift: 4a71a45c802fd9e73906457c2dcbdbdc06c9419d
+  JimcaseCapacitorSecureStoragePlugin: 35edf4b2ce2b47d921f063ab618c49d90f12522c
   MLImage: 1824212150da33ef225fbd3dc49f184cf611046c
   MLKitBarcodeScanning: 9cb0ec5ec65bbb5db31de4eba0a3289626beab4e
   MLKitCommon: afcd11b6c0735066a0dde8b4bf2331f6197cbca2
   MLKitVision: 90922bca854014a856f8b649d1f1f04f63fd9c79
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 49fdcdd1abdd8b4ef1a195a7bf97733bb8d1ef37
+PODFILE CHECKSUM: aae1e2e2833472876185fb9b74b153b0a5c49ad7
 
 COCOAPODS: 1.16.2

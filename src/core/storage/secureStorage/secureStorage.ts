@@ -27,12 +27,9 @@ class SecureStorage {
   }
 
   static async delete(key: string) {
-    try {
+    const result = await SecureStoragePlugin.get({ key });
+    if (result && result.value !== null) {
       await SecureStoragePlugin.remove({ key });
-    } catch (error) {
-      if (!(error instanceof Error) || !error.message.includes("Item with given key does not exist")) {
-        throw error;
-      }
     }
   }
 

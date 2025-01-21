@@ -372,55 +372,48 @@ class Agent {
 
   async devPreload() {
     const APP_PASSSCODE_DEV_MODE = "111111";
+
     try {
       await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
     } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
-      ) {
-        await SecureStorage.set(
-          KeyStoreKeys.APP_PASSCODE,
-          APP_PASSSCODE_DEV_MODE
-        );
+      const typedError = error as Error;
+      if (typedError.message.includes(`${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`)) {
+        await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
       } else {
-        throw error;
+        console.error("Unexpected error when checking APP_PASSCODE:", typedError);
       }
     }
 
     try {
       await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
     } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
-      ) {
-        await SecureStorage.set(
-          KeyStoreKeys.SIGNIFY_BRAN,
-          randomPasscode().substring(0, 21)
-        );
+      const typedError = error as Error;
+      if (typedError.message.includes(`${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`)) {
+        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
       } else {
-        throw error;
+        console.error("Unexpected error when checking SIGNIFY_BRAN:", typedError);
       }
     }
 
-    await this.basicStorage.createOrUpdateBasicRecord(
-      new BasicRecord({
-        id: MiscRecordId.APP_ALREADY_INIT,
-        content: {
-          initialized: true,
-        },
-      })
-    );
+    try {
+      await this.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_ALREADY_INIT,
+          content: {
+            initialized: true,
+          },
+        })
+      );
 
-    await this.basicStorage.createOrUpdateBasicRecord(
-      new BasicRecord({
-        id: MiscRecordId.APP_PASSWORD_SKIPPED,
-        content: { value: true },
-      })
-    );
+      await this.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_PASSWORD_SKIPPED,
+          content: { value: true },
+        })
+      );
+    } catch (error) {
+      console.error("Error setting initialization records in dev mode:", error);
+    }
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
