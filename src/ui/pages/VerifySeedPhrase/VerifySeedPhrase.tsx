@@ -53,7 +53,7 @@ const VerifySeedPhrase = () => {
 
   useEffect(() => {
     sortSeedPhrase();
-  }, []);
+  }, [sortSeedPhrase]);
 
   const handleClearSelected = () => {
     setSeedPhraseSelected([]);

@@ -17,7 +17,7 @@ const ErrorMessage = ({ message, timeout, action }: ErrorMessageProps) => {
         clearTimeout(timer);
       };
     }
-  }, []);
+  }, [timeout]);
 
   return (
     <>

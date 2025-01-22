@@ -17,6 +17,7 @@ import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { InputRequest } from "./InputRequest";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
+import { ModalMockProps } from "../../globals/test-types";
 
 const connectByOobiUrl = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
@@ -66,7 +67,7 @@ jest.mock("../CustomInput", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: ModalMockProps) => children,
 }));
 
 jest.mock("signify-ts", () => ({

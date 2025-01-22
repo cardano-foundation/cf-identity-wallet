@@ -1,11 +1,11 @@
 import { Salter } from "signify-ts";
-import { ConnectionStatus, KeriConnectionType } from "../agent.types";
-import { ConnectionService } from "./connectionService";
-import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
-import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConnectionStatus, KeriConnectionType } from "../agent.types";
+import { CoreEventEmitter } from "../event";
 import { EventTypes } from "../event.types";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConnectionService } from "./connectionService";
 import {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
@@ -107,7 +107,7 @@ const signifyClient = jest.mocked({
 const eventEmitter = new CoreEventEmitter();
 
 const agentServicesProps = {
-  signifyClient: signifyClient as any,
+  signifyClient: signifyClient as never,
   eventEmitter,
 };
 
@@ -146,10 +146,10 @@ const identifiers = jest.mocked({
 
 const connectionService = new ConnectionService(
   agentServicesProps,
-  connectionStorage as any,
-  credentialStorage as any,
-  operationPendingStorage as any,
-  identifiers as any
+  connectionStorage as never,
+  credentialStorage as never,
+  operationPendingStorage as never,
+  identifiers as never
 );
 
 jest.mock("uuid", () => {

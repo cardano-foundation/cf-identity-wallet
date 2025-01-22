@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import "./IncomingRequest.scss";
 import { SidePageContentProps } from "../../components/SidePage/SidePage.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -36,6 +36,18 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const ANIMATION_DELAY = 4000;
   const [blur, setBlur] = useState(false);
 
+
+
+  const handleReset = useCallback(() => {
+    setInitiateAnimation(false);
+    setOpenPage(false);
+    setBlur(false);
+
+    setTimeout(() => {
+      dispatch(dequeueIncomingRequest());
+    }, 500);
+  }, [dispatch, setOpenPage]);
+
   // After the current refactoring we are defaulting all incoming requests to be
   // of type IncomingRequestType.PEER_CONNECT_SIGN because of the lack of other use cases.
   // Before the refactoring we had 3 use cases, so the JSX was rendering a component
@@ -56,7 +68,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     }
     setRequestData(incomingRequest);
     setOpenPage(true);
-  }, [connectedWallet, incomingRequest, setOpenPage]);
+  }, [connectedWallet, handleReset, incomingRequest, setOpenPage]);
 
   useEffect(() => {
     if (blur) {
@@ -65,16 +77,6 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       document?.querySelector("ion-router-outlet")?.classList.remove("blur");
     }
   }, [blur]);
-
-  const handleReset = () => {
-    setInitiateAnimation(false);
-    setOpenPage(false);
-    setBlur(false);
-
-    setTimeout(() => {
-      dispatch(dequeueIncomingRequest());
-    }, 500);
-  };
 
   const handleCancel = async () => {
     if (!incomingRequest) {

@@ -5,7 +5,6 @@ import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
-  getIdentifiersCache,
   getMultiSigGroupCache,
   removeIdentifierCache,
   setScanGroupId
@@ -37,7 +36,6 @@ const SetupConnections = ({
   preventRedirect,
   isModalOpen,
 }: IdentifierStageProps) => {
-  const identifierData = useAppSelector(getIdentifiersCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -55,7 +53,7 @@ const SetupConnections = ({
   const [initiated, setInitiated] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [alertDeleteOpen, setAlertDeleteOpen] = useState(false);
-  const [scannedConections, setScannedConnections] = useState<
+  const [scannedConnections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
 
@@ -80,9 +78,29 @@ const SetupConnections = ({
     } catch (e) {
       showError("Unable to fetch Oobi", e, dispatch);
     }
-  }, [groupId, userName, dispatch]);
+  }, [identifierId, userName, groupId, dispatch]);
 
   useOnlineStatusEffect(fetchOobi);
+
+  const handleInitiateMultiSig = useCallback(() => {
+    const theme = getTheme(resumeMultiSig?.theme || 0);
+
+    dispatch(setCurrentOperation(OperationType.IDLE));
+    setState((prevState) => ({
+      ...prevState,
+      scannedConections: scannedConnections,
+      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName || "",
+      ourIdentifier: state.ourIdentifier || resumeMultiSig?.id || "",
+      identifierCreationStage: Stage.Members,
+      color: theme.color,
+      selectedTheme: theme.layout,
+    }));
+  }, [dispatch, resumeMultiSig?.displayName, resumeMultiSig?.id, resumeMultiSig?.theme, scannedConnections, setState, state.displayNameValue, state.ourIdentifier]);
+
+  useEffect(() => {
+    if(currentOperation === OperationType.MULTI_SIG_INITIATOR_INIT)
+      handleInitiateMultiSig();
+  }, [currentOperation, handleInitiateMultiSig])
 
   useEffect(() => {
     if (groupId) {
@@ -92,10 +110,7 @@ const SetupConnections = ({
       };
       updateConnections();
     }
-
-    currentOperation === OperationType.MULTI_SIG_INITIATOR_INIT &&
-      handleInitiateMultiSig();
-  }, [groupMetadata, currentOperation, groupId, multiSigGroupCache]);
+  }, [groupMetadata, groupId, multiSigGroupCache]);
 
   const handleDone = () => {
     resetModal && resetModal();
@@ -108,7 +123,7 @@ const SetupConnections = ({
   };
 
   const handleScanButton = () => {
-    scannedConections.length >= 1 ? handleInitiateScan() : setAlertIsOpen(true);
+    scannedConnections.length >= 1 ? handleInitiateScan() : setAlertIsOpen(true);
   };
 
   const handleInitiateScan = () => {
@@ -120,21 +135,6 @@ const SetupConnections = ({
       )
     );
     setInitiated(true);
-  };
-
-  const handleInitiateMultiSig = () => {
-    const theme = getTheme(resumeMultiSig?.theme || 0);
-
-    dispatch(setCurrentOperation(OperationType.IDLE));
-    setState((prevState) => ({
-      ...prevState,
-      scannedConections,
-      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName || "",
-      ourIdentifier: state.ourIdentifier || resumeMultiSig?.id || "",
-      identifierCreationStage: Stage.Members,
-      color: theme.color,
-      selectedTheme: theme.layout,
-    }));
   };
 
   const openDeleteConfirm = () => {
@@ -169,7 +169,7 @@ const SetupConnections = ({
 
   return (
     <>
-      {resumeMultiSig || initiated || scannedConections?.length ? (
+      {resumeMultiSig || initiated || scannedConnections?.length ? (
         <SetupConnectionBodyResume
           componentId={componentId}
           handleDone={handleDone}
@@ -177,7 +177,7 @@ const SetupConnections = ({
           oobi={oobi}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
-          scannedConections={scannedConections}
+          scannedConections={scannedConnections}
           handleDelete={openDeleteConfirm}
         />
       ) : (
@@ -187,7 +187,7 @@ const SetupConnections = ({
           oobi={oobi}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
-          scannedConections={scannedConections}
+          scannedConections={scannedConnections}
           handleDelete={openDeleteConfirm}
         />
       )}

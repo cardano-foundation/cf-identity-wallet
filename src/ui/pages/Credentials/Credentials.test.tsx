@@ -23,6 +23,7 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Credentials } from "./Credentials";
 import { CredentialsFilters } from "./Credentials.types";
+import { ModalMockProps } from "../../globals/test-types";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
@@ -48,7 +49,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

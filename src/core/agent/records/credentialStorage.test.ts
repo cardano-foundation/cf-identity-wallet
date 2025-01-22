@@ -15,7 +15,7 @@ const storageService = jest.mocked({
   getAll: jest.fn(),
 });
 
-const credentialStorage = new CredentialStorage(storageService as any);
+const credentialStorage = new CredentialStorage(storageService as never);
 
 const id1 = "id1";
 const id2 = "id2";

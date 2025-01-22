@@ -9,6 +9,7 @@ import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierF
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { IdentifierOptions } from "./IdentifierOptions";
+import { ModalMockProps } from "../../globals/test-types";
 
 const updateMock = jest.fn();
 const oobi =
@@ -109,7 +110,7 @@ describe("Identifier Options modal", () => {
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: ModalMockProps) => children,
 }));
 
 describe("Identifier Options function test", () => {

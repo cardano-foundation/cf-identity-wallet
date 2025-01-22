@@ -9,6 +9,7 @@ import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
+import { ModalMockProps } from "../../globals/test-types";
 
 const identifierCache = [
   {
@@ -61,7 +62,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
+  IonModal: ({ children, isOpen }: ModalMockProps) => (
     <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>
   ),
 }));

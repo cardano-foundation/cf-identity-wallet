@@ -6,6 +6,7 @@ import {
 } from "ionicons/icons";
 import { useState } from "react";
 import { Agent } from "../../../../core/agent/agent";
+import { NotificationRoute } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch } from "../../../../store/hooks";
 import {
@@ -14,10 +15,8 @@ import {
 } from "../../../../store/reducers/notificationsCache";
 import { Alert } from "../../../components/Alert";
 import { OptionItem, OptionModal } from "../../../components/OptionsModal";
-import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
-import { NotificationRoute } from "../../../../core/agent/agent.types";
 import { showError } from "../../../utils/error";
-import { ToastMsgType } from "../../../globals/types";
+import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,

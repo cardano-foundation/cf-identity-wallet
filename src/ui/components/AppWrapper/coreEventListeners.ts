@@ -12,7 +12,7 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
-  deleteNotificationById,
+  deleteNotificationById
 } from "../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
@@ -54,7 +54,7 @@ const identifierAddedHandler = async (
 };
 
 export {
-  notificationStateChanged,
-  signifyOperationStateChangeHandler,
-  identifierAddedHandler,
+  identifierAddedHandler, notificationStateChanged,
+  signifyOperationStateChangeHandler
 };
+

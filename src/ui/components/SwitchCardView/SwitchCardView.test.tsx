@@ -26,7 +26,7 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: () => ({
     ...jest.requireActual("react-router-dom").useHistory,
-    push: (params: any) => historyPushMock(params),
+    push: (params: unknown) => historyPushMock(params),
   }),
 }));
 

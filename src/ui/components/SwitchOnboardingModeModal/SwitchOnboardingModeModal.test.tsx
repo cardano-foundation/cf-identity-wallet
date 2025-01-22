@@ -3,6 +3,7 @@ import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { CheckboxMockProps, ModalMockProps } from "../../globals/test-types";
 import { SwitchOnboardingModeModal } from "./SwitchOnboardingModeModal";
 import { OnboardingMode } from "./SwitchOnboardingModeModal.types";
 
@@ -44,8 +45,8 @@ const storeMocked = {
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: unknown }) => children,
-  IonCheckbox: (props: any) => {
+  IonModal: ({ children }: ModalMockProps) => children,
+  IonCheckbox: (props: CheckboxMockProps) => {
     return <input type="checkbox" data-testid={props["data-testid"]} checked={props.checked} onChange={(event) => {
       props.onIonChange({
         detail: {

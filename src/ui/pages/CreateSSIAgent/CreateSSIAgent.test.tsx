@@ -19,6 +19,7 @@ import {
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { CreateSSIAgent } from "./CreateSSIAgent";
 import { Agent } from "../../../core/agent/agent";
+import { ModalMockProps } from "../../globals/test-types";
 
 const bootAndConnectMock = jest.fn((...args: unknown[]) => Promise.resolve(args));
 const recoverKeriaAgentMock = jest.fn();
@@ -53,7 +54,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, ...props }: any) => {
+  IonModal: ({ children, ...props }: ModalMockProps) => {
     const testId = props["data-testid"];
 
     return <div data-testid={testId}>{children}</div>;

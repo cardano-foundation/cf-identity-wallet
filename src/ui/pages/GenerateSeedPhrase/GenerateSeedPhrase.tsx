@@ -1,6 +1,6 @@
 import { IonButton, IonCheckbox, IonIcon } from "@ionic/react";
 import { informationCircleOutline, refreshOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
@@ -43,7 +43,7 @@ const GenerateSeedPhrase = () => {
   const [openDocument, setOpenDocument] = useState(false);
   const [showSwitchModeModal, setSwitchModeModal] = useState(false);
 
-  const initializeSeedPhrase = async () => {
+  const initializeSeedPhrase = useCallback(async () => {
     setHideSeedPhrase(true);
     if (seedPhraseStore.seedPhrase.length > 0) {
       setSeedPhrase(seedPhraseStore.seedPhrase.split(" "));
@@ -60,13 +60,13 @@ const GenerateSeedPhrase = () => {
         showError("Unable to get mnemonic", e, dispatch);
       }
     }
-  };
+  }, [dispatch, seedPhraseStore.bran, seedPhraseStore.seedPhrase]);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       initializeSeedPhrase();
     }
-  }, [history?.location.pathname]);
+  }, [history?.location.pathname, initializeSeedPhrase]);
 
   const handleClearState = () => {
     setSeedPhrase([]);

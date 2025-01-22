@@ -14,6 +14,7 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { formatShortDate } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Connections } from "./Connections";
+import { InputMockProps, ModalMockProps } from "../../globals/test-types";
 
 const deleteConnectionByIdMock = jest.fn();
 
@@ -51,13 +52,18 @@ jest.mock("@ionic/react", () => {
 
   return {
     ...jest.requireActual("@ionic/react"),
-    IonModal: ({ children, isOpen, ...props }: any) =>
+    IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
       isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
-    IonSearchbar: forwardRef((props: any, ref: any) => {
-      const { onIonInput, onIonFocus, onIonBlur } = props;
-
+    IonSearchbar: forwardRef((props: InputMockProps, ref: never) => {
+      const {
+        onIonInput,
+        onIonFocus,
+        onIonBlur,
+      } = props;
+  
       return (
         <input
+          ref={ref}
           value={props.value}
           data-testid="search-bar"
           onChange={onIonInput}

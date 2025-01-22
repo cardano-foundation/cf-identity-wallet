@@ -7,10 +7,11 @@ import { store } from "../../../../../store";
 import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
 import { OperationType, RequestType } from "../../../../globals/types";
 import { ConnectionsOptionModal } from "./ConnectionsOptionModal";
+import { ModalMockProps } from "../../../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 describe("Connection modal", () => {

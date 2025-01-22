@@ -6,11 +6,11 @@ import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { CredentialDetails } from "../../pages/CredentialDetails";
 import { VerifyPasscode } from "./VerifyPasscode";
-import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 

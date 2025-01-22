@@ -414,11 +414,12 @@ const CredentialDetailModule = ({
 
   const resetOperation = () =>
     dispatch(setCurrentOperation(OperationType.IDLE));
-
+  const handleCloseConnectionDetails = useCallback(() => setOpenConnectionlModal(false), []);
+  
   return openConnectionlModal && connectionShortDetails ? (
     <ConnectionDetails
       connectionShortDetails={connectionShortDetails}
-      handleCloseConnectionModal={() => setOpenConnectionlModal(false)}
+      handleCloseConnectionModal={handleCloseConnectionDetails}
     />
   ) : (
     <>

@@ -138,7 +138,7 @@ const operationPendingStorage = jest.mocked({
 
 const eventEmitter = new CoreEventEmitter();
 const agentServicesProps = {
-  signifyClient: signifyClient as any,
+  signifyClient: signifyClient as never,
   eventEmitter,
 };
 
@@ -155,11 +155,11 @@ const identifiers = jest.mocked({
 
 const multiSigService = new MultiSigService(
   agentServicesProps,
-  identifierStorage as any,
-  operationPendingStorage as any,
-  notificationStorage as any,
-  connections as any,
-  identifiers as any
+  identifierStorage as never,
+  operationPendingStorage as never,
+  notificationStorage as never,
+  connections as never,
+  identifiers as never
 );
 
 const now = new Date();
@@ -190,7 +190,7 @@ describe("Oobi/endrole", () => {
       .mockResolvedValue(memberMetadataRecord);
     connections.resolveOobi.mockResolvedValue(resolvedOobiOpResponse);
 
-    identifiersCreateMock.mockImplementation((name, _config) => {
+    identifiersCreateMock.mockImplementation((name) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}`, done: true };
@@ -377,7 +377,7 @@ describe("Creation of multi-sig", () => {
       .mockResolvedValue(memberMetadataRecord);
     connections.resolveOobi.mockResolvedValue(resolvedOobiOpResponse);
 
-    identifiersCreateMock.mockImplementation((name, _config) => {
+    identifiersCreateMock.mockImplementation((name) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}`, done: false };
@@ -437,8 +437,10 @@ describe("Creation of multi-sig", () => {
       },
     });
 
-    (memberMetadataRecord.groupMetadata as any).groupCreated = false;
-    identifiersCreateMock.mockImplementation((name, _config) => {
+    if(memberMetadataRecord.groupMetadata)
+      memberMetadataRecord.groupMetadata.groupCreated = false;
+
+    identifiersCreateMock.mockImplementation((name) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}1`, done: false };
@@ -472,8 +474,10 @@ describe("Creation of multi-sig", () => {
       })
     );
 
-    (memberMetadataRecord.groupMetadata as any).groupCreated = false;
-    identifiersCreateMock.mockImplementation((name, _config) => {
+    if(memberMetadataRecord.groupMetadata)
+      memberMetadataRecord.groupMetadata.groupCreated = false;
+
+    identifiersCreateMock.mockImplementation((name) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}2`, done: false };
@@ -508,7 +512,9 @@ describe("Creation of multi-sig", () => {
       })
     );
 
-    (memberMetadataRecord.groupMetadata as any).groupCreated = false;
+    if(memberMetadataRecord.groupMetadata)
+      memberMetadataRecord.groupMetadata.groupCreated = false;
+
     const invalidOtherIdentifiers = [
       {
         id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
@@ -563,7 +569,7 @@ describe("Creation of multi-sig", () => {
       .fn()
       .mockResolvedValue([resolvedOobiOpResponse]);
     notificationStorage.deleteById = jest.fn().mockResolvedValue("id");
-    identifiersCreateMock.mockImplementationOnce((name, _config) => {
+    identifiersCreateMock.mockImplementationOnce((name) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}`, done: false };
@@ -619,7 +625,7 @@ describe("Creation of multi-sig", () => {
       },
     });
 
-    identifiersCreateMock.mockImplementationOnce((name, _config) => {
+    identifiersCreateMock.mockImplementationOnce((name) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}`, done: true };
@@ -684,7 +690,7 @@ describe("Creation of multi-sig", () => {
     identifiers.getIdentifiers = jest
       .fn()
       .mockResolvedValue([memberIdentifierRecord]);
-    identifiersCreateMock.mockImplementation((name, _config) => {
+    identifiersCreateMock.mockImplementation((name) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}`, done: false };

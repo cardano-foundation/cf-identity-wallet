@@ -11,6 +11,7 @@ import {
 } from "../../../__fixtures__/credsFix";
 import { filteredIdentifierMapFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../__fixtures__/identifierFix";
+import { ModalMockProps } from "../../../globals/test-types";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { CredentialContent } from "./CredentialContent";
 
@@ -32,7 +33,7 @@ const getIndentifier = jest.fn(() => identifierFix[0]);
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

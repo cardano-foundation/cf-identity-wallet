@@ -5,6 +5,7 @@ import { i18n } from "../../../i18n";
 import { combineClassNames } from "../../utils/style";
 import "./SeedPhraseModule.scss";
 import {
+  IonInputRef,
   SeedPhraseModuleProps,
   SeedPhraseModuleRef,
 } from "./SeedPhraseModule.types";
@@ -31,7 +32,7 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
     },
     ref
   ) => {
-    const seedInputs = useRef<(HTMLElement | null)[]>([]);
+    const seedInputs = useRef<(IonInputRef | null)[]>([]);
     usePrivacyScreen();
 
     useImperativeHandle(ref, () => ({
@@ -39,7 +40,7 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
         const input = seedInputs.current.at(index);
         if (!input) return;
 
-        (input as any).setFocus();
+        (input as IonInputRef).setFocus();
       },
     }));
 

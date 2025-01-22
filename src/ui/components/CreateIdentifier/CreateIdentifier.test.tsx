@@ -15,28 +15,30 @@ import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierF
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CreateIdentifier } from "./CreateIdentifier";
+import { ModalMockProps } from "../../globals/test-types";
 
 setupIonicReact();
 mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
+  IonModal: ({ children, isOpen }: ModalMockProps) => (
     <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>
   ),
 }));
 
-const mockGetMultisigConnection = jest.fn((args: any) =>
-  Promise.resolve([] as ConnectionDetails[])
-);
-const createIdentifierMock = jest.fn();
-const markIdentifierPendingCreateMock = jest.fn((args: unknown) => ({}));
+const mockGetMultisigConnection = jest.fn<Promise<unknown[]>, string[]>(() => Promise.resolve(([] as ConnectionDetails[])));
+const createIdentifierMock = jest.fn<object, unknown[]>(() => ({
+  identifier: "mock-id",
+  isPending: true,
+}));
+const markIdentifierPendingCreateMock = jest.fn<object, unknown[]>(() => ({}));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getMultisigLinkedContacts: (args: any) =>
+        getMultisigLinkedContacts: (args: never) =>
           mockGetMultisigConnection(args),
       },
       identifiers: {
@@ -61,7 +63,7 @@ const addKeyboardEventMock = jest.fn();
 
 jest.mock("@capacitor/keyboard", () => ({
   Keyboard: {
-    addListener: (...params: any[]) => addKeyboardEventMock(...params),
+    addListener: (...params: never[]) => addKeyboardEventMock(...params),
   },
 }));
 
@@ -101,10 +103,8 @@ jest.mock("../CustomInput", () => ({
 describe("Create Identifier modal", () => {
   const mockStore = configureStore();
   beforeEach(() => {
-    mockGetMultisigConnection.mockImplementation((): any =>
-      Promise.resolve([] as ConnectionDetails[])
-    );
-    createIdentifierMock.mockImplementation((args: unknown) => ({
+    mockGetMultisigConnection.mockImplementation(() => Promise.resolve(([] as ConnectionDetails[])))
+    createIdentifierMock.mockImplementation(() => ({
       identifier: "mock-id",
       isPending: true,
     }));

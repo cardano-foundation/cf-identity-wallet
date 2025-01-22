@@ -146,8 +146,8 @@ const addKeyboardEventMock = jest.fn();
 
 jest.mock("@capacitor/keyboard", () => ({
   Keyboard: {
-    addListener: (...params: any[]) => addKeyboardEventMock(...params),
-    hide: jest.fn(),
+    addListener: (...params: unknown[]) => addKeyboardEventMock(...params),
+    hide: jest.fn()
   },
 }));
 
@@ -408,9 +408,9 @@ describe("App", () => {
   test("Show error when unhandledrejection event fired", async () => {
     const spy = jest
       .spyOn(window, "addEventListener")
-      .mockImplementation((type, listener: any) => {
+      .mockImplementation((type, listener: unknown) => {
         if (type === "unhandledrejection") {
-          listener({
+          (listener as (args: object) => void)({
             preventDefault: jest.fn(),
             promise: Promise.reject(new Error("Failed")),
           });
@@ -433,9 +433,9 @@ describe("App", () => {
   test("Show error when error fired", async () => {
     const spy = jest
       .spyOn(window, "addEventListener")
-      .mockImplementation((type, listener: any) => {
+      .mockImplementation((type, listener: unknown) => {
         if (type === "error") {
-          listener({
+          (listener as (args: object) => void)({
             preventDefault: jest.fn(),
             error: new Error("Failed"),
           });

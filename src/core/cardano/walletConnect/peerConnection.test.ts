@@ -30,7 +30,6 @@ jest.mock("../../agent/agent", () => ({
   },
 }));
 const EXISTING_KEY = "keythatexists";
-const NON_EXISTING_KEY = "keythatdoesnotexist";
 const EXISTING_VALUE: DataType = "valuethatexists";
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
