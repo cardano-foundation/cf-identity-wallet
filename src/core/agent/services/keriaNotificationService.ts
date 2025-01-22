@@ -446,18 +446,18 @@ class KeriaNotificationService extends AgentService {
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
     const telStatus = (await this.props.signifyClient
       .credentials()
-      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d)).et; 
+      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d)).et;
+    
+    const oldGrantNotifications = await this.notificationStorage.findAllByQuery({
+      credentialId: exchange.exn.e.acdc.d,
+    });
 
     // IPEX messages and TEL updates are not strictly ordered, so this will put to the failed notifications queue to re-process out of order
-    if (existingCredential && telStatus === Ilks.iss) {
+    if (telStatus === Ilks.iss && (existingCredential || oldGrantNotifications.length > 0)) {
       throw new Error(`${KeriaNotificationService.DUPLICATE_ISSUANCE}: [grant: ${exchange.exn.d}] [credential: ${exchange.exn.e.acdc.d}]`);
     }
 
     if (telStatus === Ilks.rev) {
-      const oldGrantNotifications = await this.notificationStorage.findAllByQuery({
-        credentialId: exchange.exn.e.acdc.d,
-      });
-
       for (const notificationRecord of oldGrantNotifications) {
         await this.deleteNotificationRecordById(
           notificationRecord.id,
