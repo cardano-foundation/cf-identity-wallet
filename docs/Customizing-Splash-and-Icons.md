@@ -1,29 +1,19 @@
-## Splashscreen and Icons
+## Splashscreen and Icons  
 
-To customize the app icons and splash screens, the Identity Wallet uses the [@capacitor/assets](https://github.com/ionic-team/capacitor-assets) package.
+To customize the app icons and splash screens, the Identity Wallet uses the [@capacitor/assets](https://github.com/ionic-team/capacitor-assets) package.  
 
-### Steps to Customize
+### Steps to Customize  
 
 1. **Replace Default Assets**  
    Replace the default icons and splash screens in the `./src/assets` folder with your custom assets.  
 
-   - **For Android:**  
-     Place custom assets in the `./src/assets/android` folder. This addresses the issue of default Android icons appearing too small due to excessive padding in the logos. By using assets with reduced padding in this folder, the icons will appear larger on Android.
-
 2. **Generate Required Resources**  
-   Run the following commands to generate platform-specific resources:
+   Run the following command to generate platform-specific resources for all platforms:  
 
-   - **For iOS:**
-     ```bash
-     npx capacitor-assets generate --ios --asset-path ./src/assets
-     ```
+   ```bash  
+   npx capacitor-assets generate --assetPath ./src/assets  
 
-   - **For Android:**
-     ```bash
-     npx capacitor-assets generate --android --asset-path ./src/assets/android
-     ```
-
-This will generate the icons and splash screens for the respective platforms.  
+This will generate the icons and splash screens for all platforms.  
 
 For more details, refer to the [Splash Screens and Icons Capacitor Documentation](https://capacitorjs.com/docs/guides/splash-screens-and-icons).
 
