@@ -9,10 +9,11 @@ import { credRequestFix } from "../../../../../__fixtures__/credRequestFix";
 import { notificationsFix } from "../../../../../__fixtures__/notificationsFix";
 import { passcodeFiller } from "../../../../../utils/passcodeFiller";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
+import { ModalMockProps } from "../../../../../globals/test-types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) =>
+  IonModal: ({ children, isOpen, ...props }: ModalMockProps) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 

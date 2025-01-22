@@ -1,7 +1,6 @@
 import { App, AppState } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
-import i18n from "i18next";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -35,6 +34,7 @@ import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { showError } from "../../utils/error";
 import "./LockPage.scss";
+import { i18n } from "../../../i18n";
 
 const LockPageContainer = () => {
   const pageId = "lock-page";

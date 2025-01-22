@@ -5,7 +5,6 @@ import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
-  getIdentifiersCache,
   getMultiSigGroupCache,
   removeIdentifierCache,
   setScanGroupId
@@ -37,7 +36,6 @@ const SetupConnections = ({
   preventRedirect,
   isModalOpen,
 }: IdentifierStageProps) => {
-  const identifierData = useAppSelector(getIdentifiersCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);

@@ -1,22 +1,22 @@
-import { IonModal, IonSpinner } from "@ionic/react";
+import { IonModal } from "@ionic/react";
 import { useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { useAppDispatch } from "../../../store/hooks";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import { useOnlineStatusEffect } from "../../hooks";
+import { showError } from "../../utils/error";
+import { IdentifierColor } from "../CreateIdentifier/components/IdentifierColorSelector";
+import { Spinner } from "../Spinner";
 import "./CreateGroupIdentifier.scss";
 import {
   CreateIdentifierProps,
   IdentifierStageStateProps,
 } from "./CreateGroupIdentifier.types";
-import { SetupConnections } from "./components/SetupConnections";
 import { GroupMembers } from "./components/GroupMembers";
+import { SetupConnections } from "./components/SetupConnections";
 import { SetupThreshold } from "./components/SetupThreshold";
 import { Summary } from "./components/Summary";
-import { useOnlineStatusEffect } from "../../hooks";
-import { showError } from "../../utils/error";
-import { IdentifierColor } from "../CreateIdentifier/components/IdentifierColorSelector";
-import { Spinner } from "../Spinner";
 
 const stages = [
   SetupConnections,

@@ -10,13 +10,13 @@ import {
   revokedCredsFix,
 } from "../../__fixtures__/filteredCredsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
+import { ModalMockProps } from "../../globals/test-types";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
-import { ModalMockProps } from "../../globals/test-types";
 
 const deleteCredentialsMock = jest.fn<Promise<boolean>, string[]>(() => Promise.resolve(true));
 const deleteNotificationMock = jest.fn(() => Promise.resolve(true));
-const markCredentialPendingDeletionMock = jest.fn((id: string) => Promise.resolve(true));
+const markCredentialPendingDeletionMock = jest.fn<Promise<boolean>, unknown[]>(() => Promise.resolve(true));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {

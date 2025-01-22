@@ -5,8 +5,7 @@ import {
   IonGrid,
   IonIcon,
   IonModal,
-  IonRow,
-  IonSpinner,
+  IonRow
 } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -40,6 +39,7 @@ import { ErrorMessage } from "../ErrorMessage";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
+import { Spinner } from "../Spinner";
 import { IADTypeInfoModal } from "./components/AIDTypeInfoModal";
 import {
   IdentifierColor,
@@ -52,7 +52,6 @@ import {
   CreateIdentifierProps,
   IdentifierModel,
 } from "./CreateIdentifier.types";
-import { Spinner } from "../Spinner";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
 const DUPLICATE_NAME = "Identifier name is a duplicate";
