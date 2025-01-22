@@ -100,10 +100,12 @@ jest.mock("@capacitor/device", () => ({
   },
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: jest.fn((options: { key: string }) => {
+      return Promise.resolve({ value: "value" });
+    }),
     set: jest.fn(),
-    get: jest.fn(),
     remove: jest.fn(),
   },
 }));
@@ -739,7 +741,7 @@ describe("System copatibility alert", () => {
     getPlatformsMock.mockImplementation(() => ["android"]);
     getAvailableWitnessesMock.mockClear();
   });
-  
+
   afterEach(() => {
     getDeviceInfo.mockClear();
   })

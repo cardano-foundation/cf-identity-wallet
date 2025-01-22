@@ -1,7 +1,4 @@
-import {
-  SecureStorage as CapacitorSecureStorage,
-  DataType,
-} from "@aparajita/capacitor-secure-storage";
+import { SecureStoragePlugin } from "@jimcase/capacitor-secure-storage-plugin";
 
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
@@ -13,22 +10,30 @@ enum KeyStoreKeys {
 
 class SecureStorage {
   static readonly KEY_NOT_FOUND =
-    "Secure Storage does not contain an item with specified key";
+    "Item with given key does not exist";
 
-  static async get(key: string): Promise<DataType | null> {
-    const item = await CapacitorSecureStorage.get(key);
-    if (item === null) {
-      throw new Error(`${SecureStorage.KEY_NOT_FOUND} ${key}`);
+  static async get(key: string): Promise<string | null> {
+    try {
+      const result = await SecureStoragePlugin.get({ key });
+      return result.value;
+    } catch (e) {
+      const error = e as { message?: string };
+      if (!error.message?.includes(SecureStorage.KEY_NOT_FOUND)) {
+        throw e;
+      }
+      return null;
     }
-    return item;
   }
 
   static async set(key: string, value: string): Promise<void> {
-    await CapacitorSecureStorage.set(key, value, true, false);
+    await SecureStoragePlugin.set({key, value});
   }
 
   static async delete(key: string) {
-    await CapacitorSecureStorage.remove(key);
+    const result = await this.get(key);
+    if (result) {
+      await SecureStoragePlugin.remove({ key });
+    }
   }
 
   static async isKeyStoreSupported() {
@@ -39,10 +44,7 @@ class SecureStorage {
     } catch (e) {
       return false;
     }
-
   }
 }
 
-// This is just to allow us to make change libs if needed without refactoring other code.
-export type { DataType as SecureStorageItem };
 export { SecureStorage, KeyStoreKeys };
