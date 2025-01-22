@@ -1,4 +1,4 @@
-import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { LensFacing } from "@jimcase/barcode-scanning";
 import { LoginAttempts } from "../../../core/agent/services/auth.types";
 import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
