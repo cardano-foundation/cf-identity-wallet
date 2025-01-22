@@ -46,7 +46,7 @@ const LockPageContainer = () => {
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const firstAppLaunch = useSelector(geFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
-  const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen(false);
 
   const {
     isLock,
@@ -128,13 +128,13 @@ const LockPageContainer = () => {
   };
 
   const handleBiometrics = async () => {
-    disablePrivacy();
+    await disablePrivacy();
     const isAuthenticated = await handleBiometricAuth();
+    await enablePrivacy();
     if (isAuthenticated === true) {
       dispatch(login());
       dispatch(setFirstAppLaunch(false));
     }
-    enablePrivacy();
   };
 
   const resetPasscode = () => {
