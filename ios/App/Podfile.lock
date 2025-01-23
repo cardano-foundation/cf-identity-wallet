@@ -56,7 +56,7 @@ PODS:
   - JimcaseBarcodeScanning (7.0.0-next.5):
     - Capacitor
     - GoogleMLKit/BarcodeScanning (= 7.0.0)
-  - JimcaseCapacitorSecureStoragePlugin (3.1.4):
+  - JimcaseCapacitorSecureStoragePlugin (3.1.5):
     - Capacitor
     - SimpleKeychain
   - MLImage (1.0.0-beta6)
@@ -184,7 +184,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   JimcaseBarcodeScanning: 95fa9be64d9ae0ded644f707c9a5db4b737afeda
-  JimcaseCapacitorSecureStoragePlugin: 35edf4b2ce2b47d921f063ab618c49d90f12522c
+  JimcaseCapacitorSecureStoragePlugin: abc0546dd35dce9515fc73db44f5130145653bca
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
