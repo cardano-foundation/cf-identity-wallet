@@ -175,7 +175,7 @@ jobs:
             earthly --platform=${{ matrix.platform }} \
             +docker-publish \
             ${FORCE_BUILD} \
-            ${DOCKER_IMAGES_TARGETS_ARG} \
+            $(echo ${DOCKER_IMAGES_TARGETS_ARG}) \
             --PUSH=true \
             --TARGET_PLATFORM="${{ matrix.platform }}" \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
