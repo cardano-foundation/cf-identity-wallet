@@ -170,7 +170,6 @@ jobs:
               FORCE_BUILD="--FORCE_BUILD=true"
               DOCKER_IMAGES_TARGETS_ARG="--DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS}"
             fi
-            echo @@@@@ $DOCKER_IMAGES_TARGETS_ARG
 
             earthly --platform=${{ matrix.platform }} \
             +docker-publish \
@@ -208,9 +207,11 @@ jobs:
 
       - name: Merge multi-platform manifests
         run: |
+          echo ${{ needs.set-matrix.outputs.matrix }}
+          echo ${{ needs.metadata.outputs.DOCKER_IMAGES_TARGETS }}
           earthly \
           +docker-manifests-merge \
           --PLATFORMS=$(jq -r '.platform[]' <<< "${{ needs.set-matrix.outputs.matrix }}") \
-          --DOCKER_IMAGES_TARGETS="${{ steps.metadata.outputs.DOCKER_IMAGES_TARGETS }}" \
+          --DOCKER_IMAGES_TARGETS="${{ needs.metadata.outputs.DOCKER_IMAGES_TARGETS }}" \
           --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
           --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
