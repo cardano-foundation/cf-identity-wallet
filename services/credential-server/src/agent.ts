@@ -141,7 +141,7 @@ class Agent {
     );
   }
 
-  async onNotificationKeriStateChanged() {
+  async pollNotifications() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const notifications = await this.signifyApi.getNotifications();
@@ -174,7 +174,6 @@ class Agent {
   }
 
   async initKeri(): Promise<void> {
-    this.onNotificationKeriStateChanged();
     /* eslint-disable no-console */
     const existingKeriIssuerRegistryRegk = await this.signifyApiIssuer
       .getRegistry(Agent.ISSUER_AID_NAME)
@@ -214,6 +213,8 @@ class Agent {
     }
 
     await this.createQVICredential().catch((e) => console.error(e));
+
+    this.pollNotifications();
   }
 
   async createQVICredential() {
