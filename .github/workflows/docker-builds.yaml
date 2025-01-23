@@ -167,13 +167,13 @@ jobs:
             if [ ${{github.event_name}} == "workflow_dispatch" ]
             then 
               FORCE_BUILD="--FORCE_BUILD=true"
-              DOCKER_IMAGES_TARGETS="--DOCKER_IMAGES_TARGETS=\"${DOCKER_IMAGES_TARGETS}\""
+              DOCKER_IMAGES_TARGETS_ARG="--DOCKER_IMAGES_TARGETS=\"${DOCKER_IMAGES_TARGETS}\""
             fi
 
             earthly --platform=${{ matrix.platform }} \
             +docker-publish \
             ${FORCE_BUILD} \
-            ${DOCKER_IMAGES_TARGETS} \
+            ${DOCKER_IMAGES_TARGETS_ARG} \
             --PUSH=true \
             --TARGET_PLATFORM="${{ matrix.platform }}" \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
