@@ -238,9 +238,9 @@ const Notifications = () => {
       <Alert
         isOpen={openUnknownConnectionAlert}
         setIsOpen={setOpenUnknownConnectionAlert}
-        dataTestId="alert-confirm-identifier-delete-details"
-        headerText={i18n.t("tabs.notifications.tab.unknownoobialert.unknownissuer")}
-        confirmButtonText={`${i18n.t("tabs.notifications.tab.unknownoobialert.button")}`}
+        dataTestId="alert-unknown-issuer"
+        headerText={i18n.t("tabs.notifications.tab.unknownissuer.text")}
+        confirmButtonText={`${i18n.t("tabs.notifications.tab.unknownissuer.button")}`}
         actionConfirm={closeUnknownConnection}
         actionDismiss={closeUnknownConnection}
       />
