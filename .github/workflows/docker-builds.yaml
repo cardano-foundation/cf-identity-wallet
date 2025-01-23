@@ -163,10 +163,15 @@ jobs:
             fi
           else
             # if the workflow was triggered manually, we force the build
-            if [ ${{github.event_name}} == "workflow_dispatch" ]; then FORCE_BUILD="--FORCE_BUILD=true"; fi
+            if [ ${{github.event_name}} == "workflow_dispatch" ]
+            then 
+              FORCE_BUILD="--FORCE_BUILD=true"
+              DOCKER_IMAGES_TARGETS="--DOCKER_IMAGE_TARGETS=${DOCKER_IMAGES_TARGETS}"
+            fi
 
             earthly +docker-publish \
             ${FORCE_BUILD} \
+            ${DOCKER_IMAGES_TARGETS} \
             --platform=${{ matrix.platform }} \
             --PUSH=true \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
