@@ -105,6 +105,8 @@ jobs:
                 exit 1
                 ;;
             esac
+
+            echo "DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
           fi
 
           if [ ${{github.event_name}} == "pull_request" ]
@@ -171,3 +173,5 @@ jobs:
             --DOCKER_IMAGES_LABELS="${DOCKER_METADATA_OUTPUT_LABELS_COMMA_SEPARATED}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           fi
+
+          docker inspect --type=image idw-keria:latest
