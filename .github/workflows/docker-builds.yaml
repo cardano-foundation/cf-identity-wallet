@@ -14,6 +14,19 @@ on:
     - 'services/credential-server-ui/**'
     - 'services/credential-server/**'
   workflow_dispatch:
+    inputs:
+      images:
+        description: 'Select which earthly targets to build and push'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - idw-keria
+        - idw-witness
+        - cred-issuance
+        - cred-issuance-ui
+        - cip45-sample-dapp
+        - all
 
 env:
   PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
@@ -65,6 +78,35 @@ jobs:
       - name: Set docker image targets based on path changes from last commit
         id: metadata
         run: |
+
+          if [ ${{github.event_name}} == "workflow_dispatch" ]
+          then
+            case "${{ github.event.inputs.images }}" in
+              idw-keria)
+                DOCKER_IMAGES_TARGETS="idw-keria"
+                ;;
+              idw-witness)
+                DOCKER_IMAGES_TARGETS="idw-witness"
+                ;;
+              cred-issuance)
+                DOCKER_IMAGES_TARGETS="cred-issuance"
+                ;;
+              cred-issuance-ui)
+                DOCKER_IMAGES_TARGETS="cred-issuance-ui"
+                ;;
+              cip45-sample-dapp)
+                DOCKER_IMAGES_TARGETS="cip45-sample-dapp"
+                ;;
+              all)
+                DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui cip45-sample-dapp"
+                ;;
+              *)
+                echo "Invalid option, exiting..."
+                exit 1
+                ;;
+            esac
+          fi
+
           if [ ${{github.event_name}} == "pull_request" ]
           then
             GIT_BRANCH_SHORT_COMMIT=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
