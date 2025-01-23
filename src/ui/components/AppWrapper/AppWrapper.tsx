@@ -502,8 +502,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     await new ConfigurationService().start();
     await Agent.agent.setupLocalDependencies();
 
-    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
-    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
+    // Keystore wiped after re-installs so iOS is consistent with Android.
     const initState = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_ALREADY_INIT
     );
