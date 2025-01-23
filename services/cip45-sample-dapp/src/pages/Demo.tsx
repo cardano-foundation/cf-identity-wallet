@@ -166,8 +166,10 @@ const Demo: React.FC = () => {
         setSignature(signedMessage);
       // @ts-ignore
       } catch (e) {
+        // @ts-ignore
         setError(e.code === 2
             ? "User declined to sign"
+            // @ts-ignore
             : e.info)
       }
     } else {
