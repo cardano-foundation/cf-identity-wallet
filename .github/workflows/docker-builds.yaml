@@ -146,6 +146,7 @@ jobs:
 
       - name: 🌍 earthly (docker build and push)
         run: |
+          set -x
           # For PR builds, we skip any earthly build if there are no changes on any known target-related file, for branch builds, we just build everything
           if [ ${{github.event_name}} == "pull_request" ]
           then
@@ -169,6 +170,7 @@ jobs:
               FORCE_BUILD="--FORCE_BUILD=true"
               DOCKER_IMAGES_TARGETS_ARG="--DOCKER_IMAGES_TARGETS='${DOCKER_IMAGES_TARGETS}'"
             fi
+            echo @@@@@ $DOCKER_IMAGES_TARGETS_ARG
 
             earthly --platform=${{ matrix.platform }} \
             +docker-publish \
