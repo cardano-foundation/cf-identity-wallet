@@ -27,11 +27,21 @@ jobs:
       contents: read
       packages: write
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup qemu for arm builds
+        uses: docker/setup-qemu-action@v3
+        if: {{ matrix.platform == 'linux/arm64' }}
+        platforms: arm64
 
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
@@ -90,6 +100,7 @@ jobs:
             if [ ! -z "${DOCKER_IMAGES_TARGETS}" ]
             then
               earthly +docker-publish \
+              --platform=${{ matrix.platform }} \
               --PUSH=true \
               --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
               --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}" \
@@ -104,6 +115,7 @@ jobs:
 
             earthly +docker-publish \
             ${FORCE_BUILD} \
+            --platform=${{ matrix.platform }} \
             --PUSH=true \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_LABELS="${DOCKER_METADATA_OUTPUT_LABELS_COMMA_SEPARATED}" \
