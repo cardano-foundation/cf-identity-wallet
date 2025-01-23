@@ -29,11 +29,8 @@ class PeerConnection {
   };
 
   private announce = [
-    "wss://tracker.openwebtorrent.com",
-    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org",
-    "wss://tracker.files.fm:7073/announce",
-    "ws://tracker.files.fm:7072/announce",
-    "wss://tracker.openwebtorrent.com:443/announce",
+    "wss://tracker.webtorrent.dev:443/announce",
+    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"
   ];
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
