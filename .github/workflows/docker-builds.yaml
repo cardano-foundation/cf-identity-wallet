@@ -182,7 +182,7 @@ jobs:
           fi
 
   merge-multi-platform-manifests:
-    needs: set-matrix
+    needs: build-n-publish
     permissions:
       contents: read
       packages: write
