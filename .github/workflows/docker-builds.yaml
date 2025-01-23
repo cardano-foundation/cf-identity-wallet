@@ -44,7 +44,7 @@ jobs:
         id: set-matrix
         run: |
           echo 'matrix={"platform":["linux/amd64","linux/arm64"]}' | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
-  publish:
+  build-n-publish:
     needs: set-matrix
     permissions:
       contents: read
@@ -181,4 +181,34 @@ jobs:
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           fi
 
-          docker inspect --type=image cf-idw-witness:latest
+  merge-multi-platform-manifests:
+    needs: set-matrix
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⛮ cf-gha-baseline
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
+          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
+          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+          HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
+          HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
+          DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
+
+      - name: Merge multi-platform manifests
+        run: |
+          earthly \
+          +docker-manifests-merge \
+          --PLATFORMS=$(jq -r '.platform[]' <<< "${{ needs.set-matrix.outputs.matrix }}") \
+          --DOCKER_IMAGES_TARGETS="${{ steps.metadata.outputs.DOCKER_IMAGES_TARGETS }}" \
+          --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
+          --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
