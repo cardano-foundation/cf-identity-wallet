@@ -1,4 +1,4 @@
-import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { LensFacing } from "@jimcase/barcode-scanning";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Salter } from "signify-ts";
 import { LoginAttempts } from "../../../core/agent/services/auth.types";

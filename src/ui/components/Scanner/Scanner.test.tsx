@@ -8,7 +8,7 @@ import {
   BarcodeFormat,
   BarcodeScannedEvent,
   BarcodeValueType,
-} from "@capacitor-mlkit/barcode-scanning";
+} from "@jimcase/barcode-scanning";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import {
@@ -90,9 +90,9 @@ const checkPermisson = jest.fn(() =>
 
 const requestPermission = jest.fn();
 const startScan = jest.fn();
-jest.mock("@capacitor-mlkit/barcode-scanning", () => {
+jest.mock("@jimcase/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
+    ...jest.requireActual("@jimcase/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () => checkPermisson(),
       requestPermissions: () => requestPermission(),
