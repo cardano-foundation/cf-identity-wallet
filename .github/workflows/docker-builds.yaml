@@ -166,7 +166,7 @@ jobs:
             if [ ${{github.event_name}} == "workflow_dispatch" ]
             then 
               FORCE_BUILD="--FORCE_BUILD=true"
-              DOCKER_IMAGES_TARGETS="--DOCKER_IMAGE_TARGETS=${DOCKER_IMAGES_TARGETS}"
+              DOCKER_IMAGES_TARGETS="--DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS}"
             fi
 
             earthly +docker-publish \
@@ -179,4 +179,4 @@ jobs:
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           fi
 
-          docker inspect --type=image idw-keria:latest
+          docker inspect --type=image cf-idw-witness:latest
