@@ -29,6 +29,21 @@ all:
 docker-publish:
   BUILD +all --PUSH=$PUSH
 
+docker-manifests-merge:
+  ARG PLATFORMS
+  ARG DOCKER_REGISTRIES
+  ARG DOCKER_IMAGES_TARGETS
+  ARG DOCKER_IMAGES_EXTRA_TAGS
+  LOCALLY
+  FOR image_target IN $DOCKER_IMAGES_TARGETS
+    DO functions+DOCKER_MANIFESTS_MERGE \
+       --PLATFORMS="${PLATFORMS}" \
+       --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
+       --DOCKER_IMAGE_NAME="${DOCKER_IMAGES_PREFIX}-${image_target}" \
+       --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}" \
+       --PUSH=$PUSH
+  END
+
 keria-src:
   FROM alpine/git
   RUN git clone $KERIA_GIT_REPO_URL /keria && \
