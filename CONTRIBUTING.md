@@ -9,13 +9,13 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in
 
 ### Bug reports
 
-[Submit a bug report](https://github.com/cardano-foundation/cf-identity-wallet/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=%5BBUG%5D+) using the provided template for bug reports. If the template does not fit your purpose start with a blank issue.
+[Submit a bug report](https://github.com/cardano-foundation/cf-identity-wallet/issues/new?assignees=&labels=&projects=&template=bug_report.yml&title=%5BBUG%5D+) using the provided template for bug reports. If the template does not fit your purpose start with a blank issue.
 
 For bug reports, it's very important to fill in the information in the structure provided by the templates to help us analyzing the bug.
 
 ### Feature requests and ideas
 
-[Submit a feature request](https://github.com/cardano-foundation/cf-identity-wallet/issues/new?assignees=&labels=&projects=&template=feature_request.md&title=%5BFEATURE%5D+) using the provided template for feature requests. If the template does not fit your purpose start with a blank issue but make sure the name starts with a "FEATURE" in square brackets.
+[Submit a feature request](https://github.com/cardano-foundation/cf-identity-wallet/issues/new?assignees=&labels=&projects=&template=feature_request.yml&title=%5BFEATURE%5D+) using the provided template for feature requests. If the template does not fit your purpose start with a blank issue but make sure the name starts with a "FEATURE" in square brackets.
 
 If you are starting with a very vague idea instead of a concrete feature request post it in the [discussions section](https://github.com/cardano-foundation/cf-identity-wallet/discussions) of the repository where we can refine the idea with you and create a structured feature request from it.
 
