@@ -79,12 +79,14 @@ const Demo: React.FC = () => {
         }
       };
 
+      // @ts-ignore: TS6133
       const onApiEject = (name: string): void => {
         setPeerConnectWalletInfo(defautlWallet);
         setError("");
         disconnect();
       };
 
+      // @ts-ignore
       const onP2PConnect = (a): void => {};
 
       initDappConnect(
@@ -162,6 +164,7 @@ const Demo: React.FC = () => {
         );
 
         setSignature(signedMessage);
+      // @ts-ignore
       } catch (e) {
         setError(e.code === 2
             ? "User declined to sign"
