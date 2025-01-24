@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v4
       - name: 🦾 Create .env file
         run: |
-          echo "${HOME}/Documents/xcode/DerivedData/Build/Products/Debug-iphonesimulator/App.app" > .env
+          echo ${HOME}/Documents/xcode/DerivedData/Build/Products/Debug-iphonesimulator/App.app > .env
       - name: Setup node
         uses: actions/setup-node@v4
         with:
