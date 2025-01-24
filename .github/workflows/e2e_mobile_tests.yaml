@@ -39,3 +39,6 @@ jobs:
 
       - name: ☠ Erase all settings and content from iOS simulator
         run: xcrun simctl shutdown all && xcrun simctl erase all
+
+      - name: ☠ Remove app build from localhost
+        run: rm -rf /Users/admin/Library/Developer/Xcode/DerivedData/App-*
