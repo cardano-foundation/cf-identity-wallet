@@ -36,3 +36,6 @@ jobs:
 
       - name: 🏃🏼 Run tests for iOS simulator
         run: npm run wdio:ios:16promax
+
+      - name: ☠ Erase all settings and content from iOS simulator
+        run: xcrun simctl shutdown all && xcrun simctl erase all
