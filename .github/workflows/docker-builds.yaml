@@ -183,7 +183,9 @@ jobs:
           fi
 
   merge-multi-platform-manifests:
-    needs: build-n-publish
+    needs: 
+      - set-matrix
+      - build-n-publish
     permissions:
       contents: read
       packages: write
@@ -207,8 +209,8 @@ jobs:
 
       - name: Merge multi-platform manifests
         run: |
-          echo ${{ jobs.set-matrix.outputs.matrix }}
-          echo ${{ jobs.metadata.outputs.DOCKER_IMAGES_TARGETS }}
+          echo ${{ needs.set-matrix.outputs.matrix }}
+          echo ${{ needs.build-n-publish.outputs.DOCKER_IMAGES_TARGETS }}
           earthly \
           +docker-manifests-merge \
           --PLATFORMS=$(jq -r '.platform[]' <<< "${{ needs.set-matrix.outputs.matrix }}") \
