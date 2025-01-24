@@ -234,8 +234,9 @@ jobs:
           echo $DOCKER_IMAGE_TARGETS
 
           earthly \
-          +docker-manifests-merge \
-          --PLATFORMS="${PLATFORMS}" \
-          --DOCKER_IMAGES_TARGETS="${DOCKER_IMAGES_TARGETS}" \
-          --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
-          --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
+            +docker-manifests-merge \
+            --PUSH=true \
+            --PLATFORMS="${PLATFORMS}" \
+            --DOCKER_IMAGES_TARGETS="${DOCKER_IMAGES_TARGETS}" \
+            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
+            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
