@@ -5,7 +5,6 @@ import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
-  getIdentifiersCache,
   getMultiSigGroupCache,
   removeIdentifierCache,
   setScanGroupId
@@ -36,8 +35,8 @@ const SetupConnections = ({
   multiSigGroup,
   preventRedirect,
   isModalOpen,
+  openAfterCreate
 }: IdentifierStageProps) => {
-  const identifierData = useAppSelector(getIdentifiersCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -58,6 +57,8 @@ const SetupConnections = ({
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
+
+  const isPending = !!resumeMultiSig?.isPending;
 
   useEffect(() => {
     if (isModalOpen) {
@@ -169,7 +170,7 @@ const SetupConnections = ({
 
   return (
     <>
-      {resumeMultiSig || initiated || scannedConections?.length ? (
+      {(!openAfterCreate || initiated || scannedConections?.length) ? (
         <SetupConnectionBodyResume
           componentId={componentId}
           handleDone={handleDone}
@@ -179,6 +180,7 @@ const SetupConnections = ({
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
           handleDelete={openDeleteConfirm}
+          isPending={isPending}
         />
       ) : (
         <SetupConnectionBodyInit
@@ -189,6 +191,7 @@ const SetupConnections = ({
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
           handleDelete={openDeleteConfirm}
+          isPending={isPending}
         />
       )}
       <Alert
