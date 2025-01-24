@@ -184,10 +184,18 @@ jobs:
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           fi
 
+      - uses: cloudposse/github-action-matrix-outputs-write@v1
+        id: out
+        with:
+          matrix-step-name: ${{ github.job }}
+          matrix-key: ${{ matrix.platform }}
+          outputs: |-
+            DOCKER_IMAGES_TARGETS: ${{ steps.metadata.outputs.DOCKER_IMAGES_TARGETS }}
+
   merge-multi-platform-manifests:
     needs: 
-      - build-n-publish
       - set-matrix
+      - build-n-publish
     permissions:
       contents: read
       packages: write
@@ -209,12 +217,17 @@ jobs:
           HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
           DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
 
+      - uses: cloudposse/github-action-matrix-outputs-read@v1
+        id: read
+        with:
+          matrix-step-name: build-n-publish
+
       - name: Merge multi-platform manifests
         run: |
           PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo)
           echo $PLATFORMS
-          echo ${{ needs.build-n-publish.outputs.DOCKER_IMAGES_TARGETS_linux_amd64 }}
-          DOCKER_IMAGE_TARGETS="${{ needs.build-n-publish.outputs.DOCKER_IMAGES_TARGETS_linux_amd64 }}"
+          echo ${{ steps.read.outputs.DOCKER_IMAGES_TARGETS }}
+          DOCKER_IMAGE_TARGETS=${{ steps.read.outputs.DOCKER_IMAGES_TARGETS }}
           echo $DOCKER_IMAGE_TARGETS
 
           earthly \
