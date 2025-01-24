@@ -1,16 +1,18 @@
-import { IonIcon, IonButton, IonItem, IonLabel, IonList } from "@ionic/react";
-import { qrCodeOutline, copyOutline, trashOutline } from "ionicons/icons";
+import { IonButton, IonIcon, IonItem, IonLabel, IonList } from "@ionic/react";
+import { copyOutline, trashOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
-import { PageHeader } from "../../PageHeader";
-import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
-import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { PageFooter } from "../../PageFooter";
-import { writeToClipboard } from "../../../utils/clipboard";
 import { useAppDispatch } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ToastMsgType } from "../../../globals/types";
+import { writeToClipboard } from "../../../utils/clipboard";
+import { PageFooter } from "../../PageFooter";
+import { PageHeader } from "../../PageHeader";
+import { Spinner } from "../../Spinner";
+import { SpinnerConverage } from "../../Spinner/Spinner.type";
+import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
 
 const SetupConnectionBodyResume = ({
   componentId,
@@ -21,6 +23,7 @@ const SetupConnectionBodyResume = ({
   handleScanButton,
   scannedConections,
   handleDelete,
+  isPending
 }: IdentifierStage1BodyProps) => {
   const dispatch = useAppDispatch();
   const copyToClipboard = () => {
@@ -53,30 +56,30 @@ const SetupConnectionBodyResume = ({
         </p>
         <div
           className={`multisig-share-qr-code${
-            oobi.length ? " reveal" : " blur"
+            oobi.length && !isPending ? " reveal" : " blur"
           }`}
           data-testid="multisig-share-qr-code"
         >
-          <QRCode
-            value={oobi}
-            size={250}
-            fgColor={"black"}
-            bgColor={"white"}
-            qrStyle={"squares"}
-            logoImage={""}
-            logoWidth={60}
-            logoHeight={60}
-            logoOpacity={1}
-            quietZone={10}
-          />
-          <span className="multisig-share-qr-code-blur-overlay-container">
-            <span className="multisig-share-qr-code-blur-overlay-inner">
-              <IonIcon
-                slot="icon-only"
-                icon={qrCodeOutline}
-              />
+          <div className="qr-container">
+            <QRCode
+              value={oobi}
+              size={250}
+              fgColor={"black"}
+              bgColor={"white"}
+              qrStyle={"squares"}
+              logoImage={""}
+              logoWidth={60}
+              logoHeight={60}
+              logoOpacity={1}
+              quietZone={10}
+            />
+            <span className="multisig-share-qr-code-blur-overlay-container">
+              <span className="multisig-share-qr-code-blur-overlay-inner">
+                <Spinner show={isPending} coverage={SpinnerConverage.Container}/>
+                <p>{i18n.t("createidentifier.share.pending")}</p>
+              </span>
             </span>
-          </span>
+          </div>
           <IonButton
             shape="round"
             expand="block"
@@ -84,6 +87,7 @@ const SetupConnectionBodyResume = ({
             className="copy-button secondary-button"
             data-testid={`copy-button-${componentId}`}
             onClick={copyToClipboard}
+            disabled
           >
             {i18n.t("createidentifier.share.copybutton")}
             <IonIcon

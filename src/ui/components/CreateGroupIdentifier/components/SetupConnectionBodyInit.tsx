@@ -1,5 +1,5 @@
 import { IonButton, IonIcon } from "@ionic/react";
-import { copyOutline, qrCodeOutline, scanOutline } from "ionicons/icons";
+import { copyOutline, scanOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch } from "../../../../store/hooks";
@@ -7,6 +7,8 @@ import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { PageHeader } from "../../PageHeader";
+import { Spinner } from "../../Spinner";
+import { SpinnerConverage } from "../../Spinner/Spinner.type";
 import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
 
@@ -15,6 +17,7 @@ const SetupConnectionBodyInit = ({
   handleDone,
   oobi,
   handleScanButton,
+  isPending
 }: IdentifierStage1BodyProps) => {
   const dispatch = useAppDispatch();
   const copyToClipboard = () => {
@@ -41,29 +44,29 @@ const SetupConnectionBodyInit = ({
         {i18n.t("createidentifier.share.notes.top")}
       </p>
       <div
-        className={`multisig-share-qr-code${oobi.length ? " reveal" : " blur"}`}
+        className={`multisig-share-qr-code${oobi.length && !isPending ? " reveal" : " blur"}`}
         data-testid="multisig-share-qr-code"
       >
-        <QRCode
-          value={oobi}
-          size={250}
-          fgColor={"black"}
-          bgColor={"white"}
-          qrStyle={"squares"}
-          logoImage={""}
-          logoWidth={60}
-          logoHeight={60}
-          logoOpacity={1}
-          quietZone={10}
-        />
-        <span className="multisig-share-qr-code-blur-overlay-container">
-          <span className="multisig-share-qr-code-blur-overlay-inner">
-            <IonIcon
-              slot="icon-only"
-              icon={qrCodeOutline}
-            />
+        <div className="qr-container">
+          <QRCode
+            value={oobi}
+            size={250}
+            fgColor={"black"}
+            bgColor={"white"}
+            qrStyle={"squares"}
+            logoImage={""}
+            logoWidth={60}
+            logoHeight={60}
+            logoOpacity={1}
+            quietZone={10}
+          />
+          <span className="multisig-share-qr-code-blur-overlay-container">
+            <span className="multisig-share-qr-code-blur-overlay-inner">
+              <Spinner show={isPending} coverage={SpinnerConverage.Container}/>
+              <p>{i18n.t("createidentifier.share.pending")}</p>
+            </span>
           </span>
-        </span>
+        </div>
         <IonButton
           shape="round"
           expand="block"
@@ -71,6 +74,7 @@ const SetupConnectionBodyInit = ({
           className="copy-button secondary-button"
           data-testid={"multisig-copy-oobi-connection-button"}
           onClick={copyToClipboard}
+          disabled
         >
           {i18n.t("createidentifier.share.copybutton")}
           <IonIcon

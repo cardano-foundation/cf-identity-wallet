@@ -69,9 +69,22 @@ ion-modal.create-group-identifier-modal {
         border-color: var(--ion-color-neutral-100);
       }
 
+      &.button-disabled {
+        &::part(native) {
+          filter: blur(.1rem);
+        }
+      }
+
       ion-icon {
         margin-left: 8vw;
       }
+    }
+
+    .qr-container {
+      display: inline-block;
+      box-shadow: 0rem 0.125rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
+      margin: 0.8rem auto;
+      border-radius: 1rem;
     }
 
     .multisig-share-qr-code-blur-overlay-container {
@@ -89,7 +102,6 @@ ion-modal.create-group-identifier-modal {
       width: 70vw !important;
       height: 70vw !important;
       padding: 1.5rem;
-      margin: 0.8rem auto;
       border-radius: 1rem;
     }
 
@@ -106,12 +118,13 @@ ion-modal.create-group-identifier-modal {
         width: 100%;
         height: 100%;
 
-        ion-icon {
-          width: 5rem;
-          height: 5rem;
-          opacity: 1;
-          text-align: center;
-          margin: 0 auto;
+        .spinner-container {
+          background: none;
+          height: auto;
+        }
+
+        p {
+          margin: 1rem 1rem 0;
         }
       }
     }
@@ -477,6 +490,19 @@ ion-modal.create-group-identifier-modal {
 
       .multisig-share-qr-code-blur-overlay-container {
         left: calc(50% - 32.5vw);
+
+        .multisig-share-qr-code-blur-overlay-inner {
+          .spinner-container {
+            ion-spinner {
+              width: 1.25rem;
+              height: 1.25rem;
+            }
+          }
+
+          p {
+            margin: 1rem 1rem 0rem;
+          }
+        }
       }
 
       .share-identifier-scan-button ion-button {

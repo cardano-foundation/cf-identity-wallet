@@ -1651,7 +1651,8 @@
         "confirm": "Confirm and scan",
         "cancel": "Cancel"
       },
-      "delete": "Delete identifier"
+      "delete": "Delete identifier",
+      "pending": "Still loading. Check back later or contact support if it persists."
     },
     "receive": {
       "title": "Setup identifier",

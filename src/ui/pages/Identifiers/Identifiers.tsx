@@ -116,6 +116,7 @@ const Identifiers = () => {
     useState(false);
   const [groupIdentifierOpen, setGroupIdentifierOpen] =
     useState(false);
+  const [openGroupAfterCreate, setOpenGroupAfterCreate] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [resumeMultiSig, setResumeMultiSig] =
     useState<IdentifierShortDetails | null>(null);
@@ -176,7 +177,7 @@ const Identifiers = () => {
     const tmpGroupIdentifiers = [];
 
     for (const identifier of identifiersData) {
-      if (identifier.isPending) {
+      if (identifier.isPending && !identifier.groupMetadata) {
         tmpPendingIdentifiers.push(identifier);
         continue;
       }
@@ -245,6 +246,7 @@ const Identifiers = () => {
   const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
     if(identifier?.groupMetadata || identifier?.multisigManageAid) {
       handleMultiSigClick(identifier);
+      setOpenGroupAfterCreate(true);
     }
   };
 
@@ -451,9 +453,13 @@ const Identifiers = () => {
       />
       <CreateGroupIdentifier 
         modalIsOpen={groupIdentifierOpen} 
-        setModalIsOpen={setGroupIdentifierOpen} 
+        setModalIsOpen={(value) => {
+          setGroupIdentifierOpen(value);
+          setOpenGroupAfterCreate(false);
+        }} 
         setResumeMultiSig={setResumeMultiSig} 
         resumeMultiSig={resumeMultiSig}
+        openAfterCreate={openGroupAfterCreate}
       />
     </>
   );
