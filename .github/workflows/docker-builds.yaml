@@ -107,6 +107,7 @@ jobs:
             esac
 
             echo "DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+            echo "DOCKER_IMAGES_TARGETS_$(echo ${{ matrix.platform }} | sed 's|/|_|g')=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
           fi
 
           if [ ${{github.event_name}} == "pull_request" ]
@@ -141,6 +142,7 @@ jobs:
             STRIPPED_DOCKER_IMAGES_TARGETS=$(echo $DOCKER_IMAGES_TARGETS | tr -s ' ' | sed -e 's|^ ||' -e 's| $||')
             if [ ! -z "${STRIPPED_DOCKER_IMAGES_TARGETS}" ]; then
               echo "DOCKER_IMAGES_TARGETS=${STRIPPED_DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+              echo "DOCKER_IMAGES_TARGETS_$(echo ${{ matrix.platform }} | sed 's|/|_|g')=${STRIPPED_DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
             fi
           fi
 
@@ -210,10 +212,10 @@ jobs:
       - name: Merge multi-platform manifests
         run: |
           echo ${{ needs.set-matrix.outputs.matrix }}
-          echo ${{ needs.build-n-publish.outputs.DOCKER_IMAGES_TARGETS }}
+          echo ${{ needs.build-n-publish.outputs.DOCKER_IMAGES_TARGETS_linux_amd64 }}
           earthly \
           +docker-manifests-merge \
-          --PLATFORMS=$(jq -r '.platform[]' <<< "${{ needs.set-matrix.outputs.matrix }}") \
-          --DOCKER_IMAGES_TARGETS="${{ needs.metadata.outputs.DOCKER_IMAGES_TARGETS }}" \
+          --PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo) \
+          --DOCKER_IMAGES_TARGETS="${{ needs.metadata.outputs.DOCKER_IMAGES_TARGETS_linux_amd64 }}" \
           --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
           --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
