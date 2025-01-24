@@ -205,11 +205,10 @@ jobs:
       # Manually doing this instead of using the cloudposse/read action as it seems there is some issue with it
       - name: read-matrix-artifacts
         id: matrix-artifacts
+        env:
+          MATRIX_STEP_NAME: build-n-publish
         run: |
-          find . -name build-n-publish -maxdepth 2 -type f
-          find . -name build-n-publish -maxdepth 2 -type f | head -n1
-          find . -name build-n-publish -maxdepth 2 -type f | head -n1 | xargs cat
-          DOCKER_IMAGES_TARGETS=$(find . -name build-n-publish -maxdepth 2 -type f | head -n1 | xargs cat | jq -r '."linux/amd64".DOCKER_IMAGES_TARGETS')
+          DOCKER_IMAGES_TARGETS=$(find . -name ${MATRIX_STEP_NAME} -maxdepth 2 -type f | head -n1 | xargs cat | jq -r '.[].DOCKER_IMAGES_TARGETS')
           echo DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS} | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
 
       - name: Checkout
