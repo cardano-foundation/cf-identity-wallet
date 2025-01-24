@@ -221,10 +221,10 @@ jobs:
         run: |
           find -maxdepth 2
           cat */build-n-publish
-          find . -name ${{ inputs.matrix-step-name }} -maxdepth 2
-          find . -name ${{ inputs.matrix-step-name }} -maxdepth 2 -exec cat {} \
-          find . -name ${{ inputs.matrix-step-name }} -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)'
-          result="$(find . -name ${{ inputs.matrix-step-name }} -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)' )"
+          find . -name build-n-publish -maxdepth 2
+          find . -name build-n-publish -maxdepth 2 -exec cat {} \
+          find . -name build-n-publish -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)'
+          result="$(find . -name build-n-pubish -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)' )"
           echo "result=${result}" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
 
       - name: Checkout
