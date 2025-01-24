@@ -207,8 +207,8 @@ jobs:
 
       - name: Merge multi-platform manifests
         run: |
-          echo ${{ needs.set-matrix.outputs.matrix }}
-          echo ${{ needs.metadata.outputs.DOCKER_IMAGES_TARGETS }}
+          echo ${{ jobs.set-matrix.outputs.matrix }}
+          echo ${{ jobs.metadata.outputs.DOCKER_IMAGES_TARGETS }}
           earthly \
           +docker-manifests-merge \
           --PLATFORMS=$(jq -r '.platform[]' <<< "${{ needs.set-matrix.outputs.matrix }}") \
