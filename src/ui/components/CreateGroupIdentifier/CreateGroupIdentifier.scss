@@ -12,12 +12,13 @@ ion-modal.create-group-identifier-modal {
 
         &::part(native) {
           padding: 0;
+          background: var(--ion-color-primary-700);
         }
 
         ion-icon {
           width: 1.5rem;
           height: 1.5rem;
-          color: var(--ion-color-neutral-700);
+          color: var(--ion-color-neutral-100);
         }
       }
     }
@@ -70,7 +71,7 @@ ion-modal.create-group-identifier-modal {
 
       &.button-disabled {
         &::part(native) {
-          filter: blur(.1rem);
+          filter: blur(0.15rem);
         }
       }
 
@@ -109,7 +110,7 @@ ion-modal.create-group-identifier-modal {
 
     &.blur {
       #react-qrcode-logo {
-        filter: blur(0.5rem);
+        filter: blur(1.5rem);
         opacity: 0.3;
       }
 
@@ -123,10 +124,6 @@ ion-modal.create-group-identifier-modal {
         .spinner-container {
           background: none;
           height: auto;
-        }
-
-        p {
-          margin: 1rem 1rem 0;
         }
       }
     }

@@ -76,7 +76,6 @@ const SetupConnectionBodyResume = ({
             <span className="multisig-share-qr-code-blur-overlay-container">
               <span className="multisig-share-qr-code-blur-overlay-inner">
                 <Spinner show={isPending} coverage={SpinnerConverage.Container}/>
-                <p>{i18n.t("createidentifier.share.pending")}</p>
               </span>
             </span>
           </div>
@@ -113,6 +112,7 @@ const SetupConnectionBodyResume = ({
             data-testid="share-resume-identifier-scan-button"
             className="secondary-button"
             onClick={handleScanButton}
+            disabled={isPending}
           >
             {i18n.t("createidentifier.share.scanbutton")}
           </IonButton>
