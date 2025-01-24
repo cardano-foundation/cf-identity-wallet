@@ -201,7 +201,7 @@ jobs:
           matrix-step-name: metadata
 
     outputs:
-      result: "${{ steps.read-matrix.outputs.result }}"
+      result: "${{ steps.read.outputs.result }}"
 
   merge-multi-platform-manifests:
     needs: 
