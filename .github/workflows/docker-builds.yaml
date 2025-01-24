@@ -186,8 +186,8 @@ jobs:
 
   merge-multi-platform-manifests:
     needs: 
-      - set-matrix
       - build-n-publish
+      - set-matrix
     permissions:
       contents: read
       packages: write
@@ -211,11 +211,15 @@ jobs:
 
       - name: Merge multi-platform manifests
         run: |
-          echo ${{ needs.set-matrix.outputs.matrix }}
+          PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo)
+          echo $PLATFORMS
           echo ${{ needs.build-n-publish.outputs.DOCKER_IMAGES_TARGETS_linux_amd64 }}
+          DOCKER_IMAGE_TARGETS="${{ needs.build-n-publish.outputs.DOCKER_IMAGES_TARGETS_linux_amd64 }}"
+          echo $DOCKER_IMAGE_TARGETS
+
           earthly \
           +docker-manifests-merge \
-          --PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo) \
-          --DOCKER_IMAGES_TARGETS="${{ needs.metadata.outputs.DOCKER_IMAGES_TARGETS_linux_amd64 }}" \
+          --PLATFORMS="${PLATFORMS}" \
+          --DOCKER_IMAGES_TARGETS="${DOCKER_IMAGES_TARGETS}" \
           --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
           --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
