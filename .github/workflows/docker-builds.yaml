@@ -213,6 +213,13 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     steps:
+
+      - uses: actions/download-artifact@v4
+
+      - name: debug artifacts
+        run: |
+          find -maxdepth 2
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -228,6 +235,7 @@ jobs:
           HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
           HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
           DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
+
 
       - uses: cloudposse/github-action-matrix-outputs-read@v1
         id: read
