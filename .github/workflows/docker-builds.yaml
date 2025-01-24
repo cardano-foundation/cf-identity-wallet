@@ -217,9 +217,15 @@ jobs:
       - uses: actions/download-artifact@v4
 
       - name: debug artifacts
+        id: matrix-artifacts
         run: |
           find -maxdepth 2
           cat */build-n-publish
+          find . -name ${{ inputs.matrix-step-name }} -maxdepth 2
+          find . -name ${{ inputs.matrix-step-name }} -maxdepth 2 -exec cat {} \
+          find . -name ${{ inputs.matrix-step-name }} -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)'
+          result="$(find . -name ${{ inputs.matrix-step-name }} -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)' )"
+          echo "result=${result}" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -248,6 +254,7 @@ jobs:
           PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo)
           echo $PLATFORMS
           echo ${{ steps.read.outputs.result}}
+          echo ${{ steps.matrix-artifacts.outputs.result}}
           echo ${{ needs.read-matrix.outputs.result }}
           echo $DOCKER_IMAGE_TARGETS
 
