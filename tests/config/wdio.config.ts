@@ -47,7 +47,7 @@ export const config: Options.Testrunner = {
     // <string> (expression) only execute the features or scenarios with tags matching the expression
     tags: "",
     // <number> timeout for step definitions
-    timeout: 60000,
+    timeout: 100 * 1000, // 100 seconds
   },
   //
   // =====

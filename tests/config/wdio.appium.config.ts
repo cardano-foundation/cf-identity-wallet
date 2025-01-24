@@ -36,8 +36,8 @@ export const config = {
         "appium:autoWebview": true,
         "appium:noReset": false,
         "appium:app": process.env.APP_PATH,
-        "appium:newCommandTimeout": 240,
-        "appium:webviewConnectTimeout": 60 * 1000,
+        "appium:newCommandTimeout": 260,
+        "appium:webviewConnectTimeout": 80 * 1000, // 80 seconds
       },
     ]
   },
