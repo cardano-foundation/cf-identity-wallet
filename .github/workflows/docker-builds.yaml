@@ -219,6 +219,7 @@ jobs:
       - name: debug artifacts
         run: |
           find -maxdepth 2
+          cat */build-n-publish
 
       - name: Checkout
         uses: actions/checkout@v4
