@@ -190,24 +190,10 @@ jobs:
           outputs: |-
             DOCKER_IMAGES_TARGETS: ${{ steps.metadata.outputs.DOCKER_IMAGES_TARGETS }}
 
-  ## Read matrix outputs 
-  read-matrix:
-    runs-on: ubuntu-latest
-    needs: [build-n-publish]
-    steps:
-      - uses: cloudposse/github-action-matrix-outputs-read@v1
-        id: read
-        with:
-          matrix-step-name: metadata
-
-    outputs:
-      result: "${{ steps.read.outputs.result }}"
-
   merge-multi-platform-manifests:
     needs: 
       - set-matrix
       - build-n-publish
-      - read-matrix
     permissions:
       contents: read
       packages: write
@@ -216,16 +202,19 @@ jobs:
 
       - uses: actions/download-artifact@v4
 
-      - name: debug artifacts
+      # Manually doing this instead of using the cloudposse/read action as it seems there is some issue with it
+      - name: read-matrix-artifacts
         id: matrix-artifacts
         run: |
-          find -maxdepth 2
-          cat */build-n-publish
-          find . -name build-n-publish -maxdepth 2
-          find . -name build-n-publish -maxdepth 2 -exec cat {} \
-          find . -name build-n-publish -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)'
-          result="$(find . -name build-n-pubish -maxdepth 2 -exec cat {} \; | jq -c --slurp 'map(to_entries | map(.key as $matrix_key | .value | map_values({($matrix_key): .}))) | flatten | reduce .[] as $item ({}; . * $item)' )"
-          echo "result=${result}" | tee -a $GITHUB_ENV | tee -a $GITHUB_OUTPUT
+          DOCKER_IMAGES_TARGETS=$(find . -name build-n-publish -maxdepth 2 -type f | head -n1 | xargs cat | jq -r '."linux/amd64".DOCKER_IMAGES_TARGETS')
+          echo DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS} | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Remove artifacts
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.actions.artifact.deleteAll()
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -243,19 +232,10 @@ jobs:
           HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
           DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
 
-
-      - uses: cloudposse/github-action-matrix-outputs-read@v1
-        id: read
-        with:
-          matrix-step-name: metadata
-
       - name: Merge multi-platform manifests
         run: |
           PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo)
           echo $PLATFORMS
-          echo ${{ steps.read.outputs.result}}
-          echo ${{ steps.matrix-artifacts.outputs.result}}
-          echo ${{ needs.read-matrix.outputs.result }}
           echo $DOCKER_IMAGE_TARGETS
 
           earthly \
