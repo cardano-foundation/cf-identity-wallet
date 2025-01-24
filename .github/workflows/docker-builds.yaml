@@ -29,9 +29,7 @@ on:
         - all
 
 env:
-  PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
-  PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
-  PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
+
   DOCKER_PUSH: true
 
 jobs:
@@ -68,9 +66,9 @@ jobs:
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
-          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
-          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+          PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
+          PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
+          PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
           HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
           HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
           DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
@@ -200,7 +198,7 @@ jobs:
       - uses: cloudposse/github-action-matrix-outputs-read@v1
         id: read
         with:
-          matrix-step-name: build-n-publish
+          matrix-step-name: metadata
 
     outputs:
       result: "${{ steps.read-matrix.outputs.result }}"
@@ -234,13 +232,13 @@ jobs:
       - uses: cloudposse/github-action-matrix-outputs-read@v1
         id: read
         with:
-          matrix-step-name: build-n-publish
+          matrix-step-name: metadata
 
       - name: Merge multi-platform manifests
         run: |
           PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo)
           echo $PLATFORMS
-          echo ${{ steps.read.outputs.DOCKER_IMAGES_TARGETS }}
+          echo ${{ steps.read.outputs.result}}
           echo ${{ needs.read-matrix.outputs.result }}
           echo $DOCKER_IMAGE_TARGETS
 
