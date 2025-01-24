@@ -242,7 +242,6 @@ jobs:
           echo $PLATFORMS
           echo ${{ steps.read.outputs.DOCKER_IMAGES_TARGETS }}
           echo ${{ needs.read-matrix.outputs.result }}
-          #DOCKER_IMAGE_TARGETS=${{ fromJson(needs.read-matrix.outputs.result).DOCKER_IMAGES_TARGETS }}
           echo $DOCKER_IMAGE_TARGETS
 
           earthly \
