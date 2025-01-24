@@ -241,7 +241,7 @@ jobs:
           PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo)
           echo $PLATFORMS
           echo ${{ steps.read.outputs.DOCKER_IMAGES_TARGETS }}
-          echo ${{ fromJson(needs.read-matrix.outputs.result).DOCKER_IMAGES_TARGETS }}
+          echo ${{ needs.read-matrix.outputs.result }}
           DOCKER_IMAGE_TARGETS=${{ fromJson(needs.read-matrix.outputs.result).DOCKER_IMAGES_TARGETS }}
           echo $DOCKER_IMAGE_TARGETS
 
