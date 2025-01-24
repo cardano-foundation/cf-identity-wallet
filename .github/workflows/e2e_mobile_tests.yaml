@@ -1,14 +1,16 @@
-name: Mobile e2e tests
+name: e2e mobile tests
 on:
   workflow_dispatch:
 jobs:
-  test:
+  e2e-mobile-tests:
     timeout-minutes: 60
-    runs-on: macos-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      - name: 🦾 Create .env file
+        run: |
+          echo "APP_PATH=/Users/admin/Library/Developer/Xcode/DerivedData/App-dgpfwkrrkmjevwdutjwosmyccrkl/Build/Products/Debug-iphonesimulator/App.app" > .env
       - name: Setup node
         uses: actions/setup-node@v4
         with:
@@ -16,3 +18,21 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: 🔨 Build project
+        run: |
+          export LANG=en_US.UTF-8
+          npm run build:cap
+
+      - name: 🔨 Build app for iOS simulator
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator18.0 CODE_SIGN_INDENTITY="org.cardanofoundation.idw" CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=YES
+
+      - name: 📱 Start appium
+        run: appium &
+
+      - name: 📱 Start iOS simulator app
+        run: open -a Simulator.app &
+
+      - name: 🏃🏼 Run tests for iOS simulator
+        run: npm run wdio:ios:16promax
