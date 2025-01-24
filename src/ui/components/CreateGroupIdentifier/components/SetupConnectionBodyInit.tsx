@@ -74,7 +74,7 @@ const SetupConnectionBodyInit = ({
           className="copy-button secondary-button"
           data-testid={"multisig-copy-oobi-connection-button"}
           onClick={copyToClipboard}
-          disabled
+          disabled={isPending}
         >
           {i18n.t("createidentifier.share.copybutton")}
           <IonIcon

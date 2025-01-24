@@ -87,7 +87,7 @@ const SetupConnectionBodyResume = ({
             className="copy-button secondary-button"
             data-testid={`copy-button-${componentId}`}
             onClick={copyToClipboard}
-            disabled
+            disabled={isPending}
           >
             {i18n.t("createidentifier.share.copybutton")}
             <IonIcon
