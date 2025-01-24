@@ -38,7 +38,7 @@
     "@ionic/react-router": "^7.5.4",
     "@ionic/storage": "^3.0.6",
     "@jimcase/barcode-scanning": "^7.0.0-next.5",
-    "@jimcase/capacitor-secure-storage-plugin": "^3.1.4",
+    "@jimcase/capacitor-secure-storage-plugin": "^3.1.5",
     "@reduxjs/toolkit": "^1.9.5",
     "bip39": "^3.0.4",
     "capacitor-native-settings": "^6.0.1",
