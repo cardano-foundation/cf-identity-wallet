@@ -195,12 +195,12 @@ jobs:
   ## Read matrix outputs 
   read-matrix:
     runs-on: ubuntu-latest
-    needs: [build-n-push]
+    needs: [build-n-publish]
     steps:
       - uses: cloudposse/github-action-matrix-outputs-read@v1
         id: read
         with:
-          matrix-step-name: build-n-push
+          matrix-step-name: build-n-publish
 
     outputs:
       result: "${{ steps.read-matrix.outputs.result }}"
