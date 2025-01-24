@@ -192,10 +192,24 @@ jobs:
           outputs: |-
             DOCKER_IMAGES_TARGETS: ${{ steps.metadata.outputs.DOCKER_IMAGES_TARGETS }}
 
+  ## Read matrix outputs 
+  read-matrix:
+    runs-on: ubuntu-latest
+    needs: [build-n-push]
+    steps:
+      - uses: cloudposse/github-action-matrix-outputs-read@v1
+        id: read
+        with:
+          matrix-step-name: build-n-push
+
+    outputs:
+      result: "${{ steps.read-matrix.outputs.result }}"
+
   merge-multi-platform-manifests:
     needs: 
       - set-matrix
       - build-n-publish
+      - read-matrix
     permissions:
       contents: read
       packages: write
@@ -227,7 +241,8 @@ jobs:
           PLATFORMS=$(echo '${{ needs.set-matrix.outputs.matrix }}' | jq -r '.platform[]' | xargs echo)
           echo $PLATFORMS
           echo ${{ steps.read.outputs.DOCKER_IMAGES_TARGETS }}
-          DOCKER_IMAGE_TARGETS=${{ steps.read.outputs.DOCKER_IMAGES_TARGETS }}
+          echo ${{ fromJson(needs.read-matrix.outputs.result).DOCKER_IMAGES_TARGETS }}
+          DOCKER_IMAGE_TARGETS=${{ fromJson(needs.read-matrix.outputs.result).DOCKER_IMAGES_TARGETS }}
           echo $DOCKER_IMAGE_TARGETS
 
           earthly \
