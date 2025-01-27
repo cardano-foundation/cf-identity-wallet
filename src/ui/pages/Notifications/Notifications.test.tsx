@@ -110,6 +110,23 @@ const filterTestData = {
   },
 };
 
+const emptyConnection = {
+  stateCache: {
+    routes: [TabsRoutePath.NOTIFICATIONS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  connectionsCache: {
+    connections: {},
+  },
+  notificationsCache: {
+    notifications: [notificationsFix[0], notificationsFix[3]],
+  },
+};
+
 describe("Notifications Tab", () => {
   test("Renders empty Notifications Tab", () => {
     const storeMocked = {
@@ -227,6 +244,42 @@ describe("Notifications Tab", () => {
     });
 
     expect(readNotificationMock).toBeCalledWith(notificationsFix[0].id);
+  });
+
+  test("Cannot open notification from unknown issuer", async () => {
+    const storeMocked = {
+      ...mockStore(filterTestData),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.NOTIFICATIONS);
+
+    const { getByTestId, getByText } = render(
+      <IonReactMemoryRouter history={history}>
+        <Provider store={storeMocked}>
+          <Notifications />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByTestId(`notifications-tab-item-${notificationsFix[0].id}`)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`notifications-tab-item-${notificationsFix[0].id}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.notifications.tab.unknownissuer.text)
+      ).toBeVisible();
+    });
   });
 
   test("Renders Notifications in Notifications Tab", async () => {

@@ -1,8 +1,4 @@
 .notification-details-multi-sig-request {
-  &.setup-identifier.blur {
-    filter: blur(0.1rem);
-  }
-
   ion-header ion-toolbar {
     margin-top: 0.625rem;
     --background: var(--ion-color-neutral-200);
@@ -185,15 +181,13 @@
   }
 }
 
-.multisig-request-spinner-container {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 ion-toolbar.multisig-request-footer {
   &.page-footer {
     padding-bottom: 0.5rem;
+
+    .secondary-button::part(native) {
+      border: none;
+      color: var(--ion-color-error-800);
+    }
   }
 }

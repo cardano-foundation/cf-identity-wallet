@@ -70,11 +70,12 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-const getMock = jest.fn();
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: () => getMock(),
+const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
+
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: (options: { key: string }) => getMock(options.key),
     remove: jest.fn(),
   },
 }));
@@ -174,7 +175,6 @@ describe("ConnectionDetails Page", () => {
   });
 
   test("Delete button in the footer triggers a confirmation alert", async () => {
-    getMock.mockImplementation(() => Promise.resolve("111111"));
 
     const storeMocked = {
       ...mockStore(initialStateFull),
@@ -668,8 +668,6 @@ describe("Checking the Connection Details Page when connection is missing from t
         />
       </Provider>
     );
-
-    getMock.mockImplementation(() => Promise.resolve("111111"));
 
     await waitFor(() => {
       expect(getByTestId("connection-details-cloud-error-page")).toBeVisible();

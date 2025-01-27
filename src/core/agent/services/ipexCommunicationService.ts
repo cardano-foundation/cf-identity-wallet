@@ -106,9 +106,8 @@ class IpexCommunicationService extends AgentService {
     }
 
     const schemaSaid = grantExn.exn.e.acdc.s;
-    await this.connections.resolveOobi(
-      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
-    );
+    const issuerOobi = (await this.connections.getConnectionById(grantExn.exn.i)).serviceEndpoints[0];
+    await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, grantExn.exn.i, schemaSaid), true);
 
     const allSchemaSaids = Object.keys(grantExn.exn.e.acdc?.e || {}).map(
       // Chained schemas, will be resolved in admit/multisigAdmit
@@ -159,6 +158,7 @@ class IpexCommunicationService extends AgentService {
         grantNoteRecord.a.d as string,
         holder.id,
         grantExn.exn.i,
+        issuerOobi,
         allSchemaSaids
       );
 
@@ -442,15 +442,11 @@ class IpexCommunicationService extends AgentService {
     notificationD: string,
     holderAid: string,
     issuerAid: string,
+    issuerOobi: string,
     schemaSaids: string[]
   ): Promise<{ op: Operation, exnSaid: string }> {
-    // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     for (const schemaSaid of schemaSaids) {
-      if (schemaSaid) {
-        await this.connections.resolveOobi(
-          `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
-        );
-      }
+      await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, issuerAid, schemaSaid), true);
     }
 
     const dt = new Date().toISOString().replace("Z", "000+00:00");
@@ -492,9 +488,8 @@ class IpexCommunicationService extends AgentService {
       schemaSaid = previousExchange.exn.e.acdc.s;
     }
 
-    await this.connections.resolveOobi(
-      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
-    );
+    const issuerOobi = (await this.connections.getConnectionById(connectionId)).serviceEndpoints[0];
+    await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, connectionId, schemaSaid), true);
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
 
     let prefix;
@@ -910,9 +905,8 @@ class IpexCommunicationService extends AgentService {
       .catch(async (error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
-          await this.connections.resolveOobi(
-            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
-          );
+          const issuerOobi = (await this.connections.getConnectionById(exchange.exn.i)).serviceEndpoints[0];
+          await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, exchange.exn.i, schemaSaid), true);
           return await this.props.signifyClient.schemas().get(schemaSaid);
         } else {
           throw error;
@@ -948,13 +942,11 @@ class IpexCommunicationService extends AgentService {
     let sigsMes: string[];
     let mend: string;
 
+    const issuerOobi = (await this.connections.getConnectionById(grantExn.exn.i)).serviceEndpoints[0];
     await Promise.all(
       schemaSaids.map(
         async (schemaSaid) =>
-          await this.connections.resolveOobi(
-            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
-            true
-          )
+          await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, grantExn.exn.i, schemaSaid), true)
       )
     );
 
@@ -1116,6 +1108,18 @@ class IpexCommunicationService extends AgentService {
     const multiSigExn = await this.props.signifyClient.exchanges().get(current);
     const offerExn = multiSigExn.exn.e.exn;
     return offerExn.e.acdc.d;
+  }
+
+  private async getSchemaUrl(agentOobi: string, prefix: string, said: string): Promise<string> {
+    // Indexer role indicates issuer site hosting OOBIs for e.g. schemas.
+    // This can be improved by resolving the indexer OOBI and using KERIA to retrieve the /loc/scheme URL.
+    // For now this works, and doesn't impose security risks since schemas are secured by their SAID.
+    const agentBase = agentOobi.split("/agent")[0].split("/controller")[0].replace("http://keria:3902", "http://127.0.0.1:3902");
+
+    const indexerOobiResult = await (await fetch(`${agentBase}/indexer/${prefix}`)).text();
+    const schemaBase = indexerOobiResult.split("\"url\":\"")[1].split("\"")[0];
+
+    return `${schemaBase}/oobi/${said}`;
   }
 }
 

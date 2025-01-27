@@ -46,7 +46,7 @@ const LockPageContainer = () => {
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const firstAppLaunch = useSelector(geFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
-  const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen(false);
 
   const {
     isLock,
@@ -118,25 +118,23 @@ const LockPageContainer = () => {
   };
 
   const verifyPasscode = async (pass: string) => {
-    try {
-      const storedPass = (await SecureStorage.get(
-        KeyStoreKeys.APP_PASSCODE
-      )) as string;
-      if (!storedPass) return false;
-      return storedPass === pass;
-    } catch (e) {
+    const storedPass = await SecureStorage.get(
+      KeyStoreKeys.APP_PASSCODE
+    );
+    if (!storedPass) {
       return false;
     }
+    return storedPass === pass;
   };
 
   const handleBiometrics = async () => {
-    disablePrivacy();
+    await disablePrivacy();
     const isAuthenticated = await handleBiometricAuth();
+    await enablePrivacy();
     if (isAuthenticated === true) {
       dispatch(login());
       dispatch(setFirstAppLaunch(false));
     }
-    enablePrivacy();
   };
 
   const resetPasscode = () => {

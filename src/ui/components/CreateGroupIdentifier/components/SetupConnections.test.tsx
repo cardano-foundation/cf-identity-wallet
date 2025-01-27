@@ -150,6 +150,7 @@ describe("Create group identifier - Setup Connection", () => {
           resetModal={resetModal}
           resumeMultiSig={stage1State.newIdentifier}
           multiSigGroup={undefined}
+          openAfterCreate
         />
       </Provider>
     );
@@ -229,6 +230,7 @@ describe("Create group identifier - Setup Connection", () => {
             setBlur={setBlur}
             resetModal={resetModal}
             multiSigGroup={undefined}
+            openAfterCreate
           />
         </Provider>
       );
@@ -319,6 +321,7 @@ describe("Create group identifier - Setup Connection", () => {
             setBlur={setBlur}
             resetModal={resetModal}
             multiSigGroup={undefined}
+            openAfterCreate
           />
         </Provider>
       );

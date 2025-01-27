@@ -52,6 +52,7 @@ import {
   CreateIdentifierProps,
   IdentifierModel,
 } from "./CreateIdentifier.types";
+import { Spinner } from "../Spinner";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
 const DUPLICATE_NAME = "Identifier name is a duplicate";
@@ -272,14 +273,7 @@ const CreateIdentifier = ({
         className={`${componentId} full-page-modal ${blur ? "blur" : ""}`}
         data-testid={componentId}
       >
-        {blur && (
-          <div
-            className="spinner-container"
-            data-testid="spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        )}
+        <Spinner show={blur}/>
         <ScrollablePageLayout
           pageId={componentId + "-content"}
           activeStatus={modalIsOpen}

@@ -1158,6 +1158,10 @@
           "identifiers": "Identifiers",
           "credentials": "Credentials"
         },
+        "unknownissuer": {
+          "text": "Someone is trying to issue you a credential. Ensure your connections are set up to accept it.",
+          "button": "OK"
+        },
         "sections": {
           "new": "New",
           "earlier": {
@@ -1865,5 +1869,22 @@
   "readmore": {
     "more": "Read more",
     "less": "Read less"
+  },
+  "systemcompatibility": {
+    "title": "Operating system outdated",
+    "description": "Your device's operating system does not meet the minimum requirements for secure data storage. To protect your information, update is required.",
+    "ios": {
+      "os": "Required iOS",
+      "youros": "Your iOS",
+      "storage": "Secure Storage"
+    },
+    "android": {
+      "os": "Required Android OS",
+      "youros": "Your Android OS",
+      "webview": "Required WebView",
+      "yourwebview": "Your WebView",
+      "storage": "Secure Storage"
+    },
+    "noinfo": "No device information available."
   }
 }

@@ -254,6 +254,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     const conditions: string[] = [];
     let values: string[] = [];
     const dbQuery = convertDbQuery(query);
+
     for (const [queryKey, queryVal] of Object.entries(dbQuery)) {
       if (queryKey === "$or" || queryKey === "$and") {
         const orConditions: string[] = [];
@@ -262,11 +263,14 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
           orConditions.push(orQuery.condition);
           values = values.concat(orQuery.values);
         }
-        conditions.push(
-          orConditions
-            .map((condition) => "(" + condition + ")")
-            .join(queryKey === "$or" ? " OR " : " AND ")
-        );
+
+        if (orConditions.length > 0) {
+          conditions.push(
+            orConditions
+              .map((condition) => "(" + condition + ")")
+              .join(queryKey === "$or" ? " OR " : " AND ")
+          );
+        }
       } else if (queryKey === "$not") {
         const notQuery = this.getQueryConditionSql(
           queryVal as Query<BasicRecord>

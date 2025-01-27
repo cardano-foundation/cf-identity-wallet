@@ -27,11 +27,14 @@ import { NotificationOptionsModal } from "./components/NotificationOptionsModal"
 import { FilterChip } from "../../components/FilterChip/FilterChip";
 import { IdentifiersFilters } from "../Identifiers/Identifiers.types";
 import { AllowedChipFilter } from "../../components/FilterChip/FilterChip.types";
+import { Alert } from "../../components/Alert";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
   const history = useHistory();
+  const connectionsCache = useAppSelector(getConnectionsCache);
   const notificationsCache = useAppSelector(getNotificationsCache);
   const notifications = [...notificationsCache].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -45,6 +48,7 @@ const Notifications = () => {
   );
   const [isOpenCredModal, setIsOpenCredModal] = useState(false);
   const [viewCred, setViewCred] = useState("");
+  const [openUnknownConnectionAlert, setOpenUnknownConnectionAlert] = useState(false);
 
   const filteredNotification = useMemo(() => {
     if (selectedFilter === NotificationFilters.All) {
@@ -106,6 +110,11 @@ const Notifications = () => {
   const handleNotificationClick = async (item: KeriaNotification) => {
     await maskAsReaded(item);
 
+    if(item.a.r === NotificationRoute.ExnIpexGrant && !connectionsCache?.[item.connectionId]?.label) {
+      setOpenUnknownConnectionAlert(true);
+      return;
+    }
+
     if (item.a.r === NotificationRoute.LocalAcdcRevoked) {
       setIsOpenCredModal(true);
       setViewCred(`${item.a.credentialId}`);
@@ -150,6 +159,10 @@ const Notifications = () => {
     setViewCred("");
     setIsOpenCredModal(false);
   };
+
+  const closeUnknownConnection = () => {
+    setOpenUnknownConnectionAlert(false);
+  }
 
   return (
     <>
@@ -221,6 +234,15 @@ const Notifications = () => {
         setIsOpen={setIsOpenCredModal}
         onClose={handleHideCardDetails}
         id={viewCred}
+      />
+      <Alert
+        isOpen={openUnknownConnectionAlert}
+        setIsOpen={setOpenUnknownConnectionAlert}
+        dataTestId="alert-unknown-issuer"
+        headerText={i18n.t("tabs.notifications.tab.unknownissuer.text")}
+        confirmButtonText={`${i18n.t("tabs.notifications.tab.unknownissuer.button")}`}
+        actionConfirm={closeUnknownConnection}
+        actionDismiss={closeUnknownConnection}
       />
     </>
   );

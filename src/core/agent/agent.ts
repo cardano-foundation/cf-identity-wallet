@@ -60,6 +60,7 @@ class Agent {
     "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
+  static readonly MISSING_BRAN_SECURE_STORAGE = "Bran not in secure storage";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
@@ -372,38 +373,15 @@ class Agent {
 
   async devPreload() {
     const APP_PASSSCODE_DEV_MODE = "111111";
-    try {
-      await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
-      ) {
-        await SecureStorage.set(
-          KeyStoreKeys.APP_PASSCODE,
-          APP_PASSSCODE_DEV_MODE
-        );
-      } else {
-        throw error;
-      }
+
+    const appPasscode = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+    if (!appPasscode) {
+      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
     }
 
-    try {
-      await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
-      ) {
-        await SecureStorage.set(
-          KeyStoreKeys.SIGNIFY_BRAN,
-          randomPasscode().substring(0, 21)
-        );
-      } else {
-        throw error;
-      }
+    const appSignifyBran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    if (!appSignifyBran) {
+      await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
     }
 
     await this.basicStorage.createOrUpdateBasicRecord(
@@ -499,7 +477,11 @@ class Agent {
   }
 
   private async getBran(): Promise<string> {
-    return (await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN)) as string;
+    const bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    if (!bran){
+      throw new Error(Agent.MISSING_BRAN_SECURE_STORAGE);
+    }
+    return bran as string;
   }
 
   private getStorageService<T extends BaseRecord>(
