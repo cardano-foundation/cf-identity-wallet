@@ -35,7 +35,7 @@
 
 <p align="center">
   <kbd> 
-      <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
+      <img src="docs/images/readme/User-Flow-Preview.png" alt="User Flow Preview" width="720"/>
   </kbd>
 </p>
 
