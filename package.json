@@ -38,7 +38,7 @@
     "@ionic/react-router": "^7.5.4",
     "@ionic/storage": "^3.0.6",
     "@jimcase/barcode-scanning": "^7.0.0-next.5",
-    "@jimcase/capacitor-secure-storage-plugin": "^3.1.4",
+    "@jimcase/capacitor-secure-storage-plugin": "^3.1.5",
     "@reduxjs/toolkit": "^1.9.5",
     "bip39": "^3.0.4",
     "capacitor-native-settings": "^6.0.1",
@@ -54,7 +54,7 @@
     "react-qrcode-logo": "^3.0.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.3.4",
-    "signify-ts": "github:WebOfTrust/signify-ts#75a280beea0831d3f90dfa7703eaef83d73b79e5",
+    "signify-ts": "github:WebOfTrust/signify-ts#b2395633ad75ecabbd3e54394c96e0fbf5148a2d",
     "swiper": "^11.1.14",
     "web-vitals": "^2.1.4"
   },

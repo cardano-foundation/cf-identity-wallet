@@ -665,7 +665,7 @@ describe("Identifiers Tab", () => {
     unmount();
   });
 
-  test("Remove pending multisig identifier alert", async () => {
+  test("Open pending group identifier", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -701,15 +701,18 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+
     const { getByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter history={history}>
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
             component={Identifiers}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     await waitFor(() => {
@@ -724,9 +727,7 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.identifiers.detelepending.mutilsigdescription
-        )
+        getByTestId("create-group-identifier-modal")
       ).toBeVisible();
     });
   });

@@ -12,12 +12,13 @@ ion-modal.create-group-identifier-modal {
 
         &::part(native) {
           padding: 0;
+          background: var(--ion-color-primary-700);
         }
 
         ion-icon {
           width: 1.5rem;
           height: 1.5rem;
-          color: var(--ion-color-neutral-700);
+          color: var(--ion-color-neutral-100);
         }
       }
     }
@@ -54,7 +55,6 @@ ion-modal.create-group-identifier-modal {
 
     #react-qrcode-logo {
       background-color: var(--ion-color-neutral-100);
-      box-shadow: 0rem 0.125rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
     }
 
     ion-button.copy-button {
@@ -69,15 +69,31 @@ ion-modal.create-group-identifier-modal {
         border-color: var(--ion-color-neutral-100);
       }
 
+      &.button-disabled {
+        &::part(native) {
+          filter: blur(0.15rem);
+        }
+      }
+
       ion-icon {
         margin-left: 8vw;
       }
     }
 
+    .qr-container {
+      display: inline-block;
+      box-shadow: 0.25rem 0.25rem 0.5rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
+      margin: 0.8rem auto;
+      border-radius: 1rem;
+      width: 70vw;
+      height: 70vw;
+      position: relative;
+      overflow: hidden;
+    }
+
     .multisig-share-qr-code-blur-overlay-container {
       position: absolute;
       left: calc(50% - 35vw);
-      box-shadow: 0rem 0.125rem 0.25rem rgba(var(--ion-color-neutral-700), 0.2);
 
       .multisig-share-qr-code-blur-overlay-inner {
         display: none;
@@ -86,16 +102,15 @@ ion-modal.create-group-identifier-modal {
 
     #react-qrcode-logo,
     .multisig-share-qr-code-blur-overlay-container {
-      width: 70vw !important;
-      height: 70vw !important;
       padding: 1.5rem;
-      margin: 0.8rem auto;
       border-radius: 1rem;
+      width: 100% !important;
+      height: 100% !important;
     }
 
     &.blur {
       #react-qrcode-logo {
-        filter: blur(0.5rem);
+        filter: blur(0.35rem);
         opacity: 0.3;
       }
 
@@ -106,12 +121,9 @@ ion-modal.create-group-identifier-modal {
         width: 100%;
         height: 100%;
 
-        ion-icon {
-          width: 5rem;
-          height: 5rem;
-          opacity: 1;
-          text-align: center;
-          margin: 0 auto;
+        .spinner-container {
+          background: none;
+          height: auto;
         }
       }
     }
@@ -469,14 +481,25 @@ ion-modal.create-group-identifier-modal {
 
       #react-qrcode-logo,
       .multisig-share-qr-code-blur-overlay-container {
-        width: 65vw !important;
-        height: 65vw !important;
         padding: 0.9rem;
         margin: 0 auto 0.5rem;
       }
 
       .multisig-share-qr-code-blur-overlay-container {
         left: calc(50% - 32.5vw);
+
+        .multisig-share-qr-code-blur-overlay-inner {
+          .spinner-container {
+            ion-spinner {
+              width: 1.25rem;
+              height: 1.25rem;
+            }
+          }
+
+          p {
+            margin: 1rem 1rem 0rem;
+          }
+        }
       }
 
       .share-identifier-scan-button ion-button {

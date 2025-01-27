@@ -76,6 +76,7 @@ jobs:
       - name: Set docker image targets based on path changes from last commit
         id: metadata
         run: |
+          set -x
 
           if [ ${{github.event_name}} == "workflow_dispatch" ]
           then
@@ -107,33 +108,33 @@ jobs:
             echo "DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
             echo "DOCKER_IMAGES_TARGETS_$(echo ${{ matrix.platform }} | sed 's|/|_|g')=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
           fi
-
+          
           if [ ${{github.event_name}} == "pull_request" ]
           then
-            GIT_BRANCH_SHORT_COMMIT=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
+            git checkout ${BRANCH_NAME}
 
             # set earthly docker image targets based on changed paths
             set +e
             DOCKER_IMAGES_TARGETS="$( \
-              ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
-              ( git log --patch -n1 Earthfile | grep -q "ARG.*global.*KERIA_" ) && \
+              ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${PR_GIT_SHORT_COMMIT} ) && \
+              ( git log --patch -n1 Earthfile | grep -q "^[+-]ARG.*global.*KERIA_" ) && \
               echo idw-keria
             )"
             DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
-                ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
-                ( git log --patch -n1 Earthfile | grep -q "ARG.*global.*KERI_DOCKER" ) && \
+                ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${PR_GIT_SHORT_COMMIT} ) && \
+                ( git log --patch -n1 Earthfile | grep -q "^[+-]ARG.*global.*KERI_DOCKER" ) && \
                 echo idw-witness
             )"
             DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
-                ( git log --pretty=format:'%h' -n 1 services/credential-server | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
+                ( git log --pretty=format:'%h' -n 1 services/credential-server | grep -q ${PR_GIT_SHORT_COMMIT} ) && \
                 echo cred-issuance
             )"
             DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
-                ( git log --pretty=format:'%h' -n 1 services/credential-server-ui | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
+                ( git log --pretty=format:'%h' -n 1 services/credential-server-ui | grep -q ${PR_GIT_SHORT_COMMIT} ) && \
                 echo cred-issuance-ui
             )"
             DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
-                ( git log --pretty=format:'%h' -n 1 services/cip45-sample-dapp | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
+                ( git log --pretty=format:'%h' -n 1 services/cip45-sample-dapp | grep -q ${PR_GIT_SHORT_COMMIT} ) && \
                 echo cip45-sample-dapp
             )"
             set -e
@@ -142,6 +143,8 @@ jobs:
               echo "DOCKER_IMAGES_TARGETS=${STRIPPED_DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
               echo "DOCKER_IMAGES_TARGETS_$(echo ${{ matrix.platform }} | sed 's|/|_|g')=${STRIPPED_DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
             fi
+
+            git checkout ${GIT_SHORT_COMMIT}
           fi
 
       - name: 🌍 earthly (docker build and push)
