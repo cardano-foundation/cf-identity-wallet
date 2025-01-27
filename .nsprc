@@ -1,10 +1,25 @@
 {
-  "1099357": {
+  "1096820": {
     "active": true,
-    "notes": "Ignored since there is not any patch available",
-    "expiry": "2025-03-31"
+    "notes": "Ignored since is related just to appium e2e"
   },
-  "1101081": {
+  "1096856": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1098392": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1098583": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1099520": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1099846": {
     "active": true,
     "notes": "Ignored since is related just to appium e2e"
   },
@@ -12,8 +27,40 @@
     "active": true,
     "notes": "Ignored since is related just to appium e2e"
   },
+  "1100526": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1100528": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1100530": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1100563": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
   "1101088": {
     "active": true,
     "notes": "Ignored since is related to nodemon server from dev dep"
+  },
+  "1101844": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1101846": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1101850": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
+  },
+  "1101851": {
+    "active": true,
+    "notes": "Ignored since is related just to appium e2e"
   }
 }
