@@ -34,14 +34,15 @@ const PasswordMeter = ({ password }: PasswordMeterProps) => {
     {
       password.length > 0 && <div className="password-strength-meter">
         <div className={classes}>
-          <div className="level"/>
-          <div className="level"/>
-          <div className="level"/>
+          <div className="level" />
+          <div className="level" />
+          <div className="level" />
         </div>
         <p>{label}</p>
       </div>
     }
-    <p className={acceptCriteriaClass}>
+    <p className={acceptCriteriaClass}
+      data-testid="password-accept-criteria">
       <Trans i18nKey="createpassword.meter.acceptcriteria.text" />
     </p>
   </div>

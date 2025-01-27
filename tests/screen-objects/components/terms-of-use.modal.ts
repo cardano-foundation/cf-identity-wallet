@@ -48,8 +48,8 @@ export class TermsOfUseModal extends BaseModal {
   }
 
   async loads() {
-    await expect(this.introTitle(this.modalName)).toHaveText(TermsOfUse.Title);
-    await expect(this.introText(this.modalName)).toHaveText(TermsOfUse.Intro);
+    await expect(await this.introTitle(this.modalName)).toHaveText(TermsOfUse.Title);
+    await expect(await this.introText(this.modalName)).toHaveText(TermsOfUse.Intro);
     await this.validateSubtitlesAndContent("useofproducts", 1, 6);
     await this.validateSubtitlesAndContent("yourcontent", 2, 5);
     await this.validateSubtitlesAndContent("intellectualproperty", 3, 4);
