@@ -1,6 +1,6 @@
 VERSION 0.8
 
-IMPORT --allow-privileged github.com/cardano-foundation/cf-gha-workflows/./earthfiles/functions:main AS functions
+IMPORT --allow-privileged github.com/cardano-foundation/cf-gha-workflows/./earthfiles/functions:feat/add-manifest-merge-earhtly-function AS functions
 
 ARG --global DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui cip45-sample-dapp"
 
@@ -9,6 +9,7 @@ ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
 ARG --global DOCKER_IMAGES_LABELS=""
 ARG --global DOCKER_REGISTRIES=""
 ARG --global RELEASE_TAG=""
+ARG --global TARGET_PLATFORM=""
 ARG --global PUSH=false
 
 ARG --global KERIA_DOCKER_IMAGE_REPO=weboftrust/keria
@@ -27,6 +28,21 @@ all:
 
 docker-publish:
   BUILD +all --PUSH=$PUSH
+
+docker-manifests-merge:
+  ARG PLATFORMS
+  ARG DOCKER_REGISTRIES
+  ARG DOCKER_IMAGES_TARGETS
+  ARG DOCKER_IMAGES_EXTRA_TAGS
+  LOCALLY
+  FOR image_target IN $DOCKER_IMAGES_TARGETS
+    DO functions+DOCKER_MANIFESTS_MERGE \
+       --PLATFORMS="${PLATFORMS}" \
+       --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
+       --DOCKER_IMAGE_NAME="${DOCKER_IMAGES_PREFIX}-${image_target}" \
+       --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}" \
+       --PUSH=$PUSH
+  END
 
 keria-src:
   FROM alpine/git
@@ -78,6 +94,7 @@ idw-keria:
 
     DO functions+DOCKER_TAG_N_PUSH \
        --PUSH=$PUSH \
+       --TARGET_PLATFORM=${TARGET_PLATFORM} \
        --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
        --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
        --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keria-${KERIA_UPSTREAM_TAG}"
@@ -90,6 +107,7 @@ idw-witness:
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   LOCALLY
+  RUN echo $TARGETPLATFORM
   IF [ "${FORCE_BUILD}" = "false" ]
     ARG REGISTRY_IMAGE_EXISTS=$( (docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keri-${KERI_DOCKER_IMAGE_TAG} 2> /dev/null | grep -q layers) || echo false)
   ELSE
@@ -111,6 +129,7 @@ idw-witness:
     END
     DO functions+DOCKER_TAG_N_PUSH \
        --PUSH=$PUSH \
+       --TARGET_PLATFORM=${TARGET_PLATFORM} \
        --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
        --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
        --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keri-${KERI_DOCKER_IMAGE_TAG}"
@@ -129,6 +148,7 @@ cred-issuance:
   END
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
+     --TARGET_PLATFORM=${TARGET_PLATFORM} \
      --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
@@ -146,6 +166,7 @@ cred-issuance-ui:
   END
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
+     --TARGET_PLATFORM=${TARGET_PLATFORM} \
      --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
@@ -166,6 +187,7 @@ cip45-sample-dapp:
   END
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
+     --TARGET_PLATFORM=${TARGET_PLATFORM} \
      --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
