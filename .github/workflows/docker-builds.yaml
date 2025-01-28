@@ -255,10 +255,10 @@ jobs:
               --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
               --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           else
+              earthly \
               +docker-manifests-merge \
               --PUSH=true \
               --PLATFORMS="${PLATFORMS}" \
               --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
               --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           fi
-            
