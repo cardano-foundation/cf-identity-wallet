@@ -6,19 +6,19 @@ Feature: YourRecoveryPhrase
     And skip Create Password screen
 
 
-  Scenario: YourRecoveryPhrase - user can read Terms of Use
+  Scenario: C180 YourRecoveryPhrase - user can read Terms of Use
     Given user tap Terms of Use link on Your Recovery Phrase screen
     Then user can see Terms of Use modal
     When user tap Done button on modal
     Then user can see Your Recovery Phrase screen
 
-  Scenario: YourRecoveryPhrase - user can read Privacy Policy
+  Scenario: C181 YourRecoveryPhrase - user can read Privacy Policy
     Given user tap Privacy Policy link on Your Recovery Phrase screen
     Then user can see Privacy Policy modal
     When user tap Done button on modal
     Then user can see Your Recovery Phrase screen
 
-  Scenario: YourRecoveryPhrase - user can go to see Verify Seed Phrase screen
+  Scenario: C182 YourRecoveryPhrase - user can go to see Verify Seed Phrase screen
     Given user tap View Recovery Phrase button on Your Recovery Phrase screen
     And tap agree to the Terms and Conditions checkbox on Your Recovery Phrase screen
     When user tap Continue button Your Recovery Phrase screen
