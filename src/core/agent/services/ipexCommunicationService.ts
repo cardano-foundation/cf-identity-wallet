@@ -704,7 +704,7 @@ class IpexCommunicationService extends AgentService {
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
-    const [_, acdc] = Saider.saidify(acdcDetail);
+    const [, acdc] = Saider.saidify(acdcDetail);
 
     if (offerExnToJoin) {
       const [, ked] = Saider.saidify(offerExnToJoin);

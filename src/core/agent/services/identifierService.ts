@@ -257,7 +257,7 @@ class IdentifierService extends AgentService {
     } catch (error) {
       if (!(error instanceof Error)) throw error;
 
-      const [_, status, reason] = error.message.split(" - ");
+      const [, status, reason] = error.message.split(" - ");
       if (!(/400/gi.test(status) && /already incepted/gi.test(reason))) {
         throw error;
       }
