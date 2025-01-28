@@ -262,3 +262,28 @@ jobs:
               --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
               --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           fi
+
+  dispatch-build-success-event:
+    runs-on: ubuntu-latest
+    needs:
+      - merge-multi-platform-manifests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ⛮ cf-gha-baseline
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dispatch successful build event to private repo
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-dispatch-event@main
+        with:
+          EVENT_TYPE: "${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}"
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+          GITHUB_REPO: ${{ secrets.PRIVATE_REPO }}
+          TRIGGERING_EVENT: ${{ github.event_name }}
+          TRIGGERING_REF: ${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}
+          TRIGGERING_BRANCH: ${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}
+          TRIGGERING_GHRUNID: ${{ github.run_id }}
+          GIT_SHORT_COMMIT: ${{ steps.cf-gha-baseline.outputs.GIT_SHORT_COMMIT }}
