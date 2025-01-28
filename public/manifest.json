@@ -3,78 +3,43 @@
   "name": "CF Identity Wallet",
   "icons": [
     {
-      "src": "favicon-16x16.png",
-      "sizes": "16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo24.png",
-      "sizes": "24x24",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "favicon-32x32.png",
-      "sizes": "32x32",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "favicon48.png",
-      "sizes": "48x48",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo64.png",
-      "sizes": "64x64",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo-512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    },
-    {
-      "src": "../icons/icon-48.webp",
+      "src": "assets/icons/icon-48.webp",
       "type": "image/png",
       "sizes": "48x48",
       "purpose": "any maskable"
     },
     {
-      "src": "../icons/icon-72.webp",
+      "src": "assets/icons/icon-72.webp",
       "type": "image/png",
       "sizes": "72x72",
       "purpose": "any maskable"
     },
     {
-      "src": "../icons/icon-96.webp",
+      "src": "assets/icons/icon-96.webp",
       "type": "image/png",
       "sizes": "96x96",
       "purpose": "any maskable"
     },
     {
-      "src": "../icons/icon-128.webp",
+      "src": "assets/icons/icon-128.webp",
       "type": "image/png",
       "sizes": "128x128",
       "purpose": "any maskable"
     },
     {
-      "src": "../icons/icon-192.webp",
+      "src": "assets/icons/icon-192.webp",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "../icons/icon-256.webp",
+      "src": "assets/icons/icon-256.webp",
       "type": "image/png",
       "sizes": "256x256",
       "purpose": "any maskable"
     },
     {
-      "src": "../icons/icon-512.webp",
+      "src": "assets/icons/icon-512.webp",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"

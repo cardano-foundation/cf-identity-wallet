@@ -66,11 +66,9 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: () => {
-      return "111111";
-    },
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: (options: { key: string }) => Promise.resolve({ value: "111111" })
   },
 }));
 
@@ -211,7 +209,7 @@ describe("Wallet Connect Stage One", () => {
         pendingConnection: walletConnectionsFix[0],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
 

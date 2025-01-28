@@ -30,7 +30,7 @@
   ion-card {
     margin: 0;
     display: flex;
-    background: var(--ion-color-white);
+    background: var(--ion-color-neutral-100);
     border-radius: 1rem;
     flex-direction: column;
     justify-content: space-evenly;
@@ -57,7 +57,7 @@
         }
 
         *:last-child {
-          color: rgba(var(--ion-color-secondary-rgb), 0.5);
+          color: rgba(var(--ion-color-neutral-500-rgb), 0.5);
         }
 
         ion-icon {
@@ -82,7 +82,7 @@
 
 .edit-profile {
   .action-button-label p {
-    color: var(--ion-color-action-blue) !important;
+    color: var(--ion-color-primary-700) !important;
   }
 
   .edit-profile-content {

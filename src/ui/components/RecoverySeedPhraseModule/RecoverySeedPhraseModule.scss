@@ -1,5 +1,4 @@
 .verify-recovery-seed-phrase-module {
-  --background: var(--ion-color-light);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -12,10 +11,6 @@
     & > * {
       flex: 0 1 auto;
     }
-  }
-
-  .seed-phrase-module:nth-of-type(1) {
-    background: var(--ion-color-light-grey);
   }
 
   .page-title {
@@ -32,7 +27,7 @@
   .suggest-error {
     font-size: 1rem;
     line-height: 1.115rem;
-    color: var(--ion-color-primary);
+    color: var(--ion-color-neutral-800);
     text-align: center;
     font-weight: 400;
   }

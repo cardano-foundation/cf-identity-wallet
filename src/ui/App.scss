@@ -9,7 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 500;
-  background-color: var(--ion-color-light);
+  background-color: var(--ion-color-neutral-200);
 
   .max-zindex {
     z-index: 2147483647 !important; // max value
@@ -40,7 +40,7 @@ body {
       width: 100%;
       align-items: center;
       justify-content: center;
-      background: rgba(var(--ion-color-primary-rgb), 0.2);
+      background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
     }
   }
 
@@ -54,9 +54,9 @@ body {
     > div:last-child {
       display: block;
       z-index: -10;
-      --background: var(--ion-color-secondary) !important;
-      --ion-background-color: var(--ion-color-secondary) !important;
-      background-color: var(--ion-color-secondary) !important;
+      --background: var(--ion-color-neutral-700) !important;
+      --ion-background-color: var(--ion-color-neutral-700) !important;
+      background-color: var(--ion-color-neutral-700) !important;
 
       &.hide {
         display: none;
@@ -108,7 +108,7 @@ h1,
 h2,
 h3,
 h4 {
-  color: var(--ion-color-primary);
+  color: var(--ion-color-neutral-800);
 }
 
 h2,
@@ -127,7 +127,7 @@ p {
   margin: 0.5rem 0;
   padding-inline: 0;
   line-height: 1.375rem;
-  color: var(--ion-color-secondary);
+  color: var(--ion-color-neutral-700);
 }
 
 @media screen and (min-width: 250px) and (max-width: 370px) {
@@ -164,41 +164,50 @@ p {
 }
 
 .primary-button {
-  --color: var(--ion-color-primary);
-  --background: var(--ion-color-primary-gradient);
+  --color: var(--ion-color-neutral-100);
+  --background: var(--ion-color-primary-700);
+
+  ion-icon {
+    color: var(--ion-color-neutral-100) !important;
+  }
 }
 
 .secondary-button {
-  --color: var(--ion-color-primary);
-  --background: var(--ion-color-light);
-  --border-color: var(--ion-color-dark-grey);
+  --color: var(--ion-color-neutral-700);
+  --background: var(--ion-color-neutral-200);
+  --border-color: var(--ion-color-neutral-400);
 
   &::part(native) {
-    border: 1px solid var(--ion-color-dark-grey);
+    border: 1px solid var(--ion-color-neutral-400);
   }
 }
 
 .tertiary-button {
-  --color: var(--ion-color-primary);
+  --color: var(--ion-color-neutral-700);
   --background: transparent;
+  font-weight: 500;
+
+  ion-icon {
+    margin-right: 0.5rem;
+  }
 }
 
 .delete-button,
 .archive-button {
-  --color: var(--ion-color-white);
+  --color: var(--ion-color-neutral-100);
 
   ion-icon {
     margin-right: 0.5rem;
-    --ion-color-base: var(--ion-color-white) !important;
+    --ion-color-base: var(--ion-color-neutral-100) !important;
   }
 }
 
 .delete-button {
-  --background: var(--ion-color-danger);
+  --background: var(--ion-color-error-800);
 }
 
 .archive-button {
-  --background: var(--ion-color-action-blue);
+  --background: var(--ion-color-archive-400);
 }
 
 .primary-button,
@@ -208,10 +217,12 @@ p {
 .archive-button {
   font-size: 1rem;
   height: 3.25rem;
-  --background-activated: var(--ion-color-medium-grey);
+  --background-activated: var(--ion-color-neutral-400);
+  --border-radius: 1rem;
 
   &.button-disabled {
-    --background: var(--ion-color-dark-grey);
+    --background: var(--ion-color-neutral-400);
+    --color: var(--ion-color-neutral-800);
   }
 }
 
@@ -236,7 +247,7 @@ p {
 ion-toast {
   --height: 3.25rem;
   --border-radius: 0.5rem;
-  --box-shadow: 3px 3px 10px 0 rgba(var(--ion-color-black-rgb), 0.2);
+  --box-shadow: none;
 
   &::part(message) {
     text-align: left;
@@ -245,7 +256,7 @@ ion-toast {
 
   &.confirmation-toast {
     &::part(message) {
-      color: var(--ion-color-light);
+      color: var(--ion-color-neutral-100);
     }
   }
 
@@ -263,12 +274,13 @@ ion-router-outlet.blur {
 }
 
 ion-segment {
-  --background: var(--ion-color-dark-grey);
+  --background: var(--ion-color-neutral-300);
 
   ion-segment-button {
     &.segment-button-checked {
+      --color-checked: var(--ion-color-neutral-100);
       &::part(indicator-background) {
-        background: var(--ion-color-primary-gradient);
+        background: var(--ion-color-primary-700);
       }
     }
   }
@@ -286,4 +298,8 @@ ion-segment {
       min-height: 2.4rem;
     }
   }
+}
+
+ion-spinner {
+  color: var(--ion-color-primary-700);
 }

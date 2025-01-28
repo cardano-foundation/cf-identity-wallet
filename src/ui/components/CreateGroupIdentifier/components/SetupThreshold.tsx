@@ -5,6 +5,7 @@ import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { combineClassNames } from "../../../utils/style";
 
 const SetupThreshold = ({
   state,
@@ -33,6 +34,14 @@ const SetupThreshold = ({
       identifierCreationStage: Stage.Summary,
     }));
   };
+
+  const decreaseButtonClass = combineClassNames("decrease-threshold-button", {
+    "inactive": state.threshold === 1
+  });
+
+  const increaseButtonClass = combineClassNames("increase-threshold-button", {
+    "inactive": state.scannedConections.length + 1 === state.threshold
+  });
 
   return (
     <>
@@ -65,7 +74,7 @@ const SetupThreshold = ({
             <div className="identifier-threshold-controls">
               <IonButton
                 shape="round"
-                className="decrease-threshold-button"
+                className={decreaseButtonClass}
                 data-testid="decrease-threshold-button"
                 onClick={() => updateThreshold(-1)}
               >
@@ -77,7 +86,7 @@ const SetupThreshold = ({
               </IonButton>
               <IonButton
                 shape="round"
-                className="increase-threshold-button"
+                className={increaseButtonClass}
                 data-testid="increase-threshold-button"
                 onClick={() => updateThreshold(1)}
               >

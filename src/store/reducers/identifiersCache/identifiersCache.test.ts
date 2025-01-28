@@ -26,7 +26,7 @@ import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.ty
 
 describe("identifiersCacheSlice", () => {
   const initialState = {
-    identifiers: [],
+    identifiers: {},
     favourites: [],
     multiSigGroup: undefined,
     openMultiSigId: undefined,
@@ -52,7 +52,15 @@ describe("identifiersCacheSlice", () => {
       initialState,
       setIdentifiersCache(identifiers)
     );
-    expect(newState.identifiers).toEqual(identifiers);
+    expect(newState.identifiers).toEqual({
+      "id-1" : {
+        id: "id-1",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        isPending: false,
+      }
+    });
   });
 
   it("should handle setMultiSigGroupCache", () => {
@@ -100,7 +108,7 @@ describe("identifiersCacheSlice", () => {
   });
   it("should handle removeFavouriteIdentifierCache", () => {
     const initialState = {
-      identifiers: [],
+      identifiers: {},
       favourites: [
         {
           id: "abcd",
@@ -151,7 +159,22 @@ describe("identifiersCacheSlice", () => {
       currentState,
       updateOrAddIdentifiersCache(identifier)
     );
-    expect(newState.identifiers).toEqual([...identifiers, identifier]);
+    expect(newState.identifiers).toEqual({
+      "id-1": {
+        id: "id-1",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        isPending: false,
+      },
+      "id-2": {
+        id: "id-2",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        isPending: false,
+      }
+    });
   });
 
   it("should handle updateIsPending", () => {
@@ -164,10 +187,12 @@ describe("identifiersCacheSlice", () => {
         isPending: true,
       },
     ];
+    
     const currentState = identifiersCacheSlice.reducer(
       initialState,
       setIdentifiersCache(identifiers)
     );
+
     const identifier: IdentifierShortDetails = {
       id: "id-1",
       displayName: "example-name",
@@ -175,11 +200,21 @@ describe("identifiersCacheSlice", () => {
       theme: 0,
       isPending: false,
     };
+
     const newState = identifiersCacheSlice.reducer(
       currentState,
       updateIsPending({ id: identifier.id, isPending: identifier.isPending })
     );
-    expect(newState.identifiers).toEqual([identifier]);
+
+    expect(newState.identifiers).toEqual({
+      "id-1" : {
+        id: "id-1",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        isPending: false,
+      }
+    });
   });
 
   it("should handle setOpenMultiSigId", () => {
@@ -203,20 +238,17 @@ describe("get identifier Cache", () => {
   it("should return the identifiers cache from RootState", () => {
     const state = {
       identifiersCache: {
-        identifiers: [
-          {
-            id: "id-1",
-            displayName: "example-name-1",
-            createdAtUTC: "example-date",
-          },
-          {
-            id: "id-2",
-            displayName: "example-name-2",
-            createdAtUTC: "example-date",
-          },
-        ],
+        identifiers: {},
       },
     } as RootState;
+    state.identifiersCache.identifiers["id-1"] = {
+      id: "id-1",
+      displayName: "example-name-1",
+      createdAtUTC: "example-date", 
+      theme: 0,
+      isPending: false
+    }
+  
     const identifiersCache = getIdentifiersCache(state);
     expect(identifiersCache).toEqual(state.identifiersCache.identifiers);
   });

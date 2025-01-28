@@ -40,6 +40,12 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
   },
 ];
 
+const filteredIdentifierMapFix = filteredIdentifierFix.reduce((result, next) => {
+  result[next.id] = next;
+
+  return result;
+}, {} as Record<string, IdentifierShortDetails>);
+
 const multisignIdentifierFix: IdentifierShortDetails[] = [
   {
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
@@ -71,6 +77,7 @@ const pendingMultisignIdentifierFix: IdentifierShortDetails[] = [
 ];
 
 export {
+  filteredIdentifierMapFix,
   filteredIdentifierFix,
   multisignIdentifierFix,
   pendingMultisignIdentifierFix,

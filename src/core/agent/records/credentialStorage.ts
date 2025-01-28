@@ -15,7 +15,7 @@ class CredentialStorage {
     const records = await this.storageService.findAllByQuery(
       {
         ...(isArchived !== undefined ? { isArchived } : {}),
-        isDeleted: false,
+        pendingDeletion: false,
       },
       CredentialMetadataRecord
     );
@@ -49,7 +49,7 @@ class CredentialStorage {
     data: Partial<
       Pick<
         CredentialMetadataRecord,
-        "isArchived" | "status" | "credentialType" | "isDeleted"
+        "isArchived" | "status" | "credentialType" | "pendingDeletion"
       >
     >
   ) {
@@ -59,7 +59,7 @@ class CredentialStorage {
       if (data.credentialType !== undefined)
         record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
-      if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
+      if (data.pendingDeletion !== undefined) record.pendingDeletion = data.pendingDeletion;
       await this.storageService.update(record);
     }
   }
@@ -69,6 +69,15 @@ class CredentialStorage {
       {
         $or: ids.map((id) => ({ id })),
         ...query,
+      },
+      CredentialMetadataRecord
+    );
+  }
+
+  async getCredentialsPendingDeletion(): Promise<CredentialMetadataRecord[]> {
+    return this.storageService.findAllByQuery(
+      {
+        pendingDeletion: true,
       },
       CredentialMetadataRecord
     );

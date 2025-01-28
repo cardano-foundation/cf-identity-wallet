@@ -43,6 +43,7 @@ describe("credsCacheSlice", () => {
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierType: IdentifierType.Individual,
         identifierId: multisigMetadataRecord.id,
+        connectionId: "ebfeb1ebc6f1c276ef71212ec20"
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -61,6 +62,7 @@ describe("credsCacheSlice", () => {
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
       identifierId: multisigMetadataRecord.id,
+      connectionId: "ebfeb1ebc6f1c276ef71212ec20"
     };
     const newState = credsCacheSlice.reducer(
       initialState,
@@ -80,6 +82,7 @@ describe("credsCacheSlice", () => {
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Group,
       identifierId: multisigMetadataRecord.id,
+      connectionId: "ebfeb1ebc6f1c276ef71212ec20"
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
@@ -89,6 +92,7 @@ describe("credsCacheSlice", () => {
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Group,
       identifierId: multisigMetadataRecord.id,
+      connectionId: "ebfeb1ebc6f1c276ef71212ec20"
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,

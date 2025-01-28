@@ -1,6 +1,6 @@
 import { Notification } from "../services/credentialService.types";
 
-interface LinkedGroupRequest {
+interface LinkedRequest {
   accepted: boolean;
   current?: string;
   previous?: string;
@@ -12,4 +12,4 @@ interface NotificationAttempts {
   notification: Notification;
 }
 
-export type { LinkedGroupRequest, NotificationAttempts };
+export type { LinkedRequest, NotificationAttempts };

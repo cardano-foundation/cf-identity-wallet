@@ -22,7 +22,7 @@ const IdentifierSelectorModal = ({
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
 
-  const displayIdentifiers = identifierCache
+  const displayIdentifiers = Object.values(identifierCache)
     .filter((item) => !item.isPending)
     .filter((item) => !item.groupMetadata?.groupId)
     .map(

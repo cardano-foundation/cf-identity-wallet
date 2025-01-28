@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { BackEventPriorityType } from "../../globals/types";
 
 interface HardwareBackButtonConfig {
-  prevent: boolean;
+  prevent?: boolean;
   priority?: BackEventPriorityType;
   handler?: (processNextHandler?: () => void) => void;
 }

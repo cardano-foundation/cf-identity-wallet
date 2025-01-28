@@ -36,7 +36,7 @@ const ErrorPage = ({
     const multiSignGroupId =
       connectionsCache[notificationDetails.connectionId].groupId;
 
-    const identifier = identifierCache.find(
+    const identifier = Object.values(identifierCache).find(
       (item) => item.groupMetadata?.groupId === multiSignGroupId
     );
 

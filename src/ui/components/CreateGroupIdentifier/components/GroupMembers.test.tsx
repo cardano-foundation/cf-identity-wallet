@@ -34,7 +34,7 @@ describe("Identifier Stage 2", () => {
       isPending: false,
       groupMetadata: undefined,
     },
-    color: IdentifierColor.Green,
+    color: IdentifierColor.One,
   };
 
   const dispatchMock = jest.fn();

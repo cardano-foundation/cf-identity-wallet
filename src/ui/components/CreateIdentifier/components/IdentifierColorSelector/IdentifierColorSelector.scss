@@ -11,7 +11,7 @@
     position: relative;
 
     &.selected {
-      border: 1px solid var(--ion-color-secondary);
+      border: 2px solid var(--ion-color-primary-700);
     }
 
     .selected-theme-checkmark {
@@ -31,6 +31,9 @@
         height: 1.125rem;
         margin: auto;
         border-radius: 1.125rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
 
@@ -54,33 +57,29 @@
     }
 
     .selected-theme-checkmark {
-      background: var(--ion-color-primary-gradient);
+      background: var(--ion-color-primary-700);
+      color: var(--ion-color-neutral-100);
+      border: 1px solid var(--ion-color-neutral-100);
     }
 
-    &.green {
-      background: linear-gradient(
-        90.04deg,
-        #667745 28.46%,
-        #879e54 78.5%,
-        #a8c55f 123.53%,
-        #b9cf7c 165.71%
-      );
+    &.card-theme-0 {
+      background: var(--ion-color-card-theme-one);
     }
 
-    &.dark {
-      background: linear-gradient(91.22deg, #222222 -5.14%, #697949 165.6%);
+    &.card-theme-1 {
+      background: var(--ion-color-card-theme-two);
     }
 
-    &.brown {
-      background: linear-gradient(90.04deg, #986c32 28.46%, #4c371a 165.71%);
+    &.card-theme-2 {
+      background: var(--ion-color-card-theme-three);
     }
 
-    &.primary {
-      background: linear-gradient(91.86deg, #92ffc0 28.76%, #00a5e6 119.14%);
+    &.card-theme-3 {
+      background: var(--ion-color-card-theme-four);
     }
 
-    &.secondary {
-      background: linear-gradient(91.86deg, #363c4a 28.76%, #030321 119.14%);
+    &.card-theme-4 {
+      background: var(--ion-color-card-theme-five);
     }
   }
 }

@@ -57,7 +57,7 @@ describe("NextRoute", () => {
         bran: "",
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -317,7 +317,7 @@ describe("getNextRoute", () => {
       bran: "",
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
       favourites: [],
       multiSigGroup: {
         groupId: "",

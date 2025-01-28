@@ -29,7 +29,7 @@ const IdentifierOptions = ({
   const [shareIsOpen, setShareIsOpen] = useState(false);
 
   useEffect(() => {
-    const identifier = identifiersData.find((data) => data.id === cardData.id);
+    const identifier = identifiersData[cardData.id];
     if (identifier && identifier.multisigManageAid) {
       setIsMultiSig(true);
     }

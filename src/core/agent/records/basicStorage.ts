@@ -2,14 +2,12 @@ import {
   Query,
   SaveBasicRecordOption,
   StorageApi,
+  StorageMessage,
   StorageService,
 } from "../../storage/storage.types";
 import { BasicRecord } from "./basicRecord";
 
 class BasicStorage implements StorageApi {
-  static readonly RECORD_DOES_NOT_EXIST_ERROR_MSG =
-    "Record does not exist with id";
-
   private storageService: StorageService<BasicRecord>;
 
   constructor(storageService: StorageService<BasicRecord>) {
@@ -49,7 +47,7 @@ class BasicStorage implements StorageApi {
       if (
         error instanceof Error &&
         error.message ===
-          `${BasicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
+          `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
       ) {
         await this.save(record);
       } else {

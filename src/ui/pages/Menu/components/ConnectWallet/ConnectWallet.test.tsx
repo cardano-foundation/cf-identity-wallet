@@ -283,7 +283,7 @@ describe("Wallet connect: empty history", () => {
         walletConnections: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       biometricsCache: {
         enabled: false,
@@ -356,8 +356,8 @@ describe("Wallet connect: empty history", () => {
         walletConnections: [],
       },
       identifiersCache: {
-        identifiers: [
-          {
+        identifiers: {
+          "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L": {
             displayName: "ms",
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
@@ -365,7 +365,7 @@ describe("Wallet connect: empty history", () => {
             isPending: false,
             multisigManageAid: "EBze49sDYvxxtq5eFbX2TKbK7g4SPS7DJVdoTRIyybxN",
           },
-          {
+          "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ61": {
             displayName: "ms",
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
@@ -373,7 +373,7 @@ describe("Wallet connect: empty history", () => {
             isPending: false,
             groupMetadata: {},
           },
-        ],
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -519,7 +519,7 @@ describe("Wallet connect", () => {
 
 
     const deleteConfirmButton = await findByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory.deletealert.confirm)
-    
+
     fireEvent.click(deleteConfirmButton);
 
     await waitFor(() => {
@@ -623,7 +623,7 @@ describe("Wallet connect", () => {
   });
 
   test("Connect wallet", async () => {
-    const { getByText, getByTestId, queryByText } = render(
+    const { getByText, getByTestId, queryByText, getAllByText } = render(
       <Provider store={storeMocked}>
         <ConnectWallet />
       </Provider>
@@ -657,14 +657,12 @@ describe("Wallet connect", () => {
       ).toBeVisible();
     });
 
-    act(() => {
-      fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet
-            .disconnectbeforecreatealert.confirm
-        )
-      );
-    });
+    fireEvent.click(
+      getAllByText(
+        EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet
+          .disconnectbeforecreatealert.confirm
+      )[1]
+    );
 
     await waitFor(() => {
       expect(
@@ -716,7 +714,7 @@ describe("Wallet connect", () => {
         connectedWallet: null,
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       biometricsCache: {
         enabled: false,
@@ -790,8 +788,8 @@ describe("Wallet connect", () => {
         pendingConnection: walletConnectionsFix[0],
       },
       identifiersCache: {
-        identifiers: [
-          {
+        identifiers: {
+          "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd": {
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",
@@ -813,7 +811,7 @@ describe("Wallet connect", () => {
             b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
             di: "test", // Delegated identifier prefix, don't show if ""
           },
-        ],
+        },
       },
       biometricsCache: {
         enabled: false,
@@ -859,8 +857,8 @@ describe("Wallet connect", () => {
         pendingConnection: null,
       },
       identifiersCache: {
-        identifiers: [
-          {
+        identifiers: {
+          "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd": {
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",
@@ -882,7 +880,7 @@ describe("Wallet connect", () => {
             b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
             di: "test", // Delegated identifier prefix, don't show if ""
           },
-        ],
+        },
       },
       biometricsCache: {
         enabled: false,

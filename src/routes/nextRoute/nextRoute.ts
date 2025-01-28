@@ -88,6 +88,7 @@ const updateStoreAfterSetPasscodeRoute = (data: DataProps) => {
     loggedIn: true,
     time: Date.now(),
     passcodeIsSet: true,
+    firstAppLaunch: false,
   });
 };
 const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {

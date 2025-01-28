@@ -3,11 +3,12 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { ReactNode, act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { KeriaNotification } from "../../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../routes/paths";
 import {
-  deleteNotification,
-  setReadedNotification,
+  deleteNotificationById,
+  markNotificationAsRead,
 } from "../../../../store/reducers/notificationsCache";
 import { NotificationOptionsModal } from "./NotificationOptionsModal";
 
@@ -16,7 +17,7 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children }: { children: ReactNode }) => children,
 }));
 
-const notification = {
+const notification: KeriaNotification = {
   id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
   createdAt: "2024-06-25T12:38:36.988Z",
   a: {
@@ -26,6 +27,7 @@ const notification = {
   },
   connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
   read: false,
+  groupReplied: false,
 };
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
@@ -128,7 +130,7 @@ describe("Notification Options modal", () => {
 
     await waitFor(() => {
       expect(deleteNotificationMock).toBeCalledWith(notification.id);
-      expect(dispatchMock).toBeCalledWith(deleteNotification(notification));
+      expect(dispatchMock).toBeCalledWith(deleteNotificationById(notification.id));
     });
   });
 
@@ -153,7 +155,7 @@ describe("Notification Options modal", () => {
     await waitFor(() => {
       expect(readNotificationMock).toBeCalledWith(notification.id);
       expect(dispatchMock).toBeCalledWith(
-        setReadedNotification({
+        markNotificationAsRead({
           id: notification.id,
           read: !notification.read,
         })
@@ -185,7 +187,7 @@ describe("Notification Options modal", () => {
     await waitFor(() => {
       expect(unreadNotificationMock).toBeCalledWith(notification.id);
       expect(dispatchMock).toBeCalledWith(
-        setReadedNotification({
+        markNotificationAsRead({
           id: notification.id,
           read: false,
         })

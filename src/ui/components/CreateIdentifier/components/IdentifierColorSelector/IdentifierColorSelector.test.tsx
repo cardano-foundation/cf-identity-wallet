@@ -4,11 +4,11 @@ import { IdentifierColorSelector } from "./IdentifierColorSelector";
 import { IdentifierColor } from "./IdentifierColorSelector.types";
 
 const ColorConfigs = [
-  IdentifierColor.Green,
-  IdentifierColor.Dark,
-  IdentifierColor.Brown,
-  IdentifierColor.Primary,
-  IdentifierColor.Secondary,
+  IdentifierColor.One,
+  IdentifierColor.Two,
+  IdentifierColor.Three,
+  IdentifierColor.Four,
+  IdentifierColor.Five,
 ];
 
 describe("Identifier color selector", () => {
@@ -18,7 +18,7 @@ describe("Identifier color selector", () => {
     const { getByTestId } = render(
       <IdentifierColorSelector
         onColorChange={colorChangeEvent}
-        value={IdentifierColor.Green}
+        value={IdentifierColor.One}
       />
     );
 

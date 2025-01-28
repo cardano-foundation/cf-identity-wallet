@@ -19,8 +19,10 @@ const MultisigMember = ({ name, status }: MemberProps) => {
       return checkmark;
     case MemberAcceptStatus.Rejected:
       return closeOutline;
-    default:
+    case MemberAcceptStatus.Waiting:
       return hourglassOutline;
+    default:
+      return null;
     }
   }, [status]);
 
@@ -41,7 +43,7 @@ const MultisigMember = ({ name, status }: MemberProps) => {
       >
         {name}
       </IonText>
-      {status !== undefined && (
+      {status !== undefined && icon && (
         <IonIcon
           slot="end"
           icon={icon}

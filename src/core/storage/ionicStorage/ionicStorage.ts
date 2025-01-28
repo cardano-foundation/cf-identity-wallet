@@ -4,6 +4,7 @@ import {
   BaseRecord,
   StorageService,
   BaseRecordConstructor,
+  StorageMessage,
 } from "../storage.types";
 import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
@@ -11,12 +12,7 @@ import { BasicRecord } from "../../agent/records";
 class IonicStorage<T extends BaseRecord> implements StorageService<T> {
   private static readonly SESION_IS_NOT_INITIALIZED =
     "Session is not initialized";
-
-  static readonly RECORD_ALREADY_EXISTS_ERROR_MSG =
-    "Record already exists with id";
-
-  static readonly RECORD_DOES_NOT_EXIST_ERROR_MSG =
-    "Record does not exist with id";
+  
   private session?: Storage;
 
   constructor(session: Storage) {
@@ -28,7 +24,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
     record.updatedAt = new Date();
     if (await this.session!.get(record.id)) {
       throw new Error(
-        `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
+        `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
       );
     }
     await this.session!.set(record.id, {
@@ -44,7 +40,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
     this.checkSession(this.session);
     if (!(await this.session!.get(record.id))) {
       throw new Error(
-        `${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
+        `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
       );
     }
 
@@ -54,7 +50,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
   async deleteById(id: string): Promise<void> {
     this.checkSession(this.session);
     if (!(await this.session!.get(id))) {
-      throw new Error(`${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
+      throw new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
     }
 
     await this.session!.remove(id);
@@ -64,7 +60,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
     this.checkSession(this.session);
     if (!(await this.session!.get(record.id))) {
       throw new Error(
-        `${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
+        `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
       );
     }
 

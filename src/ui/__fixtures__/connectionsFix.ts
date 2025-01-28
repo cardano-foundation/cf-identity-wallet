@@ -25,7 +25,7 @@ const connectionsFix: ConnectionDetails[] = [
       {
         type: 1,
         timestamp: "2017-01-14T19:23:24Z",
-        credentialType: "Rare EVO Attendee",
+        credentialType: "Cardano Foundation",
       },
     ],
   },
@@ -89,6 +89,13 @@ const connectionsFix: ConnectionDetails[] = [
     historyItems: [],
   },
 ];
+
+const connectionsMapFix = connectionsFix.reduce((result, next) => {
+  return {
+    ...result,
+    [next.id]: next
+  }
+}, {})
 
 const connectionRequestPlaceholder = {
   label: "",
@@ -185,4 +192,5 @@ export {
   connectionRequestPlaceholder,
   credentialRequestData,
   connectionsForNotifications,
+  connectionsMapFix
 };

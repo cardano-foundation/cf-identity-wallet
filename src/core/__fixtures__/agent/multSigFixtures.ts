@@ -58,6 +58,7 @@ const getMemberIdentifierResponse = {
     },
     di: "",
   },
+  icp_dt: "2024-08-09T07:23:52.839894+00:00"
 };
 
 const getMultisigIdentifierResponse = {

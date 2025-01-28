@@ -148,4 +148,25 @@ describe("Verify Recovery Seed Phrase", () => {
       );
     });
   });
+
+  test("Show switch onboarding modal", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_RECOVERY_SEED_PHRASE);
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[RoutePath.VERIFY_RECOVERY_SEED_PHRASE]}
+        >
+          <VerifyRecoverySeedPhrase />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    fireEvent.click(getByTestId("tertiary-button-verify-recovery-seed-phrase"));
+
+    await waitFor(() => {
+      expect(getByText(TRANSLATIONS.switchmodemodal.title)).toBeVisible();
+    })
+  });
 });

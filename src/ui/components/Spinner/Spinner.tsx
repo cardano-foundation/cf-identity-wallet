@@ -16,7 +16,7 @@ export const Spinner = ({
   });
 
   return (
-    <div className={classes}>
+    <div data-testid="spinner-container" className={classes}>
       <IonSpinner name="circular" />
     </div>
   );

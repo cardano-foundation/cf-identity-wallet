@@ -14,10 +14,6 @@ export class MenuToolbar {
     return $("[data-testid=\"connections-button\"]");
   }
 
-  async menusButton(screenLocator: string) {
-    return $(`[data-testid="menu-button-${screenLocator}"]`);
-  }
-
   async clickBackArrowIcon() {
     await findFilterAndClickElement(this.backArrowButtonLocator);
   }

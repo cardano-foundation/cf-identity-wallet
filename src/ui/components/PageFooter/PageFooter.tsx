@@ -29,7 +29,7 @@ const PageFooter = ({
   return (
     <IonToolbar
       className={`page-footer${customClass ? " " + customClass : ""}`}
-      data-testid={`${pageId}-footer`}
+      data-testid={pageId && `${pageId}-footer`}
     >
       {children}
       <div className="page-footer-content">
@@ -47,7 +47,6 @@ const PageFooter = ({
                 slot="icon-only"
                 size="small"
                 icon={primaryButtonIcon}
-                color="primary"
               />
             )}
             {primaryButtonText}

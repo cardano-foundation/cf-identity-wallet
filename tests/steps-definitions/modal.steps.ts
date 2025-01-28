@@ -3,14 +3,13 @@ import { faker } from "@faker-js/faker";
 import AlertModal from "../screen-objects/components/alert.modal.js";
 import Assert  from "../helpers/assert.js";
 import BaseModal from "../screen-objects/components/base.modal.js";
-import CreatePasswordScreen from "../screen-objects/create-password.screen.js";
-import IdentityCardDetailsScreen from "../screen-objects/identity/identity-card-details.screen.js";
-import IdentityEditModal from "../screen-objects/components/identity/identity-edit.modal.js";
-import IdentityOptionsModal from "../screen-objects/components/identity/identity-options.modal.js";
+import CreatePasswordScreen from "../screen-objects/onboarding/create-password.screen.js";
+import IdentifierCardDetailsScreen from "../screen-objects/identifiers/identifier-card-details.screen.js";
+import IdentifierEditModal from "../screen-objects/components/identifier/identifier-edit.modal.js";
 import PrivacyPolicyModal from "../screen-objects/components/privacy-policy.modal.js";
-import SeedPhraseGenerateScreen from "../screen-objects/seed-phrase/seed-phrase-generate.screen.js";
 import TermsOfUseModal from "../screen-objects/components/terms-of-use.modal.js";
 import WelcomeModal  from "../screen-objects/components/welcome.modal.js";
+import YourRecoveryPhraseScreen from "../screen-objects/onboarding/your-recovery-phrase.screen.js";
 
 
 When(
@@ -21,9 +20,9 @@ When(
 );
 
 When(
-  /^tap Cancel button on alert modal for Seed Phrase Generate screen$/,
+  /^tap Cancel button on alert modal for Your Recovery Phrase screen$/,
   async function () {
-    await AlertModal.clickCancelButtonOf(SeedPhraseGenerateScreen.alertModal);
+    await AlertModal.clickCancelButtonOf(YourRecoveryPhraseScreen.alertModal);
   }
 );
 
@@ -37,14 +36,14 @@ When(
 When(
   /^tap Confirm button on alert modal on Identifier Card Details screen$/,
   async function () {
-    await AlertModal.clickConfirmButtonOf(IdentityCardDetailsScreen.alertModal);
+    await AlertModal.clickConfirmButtonOf(IdentifierCardDetailsScreen.alertModal);
   }
 );
 
 When(
-  /^tap Confirm button on alert modal for Seed Phrase Generate screen$/,
+  /^tap Confirm button on alert modal for Your Recovery Phrase screen$/,
   async function () {
-    await AlertModal.clickConfirmButtonOf(SeedPhraseGenerateScreen.alertModal);
+    await AlertModal.clickConfirmButtonOf(YourRecoveryPhraseScreen.alertModal);
   }
 );
 
@@ -53,7 +52,7 @@ When(/^user tap Done button on modal$/, async function () {
 });
 
 When(/^user tap Cancel button on Identifier Edit modal$/, async function () {
-  await BaseModal.clickCloseButtonOf(await IdentityEditModal.idLocator);
+  await BaseModal.clickCloseButtonOf(await IdentifierEditModal.idLocator);
 });
 
 When(/^user tap Cancel button on modal$/, async function () {

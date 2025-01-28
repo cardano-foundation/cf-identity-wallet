@@ -34,7 +34,7 @@ const CardDetailsAttributes = ({
           return;
         }
         default: {
-          return typeof item[1] === ("string" || "number") &&
+          return (typeof item[1] === "string" || typeof item[1] === "number") &&
               !customType &&
               !`${item[1]}`.includes(" ") &&
               `${item[1]}`[10] !== "T" ? (

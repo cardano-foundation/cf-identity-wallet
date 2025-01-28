@@ -1,7 +1,7 @@
 import { Given, When } from "@wdio/cucumber-framework";
 import MenuToolbar from "../screen-objects/components/menu.toolbar.js";
-import PasscodeScreen from "../screen-objects/passcode.screen.js";
-import SeedPhraseVerifyScreen from "../screen-objects/seed-phrase/seed-phrase-verify.screen.js";
+import PasscodeScreen from "../screen-objects/onboarding/passcode.screen.js";
+import VerifyYourRecoveryPhraseScreen from "../screen-objects/onboarding/verify-your-recovery-phrase.screen.js";
 import BaseModal from "../screen-objects/components/base.modal.js";
 
 Given(
@@ -24,8 +24,8 @@ When(/^user tap Back button on Re-enter your Passcode screen$/, async function (
 });
 
 When(
-  /^user tap Back button on Seed Phrase Verify screen$/,
+  /^user tap Back button on Verify Your Recovery Phrase screen$/,
   async function () {
-    await BaseModal.clickCloseButtonOf(SeedPhraseVerifyScreen.id);
+    await BaseModal.clickCloseButtonOf(VerifyYourRecoveryPhraseScreen.id);
   }
 );

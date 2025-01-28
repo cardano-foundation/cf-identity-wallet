@@ -5,7 +5,6 @@ interface CredentialMetadataRecordProps {
   id: string;
   createdAt?: Date;
   isArchived?: boolean;
-  isDeleted?: boolean;
   issuanceDate: string;
   credentialType: string;
   status: CredentialStatus;

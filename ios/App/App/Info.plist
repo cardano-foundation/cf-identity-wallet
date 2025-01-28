@@ -30,7 +30,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>To be able to scan barcodes</string>
+	<string>The app enables the scanning of various barcodes.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>This app uses Face ID to secure your data and provide faster access.</string>
 	<key>UIFileSharingEnabled</key>
@@ -78,7 +78,5 @@
 			</dict>
 		</dict>
 	</array>
-	<key>NSCameraUsageDescription</key>
-    <string>The app enables the scanning of various barcodes.</string>
 </dict>
 </plist>

@@ -451,6 +451,21 @@ describe("SSI agent page", () => {
       });
     });
   });
+  test("Show switch onboarding modal", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateSSIAgent />
+      </Provider>
+    );
+
+    expect(getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)).toBeVisible();
+
+    fireEvent.click(getByTestId("tertiary-button-create-ssi-agent"));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();
+    })
+  });
 });
 
 describe("SSI agent page: recovery mode", () => {

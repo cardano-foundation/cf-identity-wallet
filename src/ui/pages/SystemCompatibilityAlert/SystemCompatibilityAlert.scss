@@ -1,0 +1,109 @@
+.system-comp-alert-page {
+  .alert-container {
+    text-align: center;
+    min-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .title {
+    color: var(--ion-color-neutral-800);
+    margin-top: 1.5rem;
+  }
+
+  .description {
+    color: var(--ion-color-neutral-700);
+    margin-top: 1rem;
+  }
+
+  .system-requirements {
+    width: 100%;
+    margin-top: 1.5rem;
+
+    .requirement {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      --padding-top: 0.75rem;
+      --padding-bottom: 0.75rem;
+      --min-height: auto;
+    
+      .name {
+        width: 64%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--ion-color-neutral-700);
+    
+        &.md {
+          margin-inline-end: 0;
+        }
+      }
+
+      .requirement-value {
+        color: var(--ion-color-neutral-500);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+      }
+    
+      .status {
+        border-radius: 50%;
+        padding: 0.3125rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        color: var(--ion-color-neutral-100);
+        margin-left: 0.5rem;
+    
+        &.md {
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+    
+        &.met {
+          background: var(--ion-color-card-theme-one);
+        }
+    
+        &.not-met {
+          background: var(--ion-color-error-800);
+        }
+      }
+    
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        --padding-top: 0.5rem;
+        --padding-bottom: 0.5rem;
+    
+        .name {
+          font-size: 0.875rem;
+        }
+    
+        .status {
+          padding: 0.125rem;
+          width: 0.75rem;
+          height: 0.75rem;
+    
+          &.md {
+            margin-inline-start: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+
+  .contact-button {
+    margin-top: 1.5rem;
+    width: 100%;
+  }
+
+  .warning-icon {
+    font-size: 3.25rem;
+    color: var(--ion-color-danger);
+  }
+
+  .no-info {
+    color: var(--ion-color-neutral-500);
+  }
+}

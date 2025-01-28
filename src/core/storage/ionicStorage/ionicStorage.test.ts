@@ -1,5 +1,6 @@
 import { IonicStorage } from "./ionicStorage";
 import { BasicRecord } from "../../agent/records";
+import { StorageMessage } from "../storage.types";
 
 const startTime = new Date();
 
@@ -140,7 +141,7 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
 
   test("should not be able to store an already existing record", async () => {
     await expect(storageService.save(existingRecord)).rejects.toThrowError(
-      `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${existingRecord.id}`
+      `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${existingRecord.id}`
     );
     expect(setMock).not.toBeCalled();
   });
@@ -157,7 +158,7 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
 
   test("should not be able to update a record that does not exist", async () => {
     await expect(storageService.update(newRecord)).rejects.toThrowError(
-      `${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
+      `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
     );
     expect(setMock).not.toBeCalled();
   });
@@ -183,7 +184,7 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
 
   test("should not be able to delete a record that does not exist", async () => {
     await expect(storageService.delete(newRecord)).rejects.toThrowError(
-      `${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
+      `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
     );
     expect(getMock).toBeCalledWith(newRecord.id);
     expect(removeMock).not.toBeCalled();
@@ -197,7 +198,7 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
 
   test("should not be able to delete a record by id that does not exist", async () => {
     await expect(storageService.deleteById(newRecord.id)).rejects.toThrowError(
-      `${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
+      `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
     );
     expect(getMock).toBeCalledWith(newRecord.id);
     expect(removeMock).not.toBeCalled();

@@ -1,6 +1,11 @@
 export enum CreatePassword {
-  Description = "Set your operations password so you can access additional wallet features.",
+  AcceptCriteria = "Must be between 8-64 characters, contain a lowercase and uppercase letter, a number, and a symbol.",
+  Description = "Add an extra layer of security for sensitive actions in your wallet by creating an optional password.",
   Title = "Create password",
+}
+
+export enum IdentifierDetails {
+  Title = "Identifier details",
 }
 
 export enum Passcode {
@@ -62,13 +67,12 @@ export enum PrivacyPolicy {
   Section11Content1 = "For further inquiries or requests in relation to Our handling of your Personal Data or this Privacy Policy please contact Us at privacy@cardanofoundation.org",
 }
 
-export enum SeedPhraseGenerate {
-  DescriptionBottom = "It's important to keep these words safe and sound! Store them in a secure location and remember to never share them with anyone.",
-  DescriptionTop = "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
-  Title = "Generate recovery phrase",
+export enum YourRecoveryPhrase {
+  DescriptionBottom = "Keep these words safe! Store them securely and never share them with anyone.",
+  Title = "Your recovery phrase",
 }
 
-export enum SeedPhraseVerify {
+export enum VerifyYourRecoveryPhrase {
   Description = "Please select each word in the order it was presented to you.",
   Title = "Verify your recovery phrase",
 }

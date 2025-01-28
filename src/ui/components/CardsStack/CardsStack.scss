@@ -3,6 +3,14 @@
   flex-direction: column;
   overflow-y: visible;
 
+  & > div {
+    box-shadow: 0rem -0.25rem 0.5rem 0rem rgba(var(--ion-color-neutral-700-rgb), 0.5);
+
+    &:first-child {
+      box-shadow: none;
+    }
+  }
+
   &.transition-start {
     height: 100vh;
     position: relative;

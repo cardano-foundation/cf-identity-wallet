@@ -5,7 +5,7 @@ const credentialMetadataMock = {
   type: "CredentialMetadataRecord",
   id: "EJuFvMGiT3uhEXtd7UQlkAm4N_MymeHfhkgnOgPhK0cJ",
   isArchived: false,
-  isDeleted: false,
+  pendingDeletion: false,
   createdAt: "2024-08-09T04:21:18.311Z",
   issuanceDate: "2024-08-09T04:21:12.575Z",
   credentialType: "Qualified vLEI Issuer Credential",
@@ -87,32 +87,13 @@ const agreeForPresentingExnMessage = {
     t: "exn",
     d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
     i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-    p: "",
+    p: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+    rp: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
     dt: "2024-07-30T04:19:55.801000+00:00",
     r: ExchangeRoute.IpexAgree,
     q: {},
-    a: { m: "", i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G" },
-    e: {
-      acdc: {
-        d: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-        a: {
-          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
-          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-          dt: "2024-07-30T04:19:55.348000+00:00",
-          attendeeName: "ccc",
-        },
-      },
-      iss: {
-        t: "iss",
-        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
-        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
-        s: "0",
-        dt: "2024-07-30T04:19:55.348000+00:00",
-      },
-      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
-    },
+    a: { m: "" },
+    e: {},
   },
   pathed: {
     acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
@@ -317,7 +298,7 @@ const notificationIpexGrantProp = {
 
 const notificationIpexAgreeProp = {
   i: "string",
-  dt: "string",
+  dt: "2024-12-10T07:28:18.217384+00:00",
   r: false,
   a: {
     r: NotificationRoute.ExnIpexAgree,
@@ -363,6 +344,15 @@ const notificationIpexOfferProp = {
   },
 };
 
+const groupIdentifierMetadataRecord = {
+  type: "IdentifierMetadataRecord",
+  id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  displayName: "holder",
+  multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
 export {
   credentialMetadataMock,
   grantForIssuanceExnMessage,
@@ -381,4 +371,5 @@ export {
   notificationIpexApplyProp,
   credentialStateIssued,
   notificationIpexOfferProp,
+  groupIdentifierMetadataRecord,
 };

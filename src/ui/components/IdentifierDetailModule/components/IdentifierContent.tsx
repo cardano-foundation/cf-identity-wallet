@@ -19,9 +19,9 @@ import {
 import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
 import { ListHeader } from "../../../components/ListHeader";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
-import { IdentifierContentProps } from "./IdentifierContent.types";
-import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierAttributeDetailModal } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal";
+import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
+import { IdentifierContentProps } from "./IdentifierContent.types";
 
 const DISPLAY_MEMBERS = 3;
 
@@ -42,7 +42,7 @@ const IdentifierContent = ({
   }, []);
 
   const isMultiSig = useMemo(() => {
-    const identifier = identifiersData.find((data) => data.id === cardData.id);
+    const identifier = identifiersData[cardData.id];
 
     return (
       cardData.multisigManageAid || (identifier && identifier.multisigManageAid)
@@ -74,6 +74,7 @@ const IdentifierContent = ({
           <CardBlock
             onClick={openGroupMember}
             title={i18n.t("tabs.identifiers.details.group.groupmembers.title")}
+            testId="group-member-block"
           >
             {members.map((item, index) => {
               return (
@@ -104,6 +105,7 @@ const IdentifierContent = ({
                 "tabs.identifiers.details.group.signingkeysthreshold.title"
               )}
               onClick={() => openPropDetailModal(DetailView.SigningThreshold)}
+              testId="signing-threshold-block"
             >
               <CardDetailsContent
                 mainContent={`${cardData.kt}`}
@@ -111,6 +113,7 @@ const IdentifierContent = ({
                   "tabs.identifiers.details.group.signingkeysthreshold.outof",
                   { threshold: memberCount }
                 )}`}
+                testId="signing-threshold-content"
               />
             </CardBlock>
           )}
@@ -125,6 +128,7 @@ const IdentifierContent = ({
           title={i18n.t(
             "tabs.identifiers.details.identifierdetail.identifierid.title"
           )}
+          testId="identifier-id-block"
         >
           <CardDetailsItem
             info={`${cardData.id.substring(0, 5)}...${cardData.id.slice(-5)}`}
@@ -138,6 +142,7 @@ const IdentifierContent = ({
           title={i18n.t(
             "tabs.identifiers.details.identifierdetail.created.title"
           )}
+          testId="created-block"
         >
           <CardDetailsItem
             keyValue={formatShortDate(cardData.createdAtUTC)}
@@ -158,6 +163,7 @@ const IdentifierContent = ({
             title={i18n.t(
               "tabs.identifiers.details.identifierdetail.signingkey.title"
             )}
+            testId="signingkey-block"
           >
             {cardData.k.map((item, index) => {
               return (
@@ -175,6 +181,7 @@ const IdentifierContent = ({
           <CardBlock
             className="rotate-button-container"
             flatBorder={FlatBorderType.TOP}
+            testId="rotate-button-block"
           >
             <IonButton
               shape="round"
@@ -195,6 +202,7 @@ const IdentifierContent = ({
       <CardBlock
         title={i18n.t("tabs.identifiers.details.identifierdetail.showadvanced")}
         onClick={() => openPropDetailModal(DetailView.AdvancedDetail)}
+        testId="show-advanced-block"
       />
       {isMultiSig && cardData.kt && (
         <>
@@ -206,6 +214,7 @@ const IdentifierContent = ({
               "tabs.identifiers.details.keyrotation.rotatesigningkey.title"
             )}
             onClick={() => openPropDetailModal(DetailView.RotationThreshold)}
+            testId="rotate-signing-key-block"
           >
             <CardDetailsContent
               testId="rotate-signing-key"

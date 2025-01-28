@@ -9,7 +9,7 @@ const List = ({ data, title, bottomText, fullText, mask }: ListProps) => {
   return (
     <>
       <ListHeader title={title} />
-      <CardBlock className="list-item">
+      <CardBlock testId="group-member-block" className="list-item">
         {data.map((item, index) => {
           return (
             <CardDetailsItem

@@ -63,7 +63,7 @@ const ConnectionNote = ({
       <div className="connection-details-delete-note">
         <IonButton
           shape="round"
-          color={"danger"}
+          color="danger"
           data-testid={`note-delete-button-${id}`}
           onClick={() => {
             onDeleteNote(id);

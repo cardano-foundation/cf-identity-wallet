@@ -66,15 +66,15 @@ const CreatePasscodeModule = forwardRef<
     const cancelBiometricsConfirmText = setupAndroidBiometricsConfirmtext;
 
     const verifyPasscode = async (pass: string) => {
-      try {
-        const storedPass = (await SecureStorage.get(
-          KeyStoreKeys.APP_PASSCODE
-        )) as string;
-        if (!storedPass) return false;
-        return storedPass === pass;
-      } catch (e) {
+      const storedPass = await SecureStorage.get(
+        KeyStoreKeys.APP_PASSCODE
+      );
+
+      if (!storedPass) {
         return false;
       }
+
+      return storedPass === pass;
     };
 
     useEffect(() => {

@@ -11,7 +11,7 @@ const RotationThreshold = ({ data }: SigningThresholdProps) => {
           "tabs.identifiers.details.detailmodal.rotationthreshold.threshold.title"
         )}
       />
-      <CardBlock>
+      <CardBlock testId="threshhold-block">
         <CardDetailsItem
           info={i18n.t(
             "tabs.identifiers.details.detailmodal.rotationthreshold.threshold.text",

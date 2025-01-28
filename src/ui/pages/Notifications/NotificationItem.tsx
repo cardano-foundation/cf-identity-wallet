@@ -29,31 +29,42 @@ const NotificationItem = ({
   const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
 
   const notificationLabelText = useMemo(() => {
+    const connectionName = connectionsCache?.[item.connectionId]?.label;
+
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
       return t("tabs.notifications.tab.labels.exnipexgrant", {
-        connection: connectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
+        connection: connectionName || t("connections.unknown"),
       });
     case NotificationRoute.MultiSigIcp:
       return t("tabs.notifications.tab.labels.multisigicp", {
         connection: multisigConnectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
       });
-    case NotificationRoute.ExnIpexApply:
+    case NotificationRoute.ExnIpexApply: {
+      if(item.groupReplied && !item.groupInitiator && item.initiatorAid) {
+        const initiator = item.initiatorAid ? multisigConnectionsCache[item.initiatorAid].label :  t("connections.unknown");
+        return t("tabs.notifications.tab.labels.exnipexapplyproposed", {
+          connection: connectionName || t("connections.unknown"),
+          initiator
+        });
+      }
+
       return t("tabs.notifications.tab.labels.exnipexapply", {
-        connection: connectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
+        connection: connectionName || t("connections.unknown"),
       });
+    }
     case NotificationRoute.LocalAcdcRevoked:
       return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
         credential: item.a.credentialTitle,
       });
     case NotificationRoute.MultiSigExn:
       return t("tabs.notifications.tab.labels.multisigexn", {
-        connection: connectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
+        connection: connectionName || t("connections.unknown"),
       });
     default:
       return "";
     }
-  }, [connectionsCache, item.a.credentialTitle, item.a.r, item.connectionId, multisigConnectionsCache])
+  }, [connectionsCache, item.a.credentialTitle, item.a.r, item.connectionId, item.groupInitiator, item.groupReplied, item.initiatorAid, multisigConnectionsCache])
 
   const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {

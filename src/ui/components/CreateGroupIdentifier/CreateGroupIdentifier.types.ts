@@ -18,6 +18,7 @@ interface CreateIdentifierProps {
   setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
   groupId?: string;
   preventRedirect?: boolean;
+  openAfterCreate?: boolean;
 }
 
 interface IdentifierStageStateProps {
@@ -44,6 +45,7 @@ interface IdentifierStageProps {
   setMultiSigGroup?: (value: MultiSigGroup) => void;
   preventRedirect?: boolean;
   isModalOpen?: boolean;
+  openAfterCreate?: boolean;
 }
 
 interface IdentifierStage1BodyProps {
@@ -56,6 +58,7 @@ interface IdentifierStage1BodyProps {
     groupInitiator: boolean;
     groupCreated: boolean;
   };
+  isPending: boolean;
   scannedConections?: ConnectionShortDetails[];
   handleScanButton: () => void;
   handleDelete?: () => void;

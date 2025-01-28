@@ -110,4 +110,21 @@ describe("Credential storage test", () => {
       CredentialMetadataRecord
     );
   });
+
+  test("can get credentials pending deletion", async () => {
+    storageService.findAllByQuery.mockResolvedValue([
+      credentialMetadataRecordA,
+      credentialMetadataRecordB,
+    ]);
+    expect(await credentialStorage.getCredentialsPendingDeletion()).toEqual([
+      credentialMetadataRecordA,
+      credentialMetadataRecordB,
+    ]);
+    expect(storageService.findAllByQuery).toBeCalledWith(
+      {
+        pendingDeletion: true,
+      },
+      CredentialMetadataRecord
+    );
+  });
 });

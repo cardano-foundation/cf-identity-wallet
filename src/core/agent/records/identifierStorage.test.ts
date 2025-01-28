@@ -85,4 +85,27 @@ describe("Identifier storage test", () => {
     );
     expect(storageService.update).toBeCalled();
   });
+
+  test("Should get all identifier pending deletion", async () => {
+    storageService.findAllByQuery.mockResolvedValue([
+      {
+        ...identifierMetadataRecord,
+        pendingDeletion: true,
+      },
+      {
+        ...identifierMetadataRecord2,
+        pendingDeletion: true,
+      },
+    ]);
+    expect(await identifierStorage.getIdentifiersPendingDeletion()).toEqual([
+      {
+        ...identifierMetadataRecord,
+        pendingDeletion: true,
+      },
+      {
+        ...identifierMetadataRecord2,
+        pendingDeletion: true,
+      },
+    ]);
+  });
 });

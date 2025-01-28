@@ -1,30 +1,4 @@
 ion-modal.create-group-identifier-modal {
-  &.blur {
-    .create-identifier-modal-content > *:not(.spinner-container),
-    ion-toolbar.page-footer {
-      filter: blur(0.1rem);
-      --background: rgba(var(--ion-color-primary-rgb), 0);
-    }
-
-    ion-toolbar.page-footer {
-      background: transparent !important;
-    }
-  }
-
-  .spinner-container {
-    z-index: 1000;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(var(--ion-color-primary-rgb), 0.2);
-  }
-
   .responsive-page-content {
     justify-content: space-evenly;
 
@@ -38,12 +12,13 @@ ion-modal.create-group-identifier-modal {
 
         &::part(native) {
           padding: 0;
+          background: var(--ion-color-primary-700);
         }
 
         ion-icon {
           width: 1.5rem;
           height: 1.5rem;
-          color: var(--ion-color-secondary);
+          color: var(--ion-color-neutral-100);
         }
       }
     }
@@ -79,17 +54,25 @@ ion-modal.create-group-identifier-modal {
     text-align: center;
 
     #react-qrcode-logo {
-      background-color: var(--ion-color-white);
-      box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary-rgb), 0.2);
+      background-color: var(--ion-color-neutral-100);
     }
 
     ion-button.copy-button {
       width: 70vw !important;
       margin: 0 auto;
+      --border-radius: 4rem;
+      --background-activated: var(--ion-color-neutral-100);
+      --color-activated: var(--ion-color-neutral-700);
 
       &::part(native) {
-        background-color: var(--ion-color-white);
-        border-color: var(--ion-color-light);
+        background-color: var(--ion-color-neutral-100);
+        border-color: var(--ion-color-neutral-100);
+      }
+
+      &.button-disabled {
+        &::part(native) {
+          filter: blur(0.15rem);
+        }
       }
 
       ion-icon {
@@ -97,10 +80,20 @@ ion-modal.create-group-identifier-modal {
       }
     }
 
+    .qr-container {
+      display: inline-block;
+      box-shadow: 0.25rem 0.25rem 0.5rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
+      margin: 0.8rem auto;
+      border-radius: 1rem;
+      width: 70vw;
+      height: 70vw;
+      position: relative;
+      overflow: hidden;
+    }
+
     .multisig-share-qr-code-blur-overlay-container {
       position: absolute;
       left: calc(50% - 35vw);
-      box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary), 0.2);
 
       .multisig-share-qr-code-blur-overlay-inner {
         display: none;
@@ -109,16 +102,15 @@ ion-modal.create-group-identifier-modal {
 
     #react-qrcode-logo,
     .multisig-share-qr-code-blur-overlay-container {
-      width: 70vw !important;
-      height: 70vw !important;
       padding: 1.5rem;
-      margin: 0.8rem auto;
       border-radius: 1rem;
+      width: 100% !important;
+      height: 100% !important;
     }
 
     &.blur {
       #react-qrcode-logo {
-        filter: blur(0.5rem);
+        filter: blur(0.35rem);
         opacity: 0.3;
       }
 
@@ -129,22 +121,19 @@ ion-modal.create-group-identifier-modal {
         width: 100%;
         height: 100%;
 
-        ion-icon {
-          width: 5rem;
-          height: 5rem;
-          opacity: 1;
-          text-align: center;
-          margin: 0 auto;
+        .spinner-container {
+          background: none;
+          height: auto;
         }
       }
     }
   }
 
   ion-toolbar {
-    --background: var(--ion-color-light);
+    --background: var(--ion-color-neutral-200);
 
     &.page-footer {
-      z-index: 1000;
+      z-index: 500;
       bottom: calc(-100vh + 5rem);
       padding-inline: 0.9rem;
 
@@ -197,82 +186,6 @@ ion-modal.create-group-identifier-modal {
       padding-left: 1.25rem;
     }
 
-    div.identifier-name {
-      margin-bottom: 0.56rem;
-
-      &.identifier-name-error ion-item.custom-input .input-line {
-        border-color: var(--ion-color-danger);
-      }
-
-      ion-item.custom-input {
-        margin-bottom: 0;
-
-        .input-line ion-input,
-        .input-line ion-input input::placeholder,
-        .identifier-type {
-          font-size: 1rem;
-          font-weight: 400;
-        }
-
-        .input-line ion-input input::placeholder {
-          color: rgba(var(--ion-color-secondary-rgb), 0.75);
-        }
-      }
-
-      .error-message-container {
-        height: 1rem;
-
-        p {
-          font-size: 0.875rem;
-          margin: 0 auto;
-          text-align: left;
-        }
-      }
-    }
-
-    .identifier-type-selector,
-    .aid-type-selector {
-      ion-col {
-        padding: 0;
-        margin: 0 0.3rem;
-
-        &:first-of-type {
-          margin-left: 0;
-        }
-
-        &:last-of-type {
-          margin-right: 0;
-        }
-
-        ion-card {
-          &.type-input {
-            --background: var(--ion-color-light);
-            --inner-border-width: 0;
-            border: 1px solid var(--ion-color-dark-grey);
-            color: var(--ion-color-secondary);
-            border-radius: 0.5rem;
-            height: 3.125rem;
-          }
-
-          &.selected-type {
-            border: 1px solid var(--ion-color-secondary) !important;
-            background: var(--ion-color-medium-grey);
-          }
-
-          &::part(native) {
-            min-height: 3.125rem;
-            border-radius: 0.5rem;
-          }
-
-          span {
-            width: 100%;
-            text-align: center;
-            font-weight: 400;
-          }
-        }
-      }
-    }
-
     .multisig-share-note {
       text-align: center;
       padding: 0 2.5rem;
@@ -287,7 +200,7 @@ ion-modal.create-group-identifier-modal {
 
         &::part(native) {
           padding: 0;
-          background: var(--ion-color-light);
+          background: var(--ion-color-neutral-200);
         }
 
         &:last-of-type {
@@ -311,8 +224,8 @@ ion-modal.create-group-identifier-modal {
             margin: 0 0 0 0.375rem;
 
             &.checkbox-checked {
-              --checkbox-background-checked: var(--ion-color-primary-gradient);
-              --checkmark-color: var(--ion-color-primary);
+              --checkbox-background-checked: var(--ion-color-primary-700);
+              --checkmark-color: var(--ion-color-primary-100);
 
               &::part(container) {
                 border: 0;
@@ -350,7 +263,7 @@ ion-modal.create-group-identifier-modal {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        border: 1px solid var(--ion-color-dark-grey);
+        border: 1px solid var(--ion-color-neutral-400);
         border-radius: 0.5rem;
         height: 3.125rem;
         padding-left: 1.25rem;
@@ -370,8 +283,10 @@ ion-modal.create-group-identifier-modal {
           border-radius: 2rem;
 
           &::part(native) {
-            color: var(--ion-color-secondary);
-            --background-activated: var(--ion-color-medium-grey);
+            border: 1px solid var(--ion-color-neutral-400);
+            --background-activated: var(--ion-color-neutral-100);
+            background: var(--ion-color-neutral-100);
+            color: var(--ion-color-neutral-700);
           }
 
           ion-icon {
@@ -379,12 +294,11 @@ ion-modal.create-group-identifier-modal {
           }
         }
 
-        .decrease-threshold-button::part(native) {
-          background: var(--ion-color-light);
-          border: 1px solid var(--ion-color-dark-grey);
+        .decrease-threshold-button.inactive::part(native) {
+          background: var(--ion-color-neutral-400);
         }
-        .increase-threshold-button::part(native) {
-          background: var(--ion-color-dark-grey);
+        .increase-threshold-button.inactive::part(native) {
+          background: var(--ion-color-neutral-400);
         }
       }
     }
@@ -392,7 +306,7 @@ ion-modal.create-group-identifier-modal {
     ion-card {
       margin: 0;
       display: flex;
-      background: var(--ion-color-white);
+      background: var(--ion-color-neutral-100);
       border-radius: 1rem;
       flex-direction: column;
       justify-content: space-evenly;
@@ -413,7 +327,7 @@ ion-modal.create-group-identifier-modal {
         ion-label {
           margin: 0.813rem 0;
           font-weight: 500;
-          color: var(--ion-color-secondary);
+          color: var(--ion-color-neutral-700);
 
           img {
             width: 1.5rem;
@@ -433,7 +347,7 @@ ion-modal.create-group-identifier-modal {
 
         ion-icon {
           font-size: 1.5rem;
-          color: var(--ion-color-secondary);
+          color: var(--ion-color-neutral-700);
           opacity: 0.5;
         }
       }
@@ -567,14 +481,25 @@ ion-modal.create-group-identifier-modal {
 
       #react-qrcode-logo,
       .multisig-share-qr-code-blur-overlay-container {
-        width: 65vw !important;
-        height: 65vw !important;
         padding: 0.9rem;
         margin: 0 auto 0.5rem;
       }
 
       .multisig-share-qr-code-blur-overlay-container {
         left: calc(50% - 32.5vw);
+
+        .multisig-share-qr-code-blur-overlay-inner {
+          .spinner-container {
+            ion-spinner {
+              width: 1.25rem;
+              height: 1.25rem;
+            }
+          }
+
+          p {
+            margin: 1rem 1rem 0rem;
+          }
+        }
       }
 
       .share-identifier-scan-button ion-button {

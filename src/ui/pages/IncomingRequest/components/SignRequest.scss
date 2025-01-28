@@ -19,6 +19,11 @@
 
   .sign-footer {
     padding: 1rem 0;
+
+    .secondary-button::part(native) {
+      border: none;
+      color: var(--ion-color-error-800);
+    }
   }
 
   .sign-header {
@@ -38,7 +43,7 @@
       font-size: 1.5rem;
       line-height: 1.75rem;
       margin-bottom: 0.5rem;
-      color: var(--ion-color-primary);
+      color: var(--ion-color-neutral-800);
     }
 
     .sign-link {
@@ -46,7 +51,7 @@
       font-size: 0.75rem;
       line-height: 1rem;
       margin: 0;
-      color: rgba(var(--ion-color-secondary-rgb), 0.75);
+      color: var(--ion-color-neutral-600);
     }
   }
 

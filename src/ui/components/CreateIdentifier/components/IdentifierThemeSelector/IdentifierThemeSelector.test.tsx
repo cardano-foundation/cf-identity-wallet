@@ -7,7 +7,7 @@ describe("Identifier Theme Selector", () => {
     const setNewSelectedTheme = jest.fn();
     const { getByTestId } = render(
       <IdentifierThemeSelector
-        color={IdentifierColor.Green}
+        color={IdentifierColor.One}
         selectedTheme={0}
         setSelectedTheme={setNewSelectedTheme}
       />

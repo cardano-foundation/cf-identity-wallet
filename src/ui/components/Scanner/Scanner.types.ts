@@ -1,4 +1,4 @@
-import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { LensFacing } from "@jimcase/barcode-scanning";
 
 interface ScannerProps {
   routePath?: string;

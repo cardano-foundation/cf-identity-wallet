@@ -2,7 +2,7 @@ import {
   BarcodeFormat,
   BarcodeScanner,
   LensFacing,
-} from "@capacitor-mlkit/barcode-scanning";
+} from "@jimcase/barcode-scanning";
 import { Capacitor } from "@capacitor/core";
 import {
   getPlatforms,

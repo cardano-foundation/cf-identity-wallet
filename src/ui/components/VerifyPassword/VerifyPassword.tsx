@@ -52,23 +52,11 @@ const VerifyPassword = ({
   const handleFetchStoredValues = useCallback(async () => {
     if (!isOpen) return;
 
-    try {
-      const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
-      if (password) {
-        setStoredPassword(`${password}`);
-      }
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
-        )
-      ) {
-        showErrorMessage("Unable to get password", e, dispatch);
-        throw e;
-      }
+    const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
+    if (password) {
+      setStoredPassword(`${password}`);
+    } else {
+      showErrorMessage("Unable to get password", new Error("Unable to get password"), dispatch);
     }
 
     let hint;

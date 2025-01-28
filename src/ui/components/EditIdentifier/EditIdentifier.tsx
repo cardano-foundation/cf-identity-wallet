@@ -7,11 +7,13 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifiersCache,
-  setIdentifiersCache,
+  updateOrAddIdentifiersCache
 } from "../../../store/reducers/identifiersCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
 import { ToastMsgType } from "../../globals/types";
+import { showError } from "../../utils/error";
+import { nameChecker } from "../../utils/nameChecker";
 import { createThemeValue, getTheme } from "../../utils/theme";
 import { IdentifierColorSelector } from "../CreateIdentifier/components/IdentifierColorSelector";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
@@ -22,9 +24,9 @@ import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
 import "./EditIdentifier.scss";
 import { EditIdentifierProps } from "./EditIdentifier.types";
-import { showError } from "../../utils/error";
-import { IdentifierService } from "../../../core/agent/services";
-import { nameChecker } from "../../utils/nameChecker";
+
+const IDENTIFIER_NOT_EXIST = "Identifier not existed. id: ";
+const DUPLICATE_NAME = "Identifier name is a duplicate";
 
 const EditIdentifier = ({
   modalIsOpen,
@@ -67,7 +69,7 @@ const EditIdentifier = ({
   const verifyDisplayName =
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
-    (newDisplayName !== cardData.displayName ||
+    (newDisplayName.trim() !== cardData.displayName.trim() ||
       createThemeValue(newSelectedColor, newSelectedTheme) !== cardData.theme);
 
   useEffect(() => {
@@ -83,14 +85,20 @@ const EditIdentifier = ({
 
   const handleSubmit = async () => {
     try {
+      if(newDisplayName.trim() !== cardData.displayName.trim() && Object.values(identifiersData).some(item => item.displayName === newDisplayName)) {
+        throw new Error(DUPLICATE_NAME);
+      }
+      
       setLoading(true);
-      const updatedIdentifiers = [...identifiersData];
-      const index = updatedIdentifiers.findIndex(
-        (identifier) => identifier.id === cardData.id
-      );
+      const currentIdentifier = identifiersData[cardData.id];
+
+      if(!currentIdentifier) {
+        throw new Error(`${IDENTIFIER_NOT_EXIST} ${cardData.id}`)
+      }
+
       const theme = Number(`${newSelectedColor}${newSelectedTheme}`);
-      updatedIdentifiers[index] = {
-        ...updatedIdentifiers[index],
+      const updatedIdentifier = {
+        ...currentIdentifier,
         displayName: newDisplayName,
         theme,
       };
@@ -104,10 +112,10 @@ const EditIdentifier = ({
         theme,
       });
       handleCancel();
-      dispatch(setIdentifiersCache(updatedIdentifiers));
+      dispatch(updateOrAddIdentifiersCache(updatedIdentifier));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     } catch (e) {
-      if((e as Error).message.includes(IdentifierService.IDENTIFIER_NAME_TAKEN)) {
+      if((e as Error).message === DUPLICATE_NAME) {
         setDuplicateName(true);
         return;
       }

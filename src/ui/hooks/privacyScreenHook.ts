@@ -2,20 +2,22 @@ import { useEffect, useRef, useCallback } from "react";
 import { PrivacyScreen } from "@capacitor-community/privacy-screen";
 import { Capacitor } from "@capacitor/core";
 
-const usePrivacyScreen = () => {
+const usePrivacyScreen = (autoEnable = true) => {
   const unmount = useRef(false);
 
-  const enablePrivacy = useCallback(() => {
+  const enablePrivacy = useCallback(async () => {
     if (!Capacitor.isNativePlatform()) return;
-    PrivacyScreen.enable();
+    return PrivacyScreen.enable();
   }, []);
 
-  const disablePrivacy = useCallback(() => {
+  const disablePrivacy = useCallback(async () => {
     if (!Capacitor.isNativePlatform()) return;
-    PrivacyScreen.disable();
+    return PrivacyScreen.disable();
   }, []);
 
   useEffect(() => {
+    if(!autoEnable) return;
+
     setTimeout(() => {
       if (unmount.current) return;
       enablePrivacy();
@@ -25,7 +27,7 @@ const usePrivacyScreen = () => {
       unmount.current = true;
       disablePrivacy();
     };
-  }, [enablePrivacy, disablePrivacy]);
+  }, [enablePrivacy, disablePrivacy, autoEnable]);
 
   return { enablePrivacy, disablePrivacy };
 };

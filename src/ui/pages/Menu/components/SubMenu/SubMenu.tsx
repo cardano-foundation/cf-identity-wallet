@@ -1,6 +1,6 @@
 import { arrowBackOutline } from "ionicons/icons";
 import "./SubMenu.scss";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { SubMenuProps } from "./SubMenu.types";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
@@ -32,6 +32,10 @@ const SubMenu = ({
     }
   }, [nestedMenu, setShowSubMenu, switchView]);
 
+  const hardwareBackButtonConfig = useMemo(() => ({
+    prevent: !showSubMenu
+  }), [showSubMenu]);
+
   return (
     <SideSlider
       renderAsModal={renderAsModal}
@@ -51,6 +55,7 @@ const SubMenu = ({
             actionButton={actionButton}
             actionButtonAction={actionButtonAction}
             actionButtonLabel={actionButtonLabel}
+            hardwareBackButtonConfig={hardwareBackButtonConfig}
           />
         }
       >

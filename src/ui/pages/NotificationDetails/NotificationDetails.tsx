@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { NotificationRoute } from "../../../core/agent/agent.types";
+import { KeriaNotification, NotificationRoute } from "../../../core/agent/agent.types";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppSelector } from "../../../store/hooks";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { useAppIonRouter } from "../../hooks";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
-import { TabsRoutePath } from "../../../routes/paths";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -19,21 +19,25 @@ const NotificationDetails = () => {
     return notificationCache.find((notification) => notification.id === id);
   }, [id, notificationCache]);
 
+  const currentNotification = useRef<KeriaNotification | undefined>(notificationDetails);
+
   const handleBack = useCallback(() => {
     ionicRouter.push(TabsRoutePath.NOTIFICATIONS, "back", "pop");
   }, [ionicRouter]);
 
-  useEffect(() => {
-    if(!notificationDetails) handleBack();
-  }, [handleBack, notificationDetails]);
+  const displayNotification = currentNotification.current || notificationDetails;
 
-  switch (notificationDetails?.a?.r) {
+  useEffect(() => {
+    if(!displayNotification) handleBack();
+  }, [handleBack, displayNotification]);
+
+  switch (displayNotification?.a?.r) {
   case NotificationRoute.MultiSigIcp:
     return (
       <MultiSigRequest
         pageId={pageId}
-        activeStatus={!!notificationDetails}
-        notificationDetails={notificationDetails}
+        activeStatus={!!displayNotification}
+        notificationDetails={displayNotification}
         handleBack={handleBack}
       />
     );
@@ -41,8 +45,8 @@ const NotificationDetails = () => {
     return (
       <ReceiveCredential
         pageId={pageId}
-        activeStatus={!!notificationDetails}
-        notificationDetails={notificationDetails}
+        activeStatus={!!displayNotification}
+        notificationDetails={displayNotification}
         handleBack={handleBack}
       />
     );
@@ -50,8 +54,8 @@ const NotificationDetails = () => {
     return (
       <CredentialRequest
         pageId={pageId}
-        activeStatus={!!notificationDetails}
-        notificationDetails={notificationDetails}
+        activeStatus={!!displayNotification}
+        notificationDetails={displayNotification}
         handleBack={handleBack}
       />
     );
@@ -59,8 +63,8 @@ const NotificationDetails = () => {
     return (
       <ReceiveCredential
         pageId={pageId}
-        activeStatus={!!notificationDetails}
-        notificationDetails={notificationDetails}
+        activeStatus={!!displayNotification}
+        notificationDetails={displayNotification}
         handleBack={handleBack}
         multisigExn
       />

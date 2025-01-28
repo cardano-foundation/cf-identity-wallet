@@ -8,7 +8,7 @@ enum CredentialStatus {
 
 type CredentialShortDetails = Omit<
   CredentialMetadataRecordProps,
-  "connectionId" | "createdAt"
+ "createdAt"
 >;
 
 type JSONValue =

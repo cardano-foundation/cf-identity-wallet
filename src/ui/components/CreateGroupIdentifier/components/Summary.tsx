@@ -62,7 +62,7 @@ const Summary = ({
             isPending: !!isPending,
             multisigManageAid: ourIdentifier,
           };
-          const filteredIdentifiersData = identifiersData.filter(
+          const filteredIdentifiersData = Object.values(identifiersData).filter(
             (item) => item.id !== ourIdentifier
           );
           dispatch(

@@ -35,7 +35,7 @@
 
 <p align="center">
   <kbd> 
-      <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
+      <img src="docs/images/readme/User-Flow-Preview.png" alt="User Flow Preview" width="720"/>
   </kbd>
 </p>
 
@@ -142,6 +142,9 @@ You can discover how to run the application in an emulator by following this [li
 
 ## End-to-End (E2E) Testing
 You can gain additional insights into end-to-end testing by visiting the provided [link](docs/Testing.md).
+
+## Additional Tutorials
+- [Customizing Splash Screens and Icons](docs/Customizing-Splash-and-Icons.md)
 
 # Contributing
 

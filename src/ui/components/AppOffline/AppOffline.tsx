@@ -5,9 +5,9 @@ import "./AppOffline.scss";
 import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import { BackEventPriorityType } from "../../globals/types";
 import { useAppSelector } from "../../../store/hooks";
-import { getAuthentication } from "../../../store/reducers/stateCache";
+import { getAuthentication, getIsOnline } from "../../../store/reducers/stateCache";
 
-const AppOffline = () => {
+const AppOfflinePage = () => {
   const loggedIn = useAppSelector(getAuthentication).loggedIn;
 
   // NOTE: Prevent all registered hardware back button of other pages instead of lock page.
@@ -29,5 +29,14 @@ const AppOffline = () => {
     </ResponsivePageLayout>
   );
 };
+
+const AppOffline = () => {
+  const ssiAgentIsSet = useAppSelector(getAuthentication).ssiAgentIsSet;
+  const isOnline = useAppSelector(getIsOnline);
+
+  if(!ssiAgentIsSet || isOnline) return null;
+
+  return <AppOfflinePage />
+}
 
 export { AppOffline };

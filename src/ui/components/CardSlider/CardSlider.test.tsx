@@ -4,7 +4,6 @@ import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { identifierFix } from "../../__fixtures__/identifierFix";
-import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 import { CardType } from "../../globals/types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CardSlider } from "./CardSlider";
@@ -92,41 +91,6 @@ describe("Card slider", () => {
       fireEvent.click(
         getByTestId("identifier-card-template-allidentifiers-index-0")
       );
-    });
-
-    await waitFor(() => {
-      expect(historyPushMock).toBeCalled();
-    });
-  });
-
-  test.skip("Click to pagination", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={mockedStore}>
-        <CardSlider
-          cardType={CardType.CREDENTIALS}
-          cardsData={shortCredsFix}
-          title="title"
-          name="creds"
-        />
-      </Provider>
-    );
-
-    expect(getByText("title")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(getByTestId("slide-pagination-1")).toBeInTheDocument();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("slide-pagination-1"));
-    });
-
-    await waitFor(() => {
-      expect(createOrUpdateBasicRecordMock).toBeCalled();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("keri-card-template-creds-index-1"));
     });
 
     await waitFor(() => {

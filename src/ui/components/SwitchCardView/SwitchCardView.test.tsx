@@ -8,6 +8,7 @@ import { CardType } from "../../globals/types";
 import { SwitchCardView } from "./SwitchCardView";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
 
 const historyPushMock = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
@@ -48,6 +49,9 @@ const initialState = {
       viewType: null,
       favouriteIndex: 0,
     },
+  },
+  connectionsCache: {
+    connections: connectionsMapFix,
   },
 };
 let mockedStore: Store<unknown, AnyAction>;

@@ -1,9 +1,9 @@
 enum IdentifierColor {
-  Green,
-  Dark,
-  Brown,
-  Primary,
-  Secondary,
+  One,
+  Two,
+  Three,
+  Four,
+  Five,
 }
 
 interface IdentifierColorSelectorProps {

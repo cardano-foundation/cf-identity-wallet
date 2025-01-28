@@ -1,30 +1,4 @@
 ion-modal.create-identifier-modal {
-  &.blur {
-    .create-identifier-modal-content > *:not(.spinner-container),
-    ion-toolbar.page-footer {
-      filter: blur(0.1rem);
-      --background: rgba(var(--ion-color-primary-rgb), 0);
-    }
-
-    ion-toolbar.page-footer {
-      background: transparent !important;
-    }
-  }
-
-  .spinner-container {
-    z-index: 1000;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(var(--ion-color-primary-rgb), 0.2);
-  }
-
   .scrollable-page-layout {
     &.keyboard-is-open ion-content.scrollable-page-content {
       overflow: hidden;
@@ -40,16 +14,11 @@ ion-modal.create-identifier-modal {
   }
 
   ion-toolbar {
-    --background: var(--ion-color-light);
-
     &.page-footer {
-      z-index: 1000;
+      z-index: 102;
       bottom: calc(-100vh + 5rem);
       padding-inline: 0.9rem;
-
-      &.identifier-stage-3 {
-        bottom: calc(-100vh + 8.5rem);
-      }
+      --background: var(--ion-color-neutral-200);
     }
   }
 
@@ -103,8 +72,16 @@ ion-modal.create-identifier-modal {
           font-weight: 400;
         }
 
+        ion-input {
+          --background: var(--ion-color-neutral-100);
+
+          .input-wrapper {
+            border-radius: 0.5rem;
+          }
+        }
+
         .input-line ion-input input::placeholder {
-          color: rgba(var(--ion-color-secondary-rgb), 0.75);
+          color: rgba(var(--ion-color-neutral-500-rgb), 0.75);
         }
       }
 
@@ -135,17 +112,17 @@ ion-modal.create-identifier-modal {
 
         ion-card {
           &.type-input {
-            --background: var(--ion-color-light);
+            --background: var(--ion-color-neutral-100);
             --inner-border-width: 0;
-            border: 1px solid var(--ion-color-dark-grey);
-            color: var(--ion-color-secondary);
+            border: 1px solid var(--ion-color-neutral-400);
+            color: var(--ion-color-neutral-700);
             border-radius: 0.5rem;
             height: 3.125rem;
           }
 
           &.selected-type {
-            border: 1px solid var(--ion-color-secondary) !important;
-            background: var(--ion-color-medium-grey);
+            border: 2px solid var(--ion-color-primary-700) !important;
+            background: var(--ion-color-primary-100);
           }
 
           &::part(native) {
@@ -263,8 +240,6 @@ ion-modal.create-identifier-modal {
       }
 
       ion-card {
-        padding: 0.4rem 1rem;
-
         ion-item.identifier-list-item {
           --min-height: 2.4rem;
 
@@ -316,9 +291,10 @@ ion-modal.create-identifier-modal {
 
     ion-toolbar.page-footer {
       bottom: calc(-100vh + 3.5rem);
+      padding-top: 0.1rem;
 
-      &.identifier-stage-3 {
-        bottom: calc(-100vh + 6.25rem);
+      ion-button {
+        margin: 0.25rem 0 0;
       }
     }
   }

@@ -1,3 +1,5 @@
+import { Capacitor } from "@capacitor/core";
+import { Device, DeviceInfo } from "@capacitor/device";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
@@ -8,21 +10,16 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
-import { Capacitor } from "@capacitor/core";
-import { RoutePath, Routes } from "../routes";
-import { PublicRoutes } from "../routes/paths";
+import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-  getAuthentication,
   getCurrentOperation,
-  getCurrentRoute,
-  getIsInitialized,
-  getIsOnline,
+  getIsInitialized
 } from "../store/reducers/stateCache";
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
 import { ToastStack } from "./components/CustomToast/ToastStack";
-import { GenericError } from "./components/Error";
+import { GenericError, NoWitnessAlert } from "./components/Error";
 import { InputRequest } from "./components/InputRequest";
 import { SidePage } from "./components/SidePage";
 import { OperationType } from "./globals/types";
@@ -33,16 +30,19 @@ import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
 import { showError } from "./utils/error";
+import SystemCompatibilityAlert from "./pages/SystemCompatibilityAlert/SystemCompatibilityAlert";
+import { SecureStorage } from "../core/storage";
+import { compareVersion } from "./utils/version";
+import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "./globals/constants";
 
 setupIonicReact();
 
 const App = () => {
   const initialized = useAppSelector(getIsInitialized);
-  const isOnline = useAppSelector(getIsOnline);
-  const authentication = useAppSelector(getAuthentication);
-  const currentRoute = useAppSelector(getCurrentRoute);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
+  const [isCompatible, setIsCompatible] = useState(true);
+  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -97,42 +97,63 @@ const App = () => {
     }
   }, []);
 
+
+  useEffect(() => {
+    const checkCompatibility = async () => {
+      if (Capacitor.isNativePlatform()) {
+        const info = await Device.getInfo();
+        setDeviceInfo(info);
+
+        if (info.platform === "android") {
+          const notSupportedOS = compareVersion(info.osVersion, `${ANDROID_MIN_VERSION}`) < 0 || compareVersion(info.webViewVersion, `${WEBVIEW_MIN_VERSION}`) < 0;
+          const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
+          if (notSupportedOS || !isKeyStoreSupported) {
+            setIsCompatible(false);
+            return;
+          }
+        } else if (info.platform === "ios") {
+          const notSupportedOS = compareVersion(info.osVersion, `${IOS_MIN_VERSION}`) < 0;
+          const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
+          if (notSupportedOS || !isKeyStoreSupported) {
+            setIsCompatible(false);
+            return;
+          }
+        }
+      }
+      setIsCompatible(true);
+    };
+
+    checkCompatibility();
+  }, []);
+
+
+
   const renderApp = () => {
-    return (
-      <IonReactRouter>
-        {showScan ? (
-          <FullPageScanner
-            showScan={showScan}
-            setShowScan={setShowScan}
-          />
-        ) : (
-          <div
-            className="app-spinner-container"
-            data-testid="app-spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        )}
-        <div className={showScan ? "ion-hide" : ""}>
-          <Routes />
-        </div>
-      </IonReactRouter>
-    );
-  };
-
-  const isPublicPage = PublicRoutes.includes(currentRoute?.path as RoutePath);
-
-  return (
-    <IonApp>
+    return <>
       <AppWrapper>
         <StrictMode>
           {initialized ? (
             <>
-              {renderApp()}
-              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
-              {authentication.ssiAgentIsSet && !isOnline ? (
-                <AppOffline />
-              ) : null}
+              <IonReactRouter>
+                {showScan ? (
+                  <FullPageScanner
+                    showScan={showScan}
+                    setShowScan={setShowScan}
+                  />
+                ) : (
+                  <div
+                    className="app-spinner-container"
+                    data-testid="app-spinner-container"
+                  >
+                    <IonSpinner name="circular" />
+                  </div>
+                )}
+                <div className={showScan ? "ion-hide" : ""}>
+                  <Routes />
+                </div>
+              </IonReactRouter>
+              <LockPage />
+              <AppOffline />
             </>
           ) : (
             <LoadingPage />
@@ -140,9 +161,19 @@ const App = () => {
           <InputRequest />
           <SidePage />
           <GenericError />
+          <NoWitnessAlert />
           <ToastStack />
         </StrictMode>
       </AppWrapper>
+    </>
+  }
+  return (
+    <IonApp>
+      {isCompatible ? (
+        renderApp()
+      ) : (
+        <SystemCompatibilityAlert deviceInfo={deviceInfo} />
+      )}
     </IonApp>
   );
 };

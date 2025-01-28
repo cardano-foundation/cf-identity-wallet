@@ -21,6 +21,12 @@ export class TabBar {
     return $("#tab-button-Scan");
   }
 
+  async tapOnMenuButton() {
+    await expect(this.menuTabButton).toBeDisplayed();
+    await expect(this.menuTabButton).toBeEnabled();
+    await this.menuTabButton.click();
+  }
+
   async loads() {
     await expect(this.identityTabButton).toBeDisplayed();
     await expect(this.credentialsTabButton).toBeDisplayed();

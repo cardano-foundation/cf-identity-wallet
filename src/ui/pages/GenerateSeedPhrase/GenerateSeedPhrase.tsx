@@ -1,28 +1,30 @@
+import { IonButton, IonCheckbox, IonIcon } from "@ionic/react";
+import { informationCircleOutline, refreshOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { IonCheckbox } from "@ionic/react";
-import { useHistory } from "react-router-dom";
-import "./GenerateSeedPhrase.scss";
 import { Trans } from "react-i18next";
-import { i18n } from "../../../i18n";
-import { Alert as AlertConfirm } from "../../components/Alert";
-import { getStateCache } from "../../../store/reducers/stateCache";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { updateReduxState } from "../../../store/utils";
-import { RoutePath } from "../../../routes";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../components/PageHeader";
-import { PageFooter } from "../../components/PageFooter";
-import { SeedPhraseModule } from "../../components/SeedPhraseModule";
-import { TermsModal } from "../../components/TermsModal";
-import { useAppIonRouter } from "../../hooks";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { BranAndMnemonic } from "../../../core/agent/agent.types";
-import { SwitchOnboardingMode } from "../../components/SwitchOnboardingMode";
-import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnboardingMode.types";
+import { i18n } from "../../../i18n";
+import { RoutePath } from "../../../routes";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import { Alert as AlertConfirm } from "../../components/Alert";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { SeedPhraseModule } from "../../components/SeedPhraseModule";
+import { SwitchOnboardingModeModal } from "../../components/SwitchOnboardingModeModal";
+import { OnboardingMode } from "../../components/SwitchOnboardingModeModal/SwitchOnboardingModeModal.types";
+import { TermsModal } from "../../components/TermsModal";
+import { useAppIonRouter } from "../../hooks";
 import { showError } from "../../utils/error";
+import { RecoverySeedPhraseDocumentModal } from "./components/RecoverySeedPhraseDocumentModal";
+import "./GenerateSeedPhrase.scss";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -38,6 +40,8 @@ const GenerateSeedPhrase = () => {
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
   const [privacyModalIsOpen, setPrivacyModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [openDocument, setOpenDocument] = useState(false);
+  const [showSwitchModeModal, setSwitchModeModal] = useState(false);
 
   const initializeSeedPhrase = async () => {
     setHideSeedPhrase(true);
@@ -127,19 +131,27 @@ const GenerateSeedPhrase = () => {
       <h2 data-testid={`${pageId}-title`}>
         {i18n.t("generateseedphrase.onboarding.title")}
       </h2>
-      <p data-testid={`${pageId}-paragraph-top`}>
-        {i18n.t("generateseedphrase.onboarding.paragraph.top")}
-      </p>
       <SeedPhraseModule
         testId="seed-phrase-container"
         seedPhrase={seedPhrase}
         hideSeedPhrase={hideSeedPhrase}
         setHideSeedPhrase={setHideSeedPhrase}
       />
+      <IonButton
+        onClick={() => setOpenDocument(true)}
+        fill="outline"
+        data-testid="recovery-phrase-docs-btn"
+        className="switch-button secondary-button"
+      >
+        <IonIcon
+          slot="start"
+          icon={informationCircleOutline}
+        />
+        {i18n.t("generateseedphrase.onboarding.button.recoverydocumentation")}
+      </IonButton>
       <p data-testid={`${pageId}-paragraph-bottom`}>
         {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
       </p>
-      <SwitchOnboardingMode mode={OnboardingMode.Recovery} />
       <div className="terms-and-conditions">
         <IonCheckbox
           labelPlacement="end"
@@ -154,16 +166,6 @@ const GenerateSeedPhrase = () => {
           />
         </p>
       </div>
-      <TermsModal
-        name="terms-of-use"
-        isOpen={termsModalIsOpen}
-        setIsOpen={setTermsModalIsOpen}
-      />
-      <TermsModal
-        name="privacy-policy"
-        isOpen={privacyModalIsOpen}
-        setIsOpen={setPrivacyModalIsOpen}
-      />
       <PageFooter
         pageId={pageId}
         primaryButtonText={`${i18n.t(
@@ -173,6 +175,19 @@ const GenerateSeedPhrase = () => {
           setAlertConfirmIsOpen(true);
         }}
         primaryButtonDisabled={hideSeedPhrase || !checked}
+        tertiaryButtonText={`${i18n.t("generateseedphrase.onboarding.button.switch")}`}
+        tertiaryButtonAction={() => setSwitchModeModal(true)}
+        tertiaryButtonIcon={refreshOutline}
+      />
+      <TermsModal
+        name="terms-of-use"
+        isOpen={termsModalIsOpen}
+        setIsOpen={setTermsModalIsOpen}
+      />
+      <TermsModal
+        name="privacy-policy"
+        isOpen={privacyModalIsOpen}
+        setIsOpen={setPrivacyModalIsOpen}
       />
       <AlertConfirm
         isOpen={alertConfirmIsOpen}
@@ -187,6 +202,8 @@ const GenerateSeedPhrase = () => {
         )}`}
         actionConfirm={handleContinue}
       />
+      <RecoverySeedPhraseDocumentModal isOpen={openDocument} setIsOpen={setOpenDocument}/>
+      <SwitchOnboardingModeModal mode={OnboardingMode.Recovery} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
     </ScrollablePageLayout>
   );
 };

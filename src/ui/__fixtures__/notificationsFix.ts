@@ -12,6 +12,7 @@ const notificationsFix: KeriaNotification[] = [
     },
     connectionId: "EJNd_YCOZA_g5fT8BnvY6KWgSMbIP9selgebbVNu8gNw",
     read: false,
+    groupReplied: false,
   },
   {
     id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
@@ -23,6 +24,7 @@ const notificationsFix: KeriaNotification[] = [
     },
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
+    groupReplied: false,
   },
   {
     id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmv",
@@ -34,6 +36,7 @@ const notificationsFix: KeriaNotification[] = [
     },
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
+    groupReplied: false,
   },
   {
     id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmk",
@@ -47,6 +50,7 @@ const notificationsFix: KeriaNotification[] = [
     },
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
+    groupReplied: false,
   },
   {
     id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmc",
@@ -60,6 +64,7 @@ const notificationsFix: KeriaNotification[] = [
     },
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
+    groupReplied: false,
   },
   {
     id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMm1",
@@ -72,6 +77,7 @@ const notificationsFix: KeriaNotification[] = [
     },
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
+    groupReplied: false,
   },
   {
     id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMm2",
@@ -83,6 +89,7 @@ const notificationsFix: KeriaNotification[] = [
     },
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
+    groupReplied: false,
   },
 ];
 

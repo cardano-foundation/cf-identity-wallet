@@ -29,8 +29,8 @@
       margin: 0;
       --background: transparent;
       --box-shadow: none;
-      --color: var(--ion-color-secondary);
-      --background-activated: var(--ion-color-light-grey);
+      --color: var(--ion-color-neutral-700);
+      --background-activated: var(--ion-color-neutral-300);
 
       &::part(native) {
         padding: 0;
@@ -67,8 +67,8 @@
         height: 70vw !important;
         padding: 1.5rem;
         margin: 1rem auto;
-        background-color: var(--ion-color-white);
-        box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary-rgb), 0.2);
+        background-color: var(--ion-color-neutral-100);
+        box-shadow: 0rem 0.125rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
         border-radius: 1rem;
       }
 
@@ -80,7 +80,7 @@
         border-radius: 1rem;
         position: absolute;
         left: calc(50% - 35vw);
-        box-shadow: 0px 2px 4px rgba(var(--ion-color-secondary-rgb), 0.2);
+        box-shadow: 0rem 0.125rem 0.25rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
 
         .share-qr-code-blur-overlay-inner {
           display: none;
@@ -126,7 +126,7 @@
       margin-bottom: 1rem;
 
       .share-identifier-divider-line {
-        border-bottom: 1px solid var(--ion-color-dark-grey);
+        border-bottom: 1px solid var(--ion-color-neutral-300);
         display: flex;
         flex-grow: 2;
         margin-bottom: 0.5rem;

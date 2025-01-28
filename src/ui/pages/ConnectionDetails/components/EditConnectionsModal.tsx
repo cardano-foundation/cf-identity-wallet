@@ -210,7 +210,7 @@ export const EditConnectionsContainer = ({
           <div className="connection-details-add-note">
             <IonButton
               shape="round"
-              className="primary-button"
+              className="primary-button add-note-button"
               data-testid="add-note-button"
               onClick={handleAddNewNote}
             >

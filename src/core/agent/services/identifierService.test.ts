@@ -1,12 +1,14 @@
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
-import { ConnectionStatus } from "../agent.types";
+import { ConnectionStatus, MiscRecordId } from "../agent.types";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { CoreEventEmitter } from "../event";
 import { IdentifierService } from "./identifierService";
 import { EventTypes } from "../event.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { IdentifierStorage } from "../records";
+import * as utils from "./utils";
+import { BasicRecord } from "../records";
+import { StorageMessage } from "../../storage/storage.types";
 
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
@@ -15,7 +17,7 @@ const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
-const operationMock = jest.fn();
+const findOperationMock = jest.fn();
 const mockSigner = {
   _code: "A",
   _size: -1,
@@ -119,11 +121,13 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
   getIdentifierMetadataByGroupId: jest.fn(),
   deleteIdentifierMetadata: jest.fn(),
+  getIdentifierPendingCreation: jest.fn(),
   getIdentifiersPendingDeletion: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
   save: saveOperationPendingMock,
+  findById: findOperationMock,
 });
 
 const eventEmitter = new CoreEventEmitter();
@@ -137,11 +141,20 @@ const connections = jest.mocked({
   deleteConnectionById: jest.fn(),
 });
 
+const basicStorage = jest.mocked({
+  findById: jest.fn(),
+  save: jest.fn(),
+  createOrUpdateBasicRecord: jest.fn(),
+  update: jest.fn(),
+  deleteById: jest.fn(),
+});
+
 const identifierService = new IdentifierService(
   agentServicesProps,
   identifierStorage as any,
   operationPendingStorage as any,
-  connections as any
+  connections as any,
+  basicStorage as any
 );
 
 jest.mock("../../cardano/walletConnect/peerConnection", () => ({
@@ -193,6 +206,7 @@ const identifierStateKeria = {
     b: "b",
     di: "di",
   },
+  icp_dt: "2024-12-30T16:49:05.800487+00:00",
 };
 
 const groupIdentifierStateKeria = {
@@ -229,19 +243,33 @@ const WITNESSES = [
   "http://witnesess:5644/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX/controller?role=witness",
   "http://witnesess:5645/oobi/BM35JN8XeJSEfpxopjn5jr7tAHCE5749f0OobhMLCorE/controller?role=witness",
   "http://witnesess:5646/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHP/controller?role=witness",
-  "http://witnesess:5647/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsM/controller?role=witness"
+  "http://witnesess:5647/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsM/controller?role=witness",
+  "http://witnesess:5648/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2HA/controller?role=witness",
+  "http://witnesess:5649/oobi/BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapA/controller?role=witness",
+  "http://witnesess:5650/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfA/controller?role=witness",
+  "http://witnesess:5651/oobi/BM35JN8XeJSEfpxopjn5jr7tAHCE5749f0OobhMLCorA/controller?role=witness",
+  "http://witnesess:5652/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHA/controller?role=witness",
+  "http://witnesess:5653/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsB/controller?role=witness",
+  "http://witnesess:5654/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2HB/controller?role=witness",
+  "http://witnesess:5655/oobi/BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapB/controller?role=witness",
+  "http://witnesess:5656/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfB/controller?role=witness",
+  "http://witnesess:5657/oobi/BM35JN8XeJSEfpxopjn5jr7tAHCE5749f0OobhMLCorB/controller?role=witness",
+  "http://witnesess:5658/oobi/BIj15u5V11bkbtAxMA7gcNJZcax-7TgaBMLsQnMHpYHB/controller?role=witness",
+  "http://witnesess:5659/oobi/BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7PfsB/controller?role=witness",
 ];
-const witnessEids = WITNESSES.map((oobi: string) => oobi.split("/oobi/")[1].split("/")[0]);
+const witnessEids = WITNESSES.map(
+  (oobi: string) => oobi.split("/oobi/")[1].split("/")[0]
+);
 
 describe("Single sig service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
     getAgentConfigMock.mockResolvedValue({
-      iurls: WITNESSES
+      iurls: WITNESSES.slice(0, 6),
     });
   });
-  
+
   test("can get all identifiers", async () => {
     identifierStorage.getAllIdentifierMetadata = jest
       .fn()
@@ -275,15 +303,17 @@ describe("Single sig service of agent", () => {
     );
     await expect(
       identifierService.getIdentifier(keriMetadataRecord.id)
-    ).rejects.toThrow(
-      new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${keriMetadataRecord.id}`)
+    ).rejects.toMatchObject(
+      new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${keriMetadataRecord.id}`, {
+        cause: "request - 404 - SignifyClient message",
+      })
     );
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id
     );
   });
 
-  test("Should throw error if the identifier is pending", async () => {
+  test("cannot get identifier if it's still pending", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
@@ -294,12 +324,13 @@ describe("Single sig service of agent", () => {
     ).rejects.toThrow(new Error(IdentifierService.IDENTIFIER_IS_PENDING));
   });
 
-  test("can get a keri identifier in detailed view", async () => {
+  test("can get an identifier in detailed view", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+
     expect(
       await identifierService.getIdentifier(keriMetadataRecord.id)
     ).toStrictEqual({
@@ -322,6 +353,7 @@ describe("Single sig service of agent", () => {
       .mockResolvedValue(keriMetadataRecord);
     getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
     getIdentifierMembersMock.mockResolvedValue(identifierMembersState);
+
     expect(
       await identifierService.getIdentifier(keriMetadataRecord.id)
     ).toStrictEqual({
@@ -340,47 +372,53 @@ describe("Single sig service of agent", () => {
     });
   });
 
-  test("can create a keri identifier", async () => {
+  test("cannot create an identifier if theme is not valid", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const aid = "newIdentifierAid";
-    const displayName = "newDisplayName";
-    createIdentifierMock.mockResolvedValue({
-      serder: {
-        ked: {
-          i: aid,
-        },
-      },
-      op: jest.fn().mockResolvedValue({
-        name: "op123",
-        done: true,
-      }),
-    });
 
-    expect(
-      await identifierService.createIdentifier({
-        displayName,
-        theme: 0,
+    await expect(
+      identifierService.createIdentifier({
+        displayName: "newDisplayName",
+        theme: 44,
       })
-    ).toEqual({
-      identifier: aid,
-      isPending: false,
-    });
-    expect(createIdentifierMock).toBeCalledWith(`0:${displayName}`, {
-      toad: WITNESSES.length,
-      wits: witnessEids
-    });
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+    ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
+
+    expect(createIdentifierMock).not.toBeCalled();
   });
 
-  test("can create a keri identifier with pending operation", async () => {
+  test("should throw an error if queuedDisplayNames is not an array when creating identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const aid = "newIdentifierAid";
-    const displayName = "newDisplayName";
+    const newTheme = 1;
+    basicStorage.findById.mockResolvedValueOnce(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: "invalidFormat",
+        },
+      })
+    );
+
+    await expect(
+      identifierService.createIdentifier({
+        displayName: "displayName",
+        theme: newTheme,
+      })
+    ).rejects.toThrowError(
+      IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT
+    );
+
+    expect(basicStorage.findById).toHaveBeenCalledWith(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
+    );
+  });
+
+  test("can create an identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "displayName";
     eventEmitter.emit = jest.fn();
     createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
-          i: aid,
+          i: "id",
         },
       },
       op: jest.fn().mockResolvedValue({
@@ -388,33 +426,58 @@ describe("Single sig service of agent", () => {
         done: false,
       }),
     });
-    operationGetMock.mockImplementation((id: string) => {
-      return {
-        done: false,
-        response: {
-          i: id,
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValueOnce(new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: [],
         },
-      };
-    });
+      }))
+      .mockResolvedValueOnce(new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:displayName"],
+        },
+      }));
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
 
-    expect(
-      await identifierService.createIdentifier({
-        displayName,
-        theme: 0,
-      })
-    ).toEqual({
-      identifier: aid,
+    await identifierService.createIdentifier({
+      displayName,
+      theme: 0,
+    });
+
+    expect(basicStorage.createOrUpdateBasicRecord).toBeCalledWith(expect.objectContaining({
+      id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+      content: { queuedDisplayNames: ["0:displayName"] },
+    }));
+    expect(createIdentifierMock).toBeCalledWith("0:displayName", {
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
+      displayName,
+      id: "id",
       isPending: true,
+      theme: 0
+    }));
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.IdentifierAdded,
+      payload: {
+        identifier: {
+          id: "id",
+          displayName,
+          createdAtUTC: "2024-12-30T16:49:05.800Z",
+          isPending: true,
+          theme: 0,
+        },
+      },
     });
-    expect(createIdentifierMock).toBeCalledWith(`0:${displayName}`, {
-      toad: WITNESSES.length,
-      wits: witnessEids
-    });
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationAdded,
       payload: {
@@ -424,26 +487,315 @@ describe("Single sig service of agent", () => {
         },
       },
     });
+    expect(basicStorage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: { queuedDisplayNames: [] },
+      })
+    );
   });
 
-  test("cannot create a keri identifier if theme is not valid", async () => {
+  test("can retry creating an identifier (skip storing name)", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const displayName = "newDisplayName";
+    const displayName = "displayName";
+    eventEmitter.emit = jest.fn();
     createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
-          i: "i",
+          i: "id",
         },
       },
-      op: jest.fn(),
+      op: jest.fn().mockResolvedValue({
+        name: "op123",
+        done: false,
+      }),
     });
-    await expect(
-      identifierService.createIdentifier({
-        displayName,
-        theme: 44,
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValue(new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:X", "0:displayName", "1:Y", "2:Z"],
+        },
+      }));
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "op123",
+      recordType: OperationPendingRecordType.Witness,
+    });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+
+    await identifierService.createIdentifier({
+      displayName,
+      theme: 0,
+    }, true);
+
+    expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
+    expect(createIdentifierMock).toBeCalledWith("0:displayName", {
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
+      displayName,
+      id: "id",
+      isPending: true,
+      theme: 0
+    }));
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.IdentifierAdded,
+      payload: {
+        identifier: {
+          id: "id",
+          displayName,
+          createdAtUTC: "2024-12-30T16:49:05.800Z",
+          isPending: true,
+          theme: 0,
+        },
+      },
+    });
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "op123",
+          recordType: OperationPendingRecordType.Witness,
+        },
+      },
+    });
+    expect(basicStorage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: { queuedDisplayNames: ["0:X", "1:Y", "2:Z"] },
       })
-    ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
-    expect(createIdentifierMock).not.toBeCalled();
+    );
+  });
+
+  test("can continue to create identifier if already exists on the cloud", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "displayName";
+    eventEmitter.emit = jest.fn();
+    createIdentifierMock.mockRejectedValue(new Error("request - 400 - already incepted"));
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValue(new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:displayName"],
+        },
+      }));
+    listIdentifiersMock.mockResolvedValueOnce({
+      aids: [{ prefix: "differentId", name: "0:a-different-name" }]
+    }).mockResolvedValueOnce({
+      aids: [{ prefix: "id", name: "0:displayName" }]
+    });
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "op123",
+      recordType: OperationPendingRecordType.Witness,
+    });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+
+    await identifierService.createIdentifier({
+      displayName,
+      theme: 0,
+    }, true);
+
+    expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
+    expect(createIdentifierMock).toBeCalledWith("0:displayName", {
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
+      displayName,
+      id: "id",
+      isPending: true,
+      theme: 0
+    }));
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.IdentifierAdded,
+      payload: {
+        identifier: {
+          id: "id",
+          displayName,
+          createdAtUTC: "2024-12-30T16:49:05.800Z",
+          isPending: true,
+          theme: 0,
+        },
+      },
+    });
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "op123",
+          recordType: OperationPendingRecordType.Witness,
+        },
+      },
+    });
+    expect(basicStorage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: { queuedDisplayNames: [] },
+      })
+    );
+  });
+
+  test("should error if display name is conflicting but cannot find by name thereafter", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "displayName";
+    eventEmitter.emit = jest.fn();
+    createIdentifierMock.mockRejectedValue(new Error("request - 400 - already incepted"));
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValue(new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:displayName"],
+        },
+      }));
+    listIdentifiersMock.mockResolvedValueOnce({
+      aids: [{ prefix: "different-id", name: "0:different-displayName" }]
+    }).mockResolvedValueOnce({
+      aids: []
+    });
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "op123",
+      recordType: OperationPendingRecordType.Witness,
+    });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+
+    await expect(identifierService.createIdentifier({
+      displayName,
+      theme: 0,
+    }, true)).rejects.toThrowError(IdentifierService.CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH);
+
+    expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
+    expect(createIdentifierMock).toBeCalledWith("0:displayName", {
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(basicStorage.update).not.toBeCalled();
+  });
+
+  test("should continue to track operations if metadata record already exists when creating identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "displayName";
+    eventEmitter.emit = jest.fn();
+    createIdentifierMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: "id",
+        },
+      },
+      op: jest.fn().mockResolvedValue({
+        name: "op123",
+        done: false,
+      }),
+    });
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValue(new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:X", "0:displayName", "1:Y", "2:Z"],
+        },
+      }));
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "op123",
+      recordType: OperationPendingRecordType.Witness,
+    });
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+    identifierStorage.createIdentifierMetadataRecord = jest.fn().mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
+
+    await identifierService.createIdentifier({
+      displayName,
+      theme: 0,
+    }, true);
+
+    expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
+    expect(createIdentifierMock).toBeCalledWith("0:displayName", {
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
+      displayName,
+      id: "id",
+      isPending: true,
+      theme: 0
+    }));
+    expect(eventEmitter.emit).toBeCalledTimes(1);  // Only once this time, usually 2
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "op123",
+          recordType: OperationPendingRecordType.Witness,
+        },
+      },
+    });
+    expect(basicStorage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: { queuedDisplayNames: ["0:X", "1:Y", "2:Z"] },
+      })
+    );
+  });
+
+  test("should remove pending identifier name if all actions complete and duplicated", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "displayName";
+    eventEmitter.emit = jest.fn();
+    createIdentifierMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: "id",
+        },
+      },
+      op: jest.fn().mockResolvedValue({
+        name: "op123",
+        done: false,
+      }),
+    });
+    basicStorage.findById = jest
+      .fn()
+      .mockResolvedValue(new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:X", "0:displayName", "1:Y", "2:Z"],
+        },
+      }));
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+    identifierStorage.createIdentifierMetadataRecord = jest.fn().mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
+    saveOperationPendingMock.mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
+
+    await identifierService.createIdentifier({
+      displayName,
+      theme: 0,
+    }, true);
+
+    expect(basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
+    expect(createIdentifierMock).toBeCalledWith("0:displayName", {
+      toad: 4,
+      wits: witnessEids.slice(0, 6),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
+      displayName,
+      id: "id",
+      isPending: true,
+      theme: 0
+    }));
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(basicStorage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: { queuedDisplayNames: ["0:X", "1:Y", "2:Z"] },
+      })
+    );
   });
 
   test("cannot create identifier is agent config is missing", async () => {
@@ -456,13 +808,16 @@ describe("Single sig service of agent", () => {
         theme: 0,
       })
     ).rejects.toThrowError(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
+
     expect(createIdentifierMock).not.toBeCalled();
   });
 
   test("cannot create identifier is there are no discoverable witnesses", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     getAgentConfigMock.mockResolvedValueOnce({
-      iurls: ["http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller"]
+      iurls: [
+        "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller",
+      ],
     });
 
     await expect(
@@ -470,33 +825,9 @@ describe("Single sig service of agent", () => {
         displayName: "newDisplayName",
         theme: 0,
       })
-    ).rejects.toThrowError(IdentifierService.NO_WITNESSES_AVAILABLE);
-    expect(createIdentifierMock).not.toBeCalled();
-  });
+    ).rejects.toThrowError(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
 
-  test("should throw an error if identifier name already exists", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const displayName = "newDisplayName";
-    const theme = 0;
-    const errorMessage =
-      "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
-    createIdentifierMock.mockResolvedValue({
-      serder: {
-        ked: {
-          i: "i",
-        },
-      },
-      op: operationMock,
-    });
-    operationMock.mockRejectedValue(new Error(errorMessage));
-    await expect(
-      identifierService.createIdentifier({
-        displayName,
-        theme,
-      })
-    ).rejects.toThrowError(
-      `${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${theme}:${displayName}`
-    );
+    expect(createIdentifierMock).not.toBeCalled();
   });
 
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
@@ -523,6 +854,15 @@ describe("Single sig service of agent", () => {
   });
 
   test("should delete the local member identifier for that multisig if deleting the multi-sig identifier", async () => {
+    const localMember = {
+      id: "aidLocalMember",
+      displayName: "Identifier Local",
+      createdAt: now,
+      theme: 0,
+      groupMetadata,
+      isPending: true,
+      multisigManageAid: "manageAid",
+    };
     identifierStorage.getIdentifierMetadata
       .mockReturnValueOnce({
         ...keriMetadataRecord,
@@ -530,11 +870,7 @@ describe("Single sig service of agent", () => {
         multisigManageAid: "manageAid",
         groupMetadata: undefined,
       })
-      .mockReturnValueOnce({
-        ...keriMetadataRecord,
-        isPending: true,
-        multisigManageAid: "manageAid",
-      });
+      .mockReturnValueOnce(localMember);
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
         id: "group-id",
@@ -548,8 +884,10 @@ describe("Single sig service of agent", () => {
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+    jest
+      .spyOn(utils, "randomSalt")
+      .mockReturnValueOnce("QOP7zdP-kJs8nlwVR290XfyAk")
+      .mockReturnValueOnce("0ADQpus-mQmmO4mgWcT3ekDz");
 
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
 
@@ -561,9 +899,13 @@ describe("Single sig service of agent", () => {
         pendingDeletion: false,
       }
     );
-    expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
-      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`
+    expect(updateIdentifierMock).toBeCalledWith(localMember.id, {
+      name: `XX-QOP7zdP-kJs8nlwVR290XfyAk:${localMember.groupMetadata.groupId}:${localMember.displayName}`,
     });
+    expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
+      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`,
+    });
+    expect(updateIdentifierMock).toBeCalledTimes(2);
   });
 
   test("can update an identifier", async () => {
@@ -597,8 +939,7 @@ describe("Single sig service of agent", () => {
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+    jest.spyOn(utils, "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
 
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
 
@@ -613,7 +954,7 @@ describe("Single sig service of agent", () => {
       }
     );
     expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
-      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`
+      name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`,
     });
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
       "dApp-address",
@@ -621,12 +962,12 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("Should correctly sync KERI identifiers, handling both group and non-group cases", async () => {
+  test("Should correctly sync identifiers, handling both group and non-group cases", async () => {
     // Mock the online status of the agent
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-  
+
     // Mock the list of identifiers returned by signifyClient
-    listIdentifiersMock.mockReturnValue({
+    listIdentifiersMock.mockReturnValueOnce({
       aids: [
         {
           name: "0:1-group1:test1",
@@ -647,13 +988,15 @@ describe("Single sig service of agent", () => {
           prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
         },
       ],
-    });
-  
+    }).mockReturnValue({ aids: [] });
+
     // Mock the identifier storage
-    identifierStorage.getKeriIdentifiersMetadata = jest.fn().mockReturnValue([]);
+    identifierStorage.getKeriIdentifiersMetadata = jest
+      .fn()
+      .mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
     identifierStorage.updateIdentifierMetadata = jest.fn();
-  
+
     // Mock the signifyClient operations call
     const mockOperation = {
       done: true,
@@ -662,12 +1005,17 @@ describe("Single sig service of agent", () => {
     jest
       .spyOn(signifyClient.operations(), "get")
       .mockResolvedValue(mockOperation);
-  
+    getIdentifiersMock.mockResolvedValue({
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    });
+
     // Call the function to test
     await identifierService.syncKeriaIdentifiers();
-  
+
     // sync data of non-group record
-    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       displayName: "1-group1",
       theme: 0,
@@ -677,13 +1025,17 @@ describe("Single sig service of agent", () => {
         groupInitiator: true,
       },
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
-  
-    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
       id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
-      displayName: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      displayName: "test2",
       theme: 33,
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
 
     // sync data of group record
@@ -698,15 +1050,17 @@ describe("Single sig service of agent", () => {
       }
     );
 
-    expect(identifierStorage.createIdentifierMetadataRecord).toHaveBeenCalledWith({
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       displayName: "1-group1",
       theme: 15,
       multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       isPending: false,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
   });
-  
 
   test("should call signify.rotateIdentifier with correct params", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
@@ -745,9 +1099,6 @@ describe("Single sig service of agent", () => {
   test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
-      Agent.KERIA_CONNECTION_BROKEN
-    );
-    await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
     await expect(identifierService.getSigner("id")).rejects.toThrowError(
@@ -836,5 +1187,136 @@ describe("Single sig service of agent", () => {
 
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id1");
     expect(identifierService.deleteIdentifier).toHaveBeenCalledWith("id2");
+  });
+
+  test("should resolve group identifier metadata correctly", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    basicStorage.findById.mockResolvedValueOnce(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: ["0:newDisplayName"],
+        },
+      })
+    );
+    identifierService.createIdentifier = jest.fn().mockResolvedValueOnce({
+      identifier: "newIdentifier",
+      isPending: true,
+    });
+
+    await identifierService.resolvePendingIdentifiers();
+
+    expect(identifierService.createIdentifier).toHaveBeenCalledWith(
+      {
+        theme: 0,
+        displayName: "newDisplayName",
+      },
+      true
+    );
+    expect(identifierService.createIdentifier).toHaveBeenCalledTimes(1);
+  });
+
+  test("should throw error if queued display name has invalid format", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    basicStorage.findById.mockResolvedValueOnce(
+      new BasicRecord({
+        id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
+        content: {
+          queuedDisplayNames: "0:invalidFormat",
+        },
+      })
+    );
+
+    await expect(
+      identifierService.resolvePendingIdentifiers()
+    ).rejects.toThrowError(
+      IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT
+    );
+  });
+
+  test("should gracefully exit if no pending identifiers", async () => {
+    basicStorage.findById.mockResolvedValueOnce(null);
+    await identifierService.resolvePendingIdentifiers();
+
+    expect(basicStorage.findById).toHaveBeenCalledWith(
+      MiscRecordId.IDENTIFIERS_PENDING_CREATION
+    );
+    expect(identifierService.createIdentifier).not.toHaveBeenCalled();
+  });
+
+  test("cannot get available witnesses list if the config is misconfigured", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({});
+
+    await expect(
+      identifierService.getAvailableWitnesses()
+    ).rejects.toThrowError(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("can get available witnesses list", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [
+        "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller",
+        ...WITNESSES.slice(0, 6)
+      ],
+    });
+
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 4, witnesses: [...witnessEids.slice(0, 6)] });
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("available witness list must be at least 6", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 5),
+    });
+
+    await expect(identifierService.getAvailableWitnesses()).rejects.toThrowError(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("duplicate witnesses are ignored", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: [...WITNESSES.slice(0, 6), ...WITNESSES.slice(0, 6)] 
+    });
+
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 4, witnesses: [...witnessEids.slice(0, 6)] }); 
+    expect(getAgentConfigMock).toBeCalled();
+  });
+
+  test("different witness list sizes", async () => {
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 7),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 5, witnesses: [...witnessEids.slice(0, 7)] });
+    
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 8),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 5, witnesses: [...witnessEids.slice(0, 7)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 9),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 6, witnesses: [...witnessEids.slice(0, 9)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 10),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 7, witnesses: [...witnessEids.slice(0, 10)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 11),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 7, witnesses: [...witnessEids.slice(0, 10)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES.slice(0, 12),
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 8, witnesses: [...witnessEids.slice(0, 12)] });
+
+    getAgentConfigMock.mockResolvedValueOnce({
+      iurls: WITNESSES
+    });
+    expect(await identifierService.getAvailableWitnesses()).toStrictEqual({ toad: 8, witnesses: [...witnessEids.slice(0, 12)] });
   });
 });

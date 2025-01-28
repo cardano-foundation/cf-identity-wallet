@@ -3,14 +3,17 @@ import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { IdentifierService } from "../core/agent/services";
 import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
 import { store } from "../store";
-import { showGenericError } from "../store/reducers/stateCache";
+import { showGenericError, showNoWitnessAlert } from "../store/reducers/stateCache";
 import { App } from "./App";
 import { OperationType } from "./globals/types";
+import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "./globals/constants";
 
 const mockInitDatabase = jest.fn();
+const getAvailableWitnessesMock = jest.fn();
 
 jest.mock("../core/agent/agent", () => ({
   Agent: {
@@ -26,6 +29,8 @@ jest.mock("../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+        onIdentifierAdded: jest.fn(),
+        getAvailableWitnesses: () => getAvailableWitnessesMock()
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -50,7 +55,7 @@ jest.mock("../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         onAcdcStateChanged: jest.fn(),
-        syncACDCs: jest.fn(),
+        syncKeriaCredentials: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
@@ -59,7 +64,7 @@ jest.mock("../core/agent/agent", () => ({
       keriaNotifications: {
         pollNotifications: jest.fn(),
         pollLongOperations: jest.fn(),
-        getAllNotifications: jest.fn(),
+        getNotifications: jest.fn(),
         stopNotification: jest.fn(),
         startNotification: jest.fn(),
         onNewNotification: jest.fn(),
@@ -86,10 +91,21 @@ jest.mock("../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
+const getDeviceInfo = jest.fn();
+
+jest.mock("@capacitor/device", () => ({
+  ...jest.requireActual("@capacitor/device"),
+  Device: {
+    getInfo: () => getDeviceInfo()
+  },
+}));
+
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: jest.fn((options: { key: string }) => {
+      return Promise.resolve({ value: "value" });
+    }),
     set: jest.fn(),
-    get: jest.fn(),
     remove: jest.fn(),
   },
 }));
@@ -133,7 +149,7 @@ const addKeyboardEventMock = jest.fn();
 jest.mock("@capacitor/keyboard", () => ({
   Keyboard: {
     addListener: (...params: any[]) => addKeyboardEventMock(...params),
-    hide: jest.fn()
+    hide: jest.fn(),
   },
 }));
 
@@ -173,7 +189,7 @@ const initialState = {
     bran: "",
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
     favourites: [],
     multiSigGroup: {
       groupId: "",
@@ -223,6 +239,19 @@ describe("App", () => {
     isNativeMock.mockImplementation(() => false);
     mockInitDatabase.mockClear();
     getPlatformsMock.mockImplementation(() => ["android"]);
+    getAvailableWitnessesMock.mockClear();
+
+    const deviceInfo = {
+      platform: "ios",
+      osVersion: "18.0",
+      model: "",
+      operatingSystem: "ios",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
   });
 
   test("Mobile header hidden when app not in preview mode", async () => {
@@ -326,7 +355,7 @@ describe("App", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -458,7 +487,7 @@ describe("App", () => {
         bran: "",
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -518,3 +547,277 @@ describe("App", () => {
     });
   });
 });
+
+describe("Witness availability", () => {
+  test("No witness availability", async () => {
+    getAvailableWitnessesMock.mockRejectedValue(new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE));
+
+    const initialState = {
+      stateCache: {
+        isOnline: true,
+        routes: [{ path: TabsRoutePath.ROOT }],
+        authentication: {
+          loggedIn: true,
+          userName: "",
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        toastMsgs: [],
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <App />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
+    });
+  });
+
+  test("Throw error", async () => {
+    getAvailableWitnessesMock.mockRejectedValue(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION));
+
+    const initialState = {
+      stateCache: {
+        isOnline: true,
+        routes: [{ path: TabsRoutePath.ROOT }],
+        authentication: {
+          loggedIn: true,
+          userName: "",
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        toastMsgs: [],
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <App />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
+    });
+  });
+});
+
+describe("System copatibility alert", () => {
+  beforeEach(() => {
+    isNativeMock.mockImplementation(() => true);
+    mockInitDatabase.mockClear();
+    getPlatformsMock.mockImplementation(() => ["android"]);
+    getAvailableWitnessesMock.mockClear();
+  });
+
+  afterEach(() => {
+    getDeviceInfo.mockClear();
+  })
+
+  test("Android", async () => {
+    const deviceInfo = {
+      platform: "android",
+      osVersion: "9.0",
+      model: "",
+      operatingSystem: "android",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
+
+    const {getByTestId, getByText} = render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getDeviceInfo).toBeCalled();
+    })
+
+    expect(getByText(Eng_Trans.systemcompatibility.title)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.os)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.youros)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.webview)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.yourwebview)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.android.storage)).toBeVisible();
+
+    expect(getByText("9.0")).toBeVisible();
+    expect(getByText("131.0.6778.260")).toBeVisible();
+    expect(getByText(`${ANDROID_MIN_VERSION}+`)).toBeVisible();
+    expect(getByText(`${WEBVIEW_MIN_VERSION}+`)).toBeVisible();
+    expect(getByText("N/A")).toBeVisible();
+
+    expect(getByTestId("met")).toBeVisible();
+    expect(getByTestId("not-met")).toBeVisible();
+  });
+
+  test("Ios", async () => {
+    const deviceInfo = {
+      platform: "ios",
+      osVersion: "11.0",
+      model: "",
+      operatingSystem: "ios",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
+
+    const {getByTestId, getByText} = render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getDeviceInfo).toBeCalled();
+    })
+
+    expect(getByText(Eng_Trans.systemcompatibility.title)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.ios.os)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.ios.youros)).toBeVisible();
+    expect(getByText(Eng_Trans.systemcompatibility.ios.storage)).toBeVisible();
+
+    expect(getByText("11.0")).toBeVisible();
+    expect(getByText(`${IOS_MIN_VERSION}+`)).toBeVisible();
+    expect(getByText("N/A")).toBeVisible();
+
+    expect(getByTestId("not-met")).toBeVisible();
+  });
+})

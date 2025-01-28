@@ -9,7 +9,7 @@ import {
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 
 const initialState: IdentifierCacheState = {
-  identifiers: [],
+  identifiers: {},
   favourites: [],
   multiSigGroup: undefined,
   openMultiSigId: undefined,
@@ -23,31 +23,42 @@ const identifiersCacheSlice = createSlice({
       state,
       action: PayloadAction<IdentifierShortDetails[]>
     ) => {
-      state.identifiers = action.payload;
+      const newIdentifiers = action.payload.reduce(
+        (acc: Record<string, IdentifierShortDetails>, identifier) => {
+          acc[identifier.id] = identifier;
+          return acc;
+        },
+        {}
+      );
+
+      state.identifiers = newIdentifiers;
     },
     updateOrAddIdentifiersCache: (
       state,
       action: PayloadAction<IdentifierShortDetails>
     ) => {
-      const identifiers = state.identifiers.filter(
-        (aid) => aid.id !== action.payload.id
-      );
-      state.identifiers = [...identifiers, action.payload];
+      state.identifiers = {
+        ...state.identifiers,
+        [action.payload.id]: action.payload,
+      };
     },
     updateIsPending: (
       state,
       action: PayloadAction<Pick<IdentifierShortDetails, "id" | "isPending">>
     ) => {
-      const identifier = state.identifiers.find(
-        (aid) => aid.id === action.payload.id
-      );
+      const identifier = state.identifiers[action.payload.id];
+
       if (identifier) {
         identifier.isPending = action.payload.isPending;
-        state.identifiers = [
-          ...state.identifiers.filter((aid) => aid.id !== action.payload.id),
-          identifier,
-        ];
+
+        state.identifiers = {
+          ...state.identifiers,
+          [action.payload.id]: identifier,
+        };
       }
+    },
+    removeIdentifierCache: (state, action: PayloadAction<string>) => {
+      delete state.identifiers[action.payload]
     },
     setFavouritesIdentifiersCache: (
       state,
@@ -101,6 +112,7 @@ export const {
   setOpenMultiSigId,
   setScanGroupId,
   setIdentifiersFilters,
+  removeIdentifierCache
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>

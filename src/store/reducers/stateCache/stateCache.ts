@@ -1,4 +1,4 @@
-import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { LensFacing } from "@jimcase/barcode-scanning";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Salter } from "signify-ts";
 import { LoginAttempts } from "../../../core/agent/services/auth.types";
@@ -165,6 +165,9 @@ const stateCacheSlice = createSlice({
     showConnections: (state, action: PayloadAction<boolean>) => {
       state.showConnections = action.payload;
     },
+    showNoWitnessAlert: (state, action: PayloadAction<boolean | undefined>) => {
+      state.showNoWitnessAlert = action.payload;
+    },
   },
 });
 
@@ -190,6 +193,7 @@ const {
   showGenericError,
   showConnections,
   removeToastMessage,
+  showNoWitnessAlert
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -214,6 +218,8 @@ const getShowCommonError = (state: RootState) =>
   state.stateCache.showGenericError;
 const getShowConnections = (state: RootState) =>
   state.stateCache.showConnections;
+const getShowNoWitnessAlert = (state: RootState) =>
+  state.stateCache.showNoWitnessAlert;
 const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
 
 export type {
@@ -223,6 +229,8 @@ export type {
 };
 
 export {
+  showNoWitnessAlert,
+  getShowNoWitnessAlert,
   dequeueIncomingRequest,
   enqueueIncomingRequest,
   getAuthentication,

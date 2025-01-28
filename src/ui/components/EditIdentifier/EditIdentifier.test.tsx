@@ -1,17 +1,16 @@
+import { IonInput, IonLabel } from "@ionic/react";
 import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { IonInput, IonLabel } from "@ionic/react";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../__fixtures__/identifierFix";
+import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { EditIdentifier } from "./EditIdentifier";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { CustomInputProps } from "../CustomInput/CustomInput.types";
-import { IdentifierService } from "../../../core/agent/services";
 
 const updateMock = jest.fn();
 
@@ -96,7 +95,7 @@ describe("Edit identifier", () => {
         },
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
     mockedStore = {
@@ -170,13 +169,8 @@ describe("Edit identifier", () => {
     });
   });
 
-
   test("Display error when display name invalid", async () => {
-    updateMock.mockImplementation(() => {
-      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN)
-    })
-
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={mockedStore}>
         <EditIdentifier
           modalIsOpen={true}
@@ -226,23 +220,17 @@ describe("Edit identifier", () => {
         getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
       ).toBeVisible();
     });
-    
-    act(() => {
-      ionFireEvent.ionInput(getByTestId("edit-name-input"), "Duke");
-    });
 
-    await waitFor(() => {
-      expect(queryByTestId("error-message")).toBe(null);
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("edit-name-input"), "Test MS");
     });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-edit-identifier"));
     });
-
+    
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.duplicatename)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.duplicatename)).toBeVisible();
     });
   });
 });

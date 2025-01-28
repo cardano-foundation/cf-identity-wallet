@@ -9,10 +9,13 @@
   ion-chip {
     margin-top: 0;
     margin-bottom: 0;
+    --background: var(--ion-color-neutral-300);
+    --color: var(--ion-color-neutral-700);
   }
 
   .selected {
-    background: var(--ion-color-primary-gradient);
+    --background: var(--ion-color-primary-700);
+    --color: var(--ion-color-neutral-100);
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {

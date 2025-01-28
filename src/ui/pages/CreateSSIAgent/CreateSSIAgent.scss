@@ -1,6 +1,4 @@
 .create-ssi-agent {
-  --background: var(--ion-color-light);
-
   .ssi-error-placeholder {
     height: 1.375rem;
 
@@ -14,7 +12,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: calc(100vh - (5.25rem + var(--ion-safe-area-top)));
+      min-height: calc(100vh - (4rem + var(--ion-safe-area-top)));
 
       & .title {
         margin-top: 1rem;
@@ -63,6 +61,6 @@
   justify-content: center;
   align-items: center;
   z-index: 101;
-  background: rgba(var(--ion-color-primary-rgb), 0.2);
+  background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
   backdrop-filter: blur(0.25rem);
 }

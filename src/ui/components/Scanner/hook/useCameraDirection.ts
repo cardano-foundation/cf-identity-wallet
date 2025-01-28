@@ -1,4 +1,4 @@
-import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { LensFacing } from "@jimcase/barcode-scanning";
 import { Capacitor } from "@capacitor/core";
 import { useMemo } from "react";
 import { Agent } from "../../../../core/agent/agent";

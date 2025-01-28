@@ -70,11 +70,12 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-const getMock = jest.fn();
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: () => getMock(),
+const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
+
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: (options: { key: string }) => getMock(options.key),
     remove: jest.fn(),
   },
 }));
@@ -134,7 +135,7 @@ describe("ConnectionDetails Page", () => {
             {
               type: 3,
               timestamp: "2024-08-07T15:33:18.204Z",
-              credentialType: "Rare EVO 2024 Attendee",
+              credentialType: "Qualified vLEI Issuer Credential",
             },
           ],
           serviceEndpoints: [],
@@ -174,7 +175,6 @@ describe("ConnectionDetails Page", () => {
   });
 
   test("Delete button in the footer triggers a confirmation alert", async () => {
-    getMock.mockImplementation(() => Promise.resolve("111111"));
 
     const storeMocked = {
       ...mockStore(initialStateFull),
@@ -447,7 +447,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
             {
               type: 1,
               timestamp: "2017-01-14T19:23:24Z",
-              credentialType: "Rare EVO 2024 Attendee",
+              credentialType: "Qualified vLEI Issuer Credential",
             },
           ],
           serviceEndpoints: [],
@@ -494,22 +494,22 @@ describe("Checking the Connection Details Page when notes are available", () => 
       {
         type: 3,
         timestamp: "2024-08-07T15:33:18.204Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
       {
         type: 2,
         timestamp: "2024-08-07T15:32:26.006Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
       {
         type: 1,
         timestamp: "2024-08-07T15:32:13.597Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
       {
         type: 0,
         timestamp: "2024-08-07T15:31:17.382Z",
-        credentialType: "Rare EVO 2024 Attendee",
+        credentialType: "Qualified vLEI Issuer Credential",
       },
     ];
     const connectionDetails = {
@@ -668,8 +668,6 @@ describe("Checking the Connection Details Page when connection is missing from t
         />
       </Provider>
     );
-
-    getMock.mockImplementation(() => Promise.resolve("111111"));
 
     await waitFor(() => {
       expect(getByTestId("connection-details-cloud-error-page")).toBeVisible();

@@ -1,8 +1,8 @@
 import { IonCard, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { checkmark } from "ionicons/icons";
 import "./IdentifierThemeSelector.scss";
-import { IDENTIFIER_BG_MAPPING } from "../../../../globals/types";
 import { IdentifierThemeSelectorProps, ThemeItemProps } from "./IdentifierThemeSelector.types";
+import { CardTheme } from "../../../CardTheme";
 
 const IdentifierThemeSelector = ({
   color,
@@ -40,14 +40,11 @@ const IdentifierThemeSelector = ({
         <IonCard
           onClick={() => setSelectedTheme(index)}
           data-testid={`identifier-theme-selector-item-${index}`}
-          className="theme-input"
-          style={{
-            backgroundImage: `url(${
-              IDENTIFIER_BG_MAPPING[Number(`${color}${index}`)]
-            })`,
-            backgroundSize: "cover",
-          }}
+          className={`theme-input card-theme-${color}`}
         >
+          <div>
+            <CardTheme color={color} layout={index} />
+          </div>
           {selectedTheme === index ? <Checkmark /> : <Circle />}
         </IonCard>
       </IonCol>

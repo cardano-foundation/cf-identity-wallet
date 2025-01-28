@@ -166,8 +166,11 @@ class ConnectionService extends AgentService {
           connection,
         };
       }
-      await this.createConnectionMetadata(connectionId, connectionMetadata);
-    } else {
+    }
+    
+    await this.createConnectionMetadata(connectionId, connectionMetadata);
+
+    if (!multiSigInvite) {
       this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
         type: EventTypes.ConnectionStateChanged,
         payload: {
@@ -178,9 +181,8 @@ class ConnectionService extends AgentService {
           label: alias,
         },
       });
-
-      await this.createConnectionMetadata(connectionId, connectionMetadata);
     }
+
     return { type: KeriConnectionType.NORMAL, connection };
   }
 
@@ -248,7 +250,9 @@ class ConnectionService extends AgentService {
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
-          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`);
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`, {
+            cause: error,
+          });
         } else {
           throw error;
         }
@@ -425,24 +429,22 @@ class ConnectionService extends AgentService {
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
-  @OnlineOnly
   async syncKeriaContacts() {
-    const signifyContacts = await this.props.signifyClient.contacts().list();
-    const storageContacts = await this.connectionStorage.getAll();
-    const unSyncedData = signifyContacts.filter(
+    const cloudContacts = await this.props.signifyClient.contacts().list();
+    const localContacts = await this.connectionStorage.getAll();
+
+    const unSyncedData = cloudContacts.filter(
       (contact: Contact) =>
-        !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
+        !localContacts.find((item: ConnectionRecord) => contact.id == item.id)
     );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      for (const contact of unSyncedData) {
-        await this.createConnectionMetadata(contact.id, {
-          alias: contact.alias,
-          oobi: contact.oobi,
-          groupId: contact.groupCreationId,
-          createdAtUTC: contact.createdAt,
-        });
-      }
+
+    for (const contact of unSyncedData) {
+      await this.createConnectionMetadata(contact.id, {
+        alias: contact.alias,
+        oobi: contact.oobi,
+        groupId: contact.groupCreationId,
+        createdAtUTC: contact.createdAt,
+      });
     }
   }
 
@@ -470,7 +472,9 @@ class ConnectionService extends AgentService {
         5000
       )) as Operation & { response: State };
       if (!operation.done) {
-        throw new Error(`${ConnectionService.FAILED_TO_RESOLVE_OOBI} [url: ${url}]`);
+        throw new Error(
+          `${ConnectionService.FAILED_TO_RESOLVE_OOBI} [url: ${url}]`
+        );
       }
       if (operation.response && operation.response.i) {
         const connectionId = operation.response.i;
