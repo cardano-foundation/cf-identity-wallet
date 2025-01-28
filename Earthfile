@@ -31,14 +31,14 @@ docker-publish:
 
 docker-manifests-merge:
   ARG PLATFORMS
-  LET TARGET_PLATFORMS=${PLATFORMS}
   LOCALLY
   FOR image_target IN $DOCKER_IMAGES_TARGETS
     IF [ "${image_target}" = "cip45-sample-dapp" ]
-      SET TARGET_PLATFORMS="linux/amd64"
+      LET PLATFORMS="linux/amd64"
+      LET DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES} | sed 's|hub.docker.com||g')"
     END
     DO functions+DOCKER_MANIFESTS_MERGE \
-       --PLATFORMS="${TARGET_PLATFORMS}" \
+       --PLATFORMS="${PLATFORMS}" \
        --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
        --DOCKER_IMAGE_NAME="${DOCKER_IMAGES_PREFIX}-${image_target}" \
        --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}" \
