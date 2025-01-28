@@ -89,8 +89,12 @@ class ConnectionService extends AgentService {
   onConnectionRemoved() {
     this.props.eventEmitter.on(
       EventTypes.ConnectionRemoved,
-      (data: ConnectionRemovedEvent) =>
-        this.deleteConnectionById(data.payload.connectionId!)
+      (data: ConnectionRemovedEvent) => {
+        const connectionId = data.payload.connectionId;
+        if (connectionId) {
+          this.deleteConnectionById(connectionId);
+        }
+      }
     );
   }
 
@@ -104,10 +108,11 @@ class ConnectionService extends AgentService {
     }
 
     const multiSigInvite = url.includes("groupId");
-    const connectionId = new URL(url).pathname
-      .split("/oobi/")
-      .pop()!
-      .split("/")[0];
+    const pathParts = new URL(url).pathname.split("/oobi/");
+    const connectionId = pathParts.length > 1 ? pathParts.pop()?.split("/")[0] : undefined;
+    if (!connectionId) {
+      throw new Error("Invalid OOBI URL: Unable to extract connection ID");
+    }
 
     const alias = new URL(url).searchParams.get("name") ?? randomSalt();
     const connectionDate = new Date().toISOString();
