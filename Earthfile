@@ -31,10 +31,14 @@ docker-publish:
 
 docker-manifests-merge:
   ARG PLATFORMS
+  LET TARGET_PLATFORMS=${PLATFORMS}
   LOCALLY
   FOR image_target IN $DOCKER_IMAGES_TARGETS
+    IF [ "${image_target}" = "cip45-sample-dapp" ]
+      SET TARGET_PLATFORMS="linux/amd64"
+    END
     DO functions+DOCKER_MANIFESTS_MERGE \
-       --PLATFORMS="${PLATFORMS}" \
+       --PLATFORMS="${TARGET_PLATFORMS}" \
        --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
        --DOCKER_IMAGE_NAME="${DOCKER_IMAGES_PREFIX}-${image_target}" \
        --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}" \
@@ -172,19 +176,23 @@ cip45-sample-dapp:
   ARG EARTHLY_TARGET_NAME
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
   LOCALLY
-  # do not push this image to the public docker hub
-  LET DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES} | sed 's|hub.docker.com||g')"
 
-  WAIT
-    FROM DOCKERFILE ./services/cip45-sample-dapp
+  # skip this for arm as it takes forever
+  IF [ "${TARGET_PLATFORM}" != "linux/arm64" ]
+    # do not push this image to the public docker hub
+    LET DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES} | sed 's|hub.docker.com||g')"
+
+    WAIT
+      FROM DOCKERFILE ./services/cip45-sample-dapp
+    END
+    WAIT
+      DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"
+      SAVE IMAGE ${DOCKER_IMAGE_NAME}
+    END
+    DO functions+DOCKER_TAG_N_PUSH \
+       --PUSH=$PUSH \
+       --TARGET_PLATFORM=${TARGET_PLATFORM} \
+       --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
+       --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+       --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
   END
-  WAIT
-    DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"
-    SAVE IMAGE ${DOCKER_IMAGE_NAME}
-  END
-  DO functions+DOCKER_TAG_N_PUSH \
-     --PUSH=$PUSH \
-     --TARGET_PLATFORM=${TARGET_PLATFORM} \
-     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
-     --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
-     --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
