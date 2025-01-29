@@ -1,5 +1,5 @@
 Feature: Onboarding
 
   
-  Scenario: Onboarding - loads correctly
+  Scenario: C172 Onboarding - loads correctly
     Then user can see Onboarding screen
