@@ -42,14 +42,14 @@ const identifiersCacheSlice = createSlice({
         [action.payload.id]: action.payload,
       };
     },
-    updateIsPending: (
+    updateCreationStatus: (
       state,
-      action: PayloadAction<Pick<IdentifierShortDetails, "id" | "isPending">>
+      action: PayloadAction<Pick<IdentifierShortDetails, "id" | "creationStatus">>
     ) => {
       const identifier = state.identifiers[action.payload.id];
 
       if (identifier) {
-        identifier.isPending = action.payload.isPending;
+        identifier.creationStatus = action.payload.creationStatus;
 
         state.identifiers = {
           ...state.identifiers,
@@ -105,7 +105,7 @@ export const {
   setIdentifiersCache,
   setFavouritesIdentifiersCache,
   updateOrAddIdentifiersCache,
-  updateIsPending,
+  updateCreationStatus,
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
   setMultiSigGroupCache,

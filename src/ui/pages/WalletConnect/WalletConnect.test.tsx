@@ -9,6 +9,7 @@ import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
+import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
 const identifierCache = [
   {
@@ -16,7 +17,7 @@ const identifierCache = [
     id: "testid_00",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
     multisigManageAid: "EHNPqg5RyNVWfpwUYDK135xuUMFGK1GXZoDVqGc0DPsy",
   },
   {
@@ -24,7 +25,7 @@ const identifierCache = [
     id: "testid_0",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
     groupMetadata: {
       groupId: "test",
       groupInitiator: true,
@@ -36,7 +37,7 @@ const identifierCache = [
     id: "testid_1",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
   },
 ];
 

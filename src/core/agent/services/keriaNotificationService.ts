@@ -31,12 +31,14 @@ import {
   OperationAddedEvent,
   NotificationRemovedEvent,
   ConnectionStateChangedEvent,
+  OperationFailedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById, isNetworkError, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
 import { StorageMessage } from "../../storage/storage.types";
+import { CreationStatus } from "./identifier.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -983,40 +985,59 @@ class KeriaNotificationService extends AgentService {
       }
     }
 
-    if (operation && operation.done) {
-      const recordId = operationRecord.id.replace(
-        `${operationRecord.recordType}.`,
-        ""
+    if (!operation) {
+      return;
+    }
+
+    const recordId = operationRecord.id.replace(
+      `${operationRecord.recordType}.`,
+      ""
+    );
+
+    if (operation.done && operation.error) {
+      switch (operationRecord.recordType) {
+      case OperationPendingRecordType.Witness: {
+        await this.identifierStorage.updateIdentifierMetadata(recordId, {
+          creationStatus: CreationStatus.FAILED,
+        });
+        break;
+      }
+      default: {
+        break;
+      }
+      }
+
+      this.props.eventEmitter.emit<OperationFailedEvent>({
+        type: EventTypes.OperationFailed,
+        payload: {
+          opType: operationRecord.recordType,
+          oid: recordId,
+        },
+      });
+      await this.operationPendingStorage.deleteById(operationRecord.id);
+      this.pendingOperations.splice(
+        this.pendingOperations.indexOf(operationRecord),
+        1
       );
+
+      return;
+    }
+
+    if (operation.done) {
       switch (operationRecord.recordType) {
       case OperationPendingRecordType.Group: {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
-          isPending: false,
+          creationStatus: CreationStatus.COMPLETE,
         });
         // Trigger add end role authorization for multi-sigs
         const multisigIdentifier =
             await this.identifierStorage.getIdentifierMetadata(recordId);
         await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
-        this.props.eventEmitter.emit<OperationCompleteEvent>({
-          type: EventTypes.OperationComplete,
-          payload: {
-            opType: operationRecord.recordType,
-            oid: recordId,
-          },
-        });
         break;
       }
       case OperationPendingRecordType.Witness: {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
-          isPending: false,
-        });
-
-        this.props.eventEmitter.emit<OperationCompleteEvent>({
-          type: EventTypes.OperationComplete,
-          payload: {
-            opType: operationRecord.recordType,
-            oid: recordId,
-          },
+          creationStatus: CreationStatus.COMPLETE,
         });
         break;
       }
@@ -1059,13 +1080,6 @@ class KeriaNotificationService extends AgentService {
             .contacts()
             .delete((operation.response as State).i);
         }
-        this.props.eventEmitter.emit<OperationCompleteEvent>({
-          type: EventTypes.OperationComplete,
-          payload: {
-            opType: operationRecord.recordType,
-            oid: recordId,
-          },
-        });
         break;
       }
       case OperationPendingRecordType.ExchangeReceiveCredential: {
@@ -1206,9 +1220,18 @@ class KeriaNotificationService extends AgentService {
         }
         break;
       }
-      default:
+      default: {
         break;
       }
+      }
+
+      this.props.eventEmitter.emit<OperationCompleteEvent>({
+        type: EventTypes.OperationComplete,
+        payload: {
+          opType: operationRecord.recordType,
+          oid: recordId,
+        },
+      });
       await this.operationPendingStorage.deleteById(operationRecord.id);
       this.pendingOperations.splice(
         this.pendingOperations.indexOf(operationRecord),
@@ -1221,12 +1244,16 @@ class KeriaNotificationService extends AgentService {
     this.props.eventEmitter.on(EventTypes.NotificationAdded, callback);
   }
 
-  onLongOperationComplete(callback: (event: OperationCompleteEvent) => void) {
+  onRemoveNotification(callback: (event: NotificationRemovedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.NotificationRemoved, callback);
+  }
+
+  onLongOperationSuccess(callback: (event: OperationCompleteEvent) => void) {
     this.props.eventEmitter.on(EventTypes.OperationComplete, callback);
   }
 
-  onRemoveNotification(callback: (event: NotificationRemovedEvent) => void) {
-    this.props.eventEmitter.on(EventTypes.NotificationRemoved, callback);
+  onLongOperationFailure(callback: (event: OperationFailedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.OperationFailed, callback);
   }
 }
 

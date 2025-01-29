@@ -1,5 +1,11 @@
 import { ConnectionShortDetails } from "../agent.types";
 
+enum CreationStatus {
+  PENDING = "PENDING",
+  COMPLETE = "COMPLETE",
+  FAILED = "FAILED",
+}
+
 interface GroupMetadata {
   groupId: string;
   groupInitiator: boolean;
@@ -17,7 +23,7 @@ interface IdentifierShortDetails {
   displayName: string;
   createdAtUTC: string;
   theme: number;
-  isPending: boolean;
+  creationStatus: CreationStatus;
   groupMetadata?: GroupMetadata;
   multisigManageAid?: string;
 }
@@ -60,4 +66,4 @@ export type {
   CreateIdentifierResult,
 };
 
-export { IdentifierType };
+export { IdentifierType, CreationStatus };

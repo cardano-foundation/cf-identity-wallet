@@ -5,9 +5,10 @@ import {
   NotificationRemovedEvent,
 } from "../../../core/agent/event.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
+import { CreationStatus } from "../../../core/agent/services/identifier.types";
 import { useAppDispatch } from "../../../store/hooks";
 import {
-  updateIsPending,
+  updateCreationStatus,
   updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
@@ -33,17 +34,29 @@ const notificationStateChanged = (
   }
 };
 
-const signifyOperationStateChangeHandler = async (
+const operationCompleteHandler = async (
   { oid, opType }: { oid: string; opType: OperationPendingRecordType },
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   switch (opType) {
   case OperationPendingRecordType.Witness:
   case OperationPendingRecordType.Group:
-    dispatch(updateIsPending({ id: oid, isPending: false }));
+    dispatch(updateCreationStatus({ id: oid, creationStatus: CreationStatus.COMPLETE }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
   }
+};
+
+const operationFailureHandler = async (
+  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  switch (opType) {
+  case OperationPendingRecordType.Witness:
+    dispatch(updateCreationStatus({ id: oid, creationStatus: CreationStatus.FAILED }));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    break;
+  } 
 };
 
 const identifierAddedHandler = async (
@@ -55,6 +68,7 @@ const identifierAddedHandler = async (
 
 export {
   notificationStateChanged,
-  signifyOperationStateChangeHandler,
+  operationCompleteHandler,
+  operationFailureHandler,
   identifierAddedHandler,
 };

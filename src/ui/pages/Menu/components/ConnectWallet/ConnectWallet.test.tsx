@@ -16,6 +16,7 @@ import { walletConnectionsFix } from "../../../../__fixtures__/walletConnections
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { ConnectWallet } from "./ConnectWallet";
+import { CreationStatus } from "../../../../../core/agent/services/identifier.types";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -362,7 +363,7 @@ describe("Wallet connect: empty history", () => {
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
             theme: 0,
-            isPending: false,
+            creationStatus: CreationStatus.COMPLETE,
             multisigManageAid: "EBze49sDYvxxtq5eFbX2TKbK7g4SPS7DJVdoTRIyybxN",
           },
           "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ61": {
@@ -370,7 +371,7 @@ describe("Wallet connect: empty history", () => {
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
             theme: 0,
-            isPending: false,
+            creationStatus: CreationStatus.COMPLETE,
             groupMetadata: {},
           },
         },
@@ -793,7 +794,7 @@ describe("Wallet connect", () => {
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",
-            isPending: false,
+            creationStatus: CreationStatus.COMPLETE,
             theme: 0,
             s: 4, // Sequence number, only show if s > 0
             dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
@@ -862,7 +863,7 @@ describe("Wallet connect", () => {
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",
-            isPending: false,
+            creationStatus: CreationStatus.COMPLETE,
             theme: 0,
             s: 4, // Sequence number, only show if s > 0
             dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0

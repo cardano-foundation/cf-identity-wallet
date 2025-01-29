@@ -13,7 +13,7 @@ import {
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../../../core/agent/agent.types";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { CreationStatus, IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -65,7 +65,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       ConnectionShortDetails | undefined
     >(undefined);
     const availableIdentifiers = Object.values(identifierCache)
-      .filter((item) => !item.isPending)
+      .filter((item) => item.creationStatus === CreationStatus.COMPLETE)
       .filter((item) => !item.groupMetadata?.groupId);
     const [mappedConnections, setMappedConnections] = useState<
       MappedConnections[]

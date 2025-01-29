@@ -3,6 +3,7 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../../agent/records";
+import { CreationStatus } from "../../agent/services/identifier.types";
 
 const now = new Date();
 
@@ -27,7 +28,7 @@ const multisigMetadataRecord = {
   id: "EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
   displayName: "identifier",
   isDeleted: false,
-  isPending: false,
+  creationStatus: CreationStatus.COMPLETE,
   multisigManageAid: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
   theme: 1,
 } as IdentifierMetadataRecord;
@@ -99,14 +100,14 @@ const memberIdentifierRecord = {
   _tags: {
     groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
     isDeleted: false,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
     groupCreated: true,
   },
   type: "IdentifierMetadataRecord",
   id: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
   displayName: "multi-sig",
   isDeleted: false,
-  isPending: false,
+  creationStatus: CreationStatus.COMPLETE,
   createdAt: new Date("2024-06-28T03:54:03.514Z"),
   theme: 0,
   groupMetadata: {

@@ -1,4 +1,5 @@
 import { BaseRecord } from "../../storage/storage.types";
+import { CreationStatus } from "../services/identifier.types";
 
 interface groupMetadata {
   groupId: string;
@@ -9,9 +10,9 @@ interface groupMetadata {
 interface IdentifierMetadataRecordProps {
   id: string;
   displayName: string;
+  creationStatus?: CreationStatus;
   createdAt?: Date;
   isDeleted?: boolean;
-  isPending?: boolean;
   theme: number;
   multisigManageAid?: string;
   groupMetadata?: groupMetadata;
@@ -19,10 +20,10 @@ interface IdentifierMetadataRecordProps {
 
 class IdentifierMetadataRecord extends BaseRecord {
   displayName!: string;
-  isDeleted?: boolean;
-  isPending?: boolean;
-  pendingDeletion = false;
   theme!: number;
+  creationStatus!: CreationStatus;
+  isDeleted!: boolean;
+  pendingDeletion = false;
   multisigManageAid?: string;
   groupMetadata?: groupMetadata;
 
@@ -35,12 +36,12 @@ class IdentifierMetadataRecord extends BaseRecord {
     if (props) {
       this.id = props.id;
       this.displayName = props.displayName;
-      this.isDeleted = props.isDeleted ?? false;
-      this.isPending = props.isPending ?? false;
-      this.multisigManageAid = props.multisigManageAid;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
+      this.creationStatus = props.creationStatus ?? CreationStatus.PENDING;
+      this.isDeleted = props.isDeleted ?? false;
       this.groupMetadata = props.groupMetadata;
+      this.multisigManageAid = props.multisigManageAid;
     }
   }
 
@@ -49,7 +50,7 @@ class IdentifierMetadataRecord extends BaseRecord {
       ...this._tags,
       groupId: this.groupMetadata?.groupId,
       isDeleted: this.isDeleted,
-      isPending: this.isPending,
+      creationStatus: this.creationStatus,
       groupCreated: this.groupMetadata?.groupCreated,
       pendingDeletion: this.pendingDeletion,
     };

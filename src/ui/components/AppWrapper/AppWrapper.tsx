@@ -72,7 +72,8 @@ import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
   identifierAddedHandler,
   notificationStateChanged,
-  signifyOperationStateChangeHandler,
+  operationCompleteHandler,
+  operationFailureHandler,
 } from "./coreEventListeners";
 import {
   AcdcStateChangedEvent,
@@ -461,12 +462,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.onKeriaStatusStateChanged((event) => {
       setOnlineStatus(event.payload.isOnline);
     });
+
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
     });
+
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
     });
+
     PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
       async (event) => {
         return peerConnectRequestSignChangeHandler(event, dispatch);
@@ -481,17 +485,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectionBrokenChangeHandler(event, dispatch);
       }
     );
+
     Agent.agent.keriaNotifications.onNewNotification((event) => {
       notificationStateChanged(event, dispatch);
     });
-
-    Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
-      signifyOperationStateChangeHandler(event.payload, dispatch);
-    });
-
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificationStateChanged(event, dispatch);
     });
+    Agent.agent.keriaNotifications.onLongOperationSuccess((event) => {
+      operationCompleteHandler(event.payload, dispatch);
+    });
+    Agent.agent.keriaNotifications.onLongOperationFailure((event) => {
+      operationFailureHandler(event.payload, dispatch);
+    })
 
     Agent.agent.identifiers.onIdentifierAdded((event) => {
       identifierAddedHandler(event, dispatch);

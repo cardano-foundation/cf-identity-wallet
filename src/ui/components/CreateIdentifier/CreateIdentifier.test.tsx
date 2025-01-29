@@ -15,6 +15,7 @@ import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierF
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CreateIdentifier } from "./CreateIdentifier";
+import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
 setupIonicReact();
 mockIonicReact();
@@ -104,7 +105,7 @@ describe("Create Identifier modal", () => {
     );
     createIdentifierMock.mockImplementation((args: unknown) => ({
       identifier: "mock-id",
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
     }));
   });
 

@@ -18,6 +18,7 @@ import {
 } from "../../__fixtures__/agent/multSigFixtures";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { EventTypes } from "../event.types";
+import { CreationStatus } from "./identifier.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -226,7 +227,7 @@ describe("Oobi/endrole", () => {
         id: "newMultisigIdentifierAid",
         displayName: "Identifier 2",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
         multisigManageAid: "creatorIdentifier",
         createdAt: new Date("2024-08-09T07:23:52.839894+00:00")
       }
@@ -414,14 +415,14 @@ describe("Creation of multi-sig", () => {
       )
     ).toEqual({
       identifier: multisigIdentifier,
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({ 
         id: multisigIdentifier,
         displayName: "Identifier 2",
         theme: 0,
-        isPending: true,
+        creationStatus: CreationStatus.PENDING,
         multisigManageAid: "creatorIdentifier",
         createdAt: new Date("2024-08-09T07:23:52.839Z") 
       })
@@ -459,14 +460,14 @@ describe("Creation of multi-sig", () => {
       )
     ).toEqual({
       identifier: `${multisigIdentifier}1`,
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}1`,
         displayName: "Identifier 2",
         theme: 0,
-        isPending: true,
+        creationStatus: CreationStatus.PENDING,
         multisigManageAid: "creatorIdentifier",
         createdAt: new Date("2024-08-09T07:23:52.839Z")
       })
@@ -495,14 +496,14 @@ describe("Creation of multi-sig", () => {
       )
     ).toEqual({
       identifier: `${multisigIdentifier}2`,
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}2`,
         displayName: "Identifier 2",
         theme: 0,
-        isPending: true,
+        creationStatus: CreationStatus.PENDING,
         multisigManageAid: "creatorIdentifier",
         createdAt: new Date("2024-08-09T07:23:52.839Z")
       })
@@ -595,13 +596,13 @@ describe("Creation of multi-sig", () => {
       )
     ).toEqual({
       identifier: multisigIdentifier,
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
 
       multisigManageAid: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
     });
 
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({ id: multisigIdentifier, isPending: true })
+      expect.objectContaining({ id: multisigIdentifier, creationStatus: CreationStatus.PENDING })
     );
 
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(

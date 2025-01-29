@@ -10,6 +10,7 @@ import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { SetupThreshold } from "./SetupThreshold";
 import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
 import { Stage } from "../CreateGroupIdentifier.types";
+import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
 setupIonicReact();
 mockIonicReact();
@@ -31,7 +32,7 @@ describe("Create group identifier - Setup Threshold", () => {
       displayName: "",
       createdAtUTC: "",
       theme: 0,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       groupMetadata: undefined,
     },
     color: IdentifierColor.One,

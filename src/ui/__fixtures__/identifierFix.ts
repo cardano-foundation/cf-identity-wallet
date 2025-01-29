@@ -1,4 +1,4 @@
-import { IdentifierDetails } from "../../core/agent/services/identifier.types";
+import { CreationStatus, IdentifierDetails } from "../../core/agent/services/identifier.types";
 
 const identifierFix: IdentifierDetails[] = [
   {
@@ -6,7 +6,7 @@ const identifierFix: IdentifierDetails[] = [
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
     kt: "2", // Keys signing threshold (only show for group identifiers)
@@ -28,7 +28,7 @@ const identifierFix: IdentifierDetails[] = [
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     theme: 1,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
     kt: "2", // Keys signing threshold (only show for group identifiers)
@@ -50,7 +50,7 @@ const identifierFix: IdentifierDetails[] = [
     displayName: "Test MS",
     createdAtUTC: "2024-03-07T11:54:56.886Z",
     theme: 0,
-    isPending: true,
+    creationStatus: CreationStatus.PENDING,
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
     kt: "2", // Keys signing threshold (only show for group identifiers)

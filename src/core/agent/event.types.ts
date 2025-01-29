@@ -15,6 +15,7 @@ interface BaseEventEmitter {
 enum EventTypes {
   NotificationAdded = "NotificationAdded ",
   OperationComplete = "OperationComplete",
+  OperationFailed = "OperationFailed",
   OperationAdded = "OperationAdded",
   ConnectionStateChanged = "ConnectionStateChanged",
   ConnectionRemoved = "ConnectionRemoved",
@@ -35,6 +36,14 @@ interface NotificationAddedEvent extends BaseEventEmitter {
 
 interface OperationCompleteEvent extends BaseEventEmitter {
   type: typeof EventTypes.OperationComplete;
+  payload: {
+    oid: string;
+    opType: OperationPendingRecordType;
+  };
+}
+
+interface OperationFailedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.OperationFailed;
   payload: {
     oid: string;
     opType: OperationPendingRecordType;
@@ -112,6 +121,7 @@ interface IdentifierAddedEvent extends BaseEventEmitter {
 export type {
   NotificationAddedEvent,
   OperationCompleteEvent,
+  OperationFailedEvent,
   BaseEventEmitter,
   ConnectionStateChangedEvent,
   AcdcStateChangedEvent,
