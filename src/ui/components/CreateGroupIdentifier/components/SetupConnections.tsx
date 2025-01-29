@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getMultiSigGroupCache,
   removeIdentifierCache,
-  setScanGroupId
+  setScanGroupId,
 } from "../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -36,7 +36,7 @@ const SetupConnections = ({
   multiSigGroup,
   preventRedirect,
   isModalOpen,
-  openAfterCreate
+  openAfterCreate,
 }: IdentifierStageProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -58,8 +58,6 @@ const SetupConnections = ({
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
-
-  const isPending = resumeMultiSig?.creationStatus !== CreationStatus.COMPLETE;
 
   useEffect(() => {
     if (isModalOpen) {
@@ -131,7 +129,8 @@ const SetupConnections = ({
     setState((prevState) => ({
       ...prevState,
       scannedConections,
-      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName || "",
+      displayNameValue:
+        state.displayNameValue || resumeMultiSig?.displayName || "",
       ourIdentifier: state.ourIdentifier || resumeMultiSig?.id || "",
       identifierCreationStage: Stage.Members,
       color: theme.color,
@@ -171,7 +170,7 @@ const SetupConnections = ({
 
   return (
     <>
-      {(!openAfterCreate || initiated || scannedConections?.length) ? (
+      {!openAfterCreate || initiated || scannedConections?.length ? (
         <SetupConnectionBodyResume
           componentId={componentId}
           handleDone={handleDone}
@@ -181,7 +180,6 @@ const SetupConnections = ({
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
           handleDelete={openDeleteConfirm}
-          isPending={isPending}
         />
       ) : (
         <SetupConnectionBodyInit
@@ -192,7 +190,6 @@ const SetupConnections = ({
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
           handleDelete={openDeleteConfirm}
-          isPending={isPending}
         />
       )}
       <Alert

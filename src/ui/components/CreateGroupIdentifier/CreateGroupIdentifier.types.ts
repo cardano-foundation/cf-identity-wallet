@@ -8,7 +8,7 @@ enum Stage {
   SetupConnection,
   Members,
   SetupThreshold,
-  Summary
+  Summary,
 }
 
 interface CreateIdentifierProps {
@@ -58,7 +58,6 @@ interface IdentifierStage1BodyProps {
     groupInitiator: boolean;
     groupCreated: boolean;
   };
-  isPending: boolean;
   scannedConections?: ConnectionShortDetails[];
   handleScanButton: () => void;
   handleDelete?: () => void;
