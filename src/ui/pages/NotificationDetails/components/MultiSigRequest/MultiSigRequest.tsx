@@ -1,51 +1,51 @@
 import {
   IonCard,
-  IonList,
-  IonItem,
-  IonGrid,
-  IonRow,
   IonCol,
-  IonLabel,
+  IonGrid,
   IonIcon,
-  IonSpinner,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonRow
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
 import { useCallback, useState } from "react";
-import { Alert as AlertDecline } from "../../../../components/Alert";
-import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { Agent } from "../../../../../core/agent/agent";
+import {
+  CreateGroupIdentifierResult,
+  NotificationRoute,
+} from "../../../../../core/agent/agent.types";
+import {
+  IdentifierShortDetails,
+  MultiSigIcpRequestDetails,
+} from "../../../../../core/agent/services/identifier.types";
+import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
+import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../../../store/reducers/identifiersCache";
-import { Agent } from "../../../../../core/agent/agent";
-import {
-  IdentifierShortDetails,
-  MultiSigIcpRequestDetails,
-} from "../../../../../core/agent/services/identifier.types";
-import { BackEventPriorityType, ToastMsgType } from "../../../../globals/types";
-import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../../../components/PageHeader";
-import { i18n } from "../../../../../i18n";
-import { PageFooter } from "../../../../components/PageFooter";
-import "./MultiSigRequest.scss";
-import {
-  CreateIdentifierResult,
-  NotificationRoute,
-} from "../../../../../core/agent/agent.types";
-import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
+import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { Alert as AlertDecline } from "../../../../components/Alert";
+import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
+import { PageFooter } from "../../../../components/PageFooter";
+import { PageHeader } from "../../../../components/PageHeader";
+import { Spinner } from "../../../../components/Spinner";
+import { Verification } from "../../../../components/Verification";
+import { BackEventPriorityType, ToastMsgType } from "../../../../globals/types";
 import {
   useIonHardwareBackButton,
   useOnlineStatusEffect,
 } from "../../../../hooks";
-import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
-import { ErrorPage } from "./ErrorPage";
-import { Verification } from "../../../../components/Verification";
 import { showError } from "../../../../utils/error";
+import { NotificationDetailsProps } from "../../NotificationDetails.types";
+import { ErrorPage } from "./ErrorPage";
+import "./MultiSigRequest.scss";
 
 const MultiSigRequest = ({
   pageId,
@@ -97,7 +97,6 @@ const MultiSigRequest = ({
   };
 
   const actionAccept = async () => {
-    document?.querySelector("ion-router-outlet")?.classList.add("blur");
     setSpinner(true);
     try {
       if (!multisigIcpDetails) {
@@ -115,7 +114,7 @@ const MultiSigRequest = ({
             theme: multisigIcpDetails.ourIdentifier.theme,
             displayName: multisigIcpDetails.ourIdentifier.displayName,
           }
-        )) as CreateIdentifierResult;
+        )) as CreateGroupIdentifierResult;
 
       if (identifier) {
         const newIdentifier: IdentifierShortDetails = {
@@ -126,7 +125,7 @@ const MultiSigRequest = ({
           isPending: !!isPending,
           multisigManageAid,
         };
-        const filteredIdentifiersData = identifiersData.filter(
+        const filteredIdentifiersData = Object.values(identifiersData).filter(
           (item) => item.id !== multisigIcpDetails?.ourIdentifier.id
         );
         dispatch(
@@ -137,11 +136,11 @@ const MultiSigRequest = ({
           : ToastMsgType.IDENTIFIER_REQUESTED;
       }
       handleNotificationUpdate();
-      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
-      setSpinner(false);
       handleBack();
     } catch (e) {
       showError("Unable to join multi-sig", e, dispatch);
+    } finally {
+      setSpinner(false);
     }
   };
 
@@ -178,23 +177,14 @@ const MultiSigRequest = ({
   }
 
   if (!multisigIcpDetails) {
-    return (
-      <div
-        className="multisig-request-spinner-container"
-        data-testid="multisig-request-spinner-container"
-      >
-        <IonSpinner name="circular" />
-      </div>
-    );
+    return <Spinner show={true}/>;
   }
 
   return (
     <>
       <ScrollablePageLayout
         pageId={`${pageId}-multi-sig-request`}
-        customClass={`${pageId}-multi-sig-request setup-identifier ${
-          spinner ? "blur" : ""
-        }`}
+        customClass={`${pageId}-multi-sig-request setup-identifier`}
         activeStatus={activeStatus}
         header={
           <PageHeader
@@ -336,14 +326,7 @@ const MultiSigRequest = ({
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
       />
-      {spinner && (
-        <div
-          className="multisig-spinner-container"
-          data-testid="multisig-spinner-container"
-        >
-          <IonSpinner name="circular" />
-        </div>
-      )}
+      <Spinner show={spinner}/>
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}

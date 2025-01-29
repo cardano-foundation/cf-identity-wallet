@@ -12,30 +12,47 @@
 
     ion-col {
       height: calc(12.125rem * 200 / 350);
-      padding: 0.5rem;
+      padding: 0;
       margin: 0;
-      border-radius: 0.5rem;
-      border: 1px solid var(--ion-color-dark-grey);
-      background: var(--ion-color-light);
 
       &:first-of-type {
         margin-right: 0.75rem;
       }
 
       &.selected-theme {
-        border: 1px solid var(--ion-color-secondary) !important;
-        background: var(--ion-color-medium-grey);
+        .theme-input {
+          border: 2px solid var(--ion-color-primary-700);
+        }
       }
 
       .theme-input {
         margin: 0;
         height: 100%;
-        border-radius: 0.5rem;
-        --background: var(--ion-color-light);
+        --background: var(--ion-color-neutral-100);
         --inner-border-width: 0;
-        border: 1px solid var(--ion-color-dark-grey);
-        color: var(--ion-color-secondary);
+        color: var(--ion-color-neutral-700);
         box-shadow: none;
+        border-radius: 0.75rem;
+        
+        &.card-theme-0 {
+          background: var(--ion-color-card-theme-one);
+        }
+    
+        &.card-theme-1 {
+          background: var(--ion-color-card-theme-two);
+        }
+    
+        &.card-theme-2 {
+          background: var(--ion-color-card-theme-three);
+        }
+    
+        &.card-theme-3 {
+          background: var(--ion-color-card-theme-four);
+        }
+    
+        &.card-theme-4 {
+          background: var(--ion-color-card-theme-five);
+        }
 
         .unselected-theme-circle,
         .selected-theme-checkmark {
@@ -43,8 +60,8 @@
           height: 1.5rem;
           border-radius: 1.5rem;
           position: absolute;
-          top: 0.25rem;
-          right: 0.25rem;
+          top: 0.75rem;
+          right: 0.75rem;
           text-align: center;
           display: flex;
           flex-direction: column;
@@ -55,16 +72,21 @@
             height: 1.125rem;
             margin: auto;
             border-radius: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
         }
 
         .selected-theme-checkmark {
-          background: var(--ion-color-primary-gradient);
+          background: var(--ion-color-primary-700);
+          color: var(--ion-color-neutral-100);
+          border: 1px solid var(--ion-color-neutral-100);
         }
 
         .unselected-theme-circle {
-          background: var(--ion-color-light);
-          border: 1px solid var(--ion-color-dark-grey);
+          background: var(--ion-color-neutral-100);
+          border: 1px solid var(--ion-color-neutral-300);
         }
 
         &::part(native) {
@@ -78,7 +100,6 @@
 @media screen and (min-width: 250px) and (max-width: 425px) {
   .identifier-theme-selector .identifier-theme-input ion-col {
     height: calc(8.5rem * 200 / 350);
-    padding: 0.35rem;
 
     &:first-of-type {
       margin-right: 0.6rem;
@@ -90,8 +111,6 @@
     .selected-theme-checkmark {
       width: 1.2rem;
       height: 1.2rem;
-      top: 0.2rem;
-      right: 0.2rem;
 
       .selected-theme-checkmark-inner {
         width: 0.9rem;
@@ -100,7 +119,6 @@
         ion-icon {
           width: 0.8rem;
           height: 0.8rem;
-          margin-bottom: 50%;
         }
       }
     }
@@ -109,7 +127,6 @@
   @media screen and (min-width: 371px) and (max-width: 425px) {
     .identifier-theme-selector .identifier-theme-input ion-col {
       height: 5.2rem;
-      padding: 0.4rem;
     }
   }
 }

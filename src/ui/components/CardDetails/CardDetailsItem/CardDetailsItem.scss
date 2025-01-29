@@ -7,14 +7,15 @@
     margin: 0 0.5rem 0 0;
     width: 1.5rem;
     height: 1.5rem;
+    overflow: hidden;
   }
 
   ion-button.action-button {
     margin: 0;
     --background: transparent;
     --box-shadow: none;
-    --color: var(--ion-color-secondary);
-    --background-activated: var(--ion-color-light-grey);
+    --color: var(--ion-color-neutral-400);
+    --background-activated: var(--ion-color-neutral-100);
 
     ion-icon {
       opacity: 0.5;
@@ -37,7 +38,7 @@
     width: 100%;
     font-size: 1rem;
     font-weight: 500;
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-neutral-700);
 
     .card-details-info-block-subtext {
       font-weight: 400;
@@ -63,10 +64,10 @@
       white-space: nowrap;
       --mask: linear-gradient(
         to right,
-        rgba(var(--ion-color-secondary-rgb)) 0,
-        rgba(var(--ion-color-secondary-rgb)) 85%,
-        rgba(var(--ion-color-black-rgb), 0.5) 90%,
-        rgba(var(--ion-color-black-rgb), 0) 100%
+        rgba(var(--ion-color-neutral-500-rgb)) 0,
+        rgba(var(--ion-color-neutral-500-rgb)) 85%,
+        rgba(var(--ion-color-neutral-700-rgb), 0.5) 90%,
+        rgba(var(--ion-color-neutral-700-rgb), 0) 100%
       );
       -webkit-mask: var(--mask);
       mask: var(--mask);

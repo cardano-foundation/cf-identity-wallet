@@ -23,6 +23,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialDetails } from "./CredentialDetails";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -92,7 +93,10 @@ const initialStateNoPasswordCurrent = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
+  },
+  connectionsCache: {
+    connections: connectionsMapFix,
   },
 };
 
@@ -122,7 +126,10 @@ const initialStateNoPasswordArchived = {
     notificationDetailCache: null,
   },
   identifiersCache: {
-    identifiers: [],
+    identifiers: {},
+  },
+  connectionsCache: {
+    connections: connectionsMapFix,
   },
 };
 
@@ -188,7 +195,7 @@ describe("Cred Details page - current not archived credential", () => {
         notificationDetailCache: null,
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
     };
 

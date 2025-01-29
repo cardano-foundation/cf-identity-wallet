@@ -18,6 +18,7 @@
     white-space: nowrap;
     font-weight: 500;
     font-size: 1rem;
+    color: var(--ion-color-neutral-700);
 
     &.md {
       margin-inline-end: 0;
@@ -36,15 +37,16 @@
     }
 
     &.accepted {
-      background: var(--ion-color-primary-gradient);
+      background: var(--ion-color-card-theme-one);
+      color: var(--ion-color-neutral-100);
     }
 
     &.rejected {
-      background: var(--ion-color-light-red);
+      background: var(--ion-color-error-400);
     }
 
     &.waiting {
-      background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+      background: var(--ion-color-neutral-300);
     }
   }
 

@@ -134,7 +134,7 @@ describe("Identifiers Tab", () => {
     store.dispatch(setIdentifiersFilters(IdentifiersFilters.All));
   });
 
-  test.skip("Renders favourites in Identifiers", () => {
+  test("Renders favourites in Identifiers", () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={mockedStore}>
@@ -169,7 +169,7 @@ describe("Identifiers Tab", () => {
     ).toBeInTheDocument();
   });
 
-  test.skip("Renders Identifiers Filters", () => {
+  test("Renders Identifiers Filters", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={mockedStore}>
@@ -521,7 +521,7 @@ describe("Identifiers Tab", () => {
       },
       seedPhraseCache: {},
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       viewTypeCache: {
         identifier: {
@@ -665,7 +665,7 @@ describe("Identifiers Tab", () => {
     unmount();
   });
 
-  test("Remove pending multisig identifier alert", async () => {
+  test("Open pending group identifier", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -701,15 +701,18 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+
     const { getByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+      <IonReactMemoryRouter history={history}>
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.IDENTIFIERS}
             component={Identifiers}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     await waitFor(() => {
@@ -724,9 +727,7 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.identifiers.detelepending.mutilsigdescription
-        )
+        getByTestId("create-group-identifier-modal")
       ).toBeVisible();
     });
   });

@@ -1,7 +1,7 @@
 ion-card.type-input {
   margin: 0;
   display: flex;
-  background: var(--ion-color-white);
+  background: var(--ion-color-neutral-100);
   border-radius: 1rem;
   flex-direction: column;
   justify-content: space-evenly;
@@ -22,7 +22,7 @@ ion-card.type-input {
     ion-label {
       margin: 0.813rem 0;
       font-weight: 500;
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
 
       img {
         width: 1.5rem;
@@ -42,7 +42,7 @@ ion-card.type-input {
 
     ion-icon {
       font-size: 1.5rem;
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
       opacity: 0.5;
     }
   }

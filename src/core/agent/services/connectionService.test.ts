@@ -518,7 +518,6 @@ describe("Connection service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     contactListMock.mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
@@ -539,6 +538,8 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
+
+    eventEmitter.emit = jest.fn();
     connectionStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
     expect(connectionStorage.save).toBeCalledTimes(2);
@@ -630,9 +631,6 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.getConnectionById("id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(connectionService.syncKeriaContacts()).rejects.toThrowError(
-      Agent.KERIA_CONNECTION_BROKEN
-    );
     await expect(
       connectionService.deleteConnectionById("id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
@@ -726,8 +724,12 @@ describe("Connection service of agent", () => {
     contactGetMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
     );
-    await expect(connectionService.getConnectionById("id")).rejects.toThrow(
-      new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`)
+    await expect(
+      connectionService.getConnectionById("id")
+    ).rejects.toMatchObject(
+      new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`, {
+        cause: "request - 404 - SignifyClient message",
+      })
     );
   });
 
@@ -810,7 +812,7 @@ describe("Connection service of agent", () => {
     };
     const mockHistoryIpexMessage = {
       id: "id",
-      credentialType: "rare evo",
+      credentialType: "lei",
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       dt: new Date().toISOString(),
@@ -818,7 +820,7 @@ describe("Connection service of agent", () => {
     };
     const mockHistoryRevokeMessage = {
       id: "id",
-      credentialType: "rare evo",
+      credentialType: "lei",
       historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
       type: ConnectionHistoryType.CREDENTIAL_REVOKED,
       dt: new Date().toISOString(),

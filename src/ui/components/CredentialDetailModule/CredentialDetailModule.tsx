@@ -80,12 +80,13 @@ const CredentialDetailModule = ({
   const [openConnectionlModal, setOpenConnectionlModal] = useState(false);
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
-  const isInactiveCred = (isArchived || isRevoked) && !viewOnly;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === id);
   const [cloudError, setCloudError] = useState(false);
   const [connectionShortDetails, setConnectionShortDetails] = useState<
     ConnectionShortDetails | undefined
   >(undefined);
+
+  const isInactiveCred = (isArchived || isRevoked || cloudError) && !viewOnly;
 
   const fetchArchivedCreds = useCallback(async () => {
     try {
@@ -111,6 +112,7 @@ const CredentialDetailModule = ({
   const getCredDetails = useCallback(async () => {
     if (credDetail) {
       setCardData(credDetail);
+      getConnection(credDetail.i);
       return;
     }
 
@@ -123,9 +125,9 @@ const CredentialDetailModule = ({
       getConnection(cardDetails.i);
     } catch (error) {
       setCloudError(true);
-      showError("Unable to get credential detail", error, dispatch);
+      showError("Unable to get credential detail", error);
     }
-  }, [credDetail, id, getConnection, dispatch]);
+  }, [credDetail, id, getConnection]);
 
   useOnlineStatusEffect(getCredDetails);
 
@@ -153,7 +155,7 @@ const CredentialDetailModule = ({
   const handleDeleteRevokedCred = async () => {
     try {
       await Agent.agent.credentials.archiveCredential(id);
-      await Agent.agent.credentials.deleteCredential(id);
+      await Agent.agent.credentials.markCredentialPendingDeletion(id);
       const creds = credsCache.filter((item) => item.id !== id);
       if (isFavourite) {
         handleSetFavourite(id);
@@ -193,9 +195,29 @@ const CredentialDetailModule = ({
 
   const handleDeleteCredential = async () => {
     try {
-      await Agent.agent.credentials.deleteCredential(id);
+      await Agent.agent.credentials.markCredentialPendingDeletion(id);
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
       await fetchArchivedCreds();
+    } catch (e) {
+      showError(
+        "Unable to delete credential",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_CRED_FAIL
+      );
+    }
+  };
+
+  const handleDeleteStaleCred = async () => {
+    try {
+      await Agent.agent.credentials.deleteStaleLocalCredential(id);
+      const creds = credsCache.filter((item) => item.id !== id);
+      if (isFavourite) {
+        handleSetFavourite(id);
+      }
+      dispatch(setCredsCache(creds));
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+      
     } catch (e) {
       showError(
         "Unable to delete credential",
@@ -229,11 +251,20 @@ const CredentialDetailModule = ({
 
     if (isArchived) {
       await handleDeleteCredential();
-    } else if (isRevoked) {
+      return;
+    } 
+    
+    if (isRevoked) {
       await handleDeleteRevokedCred();
-    } else {
-      await handleArchiveCredential();
-    }
+      return;
+    } 
+    
+    if(cloudError) {
+      await handleDeleteStaleCred();
+      return;
+    } 
+
+    await handleArchiveCredential();
   };
 
   const handleSetFavourite = (id: string) => {
@@ -384,29 +415,6 @@ const CredentialDetailModule = ({
   const resetOperation = () =>
     dispatch(setCurrentOperation(OperationType.IDLE));
 
-  if (cloudError) {
-    return (
-      <CloudError
-        pageId={pageId}
-        header={
-          <PageHeader
-            closeButton={true}
-            closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
-            closeButtonAction={() => onClose?.(BackReason.CLOSE)}
-          />
-        }
-      >
-        <PageFooter
-          pageId={pageId}
-          deleteButtonText={`${i18n.t(
-            "tabs.credentials.details.button.delete"
-          )}`}
-          deleteButtonAction={handleDelete}
-        />
-      </CloudError>
-    );
-  }
-
   return openConnectionlModal && connectionShortDetails ? (
     <ConnectionDetails
       connectionShortDetails={connectionShortDetails}
@@ -414,80 +422,103 @@ const CredentialDetailModule = ({
     />
   ) : (
     <>
-      <ScrollablePageLayout
-        pageId={pageId}
-        customClass={pageClasses}
-        header={
-          <PageHeader
-            closeButton
-            closeButtonLabel={`${i18n.t("tabs.credentials.details.done")}`}
-            closeButtonAction={() => onClose?.(BackReason.CLOSE)}
-            additionalButtons={!isInactiveCred && <AdditionalButtons />}
-            actionButton={isInactiveCred}
-            actionButtonAction={action}
-            actionButtonLabel={`${actionButtonLabel}`}
-            hardwareBackButtonConfig={hardwareBackButtonConfig}
-          />
-        }
-      >
-        {!cardData ? (
-          <div
-            className="cred-detail-spinner-container"
-            data-testid="cred-detail-spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        ) : (
-          <>
-            {isRevoked && (
-              <div className="revoked-alert">
-                {i18n.t("tabs.credentials.details.status.revoked")}
-              </div>
-            )}
-            <CredentialCardTemplate
-              cardData={{
-                ...cardData,
-                issuanceDate: cardData.a.dt,
-                credentialType: cardData.s.title || "",
-              }}
-              isActive={false}
-            />
-            <div
-              className="card-details-content"
-              data-testid="card-details-content"
-            >
-              <CredentialContent
-                joinedCredRequestMembers={joinedCredRequestMembers}
-                cardData={cardData}
-                connectionShortDetails={connectionShortDetails}
-                setOpenConnectionlModal={setOpenConnectionlModal}
+      {
+        cloudError ? (
+          <CloudError
+            pageId={pageId}
+            header={
+              <PageHeader
+                closeButton={true}
+                closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
+                closeButtonAction={() => onClose?.(BackReason.CLOSE)}
               />
-              {!viewOnly && (
-                <PageFooter
-                  pageId={pageId}
-                  archiveButtonText={
-                    !isInactiveCred
-                      ? `${i18n.t("tabs.credentials.details.button.archive")}`
-                      : ""
-                  }
-                  archiveButtonAction={() => handleArchive()}
-                  deleteButtonText={
-                    isInactiveCred
-                      ? `${i18n.t("tabs.credentials.details.button.delete")}`
-                      : ""
-                  }
-                  deleteButtonAction={() => handleDelete()}
-                />
-              )}
-            </div>
-            <CredentialOptions
-              optionsIsOpen={optionsIsOpen}
-              setOptionsIsOpen={setOptionsIsOpen}
-              credsOptionAction={() => setAlertDeleteArchiveIsOpen(true)}
+            }
+          >
+            <PageFooter
+              pageId={pageId}
+              deleteButtonText={`${i18n.t(
+                "tabs.credentials.details.button.delete"
+              )}`}
+              deleteButtonAction={handleDelete}
             />
-          </>
-        )}
-      </ScrollablePageLayout>
+          </CloudError> 
+        ) : (
+          <ScrollablePageLayout
+            pageId={pageId}
+            customClass={pageClasses}
+            header={
+              <PageHeader
+                closeButton
+                closeButtonLabel={`${i18n.t("tabs.credentials.details.done")}`}
+                closeButtonAction={() => onClose?.(BackReason.CLOSE)}
+                additionalButtons={(isLightMode || !isInactiveCred) && <AdditionalButtons />}
+                actionButton={!isLightMode && isInactiveCred}
+                actionButtonAction={action}
+                actionButtonLabel={`${actionButtonLabel}`}
+                hardwareBackButtonConfig={hardwareBackButtonConfig}
+              />
+            }
+          >
+            {!cardData ? (
+              <div
+                className="cred-detail-spinner-container"
+                data-testid="cred-detail-spinner-container"
+              >
+                <IonSpinner name="circular" />
+              </div>
+            ) : (
+              <>
+                {isRevoked && (
+                  <div className="revoked-alert">
+                    {i18n.t("tabs.credentials.details.status.revoked")}
+                  </div>
+                )}
+                <CredentialCardTemplate
+                  cardData={{
+                    ...cardData,
+                    issuanceDate: cardData.a.dt,
+                    credentialType: cardData.s.title || "",
+                  }}
+                  isActive={false}
+                />
+                <div
+                  className="card-details-content"
+                  data-testid="card-details-content"
+                >
+                  <CredentialContent
+                    joinedCredRequestMembers={joinedCredRequestMembers}
+                    cardData={cardData}
+                    connectionShortDetails={connectionShortDetails}
+                    setOpenConnectionlModal={setOpenConnectionlModal}
+                  />
+                  {!viewOnly && (
+                    <PageFooter
+                      pageId={pageId}
+                      archiveButtonText={
+                        !isInactiveCred
+                          ? `${i18n.t("tabs.credentials.details.button.archive")}`
+                          : ""
+                      }
+                      archiveButtonAction={handleArchive}
+                      deleteButtonText={
+                        isInactiveCred
+                          ? `${i18n.t("tabs.credentials.details.button.delete")}`
+                          : ""
+                      }
+                      deleteButtonAction={handleDelete}
+                    />
+                  )}
+                </div>
+                <CredentialOptions
+                  optionsIsOpen={optionsIsOpen}
+                  setOptionsIsOpen={setOptionsIsOpen}
+                  credsOptionAction={() => setAlertDeleteArchiveIsOpen(true)}
+                />
+              </>
+            )}
+          </ScrollablePageLayout>
+        )
+      }
       <AlertDeleteArchive
         isOpen={alertDeleteArchiveIsOpen}
         setIsOpen={setAlertDeleteArchiveIsOpen}
@@ -507,7 +538,7 @@ const CredentialDetailModule = ({
             ? "tabs.credentials.details.alert.delete.cancel"
             : "tabs.credentials.details.alert.archive.cancel"
         )}`}
-        actionConfirm={() => handleAuthentication()}
+        actionConfirm={handleAuthentication}
         actionCancel={resetOperation}
         actionDismiss={resetOperation}
       />
@@ -522,7 +553,7 @@ const CredentialDetailModule = ({
         cancelButtonText={`${i18n.t(
           "tabs.credentials.details.alert.restore.cancel"
         )}`}
-        actionConfirm={() => handleRestoreCredential()}
+        actionConfirm={handleRestoreCredential}
         actionCancel={resetOperation}
         actionDismiss={resetOperation}
       />

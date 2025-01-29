@@ -26,7 +26,6 @@ import { store } from "../../../store";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
-import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   setQueueIncomingRequest,
   setToastMsg,
@@ -65,6 +64,8 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+        onIdentifierAdded: jest.fn(),
+        getAvailableWitnesses: jest.fn()
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),
@@ -92,7 +93,7 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         onAcdcStateChanged: jest.fn(),
-        syncACDCs: jest.fn(),
+        syncKeriaCredentials: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
@@ -101,11 +102,11 @@ jest.mock("../../../core/agent/agent", () => ({
       keriaNotifications: {
         pollNotifications: jest.fn(),
         pollLongOperations: jest.fn(),
-        getAllNotifications: jest.fn(),
+        getNotifications: jest.fn(),
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
         onRemoveNotification: jest.fn(),
-        stopNotification: jest.fn()
+        stopNotification: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
@@ -122,10 +123,12 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: jest.fn((options: { key: string }) => {
+      return Promise.resolve({ value: "value" });
+    }),
     set: jest.fn(),
-    get: jest.fn(),
     remove: jest.fn(),
   },
 }));

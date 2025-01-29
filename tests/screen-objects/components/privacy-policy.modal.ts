@@ -29,10 +29,10 @@ export class PrivacyPolicyModal extends BaseModal {
   }
 
   async loads() {
-    await expect(this.introTitle(this.modalName)).toHaveText(
+    await expect(await this.introTitle(this.modalName)).toHaveText(
       PrivacyPolicy.Title
     );
-    await expect(this.introText(this.modalName)).toHaveText(
+    await expect(await this.introText(this.modalName)).toHaveText(
       PrivacyPolicy.Intro
     );
     await this.validateSectionContent("datacontrollerandcontactdetails", 1, 1);

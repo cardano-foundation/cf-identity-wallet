@@ -22,7 +22,6 @@ import {
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
-import { IonicStorage } from "../../storage/ionicStorage";
 import { MultiSigService } from "./multiSigService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import {
@@ -33,10 +32,11 @@ import {
   NotificationRemovedEvent,
   ConnectionStateChangedEvent,
 } from "../event.types";
-import { deleteNotificationRecordById, randomSalt } from "./utils";
+import { deleteNotificationRecordById, isNetworkError, randomSalt } from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
+import { StorageMessage } from "../../storage/storage.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -150,13 +150,13 @@ class KeriaNotificationService extends AgentService {
           .notifications()
           .list(startFetchingIndex, startFetchingIndex + 24);
       } catch (error) {
-        const errorMessage = (error as Error).message;
-        /** If the error is failed to fetch with signify,
-         * we retry until the connection is secured*/
+        if (!(error instanceof Error)) {
+          throw error;
+        }
+
         if (
-          (/Failed to fetch/gi.test(errorMessage) ||
-            /Load failed/gi.test(errorMessage)) &&
-          this.getKeriaOnlineStatus()
+          this.getKeriaOnlineStatus() &&
+          isNetworkError(error) 
         ) {
           // Possible that bootAndConnect is called from @OnlineOnly in between loops,
           // so check if its gone down to avoid having 2 bootAndConnect loops
@@ -200,7 +200,7 @@ class KeriaNotificationService extends AgentService {
           await this.processNotification(notif);
         } catch (error) {
           /* eslint-disable no-console */
-          console.error("Error when process a notification", error);
+          console.error(`Error when processing notification ${notif.i}`, error);
 
           const failedNotifications = await this.basicStorage.findById(
             MiscRecordId.FAILED_NOTIFICATIONS
@@ -226,6 +226,7 @@ class KeriaNotificationService extends AgentService {
           nextIndex: nextNotificationIndex,
           lastNotificationId: notif.i,
         };
+
         await this.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
             id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
@@ -277,18 +278,19 @@ class KeriaNotificationService extends AgentService {
       return;
     }
 
-    const exchange = await this.getExternalExnMessage(notif);
-    if (!exchange) {
+    const exn = await this.props.signifyClient.exchanges().get(notif.a.d);
+    if (await this.outboundExchange(exn)) {
+      await this.markNotification(notif.i);
       return;
     }
 
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
-      shouldCreateRecord = await this.processExnIpexApplyNotification(exchange);
+      shouldCreateRecord = await this.processExnIpexApplyNotification(exn);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
       shouldCreateRecord = await this.processExnIpexGrantNotification(
         notif,
-        exchange
+        exn
       );
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
       shouldCreateRecord = await this.processMultiSigRpyNotification(notif);
@@ -297,36 +299,40 @@ class KeriaNotificationService extends AgentService {
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(
         notif,
-        exchange
+        exn
       );
     }
+
     if (!shouldCreateRecord) {
       return;
     }
+
     try {
-      const keriaNotif = await this.createNotificationRecord(notif);
+      const note = await this.createNotificationRecord(notif);
       if (notif.a.r !== NotificationRoute.ExnIpexAgree) {
         // Hidden from UI, so don't emit
         this.props.eventEmitter.emit<NotificationAddedEvent>({
           type: EventTypes.NotificationAdded,
           payload: {
-            keriaNotif,
+            note,
           },
         });
       }
     } catch (error) {
       if (
-        (error as Error).message ===
-        `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${notif.i}`
+        (error as Error).message !==
+        `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${notif.i}`
       ) {
-        return;
-      } else {
         throw error;
       }
     }
 
-    // @TODO - foconnor: This post processing may fail, causing notification to be created again
     if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      const identifier = await this.identifierStorage.getIdentifierMetadata(exn.exn.rp);
+      if (identifier.multisigManageAid) {
+        const smids = (await this.props.signifyClient.identifiers().members(exn.exn.rp)).signing;
+        if (smids[0].aid !== identifier.multisigManageAid) return;
+      }
       await this.ipexCommunications.grantAcdcFromAgree(notif.i);
     }
   }
@@ -365,11 +371,15 @@ class KeriaNotificationService extends AgentService {
             })
           );
         } catch (error) {
+          /* eslint-disable no-console */
+          console.error(`Error when retrying notification ${notification.i} [attempts: ${attempts + 1}]`, error);
+
           failedNotifications[notificationId] = {
             ...notificationData,
             attempts: attempts + 1,
             lastAttempt: now,
           };
+
           await this.basicStorage.createOrUpdateBasicRecord(
             new BasicRecord({
               id: MiscRecordId.FAILED_NOTIFICATIONS,
@@ -381,11 +391,9 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async getExternalExnMessage(
-    notif: Notification
-  ): Promise<ExnMessage | undefined> {
-    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
-
+  private async outboundExchange(
+    exchange: ExnMessage 
+  ): Promise<boolean> {
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.i)
       .catch((error) => {
@@ -399,11 +407,7 @@ class KeriaNotificationService extends AgentService {
         }
       });
 
-    if (ourIdentifier) {
-      await this.markNotification(notif.i);
-      return undefined;
-    }
-    return exchange;
+    return ourIdentifier !== undefined;
   }
 
   private async processExnIpexApplyNotification(
@@ -442,18 +446,18 @@ class KeriaNotificationService extends AgentService {
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
     const telStatus = (await this.props.signifyClient
       .credentials()
-      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d)).et; 
+      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d)).et;
+    
+    const oldGrantNotifications = await this.notificationStorage.findAllByQuery({
+      credentialId: exchange.exn.e.acdc.d,
+    });
 
     // IPEX messages and TEL updates are not strictly ordered, so this will put to the failed notifications queue to re-process out of order
-    if (existingCredential && telStatus === Ilks.iss) {
+    if (telStatus === Ilks.iss && (existingCredential || oldGrantNotifications.length > 0)) {
       throw new Error(`${KeriaNotificationService.DUPLICATE_ISSUANCE}: [grant: ${exchange.exn.d}] [credential: ${exchange.exn.e.acdc.d}]`);
     }
 
     if (telStatus === Ilks.rev) {
-      const oldGrantNotifications = await this.notificationStorage.findAllByQuery({
-        credentialId: exchange.exn.e.acdc.d,
-      });
-
       for (const notificationRecord of oldGrantNotifications) {
         await this.deleteNotificationRecordById(
           notificationRecord.id,
@@ -463,14 +467,7 @@ class KeriaNotificationService extends AgentService {
         this.props.eventEmitter.emit<NotificationRemovedEvent>({
           type: EventTypes.NotificationRemoved,
           payload: {
-            keriaNotif: {
-              id: notificationRecord.id,
-              createdAt: notificationRecord.createdAt.toISOString(),
-              a: notificationRecord.a,
-              multisigId: notificationRecord.multisigId,
-              connectionId: notificationRecord.connectionId,
-              read: notificationRecord.read,
-            },
+            id: notificationRecord.id,
           },
         });
       }
@@ -523,7 +520,7 @@ class KeriaNotificationService extends AgentService {
         this.props.eventEmitter.emit<NotificationAddedEvent>({
           type: EventTypes.NotificationAdded,
           payload: {
-            keriaNotif: {
+            note: {
               id: notificationRecord.id,
               createdAt: new Date().toISOString(),
               a: {
@@ -533,6 +530,7 @@ class KeriaNotificationService extends AgentService {
               },
               read: false,
               connectionId: exchange.exn.i,
+              groupReplied: false,
             },
           },
         });
@@ -638,6 +636,7 @@ class KeriaNotificationService extends AgentService {
       
       // Either relates to an processed and deleted grant notification, or is out of order
       if (grantNotificationRecords.length === 0) {
+        // @TODO - foconnor: We should do this via connection history
         const grantExn = await this.props.signifyClient
           .exchanges()
           .get(exchange.exn.e.exn.p);
@@ -650,13 +649,38 @@ class KeriaNotificationService extends AgentService {
         throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
       }
 
+      // Refresh the date and read status for UI, and link
       const notificationRecord = grantNotificationRecords[0];
-      notificationRecord.linkedGroupRequest = {
-        ...notificationRecord.linkedGroupRequest,
+      notificationRecord.linkedRequest = {
+        ...notificationRecord.linkedRequest,
         current: exchange.exn.d,
       };
+      notificationRecord.createdAt = new Date();
+      notificationRecord.read = false;
 
       await this.notificationStorage.update(notificationRecord);
+
+      this.props.eventEmitter.emit<NotificationRemovedEvent>({
+        type: EventTypes.NotificationRemoved,
+        payload: {
+          id: notificationRecord.id,
+        },
+      });
+      this.props.eventEmitter.emit<NotificationAddedEvent>({
+        type: EventTypes.NotificationAdded,
+        payload: {
+          note: {
+            id: notificationRecord.id,
+            createdAt: notificationRecord.createdAt.toISOString(),
+            a: notificationRecord.a,
+            multisigId: notificationRecord.multisigId,
+            connectionId: notificationRecord.connectionId,
+            read: notificationRecord.read,
+            groupReplied: true,
+          },
+        },
+      });
+
       return false;
     }
     case ExchangeRoute.IpexOffer: {
@@ -664,48 +688,64 @@ class KeriaNotificationService extends AgentService {
         .exchanges()
         .get(exchange.exn.e.exn.p);
 
-      const notificationsApply =
+      const applyNotificationRecords =
           await this.notificationStorage.findAllByQuery({
             exnSaid: applyExn.exn.d,
           });
 
-      if (notificationsApply.length) {
-        const notificationRecord = notificationsApply[0];
-        const acdcSaid = exchange.exn.e.exn.e.acdc.d;
-        const offerSaid = exchange.exn.e.exn.d;
-        const otherMember = exchange.exn.i;
-
-        // let linkedGroupRequestDetails =
-        //     notificationRecord.linkedGroupRequests[acdcSaid];
-        // if (linkedGroupRequestDetails) {
-        //   if (
-        //     linkedGroupRequestDetails.accepted &&
-        //       !linkedGroupRequestDetails.saids[offerSaid]
-        //   ) {
-        //     // Only auto-join NEW /ipex/offer
-        //     await this.ipexCommunications.joinMultisigOffer(exchange.exn.d);
-        //   }
-
-        //   if (!linkedGroupRequestDetails.saids[offerSaid]) {
-        //     // First /multisig/exn for specific /ipex/offer
-        //     linkedGroupRequestDetails.saids[offerSaid] = [];
-        //   }
-        //   linkedGroupRequestDetails.saids[offerSaid].push([
-        //     otherMember,
-        //     exchange.exn.d,
-        //   ]); // Record, should only get 1 notification
-        // } else {
-        //   linkedGroupRequestDetails = {
-        //     // First /multisig/exn linking to /ipex/apply with this credentialId
-        //     accepted: false,
-        //     saids: { [offerSaid]: [[otherMember, exchange.exn.d]] },
-        //   };
-        // }
-
-        // notificationRecord.linkedGroupRequests[acdcSaid] =
-        //     linkedGroupRequestDetails;
-        // await this.notificationStorage.update(notificationRecord);
+      // Either relates to an processed and deleted apply notification, or is out of order
+      if (applyNotificationRecords.length === 0) {
+        // @TODO - foconnor: For deleted applies, we should track SAID in connection history
+        throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
       }
+
+      // Refresh the date and read status for UI, and link
+      const notificationRecord = applyNotificationRecords[0];
+      notificationRecord.linkedRequest = {
+        ...notificationRecord.linkedRequest,
+        current: exchange.exn.d,
+      };
+      notificationRecord.createdAt = new Date();
+      notificationRecord.read = false;
+      const { multisigMembers, ourIdentifier } =
+          await this.multiSigs.getMultisigParticipants(exchange.exn.a.gid);
+
+      const initiatorAid = multisigMembers.map(
+        (member: any) => member.aid
+      )[0];
+
+      notificationRecord.multisigId = exchange.exn.a.gid;
+      notificationRecord.groupReplied = true;
+      notificationRecord.initiatorAid = initiatorAid;
+      notificationRecord.groupInitiator =
+          ourIdentifier.groupMetadata?.groupInitiator;
+
+      await this.notificationStorage.update(notificationRecord);
+
+      this.props.eventEmitter.emit<NotificationRemovedEvent>({
+        type: EventTypes.NotificationRemoved,
+        payload: {
+          id: notificationRecord.id,
+        },
+      });
+
+      this.props.eventEmitter.emit<NotificationAddedEvent>({
+        type: EventTypes.NotificationAdded,
+        payload: {
+          note: {
+            id: notificationRecord.id,
+            createdAt: notificationRecord.createdAt.toISOString(),
+            a: notificationRecord.a,
+            multisigId: notificationRecord.multisigId,
+            connectionId: notificationRecord.connectionId,
+            read: notificationRecord.read,
+            groupReplied: notificationRecord.groupReplied,
+            initiatorAid: notificationRecord.initiatorAid,
+            groupInitiator: notificationRecord.groupInitiator,
+          },
+        },
+      });
+
       return false;
     }
     case ExchangeRoute.IpexGrant: {
@@ -713,48 +753,29 @@ class KeriaNotificationService extends AgentService {
         .exchanges()
         .get(exchange.exn.e.exn.p);
 
-      const credentialId = exchange.exn.e.exn.e.acdc.d;
-      const notificationsAgree =
+      const agreeNotificationRecords =
           await this.notificationStorage.findAllByQuery({
             exnSaid: agreeExn.exn.d,
           });
 
-      if (notificationsAgree.length) {
-        const notificationRecord = notificationsAgree[0];
-        const grantSaid = exchange.exn.e.exn.d;
-        const otherMember = exchange.exn.i;
-
-        // let linkedGroupRequestDetails =
-        //     notificationRecord.linkedGroupRequests[credentialId];
-        // if (linkedGroupRequestDetails) {
-        //   if (
-        //     linkedGroupRequestDetails.accepted &&
-        //       !linkedGroupRequestDetails.saids[grantSaid]
-        //   ) {
-        //     // Only auto-join NEW /ipex/grant
-        //     await this.ipexCommunications.joinMultisigGrant(exchange.exn.d);
-        //   }
-
-        //   if (!linkedGroupRequestDetails.saids[grantSaid]) {
-        //     // First /multisig/exn for specific /ipex/grant
-        //     linkedGroupRequestDetails.saids[grantSaid] = [];
-        //   }
-        //   linkedGroupRequestDetails.saids[grantSaid].push([
-        //     otherMember,
-        //     exchange.exn.d,
-        //   ]); // Record, should only get 1 notification
-        // } else {
-        //   linkedGroupRequestDetails = {
-        //     // First /multisig/exn linking to /ipex/apply with this credentialId
-        //     accepted: false,
-        //     saids: { [grantSaid]: [[otherMember, exchange.exn.d]] },
-        //   };
-        // }
-
-        // notificationRecord.linkedGroupRequests[credentialId] =
-        //     linkedGroupRequestDetails;
-        // await this.notificationStorage.update(notificationRecord);
+      // Either relates to an processed and deleted agree notification, or is out of order
+      if (agreeNotificationRecords.length === 0) {
+        // @TODO - foconnor: For deleted agrees, we should track SAID in connection history
+        throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
       }
+
+      // @TODO - foconnor: Could be optimised to only update record once but deviates from the other IPEX messages - OK for now.
+      const notificationRecord = agreeNotificationRecords[0];
+      notificationRecord.linkedRequest = {
+        ...notificationRecord.linkedRequest,
+        current: exchange.exn.d,
+      };
+
+      await this.notificationStorage.update(notificationRecord);
+      await this.ipexCommunications.joinMultisigGrant(
+        exchange,
+        notificationRecord
+      );
       return false;
     }
     default:
@@ -774,6 +795,7 @@ class KeriaNotificationService extends AgentService {
       read: false,
       route: event.a.r as NotificationRoute,
       connectionId: exchange.exn.i,
+      createdAt: new Date(event.dt),
       credentialId: exchange.exn.e?.acdc?.d,
     };
 
@@ -806,6 +828,7 @@ class KeriaNotificationService extends AgentService {
       multisigId: result.multisigId,
       connectionId: result.connectionId,
       read: result.read,
+      groupReplied: result.linkedRequest.current !== undefined,
     };
   }
 
@@ -831,12 +854,14 @@ class KeriaNotificationService extends AgentService {
     await this.notificationStorage.update(notificationRecord);
   }
 
-  async getAllNotifications(): Promise<KeriaNotification[]> {
+  async getNotifications(): Promise<KeriaNotification[]> {
     const notifications = await this.notificationStorage.findAllByQuery({
       $not: {
         route: NotificationRoute.ExnIpexAgree,
       },
+      hidden: false,
     });
+
     return notifications.map((notification) => {
       return {
         id: notification.id,
@@ -845,6 +870,9 @@ class KeriaNotificationService extends AgentService {
         multisigId: notification.multisigId,
         connectionId: notification.connectionId,
         read: notification.read,
+        groupReplied: notification.linkedRequest.current !== undefined,
+        groupInitiator: notification.groupInitiator,
+        initiatorAid: notification.initiatorAid,
       };
     });
   }
@@ -858,6 +886,38 @@ class KeriaNotificationService extends AgentService {
       multisigId,
     });
     return notificationRecord;
+  }
+
+  async syncIPEXReplyOperations(): Promise<void> {
+    const records = await this.notificationStorage.findAllByQuery({
+      $not: {
+        currentLinkedRequest: undefined,
+      },
+    });
+
+    for (const record of records) {
+      if (!record.linkedRequest.current) continue;
+      
+      let recordType;
+      switch (record.route) {
+      case NotificationRoute.ExnIpexApply:
+        recordType = OperationPendingRecordType.ExchangeOfferCredential;
+        break;
+      case NotificationRoute.ExnIpexAgree:
+        recordType = OperationPendingRecordType.ExchangePresentCredential;
+        break;
+      case NotificationRoute.ExnIpexGrant:
+        recordType = OperationPendingRecordType.ExchangeReceiveCredential;
+        break;
+      default:
+        continue;
+      }
+
+      await this.operationPendingStorage.save({
+        id: `exchange.${record.linkedRequest.current}`,
+        recordType,
+      });
+    }
   }
 
   async pollLongOperations() {
@@ -907,12 +967,12 @@ class KeriaNotificationService extends AgentService {
         .operations()
         .get(operationRecord.id);
     } catch (error) {
-      const errorMessage = (error as Error).message;
-      /** If the error is failed to fetch with signify,
-       * we retry until the connection is secured*/
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+
       if (
-        (/Failed to fetch/gi.test(errorMessage) ||
-          /Load failed/gi.test(errorMessage)) &&
+        isNetworkError(error) &&
         this.getKeriaOnlineStatus()
       ) {
         this.markAgentStatus(false);
@@ -950,6 +1010,7 @@ class KeriaNotificationService extends AgentService {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           isPending: false,
         });
+
         this.props.eventEmitter.emit<OperationCompleteEvent>({
           type: EventTypes.OperationComplete,
           payload: {
@@ -1016,40 +1077,35 @@ class KeriaNotificationService extends AgentService {
             .exchanges()
             .get(admitExchange.exn.p);
           const credentialId = grantExchange.exn.e.acdc.d;
-          const holder = await this.identifierStorage.getIdentifierMetadata(
-            admitExchange.exn.i
-          );
-          if (holder.multisigManageAid) {
-            const notifications =
-                await this.notificationStorage.findAllByQuery({
-                  exnSaid: grantExchange.exn.d,
-                });
-            for (const notification of notifications) {
-              await deleteNotificationRecordById(
-                this.props.signifyClient,
-                this.notificationStorage,
-                notification.id,
-                  notification.a.r as NotificationRoute
-              );
 
-              this.props.eventEmitter.emit<NotificationRemovedEvent>({
-                type: EventTypes.NotificationRemoved,
-                payload: {
-                  keriaNotif: {
-                    id: notification.id,
-                    createdAt: notification.createdAt.toISOString(),
-                    a: notification.a,
-                    multisigId: notification.multisigId,
-                    connectionId: notification.connectionId,
-                    read: notification.read,
-                  },
-                },
+          const notifications =
+              await this.notificationStorage.findAllByQuery({
+                exnSaid: grantExchange.exn.d,
               });
-            }
+          for (const notification of notifications) {
+            await deleteNotificationRecordById(
+              this.props.signifyClient,
+              this.notificationStorage,
+              notification.id,
+                notification.a.r as NotificationRoute
+            );
+
+            this.props.eventEmitter.emit<NotificationRemovedEvent>({
+              type: EventTypes.NotificationRemoved,
+              payload: {
+                id: notification.id,
+              },
+            });
           }
+
           await this.credentialService.markAcdc(
             credentialId,
             CredentialStatus.CONFIRMED
+          );
+          
+          await this.ipexCommunications.createLinkedIpexMessageRecord(
+            admitExchange,
+            ConnectionHistoryType.CREDENTIAL_ISSUANCE
           );
         }
         break;
@@ -1067,34 +1123,56 @@ class KeriaNotificationService extends AgentService {
           const holder = await this.identifierStorage.getIdentifierMetadata(
             offerExchange.exn.i
           );
-          if (holder.multisigManageAid) {
-            const notifications =
-                await this.notificationStorage.findAllByQuery({
-                  exnSaid: applyExchange.exn.d,
-                });
-            for (const notification of notifications) {
-              // @TODO: Delete other long running operations in linkedGroupRequests
-              await deleteNotificationRecordById(
-                this.props.signifyClient,
-                this.notificationStorage,
-                notification.id,
-                  notification.a.r as NotificationRoute
-              );
-
-              this.props.eventEmitter.emit<NotificationRemovedEvent>({
-                type: EventTypes.NotificationRemoved,
-                payload: {
-                  keriaNotif: {
-                    id: notification.id,
-                    createdAt: notification.createdAt.toISOString(),
-                    a: notification.a,
-                    multisigId: notification.multisigId,
-                    connectionId: notification.connectionId,
-                    read: notification.read,
-                  },
-                },
+          const notifications =
+              await this.notificationStorage.findAllByQuery({
+                exnSaid: applyExchange.exn.d,
               });
+          
+          for (const notification of notifications) {
+            if (!holder.multisigManageAid) {
+              await deleteNotificationRecordById(this.props.signifyClient, this.notificationStorage, notification.id, notification.a.r as NotificationRoute);
+              continue;
             }
+
+            // "Refresh" the notification so user is aware offer is successfully sent
+            notification.createdAt = new Date();
+            notification.read = false;
+
+            const { multisigMembers, ourIdentifier } =
+                await this.multiSigs.getMultisigParticipants(
+                  applyExchange.exn.rp
+                );
+
+            notification.groupReplied = true;
+            notification.initiatorAid = multisigMembers[0].aid;
+            notification.groupInitiator =
+                ourIdentifier.groupMetadata?.groupInitiator;
+
+            await this.notificationStorage.update(notification);
+
+            this.props.eventEmitter.emit<NotificationRemovedEvent>({
+              type: EventTypes.NotificationRemoved,
+              payload: {
+                id: notification.id,
+              },
+            });
+
+            this.props.eventEmitter.emit<NotificationAddedEvent>({
+              type: EventTypes.NotificationAdded,
+              payload: {
+                note: {
+                  id: notification.id,
+                  createdAt: notification.createdAt.toISOString(),
+                  a: notification.a,
+                  multisigId: notification.multisigId,
+                  connectionId: notification.connectionId,
+                  read: notification.read,
+                  groupReplied: notification.groupReplied,
+                  initiatorAid: notification.initiatorAid,
+                  groupInitiator: notification.groupInitiator,
+                },
+              },
+            });
           }
         }
         break;
@@ -1107,31 +1185,24 @@ class KeriaNotificationService extends AgentService {
           const agreeExchange = await this.props.signifyClient
             .exchanges()
             .get(grantExchange.exn.p);
-          const credentialId = grantExchange.exn.e.acdc.d;
-          if (credentialId) {
-            const holder = await this.identifierStorage.getIdentifierMetadata(
-              grantExchange.exn.i
-            );
-            if (holder.multisigManageAid) {
-              const notifications =
-                  await this.notificationStorage.findAllByQuery({
-                    exnSaid: agreeExchange.exn.d,
-                  });
-              for (const notification of notifications) {
-                // @TODO: Delete other long running operations in linkedGroupRequests
-                await deleteNotificationRecordById(
-                  this.props.signifyClient,
-                  this.notificationStorage,
-                  notification.id,
-                    notification.a.r as NotificationRoute
-                );
-              }
-            }
-            await this.ipexCommunications.createLinkedIpexMessageRecord(
-              grantExchange,
-              ConnectionHistoryType.CREDENTIAL_PRESENTED
+
+          const notifications =
+              await this.notificationStorage.findAllByQuery({
+                exnSaid: agreeExchange.exn.d,
+              });
+          for (const notification of notifications) {
+            await deleteNotificationRecordById(
+              this.props.signifyClient,
+              this.notificationStorage,
+              notification.id,
+                notification.a.r as NotificationRoute
             );
           }
+          
+          await this.ipexCommunications.createLinkedIpexMessageRecord(
+            grantExchange,
+            ConnectionHistoryType.CREDENTIAL_PRESENTED
+          );
         }
         break;
       }

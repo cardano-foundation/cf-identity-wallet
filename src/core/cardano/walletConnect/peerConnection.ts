@@ -1,10 +1,9 @@
 import { IConnectMessage } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IdentityWalletConnect } from "./identityWalletConnect";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
-import { KeyStoreKeys } from "../../storage";
+import {KeyStoreKeys, SecureStorage} from "../../storage";
 import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,
@@ -30,11 +29,8 @@ class PeerConnection {
   };
 
   private announce = [
-    "wss://tracker.openwebtorrent.com",
-    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org",
-    "wss://tracker.files.fm:7073/announce",
-    "ws://tracker.files.fm:7072/announce",
-    "wss://tracker.openwebtorrent.com:443/announce",
+    "wss://tracker.webtorrent.dev:443/announce",
+    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"
   ];
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
@@ -81,15 +77,11 @@ class PeerConnection {
   }
 
   async start(selectedAid: string) {
-    let meerkatSeed = null;
 
-    try {
-      meerkatSeed = (await SecureStorage.get(
-        KeyStoreKeys.MEERKAT_SEED
-      )) as string;
-    } catch {
-      meerkatSeed = null;
-    }
+    const meerkatSeed = await SecureStorage.get(
+      KeyStoreKeys.MEERKAT_SEED
+    );
+
     if (
       this.identityWalletConnect &&
       this.connectedDAppAddress.trim().length !== 0

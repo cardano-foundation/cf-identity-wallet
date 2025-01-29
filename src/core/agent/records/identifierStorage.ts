@@ -56,7 +56,12 @@ class IdentifierStorage {
     metadata: Partial<
       Pick<
         IdentifierMetadataRecord,
-        "displayName" | "theme" | "isPending" | "isDeleted" | "groupMetadata" | "pendingDeletion"
+        | "displayName"
+        | "theme"
+        | "isPending"
+        | "isDeleted"
+        | "groupMetadata"
+        | "pendingDeletion"
       >
     >
   ): Promise<void> {

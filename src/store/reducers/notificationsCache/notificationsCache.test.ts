@@ -3,16 +3,16 @@ import { KeriaNotification } from "../../../core/agent/agent.types";
 import { OperationType } from "../../../ui/globals/types";
 import { RootState } from "../../index";
 import {
-  deleteNotification,
+  deleteNotificationById,
   getNotificationsCache,
   notificationsCacheSlice,
   setNotificationsCache,
-  setReadedNotification,
+  markNotificationAsRead,
 } from "./notificationsCache";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
 
-const notification = {
+const notification: KeriaNotification = {
   id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
   createdAt: "2024-06-25T12:38:36.988Z",
   a: {
@@ -22,6 +22,7 @@ const notification = {
   },
   connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
   read: true,
+  groupReplied: false,
 };
 
 describe("Notifications cache", () => {
@@ -34,14 +35,14 @@ describe("Notifications cache", () => {
     ).toEqual(initialState);
   });
 
-  it("should handle setReadedNotification", () => {
+  it("should handle markNotificationAsRead", () => {
     const initialState = {
       notifications: [notification],
     };
 
     const newState = notificationsCacheSlice.reducer(
       initialState,
-      setReadedNotification({
+      markNotificationAsRead({
         id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
         read: false,
       })
@@ -58,6 +59,7 @@ describe("Notifications cache", () => {
         },
         connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
         read: false,
+        groupReplied: false,
       },
     ]);
   });
@@ -69,7 +71,7 @@ describe("Notifications cache", () => {
 
     const newState = notificationsCacheSlice.reducer(
       initialState,
-      deleteNotification(notification)
+      deleteNotificationById(notification.id)
     );
 
     expect(newState.notifications).toEqual([]);
@@ -87,6 +89,7 @@ describe("Notifications cache", () => {
         },
         connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
         read: true,
+        groupReplied: false,
       },
     ];
     const newState = notificationsCacheSlice.reducer(
@@ -132,7 +135,7 @@ describe("Notifications cache", () => {
         bran: "",
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "",
@@ -184,6 +187,7 @@ describe("Notifications cache", () => {
             },
             connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
             read: true,
+            groupReplied: false,
           },
         ],
       },

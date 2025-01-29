@@ -89,7 +89,7 @@ describe("Create group identifier - Setup Connection", () => {
       },
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
       favourites: [],
       multiSigGroup: {
         groupId: "b75838e5-98cb-46cf-9233-8bf3beca4cd3",
@@ -119,7 +119,7 @@ describe("Create group identifier - Setup Connection", () => {
         groupCreated: true,
       },
     },
-    color: IdentifierColor.Green,
+    color: IdentifierColor.One,
   };
 
   const dispatchMock = jest.fn();
@@ -150,6 +150,7 @@ describe("Create group identifier - Setup Connection", () => {
           resetModal={resetModal}
           resumeMultiSig={stage1State.newIdentifier}
           multiSigGroup={undefined}
+          openAfterCreate
         />
       </Provider>
     );
@@ -173,7 +174,7 @@ describe("Create group identifier - Setup Connection", () => {
     });
 
     expect(innerSetState).toBeCalledWith({
-      color: IdentifierColor.Green,
+      color: IdentifierColor.One,
       scannedConections: [connectionsFix[3]],
       displayNameValue: stage1State.displayNameValue,
       ourIdentifier: stage1State.ourIdentifier,
@@ -206,7 +207,7 @@ describe("Create group identifier - Setup Connection", () => {
           groupCreated: true,
         },
       },
-      color: IdentifierColor.Green,
+      color: IdentifierColor.One,
     };
 
     const dispatchMock = jest.fn();
@@ -229,6 +230,7 @@ describe("Create group identifier - Setup Connection", () => {
             setBlur={setBlur}
             resetModal={resetModal}
             multiSigGroup={undefined}
+            openAfterCreate
           />
         </Provider>
       );
@@ -319,6 +321,7 @@ describe("Create group identifier - Setup Connection", () => {
             setBlur={setBlur}
             resetModal={resetModal}
             multiSigGroup={undefined}
+            openAfterCreate
           />
         </Provider>
       );
@@ -361,7 +364,7 @@ describe("Create group identifier - Setup Connection", () => {
         },
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         favourites: [],
         multiSigGroup: {
           groupId: "b75838e5-98cb-46cf-9233-8bf3beca4cd3",
@@ -391,7 +394,7 @@ describe("Create group identifier - Setup Connection", () => {
           groupCreated: true,
         },
       },
-      color: IdentifierColor.Green,
+      color: IdentifierColor.One,
     };
 
     const dispatchMock = jest.fn();

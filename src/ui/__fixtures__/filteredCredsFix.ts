@@ -14,6 +14,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
@@ -23,6 +24,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec23",
@@ -32,15 +34,17 @@ const filteredCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqbo",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
   {
     id: "EAzzrBvrVEYt3kvlXTZgulQhFq4CtkO8zA61eg6JtlMj",
     issuanceDate: "2024-10-21T12:35:26.597Z",
-    credentialType: "Rare EVO 2024 Attendee",
+    credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.CONFIRMED,
-    schema: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+    schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Group,
     identifierId: "EIRdVIgcPYj6LbN4DdxzJFnsvELV-7eWDBQ4a-VsRDQb",
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
 ];
 
@@ -53,6 +57,7 @@ const revokedCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
   },
 ];
 

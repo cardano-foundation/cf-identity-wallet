@@ -21,9 +21,8 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   addFavouriteIdentifierCache,
   getFavouritesIdentifiersCache,
-  getIdentifiersCache,
   removeFavouriteIdentifierCache,
-  setIdentifiersCache,
+  removeIdentifierCache
 } from "../../../store/reducers/identifiersCache";
 import {
   getStateCache,
@@ -55,7 +54,6 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const identifierData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiersData = useAppSelector(
     getFavouritesIdentifiersCache
   );
@@ -104,7 +102,7 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
         setCloudError(true);
       } else {
         handleDone?.(false);
-        showError("Unable to get connection details", error, dispatch);
+        showError("Unable to get identifier details", error, dispatch);
       }
     }
   }, [identifierDetailId, handleDone, dispatch]);
@@ -127,13 +125,9 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
           ? identifierDetailId
           : undefined;
 
-      const updatedIdentifiers = identifierData.filter(
-        (item) => item.id !== filterId
-      );
-
       await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-      dispatch(setIdentifiersCache(updatedIdentifiers));
+      dispatch(removeIdentifierCache(filterId || ""));
     } catch (e) {
       showError(
         "Unable to delete identifier",

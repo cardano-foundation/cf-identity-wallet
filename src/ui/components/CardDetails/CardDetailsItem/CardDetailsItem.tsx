@@ -20,6 +20,7 @@ const CardDetailsItem = ({
   fullText = false,
   mask = true,
   endSlot,
+  startSlot
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
 
@@ -37,7 +38,7 @@ const CardDetailsItem = ({
   });
 
   const copy = () => {
-    writeToClipboard(copyContent || info);
+    writeToClipboard(String(copyContent ?? info ?? ""));
     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
   };
 
@@ -62,24 +63,30 @@ const CardDetailsItem = ({
           alt="keri"
         />
       )}
+      {startSlot && (
+        <div slot="start" className="card-details-info-block-line-start-icon">
+          {startSlot}
+        </div>
+      )
+      }
       <div className={contentClass}>
         <IonText className={textClass}>
           {keyValue && (
             <IonText
-              data-testid={`${testId}-key-value`}
+              data-testid={testId && `${testId}-key-value`}
               className="card-details-info-block-key"
             >
               {keyValue}
             </IonText>
           )}
-          <span data-testid={`${testId}-text-value`}>{info}</span>
+          <span data-testid={testId && `${testId}-text-value`}>{info}</span>
         </IonText>
         {copyButton && (
           <IonButton
             slot="end"
             shape="round"
             className="action-button"
-            data-testid={`${testId}-copy-button`}
+            data-testid={testId && `${testId}-copy-button`}
             onClick={copy}
           >
             <IonIcon icon={copyOutline} />

@@ -159,7 +159,7 @@ const ArchivedCredentialsContainer = forwardRef<
         )
       );
       const deleteRes = await Promise.allSettled(
-        selectedIds.map((id) => Agent.agent.credentials.deleteCredential(id))
+        selectedIds.map((id) => Agent.agent.credentials.markCredentialPendingDeletion(id))
       );
 
       const deleteSuccessCrendentials: string[] = [];
@@ -481,7 +481,7 @@ const ArchivedCredentialsContainer = forwardRef<
           "tabs.credentials.archived.alert.restorerevoked.title"
         )}
         confirmButtonText={`${i18n.t(
-          "credentials.archived.alert.restorerevoked.confirm"
+          "tabs.credentials.archived.alert.restorerevoked.confirm"
         )}`}
         actionConfirm={() => {
           setAlertRestoreRevoked(false);

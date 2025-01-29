@@ -1,14 +1,17 @@
+import { App, AppState } from "@capacitor/app";
+import { Capacitor } from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
 import i18n from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { Capacitor } from "@capacitor/core";
-import { Keyboard } from "@capacitor/keyboard";
-import { App, AppState } from "@capacitor/app";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { useAppDispatch } from "../../../store/hooks";
+import { PublicRoutes, RoutePath } from "../../../routes/paths";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
 import {
   geFirstAppLaunch,
+  getAuthentication,
+  getCurrentRoute,
   login,
   setFirstAppLaunch,
 } from "../../../store/reducers/stateCache";
@@ -19,20 +22,21 @@ import {
 } from "../../components/ErrorMessage";
 import { ForgotAuthInfo } from "../../components/ForgotAuthInfo";
 import { ForgotType } from "../../components/ForgotAuthInfo/ForgotAuthInfo.types";
-import { PageFooter } from "../../components/PageFooter";
-import { PasscodeModule } from "../../components/PasscodeModule";
-import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
-import { useBiometricAuth } from "../../hooks/useBiometricsHook";
-import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
-import "./LockPage.scss";
-import { BackEventPriorityType } from "../../globals/types";
 import {
   MaxLoginAttemptAlert,
   useLoginAttempt,
 } from "../../components/MaxLoginAttemptAlert";
+import { PageFooter } from "../../components/PageFooter";
+import { PasscodeModule } from "../../components/PasscodeModule";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { BackEventPriorityType } from "../../globals/types";
+import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
+import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import "./LockPage.scss";
+import { showError } from "../../utils/error";
 
-const LockPage = () => {
+const LockPageContainer = () => {
   const pageId = "lock-page";
   const dispatch = useAppDispatch();
   const [passcode, setPasscode] = useState("");
@@ -42,7 +46,7 @@ const LockPage = () => {
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const firstAppLaunch = useSelector(geFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
-  const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen(false);
 
   const {
     isLock,
@@ -114,25 +118,23 @@ const LockPage = () => {
   };
 
   const verifyPasscode = async (pass: string) => {
-    try {
-      const storedPass = (await SecureStorage.get(
-        KeyStoreKeys.APP_PASSCODE
-      )) as string;
-      if (!storedPass) return false;
-      return storedPass === pass;
-    } catch (e) {
+    const storedPass = await SecureStorage.get(
+      KeyStoreKeys.APP_PASSCODE
+    );
+    if (!storedPass) {
       return false;
     }
+    return storedPass === pass;
   };
 
   const handleBiometrics = async () => {
-    disablePrivacy();
+    await disablePrivacy();
     const isAuthenticated = await handleBiometricAuth();
+    await enablePrivacy();
     if (isAuthenticated === true) {
       dispatch(login());
       dispatch(setFirstAppLaunch(false));
     }
-    enablePrivacy();
   };
 
   const resetPasscode = () => {
@@ -156,6 +158,7 @@ const LockPage = () => {
       document.getElementById("passcode-button-1")?.focus();
     }
   }, []);
+  
   useEffect(() => {
     const handleAppStateChange = async (state: AppState) => {
       if (state.isActive) {
@@ -163,10 +166,10 @@ const LockPage = () => {
       }
     };
 
-    App.addListener("appStateChange", handleAppStateChange);
+    const listener = App.addListener("appStateChange", handleAppStateChange);
 
     return () => {
-      App.removeAllListeners();
+      listener.then((value) => value.remove()).catch((e) => showError("Unable to clear listener", e));
     };
   }, []);
 
@@ -234,5 +237,18 @@ const LockPage = () => {
     </ResponsivePageLayout>
   );
 };
+
+const LockPage = () => {
+  const currentRoute = useAppSelector(getCurrentRoute);
+  const authentication = useAppSelector(getAuthentication);
+
+  const isPublicPage = PublicRoutes.includes(currentRoute?.path as RoutePath);
+
+  if(isPublicPage || authentication.loggedIn) {
+    return null;
+  }
+
+  return <LockPageContainer />
+}
 
 export { LockPage };

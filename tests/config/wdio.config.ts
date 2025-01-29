@@ -6,9 +6,10 @@ export const config: Options.Testrunner = {
   runner: "local",
   tsConfigPath: 'tsconfig.json',
   specs: ["../features/**/*.feature"],
-  specFileRetries: 2,
+  specFileRetries: 0,
   specFileRetriesDelay: 3,
   specFileRetriesDeferred: false,
+  maxInstances: 1,
   logLevel: "debug",
   bail: 0,
   baseUrl: "LACK_OF_BASE_URL",
@@ -46,7 +47,7 @@ export const config: Options.Testrunner = {
     // <string> (expression) only execute the features or scenarios with tags matching the expression
     tags: "",
     // <number> timeout for step definitions
-    timeout: 60000,
+    timeout: 100 * 1000, // 100 seconds
   },
   //
   // =====

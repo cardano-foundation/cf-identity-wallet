@@ -36,7 +36,8 @@
     }
 
     ion-buttons ion-button {
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-neutral-700);
+      --ion-toolbar-color: var(--ion-color-neutral-700);
 
       &.md {
         --ripple-color: transparent;
@@ -47,7 +48,7 @@
         width: 2.75rem;
         height: 2.75rem;
         border-radius: 1.5rem;
-        background: var(--ion-color-light-grey);
+        background: var(--ion-color-neutral-200);
       }
 
       &.close-button-label,
@@ -73,13 +74,13 @@
       &.action-button-label {
         --padding-end: 0px;
         &[disabled="false"] {
-          color: var(--ion-color-blue);
+          color: var(--ion-color-primary-700);
         }
       }
 
       &[disabled],
       &.button-disabled > p {
-        color: var(--ion-color-dark-grey) !important;
+        color: var(--ion-color-neutral-300) !important;
         opacity: 1;
       }
     }
@@ -93,6 +94,9 @@
       ion-progress-bar::part(progress) {
         height: 0.5rem;
         border-radius: 0.5rem;
+
+        --progress-background: var(--ion-color-neutral-800);
+        --buffer-background: var(--ion-color-neutral-400);
       }
     }
   }

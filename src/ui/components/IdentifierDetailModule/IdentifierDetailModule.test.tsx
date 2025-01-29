@@ -52,11 +52,12 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-const getMock = jest.fn<string, string[]>(() => "111111");
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: (key: string) => getMock(key),
+const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
+
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: (options: { key: string }) => getMock(options.key)
   },
 }));
 
@@ -145,7 +146,7 @@ describe("Individual Identifier details page", () => {
   });
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
-    getMock.mockImplementation(() => "111111");
+    getMock.mockImplementation(() => Promise.resolve({ value: "111111" }));
   });
 
   test("It renders Identifier Details", async () => {
@@ -311,7 +312,7 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It asks to verify the password when users try to delete the identifier using the button in the modal", async () => {
-    getMock.mockImplementation(() => "");
+    getMock.mockImplementation(() => Promise.resolve({ value: "" }));
 
     const { getByTestId, getByText, unmount, findByText, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
@@ -430,7 +431,7 @@ describe("Individual Identifier details page", () => {
       ).toBeVisible()
     );
 
-    await act(async () => getMock.mockImplementation(() => "111111"));
+    await act(async () => getMock.mockImplementation(() => Promise.resolve({ value: "111111" })));
   });
 
   test("Hide loading after retrieved indetifier data", async () => {
@@ -597,8 +598,8 @@ describe("Group Identifier details page", () => {
       bran: "bran",
     },
     identifiersCache: {
-      identifiers: [
-        {
+      identifiers: {
+        "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut" : {
           displayName: "GG",
           id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
           createdAtUTC: "2024-10-14T13:11:52.963Z",
@@ -606,7 +607,7 @@ describe("Group Identifier details page", () => {
           isPending: false,
           multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
         },
-      ],
+      },
       favourites: [],
     },
     connectionsCache: {
@@ -670,8 +671,8 @@ describe("Group Identifier details page", () => {
         bran: "bran",
       },
       identifiersCache: {
-        identifiers: [
-          {
+        identifiers: {
+          "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut" : {
             displayName: "GG",
             id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
             createdAtUTC: "2024-10-14T13:11:52.963Z",
@@ -679,7 +680,7 @@ describe("Group Identifier details page", () => {
             isPending: false,
             multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
           },
-        ],
+        },
         favourites: [],
       },
       connectionsCache: {
@@ -1038,7 +1039,9 @@ describe("Group Identifier details page", () => {
         bran: "bran",
       },
       identifiersCache: {
-        identifiers: [filteredIdentifierFix[2]],
+        identifiers: {
+          [filteredIdentifierFix[2].id]: filteredIdentifierFix[2]
+        },
         favourites: [],
       },
       connectionsCache: {
@@ -1176,7 +1179,7 @@ describe("Favourite identifier", () => {
   });
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
-    getMock.mockImplementation(() => "111111");
+    getMock.mockImplementation(() => Promise.resolve({ value: "111111" }));
   });
   test("It changes to favourite icon on click favourite button", async () => {
     const spy = jest

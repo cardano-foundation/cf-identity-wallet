@@ -9,6 +9,7 @@ import { useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { Alert } from "../../Alert";
 import {
   CardBlock,
   CardDetailsBlock,
@@ -22,6 +23,8 @@ import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./Cr
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
+import { CardTheme } from "../../CardTheme";
+import { getTheme } from "../../../utils/theme";
 
 const CredentialContent = ({
   cardData,
@@ -33,8 +36,19 @@ const CredentialContent = ({
 
   const [openDetailModal, setOpenDetailModal] = useState(false);
   const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
+  const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
 
-  const identifier = identifiers.find(item => item.id === cardData.identifierId);
+  const identifier = identifiers[cardData.identifierId];
+
+  const openConnection = () => {
+    if(connectionShortDetails) {
+      setOpenConnectionlModal(true);
+    } else {
+      setShowMissingIssuerModal(true);
+    }
+  }
+
+  const closeAlert = () => setShowMissingIssuerModal(false);
 
   return (
     <>
@@ -42,10 +56,11 @@ const CredentialContent = ({
       <CardBlock
         flatBorder={FlatBorderType.BOT}
         title={i18n.t("tabs.credentials.details.type")}
+        testId="credential-details-type-block"
       >
         <CardDetailsItem
           info={cardData.s.title}
-          testId={"credential-details-type-block"}
+          testId="credential-details-type"
           icon={informationCircleOutline}
           mask={false}
           fullText={false}
@@ -54,6 +69,7 @@ const CredentialContent = ({
       <CardBlock
         className={"credential-details-read-more-block"}
         flatBorder={FlatBorderType.TOP}
+        testId="readmore-block"
       >
         <ReadMore content={cardData.s.description} />
       </CardBlock>
@@ -73,6 +89,7 @@ const CredentialContent = ({
       <CardBlock
         title={i18n.t("tabs.credentials.details.attributes.label")}
         onClick={() => setOpenDetailModal(true)}
+        testId="attribute-label"
       />
       <ListHeader
         title={i18n.t("tabs.credentials.details.credentialdetails")}
@@ -93,7 +110,8 @@ const CredentialContent = ({
       </CardBlock>
       <CardBlock
         title={i18n.t("tabs.credentials.details.issuer")}
-        onClick={() => setOpenConnectionlModal(true)}
+        onClick={openConnection}
+        testId="issuer"
       >
         <CardDetailsItem
           info={connectionShortDetails ? connectionShortDetails.label : i18n.t("connections.unknown")}
@@ -116,7 +134,7 @@ const CredentialContent = ({
             mask={false}
           />
         </CardBlock>
-        <CardBlock title={i18n.t("tabs.credentials.details.schemaversion")}>
+        <CardBlock title={i18n.t("tabs.credentials.details.schemaversion")} testId="schema-version">
           <h2 data-testid="credential-details-schema-version">
             {cardData.s.version}
           </h2>
@@ -159,9 +177,9 @@ const CredentialContent = ({
       >
         <CardDetailsItem
           info={identifier?.displayName || ""}
-          customIcon={KeriLogo}
           className="related-identifier"
           testId="related-identifier-name"
+          startSlot={<CardTheme {...getTheme(identifier.theme || 0)} />}
         />
       </CardBlock>}
       <IdentifierDetailModal
@@ -169,6 +187,15 @@ const CredentialContent = ({
         setIsOpen={setOpenIdentifierDetail}
         identifierDetailId={cardData.identifierId}
         pageId="credential-related-identifier"
+      />
+      <Alert
+        dataTestId="cred-missing-issuer-alert"
+        headerText={i18n.t("tabs.credentials.details.alert.missingissuer.text")}
+        confirmButtonText={`${i18n.t("tabs.credentials.details.alert.missingissuer.confirm")}`}
+        isOpen={showMissingIssuerModal} 
+        setIsOpen={setShowMissingIssuerModal} 
+        actionConfirm={closeAlert}
+        actionDismiss={closeAlert}
       />
     </>
   );

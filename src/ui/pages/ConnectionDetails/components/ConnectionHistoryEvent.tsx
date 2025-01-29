@@ -1,13 +1,13 @@
 import i18next from "i18next";
-import Minicred from "../../../assets/images/minicred.jpg";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
 } from "../../../../core/agent/agent.types";
-import { i18n } from "../../../../i18n";
 import { ConnectionHistoryType } from "../../../../core/agent/services/connectionService.types";
+import { i18n } from "../../../../i18n";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { CardTheme } from "../../../components/CardTheme";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 
 const ConnectionHistoryEvent = ({
   index,
@@ -26,17 +26,13 @@ const ConnectionHistoryEvent = ({
     >
       <div className="connection-details-logo">
         {historyItem.type ===
-        ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
+          ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
             <img
               src={connectionDetails?.logo || KeriLogo}
               alt="connection-logo"
             />
           ) : (
-            <img
-              src={Minicred}
-              alt="credential-miniature"
-              className="credential-miniature"
-            />
+            <CardTheme />
           )}
       </div>
       <p className="connection-details-history-event-info">

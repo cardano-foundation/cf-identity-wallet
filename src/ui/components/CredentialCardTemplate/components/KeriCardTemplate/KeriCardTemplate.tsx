@@ -3,13 +3,15 @@ import { hourglassOutline } from "ionicons/icons";
 import { useState } from "react";
 import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../../../i18n";
-import KeriBackground from "../../../../../ui/assets/images/keri-00.svg";
 import ACDCLogo from "../../../../../ui/assets/images/keri-acdc.svg";
 import { formatShortDate } from "../../../../utils/formatters";
 import { Alert } from "../../../Alert";
 import { useCardOffsetTop } from "../../../IdentifierCardTemplate";
 import { CredentialCardTemplateProps } from "../../CredentialCardTemplate.types";
 import "./KeriCardTemplate.scss";
+import { CardTheme } from "../../../CardTheme";
+import { useAppSelector } from "../../../../../store/hooks";
+import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 
 const KeriCardTemplate = ({
   name = "default",
@@ -19,14 +21,13 @@ const KeriCardTemplate = ({
   onHandleShowCardDetails,
   pickedCard,
 }: CredentialCardTemplateProps) => {
+  const connections = useAppSelector(getConnectionsCache);
   const { getCardOffsetTop, cardRef } = useCardOffsetTop();
 
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   const CredentialCardTemplateStyles = {
     zIndex: index,
-    backgroundImage: `url(${KeriBackground})`,
-    backgroundSize: "cover",
     transform: pickedCard
       ? `translateY(${-getCardOffsetTop() * index}px)`
       : undefined,
@@ -39,6 +40,8 @@ const KeriCardTemplate = ({
       onHandleShowCardDetails(index);
     }
   };
+
+  const connection = connections[cardData.connectionId];
 
   return (
     <div
@@ -53,6 +56,9 @@ const KeriCardTemplate = ({
       onClick={() => handleCardClick()}
       style={CredentialCardTemplateStyles}
     >
+      <div className="cred-keri-bg">
+        <CardTheme/>
+      </div>
       <div className={`keri-card-template-inner ${cardData.status}`}>
         <div className="card-header">
           <span className="card-logo">
@@ -70,15 +76,23 @@ const KeriCardTemplate = ({
               <span>{CredentialStatus.PENDING}</span>
             </IonChip>
           ) : (
-            <span className="credential-type">{cardData.credentialType}</span>
+            <span className="credential-type card-text">{cardData.credentialType}</span>
           )}
         </div>
         <div className="card-footer">
           <div className="card-footer-column">
-            <span className="card-footer-column-label">
+            <span className="card-footer-column-label card-text">
+              {i18n.t("tabs.credentials.layout.issuer")}
+            </span>
+            <span className="card-footer-column-value card-text">
+              {connection?.label}
+            </span>
+          </div>
+          <div className="card-footer-column">
+            <span className="card-footer-column-label card-text">
               {i18n.t("tabs.credentials.layout.issued")}
             </span>
-            <span className="card-footer-column-value">
+            <span className="card-footer-column-value card-text issued">
               {cardData.status === CredentialStatus.CONFIRMED ? (
                 formatShortDate(cardData.issuanceDate)
               ) : (

@@ -1,3 +1,4 @@
+import { CredentialFilter } from "signify-ts";
 import { AgentServicesProps } from "../agent.types";
 import { AgentService } from "./agentService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
@@ -13,7 +14,7 @@ import {
   IdentifierStorage,
   NotificationStorage,
 } from "../records";
-import { AcdcStateChangedEvent, EventTypes } from "../event.types";
+import { AcdcStateChangedEvent, CredentialRemovedEvent, EventTypes } from "../event.types";
 import { IdentifierType } from "./identifier.types";
 
 class CredentialService extends AgentService {
@@ -43,6 +44,14 @@ class CredentialService extends AgentService {
     this.props.eventEmitter.on(EventTypes.AcdcStateChanged, callback);
   }
 
+  onCredentialRemoved() {
+    this.props.eventEmitter.on(
+      EventTypes.CredentialRemovedEvent,
+      (data: CredentialRemovedEvent) =>
+        this.deleteCredential(data.payload.credentialId!)
+    );
+  }
+
   async getCredentials(
     isGetArchive = false
   ): Promise<CredentialShortDetails[]> {
@@ -65,6 +74,7 @@ class CredentialService extends AgentService {
       schema: metadata.schema,
       identifierType: metadata.identifierType,
       identifierId: metadata.identifierId,
+      connectionId: metadata.connectionId
     };
   }
 
@@ -99,6 +109,7 @@ class CredentialService extends AgentService {
       status: credentialShortDetails.status,
       identifierId: credentialShortDetails.identifierId,
       identifierType: credentialShortDetails.identifierType,
+      connectionId: credentialShortDetails.connectionId,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {
@@ -124,17 +135,49 @@ class CredentialService extends AgentService {
     });
   }
 
-  async deleteCredential(id: string): Promise<void> {
-    const metadata = await this.getMetadataById(id);
-    this.validArchivedCredential(metadata);
-    // We only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
-    await this.credentialStorage.updateCredentialMetadata(id, {
-      isDeleted: true,
-    });
-  }
-
   async deleteStaleLocalCredential(id: string): Promise<void> {
     await this.credentialStorage.deleteCredentialMetadata(id);
+  }
+
+  async deleteCredential(id: string): Promise<void> {
+    await this.props.signifyClient
+      .credentials()
+      .delete(id)
+      .catch(async (error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return  await this.credentialStorage.deleteCredentialMetadata(id)
+        } else {
+          throw error;
+        }
+      });
+
+    await this.credentialStorage.deleteCredentialMetadata(id)
+  }
+
+  async markCredentialPendingDeletion(id: string) {
+    const metadata = await this.getMetadataById(id);
+    this.validArchivedCredential(metadata);
+
+    await this.credentialStorage.updateCredentialMetadata(id, {
+      pendingDeletion: true,
+    });
+
+    this.props.eventEmitter.emit<CredentialRemovedEvent>({
+      type: EventTypes.CredentialRemovedEvent,
+      payload: {
+        credentialId: id,
+      },
+    })
+  }
+
+  async removeCredentialsPendingDeletion() {
+    const pendingCredentialDeletions =
+    await this.credentialStorage.getCredentialsPendingDeletion();
+
+    for (const credential of pendingCredentialDeletions) {
+      await this.deleteCredential(credential.id);
+    }
   }
 
   async restoreCredential(id: string): Promise<void> {
@@ -161,43 +204,50 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  @OnlineOnly
-  async syncACDCs() {
-    const signifyCredentials = await this.props.signifyClient
-      .credentials()
-      .list();
+  async syncKeriaCredentials() {
+    const cloudCredentials: any[] = [];
+    let returned = -1;
+    let iteration = 0;
 
-    const storedCredentials =
+    while (returned !== 0) {
+      const result = await this.props.signifyClient.credentials().list({
+        skip: iteration * 24,
+        limit: 24 + (iteration * 24)
+      });
+      cloudCredentials.push(...result);
+
+      returned = result.length;
+      iteration += 1;
+    }
+
+    const localCredentials =
       await this.credentialStorage.getAllCredentialMetadata();
-    const unSyncedData = signifyCredentials.filter(
+    
+    const unSyncedData = cloudCredentials.filter(
       (credential: any) =>
-        !storedCredentials.find((item) => credential.sad.d === item.id)
+        !localCredentials.find((item) => credential.sad.d === item.id)
     );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      for (const credential of unSyncedData) {
-        try {
-          const identifier = await this.identifierStorage.getIdentifierMetadata(
-            credential.sad.a.i
-          );
-          await this.createMetadata({
-            id: credential.sad.d,
-            isArchived: false,
-            issuanceDate: new Date(credential.sad.a.dt).toISOString(),
-            credentialType: credential.schema.title,
-            status: CredentialStatus.CONFIRMED,
-            connectionId: credential.sad.i,
-            schema: credential.schema.$id,
-            identifierId: credential.sad.a.i,
-            identifierType: identifier.multisigManageAid
-              ? IdentifierType.Group
-              : IdentifierType.Individual,
-          });
-        } catch (error) {
-          /* eslint-disable no-console */
-          console.error(error);
-        }
-      }
+
+    for (const credential of unSyncedData) {
+      const identifier = await this.identifierStorage.getIdentifierMetadata(
+        credential.sad.a.i
+      );
+      const metadata = {
+        id: credential.sad.d,
+        isArchived: false,
+        issuanceDate: new Date(credential.sad.a.dt).toISOString(),
+        credentialType: credential.schema.title,
+        status: CredentialStatus.CONFIRMED,
+        connectionId: credential.sad.i,
+        schema: credential.schema.$id,
+        identifierId: credential.sad.a.i,
+        identifierType: identifier.multisigManageAid
+          ? IdentifierType.Group
+          : IdentifierType.Individual,
+        createdAt: new Date(credential.sad.a.dt),
+      };
+
+      await this.createMetadata(metadata);
     }
   }
 

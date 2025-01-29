@@ -8,7 +8,7 @@ import {
   BarcodeFormat,
   BarcodeScannedEvent,
   BarcodeValueType,
-} from "@capacitor-mlkit/barcode-scanning";
+} from "@jimcase/barcode-scanning";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import {
@@ -90,9 +90,9 @@ const checkPermisson = jest.fn(() =>
 
 const requestPermission = jest.fn();
 const startScan = jest.fn();
-jest.mock("@capacitor-mlkit/barcode-scanning", () => {
+jest.mock("@jimcase/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
+    ...jest.requireActual("@jimcase/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () => checkPermisson(),
       requestPermissions: () => requestPermission(),
@@ -151,7 +151,7 @@ describe("Scanner", () => {
       toastMsgs: [],
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
       favourites: [],
       multiSigGroup: {
         groupId: "",
@@ -344,7 +344,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         scanGroupId: "mock",
       },
       connectionsCache: {
@@ -423,7 +423,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         scanGroupId: "72e2f089cef6",
         multiSigGroup: {
           connections: [connectionsFix[0]],
@@ -480,7 +480,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
         scanGroupId: "72e2f089cef6",
       },
       connectionsCache: {
@@ -568,7 +568,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -607,7 +607,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -684,7 +684,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -761,7 +761,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -832,7 +832,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -903,7 +903,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -983,7 +983,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -1061,7 +1061,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},
@@ -1127,7 +1127,7 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: [],
+        identifiers: {},
       },
       connectionsCache: {
         connections: {},

@@ -9,7 +9,9 @@ import { ConnectionDetails } from "../../../core/agent/agent.types";
 import { IdentifierService } from "../../../core/agent/services";
 import EN_TRANSLATION from "../../../locales/en/en.json";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { showNoWitnessAlert } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierFix";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CreateIdentifier } from "./CreateIdentifier";
@@ -24,32 +26,32 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-const mockGetMultisigConnection = jest.fn((args: any) => Promise.resolve(([] as ConnectionDetails[])));
-const createIdentifierMock = jest.fn((args: unknown) => ({
-  identifier: "mock-id",
-  isPending: true,
-}));
+const mockGetMultisigConnection = jest.fn((args: any) =>
+  Promise.resolve([] as ConnectionDetails[])
+);
+const createIdentifierMock = jest.fn();
+const markIdentifierPendingCreateMock = jest.fn((args: unknown) => ({}));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
         getMultisigLinkedContacts: (args: any) =>
-          mockGetMultisigConnection(args)
+          mockGetMultisigConnection(args),
       },
       identifiers: {
         getIdentifiersCache: jest.fn(),
         createIdentifier: (args: unknown) => createIdentifierMock(args),
+        markIdentifierPendingCreate: (args: unknown) =>
+          markIdentifierPendingCreateMock(args),
       },
     },
   },
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: () => {
-      return "111111";
-    },
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: (options: { key: string }) => Promise.resolve({ value: "111111" })
   },
 }));
 
@@ -97,8 +99,14 @@ jest.mock("../CustomInput", () => ({
 describe("Create Identifier modal", () => {
   const mockStore = configureStore();
   beforeEach(() => {
-    mockGetMultisigConnection.mockImplementation((): any=> Promise.resolve(([] as ConnectionDetails[])))
-  })
+    mockGetMultisigConnection.mockImplementation((): any =>
+      Promise.resolve([] as ConnectionDetails[])
+    );
+    createIdentifierMock.mockImplementation((args: unknown) => ({
+      identifier: "mock-id",
+      isPending: true,
+    }));
+  });
 
   const initialState = {
     stateCache: {
@@ -117,7 +125,7 @@ describe("Create Identifier modal", () => {
       isOnline: true,
     },
     identifiersCache: {
-      identifiers: [],
+      identifiers: {},
     },
   };
 
@@ -235,7 +243,9 @@ describe("Create Identifier modal", () => {
 
   test("Multisig create new identifier: mutilsign", async () => {
     const groupMockId = "b75838e5-98cb-46cf-9233-8bf3beca4cd3";
-    mockGetMultisigConnection.mockImplementation(() => Promise.resolve([connectionsFix[3]]))
+    mockGetMultisigConnection.mockImplementation(() =>
+      Promise.resolve([connectionsFix[3]])
+    );
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>
@@ -289,7 +299,7 @@ describe("Create Identifier modal", () => {
 
     await waitFor(() => {
       expect(getByTestId("color-1").classList.contains("selected"));
-    })
+    });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
@@ -305,11 +315,34 @@ describe("Create Identifier modal", () => {
   });
 
   test("Display error when display name invalid", async () => {
-    createIdentifierMock.mockImplementation(() => {
-      throw new Error(IdentifierService.IDENTIFIER_NAME_TAKEN)
-    })
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+        isOnline: true,
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierMapFix,
+      },
+    };
+  
+    const dispatchMock = jest.fn();
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
 
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
           modalIsOpen={true}
@@ -323,9 +356,7 @@ describe("Create Identifier modal", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
@@ -333,19 +364,18 @@ describe("Create Identifier modal", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+      ionFireEvent.ionInput(
+        getByTestId("display-name-input"),
+        "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke"
+      );
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.maxlength)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.maxlength)).toBeVisible();
     });
 
     act(() => {
@@ -353,27 +383,19 @@ describe("Create Identifier modal", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.hasspecialchar)
-      ).toBeVisible();
-    });
-    
-    act(() => {
-      ionFireEvent.ionInput(getByTestId("display-name-input"), "Duke");
+      expect(getByText(EN_TRANSLATION.nameerror.hasspecialchar)).toBeVisible();
     });
 
-    await waitFor(() => {
-      expect(queryByTestId("error-message")).toBe(null);
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("display-name-input"), "Professional ID");
     });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
-
+    
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATION.nameerror.duplicatename)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATION.nameerror.duplicatename)).toBeVisible();
     });
   });
 
@@ -435,6 +457,72 @@ describe("Create Identifier modal", () => {
       expect(
         getByText(EN_TRANSLATION.createidentifier.aidinfo.title)
       ).toBeVisible();
+    });
+  });
+
+  test("No witness availability", async () => {
+    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE)));
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateIdentifier
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+        />
+      </Provider>
+    );
+
+    const displayNameInput = getByTestId("display-name-input");
+
+    act(() => {
+      fireEvent.click(getByTestId("color-1"));
+      fireEvent.click(getByTestId("identifier-theme-selector-item-1"));
+      ionFireEvent.ionInput(displayNameInput, "Test");
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("color-1").classList.contains("selected"));
+    })
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
+    });
+  });
+
+  test("Misconfigured agent", async () => {
+    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)));
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateIdentifier
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+        />
+      </Provider>
+    );
+
+    const displayNameInput = getByTestId("display-name-input");
+
+    act(() => {
+      fireEvent.click(getByTestId("color-1"));
+      fireEvent.click(getByTestId("identifier-theme-selector-item-1"));
+      ionFireEvent.ionInput(displayNameInput, "Test");
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("color-1").classList.contains("selected"));
+    })
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showNoWitnessAlert(true));
     });
   });
 });

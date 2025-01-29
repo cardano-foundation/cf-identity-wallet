@@ -14,7 +14,6 @@ import { updateReduxState } from "../../../store/utils";
 import "../../components/CardDetails/CardDetails.scss";
 import { IdentifierDetailModule } from "../../components/IdentifierDetailModule";
 import { useAppIonRouter } from "../../hooks";
-import "./IdentifierDetails.scss";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;

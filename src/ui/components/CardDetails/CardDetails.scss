@@ -1,11 +1,12 @@
 .card-details {
-  background: var(--ion-color-light-grey);
+  background: var(--ion-color-neutral-200);
 
   .spinner-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background: rgba(var(--ion-color-neutral-700-rgb), 0.2);
   }
 
   @keyframes fadein {
@@ -34,14 +35,14 @@
   }
 
   ion-header ion-toolbar {
-    --background: var(--ion-color-light-grey);
+    --background: var(--ion-color-neutral-200);
 
     ion-button:not(.close-button-label),
     ion-button.md:not(.close-button-label) {
       width: 2.75rem;
       height: 2.75rem;
       border-radius: 1.5rem;
-      background: var(--ion-color-light);
+      background: var(--ion-color-neutral-100);
 
       &:not(:first-child) {
         margin-left: 0.5rem;
@@ -52,7 +53,7 @@
       }
 
       &.heart-button-favourite {
-        background: rgba(var(--ion-color-danger-rgb), 0.15) !important;
+        background: var(--ion-color-error-100);
 
         .heart-icon-favourite {
           color: var(--ion-color-danger);
@@ -77,7 +78,7 @@
   }
 
   .card-details-content {
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-neutral-700);
     margin-top: 1.5625rem;
 
     > *:not(:first-child) {

@@ -1,21 +1,21 @@
 import { IonSpinner } from "@ionic/react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
+import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { i18n } from "../../../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
+import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import { Alert } from "../../../../components/Alert";
 import { useOnlineStatusEffect } from "../../../../hooks";
+import { showError } from "../../../../utils/error";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
-import { CredentialRequestInformation } from "./CredentialRequestInformation";
-import { showError } from "../../../../utils/error";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { LinkedGroup } from "./CredentialRequest.types";
-import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
-import { getAuthentication } from "../../../../../store/reducers/stateCache";
+import { CredentialRequestInformation } from "./CredentialRequestInformation";
 
 const CredentialRequest = ({
   pageId,
@@ -24,19 +24,27 @@ const CredentialRequest = ({
   handleBack,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
   const userName = useAppSelector(getAuthentication)?.userName;
   const [requestStage, setRequestStage] = useState(0);
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
-  const identifiersData = useAppSelector(getIdentifiersCache);
 
   const [linkedGroup, setLinkedGroup] = useState<LinkedGroup | null>(null);
   const [isOpenAlert, setIsOpenAlert] = useState(false);
 
   const reachThreshold =
     linkedGroup &&
-    linkedGroup?.joinedMembers === Number(linkedGroup?.threshold);
+    linkedGroup.othersJoined.length + (linkedGroup.linkedRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
+
+  const userAID = useMemo(() => {
+    if(!credentialRequest) return null;
+
+    const identifier = identifiersData[credentialRequest.identifier];
+    
+    return identifier ? identifier.multisigManageAid : null;
+  }, [credentialRequest, identifiersData]);
 
   const getMultisigInfo = useCallback(async () => {
     const linkedGroup =
@@ -44,41 +52,26 @@ const CredentialRequest = ({
           notificationDetails.id
         );
 
-    const credentials = Object.keys(linkedGroup.offer);
-
     const memberInfos = linkedGroup.members.map((member: string) => {
       const memberConnection = multisignConnectionsCache[member];
-
-      let name = memberConnection?.label || member;
-
-      if (!memberConnection?.label) {
-        name = userName;
+      if (!memberConnection) {
+        return {
+          aid: member,
+          name: userName,
+          joined: linkedGroup.linkedRequest.accepted,
+        }
       }
-
-      const joinedCred = credentials.find((credId) =>
-        linkedGroup.offer[credId].membersJoined.includes(member)
-      );
 
       return {
         aid: member,
-        name,
-        joinedCred,
-      };
+        name: memberConnection.label || member,
+        joined: linkedGroup.othersJoined.includes(member)
+      }
     });
-
-    const joinedMembers = Object.values(linkedGroup.offer).reduce(
-      (result, next) => {
-        return next.membersJoined.length > result
-          ? next.membersJoined.length
-          : result;
-      },
-      0
-    );
 
     setLinkedGroup({
       ...linkedGroup,
-      memberInfos,
-      joinedMembers,
+      memberInfos
     });
   }, [multisignConnectionsCache, notificationDetails.id, userName]);
 
@@ -88,9 +81,7 @@ const CredentialRequest = ({
         notificationDetails
       );
 
-      const identifier = identifiersData.find(
-        (identifier) => identifier.id === request.identifier
-      );
+      const identifier = identifiersData[request.identifier];
 
       const identifierType =
         identifier?.multisigManageAid || identifier?.groupMetadata
@@ -154,6 +145,8 @@ const CredentialRequest = ({
           credentialRequest={credentialRequest}
           linkedGroup={linkedGroup}
           onBack={handleBack}
+          userAID={userAID}
+          onReloadData={getCrendetialRequest}
         />
       ) : (
         <ChooseCredential

@@ -45,6 +45,7 @@ import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
+import { isNetworkError } from "./services/utils";
 
 const walletId = "idw";
 class Agent {
@@ -59,6 +60,7 @@ class Agent {
     "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
+  static readonly MISSING_BRAN_SECURE_STORAGE = "Bran not in secure storage";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
@@ -99,7 +101,8 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.connections
+        this.connections,
+        this.basicStorage
       );
     }
     return this.identifierService;
@@ -180,9 +183,9 @@ class Agent {
         this.multiSigs,
         this.ipexCommunications,
         this.credentialService,
-        this.getKeriaOnlineStatus,
-        this.markAgentStatus,
-        this.connect
+        this.getKeriaOnlineStatus.bind(this),
+        this.markAgentStatus.bind(this),
+        this.connect.bind(this)
       );
     }
     return this.keriaNotificationService;
@@ -227,7 +230,6 @@ class Agent {
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
       await this.connectSignifyClient();
-      this.markAgentStatus(true);
     }
   }
 
@@ -246,9 +248,13 @@ class Agent {
         /* eslint-disable no-console */
         console.error(e);
         if (e.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK, {
+            cause: e,
+          });
         }
-        throw new Error(Agent.KERIA_BOOT_FAILED);
+        throw new Error(Agent.KERIA_BOOT_FAILED, {
+          cause: e,
+        });
       });
 
       if (!bootResult.ok && bootResult.status !== 409) {
@@ -281,7 +287,9 @@ class Agent {
       bran = branBuffer.toString("utf-8");
     } catch (error) {
       if (error instanceof Error && error.message === "Invalid mnemonic") {
-        throw new Error(Agent.INVALID_MNEMONIC);
+        throw new Error(Agent.INVALID_MNEMONIC, {
+          cause: error,
+        });
       }
       throw error;
     }
@@ -290,12 +298,32 @@ class Agent {
     this.agentServicesProps.signifyClient = this.signifyClient;
     await this.connectSignifyClient();
 
+    await this.basicStorage.save({
+      id: MiscRecordId.CLOUD_RECOVERY_STATUS,
+      content: { syncing: true },
+    });
+
     await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     await this.saveAgentUrls({
       url: connectUrl,
       bootUrl: "",
     });
-    this.markAgentStatus(true);
+
+    await this.syncWithKeria();
+  }
+
+  async syncWithKeria() {
+    await this.connections.syncKeriaContacts();
+    await this.identifiers.syncKeriaIdentifiers();
+    await this.credentials.syncKeriaCredentials();
+    await this.keriaNotifications.syncIPEXReplyOperations();
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.CLOUD_RECOVERY_STATUS,
+        content: { syncing: false },
+      })
+    );
   }
 
   private async connectSignifyClient(): Promise<void> {
@@ -303,19 +331,27 @@ class Agent {
       if (!(error instanceof Error)) {
         throw error;
       }
-      /* eslint-disable no-console */
-      console.error(error);
+
+      if (isNetworkError(error)) {
+        throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK, {
+          cause: error,
+        });
+      }
+      
       const status = error.message.split(" - ")[1];
-      if (error.message === "Failed to fetch") {
-        throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
-      }
       if (/404/gi.test(status)) {
-        throw new Error(Agent.KERIA_NOT_BOOTED);
+        throw new Error(Agent.KERIA_NOT_BOOTED, {
+          cause: error,
+        });
       }
-      throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
+
+      throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT, {
+        cause: error,
+      });
     });
   }
 
+  // For now this is called by UI/AppWrapper to not prematurely mark online while mid-recovery
   markAgentStatus(online: boolean) {
     Agent.isOnline = online;
 
@@ -323,6 +359,8 @@ class Agent {
       this.connections.removeConnectionsPendingDeletion();
       this.connections.resolvePendingConnections();
       this.identifiers.removeIdentifiersPendingDeletion();
+      this.identifiers.resolvePendingIdentifiers();
+      this.credentials.removeCredentialsPendingDeletion();
     }
 
     this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
@@ -335,38 +373,15 @@ class Agent {
 
   async devPreload() {
     const APP_PASSSCODE_DEV_MODE = "111111";
-    try {
-      await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
-      ) {
-        await SecureStorage.set(
-          KeyStoreKeys.APP_PASSCODE,
-          APP_PASSSCODE_DEV_MODE
-        );
-      } else {
-        throw error;
-      }
+
+    const appPasscode = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+    if (!appPasscode) {
+      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
     }
 
-    try {
-      await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
-      ) {
-        await SecureStorage.set(
-          KeyStoreKeys.SIGNIFY_BRAN,
-          randomPasscode().substring(0, 21)
-        );
-      } else {
-        throw error;
-      }
+    const appSignifyBran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    if (!appSignifyBran) {
+      await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
     }
 
     await this.basicStorage.createOrUpdateBasicRecord(
@@ -435,6 +450,7 @@ class Agent {
     this.connections.onConnectionRemoved();
     this.connections.onConnectionAdded();
     this.identifiers.onIdentifierRemoved();
+    this.credentials.onCredentialRemoved();
   }
 
   async connect(retryInterval = 1000) {
@@ -449,13 +465,7 @@ class Agent {
         });
       }
       await this.signifyClient.connect();
-      Agent.isOnline = true;
-      this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
-        type: EventTypes.KeriaStatusChanged,
-        payload: {
-          isOnline: true,
-        },
-      });
+      this.markAgentStatus(true);
     } catch (error) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
       await this.connect(retryInterval);
@@ -467,7 +477,11 @@ class Agent {
   }
 
   private async getBran(): Promise<string> {
-    return (await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN)) as string;
+    const bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    if (!bran){
+      throw new Error(Agent.MISSING_BRAN_SECURE_STORAGE);
+    }
+    return bran as string;
   }
 
   private getStorageService<T extends BaseRecord>(

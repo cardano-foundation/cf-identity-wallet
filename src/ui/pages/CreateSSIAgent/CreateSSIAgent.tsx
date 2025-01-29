@@ -1,8 +1,10 @@
+import { Browser } from "@capacitor/browser";
 import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
 import {
   informationCircleOutline,
-  scanOutline,
   openOutline,
+  scanOutline,
+  refreshOutline
 } from "ionicons/icons";
 import {
   MouseEvent as ReactMouseEvent,
@@ -10,7 +12,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Browser } from "@capacitor/browser";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { ConfigurationService } from "../../../core/configuration";
@@ -34,19 +35,19 @@ import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
+import { SwitchOnboardingModeModal } from "../../components/SwitchOnboardingModeModal";
 import { TermsModal } from "../../components/TermsModal";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import {
+  ONBOARDING_DOCUMENTATION_LINK,
+  RECOVERY_DOCUMENTATION_LINK,
+} from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
+import { showError } from "../../utils/error";
 import { isValidHttpUrl } from "../../utils/urlChecker";
 import "./CreateSSIAgent.scss";
-import { SwitchOnboardingMode } from "../../components/SwitchOnboardingMode";
-import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnboardingMode.types";
-import {
-  RECOVERY_DOCUMENTATION_LINK,
-  ONBOARDING_DOCUMENTATION_LINK,
-} from "../../globals/constants";
-import { showError } from "../../utils/error";
+import { OnboardingMode } from "../../components/SwitchOnboardingModeModal/SwitchOnboardingModeModal.types";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 const SEED_PHRASE_EMPTY = "Invalid seed phrase";
@@ -80,6 +81,7 @@ const CreateSSIAgent = () => {
   const [hasMismatchError, setHasMismatchError] = useState(false);
   const [isInvalidBootUrl, setIsInvalidBootUrl] = useState(false);
   const [isInvalidConnectUrl, setInvalidConnectUrl] = useState(false);
+  const [showSwitchModeModal, setSwitchModeModal] = useState(false);
 
   const isRecoveryMode = stateCache.authentication.recoveryWalletProgress;
 
@@ -279,6 +281,14 @@ const CreateSSIAgent = () => {
         : ONBOARDING_DOCUMENTATION_LINK,
     });
   };
+
+
+  const mode = isRecoveryMode ? OnboardingMode.Create : OnboardingMode.Recovery;
+
+  const buttonLabel = !isRecoveryMode
+    ? i18n.t("generateseedphrase.onboarding.button.switch")
+    : i18n.t("verifyrecoveryseedphrase.button.switch");
+
   return (
     <>
       <ScrollablePageLayout
@@ -392,17 +402,15 @@ const CreateSSIAgent = () => {
                     : `${i18n.t("ssiagent.error.invalidconnecturl")}`
               }
             />
-            <SwitchOnboardingMode
-              mode={
-                isRecoveryMode ? OnboardingMode.Create : OnboardingMode.Recovery
-              }
-            />
           </div>
           <PageFooter
             pageId={pageId}
             primaryButtonText={`${i18n.t("ssiagent.button.validate")}`}
             primaryButtonAction={() => handleValidate()}
             primaryButtonDisabled={!validated || loading}
+            tertiaryButtonText={buttonLabel}
+            tertiaryButtonAction={() => setSwitchModeModal(true)}
+            tertiaryButtonIcon={refreshOutline}
           />
         </div>
       </ScrollablePageLayout>
@@ -436,6 +444,7 @@ const CreateSSIAgent = () => {
             : `${i18n.t("ssiagent.button.onboardingdocumentation")}`}
         </IonButton>
       </TermsModal>
+      <SwitchOnboardingModeModal mode={mode} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
     </>
   );
 };

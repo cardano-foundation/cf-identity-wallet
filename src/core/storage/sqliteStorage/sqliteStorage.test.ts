@@ -1,6 +1,6 @@
 import { SqliteStorage } from "./sqliteStorage";
 import { convertDbQuery } from "./utils";
-import { StorageRecord } from "../storage.types";
+import { StorageMessage, StorageRecord } from "../storage.types";
 import { BasicRecord } from "../../agent/records";
 
 const startTime = new Date();
@@ -144,7 +144,7 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
 
   test("should not be able to store an already existing record", async () => {
     await expect(storageService.save(existingRecord)).rejects.toThrowError(
-      `${SqliteStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${existingRecord.id}`
+      `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${existingRecord.id}`
     );
     expect(setMock).not.toBeCalled();
   });
@@ -161,7 +161,7 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
 
   test("should not be able to update a record that does not exist", async () => {
     await expect(storageService.update(newRecord)).rejects.toThrowError(
-      `${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
+      `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
     );
     expect(updateMock).not.toBeCalled();
   });
@@ -174,7 +174,7 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
 
   test("should not be able to delete a record that does not exist", async () => {
     await expect(storageService.delete(newRecord)).rejects.toThrowError(
-      `${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
+      `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
     );
     expect(getMock).toBeCalledWith(newRecord.id);
     expect(removeMock).not.toBeCalled();
@@ -188,7 +188,7 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
 
   test("should not be able to delete a record by id that does not exist", async () => {
     await expect(storageService.deleteById(newRecord.id)).rejects.toThrowError(
-      `${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
+      `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
     );
     expect(getMock).toBeCalledWith(newRecord.id);
     expect(removeMock).not.toBeCalled();

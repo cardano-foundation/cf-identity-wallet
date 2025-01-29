@@ -10,7 +10,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { showGenericError } from "../../../../../store/reducers/stateCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
-import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierMapFix, filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
@@ -18,17 +18,17 @@ import { ReceiveCredential } from "./ReceiveCredential";
 
 jest.useFakeTimers();
 
-const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: (key: string) => mockGet(key),
-    set: jest.fn(),
+jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: {
+    get: (options: { key: string }) => mockGet(options.key),
+    set: jest.fn()
   },
 }));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const admitAcdcMock = jest.fn(
+const admitAcdcFromGrantMock = jest.fn(
   (id: string) =>
     new Promise((res) => {
       setTimeout(() => {
@@ -48,7 +48,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
           deleteNotificationMock(id),
       },
       ipexCommunications: {
-        admitAcdc: (id: string) => admitAcdcMock(id),
+        admitAcdcFromGrant: (id: string) => admitAcdcFromGrantMock(id),
         getAcdcFromIpexGrant: () => getAcdcFromIpexGrantMock(),
         getLinkedGroupFromIpexGrant: () => getLinkedGroupFromIpexGrantMock(),
       },
@@ -98,7 +98,7 @@ const initialState = {
     notifications: notificationsFix,
   },
   identifiersCache: {
-    identifiers: filteredIdentifierFix,
+    identifiers: filteredIdentifierMapFix,
   },
 };
 
@@ -109,7 +109,7 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
-describe("Credential request", () => {
+describe("Receive credential", () => {
   beforeEach(() => {
     getAcdcFromIpexGrantMock.mockImplementation(() =>
       Promise.resolve({
@@ -208,7 +208,7 @@ describe("Credential request", () => {
     });
 
     await waitFor(() => {
-      expect(admitAcdcMock).toBeCalledWith(notificationsFix[0].id);
+      expect(admitAcdcFromGrantMock).toBeCalledWith(notificationsFix[0].id);
     });
   }, 10000);
 
@@ -245,6 +245,57 @@ describe("Credential request", () => {
     });
   }, 10000);
 
+  test("Open missing issuer modal", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.NOTIFICATIONS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      credsCache: {
+        creds: [],
+      },
+      connectionsCache: {
+        connections: [],
+      },
+      notificationsCache: {
+        notifications: notificationsFix,
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierMapFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const backMock = jest.fn();
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[1]}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("show-missing-issuer-icon")).toBeVisible();
+
+    fireEvent.click(getByTestId("show-missing-issuer-icon"));
+
+    await waitFor(() => {
+      expect(getByTestId("missing-issuer-alert")).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.alert.missingissuer.text)).toBeVisible();
+    })
+  });
+
   test("Open indentifier detail", async () => {
 
     const initialState = {
@@ -267,7 +318,7 @@ describe("Credential request", () => {
         notifications: notificationsFix,
       },
       identifiersCache: {
-        identifiers: filteredIdentifierFix,
+        identifiers: filteredIdentifierMapFix,
       },
     };
 
@@ -382,7 +433,7 @@ describe("Credential request: Multisig", () => {
       notifications: notificationsFix,
     },
     identifiersCache: {
-      identifiers: filteredIdentifierFix,
+      identifiers: filteredIdentifierMapFix,
     },
   };
 
@@ -404,7 +455,7 @@ describe("Credential request: Multisig", () => {
       threshold: "2",
       members: ["member-1", "member-2"],
       othersJoined: [],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       }
     });
@@ -431,6 +482,71 @@ describe("Credential request: Multisig", () => {
 
       expect(getByText("Member 2")).toBeVisible();
     });
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.initiatoracceptedalert
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.buttons.ok
+      )
+    ).toBeVisible();
+  });
+
+  test("Hide alert when group initiator accept cred", async () => {
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const backMock = jest.fn();
+
+    getAcdcFromIpexGrantMock.mockResolvedValue({
+      ...credsFixAcdc[0],
+      identifierType: IdentifierType.Group,
+      identifierId: filteredIdentifierFix[2].id,
+    });
+
+    getLinkedGroupFromIpexGrantMock.mockResolvedValue({
+      threshold: "2",
+      members: ["member-1", "member-2"],
+      othersJoined: ["member-1"],
+      linkedRequest: {
+        accepted: false,
+      }
+    });
+
+    const { getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.receive.members
+        )
+      ).toBeVisible();
+
+      expect(getByText("Member 1")).toBeVisible();
+
+      expect(getByText("Member 2")).toBeVisible();
+    });
+
+    expect(
+      queryByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.initiatoracceptedalert
+      )
+    ).toBeNull();
   });
 
   test("Multisig credential request: max threshold", async () => {
@@ -446,7 +562,7 @@ describe("Credential request: Multisig", () => {
       threshold: "2",
       members: ["member-1", "member-2", "member-3"],
       othersJoined: ["member-1", "member-2"],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: false,
       }
     });
@@ -488,7 +604,7 @@ describe("Credential request: Multisig", () => {
       threshold: "2",
       members: ["member-1", "member-2"],
       othersJoined: ["member-1"],
-      linkedGroupRequest: {
+      linkedRequest: {
         accepted: true,
         current: "currentadmitsaid"
       }

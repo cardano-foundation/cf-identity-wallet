@@ -1,4 +1,4 @@
-import { LinkedGroupRequest } from "../records/notificationRecord.types";
+import { LinkedRequest } from "../records/notificationRecord.types";
 
 interface CredentialsMatchingApply {
   schema: {
@@ -13,11 +13,11 @@ interface CredentialsMatchingApply {
   identifier: string;
 }
 
-interface LinkedGroupInfoGrant {
+interface LinkedGroupInfo {
   threshold: string | string[];
   members: string[];
   othersJoined: string[];
-  linkedGroupRequest: LinkedGroupRequest;
+  linkedRequest: LinkedRequest;
 }
 
-export type { CredentialsMatchingApply, LinkedGroupInfoGrant };
+export type { CredentialsMatchingApply, LinkedGroupInfo };

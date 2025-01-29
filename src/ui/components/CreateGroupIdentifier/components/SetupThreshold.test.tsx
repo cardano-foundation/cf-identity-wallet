@@ -34,7 +34,7 @@ describe("Create group identifier - Setup Threshold", () => {
       isPending: false,
       groupMetadata: undefined,
     },
-    color: IdentifierColor.Green,
+    color: IdentifierColor.One,
   };
 
   const dispatchMock = jest.fn();

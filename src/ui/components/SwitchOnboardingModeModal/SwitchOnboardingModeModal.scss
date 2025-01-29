@@ -1,0 +1,129 @@
+.switch-button.secondary-button {
+  display: flex;
+  margin: 1.5rem 0.125rem;
+
+  &.ion-activated {
+    --ion-toolbar-color: var(--ion-color-neutral-100);
+    --ion-toolbar-background: var(--ion-color-neutral-700);
+    --color-activated: var(--ion-color-neutral-700);
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    margin: 0.8rem 0.125rem !important;
+  }
+}
+
+.switch-modal {
+  & .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
+  .title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    color: var(--ion-color-neutral-800);
+    margin: 1rem 0 0.5rem;
+  }
+
+  .paragraph-top {
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.325rem;
+    color: var(--ion-color-neutral-700);
+    margin-bottom: 0.75rem;
+  }
+
+  .warning {
+    margin-bottom: 0.75rem;
+
+    .card-details-info-block-inner {
+      padding: 1.25rem;
+
+      ol {
+        margin: 0;
+        padding-left: 1.25rem;
+
+        li {
+          font-size: 1rem;
+          font-weight: 500;
+          line-height: 1.325rem;
+
+          &:not(:last-child) {
+            margin-bottom: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+
+  .page-footer {
+    padding: 0.75rem 0;
+
+    .page-footer-content {
+      padding-bottom: 0.25rem;
+    }
+  }
+
+  .confirm {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .confirm-checkbox {
+      display: flex;
+      --size: 1.75rem;
+      --checkbox-background-checked: var(--ion-color-primary-700);
+      --checkmark-color: var(--ion-color-primary-100);
+      --border-radius: 0.25rem;
+      margin: 0 1rem 0 1.25rem;
+
+      &.checkbox-checked {
+        --border-color-checked: var(--checkbox-background-checked);
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .title {
+      font-size: 1rem;
+      margin: 0.5rem 0 0.25rem;
+    }
+
+    .paragraph-top {
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .warning {
+      .card-details-info-block-inner {
+        padding: 1rem;
+
+        ol {
+          li {
+            font-size: 0.85rem;
+          }
+        }
+      }
+    }
+
+    .paragraph-bottom {
+      font-size: 0.85rem;
+    }
+
+    .confirm {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+
+      .confirm-checkbox {
+        display: flex;
+        --size: 1.5rem;
+        --border-radius: 0.25rem;
+        margin: 0 0.75rem;
+      }
+    }
+  }
+}

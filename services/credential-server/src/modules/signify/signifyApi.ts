@@ -20,7 +20,7 @@ export class SignifyApi {
   static readonly CREDENTIAL_NOT_FOUND = "Not found credential with ID: ";
   static readonly CREDENTIAL_REVOKED_ALREADY =
     "The credential has been revoked already";
-  private signifyClient!: SignifyClient;
+  private client!: SignifyClient;
   private opTimeout: number;
   private opRetryInterval: number;
 
@@ -34,40 +34,49 @@ export class SignifyApi {
    */
   async start(bran: string): Promise<void> {
     await signifyReady();
-    this.signifyClient = new SignifyClient(
+    this.client = new SignifyClient(
       config.keria.url,
       bran,
       Tier.low,
       config.keria.bootUrl
     );
     try {
-      await this.signifyClient.connect();
+      await this.client.connect();
     } catch (err) {
-      await this.signifyClient.boot();
-      await this.signifyClient.connect();
+      await this.client.boot();
+      await this.client.connect();
     }
   }
 
-  async createIdentifier(signifyName: string): Promise<any> {
-    const op = await this.signifyClient.identifiers().create(signifyName);
-    await op.op();
-    const aid1 = await this.getIdentifierByName(signifyName);
-    await this.signifyClient
+  async createIdentifier(name: string): Promise<void> {
+    const result = await this.client.identifiers().create(name);
+    await waitAndGetDoneOp(this.client, await result.op());
+    await this.client
       .identifiers()
-      .addEndRole(
-        signifyName,
-        SignifyApi.DEFAULT_ROLE,
-        this.signifyClient.agent!.pre
-      );
-    return aid1;
+      .addEndRole(name, SignifyApi.DEFAULT_ROLE, this.client.agent!.pre);
+  }
+
+  async addIndexerRole(name: string): Promise<void> {
+    const prefix = (await this.client.identifiers().get(name)).prefix;
+
+    const endResult = await this.client
+      .identifiers()
+      .addEndRole(name, "indexer", prefix);
+    await waitAndGetDoneOp(this.client, await endResult.op());
+
+    const locRes = await this.client.identifiers().addLocScheme(name, {
+      url: config.oobiEndpoint,
+      scheme: new URL(config.oobiEndpoint).protocol.replace(":", ""),
+    });
+    await waitAndGetDoneOp(this.client, await locRes.op());
   }
 
   async getIdentifierByName(name: string): Promise<any> {
-    return this.signifyClient.identifiers().get(name);
+    return this.client.identifiers().get(name);
   }
 
   async getOobi(signifyName: string): Promise<any> {
-    const result = await this.signifyClient
+    const result = await this.client
       .oobis()
       .get(signifyName, SignifyApi.DEFAULT_ROLE);
     return result.oobis[0];
@@ -76,8 +85,8 @@ export class SignifyApi {
   async resolveOobi(url: string): Promise<any> {
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     const operation = (await waitAndGetDoneOp(
-      this.signifyClient,
-      await this.signifyClient.oobis().resolve(url, alias),
+      this.client,
+      await this.client.oobis().resolve(url, alias),
       this.opTimeout,
       this.opRetryInterval
     )) as Operation & { response: State };
@@ -86,22 +95,22 @@ export class SignifyApi {
     }
     if (operation.response && operation.response.i) {
       const connectionId = operation.response.i;
-      await this.signifyClient.contacts().update(connectionId, { alias });
+      await this.client.contacts().update(connectionId, { alias });
     }
     return operation;
   }
 
   async createRegistry(name: string) {
-    const result = await this.signifyClient
+    const result = await this.client
       .registries()
       .create({ name, registryName: "vLEI" });
     await result.op();
-    const registries = await this.signifyClient.registries().list(name);
+    const registries = await this.client.registries().list(name);
     return registries[0].regk;
   }
 
   async getRegistry(name: string) {
-    const registries = await this.signifyClient.registries().list(name);
+    const registries = await this.client.registries().list(name);
     return registries[0].regk;
   }
 
@@ -124,7 +133,7 @@ export class SignifyApi {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
 
-    const result = await this.signifyClient.credentials().issue(issuerName, {
+    const result = await this.client.credentials().issue(issuerName, {
       ri: registryId,
       s: schemaId,
       a: {
@@ -133,14 +142,14 @@ export class SignifyApi {
       },
     });
     await waitAndGetDoneOp(
-      this.signifyClient,
+      this.client,
       result.op,
       this.opTimeout,
       this.opRetryInterval
     );
 
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
-    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+    const [grant, gsigs, gend] = await this.client.ipex().grant({
       senderName: issuerName,
       recipient,
       acdc: result.acdc,
@@ -148,7 +157,7 @@ export class SignifyApi {
       anc: result.anc,
       datetime,
     });
-    await this.signifyClient
+    await this.client
       .ipex()
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
   }
@@ -165,7 +174,7 @@ export class SignifyApi {
     const vcdata = {
       LEI: "5493001KJTIIGC8Y1R17",
     };
-    const result = await this.signifyClient.credentials().issue(issuerName, {
+    const result = await this.client.credentials().issue(issuerName, {
       ri: registryId,
       s: Agent.QVI_SCHEMA_SAID,
       a: {
@@ -174,16 +183,16 @@ export class SignifyApi {
       },
     });
     await waitAndGetDoneOp(
-      this.signifyClient,
+      this.client,
       result.op,
       this.opTimeout,
       this.opRetryInterval
     );
-    const issuerCredential = await this.signifyClient
+    const issuerCredential = await this.client
       .credentials()
       .get(result.acdc.ked.d);
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
-    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+    const [grant, gsigs, gend] = await this.client.ipex().grant({
       senderName: issuerName,
       recipient: recipientPrefix,
       acdc: new Serder(issuerCredential.sad),
@@ -192,11 +201,11 @@ export class SignifyApi {
       ancAttachment: issuerCredential.ancAttachment,
       datetime,
     });
-    const smg = await this.signifyClient
+    const smg = await this.client
       .ipex()
       .submitGrant(issuerName, grant, gsigs, gend, [recipientPrefix]);
     await waitAndGetDoneOp(
-      this.signifyClient,
+      this.client,
       smg,
       this.opTimeout,
       this.opRetryInterval
@@ -209,18 +218,18 @@ export class SignifyApi {
     d: string,
     issuerAidPrefix: string
   ) {
-    const [admit, sigs, aend] = await this.signifyClient.ipex().admit({
+    const [admit, sigs, aend] = await this.client.ipex().admit({
       senderName: holderAidName,
       message: "",
       grantSaid: d,
       recipient: issuerAidPrefix,
       datetime: new Date().toISOString().replace("Z", "000+00:00"),
     });
-    const op = await this.signifyClient
+    const op = await this.client
       .ipex()
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAidPrefix]);
     await waitAndGetDoneOp(
-      this.signifyClient,
+      this.client,
       op,
       this.opTimeout,
       this.opRetryInterval
@@ -240,11 +249,9 @@ export class SignifyApi {
     await this.resolveOobi(
       `${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`
     );
-    const qviCredential = await this.signifyClient
-      .credentials()
-      .get(qviCredentialId);
+    const qviCredential = await this.client.credentials().get(qviCredentialId);
 
-    const result = await this.signifyClient.credentials().issue(holderAidName, {
+    const result = await this.client.credentials().issue(holderAidName, {
       ri: registryId,
       s: Agent.LE_SCHEMA_SAID,
       a: {
@@ -269,18 +276,16 @@ export class SignifyApi {
       })[1],
     });
 
-    const leCredential = await this.signifyClient
-      .credentials()
-      .get(result.acdc.ked.d);
+    const leCredential = await this.client.credentials().get(result.acdc.ked.d);
 
     await waitAndGetDoneOp(
-      this.signifyClient,
+      this.client,
       result.op,
       this.opTimeout,
       this.opRetryInterval
     );
 
-    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+    const [grant, gsigs, gend] = await this.client.ipex().grant({
       senderName: holderAidName,
       acdc: new Serder(leCredential.sad),
       anc: new Serder(leCredential.anc),
@@ -289,7 +294,7 @@ export class SignifyApi {
       recipient: legalEntityAidPrefix,
       datetime: new Date().toISOString().replace("Z", "000+00:00"),
     });
-    await this.signifyClient
+    await this.client
       .ipex()
       .submitGrant(holderAidName, grant, gsigs, gend, [legalEntityAidPrefix]);
     return result.acdc.ked.d;
@@ -301,30 +306,28 @@ export class SignifyApi {
     recipient: string,
     attributes: { [key: string]: string }
   ) {
-    const [apply, sigs] = await this.signifyClient.ipex().apply({
+    const [apply, sigs] = await this.client.ipex().apply({
       senderName,
       recipient,
       schemaSaid,
       attributes,
     });
-    await this.signifyClient
-      .ipex()
-      .submitApply(senderName, apply, sigs, [recipient]);
+    await this.client.ipex().submitApply(senderName, apply, sigs, [recipient]);
   }
 
   async contacts(): Promise<any> {
-    return this.signifyClient.contacts().list();
+    return this.client.contacts().list();
   }
 
   async deleteContact(id: string): Promise<any> {
-    return this.signifyClient.contacts().delete(id);
+    return this.client.contacts().delete(id);
   }
 
   async contactCredentials(
     issuerPrefix: string,
     connectionId: string
   ): Promise<any> {
-    return this.signifyClient.credentials().list({
+    return this.client.credentials().list({
       filter: {
         "-i": issuerPrefix,
         "-a-i": connectionId,
@@ -337,26 +340,24 @@ export class SignifyApi {
     offerSaid: string,
     recipient: string
   ) {
-    const [apply, sigs] = await this.signifyClient.ipex().agree({
+    const [apply, sigs] = await this.client.ipex().agree({
       senderName,
       recipient,
       offerSaid,
     });
-    await this.signifyClient
-      .ipex()
-      .submitAgree(senderName, apply, sigs, [recipient]);
+    await this.client.ipex().submitAgree(senderName, apply, sigs, [recipient]);
   }
 
   async getNotifications() {
-    return this.signifyClient.notifications().list();
+    return this.client.notifications().list();
   }
 
   async deleteNotification(said: string) {
-    return this.signifyClient.notifications().delete(said);
+    return this.client.notifications().delete(said);
   }
 
   async getExchangeMsg(said: string) {
-    return this.signifyClient.exchanges().get(said);
+    return this.client.exchanges().get(said);
   }
 
   async revokeCredential(
@@ -365,7 +366,7 @@ export class SignifyApi {
     credentialId: string
   ) {
     // TODO: If the credential does not exist, this will throw 500 at the moment. Will change this later
-    let credential = await this.signifyClient
+    let credential = await this.client
       .credentials()
       .get(credentialId)
       .catch(() => undefined);
@@ -376,10 +377,10 @@ export class SignifyApi {
       throw new Error(SignifyApi.CREDENTIAL_REVOKED_ALREADY);
     }
 
-    await this.signifyClient.credentials().revoke(issuerName, credentialId);
+    await this.client.credentials().revoke(issuerName, credentialId);
 
     while (credential.status.s !== "1") {
-      credential = await this.signifyClient
+      credential = await this.client
         .credentials()
         .get(credentialId)
         .catch(() => undefined);
@@ -387,7 +388,7 @@ export class SignifyApi {
     }
 
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
-    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+    const [grant, gsigs, gend] = await this.client.ipex().grant({
       senderName: issuerName,
       recipient: holder,
       acdc: new Serder(credential.sad),
@@ -395,11 +396,11 @@ export class SignifyApi {
       iss: new Serder(credential.iss),
       datetime,
     });
-    const submitGrantOp = await this.signifyClient
+    const submitGrantOp = await this.client
       .ipex()
       .submitGrant(issuerName, grant, gsigs, gend, [holder]);
     await waitAndGetDoneOp(
-      this.signifyClient,
+      this.client,
       submitGrantOp,
       this.opTimeout,
       this.opRetryInterval
@@ -415,7 +416,7 @@ export class SignifyApi {
   ): Promise<Operation> {
     const startTime = new Date().getTime();
     while (!op.done && new Date().getTime() < startTime + timeout) {
-      op = await this.signifyClient.operations().get(op.name);
+      op = await this.client.operations().get(op.name);
       await new Promise((resolve) => setTimeout(resolve, interval));
     }
     return op;

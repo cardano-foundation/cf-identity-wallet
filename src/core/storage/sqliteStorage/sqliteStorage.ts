@@ -5,18 +5,16 @@ import {
   BaseRecord,
   StorageService,
   BaseRecordConstructor,
+  StorageMessage,
 } from "../storage.types";
 import { TagDataType, convertDbQuery, isNil, resolveTagsFromDb } from "./utils";
 import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
 class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
-  private static readonly SESION_IS_NOT_INITIALIZED =
+  static readonly SESION_IS_NOT_INITIALIZED =
     "Session is not initialized";
-  static readonly RECORD_ALREADY_EXISTS_ERROR_MSG =
-    "Record already exists with id";
-  static readonly RECORD_DOES_NOT_EXIST_ERROR_MSG =
-    "Record does not exist with id";
+  
   static readonly INSERT_ITEM_TAG_SQL =
     "INSERT INTO items_tags (item_id, name, value, type) VALUES (?,?,?,?)";
   static readonly DELETE_ITEM_TAGS_SQL =
@@ -51,7 +49,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
 
     if (await this.getItem(record.id)) {
       throw new Error(
-        `${SqliteStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
+        `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
       );
     }
 
@@ -69,7 +67,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
 
     if (!(await this.getItem(record.id))) {
       throw new Error(
-        `${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
+        `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
       );
     }
 
@@ -90,7 +88,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
 
     if (!(await this.getItem(record.id))) {
       throw new Error(
-        `${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
+        `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
       );
     }
 
@@ -101,7 +99,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     this.checkSession(this.session);
 
     if (!(await this.getItem(id))) {
-      throw new Error(`${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
+      throw new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
     }
 
     await this.deleteItem(id);
@@ -256,6 +254,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     const conditions: string[] = [];
     let values: string[] = [];
     const dbQuery = convertDbQuery(query);
+
     for (const [queryKey, queryVal] of Object.entries(dbQuery)) {
       if (queryKey === "$or" || queryKey === "$and") {
         const orConditions: string[] = [];
@@ -264,11 +263,14 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
           orConditions.push(orQuery.condition);
           values = values.concat(orQuery.values);
         }
-        conditions.push(
-          orConditions
-            .map((condition) => "(" + condition + ")")
-            .join(queryKey === "$or" ? " OR " : " AND ")
-        );
+
+        if (orConditions.length > 0) {
+          conditions.push(
+            orConditions
+              .map((condition) => "(" + condition + ")")
+              .join(queryKey === "$or" ? " OR " : " AND ")
+          );
+        }
       } else if (queryKey === "$not") {
         const notQuery = this.getQueryConditionSql(
           queryVal as Query<BasicRecord>

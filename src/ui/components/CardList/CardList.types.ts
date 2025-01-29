@@ -4,6 +4,7 @@ interface CardItem<T> {
   title: string;
   subtitle?: string;
   image?: string;
+  startSlot?: ReactNode;
   id: string | number;
   data: T;
 }

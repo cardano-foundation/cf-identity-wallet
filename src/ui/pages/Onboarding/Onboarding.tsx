@@ -10,17 +10,17 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
+import introImg0 from "../../assets/images/intro-0.png";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
 import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
-import introImg0 from "../../assets/lottie/wallet.json";
 import { PageFooter } from "../../components/PageFooter";
-import { Slides } from "../../components/Slides";
-import { SlideItem } from "../../components/Slides/Slides.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import "./Onboarding.scss";
+import { SlideItem } from "./components/Slides/Slides.types";
+import { Slides } from "./components/Slides";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -38,29 +38,28 @@ const Onboarding = () => {
 
   const items: SlideItem[] = [
     {
-      title: i18n.t("onboarding.slides.0.title"),
-      description: i18n.t("onboarding.slides.0.description"),
-      image: "",
-      lottie: introImg0,
+      title: `${i18n.t("onboarding.slides.0.title")}`,
+      description: `${i18n.t("onboarding.slides.0.description")}`,
+      image: introImg0,
     },
     {
-      title: i18n.t("onboarding.slides.1.title"),
-      description: i18n.t("onboarding.slides.1.description"),
+      title: `${i18n.t("onboarding.slides.1.title")}`,
+      description: `${i18n.t("onboarding.slides.1.description")}`,
       image: introImg1,
     },
     {
-      title: i18n.t("onboarding.slides.2.title"),
-      description: i18n.t("onboarding.slides.2.description"),
+      title: `${i18n.t("onboarding.slides.2.title")}`,
+      description: `${i18n.t("onboarding.slides.2.description")}`,
       image: introImg2,
     },
     {
-      title: i18n.t("onboarding.slides.3.title"),
-      description: i18n.t("onboarding.slides.3.description"),
+      title: `${i18n.t("onboarding.slides.3.title")}`,
+      description: `${i18n.t("onboarding.slides.3.description")}`,
       image: introImg3,
     },
     {
-      title: i18n.t("onboarding.slides.4.title"),
-      description: i18n.t("onboarding.slides.4.description"),
+      title: `${i18n.t("onboarding.slides.4.title")}`,
+      description: `${i18n.t("onboarding.slides.4.description")}`,
       image: introImg4,
     },
   ];
