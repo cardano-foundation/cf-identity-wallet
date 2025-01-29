@@ -2,6 +2,7 @@ import { SignifyClient } from "signify-ts";
 import { CoreEventEmitter } from "./event";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./services/connectionService.types";
+import { CreationStatus } from "./services/identifier.types";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -153,8 +154,8 @@ interface AgentServicesProps {
 
 interface CreateGroupIdentifierResult {
   identifier: string;
+  creationStatus: CreationStatus;
   multisigManageAid?: string;
-  isPending?: boolean;
 }
 
 interface IdentifierResult {

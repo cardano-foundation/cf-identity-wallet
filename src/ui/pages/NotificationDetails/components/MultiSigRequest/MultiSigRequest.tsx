@@ -105,7 +105,7 @@ const MultiSigRequest = ({
         );
       }
 
-      const { identifier, multisigManageAid, isPending } =
+      const { identifier, multisigManageAid, creationStatus } =
         (await Agent.agent.multiSigs.joinMultisig(
           notificationDetails.id,
           notificationDetails.a.r as NotificationRoute,
@@ -122,7 +122,7 @@ const MultiSigRequest = ({
           displayName: multisigIcpDetails.ourIdentifier.displayName,
           createdAtUTC: `${notificationDetails?.createdAt}`,
           theme: multisigIcpDetails.ourIdentifier.theme,
-          isPending: !!isPending,
+          creationStatus,
           multisigManageAid,
         };
         const filteredIdentifiersData = Object.values(identifiersData).filter(

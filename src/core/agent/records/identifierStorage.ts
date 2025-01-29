@@ -58,7 +58,7 @@ class IdentifierStorage {
         IdentifierMetadataRecord,
         | "displayName"
         | "theme"
-        | "isPending"
+        | "creationStatus"
         | "isDeleted"
         | "groupMetadata"
         | "pendingDeletion"
@@ -70,8 +70,8 @@ class IdentifierStorage {
       identifierMetadataRecord.displayName = metadata.displayName;
     if (metadata.theme !== undefined)
       identifierMetadataRecord.theme = metadata.theme;
-    if (metadata.isPending !== undefined)
-      identifierMetadataRecord.isPending = metadata.isPending;
+    if (metadata.creationStatus !== undefined)
+      identifierMetadataRecord.creationStatus = metadata.creationStatus;
     if (metadata.isDeleted !== undefined)
       identifierMetadataRecord.isDeleted = metadata.isDeleted;
     if (metadata.groupMetadata !== undefined)

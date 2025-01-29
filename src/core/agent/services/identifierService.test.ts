@@ -9,6 +9,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import * as utils from "./utils";
 import { BasicRecord } from "../records";
 import { StorageMessage } from "../../storage/storage.types";
+import { CreationStatus } from "./identifier.types";
 
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
@@ -181,6 +182,7 @@ const keriMetadataRecordProps = {
   displayName: "Identifier 2",
   createdAt: now,
   theme: 0,
+  creationStatus: CreationStatus.COMPLETE,
   groupMetadata,
 };
 
@@ -237,6 +239,8 @@ const identifierMembersState = {
   ],
 };
 
+eventEmitter.emit = jest.fn();
+
 const WITNESSES = [
   "http://witnesess:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller?role=witness",
   "http://witnesess:5643/oobi/BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM/controller?role=witness",
@@ -280,7 +284,7 @@ describe("Single sig service of agent", () => {
         displayName: "Identifier 2",
         createdAtUTC: nowISO,
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
         groupMetadata,
       },
     ]);
@@ -317,11 +321,22 @@ describe("Single sig service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
     });
     await expect(
       identifierService.getIdentifier(keriMetadataRecord.id)
-    ).rejects.toThrow(new Error(IdentifierService.IDENTIFIER_IS_PENDING));
+    ).rejects.toThrow(new Error(IdentifierService.IDENTIFIER_NOT_COMPLETE));
+  });
+
+  test("cannot get identifier if it failed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...keriMetadataRecord,
+      creationStatus: CreationStatus.FAILED,
+    });
+    await expect(
+      identifierService.getIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrow(new Error(IdentifierService.IDENTIFIER_NOT_COMPLETE));
   });
 
   test("can get an identifier in detailed view", async () => {
@@ -341,7 +356,7 @@ describe("Single sig service of agent", () => {
       groupMetadata: keriMetadataRecord.groupMetadata,
       multisigManageAid: keriMetadataRecord.multisigManageAid,
       ...identifierStateKeria.state,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       members: undefined,
     });
   });
@@ -364,7 +379,7 @@ describe("Single sig service of agent", () => {
       groupMetadata: keriMetadataRecord.groupMetadata,
       multisigManageAid: keriMetadataRecord.multisigManageAid,
       ...identifierStateKeria.state,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       members: [
         identifierMembersState.signing[0].aid,
         identifierMembersState.signing[1].aid,
@@ -463,7 +478,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
       id: "id",
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -473,7 +488,7 @@ describe("Single sig service of agent", () => {
           id: "id",
           displayName,
           createdAtUTC: "2024-12-30T16:49:05.800Z",
-          isPending: true,
+          creationStatus: CreationStatus.PENDING,
           theme: 0,
         },
       },
@@ -538,7 +553,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
       id: "id",
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -548,7 +563,7 @@ describe("Single sig service of agent", () => {
           id: "id",
           displayName,
           createdAtUTC: "2024-12-30T16:49:05.800Z",
-          isPending: true,
+          creationStatus: CreationStatus.PENDING,
           theme: 0,
         },
       },
@@ -608,7 +623,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
       id: "id",
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -618,7 +633,7 @@ describe("Single sig service of agent", () => {
           id: "id",
           displayName,
           createdAtUTC: "2024-12-30T16:49:05.800Z",
-          isPending: true,
+          creationStatus: CreationStatus.PENDING,
           theme: 0,
         },
       },
@@ -724,7 +739,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
       id: "id",
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
     expect(eventEmitter.emit).toBeCalledTimes(1);  // Only once this time, usually 2
@@ -786,7 +801,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(expect.objectContaining({
       displayName,
       id: "id",
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
     expect(eventEmitter.emit).not.toBeCalled();
@@ -833,7 +848,7 @@ describe("Single sig service of agent", () => {
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
     });
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
@@ -860,13 +875,13 @@ describe("Single sig service of agent", () => {
       createdAt: now,
       theme: 0,
       groupMetadata,
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
       multisigManageAid: "manageAid",
     };
     identifierStorage.getIdentifierMetadata
       .mockReturnValueOnce({
         ...keriMetadataRecord,
-        isPending: true,
+        creationStatus: CreationStatus.PENDING,
         multisigManageAid: "manageAid",
         groupMetadata: undefined,
       })
@@ -963,10 +978,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("Should correctly sync identifiers, handling both group and non-group cases", async () => {
-    // Mock the online status of the agent
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-
-    // Mock the list of identifiers returned by signifyClient
     listIdentifiersMock.mockReturnValueOnce({
       aids: [
         {
@@ -989,30 +1001,31 @@ describe("Single sig service of agent", () => {
         },
       ],
     }).mockReturnValue({ aids: [] });
-
-    // Mock the identifier storage
     identifierStorage.getKeriIdentifiersMetadata = jest
       .fn()
       .mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
     identifierStorage.updateIdentifierMetadata = jest.fn();
-
-    // Mock the signifyClient operations call
-    const mockOperation = {
-      done: true,
-      name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-    };
     jest
       .spyOn(signifyClient.operations(), "get")
-      .mockResolvedValue(mockOperation);
+      .mockResolvedValueOnce({
+        done: true,
+        name: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "witness.EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      });
     getIdentifiersMock.mockResolvedValue({
       icp_dt: "2024-12-10T07:28:18.217384+00:00",
     });
 
-    // Call the function to test
     await identifierService.syncKeriaIdentifiers();
 
-    // sync data of non-group record
     expect(
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
@@ -1024,21 +1037,18 @@ describe("Single sig service of agent", () => {
         groupCreated: false,
         groupInitiator: true,
       },
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
-
     expect(
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
       displayName: "test2",
       theme: 33,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
-
-    // sync data of group record
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       {
@@ -1049,7 +1059,6 @@ describe("Single sig service of agent", () => {
         },
       }
     );
-
     expect(
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
@@ -1057,9 +1066,263 @@ describe("Single sig service of agent", () => {
       displayName: "1-group1",
       theme: 15,
       multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
+    expect(operationPendingStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+  });
+
+  test("Should add operation record for pending group and non-group identifiers", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    listIdentifiersMock.mockReturnValueOnce({
+      aids: [
+        {
+          name: "0:1-group1:test1",
+          prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+        },
+        {
+          name: "15:test1",
+          prefix: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+          group: {
+            mhab: {
+              name: "0:1-group1:test1",
+              prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+            },
+          },
+        },
+        {
+          name: "33:test2",
+          prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+        },
+      ],
+    }).mockReturnValue({ aids: [] });
+    identifierStorage.getKeriIdentifiersMetadata = jest
+      .fn()
+      .mockReturnValue([]);
+    identifierStorage.createIdentifierMetadataRecord = jest.fn();
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    jest
+      .spyOn(signifyClient.operations(), "get")
+      .mockResolvedValueOnce({
+        done: false,
+        name: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      })
+      .mockResolvedValueOnce({
+        done: false,
+        name: "witness.EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      })
+      .mockResolvedValueOnce({
+        done: false,
+        name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      });
+    getIdentifiersMock.mockResolvedValue({
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    });
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      recordType: OperationPendingRecordType.Witness,
+    }).mockResolvedValueOnce({
+      id: "witness.EL-EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      recordType: OperationPendingRecordType.Witness,
+    }).mockResolvedValueOnce({
+      id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      recordType: OperationPendingRecordType.Group,
+    });
+
+    await identifierService.syncKeriaIdentifiers();
+
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      displayName: "1-group1",
+      theme: 0,
+      groupMetadata: {
+        groupId: "1-group1",
+        groupCreated: false,
+        groupInitiator: true,
+      },
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+    });
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      displayName: "test2",
+      theme: 33,
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+    });
+    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
+      "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      {
+        groupMetadata: {
+          groupId: "1-group1",
+          groupCreated: true,
+          groupInitiator: true,
+        },
+      }
+    );
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      displayName: "1-group1",
+      theme: 15,
+      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+    });
+    expect(operationPendingStorage.save).toBeCalledWith({
+      recordType: OperationPendingRecordType.Witness,
+      id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl"
+    });
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+          recordType: OperationPendingRecordType.Witness,
+        }
+      }
+    });
+    expect(operationPendingStorage.save).toBeCalledWith({
+      recordType: OperationPendingRecordType.Witness,
+      id: "witness.EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs"
+    });
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "witness.EL-EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+          recordType: OperationPendingRecordType.Witness,
+        }
+      }
+    });
+    expect(operationPendingStorage.save).toBeCalledWith({
+      recordType: OperationPendingRecordType.Group,
+      id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM"
+    });
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+          recordType: OperationPendingRecordType.Group,
+        }
+      }
+    });
+  });
+
+  test("Should add operation record for failed group and non-group identifiers", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    listIdentifiersMock.mockReturnValueOnce({
+      aids: [
+        {
+          name: "0:1-group1:test1",
+          prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+        },
+        {
+          name: "15:test1",
+          prefix: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+          group: {
+            mhab: {
+              name: "0:1-group1:test1",
+              prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+            },
+          },
+        },
+        {
+          name: "33:test2",
+          prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+        },
+      ],
+    }).mockReturnValue({ aids: [] });
+    identifierStorage.getKeriIdentifiersMetadata = jest
+      .fn()
+      .mockReturnValue([]);
+    identifierStorage.createIdentifierMetadataRecord = jest.fn();
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    jest
+      .spyOn(signifyClient.operations(), "get")
+      .mockResolvedValueOnce({
+        done: true,
+        name: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+        error: { code: 400 }
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "witness.EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+        error: { code: 400 }
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+        error: { code: 400 }
+      });
+    getIdentifiersMock.mockResolvedValue({
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    });
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      recordType: OperationPendingRecordType.Witness,
+    }).mockResolvedValueOnce({
+      id: "witness.EL-EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      recordType: OperationPendingRecordType.Witness,
+    }).mockResolvedValueOnce({
+      id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      recordType: OperationPendingRecordType.Group,
+    });
+
+    await identifierService.syncKeriaIdentifiers();
+
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      displayName: "1-group1",
+      theme: 0,
+      groupMetadata: {
+        groupId: "1-group1",
+        groupCreated: false,
+        groupInitiator: true,
+      },
+      creationStatus: CreationStatus.FAILED,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+    });
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      displayName: "test2",
+      theme: 33,
+      creationStatus: CreationStatus.FAILED,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+    });
+    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
+      "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      {
+        groupMetadata: {
+          groupId: "1-group1",
+          groupCreated: true,
+          groupInitiator: true,
+        },
+      }
+    );
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      displayName: "1-group1",
+      theme: 15,
+      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      creationStatus: CreationStatus.FAILED,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+    });
+    expect(operationPendingStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
   });
 
   test("should call signify.rotateIdentifier with correct params", async () => {
@@ -1201,7 +1464,7 @@ describe("Single sig service of agent", () => {
     );
     identifierService.createIdentifier = jest.fn().mockResolvedValueOnce({
       identifier: "newIdentifier",
-      isPending: true,
+      creationStatus: CreationStatus.PENDING,
     });
 
     await identifierService.resolvePendingIdentifiers();

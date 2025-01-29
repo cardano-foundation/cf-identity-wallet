@@ -26,6 +26,7 @@ import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierDetailModule } from "./IdentifierDetailModule";
+import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -604,7 +605,7 @@ describe("Group Identifier details page", () => {
           id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
           createdAtUTC: "2024-10-14T13:11:52.963Z",
           theme: 20,
-          isPending: false,
+          creationStatus: CreationStatus.COMPLETE,
           multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
         },
       },
@@ -677,7 +678,7 @@ describe("Group Identifier details page", () => {
             id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
             createdAtUTC: "2024-10-14T13:11:52.963Z",
             theme: 20,
-            isPending: false,
+            creationStatus: CreationStatus.COMPLETE,
             multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
           },
         },

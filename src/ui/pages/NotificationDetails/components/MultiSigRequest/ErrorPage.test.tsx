@@ -13,6 +13,7 @@ import { multisignIdentifierFix } from "../../../../__fixtures__/filteredIdentif
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ErrorPage } from "./ErrorPage";
 import { DISCORD_LINK } from "../../../../globals/constants";
+import { CreationStatus } from "../../../../../core/agent/services/identifier.types";
 
 mockIonicReact();
 
@@ -27,7 +28,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
         getIdentifiersCache: jest.fn(),
         createIdentifier: jest.fn(() => ({
           identifier: "mock-id",
-          isPending: true,
+          creationStatus: CreationStatus.COMPLETE
         })),
       },
       connections: {

@@ -15,6 +15,7 @@ import { Agent } from "../../../core/agent/agent";
 import { IdentifierService } from "../../../core/agent/services";
 import {
   CreateIdentifierInputs,
+  CreationStatus,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
@@ -186,7 +187,7 @@ const CreateIdentifier = ({
 
       resetModal({
         id: identifier,
-        isPending: true,
+        creationStatus: CreationStatus.PENDING,
         createdAtUTC: createdAt,
         theme: selectedTheme,
         displayName: identifierData.displayName,

@@ -10,7 +10,7 @@ import {
   setMultiSigGroupCache,
   getMultiSigGroupCache,
   updateOrAddIdentifiersCache,
-  updateIsPending,
+  updateCreationStatus,
   setOpenMultiSigId,
   getOpenMultiSig,
   getScanGroupId,
@@ -19,7 +19,7 @@ import {
   setIdentifiersFilters,
 } from "./identifiersCache";
 import { RootState } from "../../index";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { CreationStatus, IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
@@ -45,7 +45,7 @@ describe("identifiersCacheSlice", () => {
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
       },
     ];
     const newState = identifiersCacheSlice.reducer(
@@ -58,7 +58,7 @@ describe("identifiersCacheSlice", () => {
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
       }
     });
   });
@@ -141,7 +141,7 @@ describe("identifiersCacheSlice", () => {
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
       },
     ];
     const currentState = identifiersCacheSlice.reducer(
@@ -153,7 +153,7 @@ describe("identifiersCacheSlice", () => {
       displayName: "example-name",
       createdAtUTC: "example-date",
       theme: 0,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
     };
     const newState = identifiersCacheSlice.reducer(
       currentState,
@@ -165,26 +165,26 @@ describe("identifiersCacheSlice", () => {
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
       },
       "id-2": {
         id: "id-2",
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
       }
     });
   });
 
-  it("should handle updateIsPending", () => {
+  it("should handle updateCreationStatus", () => {
     const identifiers: IdentifierShortDetails[] = [
       {
         id: "id-1",
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
-        isPending: true,
+        creationStatus: CreationStatus.PENDING,
       },
     ];
     
@@ -198,12 +198,12 @@ describe("identifiersCacheSlice", () => {
       displayName: "example-name",
       createdAtUTC: "example-date",
       theme: 0,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
     };
 
     const newState = identifiersCacheSlice.reducer(
       currentState,
-      updateIsPending({ id: identifier.id, isPending: identifier.isPending })
+      updateCreationStatus({ id: identifier.id, creationStatus: identifier.creationStatus })
     );
 
     expect(newState.identifiers).toEqual({
@@ -212,7 +212,7 @@ describe("identifiersCacheSlice", () => {
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
       }
     });
   });
@@ -246,7 +246,7 @@ describe("get identifier Cache", () => {
       displayName: "example-name-1",
       createdAtUTC: "example-date", 
       theme: 0,
-      isPending: false
+      creationStatus: CreationStatus.PENDING,
     }
   
     const identifiersCache = getIdentifiersCache(state);

@@ -1,7 +1,7 @@
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { IdentifierColor } from "./components/IdentifierColorSelector";
 
-interface IdentifierModel extends Omit<IdentifierShortDetails, "isPending" | "theme" | "createdAtUTC"> {
+interface IdentifierModel extends Omit<IdentifierShortDetails, "creationStatus" | "theme" | "createdAtUTC"> {
   selectedAidType: number;
   selectedTheme: number;
   color: IdentifierColor;

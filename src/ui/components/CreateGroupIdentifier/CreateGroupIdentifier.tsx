@@ -17,6 +17,7 @@ import { GroupMembers } from "./components/GroupMembers";
 import { SetupConnections } from "./components/SetupConnections";
 import { SetupThreshold } from "./components/SetupThreshold";
 import { Summary } from "./components/Summary";
+import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
 const stages = [
   SetupConnections,
@@ -39,7 +40,7 @@ const initialState: IdentifierStageStateProps = {
     displayName: "",
     createdAtUTC: "",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
   },
   color: IdentifierColor.One
 };

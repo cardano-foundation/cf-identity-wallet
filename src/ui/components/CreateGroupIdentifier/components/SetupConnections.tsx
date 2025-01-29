@@ -25,6 +25,7 @@ import { Verification } from "../../Verification";
 import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnectionBodyInit } from "./SetupConnectionBodyInit";
 import { SetupConnectionBodyResume } from "./SetupConnectionBodyResume";
+import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
 const SetupConnections = ({
   state,
@@ -58,7 +59,7 @@ const SetupConnections = ({
     ConnectionShortDetails[]
   >([]);
 
-  const isPending = !!resumeMultiSig?.isPending;
+  const isPending = resumeMultiSig?.creationStatus !== CreationStatus.COMPLETE;
 
   useEffect(() => {
     if (isModalOpen) {

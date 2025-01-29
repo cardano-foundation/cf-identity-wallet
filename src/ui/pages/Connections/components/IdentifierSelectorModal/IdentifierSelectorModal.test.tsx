@@ -7,6 +7,7 @@ import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { IdentifierSelectorModal } from "./IdentifierSelectorModal";
+import { CreationStatus } from "../../../../../core/agent/services/identifier.types";
 
 setupIonicReact();
 mockIonicReact();
@@ -17,7 +18,7 @@ const identifierCache = [
     id: "testid_00",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
     multisigManageAid: "EHNPqg5RyNVWfpwUYDK135xuUMFGK1GXZoDVqGc0DPsy",
   },
   {
@@ -25,7 +26,7 @@ const identifierCache = [
     id: "testid_0",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
     groupMetadata: {
       groupId: "test",
       groupInitiator: true,
@@ -37,7 +38,7 @@ const identifierCache = [
     id: "testid_1",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
-    isPending: false,
+    creationStatus: CreationStatus.COMPLETE,
   },
 ];
 

@@ -12,13 +12,14 @@ import { ToastMsgType } from "../../../globals/types";
 import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
 import { Summary } from "./Summary";
 import { Stage } from "../CreateGroupIdentifier.types";
+import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
 setupIonicReact();
 mockIonicReact();
 
 const createMultiSignMock = jest.fn((...args: any) => ({
   identifier: "mock-id",
-  isPending: true,
+  creationStatus: CreationStatus.PENDING,
 }));
 
 jest.mock("../../../../core/agent/agent", () => ({
@@ -48,7 +49,7 @@ describe("Create group identifier - Summary", () => {
       displayName: "",
       createdAtUTC: "",
       theme: 0,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       groupMetadata: undefined,
     },
     color: IdentifierColor.One,
@@ -147,7 +148,7 @@ describe("Create group identifier - Summary", () => {
         displayName: "",
         createdAtUTC: "",
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
         groupMetadata: undefined,
       },
       color: IdentifierColor.One,

@@ -39,6 +39,7 @@ import {
 import { ConnectionHistoryType } from "./connectionService.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { CreationStatus } from "./identifier.types";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -2114,7 +2115,7 @@ describe("Long running operation tracker", () => {
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       {
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
       }
     );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -2911,7 +2912,7 @@ describe("Long running operation tracker", () => {
 
   test("Should register callback for OperationComplete event", () => {
     const callback = jest.fn();
-    keriaNotificationService.onLongOperationComplete(callback);
+    keriaNotificationService.onLongOperationSuccess(callback);
 
     expect(eventEmitter.on).toHaveBeenCalledWith(
       EventTypes.OperationComplete,
@@ -2997,5 +2998,75 @@ describe("Long running operation tracker", () => {
       id: "exchange.grant-said",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
+  });
+});
+
+describe("Handling of failed long running operations", () => {
+  test("Should handle failed witness operations and exit early", async () => {
+    operationsGetMock.mockResolvedValue({
+      done: true,
+      error: { code: 400 }
+    });
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "witness",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    await keriaNotificationService.processOperation(operationRecord);
+
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      {
+        creationStatus: CreationStatus.FAILED,
+      }
+    );
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationFailed,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledWith("witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA");
+    expect(identifierStorage.updateIdentifierMetadata).not.toBeCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      {
+        creationStatus: CreationStatus.COMPLETE,
+      } 
+    );
+    expect(eventEmitter.emit).not.toBeCalledWith(expect.objectContaining({
+      type: EventTypes.OperationComplete,
+    }));
+  });
+
+  test("Should handle all other failed operation types as a failure", async () => {
+    operationsGetMock.mockResolvedValue({
+      done: true,
+      error: { code: 400 }
+    });
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "group",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    await keriaNotificationService.processOperation(operationRecord);
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationFailed,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledWith("group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA");
+    expect(eventEmitter.emit).not.toBeCalledWith(expect.objectContaining({
+      type: EventTypes.OperationComplete,
+    }));
   });
 });

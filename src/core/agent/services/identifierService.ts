@@ -1,6 +1,7 @@
 import { HabState, Operation, Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
+  CreationStatus,
   IdentifierDetails,
   IdentifierShortDetails,
 } from "./identifier.types";
@@ -43,8 +44,8 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
-  static readonly IDENTIFIER_IS_PENDING =
-    "Cannot fetch identifier details as the identifier is still pending";
+  static readonly IDENTIFIER_NOT_COMPLETE =
+    "Cannot fetch identifier details as the identifier is still pending or failed to complete";
   static readonly INSUFFICIENT_WITNESSES_AVAILABLE =
     "An insufficient number of discoverable witnesses are available on connected KERIA instance";
   static readonly MISCONFIGURED_AGENT_CONFIGURATION =
@@ -97,7 +98,7 @@ class IdentifierService extends AgentService {
         id: metadata.id,
         createdAtUTC: metadata.createdAt.toISOString(),
         theme: metadata.theme,
-        isPending: metadata.isPending ?? false,
+        creationStatus: metadata.creationStatus ?? false,
         groupMetadata: metadata.groupMetadata,
       };
       if (metadata.multisigManageAid) {
@@ -113,8 +114,8 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-    if (metadata.isPending) {
-      throw new Error(IdentifierService.IDENTIFIER_IS_PENDING);
+    if (metadata.creationStatus === CreationStatus.PENDING || metadata.creationStatus === CreationStatus.FAILED) {
+      throw new Error(IdentifierService.IDENTIFIER_NOT_COMPLETE);
     }
 
     const aid = await this.props.signifyClient
@@ -144,7 +145,7 @@ class IdentifierService extends AgentService {
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
       multisigManageAid: metadata.multisigManageAid,
-      isPending: metadata.isPending ?? false,
+      creationStatus: metadata.creationStatus,
       groupMetadata: metadata.groupMetadata,
       s: aid.state.s,
       dt: aid.state.dt,
@@ -280,19 +281,19 @@ class IdentifierService extends AgentService {
       .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
 
-    const isPending = true;
+    const creationStatus = CreationStatus.PENDING;
     try {
       await this.identifierStorage
         .createIdentifierMetadataRecord({
           id: identifier,
           ...metadata,
-          isPending,
+          creationStatus,
           createdAt: new Date(identifierDetail.icp_dt),
         });
       
       this.props.eventEmitter.emit<IdentifierAddedEvent>({
         type: EventTypes.IdentifierAdded,
-        payload: { identifier: { id: identifier, ...metadata, isPending, createdAtUTC: new Date(identifierDetail.icp_dt).toISOString() } },
+        payload: { identifier: { id: identifier, ...metadata, creationStatus, createdAtUTC: new Date(identifierDetail.icp_dt).toISOString() } },
       });
     } catch (error) {
       if (!(error instanceof Error && error.message.startsWith(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG))) {
@@ -499,8 +500,8 @@ class IdentifierService extends AgentService {
         .operations()
         .get(`witness.${identifier.prefix}`);
       
-      const isPending = !op.done;
-      if (isPending) {
+      const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
+      if (creationStatus === CreationStatus.PENDING) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
@@ -531,7 +532,7 @@ class IdentifierService extends AgentService {
             groupCreated: false,
             groupInitiator,
           },
-          isPending,
+          creationStatus,
           createdAt: new Date(identifierDetail.icp_dt),
         });
         continue;
@@ -541,7 +542,7 @@ class IdentifierService extends AgentService {
         id: identifier.prefix,
         displayName: identifier.name.split(":")[1],
         theme,
-        isPending,
+        creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
       });
     }
@@ -564,8 +565,8 @@ class IdentifierService extends AgentService {
         .operations()
         .get(`group.${identifier.prefix}`);
       
-      const isPending = !op.done;
-      if (isPending) {
+      const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
+      if (creationStatus === CreationStatus.PENDING) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Group,
@@ -589,7 +590,7 @@ class IdentifierService extends AgentService {
         displayName: groupId,
         theme,
         multisigManageAid,
-        isPending,
+        creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
       });
     }

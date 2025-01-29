@@ -17,6 +17,7 @@ import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnections } from "./SetupConnections";
 import { passcodeFiller } from "../../../utils/passcodeFiller";
+import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
 setupIonicReact();
 mockIonicReact();
@@ -112,7 +113,7 @@ describe("Create group identifier - Setup Connection", () => {
       displayName: "test",
       createdAtUTC: new Date().toISOString(),
       theme: 0,
-      isPending: false,
+      creationStatus: CreationStatus.COMPLETE,
       groupMetadata: {
         groupId: "a2c1ac9e-fbaf-4cfd-83fb-7008d9661898",
         groupInitiator: true,
@@ -200,7 +201,7 @@ describe("Create group identifier - Setup Connection", () => {
         displayName: "test",
         createdAtUTC: new Date().toISOString(),
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
         groupMetadata: {
           groupId: "a2c1ac9e-fbaf-4cfd-83fb-7008d9661898",
           groupInitiator: true,
@@ -387,7 +388,7 @@ describe("Create group identifier - Setup Connection", () => {
         displayName: "test",
         createdAtUTC: new Date().toISOString(),
         theme: 0,
-        isPending: false,
+        creationStatus: CreationStatus.COMPLETE,
         groupMetadata: {
           groupId: "a2c1ac9e-fbaf-4cfd-83fb-7008d9661898",
           groupInitiator: true,

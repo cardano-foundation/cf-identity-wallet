@@ -25,7 +25,7 @@ import {
 import { store } from "../../../store";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
-import { updateIsPending } from "../../../store/reducers/identifiersCache";
+import { updateCreationStatus } from "../../../store/reducers/identifiersCache";
 import {
   setQueueIncomingRequest,
   setToastMsg,
@@ -46,7 +46,8 @@ import {
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
 } from "./AppWrapper";
-import { signifyOperationStateChangeHandler } from "./coreEventListeners";
+import { operationCompleteHandler, operationFailureHandler } from "./coreEventListeners";
+import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -104,7 +105,8 @@ jest.mock("../../../core/agent/agent", () => ({
         pollLongOperations: jest.fn(),
         getNotifications: jest.fn(),
         onNewNotification: jest.fn(),
-        onLongOperationComplete: jest.fn(),
+        onLongOperationSuccess: jest.fn(),
+        onLongOperationFailure: jest.fn(),
         onRemoveNotification: jest.fn(),
         stopNotification: jest.fn(),
       },
@@ -352,29 +354,29 @@ describe("AppWrapper handler", () => {
   });
 });
 
-describe("Signify operation state changed handler", () => {
+describe("KERIA operation state changed handler", () => {
   test("handles completed witness operation", async () => {
     const id = "id";
-    await signifyOperationStateChangeHandler(
+    await operationCompleteHandler(
       { opType: OperationPendingRecordType.Witness, oid: id },
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      updateIsPending({ id: id, isPending: false })
+      updateCreationStatus({ id: id, creationStatus: CreationStatus.COMPLETE })
     );
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
     );
   });
 
-  test("handles completed group operation", async () => {
+  test("handles failed witness operation", async () => {
     const id = "id";
-    await signifyOperationStateChangeHandler(
-      { opType: OperationPendingRecordType.Group, oid: id },
+    await operationFailureHandler(
+      { opType: OperationPendingRecordType.Witness, oid: id },
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      updateIsPending({ id: id, isPending: false })
+      updateCreationStatus({ id: id, creationStatus: CreationStatus.FAILED })
     );
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)

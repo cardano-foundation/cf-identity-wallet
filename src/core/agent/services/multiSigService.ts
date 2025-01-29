@@ -24,7 +24,7 @@ import {
   OperationPendingStorage,
 } from "../records";
 import { AgentService } from "./agentService";
-import { MultiSigIcpRequestDetails } from "./identifier.types";
+import { CreationStatus, MultiSigIcpRequestDetails } from "./identifier.types";
 import {
   MultiSigRoute,
   CreateMultisigExnPayload,
@@ -133,7 +133,7 @@ class MultiSigService extends AgentService {
     );
     const op = result.op;
     const multisigId = op.name.split(".")[1];
-    const isPending = !op.done;
+    const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
 
     const multisigDetail = await this.props.signifyClient
       .identifiers()
@@ -143,7 +143,7 @@ class MultiSigService extends AgentService {
       id: multisigId,
       displayName: ourMetadata.displayName,
       theme: ourMetadata.theme,
-      isPending,
+      creationStatus,
       multisigManageAid: ourIdentifier,
       createdAt: new Date(multisigDetail.icp_dt)
     });
@@ -152,7 +152,7 @@ class MultiSigService extends AgentService {
       ourMetadata.id,
       ourMetadata
     );
-    if (isPending) {
+    if (creationStatus === CreationStatus.PENDING) {
       const pendingOperation = await this.operationPendingStorage.save({
         id: op.name,
         recordType: OperationPendingRecordType.Group,
@@ -166,7 +166,7 @@ class MultiSigService extends AgentService {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(multisigId);
     }
-    return { identifier: multisigId, isPending };
+    return { identifier: multisigId, creationStatus };
   }
 
   private async createAidMultisig(
@@ -372,7 +372,8 @@ class MultiSigService extends AgentService {
     const res = await this.joinMultisigKeri(exn, aid, name);
     const op = res.op;
     const multisigId = op.name.split(".")[1];
-    const isPending = !op.done;
+    const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
+
     const multisigDetail = await this.props.signifyClient
       .identifiers()
       .get(multisigId) as HabState & { icp_dt: string };
@@ -381,7 +382,7 @@ class MultiSigService extends AgentService {
       id: multisigId,
       displayName: meta.displayName,
       theme: meta.theme,
-      isPending,
+      creationStatus,
       multisigManageAid: identifier.id,
       createdAt: new Date(multisigDetail.icp_dt)
     });
@@ -391,7 +392,7 @@ class MultiSigService extends AgentService {
       identifier
     );
 
-    if (isPending) {
+    if (creationStatus === CreationStatus.PENDING) {
       const pendingOperation = await this.operationPendingStorage.save({
         id: op.name,
         recordType: OperationPendingRecordType.Group,
@@ -414,7 +415,7 @@ class MultiSigService extends AgentService {
     return {
       identifier: multisigId,
       multisigManageAid: identifier.id,
-      isPending,
+      creationStatus,
     };
   }
 

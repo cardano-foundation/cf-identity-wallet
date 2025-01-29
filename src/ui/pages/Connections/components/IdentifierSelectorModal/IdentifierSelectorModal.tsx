@@ -1,6 +1,6 @@
 import { IonCheckbox, IonContent, IonModal } from "@ionic/react";
 import { useState } from "react";
-import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
+import { CreationStatus, IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
@@ -23,7 +23,7 @@ const IdentifierSelectorModal = ({
     useState<IdentifierShortDetails | null>(null);
 
   const displayIdentifiers = Object.values(identifierCache)
-    .filter((item) => !item.isPending)
+    .filter((item) => item.creationStatus === CreationStatus.COMPLETE)
     .filter((item) => !item.groupMetadata?.groupId)
     .map(
       (identifier): CardItem<IdentifierShortDetails> => ({
