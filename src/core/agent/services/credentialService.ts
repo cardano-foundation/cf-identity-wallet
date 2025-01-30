@@ -1,4 +1,3 @@
-import { CredentialFilter } from "signify-ts";
 import { AgentServicesProps } from "../agent.types";
 import { AgentService } from "./agentService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
@@ -47,8 +46,11 @@ class CredentialService extends AgentService {
   onCredentialRemoved() {
     this.props.eventEmitter.on(
       EventTypes.CredentialRemovedEvent,
-      (data: CredentialRemovedEvent) =>
-        this.deleteCredential(data.payload.credentialId!)
+      (data: CredentialRemovedEvent) => {
+        if (data.payload.credentialId) {
+          this.deleteCredential(data.payload.credentialId);
+        }
+      }
     );
   }
 

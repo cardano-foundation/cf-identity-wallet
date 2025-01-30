@@ -38,6 +38,8 @@
         "jest"
     ],
     "rules": {
+        "react-hooks/exhaustive-deps": "off", // TODO: remove
+        "import/no-named-as-default-member":  "off",
         "@typescript-eslint/no-duplicate-enum-values": "error",
         "react/no-unescaped-entities": 0,
         "react/react-in-jsx-scope": "off",

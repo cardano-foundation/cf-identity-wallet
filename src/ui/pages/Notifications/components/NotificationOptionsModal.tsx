@@ -17,7 +17,6 @@ import { OptionItem, OptionModal } from "../../../components/OptionsModal";
 import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
 import { NotificationRoute } from "../../../../core/agent/agent.types";
 import { showError } from "../../../utils/error";
-import { ToastMsgType } from "../../../globals/types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,
