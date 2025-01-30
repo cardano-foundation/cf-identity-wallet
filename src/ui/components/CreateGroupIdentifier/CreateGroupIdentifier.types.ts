@@ -53,6 +53,7 @@ interface IdentifierStage1BodyProps {
   handleDone: () => void;
   handleInitiateMultiSig?: () => void;
   oobi: string;
+  identifierId: string;
   groupMetadata?: {
     groupId: string;
     groupInitiator: boolean;

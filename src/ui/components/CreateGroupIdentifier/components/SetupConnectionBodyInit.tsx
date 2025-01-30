@@ -17,9 +17,9 @@ import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache
 
 const SetupConnectionBodyInit = ({
   componentId,
-  groupMetadata,
   handleDone,
   oobi,
+  identifierId,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
   const dispatch = useAppDispatch();
@@ -27,14 +27,10 @@ const SetupConnectionBodyInit = ({
   const [isPending, setIsPending] = useState(true);
 
   useEffect(() => {
-    const filteredIdentifiers = Object.values(identifiers).filter(
-      (item) => item.groupMetadata?.groupId === groupMetadata?.groupId
-    );
-
-    if (filteredIdentifiers[0]?.creationStatus === CreationStatus.COMPLETE) {
+    identifiers &&
+      identifiers[identifierId]?.creationStatus === CreationStatus.COMPLETE &&
       setIsPending(false);
-    }
-  }, [groupMetadata?.groupId, identifiers]);
+  }, [identifierId, identifiers]);
 
   const copyToClipboard = () => {
     writeToClipboard(oobi);

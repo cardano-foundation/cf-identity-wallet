@@ -25,7 +25,6 @@ import { Verification } from "../../Verification";
 import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnectionBodyInit } from "./SetupConnectionBodyInit";
 import { SetupConnectionBodyResume } from "./SetupConnectionBodyResume";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
 const SetupConnections = ({
   state,
@@ -176,6 +175,7 @@ const SetupConnections = ({
           handleDone={handleDone}
           handleInitiateMultiSig={handleInitiateMultiSig}
           oobi={oobi}
+          identifierId={identifierId}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
@@ -186,6 +186,7 @@ const SetupConnections = ({
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
+          identifierId={identifierId}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
