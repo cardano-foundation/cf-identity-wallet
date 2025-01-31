@@ -44,7 +44,9 @@ const identifiersCacheSlice = createSlice({
     },
     updateCreationStatus: (
       state,
-      action: PayloadAction<Pick<IdentifierShortDetails, "id" | "creationStatus">>
+      action: PayloadAction<
+        Pick<IdentifierShortDetails, "id" | "creationStatus">
+      >
     ) => {
       const identifier = state.identifiers[action.payload.id];
 
@@ -58,7 +60,7 @@ const identifiersCacheSlice = createSlice({
       }
     },
     removeIdentifierCache: (state, action: PayloadAction<string>) => {
-      delete state.identifiers[action.payload]
+      delete state.identifiers[action.payload];
     },
     setFavouritesIdentifiersCache: (
       state,
@@ -112,11 +114,11 @@ export const {
   setOpenMultiSigId,
   setScanGroupId,
   setIdentifiersFilters,
-  removeIdentifierCache
+  removeIdentifierCache,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
-  state.identifiersCache.identifiers;
+  state.identifiersCache?.identifiers;
 
 const getFavouritesIdentifiersCache = (state: RootState) =>
   state.identifiersCache.favourites;

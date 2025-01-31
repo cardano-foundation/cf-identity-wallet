@@ -203,7 +203,7 @@ const Credentials = () => {
     return (
       <div
         className={`archived-credentials-button-container${
-          archivedCreds.length > 0 || revokedCreds.length > 0
+          archivedCreds?.length > 0 || revokedCreds.length > 0
             ? " visible"
             : " hidden"
         }`}
@@ -237,7 +237,9 @@ const Credentials = () => {
 
     try {
       await Agent.agent.credentials.archiveCredential(deletedPendingItem.id);
-      await Agent.agent.credentials.markCredentialPendingDeletion(deletedPendingItem.id);
+      await Agent.agent.credentials.markCredentialPendingDeletion(
+        deletedPendingItem.id
+      );
 
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
 

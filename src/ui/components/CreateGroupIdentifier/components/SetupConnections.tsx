@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getMultiSigGroupCache,
   removeIdentifierCache,
-  setScanGroupId
+  setScanGroupId,
 } from "../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -25,7 +25,6 @@ import { Verification } from "../../Verification";
 import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnectionBodyInit } from "./SetupConnectionBodyInit";
 import { SetupConnectionBodyResume } from "./SetupConnectionBodyResume";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
 const SetupConnections = ({
   state,
@@ -36,7 +35,7 @@ const SetupConnections = ({
   multiSigGroup,
   preventRedirect,
   isModalOpen,
-  openAfterCreate
+  openAfterCreate,
 }: IdentifierStageProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -59,14 +58,13 @@ const SetupConnections = ({
     ConnectionShortDetails[]
   >([]);
 
-  const isPending = resumeMultiSig?.creationStatus !== CreationStatus.COMPLETE;
-
   useEffect(() => {
     if (isModalOpen) {
       dispatch(setScanGroupId(groupId));
     } else {
       dispatch(setScanGroupId(undefined));
     }
+    fetchOobi();
   }, [isModalOpen, groupId, dispatch]);
 
   const fetchOobi = useCallback(async () => {
@@ -131,7 +129,8 @@ const SetupConnections = ({
     setState((prevState) => ({
       ...prevState,
       scannedConections,
-      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName || "",
+      displayNameValue:
+        state.displayNameValue || resumeMultiSig?.displayName || "",
       ourIdentifier: state.ourIdentifier || resumeMultiSig?.id || "",
       identifierCreationStage: Stage.Members,
       color: theme.color,
@@ -171,28 +170,28 @@ const SetupConnections = ({
 
   return (
     <>
-      {(!openAfterCreate || initiated || scannedConections?.length) ? (
+      {!openAfterCreate || initiated || scannedConections?.length ? (
         <SetupConnectionBodyResume
           componentId={componentId}
           handleDone={handleDone}
           handleInitiateMultiSig={handleInitiateMultiSig}
           oobi={oobi}
+          identifierId={identifierId}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
           handleDelete={openDeleteConfirm}
-          isPending={isPending}
         />
       ) : (
         <SetupConnectionBodyInit
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
+          identifierId={identifierId}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
           scannedConections={scannedConections}
           handleDelete={openDeleteConfirm}
-          isPending={isPending}
         />
       )}
       <Alert

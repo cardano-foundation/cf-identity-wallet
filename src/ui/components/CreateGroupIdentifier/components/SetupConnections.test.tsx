@@ -18,6 +18,8 @@ import { Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnections } from "./SetupConnections";
 import { passcodeFiller } from "../../../utils/passcodeFiller";
 import { CreationStatus } from "../../../../core/agent/services/identifier.types";
+import { transformGroupIdentifier } from "../../../../utils/transformGroupIdentifier";
+import { identifierFix } from "../../../__fixtures__/identifierFix";
 
 setupIonicReact();
 mockIonicReact();
@@ -519,6 +521,124 @@ describe("Create group identifier - Setup Connection", () => {
         expect(
           getByText(EN_TRANSLATIONS.createidentifier.receive.notes.middle)
         ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("Create group identifier - Setup Connection", () => {
+    const mockStore = configureStore();
+
+    const baseState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+          userName: "Duke",
+        },
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+        isOnline: true,
+      },
+      identifiersCache: {
+        identifiers: {},
+        favourites: [],
+        multiSigGroup: {
+          groupId: "b75838e5-98cb-46cf-9233-8bf3beca4cd3",
+          connections: [],
+        },
+      },
+    };
+
+    test("Renders Initial Multi Sig - CreationStatus PENDING", async () => {
+      const pendingIdentifier = identifierFix[3];
+      const transformedIdentifier = transformGroupIdentifier(pendingIdentifier);
+      const identifierId = pendingIdentifier.id;
+
+      const pendingState = {
+        ...baseState,
+        identifiersCache: {
+          ...baseState.identifiersCache,
+          identifiers: {
+            [identifierId]: transformedIdentifier[identifierId], // Ensure the key matches the transformed identifier
+          },
+        },
+      };
+
+      const storeMockedPending = {
+        ...mockStore(pendingState),
+        dispatch: dispatchMock,
+      };
+
+      const { getByTestId } = render(
+        <Provider store={storeMockedPending}>
+          <SetupConnections
+            state={stage1State}
+            setState={setState}
+            componentId={"create-identifier"}
+            setBlur={setBlur}
+            resetModal={resetModal}
+            resumeMultiSig={stage1State.newIdentifier}
+            multiSigGroup={{
+              groupId: pendingIdentifier.multisigManageAid || "",
+              connections: [],
+            }}
+            openAfterCreate
+          />
+        </Provider>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId("multisig-share-qr-code")).toHaveClass("blur");
+      });
+    });
+
+    test("Renders Initial Multi Sig - CreationStatus COMPLETE", async () => {
+      const completeIdentifier = identifierFix[4];
+      const transformedIdentifier =
+        transformGroupIdentifier(completeIdentifier);
+      const identifierId = completeIdentifier.id;
+
+      const completeState = {
+        ...baseState,
+        identifiersCache: {
+          ...baseState.identifiersCache,
+          identifiers: {
+            [identifierId]: transformedIdentifier[identifierId], // Ensure the key matches the transformed identifier
+          },
+        },
+      };
+
+      const storeMockedComplete = {
+        ...mockStore(completeState),
+        dispatch: dispatchMock,
+      };
+
+      const { getByTestId } = render(
+        <Provider store={storeMockedComplete}>
+          <SetupConnections
+            state={stage1State}
+            setState={setState}
+            componentId={"create-identifier"}
+            setBlur={setBlur}
+            resetModal={resetModal}
+            resumeMultiSig={stage1State.newIdentifier}
+            multiSigGroup={{
+              groupId: identifierFix[4].multisigManageAid || "",
+              connections: [],
+            }}
+            openAfterCreate
+          />
+        </Provider>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId("multisig-share-qr-code")).toHaveClass("blur");
       });
     });
   });

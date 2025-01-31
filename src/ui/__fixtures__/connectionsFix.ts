@@ -35,9 +35,23 @@ const connectionsFix: ConnectionDetails[] = [
     createdAtUTC: "2017-01-16T08:21:54Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    serviceEndpoints: [],
-    notes: [],
-    historyItems: [],
+    serviceEndpoints: [
+      "http://keria:3902/oobi/ELjvc_mLWOx7pI4fBh7lGUYofOAJUgUrMKnaoFGdvs86/agent/ENGnzDMWk8PlFbOoYCauLs1rDuQbvsIStxNzkjZPikSo?name=CF%20Credential%20Issuance",
+    ],
+    notes: [
+      {
+        id: "ebfeb1ebc6f1c276ef71212ec20",
+        title: "Title",
+        message: "Message",
+      },
+    ],
+    historyItems: [
+      {
+        type: 1,
+        timestamp: "2017-01-14T19:23:24Z",
+        credentialType: "Cardano Foundation",
+      },
+    ],
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
@@ -93,9 +107,9 @@ const connectionsFix: ConnectionDetails[] = [
 const connectionsMapFix = connectionsFix.reduce((result, next) => {
   return {
     ...result,
-    [next.id]: next
-  }
-}, {})
+    [next.id]: next,
+  };
+}, {});
 
 const connectionRequestPlaceholder = {
   label: "",
@@ -192,5 +206,5 @@ export {
   connectionRequestPlaceholder,
   credentialRequestData,
   connectionsForNotifications,
-  connectionsMapFix
+  connectionsMapFix,
 };
