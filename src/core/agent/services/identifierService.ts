@@ -271,10 +271,9 @@ class IdentifierService extends AgentService {
       identifier = details.prefix;
     }
 
-    // @TODO - foconnor: Need update HabState interface on signify.
     const identifierDetail = (await this.props.signifyClient
       .identifiers()
-      .get(identifier)) as HabState & { icp_dt: string };
+      .get(identifier)) as HabState;
 
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
@@ -289,6 +288,7 @@ class IdentifierService extends AgentService {
           ...metadata,
           creationStatus,
           createdAt: new Date(identifierDetail.icp_dt),
+          sxlt: identifierDetail.salty?.sxlt,
         });
       
       this.props.eventEmitter.emit<IdentifierAddedEvent>({
@@ -517,7 +517,7 @@ class IdentifierService extends AgentService {
       const isMultiSig = name.length === 3;
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
-        .get(identifier.prefix)) as HabState & { icp_dt: string };
+        .get(identifier.prefix)) as HabState;
       
       if (isMultiSig) {
         const groupId = identifier.name.split(":")[1];
@@ -534,6 +534,7 @@ class IdentifierService extends AgentService {
           },
           creationStatus,
           createdAt: new Date(identifierDetail.icp_dt),
+          sxlt: identifierDetail.salty?.sxlt,
         });
         continue;
       }
@@ -544,6 +545,7 @@ class IdentifierService extends AgentService {
         theme,
         creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
+        sxlt: identifierDetail.salty?.sxlt,
       });
     }
 
@@ -554,7 +556,7 @@ class IdentifierService extends AgentService {
       
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
-        .get(identifier.prefix)) as HabState & { icp_dt: string };
+        .get(identifier.prefix)) as HabState;
 
       const multisigManageAid = identifier.group.mhab.prefix;
       const groupId = identifier.group.mhab.name.split(":")[1];
@@ -634,7 +636,7 @@ class IdentifierService extends AgentService {
     throw new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE);
   }
 
-  private async searchByName(name: string): Promise<HabState & { icp_dt: string } | undefined> {
+  private async searchByName(name: string): Promise<HabState | undefined> {
     let returned = -1;
     let iteration = 0;
 

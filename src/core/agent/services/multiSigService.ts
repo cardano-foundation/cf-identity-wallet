@@ -137,7 +137,7 @@ class MultiSigService extends AgentService {
 
     const multisigDetail = await this.props.signifyClient
       .identifiers()
-      .get(multisigId as string) as HabState & { icp_dt: string };
+      .get(multisigId as string) as HabState;
 
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
@@ -376,7 +376,7 @@ class MultiSigService extends AgentService {
 
     const multisigDetail = await this.props.signifyClient
       .identifiers()
-      .get(multisigId) as HabState & { icp_dt: string };
+      .get(multisigId) as HabState;
     
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
