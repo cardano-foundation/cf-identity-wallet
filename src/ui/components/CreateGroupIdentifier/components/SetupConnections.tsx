@@ -64,6 +64,7 @@ const SetupConnections = ({
     } else {
       dispatch(setScanGroupId(undefined));
     }
+    fetchOobi();
   }, [isModalOpen, groupId, dispatch]);
 
   const fetchOobi = useCallback(async () => {
