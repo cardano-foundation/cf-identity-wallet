@@ -125,6 +125,16 @@ ion-modal.create-group-identifier-modal {
           background: none;
           height: auto;
         }
+
+        .text {
+          .top {
+            margin-bottom: 0;
+          }
+
+          .bottom {
+            margin: 0.115rem 0;
+          }
+        }
       }
     }
   }
@@ -481,12 +491,12 @@ ion-modal.create-group-identifier-modal {
 
       #react-qrcode-logo,
       .multisig-share-qr-code-blur-overlay-container {
-        padding: 0.9rem;
+        padding: 1rem;
         margin: 0 auto 0.5rem;
       }
 
       .multisig-share-qr-code-blur-overlay-container {
-        left: calc(50% - 32.5vw);
+        left: calc(50% - 35vw);
 
         .multisig-share-qr-code-blur-overlay-inner {
           .spinner-container {
