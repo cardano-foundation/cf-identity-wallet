@@ -25,7 +25,7 @@ const NotificationDetails = () => {
     ionicRouter.push(TabsRoutePath.NOTIFICATIONS, "back", "pop");
   }, [ionicRouter]);
 
-  const displayNotification = currentNotification.current || notificationDetails;
+  const displayNotification = notificationDetails || currentNotification.current;
 
   useEffect(() => {
     if(!displayNotification) handleBack();
