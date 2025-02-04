@@ -16,12 +16,13 @@ import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Connections } from "./Connections";
 
 const deleteConnectionByIdMock = jest.fn();
+const getConnectionByIdMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getConnectionById: jest.fn(),
+        getConnectionById: () => getConnectionByIdMock(),
         getConnectionHistoryById: jest.fn(),
         createMediatorInvitation: jest.fn(),
         getShortenUrl: jest.fn(),
@@ -538,6 +539,8 @@ describe("Connections page from Credentials tab", () => {
     const history = createMemoryHistory();
     history.push(TabsRoutePath.IDENTIFIERS);
 
+    getConnectionByIdMock.mockResolvedValueOnce(connectionsFix[2]);
+
     const { getByTestId, getByText } = render(
       <Provider store={mockedStore}>
         <Connections
@@ -559,9 +562,7 @@ describe("Connections page from Credentials tab", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.connections.details.label)
-      ).toBeVisible();
+      expect(getByTestId("connection-details-page")).toBeVisible();
     });
   });
 

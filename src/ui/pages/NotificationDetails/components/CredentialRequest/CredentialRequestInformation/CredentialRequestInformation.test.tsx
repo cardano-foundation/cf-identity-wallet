@@ -1,4 +1,9 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  getAllByTestId,
+  render,
+  waitFor,
+} from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -20,7 +25,7 @@ jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: jest.fn((options: { key: string }) => {
       return Promise.resolve({ value: "111111" });
-    })
+    }),
   },
 }));
 
@@ -36,8 +41,8 @@ jest.mock("../../../../../../core/agent/agent", () => ({
       },
       ipexCommunications: {
         joinMultisigOffer: () => joinMultisigOfferMock(),
-        getOfferedCredentialSaid: jest.fn(() => "cred-id")
-      }
+        getOfferedCredentialSaid: jest.fn(() => "cred-id"),
+      },
     },
   },
 }));
@@ -123,7 +128,7 @@ describe("Credential request information", () => {
 
 describe("Credential request information: multisig", () => {
   const linkedGroup = {
-    linkedRequest:{
+    linkedRequest: {
       accepted: false,
       current: "",
       previous: undefined,
@@ -135,14 +140,14 @@ describe("Credential request information: multisig", () => {
       {
         aid: "member-1",
         name: "Member 1",
-        joined: false
+        joined: false,
       },
       {
         aid: "member-2",
         name: "Member 2",
-        joined: false
-      }
-    ]
+        joined: false,
+      },
+    ],
   };
 
   test("Initiator open cred", async () => {
@@ -178,14 +183,47 @@ describe("Credential request information: multisig", () => {
       ).toBeVisible();
     });
 
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.initiatorselectcred)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.threshold)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.groupmember)).toBeVisible();
-    expect(queryByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.proposalfrom)).toBeNull();
-    expect(queryByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.proposedcred)).toBeNull();
-    expect(queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)).toBeNull();
-    expect(queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)).toBeNull();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.choosecredential)).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.initiatorselectcred
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.threshold
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.groupmember
+      )
+    ).toBeVisible();
+    expect(
+      queryByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposalfrom
+      )
+    ).toBeNull();
+    expect(
+      queryByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposedcred
+      )
+    ).toBeNull();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
+    ).toBeNull();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)
+    ).toBeNull();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.buttons.choosecredential
+      )
+    ).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
@@ -196,7 +234,7 @@ describe("Credential request information: multisig", () => {
 
   test("Initiator chosen cred", async () => {
     const linkedGroup = {
-      linkedRequest:{
+      linkedRequest: {
         accepted: true,
         current: "cred-id",
         previous: undefined,
@@ -208,14 +246,14 @@ describe("Credential request information: multisig", () => {
         {
           aid: "member-1",
           name: "Member 1",
-          joined: true
+          joined: true,
         },
         {
           aid: "member-2",
           name: "Member 2",
-          joined: false
-        }
-      ]
+          joined: false,
+        },
+      ],
     };
 
     const storeMocked = {
@@ -250,14 +288,45 @@ describe("Credential request information: multisig", () => {
       ).toBeVisible();
     });
 
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.initiatorselectedcred)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.threshold)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.groupmember)).toBeVisible();
-    expect(queryByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.proposalfrom)).toBeNull();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.proposedcred)).toBeVisible();
-    expect(queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)).toBeNull();
-    expect(queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)).toBeNull();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.ok)).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.initiatorselectedcred
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.threshold
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.groupmember
+      )
+    ).toBeVisible();
+    expect(
+      queryByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposalfrom
+      )
+    ).toBeNull();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposedcred
+      )
+    ).toBeVisible();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
+    ).toBeNull();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)
+    ).toBeNull();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.ok)
+    ).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
@@ -266,10 +335,9 @@ describe("Credential request information: multisig", () => {
     expect(back).toBeCalled();
   });
 
-
   test("Member open cred", async () => {
     const linkedGroup = {
-      linkedRequest:{
+      linkedRequest: {
         accepted: false,
         current: "cred-id",
         previous: undefined,
@@ -281,16 +349,15 @@ describe("Credential request information: multisig", () => {
         {
           aid: "member-1",
           name: "Member 1",
-          joined: false
+          joined: false,
         },
         {
           aid: "member-2",
           name: "Member 2",
-          joined: false
-        }
-      ]
+          joined: false,
+        },
+      ],
     };
-
 
     const initialState = {
       stateCache: {
@@ -300,7 +367,7 @@ describe("Credential request information: multisig", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        isOnline: true
+        isOnline: true,
       },
       connectionsCache: {
         connections: connectionsForNotifications,
@@ -342,10 +409,27 @@ describe("Credential request information: multisig", () => {
       ).toBeVisible();
     });
 
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.memberwaitingproposal)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.threshold)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.groupmember)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.ok)).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.memberwaitingproposal
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.threshold
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.groupmember
+      )
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.ok)
+    ).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
@@ -356,7 +440,7 @@ describe("Credential request information: multisig", () => {
 
   test("Member open cred after initiator chosen cred", async () => {
     const linkedGroup = {
-      linkedRequest:{
+      linkedRequest: {
         accepted: true,
         current: "cred-id",
         previous: undefined,
@@ -368,16 +452,15 @@ describe("Credential request information: multisig", () => {
         {
           aid: "member-1",
           name: "Member 1",
-          joined: true
+          joined: true,
         },
         {
           aid: "member-2",
           name: "Member 2",
-          joined: false
-        }
-      ]
+          joined: false,
+        },
+      ],
     };
-
 
     const initialState = {
       stateCache: {
@@ -387,7 +470,7 @@ describe("Credential request information: multisig", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        isOnline: true
+        isOnline: true,
       },
       connectionsCache: {
         connections: connectionsForNotifications,
@@ -404,7 +487,7 @@ describe("Credential request information: multisig", () => {
 
     const back = jest.fn();
 
-    const { getByText, getByTestId, getAllByText } = render(
+    const { getByText, getByTestId, getAllByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <CredentialRequestInformation
           pageId="multi-sign"
@@ -429,27 +512,50 @@ describe("Credential request information: multisig", () => {
       ).toBeGreaterThan(1);
     });
 
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.memberreviewcred)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.threshold)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.groupmember)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.credential.request.information.proposalfrom)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.memberreviewcred
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.threshold
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.groupmember
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposalfrom
+      )
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)
+    ).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
     });
-
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
-    
+
     await waitFor(() => {
       expect(joinMultisigOfferMock).toBeCalled();
-    })
+    });
 
     act(() => {
       fireEvent.click(getByTestId("delete-button-multi-sign"));
@@ -457,11 +563,11 @@ describe("Credential request information: multisig", () => {
 
     await waitFor(() => {
       expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.notifications.details.credential.request
-            .information.alert.textdecline
-        )
-      ).toBeVisible();
+        getAllByTestId("multisig-request-alert-decline")[0]
+      ).toHaveTextContent(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.alert.textdecline
+      );
     });
 
     act(() => {

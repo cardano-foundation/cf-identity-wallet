@@ -1,8 +1,9 @@
 import { IonButton, IonIcon, IonItem, IonLabel, IonList } from "@ionic/react";
 import { copyOutline, trashOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
+import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
-import { useAppDispatch } from "../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ToastMsgType } from "../../../globals/types";
@@ -13,19 +14,30 @@ import { Spinner } from "../../Spinner";
 import { SpinnerConverage } from "../../Spinner/Spinner.type";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
+import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
 const SetupConnectionBodyResume = ({
   componentId,
   handleDone,
   handleInitiateMultiSig,
   oobi,
+  identifierId,
   groupMetadata,
   handleScanButton,
   scannedConections,
   handleDelete,
-  isPending
 }: IdentifierStage1BodyProps) => {
   const dispatch = useAppDispatch();
+  const identifiers = useAppSelector(getIdentifiersCache);
+  const [isPending, setIsPending] = useState(true);
+
+  useEffect(() => {
+    identifiers &&
+      identifiers[identifierId]?.creationStatus === CreationStatus.COMPLETE &&
+      setIsPending(false);
+  }, [identifierId, identifiers]);
+
   const copyToClipboard = () => {
     writeToClipboard(oobi);
     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
@@ -75,10 +87,17 @@ const SetupConnectionBodyResume = ({
             />
             <span className="multisig-share-qr-code-blur-overlay-container">
               <span className="multisig-share-qr-code-blur-overlay-inner">
-                <Spinner show={isPending} coverage={SpinnerConverage.Container}/>
+                <Spinner
+                  show={isPending}
+                  coverage={SpinnerConverage.Container}
+                />
                 <div className="text">
-                  <p className="top">{i18n.t("createidentifier.share.pending.top")}</p>
-                  <p className="bottom">{i18n.t("createidentifier.share.pending.bottom")}</p>
+                  <p className="top">
+                    {i18n.t("createidentifier.share.pending.top")}
+                  </p>
+                  <p className="bottom">
+                    {i18n.t("createidentifier.share.pending.bottom")}
+                  </p>
                 </div>
               </span>
             </span>

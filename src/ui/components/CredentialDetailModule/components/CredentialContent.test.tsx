@@ -156,6 +156,11 @@ describe("Creds content", () => {
       identifiersCache: {
         identifiers: filteredIdentifierMapFix,
       },
+      connectionsCache: {
+        multisigConnections: {
+          [connectionDetailsFix.id]: connectionDetailsFix
+        },
+      },
     };
 
 

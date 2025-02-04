@@ -1,8 +1,9 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { copyOutline, scanOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
+import { useState, useEffect } from "react";
 import { i18n } from "../../../../i18n";
-import { useAppDispatch } from "../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { writeToClipboard } from "../../../utils/clipboard";
@@ -11,15 +12,26 @@ import { Spinner } from "../../Spinner";
 import { SpinnerConverage } from "../../Spinner/Spinner.type";
 import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
+import { CreationStatus } from "../../../../core/agent/services/identifier.types";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 
 const SetupConnectionBodyInit = ({
   componentId,
   handleDone,
   oobi,
+  identifierId,
   handleScanButton,
-  isPending
 }: IdentifierStage1BodyProps) => {
   const dispatch = useAppDispatch();
+  const identifiers = useAppSelector(getIdentifiersCache);
+  const [isPending, setIsPending] = useState(true);
+
+  useEffect(() => {
+    identifiers &&
+      identifiers[identifierId]?.creationStatus === CreationStatus.COMPLETE &&
+      setIsPending(false);
+  }, [identifierId, identifiers]);
+
   const copyToClipboard = () => {
     writeToClipboard(oobi);
     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
@@ -44,7 +56,9 @@ const SetupConnectionBodyInit = ({
         {i18n.t("createidentifier.share.notes.top")}
       </p>
       <div
-        className={`multisig-share-qr-code${oobi.length && !isPending ? " reveal" : " blur"}`}
+        className={`multisig-share-qr-code${
+          oobi.length && !isPending ? " reveal" : " blur"
+        }`}
         data-testid="multisig-share-qr-code"
       >
         <div className="qr-container">
@@ -62,10 +76,17 @@ const SetupConnectionBodyInit = ({
           />
           <span className="multisig-share-qr-code-blur-overlay-container">
             <span className="multisig-share-qr-code-blur-overlay-inner">
-              <Spinner show={isPending} coverage={SpinnerConverage.Container}/>
+              <Spinner
+                show={isPending}
+                coverage={SpinnerConverage.Container}
+              />
               <div className="text">
-                <p className="top">{i18n.t("createidentifier.share.pending.top")}</p>
-                <p className="bottom">{i18n.t("createidentifier.share.pending.bottom")}</p>
+                <p className="top">
+                  {i18n.t("createidentifier.share.pending.top")}
+                </p>
+                <p className="bottom">
+                  {i18n.t("createidentifier.share.pending.bottom")}
+                </p>
               </div>
             </span>
           </span>

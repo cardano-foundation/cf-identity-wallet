@@ -8,7 +8,7 @@ enum Stage {
   SetupConnection,
   Members,
   SetupThreshold,
-  Summary
+  Summary,
 }
 
 interface CreateIdentifierProps {
@@ -53,12 +53,12 @@ interface IdentifierStage1BodyProps {
   handleDone: () => void;
   handleInitiateMultiSig?: () => void;
   oobi: string;
+  identifierId: string;
   groupMetadata?: {
     groupId: string;
     groupInitiator: boolean;
     groupCreated: boolean;
   };
-  isPending: boolean;
   scannedConections?: ConnectionShortDetails[];
   handleScanButton: () => void;
   handleDelete?: () => void;
