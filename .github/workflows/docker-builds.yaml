@@ -256,6 +256,11 @@ jobs:
               --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
               --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
           else
+              if [ "${{github.event_name}}" == "pull_request" ]
+              then
+                echo "[+] No changes on any known target-related file, skipping earthly build..."
+                exit 0
+              fi
               earthly \
               +docker-manifests-merge \
               --PUSH=true \

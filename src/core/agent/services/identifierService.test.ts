@@ -184,6 +184,7 @@ const keriMetadataRecordProps = {
   theme: 0,
   creationStatus: CreationStatus.COMPLETE,
   groupMetadata,
+  sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
 };
 
 const identifierMetadataRecord = new IdentifierMetadataRecord({
@@ -208,12 +209,16 @@ const identifierStateKeria = {
     b: "b",
     di: "di",
   },
+  salty: {
+    sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+  },
   icp_dt: "2024-12-30T16:49:05.800487+00:00",
 };
 
 const groupIdentifierStateKeria = {
   ...identifierStateKeria,
   group: {},
+  salty: undefined,
 };
 
 const identifierMembersState = {
@@ -460,7 +465,6 @@ describe("Single sig service of agent", () => {
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
-    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
 
     await identifierService.createIdentifier({
       displayName,
@@ -479,7 +483,8 @@ describe("Single sig service of agent", () => {
       displayName,
       id: "id",
       creationStatus: CreationStatus.PENDING,
-      theme: 0
+      theme: 0,
+      sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i"
     }));
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.IdentifierAdded,
@@ -538,7 +543,6 @@ describe("Single sig service of agent", () => {
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
-    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
 
     await identifierService.createIdentifier({
       displayName,
@@ -608,7 +612,6 @@ describe("Single sig service of agent", () => {
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
-    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
 
     await identifierService.createIdentifier({
       displayName,
@@ -678,7 +681,6 @@ describe("Single sig service of agent", () => {
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
-    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
 
     await expect(identifierService.createIdentifier({
       displayName,
@@ -723,7 +725,6 @@ describe("Single sig service of agent", () => {
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
     });
-    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
     identifierStorage.createIdentifierMetadataRecord = jest.fn().mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
 
     await identifierService.createIdentifier({
@@ -784,7 +785,6 @@ describe("Single sig service of agent", () => {
         },
       }));
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
-    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
     identifierStorage.createIdentifierMetadataRecord = jest.fn().mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
     saveOperationPendingMock.mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
 
@@ -984,6 +984,7 @@ describe("Single sig service of agent", () => {
         {
           name: "0:1-group1:test1",
           prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+          sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
         },
         {
           name: "15:test1",
@@ -992,12 +993,14 @@ describe("Single sig service of agent", () => {
             mhab: {
               name: "0:1-group1:test1",
               prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+              sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
             },
           },
         },
         {
           name: "33:test2",
           prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+          sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
         },
       ],
     }).mockReturnValue({ aids: [] });
@@ -1020,7 +1023,17 @@ describe("Single sig service of agent", () => {
         done: true,
         name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       });
-    getIdentifiersMock.mockResolvedValue({
+    getIdentifiersMock.mockResolvedValueOnce({
+      salty: {
+        sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+      },
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    }).mockResolvedValueOnce({
+      salty: {
+        sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+      },
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    }).mockResolvedValueOnce({
       icp_dt: "2024-12-10T07:28:18.217384+00:00",
     });
 
@@ -1039,6 +1052,7 @@ describe("Single sig service of agent", () => {
       },
       creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
     });
     expect(
       identifierStorage.createIdentifierMetadataRecord
@@ -1048,6 +1062,7 @@ describe("Single sig service of agent", () => {
       theme: 33,
       creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
     });
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
@@ -1080,6 +1095,7 @@ describe("Single sig service of agent", () => {
         {
           name: "0:1-group1:test1",
           prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+          sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
         },
         {
           name: "15:test1",
@@ -1088,12 +1104,14 @@ describe("Single sig service of agent", () => {
             mhab: {
               name: "0:1-group1:test1",
               prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+              sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
             },
           },
         },
         {
           name: "33:test2",
           prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+          sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
         },
       ],
     }).mockReturnValue({ aids: [] });
@@ -1116,7 +1134,17 @@ describe("Single sig service of agent", () => {
         done: false,
         name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       });
-    getIdentifiersMock.mockResolvedValue({
+    getIdentifiersMock.mockResolvedValueOnce({
+      salty: {
+        sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+      },
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    }).mockResolvedValueOnce({
+      salty: {
+        sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+      },
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    }).mockResolvedValueOnce({
       icp_dt: "2024-12-10T07:28:18.217384+00:00",
     });
     saveOperationPendingMock.mockResolvedValueOnce({
@@ -1145,6 +1173,7 @@ describe("Single sig service of agent", () => {
       },
       creationStatus: CreationStatus.PENDING,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
     });
     expect(
       identifierStorage.createIdentifierMetadataRecord
@@ -1154,6 +1183,7 @@ describe("Single sig service of agent", () => {
       theme: 33,
       creationStatus: CreationStatus.PENDING,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
     });
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
@@ -1223,6 +1253,7 @@ describe("Single sig service of agent", () => {
         {
           name: "0:1-group1:test1",
           prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+          sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
         },
         {
           name: "15:test1",
@@ -1231,12 +1262,14 @@ describe("Single sig service of agent", () => {
             mhab: {
               name: "0:1-group1:test1",
               prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+              sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
             },
           },
         },
         {
           name: "33:test2",
           prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+          sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
         },
       ],
     }).mockReturnValue({ aids: [] });
@@ -1262,7 +1295,17 @@ describe("Single sig service of agent", () => {
         name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
         error: { code: 400 }
       });
-    getIdentifiersMock.mockResolvedValue({
+    getIdentifiersMock.mockResolvedValueOnce({
+      salty: {
+        sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+      },
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    }).mockResolvedValueOnce({
+      salty: {
+        sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+      },
+      icp_dt: "2024-12-10T07:28:18.217384+00:00",
+    }).mockResolvedValueOnce({
       icp_dt: "2024-12-10T07:28:18.217384+00:00",
     });
     saveOperationPendingMock.mockResolvedValueOnce({
@@ -1291,6 +1334,7 @@ describe("Single sig service of agent", () => {
       },
       creationStatus: CreationStatus.FAILED,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
     });
     expect(
       identifierStorage.createIdentifierMetadataRecord
@@ -1300,6 +1344,7 @@ describe("Single sig service of agent", () => {
       theme: 33,
       creationStatus: CreationStatus.FAILED,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
     });
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",

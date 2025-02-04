@@ -91,6 +91,14 @@ const SetupConnectionBodyResume = ({
                   show={isPending}
                   coverage={SpinnerConverage.Container}
                 />
+                <div className="text">
+                  <p className="top">
+                    {i18n.t("createidentifier.share.pending.top")}
+                  </p>
+                  <p className="bottom">
+                    {i18n.t("createidentifier.share.pending.bottom")}
+                  </p>
+                </div>
               </span>
             </span>
           </div>

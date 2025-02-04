@@ -1,3 +1,4 @@
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import {
   fireEvent,
@@ -5,17 +6,24 @@ import {
   RenderResult,
   waitFor,
 } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { createMemoryHistory } from "history";
-import { IonReactMemoryRouter } from "@ionic/react-router";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
+import { store } from "../../../store";
+import {
+  setIdentifiersCache,
+  setIdentifiersFilters,
+  setMultiSigGroupCache,
+} from "../../../store/reducers/identifiersCache";
 import { showConnections } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import {
+  failedFilteredIdentifierMapFix,
+  failedMultisignIdentifierFix,
   filteredIdentifierFix,
   multisignIdentifierFix,
   pendingMultisignIdentifierFix,
@@ -27,13 +35,7 @@ import {
 import { OperationType } from "../../globals/types";
 import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
-import {
-  setIdentifiersCache,
-  setIdentifiersFilters,
-  setMultiSigGroupCache,
-} from "../../../store/reducers/identifiersCache";
 import { IdentifiersFilters } from "./Identifiers.types";
-import { store } from "../../../store";
 
 const deleteIdentifierMock = jest.fn();
 const markIdentifierPendingDelete = jest.fn();
@@ -146,6 +148,71 @@ describe("Identifiers Tab", () => {
     expect(
       getByText(EN_TRANSLATIONS.tabs.identifiers.tab.favourites)
     ).toBeInTheDocument();
+  });
+
+  test("Open individual identifier that create fail", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+        brand: "brand",
+      },
+      identifiersCache: {
+        identifiers: failedFilteredIdentifierMapFix,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
+      },
+    };
+
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+
+    mockedStore = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(filteredIdentifierFix[2].displayName)
+      ).toBeVisible();
+    });
+
+    fireEvent.click(getByText(filteredIdentifierFix[2].displayName));
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.witnesserror)
+      ).toBeVisible();
+    });
   });
 
   test("Renders Identifiers Tab and all elements in it", () => {
@@ -447,6 +514,78 @@ describe("Identifiers Tab", () => {
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.createidentifier.share.title)
+      ).toBeVisible();
+    });
+  });
+
+  test("Open group identifier that create fail", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        currentOperation: OperationType.OPEN_MULTISIG_IDENTIFIER,
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: failedMultisignIdentifierFix,
+        multiSigGroup: {
+          groupId: failedMultisignIdentifierFix[0].groupMetadata?.groupId,
+        },
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+      },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+
+    const { getByText } = render(
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[TabsRoutePath.IDENTIFIERS]}
+      >
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(failedMultisignIdentifierFix[0].displayName)
+      ).toBeVisible();
+    });
+
+    fireEvent.click(getByText(failedMultisignIdentifierFix[0].displayName));
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.witnesserror)
       ).toBeVisible();
     });
   });

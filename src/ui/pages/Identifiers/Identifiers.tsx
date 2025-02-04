@@ -135,6 +135,12 @@ const Identifiers = () => {
   });
 
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
+    if(identifier.creationStatus === CreationStatus.FAILED) {
+      setDeletePendingItem(identifier);
+      setOpenDeletePendingAlert(true);
+      return;
+    }
+
     setResumeMultiSig(identifier);
     setGroupIdentifierOpen(true);
   };
@@ -273,9 +279,10 @@ const Identifiers = () => {
     () => ({
       title: i18n.t("tabs.identifiers.detelepending.title"),
       description: i18n.t(
-        deletedPendingItem?.groupMetadata?.groupId
-          ? "tabs.identifiers.detelepending.mutilsigdescription"
-          : "tabs.identifiers.detelepending.description"
+        deletedPendingItem?.creationStatus === CreationStatus.FAILED ? "tabs.identifiers.detelepending.witnesserror" :
+          deletedPendingItem?.groupMetadata?.groupId
+            ? "tabs.identifiers.detelepending.mutilsigdescription"
+            : "tabs.identifiers.detelepending.description"
       ),
       button: i18n.t("tabs.identifiers.detelepending.button"),
     }),
