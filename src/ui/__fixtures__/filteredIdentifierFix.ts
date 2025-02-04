@@ -46,6 +46,15 @@ const filteredIdentifierMapFix = filteredIdentifierFix.reduce((result, next) => 
   return result;
 }, {} as Record<string, IdentifierShortDetails>);
 
+const failedFilteredIdentifierMapFix = filteredIdentifierFix.reduce((result, next) => {
+  result[next.id] = {
+    ...next,
+    creationStatus: CreationStatus.FAILED
+  };
+
+  return result;
+}, {} as Record<string, IdentifierShortDetails>);
+
 const multisignIdentifierFix: IdentifierShortDetails[] = [
   {
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
@@ -53,6 +62,21 @@ const multisignIdentifierFix: IdentifierShortDetails[] = [
     createdAtUTC: "2023-01-01T19:23:24Z",
     theme: 0,
     creationStatus: CreationStatus.COMPLETE,
+    groupMetadata: {
+      groupId: "549eb79f-856c-4bb7-8dd5-d5eed865906a",
+      groupCreated: false,
+      groupInitiator: false,
+    },
+  },
+];
+
+const failedMultisignIdentifierFix: IdentifierShortDetails[] = [
+  {
+    id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    displayName: "Professional ID",
+    createdAtUTC: "2023-01-01T19:23:24Z",
+    theme: 0,
+    creationStatus: CreationStatus.FAILED,
     groupMetadata: {
       groupId: "549eb79f-856c-4bb7-8dd5-d5eed865906a",
       groupCreated: false,
@@ -81,4 +105,6 @@ export {
   filteredIdentifierFix,
   multisignIdentifierFix,
   pendingMultisignIdentifierFix,
+  failedMultisignIdentifierFix,
+  failedFilteredIdentifierMapFix
 };
