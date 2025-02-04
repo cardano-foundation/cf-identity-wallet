@@ -7,20 +7,21 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeriaNotification } from "../../../../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../../../../core/agent/services/credentialService.types";
-import {KeyStoreKeys, SecureStorage} from "../../../../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../../__fixtures__/connectionsFix";
 import { credRequestFix } from "../../../../../__fixtures__/credRequestFix";
 import { credsFixAcdc } from "../../../../../__fixtures__/credsFix";
+import { filteredIdentifierMapFix } from "../../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../../__fixtures__/notificationsFix";
 import {
   formatShortDate,
   formatTimeToSec,
 } from "../../../../../utils/formatters";
 import { passcodeFiller } from "../../../../../utils/passcodeFiller";
-import { ChooseCredential } from "./ChooseCredential";
 import { ACDC } from "../CredentialRequest.types";
+import { ChooseCredential } from "./ChooseCredential";
 
 mockIonicReact();
 
@@ -103,6 +104,9 @@ const initialState = {
   notificationsCache: {
     notifications: notificationsFix,
   },
+  identifiersCache: {
+    identifiers: filteredIdentifierMapFix
+  }
 };
 
 describe("Credential request - choose request", () => {
