@@ -5,7 +5,6 @@ import {
   IWalletInfo,
 } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
-import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
@@ -14,6 +13,7 @@ import {
   TxSignError,
 } from "./peerConnection.types";
 import { CoreEventEmitter } from "../../agent/event";
+import {PeerConnection} from "./peerConnection";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
   private selectedAid: string;
@@ -25,7 +25,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
-
+  disable: () => Promise<void>;
   constructor(
     walletInfo: IWalletInfo,
     seed: string | null,
@@ -91,6 +91,17 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         return { error: TxSignError.UserDeclined };
       }
     };
+
+
+    this.disable = async (): Promise<void> => {
+      const identifier = await Agent.agent.identifiers.getIdentifier(
+        this.selectedAid
+      );
+      // Disable
+      // PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+
+    };
+
   }
 
   protected getNetworkId(): Promise<number> {
