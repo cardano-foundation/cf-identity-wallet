@@ -25,7 +25,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
-  disable: () => Promise<void>;
+  disable: () => void;
   constructor(
     walletInfo: IWalletInfo,
     seed: string | null,
@@ -92,14 +92,8 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       }
     };
 
-
-    this.disable = async (): Promise<void> => {
-      const identifier = await Agent.agent.identifiers.getIdentifier(
-        this.selectedAid
-      );
-      // Disable
-      // PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
-
+    this.disable = (): void => {
+      PeerConnection.peerConnection.disconnectDApp(null, false);
     };
 
   }

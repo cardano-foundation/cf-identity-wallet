@@ -146,6 +146,7 @@ class PeerConnection {
       new ExperimentalContainer<ExperimentalAPIFunctions>({
         getKeriIdentifier: this.identityWalletConnect.getKeriIdentifier,
         signKeri: this.identityWalletConnect.signKeri,
+        disable: this.identityWalletConnect.disable
       })
     );
   }
@@ -162,7 +163,7 @@ class PeerConnection {
             error.message ===
             PeerConnectionStorage.PEER_CONNECTION_METADATA_RECORD_MISSING
           ) {
-            return undefined;
+            return Promise.resolve(undefined);
           } else {
             throw error;
           }
@@ -183,11 +184,11 @@ class PeerConnection {
     SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
   }
 
-  disconnectDApp(dAppIdentifier: string, isBroken?: boolean) {
+  disconnectDApp(dAppIdentifier?: string | null, isBroken?: boolean) {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
-    this.identityWalletConnect.disconnect(dAppIdentifier);
+    this.identityWalletConnect.disconnect(dAppIdentifier ? dAppIdentifier : this.connectedDAppAddress);
 
     if (isBroken) {
       this.eventEmitter.emit<PeerConnectionBrokenEvent>({

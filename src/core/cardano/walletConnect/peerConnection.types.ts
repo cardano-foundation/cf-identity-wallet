@@ -9,6 +9,7 @@ interface ExperimentalAPIFunctions {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  disable: () => void;
 }
 
 enum PeerConnectionEventTypes {
