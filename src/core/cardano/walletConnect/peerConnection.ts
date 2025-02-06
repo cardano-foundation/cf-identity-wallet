@@ -7,10 +7,10 @@ import {KeyStoreKeys, SecureStorage} from "../../storage";
 import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,
-  PeerConnectSigningEvent,
   PeerConnectedEvent,
   PeerConnectionBrokenEvent,
   PeerConnectionEventTypes,
+  PeerConnectSigningEvent,
   PeerDisconnectedEvent,
 } from "./peerConnection.types";
 import { Agent } from "../../agent/agent";
@@ -27,6 +27,13 @@ class PeerConnection {
     version: packageInfo.version,
     requestAutoconnect: true,
   };
+
+  // Trackers repository: https://github.com/ngosang/trackerslist
+  private static trackersFileUrls: string[] = [
+    "https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_ws.txt",
+    "https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_udp.txt",
+    "https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_https.txt",
+  ];
 
   private announce = [
     "wss://tracker.webtorrent.dev:443/announce",
@@ -88,6 +95,9 @@ class PeerConnection {
     ) {
       this.disconnectDApp(this.connectedDAppAddress);
     }
+
+    this.announce = await this.loadTrackersFromRemoteFiles();
+
     this.identityWalletConnect = new IdentityWalletConnect(
       this.walletInfo,
       meerkatSeed,
@@ -208,6 +218,40 @@ class PeerConnection {
     }
     return this.identityWalletConnect.getKeriIdentifier();
   }
+
+  private async loadTrackersFromRemoteFiles(): Promise<string[]> {
+    const allTrackers: string[] = [];
+
+    const validUrlRegex = /^(wss|https|udp):\/\/[^/\s?#]+(:\d+)?(\/|$)/;
+    for (const fileUrl of PeerConnection.trackersFileUrls) {
+      try {
+        const response = await fetch(fileUrl);
+        if (!response.ok) {
+          // eslint-disable-next-line no-console
+          console.warn(`Error loading file ${fileUrl}: Status code ${response.status}`);
+          continue;
+        }
+
+        const text = await response.text();
+        const trackers = text
+          .split("\n")
+          .map(line => line.trim())
+          .filter(line => line && !line.startsWith("#"))
+          .filter(line => validUrlRegex.test(line));
+
+        allTrackers.push(...trackers);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`Error processing file ${fileUrl}:`, error);
+      }
+    }
+
+    if (allTrackers.length === 0) {
+      return this.announce; // Fallback
+    }
+    return allTrackers;
+  }
+
 }
 
 export { PeerConnection };
