@@ -28,11 +28,9 @@ class PeerConnection {
     requestAutoconnect: true,
   };
 
-  // Trackers repository: https://github.com/ngosang/trackerslist
+  // Trackers repositories
   private static trackersFileUrls: string[] = [
-    "https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_ws.txt",
-    "https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_udp.txt",
-    "https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_https.txt",
+    "https://raw.githubusercontent.com/cardano-foundation/cf-identity-wallet/refs/heads/main/trackers.txt"
   ];
 
   private announce = [
@@ -96,7 +94,7 @@ class PeerConnection {
       this.disconnectDApp(this.connectedDAppAddress);
     }
 
-    this.announce = await this.loadTrackersFromRemoteFiles();
+    this.announce = await this.getTrackersFromRemoteFiles();
 
     this.identityWalletConnect = new IdentityWalletConnect(
       this.walletInfo,
@@ -219,10 +217,9 @@ class PeerConnection {
     return this.identityWalletConnect.getKeriIdentifier();
   }
 
-  private async loadTrackersFromRemoteFiles(): Promise<string[]> {
-    const allTrackers: string[] = [];
-
+  private async getTrackersFromRemoteFiles(): Promise<string[]> {
     const validUrlRegex = /^(wss|https|udp):\/\/[^/\s?#]+(:\d+)?(\/|$)/;
+
     for (const fileUrl of PeerConnection.trackersFileUrls) {
       try {
         const response = await fetch(fileUrl);
@@ -239,17 +236,19 @@ class PeerConnection {
           .filter(line => line && !line.startsWith("#"))
           .filter(line => validUrlRegex.test(line));
 
-        allTrackers.push(...trackers);
+        if (trackers.length > 0) {
+          return trackers;
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(`File ${fileUrl} loaded successfully but contains no valid trackers.`);
+        }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(`Error processing file ${fileUrl}:`, error);
       }
     }
 
-    if (allTrackers.length === 0) {
-      return this.announce; // Fallback
-    }
-    return allTrackers;
+    return this.announce; // Fallback
   }
 
 }

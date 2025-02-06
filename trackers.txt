@@ -1,0 +1,8 @@
+wss://tracker.webtorrent.dev:443/announce
+wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org
+
+# Trackers lists
+# https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_ws.txt
+# https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_udp.txt
+# https://raw.githubusercontent.com/ngosang/trackerslist/refs/heads/master/trackers_all_https.txt
+# https://raw.githubusercontent.com/XIU2/TrackersListCollection/refs/heads/master/best.txt
