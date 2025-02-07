@@ -39,7 +39,7 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
         const input = seedInputs.current.at(index);
         if (!input) return;
 
-        (input as any).setFocus();
+        (input as HTMLElement & { setFocus: () => void }).setFocus();
       },
     }));
 

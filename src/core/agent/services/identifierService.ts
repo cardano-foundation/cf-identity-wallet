@@ -77,7 +77,9 @@ class IdentifierService extends AgentService {
     this.props.eventEmitter.on(
       EventTypes.IdentifierRemoved,
       (data: IdentifierRemovedEvent) => {
-        this.deleteIdentifier(data.payload.id!);
+        if (data.payload.id) {
+          this.deleteIdentifier(data.payload.id);
+        }
       }
     );
   }
@@ -256,7 +258,7 @@ class IdentifierService extends AgentService {
     } catch (error) {
       if (!(error instanceof Error)) throw error;
 
-      const [_, status, reason] = error.message.split(" - ");
+      const [, status, reason] = error.message.split(" - ");
       if (!(/400/gi.test(status) && /already incepted/gi.test(reason))) {
         throw error;
       }
@@ -275,9 +277,12 @@ class IdentifierService extends AgentService {
       .identifiers()
       .get(identifier)) as HabState;
 
+    if (!this.props.signifyClient.agent) {
+      throw new Error("Agent is not defined");
+    }
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
-      .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
+      .addEndRole(identifier, "agent", this.props.signifyClient.agent.pre);
     await addRoleOperation.op();
 
     const creationStatus = CreationStatus.PENDING;
@@ -361,9 +366,11 @@ class IdentifierService extends AgentService {
           localMember.displayName
         }`,
       });
-      await this.deleteGroupLinkedConnections(
-        localMember.groupMetadata!.groupId
-      );
+      if (localMember.groupMetadata) {
+        await this.deleteGroupLinkedConnections(
+          localMember.groupMetadata.groupId
+        );
+      }
     }
 
     await this.props.signifyClient.identifiers().update(identifier, {
