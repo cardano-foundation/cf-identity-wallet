@@ -56,7 +56,9 @@ const App = () => {
 
     const handleUnknownError = (event: ErrorEvent) => {
       event.preventDefault();
-      showError("Unhandled error", event.error, dispatch);
+      /* eslint-disable no-console */
+      console.error("Unhandled error", event.error);
+      // showError("Unhandled error", event.error, dispatch);
     }
 
     window.addEventListener("error", handleUnknownError)
