@@ -39,4 +39,23 @@ const signObjectFix: PeerConnectSigningEvent = {
   },
 };
 
-export { signTransactionFix, signObjectFix };
+
+const signUNDPObjectFix: PeerConnectSigningEvent = {
+  type: PeerConnectionEventTypes.PeerConnectSign,
+  payload: {
+    identifier: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+    payload: JSON.stringify({
+      action: "Sign CSO Certificate",
+      actionText: "Sign CSO Certificate",
+      id: "2658fb7d-cd12-48c3-bc95-23e73616b79f",
+      address:
+        "stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek",
+      event: "Sign CSO Certificate",
+      network: "PREPROD",
+      slot: "40262407",
+    }),
+    approvalCallback: (approvalStatus: boolean) => approvalStatus,
+  },
+};
+
+export { signTransactionFix, signObjectFix, signUNDPObjectFix };

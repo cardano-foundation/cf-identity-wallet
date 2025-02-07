@@ -12,7 +12,6 @@ const CardDetailsNestedAttributes = ({
   cardKeyValue,
   itemProps,
 }: CardDetailsNestedAttributesProps) => {
-  const { className, ...restItemProps } = itemProps || {};
   const key = attribute[0];
   const item = attribute[1] as any;
   const dateRegex =
@@ -29,6 +28,7 @@ const CardDetailsNestedAttributes = ({
     return "";
   }, []);
 
+  const { className, ...restItemProps } = typeof itemProps === "function" ? itemProps(key) : (itemProps || {});
   const isObjectItem = typeof item === "object" && item !== null;
   const detailItemsClass = combineClassNames(
     "card-details-attribute-item",
