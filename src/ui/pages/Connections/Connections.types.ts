@@ -25,7 +25,13 @@ interface ConnectionRequestData {
   goal_code: string;
   goal: string;
   handshake_protocols: string[];
-  requestattach: any[];
+  requestattach: {
+    id: string;
+    mimetype: string;
+    data: {
+      base64: string;
+    };
+  }[];
   service: {
     id: string;
     type: string;

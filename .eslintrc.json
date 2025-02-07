@@ -38,6 +38,7 @@
         "jest"
     ],
     "rules": {
+        "@typescript-eslint/no-non-null-assertion": "off",
         "react-hooks/exhaustive-deps": "off", // TODO: remove
         "import/no-named-as-default-member":  "off",
         "@typescript-eslint/no-duplicate-enum-values": "error",
