@@ -9,14 +9,14 @@ const CardDetailsAttributes = ({
   customType,
   itemProps,
 }: CardDetailsAttributesProps) => {
-  const { className, ...restItemProps } = itemProps || {};
   const attributes = Object.entries(data);
-
-  const itemClass = combineClassNames("card-details-attribute-item", className);
 
   return (
     <>
       {attributes.map((item, index) => {
+        const { className, ...restItemProps } = typeof itemProps === "function" ? itemProps(item[0]) : (itemProps || {});
+        const itemClass = combineClassNames("card-details-attribute-item", className);
+
         switch (item[0]) {
         case "id": {
           return (
