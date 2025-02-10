@@ -11,21 +11,23 @@ class BasicStorage implements StorageApi {
   private storageService: StorageService<BasicRecord>;
   static DUPLICATE_ID_ERROR = "Error: Record already exists with id";
 
-
   constructor(storageService: StorageService<BasicRecord>) {
     this.storageService = storageService;
   }
 
-  save({ content, tags, id }: SaveBasicRecordOption): Promise<BasicRecord> {
+  async save({ content, tags, id }: SaveBasicRecordOption): Promise<BasicRecord> {
     const record = new BasicRecord({
       id,
       tags,
       content,
     });
-    return this.storageService.save(record).catch((error) => {
+    try {
+      await this.storageService.save(record);
+      return record;
+    } catch (error) {
       if (
         error instanceof Error &&
-        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${id}`        
+        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${id}`
       ) {
         // eslint-disable-next-line no-console
         console.warn(
@@ -35,8 +37,9 @@ class BasicStorage implements StorageApi {
       } else {
         throw error;
       }
-    });
+    }
   }
+
   delete(record: BasicRecord): Promise<void> {
     return this.storageService.delete(record);
   }
