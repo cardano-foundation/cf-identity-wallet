@@ -1,4 +1,4 @@
-import { StorageService } from "../../storage/storage.types";
+import { StorageMessage, StorageService } from "../../storage/storage.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -83,9 +83,25 @@ class IdentifierStorage {
 
   async createIdentifierMetadataRecord(
     data: IdentifierMetadataRecordProps
-  ): Promise<void> {
+  ): Promise<IdentifierMetadataRecord> {
     const record = new IdentifierMetadataRecord(data);
-    await this.storageService.save(record);
+    try {
+      await this.storageService.save(record);
+      return record;
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
+      ) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Duplicate record detected for ID: ${record.id}. Ignoring...`
+        );
+        return record;
+      } else {
+        throw error;
+      }
+    }
   }
 
   async getIdentifierMetadataByGroupId(

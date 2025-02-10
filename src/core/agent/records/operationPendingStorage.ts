@@ -1,4 +1,4 @@
-import { Query, StorageService } from "../../storage/storage.types";
+import { Query, StorageMessage, StorageService } from "../../storage/storage.types";
 import {
   OperationPendingRecord,
   OperationPendingRecordStorageProps,
@@ -15,8 +15,22 @@ class OperationPendingStorage {
     props: OperationPendingRecordStorageProps
   ): Promise<OperationPendingRecord> {
     const record = new OperationPendingRecord(props);
-    return this.storageService.save(record);
+    return this.storageService.save(record).catch((error) => {
+      if (
+        error instanceof Error &&
+        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
+      ) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Duplicate record detected for ID: ${record.id}. Ignoring...`
+        );
+        return record;
+      } else {
+        throw error;
+      }
+    });
   }
+
   delete(record: OperationPendingRecord): Promise<void> {
     return this.storageService.delete(record);
   }

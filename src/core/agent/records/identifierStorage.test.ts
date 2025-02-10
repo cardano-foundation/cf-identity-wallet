@@ -2,7 +2,7 @@ import { IdentifierMetadataRecord } from "./identifierMetadataRecord";
 import { IdentifierStorage } from "./identifierStorage";
 
 const storageService = jest.mocked({
-  save: jest.fn(),
+  save: jest.fn().mockResolvedValue(undefined),
   delete: jest.fn(),
   deleteById: jest.fn(),
   update: jest.fn(),

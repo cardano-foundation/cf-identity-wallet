@@ -1,4 +1,4 @@
-import { StorageService } from "../../storage/storage.types";
+import { StorageMessage, StorageService } from "../../storage/storage.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 
@@ -39,9 +39,25 @@ class CredentialStorage {
     return record;
   }
 
-  async saveCredentialMetadataRecord(data: CredentialMetadataRecordProps) {
+  async saveCredentialMetadataRecord(data: CredentialMetadataRecordProps): Promise<CredentialMetadataRecord> {
     const record = new CredentialMetadataRecord(data);
-    return this.storageService.save(record);
+    try {
+      await this.storageService.save(record);
+      return record;
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
+      ) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Duplicate record detected for ID: ${record.id}. Ignoring...`
+        );
+        return record;
+      } else {
+        throw error;
+      }
+    }
   }
 
   async updateCredentialMetadata(

@@ -6,7 +6,7 @@ import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types"
 import { CredentialStorage } from "./credentialStorage";
 
 const storageService = jest.mocked({
-  save: jest.fn(),
+  save: jest.fn().mockResolvedValue(Promise.resolve()), // Asegúrate de que save devuelva una promesa
   delete: jest.fn(),
   deleteById: jest.fn(),
   update: jest.fn(),
