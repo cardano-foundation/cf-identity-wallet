@@ -9,6 +9,8 @@ import { BasicRecord } from "./basicRecord";
 
 class BasicStorage implements StorageApi {
   private storageService: StorageService<BasicRecord>;
+  static DUPLICATE_ID_ERROR = "Error: Record already exists with id";
+
 
   constructor(storageService: StorageService<BasicRecord>) {
     this.storageService = storageService;
@@ -20,7 +22,20 @@ class BasicStorage implements StorageApi {
       tags,
       content,
     });
-    return this.storageService.save(record);
+    return this.storageService.save(record).catch((error) => {
+      if (
+        error instanceof Error &&
+        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${id}`        
+      ) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Duplicate record detected for ID: ${record.id}. Ignoring...`
+        );
+        return record;
+      } else {
+        throw error;
+      }
+    });
   }
   delete(record: BasicRecord): Promise<void> {
     return this.storageService.delete(record);
