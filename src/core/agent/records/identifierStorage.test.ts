@@ -108,11 +108,4 @@ describe("Identifier storage test", () => {
       },
     ]);
   });
-
-  test("Should not raise an error when adding two records with the same ID", async () => {
-    await identifierStorage.createIdentifierMetadataRecord(identifierMetadataRecordProps);
-    await expect(identifierStorage.createIdentifierMetadataRecord(identifierMetadataRecordProps)).resolves.not.toThrow();
-
-    expect(storageService.save).toBeCalledTimes(2);
-  });
 });

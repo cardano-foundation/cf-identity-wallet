@@ -127,11 +127,4 @@ describe("Credential storage test", () => {
       CredentialMetadataRecord
     );
   });
-
-  test("Should not raise an error when adding two records with the same ID", async () => {
-    credentialStorage.saveCredentialMetadataRecord(credentialMetadataProps);
-    await expect(credentialStorage.saveCredentialMetadataRecord(credentialMetadataProps)).resolves.not.toThrow();
-
-    expect(storageService.save).toBeCalledTimes(2);
-  });
 });

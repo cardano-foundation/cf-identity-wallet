@@ -1,4 +1,4 @@
-import { Query, StorageMessage, StorageService } from "../../storage/storage.types";
+import { Query, StorageService } from "../../storage/storage.types";
 import {
   ConnectionRecord,
   ConnectionRecordStorageProps,
@@ -11,27 +11,10 @@ class ConnectionStorage {
     this.storageService = storageService;
   }
 
-  async save(props: ConnectionRecordStorageProps): Promise<ConnectionRecord> {
+  save(props: ConnectionRecordStorageProps): Promise<ConnectionRecord> {
     const record = new ConnectionRecord(props);
-    try {
-      await this.storageService.save(record);
-      return record;
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
-      ) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `Duplicate record detected for ID: ${record.id}. Ignoring...`
-        );
-        return record;
-      } else {
-        throw error;
-      }
-    }
+    return this.storageService.save(record);
   }
-
   delete(record: ConnectionRecord): Promise<void> {
     return this.storageService.delete(record);
   }

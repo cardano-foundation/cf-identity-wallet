@@ -143,11 +143,4 @@ describe("Basic Storage", () => {
     const result = await basicStorage.getAll();
     expect(result).toEqual([]);
   });
-
-  test("Should not raise an error when adding two records with the same ID", async () => {
-    await basicStorage.save(basicRecordProps);
-    await expect(basicStorage.save(basicRecordProps)).resolves.not.toThrow();
-
-    expect(storageService.save).toBeCalledTimes(2);
-  });
 });
