@@ -30,22 +30,8 @@ const notification: KeriaNotification = {
   groupReplied: false,
 };
 
-const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const readNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const unreadNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-
-jest.mock("../../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      keriaNotifications: {
-        deleteNotificationRecordById: (id: string) =>
-          deleteNotificationMock(id),
-        readNotification: (id: string) => readNotificationMock(id),
-        unreadNotification: (id: string) => unreadNotificationMock(id),
-      },
-    },
-  },
-}));
+const deleteNotificationMock = jest.fn();
+const toggleNotificationMock = jest.fn();
 
 describe("Notification Options modal", () => {
   const dispatchMock = jest.fn();
@@ -78,6 +64,8 @@ describe("Notification Options modal", () => {
           setCloseModal={jest.fn}
           onShowDetail={jest.fn}
           notification={notification}
+          onDeleteNotification={deleteNotificationMock}
+          onToggleNotification={toggleNotificationMock}
         />
       </Provider>
     );
@@ -104,6 +92,8 @@ describe("Notification Options modal", () => {
           setCloseModal={jest.fn}
           onShowDetail={jest.fn}
           notification={notification}
+          onDeleteNotification={deleteNotificationMock}
+          onToggleNotification={toggleNotificationMock}
         />
       </Provider>
     );
@@ -117,20 +107,7 @@ describe("Notification Options modal", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.deletealert.text
-        )
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("alert-delete-notification-confirm-button"));
-    });
-
-    await waitFor(() => {
-      expect(deleteNotificationMock).toBeCalledWith(notification.id);
-      expect(dispatchMock).toBeCalledWith(deleteNotificationById(notification.id));
+      expect(deleteNotificationMock).toBeCalledWith(notification);
     });
   });
 
@@ -142,6 +119,8 @@ describe("Notification Options modal", () => {
           setCloseModal={jest.fn}
           onShowDetail={jest.fn}
           notification={notification}
+          onDeleteNotification={deleteNotificationMock}
+          onToggleNotification={toggleNotificationMock}
         />
       </Provider>
     );
@@ -153,27 +132,25 @@ describe("Notification Options modal", () => {
     });
 
     await waitFor(() => {
-      expect(readNotificationMock).toBeCalledWith(notification.id);
-      expect(dispatchMock).toBeCalledWith(
-        markNotificationAsRead({
-          id: notification.id,
-          read: !notification.read,
-        })
-      );
+      expect(toggleNotificationMock).toBeCalledWith(notification);
     });
   });
 
   test("mask as unread notification", async () => {
+    const testNotification = {
+      ...notification,
+      read: true,
+    };
+    
     const { getByTestId } = render(
       <Provider store={mockedStore}>
         <NotificationOptionsModal
           optionsIsOpen
           setCloseModal={jest.fn}
           onShowDetail={jest.fn}
-          notification={{
-            ...notification,
-            read: true,
-          }}
+          notification={testNotification}
+          onDeleteNotification={deleteNotificationMock}
+          onToggleNotification={toggleNotificationMock}
         />
       </Provider>
     );
@@ -185,13 +162,7 @@ describe("Notification Options modal", () => {
     });
 
     await waitFor(() => {
-      expect(unreadNotificationMock).toBeCalledWith(notification.id);
-      expect(dispatchMock).toBeCalledWith(
-        markNotificationAsRead({
-          id: notification.id,
-          read: false,
-        })
-      );
+      expect(toggleNotificationMock).toBeCalledWith(testNotification);
     });
   });
 
@@ -204,6 +175,8 @@ describe("Notification Options modal", () => {
           setCloseModal={jest.fn}
           onShowDetail={showNotiMock}
           notification={notification}
+          onDeleteNotification={deleteNotificationMock}
+          onToggleNotification={toggleNotificationMock}
         />
       </Provider>
     );

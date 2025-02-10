@@ -13,10 +13,14 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { NotificationFilters } from "./Notification.types";
 import { Notifications } from "./Notifications";
+import { deleteNotificationById } from "../../../store/reducers/notificationsCache";
 
 mockIonicReact();
 
 const readNotificationMock = jest.fn((id: string) => Promise.resolve(id));
+const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
+const unreadNotificationMock = jest.fn((id: string) => Promise.resolve(id));
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -29,6 +33,9 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       keriaNotifications: {
         readNotification: (id: string) => readNotificationMock(id),
+        deleteNotificationRecordById: (id: string) =>
+          deleteNotificationMock(id),
+        unreadNotification: (id: string) => unreadNotificationMock(id),
       },
       basicStorage: {
         deleteById: jest.fn(() => Promise.resolve()),
@@ -48,10 +55,10 @@ jest.mock("react-router-dom", () => ({
   useHistory: () => ({
     push: jest.fn(),
     location: {
-      pathname: TabsRoutePath.NOTIFICATIONS
-    }
-  })
-}))
+      pathname: TabsRoutePath.NOTIFICATIONS,
+    },
+  }),
+}));
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -89,8 +96,33 @@ const fullState = {
     notifications: notificationsFix,
   },
   credsCache: {
-    creds: []
-  }
+    creds: [],
+  },
+};
+
+
+const readNotificationState = {
+  stateCache: {
+    routes: [TabsRoutePath.NOTIFICATIONS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  connectionsCache: {
+    connections: connectionsForNotifications,
+    multisigConnectionsCache: connectionsForNotifications,
+  },
+  notificationsCache: {
+    notifications: [{
+      ...notificationsFix[0],
+      read: true
+    }],
+  },
+  credsCache: {
+    creds: [],
+  },
 };
 
 const filterTestData = {
@@ -104,23 +136,6 @@ const filterTestData = {
   },
   connectionsCache: {
     connections: connectionsForNotifications,
-  },
-  notificationsCache: {
-    notifications: [notificationsFix[0], notificationsFix[3]],
-  },
-};
-
-const emptyConnection = {
-  stateCache: {
-    routes: [TabsRoutePath.NOTIFICATIONS],
-    authentication: {
-      loggedIn: true,
-      time: Date.now(),
-      passcodeIsSet: true,
-    },
-  },
-  connectionsCache: {
-    connections: {},
   },
   notificationsCache: {
     notifications: [notificationsFix[0], notificationsFix[3]],
@@ -339,6 +354,94 @@ describe("Notifications Tab", () => {
 
     await waitFor(() => {
       expect(getByTestId("revoke-credential-modal")).toBeVisible();
+    });
+  });
+
+  test("Delete notification", async () => {
+    const storeMocked = {
+      ...mockStore(fullState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.NOTIFICATIONS]}>
+          <Notifications />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId(`delete-button-${notificationsFix[0].id}`));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.deletealert.text
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-delete-notification-confirm-button"));
+    });
+
+    await waitFor(() => {
+      expect(deleteNotificationMock).toBeCalledWith(notificationsFix[0].id);
+      expect(dispatchMock).toBeCalledWith(
+        deleteNotificationById(notificationsFix[0].id)
+      );
+    });
+  });
+
+  test("Mask notification as read", async () => {
+    const storeMocked = {
+      ...mockStore(fullState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.NOTIFICATIONS]}>
+          <Notifications />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`toogle-read-button-${notificationsFix[0].id}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(readNotificationMock).toBeCalledWith(notificationsFix[0].id);
+    });
+  });
+
+  test("Mask notification as unread", async () => {
+    const storeMocked = {
+      ...mockStore(readNotificationState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.NOTIFICATIONS]}>
+          <Notifications />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`toogle-read-button-${notificationsFix[0].id}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(unreadNotificationMock).toBeCalledWith(notificationsFix[0].id);
     });
   });
 });

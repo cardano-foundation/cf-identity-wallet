@@ -10,6 +10,7 @@ import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  deleteNotificationById,
   getNotificationsCache,
   markNotificationAsRead,
 } from "../../../store/reducers/notificationsCache";
@@ -43,12 +44,15 @@ const Notifications = () => {
     NotificationFilters | IdentifiersFilters
   >(NotificationFilters.All);
   const earlierNotificationRef = useRef<EarlierNotificationRef>(null);
+  const [openOptionModal, setOpenOptionModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<KeriaNotification | null>(
     null
   );
   const [isOpenCredModal, setIsOpenCredModal] = useState(false);
   const [viewCred, setViewCred] = useState("");
-  const [openUnknownConnectionAlert, setOpenUnknownConnectionAlert] = useState(false);
+  const [openUnknownConnectionAlert, setOpenUnknownConnectionAlert] =
+    useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const filteredNotification = useMemo(() => {
     if (selectedFilter === NotificationFilters.All) {
@@ -90,11 +94,20 @@ const Notifications = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
   });
 
-  const maskAsReaded = async (notification: KeriaNotification) => {
-    if (notification.read) return;
+  const closeOptionModal = () => {
+    setSelectedItem(null);
+    setOpenOptionModal(false);
+  }
 
+  const toggleReadNotification = async (notification: KeriaNotification) => {
     try {
-      await Agent.agent.keriaNotifications.readNotification(notification.id);
+      if (notification.read) {
+        await Agent.agent.keriaNotifications.unreadNotification(
+          notification.id
+        );
+      } else {
+        await Agent.agent.keriaNotifications.readNotification(notification.id);
+      }
 
       dispatch(
         markNotificationAsRead({
@@ -104,13 +117,20 @@ const Notifications = () => {
       );
     } catch (e) {
       showError("Unable to change notification status", e, dispatch);
+    } finally {
+      closeOptionModal();
     }
   };
 
   const handleNotificationClick = async (item: KeriaNotification) => {
-    await maskAsReaded(item);
+    if(!item.read) {
+      await toggleReadNotification(item);
+    }
 
-    if(item.a.r === NotificationRoute.ExnIpexGrant && !connectionsCache?.[item.connectionId]?.label) {
+    if (
+      item.a.r === NotificationRoute.ExnIpexGrant &&
+      !connectionsCache?.[item.connectionId]?.label
+    ) {
       setOpenUnknownConnectionAlert(true);
       return;
     }
@@ -124,6 +144,27 @@ const Notifications = () => {
     const path = `${TabsRoutePath.NOTIFICATIONS}/${item.id}`;
 
     history.push(path);
+  };
+
+  const removeNotification = async () => {
+    if(!selectedItem) return;
+
+    try {
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        selectedItem.id,
+        selectedItem.a.r as NotificationRoute
+      );
+      dispatch(deleteNotificationById(selectedItem.id));
+    } catch (e) {
+      showError("Unable to remove notification", e, dispatch);
+    } finally {
+      closeOptionModal();
+    }
+  };
+
+  const deleteNotificationClick = (notification: KeriaNotification) => {
+    setOpenAlert(true);
+    setSelectedItem(notification);
   };
 
   const filterOptions = [
@@ -147,6 +188,7 @@ const Notifications = () => {
   };
 
   const onOpenOptionModal = (item: KeriaNotification | null) => {
+    setOpenOptionModal(true);
     setSelectedItem(item);
   };
 
@@ -162,7 +204,7 @@ const Notifications = () => {
 
   const closeUnknownConnection = () => {
     setOpenUnknownConnectionAlert(false);
-  }
+  };
 
   return (
     <>
@@ -201,6 +243,8 @@ const Notifications = () => {
                     item={item}
                     onClick={handleNotificationClick}
                     onOptionButtonClick={onOpenOptionModal}
+                    onDelete={deleteNotificationClick}
+                    onReadToggle={toggleReadNotification}
                   />
                 ))}
               </IonList>
@@ -212,6 +256,8 @@ const Notifications = () => {
             data={notificationsEarlier}
             onNotificationClick={handleNotificationClick}
             onOpenOptionModal={onOpenOptionModal}
+            onDelete={deleteNotificationClick}
+            onToggle={toggleReadNotification}
           />
           <p className="notification-empty">
             {filteredNotification.length === 0
@@ -223,8 +269,10 @@ const Notifications = () => {
           <NotificationOptionsModal
             notification={selectedItem}
             onShowDetail={handleNotificationClick}
-            optionsIsOpen={!!selectedItem}
-            setCloseModal={() => onOpenOptionModal(null)}
+            optionsIsOpen={openOptionModal}
+            setCloseModal={() => setOpenOptionModal(false)}
+            onDeleteNotification={deleteNotificationClick}
+            onToggleNotification={toggleReadNotification}
           />
         )}
       </TabLayout>
@@ -240,9 +288,28 @@ const Notifications = () => {
         setIsOpen={setOpenUnknownConnectionAlert}
         dataTestId="alert-unknown-issuer"
         headerText={i18n.t("tabs.notifications.tab.unknownissuer.text")}
-        confirmButtonText={`${i18n.t("tabs.notifications.tab.unknownissuer.button")}`}
+        confirmButtonText={`${i18n.t(
+          "tabs.notifications.tab.unknownissuer.button"
+        )}`}
         actionConfirm={closeUnknownConnection}
         actionDismiss={closeUnknownConnection}
+      />
+      <Alert
+        isOpen={openAlert}
+        setIsOpen={setOpenAlert}
+        dataTestId="alert-delete-notification"
+        headerText={i18n.t(
+          "tabs.notifications.tab.optionmodal.deletealert.text"
+        )}
+        confirmButtonText={`${i18n.t(
+          "tabs.notifications.tab.optionmodal.deletealert.accept"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "tabs.notifications.tab.optionmodal.deletealert.cancel"
+        )}`}
+        actionCancel={() => setOpenAlert(false)}
+        actionConfirm={removeNotification}
+        actionDismiss={() => setOpenAlert(false)}
       />
     </>
   );
