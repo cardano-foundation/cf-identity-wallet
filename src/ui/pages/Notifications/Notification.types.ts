@@ -1,8 +1,5 @@
 import { KeriaNotification } from "../../../core/agent/agent.types";
 
-// @TODO: Remove when UNDP was implemented on core
-const UNDP_TYPE = "undp";
-
 enum NotificationFilters {
   All = "all",
   Identifier = "identifiers",
@@ -15,6 +12,6 @@ interface NotificationItemProps {
   onOptionButtonClick: (item: KeriaNotification) => void;
 }
 
-export { NotificationFilters, UNDP_TYPE };
+export { NotificationFilters };
 
 export type { NotificationItemProps };

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
-import { signUNDPObjectFix } from "../../../../__fixtures__/signTransactionFix";
 import UserIcon from "../../../../assets/images/undp-logo.png";
 import {
   CardBlock,
@@ -20,6 +19,7 @@ import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { UndpSignRequest } from "./Undp.types";
 import "./UndpRequest.scss";
+import { signUNDPObjectFix } from "../../../../__fixtures__/notificationsFix";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;

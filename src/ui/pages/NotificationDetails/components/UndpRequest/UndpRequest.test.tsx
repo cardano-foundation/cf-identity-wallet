@@ -57,7 +57,7 @@ describe("Receive credential", () => {
           pageId="creadential-request"
           activeStatus
           handleBack={jest.fn()}
-          notificationDetails={notificationsFix[1]}
+          notificationDetails={notificationsFix[7]}
         />
       </Provider>
     );

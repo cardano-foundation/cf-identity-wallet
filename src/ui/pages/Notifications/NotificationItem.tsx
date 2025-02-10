@@ -19,7 +19,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { timeDifference } from "../../utils/formatters";
-import { NotificationItemProps, UNDP_TYPE } from "./Notification.types";
+import { NotificationItemProps } from "./Notification.types";
 
 const NotificationItem = ({
   item,
@@ -62,7 +62,7 @@ const NotificationItem = ({
       return t("tabs.notifications.tab.labels.multisigexn", {
         connection: connectionName || t("connections.unknown"),
       });
-    case UNDP_TYPE: 
+    case NotificationRoute.UndpSign: 
       return t("tabs.notifications.tab.labels.undp", {
         connection: connectionName || t("connections.unknown"),
       });
@@ -78,7 +78,7 @@ const NotificationItem = ({
       return idCardOutline;
     case NotificationRoute.MultiSigIcp:
       return fingerPrintOutline;
-    case UNDP_TYPE:
+    case NotificationRoute.UndpSign:
       return documentOutline;
     default:
       return idCardOutline;
@@ -91,7 +91,7 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isUNDP = item.a.r === UNDP_TYPE;
+  const isUNDP = item.a.r === NotificationRoute.UndpSign;
 
   return (
     <IonItem

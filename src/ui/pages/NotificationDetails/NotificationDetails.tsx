@@ -8,7 +8,6 @@ import { useAppIonRouter } from "../../hooks";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
-import { UNDP_TYPE } from "../Notifications/Notification.types";
 import { UndpRequest } from "./components/UndpRequest/UndpRequest";
 
 const NotificationDetails = () => {
@@ -71,7 +70,7 @@ const NotificationDetails = () => {
         multisigExn
       />
     );
-  case UNDP_TYPE:
+  case NotificationRoute.UndpSign:
     return <UndpRequest
       pageId={pageId}
       activeStatus={!!displayNotification}
