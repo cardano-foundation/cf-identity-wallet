@@ -11,11 +11,14 @@ class OperationPendingStorage {
     this.storageService = storageService;
   }
 
-  save(
+  async save(
     props: OperationPendingRecordStorageProps
   ): Promise<OperationPendingRecord> {
     const record = new OperationPendingRecord(props);
-    return this.storageService.save(record).catch((error) => {
+    try {
+      await this.storageService.save(record);
+      return record;
+    } catch (error) {
       if (
         error instanceof Error &&
         error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
@@ -28,7 +31,7 @@ class OperationPendingStorage {
       } else {
         throw error;
       }
-    });
+    }
   }
 
   delete(record: OperationPendingRecord): Promise<void> {

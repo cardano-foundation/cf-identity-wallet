@@ -140,4 +140,11 @@ describe("Notification Storage", () => {
     const result = await notificationStorage.getAll();
     expect(result).toEqual([]);
   });
+
+  test("Should not raise an error when adding two records with the same ID", async () => {
+    await notificationStorage.save(notificationRecordProps);
+    await expect(notificationStorage.save(notificationRecordProps)).resolves.not.toThrow();
+
+    expect(storageService.save).toBeCalledTimes(2);
+  });
 });

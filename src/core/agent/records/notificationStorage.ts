@@ -11,9 +11,12 @@ class NotificationStorage {
     this.storageService = storageService;
   }
 
-  save(props: NotificationRecordStorageProps): Promise<NotificationRecord> {
+  async save(props: NotificationRecordStorageProps): Promise<NotificationRecord> {
     const record = new NotificationRecord(props);
-    return this.storageService.save(record).catch((error) => {
+    try {
+      await this.storageService.save(record);
+      return record;
+    } catch (error) {
       if (
         error instanceof Error &&
         error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
@@ -26,7 +29,7 @@ class NotificationStorage {
       } else {
         throw error;
       }
-    });
+    }
   }
 
   delete(record: NotificationRecord): Promise<void> {

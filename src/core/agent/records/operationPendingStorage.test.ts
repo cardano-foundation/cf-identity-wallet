@@ -141,4 +141,11 @@ describe("Operation Pending Storage", () => {
     const result = await operationPendingStorage.getAll();
     expect(result).toEqual([]);
   });
+
+  test("Should not raise an error when adding two records with the same ID", async () => {
+    await operationPendingStorage.save(operationPendingRecordStorageProps);
+    await expect(operationPendingStorage.save(operationPendingRecordStorageProps)).resolves.not.toThrow();
+
+    expect(storageService.save).toBeCalledTimes(2);
+  });
 });

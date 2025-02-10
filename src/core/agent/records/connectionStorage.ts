@@ -11,9 +11,12 @@ class ConnectionStorage {
     this.storageService = storageService;
   }
 
-  save(props: ConnectionRecordStorageProps): Promise<ConnectionRecord> {
+  async save(props: ConnectionRecordStorageProps): Promise<ConnectionRecord> {
     const record = new ConnectionRecord(props);
-    return this.storageService.save(record).catch((error) => {
+    try {
+      await this.storageService.save(record);
+      return record;
+    } catch (error) {
       if (
         error instanceof Error &&
         error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
@@ -26,7 +29,7 @@ class ConnectionStorage {
       } else {
         throw error;
       }
-    });
+    }
   }
 
   delete(record: ConnectionRecord): Promise<void> {

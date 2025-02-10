@@ -136,4 +136,11 @@ describe("Connection Storage", () => {
     const result = await connectionStorage.getAll();
     expect(result).toEqual([]);
   });
+
+  test("Should not raise an error when adding two records with the same ID", async () => {
+    await connectionStorage.save(connectionRecordProps);
+    await expect(connectionStorage.save(connectionRecordProps)).resolves.not.toThrow();
+
+    expect(storageService.save).toBeCalledTimes(2);
+  });
 });
