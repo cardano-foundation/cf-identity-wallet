@@ -22,6 +22,7 @@ const ConfirmConnectModal = ({
   isConnectModal,
   closeModal,
   onConfirm,
+  onReconnect,
   connectionData,
   onDeleteConnection,
 }: ConfirmConnectModalProps) => {
@@ -75,6 +76,12 @@ const ConfirmConnectModal = ({
   const confirm = () => {
     closeModal();
     onConfirm();
+  };
+
+
+  const reconnect = () => {
+    closeModal();
+    onReconnect && onReconnect();
   };
 
   const confirmClass = combineClassNames("confirm-connect-submit", {
@@ -149,6 +156,14 @@ const ConfirmConnectModal = ({
         onClick={confirm}
       >
         {buttonTitle}
+      </IonButton>
+      <IonButton
+        disabled={isConnecting}
+        className={confirmClass}
+        data-testid="confirm-connect-btn"
+        onClick={reconnect}
+      >
+        Reconnect
       </IonButton>
     </OptionModal>
   );

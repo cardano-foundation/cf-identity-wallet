@@ -38,7 +38,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       seed: seed,
       announce: announce,
       discoverySeed: discoverySeed,
-      logLevel: "info",
+      logLevel: "debug",
     });
     this.selectedAid = selectedAid;
     this.eventEmitter = eventService;
@@ -139,6 +139,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   protected submitTx(tx: string): Promise<string> {
     throw new Error("Method not implemented.");
   }
+
 }
 
 export { IdentityWalletConnect };

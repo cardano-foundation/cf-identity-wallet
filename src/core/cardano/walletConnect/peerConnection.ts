@@ -34,8 +34,7 @@ class PeerConnection {
   ];
 
   private announce = [
-    "wss://tracker.webtorrent.dev:443/announce",
-    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"
+    "wss://tracker.webtorrent.dev:443/announce"
   ];
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
@@ -83,6 +82,8 @@ class PeerConnection {
 
   async start(selectedAid: string) {
 
+
+    
     const meerkatSeed = await SecureStorage.get(
       KeyStoreKeys.MEERKAT_SEED
     );
@@ -103,6 +104,7 @@ class PeerConnection {
       selectedAid,
       this.eventEmitter
     );
+    
     this.identityWalletConnect.setOnConnect(
       async (connectMessage: IConnectMessage) => {
         if (!connectMessage.error) {

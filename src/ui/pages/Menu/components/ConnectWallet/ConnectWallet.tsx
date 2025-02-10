@@ -153,8 +153,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const disconnectWallet = () => {
       if (!connectedWallet) return;
       PeerConnection.peerConnection.disconnectDApp(connectedWallet?.id);
+      
     };
 
+    const reconnect = async () => {
+      if (!connectedWallet) return;
+      await PeerConnection.peerConnection.connectWithDApp(connectedWallet?.id);
+    }
     const toggleConnected = () => {
       if (defaultIdentifierCache.length === 0) {
         setOpenIdentifierMissingAlert(true);
@@ -337,6 +342,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           openModal={openConfirmConnectModal}
           closeModal={() => setOpenConfirmConnectModal(false)}
           onConfirm={toggleConnected}
+          onReconnect={reconnect}
           connectionData={actionInfo.data}
           onDeleteConnection={handleOpenDeleteAlert}
         />

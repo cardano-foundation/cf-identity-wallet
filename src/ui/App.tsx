@@ -10,6 +10,7 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
+import EventEmitter from "events";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -35,6 +36,7 @@ import { SecureStorage } from "../core/storage";
 import { compareVersion } from "./utils/version";
 import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "./globals/constants";
 
+
 setupIonicReact();
 
 const App = () => {
@@ -49,7 +51,12 @@ const App = () => {
     const handleUnknownPromiseError = (event: PromiseRejectionEvent) => {
       // prevent log error to console.
       event.preventDefault();
-      event.promise.catch((e) => showError("Unhandled error", e, dispatch));
+      const reasonMessage = event.reason?.message || JSON.stringify(event.reason);
+      if (reasonMessage.includes("No torrent with id")) return; // TODO: refactor error
+
+      event.promise.catch((e) => {
+        showError("Unhandled error", e, dispatch)
+      });
     }
 
     window.addEventListener("unhandledrejection", handleUnknownPromiseError);
@@ -57,7 +64,7 @@ const App = () => {
     const handleUnknownError = (event: ErrorEvent) => {
       event.preventDefault();
       /* eslint-disable no-console */
-      console.error("Unhandled error", event.error);
+      console.error("Unhandled error222", event.error);
       // showError("Unhandled error", event.error, dispatch);
     }
 
