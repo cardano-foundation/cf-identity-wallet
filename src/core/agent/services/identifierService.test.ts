@@ -786,7 +786,6 @@ describe("Single sig service of agent", () => {
       }));
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     identifierStorage.createIdentifierMetadataRecord = jest.fn().mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
-    saveOperationPendingMock.mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
 
     await identifierService.createIdentifier({
       displayName,
@@ -804,7 +803,7 @@ describe("Single sig service of agent", () => {
       creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
-    expect(eventEmitter.emit).not.toBeCalled();
+    expect(eventEmitter.emit).toBeCalled();
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
