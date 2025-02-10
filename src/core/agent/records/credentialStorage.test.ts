@@ -6,7 +6,7 @@ import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types"
 import { CredentialStorage } from "./credentialStorage";
 
 const storageService = jest.mocked({
-  save: jest.fn().mockResolvedValue(Promise.resolve()), // Asegúrate de que save devuelva una promesa
+  save: jest.fn().mockResolvedValue(Promise.resolve()),
   delete: jest.fn(),
   deleteById: jest.fn(),
   update: jest.fn(),
@@ -131,7 +131,7 @@ describe("Credential storage test", () => {
   test("Should not raise an error when adding two records with the same ID", async () => {
     credentialStorage.saveCredentialMetadataRecord(credentialMetadataProps);
     await expect(credentialStorage.saveCredentialMetadataRecord(credentialMetadataProps)).resolves.not.toThrow();
-    
+
     expect(storageService.save).toBeCalledTimes(2);
   });
 });
