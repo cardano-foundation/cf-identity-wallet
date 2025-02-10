@@ -57,6 +57,8 @@ describe("Earlier notifications", () => {
           onNotificationClick={jest.fn()}
           data={notificationsFix}
           onOpenOptionModal={jest.fn()}
+          onDelete={jest.fn()}
+          onToggle={jest.fn()}
         />
       </Provider>
     );

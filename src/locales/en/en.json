@@ -1154,6 +1154,7 @@
       "tab": {
         "header": "Notifications",
         "empty": "No notifications",
+        "complete": "Completed",
         "chips": {
           "all": "All",
           "identifiers": "Identifiers",
@@ -1192,6 +1193,11 @@
           "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you",
           "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
           "exnipexapplyproposed": "<strong>{{initiator}}</strong>  has proposed a credential for the <strong>{{connection}}’s</strong> request"
+        },
+        "button": {
+          "read": "Read",
+          "unread": "Unread",
+          "delete": "Delete"
         }
       },
       "details": {

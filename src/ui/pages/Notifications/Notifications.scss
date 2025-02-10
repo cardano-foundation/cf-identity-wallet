@@ -61,11 +61,54 @@
         background: transparent;
       }
 
+      .notification-tab-item-slide {
+        .option-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-width: 3.5rem;
+
+          ion-icon {
+            margin-bottom: 0.5rem;
+          }
+        }
+
+        .complete {
+          color: var(--ion-color-neutral-500);
+          font-size: 0.625rem;
+        }
+
+        .complete-label {
+          text-transform: uppercase;
+          font-weight: 500;
+          color: var(--ion-color-success-800);
+          font-size: 0.625rem;
+        }
+
+        @media screen and (min-width: 250px) and (max-width: 370px) {
+          .option-content {
+            min-width: 3rem;
+
+            span {
+              font-size: 13px;
+            }
+  
+            ion-icon {
+              margin-bottom: 0.5rem;
+            }
+          }
+        }
+
+        .notifications-tab-item.complete {
+          background: var(--ion-color-neutral-300);
+        }
+      }
+
       .notifications-tab-item {
         height: 4.5rem;
         display: flex;
         justify-content: space-between;
-        background: transparent;
+        background: var(--ion-color-neutral-200);
 
         &.unread {
           background: var(--ion-color-primary-200);

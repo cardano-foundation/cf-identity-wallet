@@ -21,7 +21,7 @@ const LOAD_EARLIER_NOTIFICATION = 5;
 const EarlierNotification = forwardRef<
   EarlierNotificationRef,
   EarlierNotificationProps
->(({ data, onNotificationClick, onOpenOptionModal, pageId }, ref) => {
+>(({ data, onNotificationClick, onOpenOptionModal, pageId, onDelete, onToggle }, ref) => {
   const [displayLength, setDisplayLength] = useState(
     SHOWN_EARLIER_NOTIFICATION
   );
@@ -76,6 +76,8 @@ const EarlierNotification = forwardRef<
               item={item}
               onClick={onNotificationClick}
               onOptionButtonClick={onOpenOptionModal}
+              onDelete={onDelete}
+              onReadToggle={onToggle}
             />
           ))}
         </IonList>

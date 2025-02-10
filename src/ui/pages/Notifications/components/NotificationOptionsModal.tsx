@@ -4,71 +4,20 @@ import {
   readerOutline,
   trashOutline,
 } from "ionicons/icons";
-import { useState } from "react";
-import { Agent } from "../../../../core/agent/agent";
 import { i18n } from "../../../../i18n";
-import { useAppDispatch } from "../../../../store/hooks";
-import {
-  deleteNotificationById,
-  markNotificationAsRead,
-} from "../../../../store/reducers/notificationsCache";
-import { Alert } from "../../../components/Alert";
 import { OptionItem, OptionModal } from "../../../components/OptionsModal";
 import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
-import { NotificationRoute } from "../../../../core/agent/agent.types";
-import { showError } from "../../../utils/error";
-import { ToastMsgType } from "../../../globals/types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,
   setCloseModal,
   notification,
   onShowDetail,
+  onDeleteNotification,
+  onToggleNotification
 }: NotificationOptionModalProps) => {
-  const dispatch = useAppDispatch();
-  const [openAlert, setOpenAlert] = useState(false);
-
   const closeModal = () => {
     setCloseModal();
-  };
-
-  const toggleReadNotification = async () => {
-    try {
-      if (notification.read) {
-        await Agent.agent.keriaNotifications.unreadNotification(
-          notification.id
-        );
-      } else {
-        await Agent.agent.keriaNotifications.readNotification(notification.id);
-      }
-
-      dispatch(
-        markNotificationAsRead({
-          id: notification.id,
-          read: !notification.read,
-        })
-      );
-      closeModal();
-    } catch (e) {
-      showError("Unable to change notification status", e, dispatch);
-    }
-  };
-
-  const removeNotification = async () => {
-    try {
-      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
-        notification.id,
-        notification.a.r as NotificationRoute
-      );
-      dispatch(deleteNotificationById(notification.id));
-      closeModal();
-    } catch (e) {
-      showError("Unable to remove notification", e, dispatch);
-    }
-  };
-
-  const deleteNotificationClick = () => {
-    setOpenAlert(true);
   };
 
   const options: OptionItem[] = [
@@ -88,13 +37,13 @@ const NotificationOptionsModal = ({
           ? "tabs.notifications.tab.optionmodal.markasunread"
           : "tabs.notifications.tab.optionmodal.markasread"
       ),
-      onClick: toggleReadNotification,
+      onClick: () => onToggleNotification(notification),
       testId: "toogle-read-notification",
     },
     {
       icon: trashOutline,
       label: i18n.t("tabs.notifications.tab.optionmodal.delete"),
-      onClick: deleteNotificationClick,
+      onClick: () => onDeleteNotification(notification),
       testId: "delete-notification",
     },
   ];
@@ -114,23 +63,6 @@ const NotificationOptionsModal = ({
           title: `${i18n.t("tabs.notifications.tab.optionmodal.title")}`,
         }}
         items={options}
-      />
-      <Alert
-        isOpen={openAlert}
-        setIsOpen={setOpenAlert}
-        dataTestId="alert-delete-notification"
-        headerText={i18n.t(
-          "tabs.notifications.tab.optionmodal.deletealert.text"
-        )}
-        confirmButtonText={`${i18n.t(
-          "tabs.notifications.tab.optionmodal.deletealert.accept"
-        )}`}
-        cancelButtonText={`${i18n.t(
-          "tabs.notifications.tab.optionmodal.deletealert.cancel"
-        )}`}
-        actionCancel={() => setOpenAlert(false)}
-        actionConfirm={removeNotification}
-        actionDismiss={() => setOpenAlert(false)}
       />
     </>
   );
