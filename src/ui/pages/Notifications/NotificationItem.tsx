@@ -4,6 +4,7 @@ import {
   ellipsisHorizontal,
   fingerPrintOutline,
   idCardOutline,
+  documentOutline
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
@@ -61,6 +62,10 @@ const NotificationItem = ({
       return t("tabs.notifications.tab.labels.multisigexn", {
         connection: connectionName || t("connections.unknown"),
       });
+    case NotificationRoute.LocalSign: 
+      return t("tabs.notifications.tab.labels.sign", {
+        connection: connectionName || t("connections.unknown"),
+      });
     default:
       return "";
     }
@@ -73,6 +78,8 @@ const NotificationItem = ({
       return idCardOutline;
     case NotificationRoute.MultiSigIcp:
       return fingerPrintOutline;
+    case NotificationRoute.LocalSign:
+      return documentOutline;
     default:
       return idCardOutline;
     }
@@ -84,6 +91,8 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
+  const isLocalSign = item.a.r === NotificationRoute.LocalSign;
+
   return (
     <IonItem
       onClick={() => onClick(item)}
@@ -91,12 +100,12 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        <img
+        {isLocalSign ? <div className="sign-logo"/> : <img
           src={KeriLogo}
           alt="notifications-tab-item-logo"
           className="notifications-tab-item-logo"
           data-testid="notifications-tab-item-logo"
-        />
+        />}
         <IonIcon
           src={referIcon(item)}
           size="small"

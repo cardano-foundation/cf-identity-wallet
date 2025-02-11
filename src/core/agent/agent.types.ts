@@ -181,6 +181,7 @@ enum NotificationRoute {
   ExnIpexOffer = "/exn/ipex/offer",
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
+  LocalSign = "/local/signrequest/",
 }
 
 enum ExchangeRoute {
