@@ -498,15 +498,6 @@ describe("Single sig service of agent", () => {
         },
       },
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
-        },
-      },
-    });
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
@@ -572,15 +563,6 @@ describe("Single sig service of agent", () => {
         },
       },
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
-        },
-      },
-    });
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
@@ -638,15 +620,6 @@ describe("Single sig service of agent", () => {
           createdAtUTC: "2024-12-30T16:49:05.800Z",
           creationStatus: CreationStatus.PENDING,
           theme: 0,
-        },
-      },
-    });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
         },
       },
     });
@@ -743,16 +716,7 @@ describe("Single sig service of agent", () => {
       creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
-    expect(eventEmitter.emit).toBeCalledTimes(1);  // Only once this time, usually 2
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
-        },
-      },
-    });
+    expect(eventEmitter.emit).not.toBeCalled();
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
@@ -803,7 +767,7 @@ describe("Single sig service of agent", () => {
       creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
-    expect(eventEmitter.emit).toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,

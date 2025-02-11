@@ -301,15 +301,10 @@ class IdentifierService extends AgentService {
       }
     }
 
-    const pendingOperation = await this.operationPendingStorage.save({
+    await this.operationPendingStorage.save({
       id: `witness.${identifier}`,
       recordType: OperationPendingRecordType.Witness,
     });
-    
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
-    }); 
     
     // Finally, remove from the re-try record
     const updatedRecord = await this.basicStorage.findById(

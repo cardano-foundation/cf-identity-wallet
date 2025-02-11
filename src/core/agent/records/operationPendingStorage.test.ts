@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Query, StorageService } from "../../storage/storage.types";
 import {
   OperationPendingRecord,
@@ -5,6 +6,7 @@ import {
 } from "./operationPendingRecord";
 import { OperationPendingStorage } from "./operationPendingStorage";
 import { OperationPendingRecordType } from "./operationPendingRecord.type";
+import { CoreEventEmitter } from "../event";
 
 const storageService = jest.mocked<StorageService<OperationPendingRecord>>({
   save: jest.fn(),
@@ -16,7 +18,8 @@ const storageService = jest.mocked<StorageService<OperationPendingRecord>>({
   getAll: jest.fn(),
 });
 
-const operationPendingStorage = new OperationPendingStorage(storageService);
+const eventEmitter = new CoreEventEmitter();
+const operationPendingStorage = new OperationPendingStorage(storageService, eventEmitter);
 
 const id1 = "id1";
 const id2 = "id2";
@@ -46,8 +49,10 @@ describe("Operation Pending Storage", () => {
 
   test("Should save operation pending record", async () => {
     storageService.save.mockResolvedValue(operationPendingRecordA);
+    eventEmitter.emit = jest.fn();
     await operationPendingStorage.save(operationPendingRecordStorageProps);
     expect(storageService.save).toBeCalledWith(operationPendingRecordA);
+    expect(eventEmitter.emit).toBeCalled();
   });
 
   test("Should delete operation pending record", async () => {
@@ -120,8 +125,8 @@ describe("Operation Pending Storage", () => {
   test("Should handle finding error", async () => {
     storageService.findById.mockRejectedValue(new Error("Finding error"));
     await expect(
-      operationPendingStorage.findById(operationPendingRecordA.id)
-    ).rejects.toThrow("Finding error");
+      operationPendingStorage.findById(operationPendingRecordA.id
+    )).rejects.toThrow("Finding error");
   });
 
   test("Should handle not found", async () => {

@@ -3,12 +3,16 @@ import {
   OperationPendingRecord,
   OperationPendingRecordStorageProps,
 } from "./operationPendingRecord";
+import { EventTypes, OperationAddedEvent } from "../event.types";
+import { CoreEventEmitter } from "../event";
 
 class OperationPendingStorage {
   private storageService: StorageService<OperationPendingRecord>;
+  private eventEmitter: CoreEventEmitter;
 
-  constructor(storageService: StorageService<OperationPendingRecord>) {
+  constructor(storageService: StorageService<OperationPendingRecord>, eventEmitter: CoreEventEmitter) {
     this.storageService = storageService;
+    this.eventEmitter = eventEmitter;
   }
 
   async save(
@@ -16,8 +20,12 @@ class OperationPendingStorage {
   ): Promise<OperationPendingRecord> {
     const record = new OperationPendingRecord(props);
     try {
-      await this.storageService.save(record);
-      return record;
+      const pendingOperation = await this.storageService.save(record);
+      this.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
+        payload: { operation: pendingOperation },
+      }); 
+      return pendingOperation;
     } catch (error) {
       if (
         error instanceof Error &&
