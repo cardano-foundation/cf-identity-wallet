@@ -403,15 +403,6 @@ describe("Receive individual ACDC actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-        },
-      },
-    });
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id,
       route: NotificationRoute.ExnIpexGrant,
@@ -616,15 +607,6 @@ describe("Receive group ACDC actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-        },
-      },
-    });
     expect(notificationStorage.deleteById).not.toBeCalled();
   });
 
@@ -782,15 +764,6 @@ describe("Receive group ACDC actions", () => {
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-    });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-        },
-      },
     });
     expect(notificationStorage.deleteById).not.toBeCalled();
   });
@@ -1103,15 +1076,6 @@ describe("Offer ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangeOfferCredential,
-        },
-      },
-    });
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id,
       route: NotificationRoute.ExnIpexApply,
@@ -1217,16 +1181,8 @@ describe("Offer ACDC group actions", () => {
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
-    });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangeOfferCredential,
-        },
-      },
-    });    expect(markNotificationMock).not.toBeCalled();
+    });    
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.deleteById).not.toBeCalled();
   });
 
@@ -1318,15 +1274,6 @@ describe("Offer ACDC group actions", () => {
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
-    });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangeOfferCredential,
-        },
-      },
     });
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "id",
@@ -1581,16 +1528,6 @@ describe("Grant ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangePresentCredential,
-        },
-      },
-    });
-    expect(eventEmitter.emit).toBeCalledTimes(1);
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "note-id",
       hidden: true,
@@ -1761,15 +1698,6 @@ describe("Grant ACDC group actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangePresentCredential,
-        },
-      },
-    });
     expect(notificationStorage.deleteById).not.toBeCalled();
   });
 
@@ -1862,15 +1790,6 @@ describe("Grant ACDC group actions", () => {
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
-    });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "opName",
-          recordType: OperationPendingRecordType.ExchangePresentCredential,
-        },
-      },
     });
     expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
       id: "note-id",

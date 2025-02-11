@@ -301,21 +301,10 @@ class IdentifierService extends AgentService {
       }
     }
 
-    try {
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: `witness.${identifier}`,
-        recordType: OperationPendingRecordType.Witness,
-      });
-      
-      this.props.eventEmitter.emit<OperationAddedEvent>({
-        type: EventTypes.OperationAdded,
-        payload: { operation: pendingOperation },
-      }); 
-    } catch (error) {
-      if (!(error instanceof Error && error.message.startsWith(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG))) {
-        throw error;
-      }
-    }
+    await this.operationPendingStorage.save({
+      id: `witness.${identifier}`,
+      recordType: OperationPendingRecordType.Witness,
+    });
     
     // Finally, remove from the re-try record
     const updatedRecord = await this.basicStorage.findById(
@@ -506,10 +495,6 @@ class IdentifierService extends AgentService {
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
         });
-        this.props.eventEmitter.emit<OperationAddedEvent>({
-          type: EventTypes.OperationAdded,
-          payload: { operation: pendingOperation },
-        });
       }
 
       const name = identifier.name.split(":");
@@ -572,10 +557,6 @@ class IdentifierService extends AgentService {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Group,
-        });
-        this.props.eventEmitter.emit<OperationAddedEvent>({
-          type: EventTypes.OperationAdded,
-          payload: { operation: pendingOperation },
         });
       }
 

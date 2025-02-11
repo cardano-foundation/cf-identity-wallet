@@ -1,22 +1,43 @@
-import { Query, StorageService } from "../../storage/storage.types";
+import { Query, StorageMessage, StorageService } from "../../storage/storage.types";
 import {
   OperationPendingRecord,
   OperationPendingRecordStorageProps,
 } from "./operationPendingRecord";
+import { EventTypes, OperationAddedEvent } from "../event.types";
+import { CoreEventEmitter } from "../event";
 
 class OperationPendingStorage {
   private storageService: StorageService<OperationPendingRecord>;
+  private eventEmitter: CoreEventEmitter;
 
-  constructor(storageService: StorageService<OperationPendingRecord>) {
+  constructor(storageService: StorageService<OperationPendingRecord>, eventEmitter: CoreEventEmitter) {
     this.storageService = storageService;
+    this.eventEmitter = eventEmitter;
   }
 
-  save(
+  async save(
     props: OperationPendingRecordStorageProps
   ): Promise<OperationPendingRecord> {
     const record = new OperationPendingRecord(props);
-    return this.storageService.save(record);
+    try {
+      const pendingOperation = await this.storageService.save(record);
+      this.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
+        payload: { operation: pendingOperation },
+      }); 
+      return pendingOperation;
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
+      ) {
+        return record;
+      } else {
+        throw error;
+      }
+    }
   }
+
   delete(record: OperationPendingRecord): Promise<void> {
     return this.storageService.delete(record);
   }

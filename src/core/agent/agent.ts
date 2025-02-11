@@ -1,4 +1,5 @@
 import { Capacitor } from "@capacitor/core";
+import { EventEmitter } from "events";
 import {
   randomPasscode,
   SignifyClient,
@@ -68,7 +69,7 @@ class Agent {
 
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
-    eventEmitter: undefined as any,
+    eventEmitter: new CoreEventEmitter(),
     signifyClient: undefined as any,
   };
 
@@ -441,7 +442,8 @@ class Agent {
       this.getStorageService<PeerConnectionMetadataRecord>(this.storageSession)
     );
     this.operationPendingStorage = new OperationPendingStorage(
-      this.getStorageService<OperationPendingRecord>(this.storageSession)
+      this.getStorageService<OperationPendingRecord>(this.storageSession),
+      this.agentServicesProps.eventEmitter
     );
     this.agentServicesProps = {
       signifyClient: this.signifyClient,

@@ -498,15 +498,6 @@ describe("Single sig service of agent", () => {
         },
       },
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
-        },
-      },
-    });
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
@@ -572,15 +563,6 @@ describe("Single sig service of agent", () => {
         },
       },
     });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
-        },
-      },
-    });
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
@@ -638,15 +620,6 @@ describe("Single sig service of agent", () => {
           createdAtUTC: "2024-12-30T16:49:05.800Z",
           creationStatus: CreationStatus.PENDING,
           theme: 0,
-        },
-      },
-    });
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
         },
       },
     });
@@ -743,16 +716,7 @@ describe("Single sig service of agent", () => {
       creationStatus: CreationStatus.PENDING,
       theme: 0
     }));
-    expect(eventEmitter.emit).toBeCalledTimes(1);  // Only once this time, usually 2
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "op123",
-          recordType: OperationPendingRecordType.Witness,
-        },
-      },
-    });
+    expect(eventEmitter.emit).not.toBeCalled();
     expect(basicStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
         id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
@@ -786,7 +750,6 @@ describe("Single sig service of agent", () => {
       }));
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     identifierStorage.createIdentifierMetadataRecord = jest.fn().mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
-    saveOperationPendingMock.mockRejectedValue(new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG));
 
     await identifierService.createIdentifier({
       displayName,
@@ -1208,41 +1171,14 @@ describe("Single sig service of agent", () => {
     expect(operationPendingStorage.save).toBeCalledWith({
       recordType: OperationPendingRecordType.Witness,
       id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl"
-    });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-          recordType: OperationPendingRecordType.Witness,
-        }
-      }
-    });
+    }); 
     expect(operationPendingStorage.save).toBeCalledWith({
       recordType: OperationPendingRecordType.Witness,
       id: "witness.EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs"
     });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "witness.EL-EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
-          recordType: OperationPendingRecordType.Witness,
-        }
-      }
-    });
     expect(operationPendingStorage.save).toBeCalledWith({
       recordType: OperationPendingRecordType.Group,
       id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM"
-    });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-          recordType: OperationPendingRecordType.Group,
-        }
-      }
     });
   });
 

@@ -171,13 +171,9 @@ class IpexCommunicationService extends AgentService {
       grantNoteRecord.hidden = true;
     }
 
-    const pendingOperation = await this.operationPendingStorage.save({
+    await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-    });
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
     });
     
     await this.notificationStorage.update(grantNoteRecord);
@@ -240,13 +236,9 @@ class IpexCommunicationService extends AgentService {
       applyNoteRecord.hidden = true;
     }
 
-    const pendingOperation = await this.operationPendingStorage.save({
+    await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
-    });
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
     });
 
     await this.notificationStorage.update(applyNoteRecord);
@@ -335,13 +327,9 @@ class IpexCommunicationService extends AgentService {
       agreeNoteRecord.hidden = true;
     }
 
-    const pendingOperation = await this.operationPendingStorage.save({
+    await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangePresentCredential,
-    });
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
     });
 
     await this.notificationStorage.update(agreeNoteRecord);
@@ -585,13 +573,9 @@ class IpexCommunicationService extends AgentService {
       },
     });
 
-    const pendingOperation = await this.operationPendingStorage.save({
+    await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-    });
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
     });
 
     grantNoteRecord.linkedRequest = {
@@ -629,13 +613,9 @@ class IpexCommunicationService extends AgentService {
       offerExn
     );
 
-    const pendingOperation = await this.operationPendingStorage.save({
+    await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
-    });
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
     });
 
     applyNoteRecord.linkedRequest = {
@@ -666,13 +646,9 @@ class IpexCommunicationService extends AgentService {
       }
     );
 
-    const pendingOperation = await this.operationPendingStorage.save({
+    await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangePresentCredential,
-    });
-    this.props.eventEmitter.emit<OperationAddedEvent>({
-      type: EventTypes.OperationAdded,
-      payload: { operation: pendingOperation },
     });
 
     agreeNoteRecord.linkedRequest = {

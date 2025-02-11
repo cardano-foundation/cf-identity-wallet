@@ -153,14 +153,9 @@ class MultiSigService extends AgentService {
       ourMetadata
     );
     if (creationStatus === CreationStatus.PENDING) {
-      const pendingOperation = await this.operationPendingStorage.save({
+      await this.operationPendingStorage.save({
         id: op.name,
         recordType: OperationPendingRecordType.Group,
-      });
-
-      this.props.eventEmitter.emit<OperationAddedEvent>({
-        type: EventTypes.OperationAdded,
-        payload: { operation: pendingOperation },
       });
     } else {
       // Trigger the end role authorization if the operation is done
@@ -393,14 +388,9 @@ class MultiSigService extends AgentService {
     );
 
     if (creationStatus === CreationStatus.PENDING) {
-      const pendingOperation = await this.operationPendingStorage.save({
+      await this.operationPendingStorage.save({
         id: op.name,
         recordType: OperationPendingRecordType.Group,
-      });
-
-      this.props.eventEmitter.emit<OperationAddedEvent>({
-        type: EventTypes.OperationAdded,
-        payload: { operation: pendingOperation },
       });
     } else {
       // Trigger the end role authorization if the operation is done
