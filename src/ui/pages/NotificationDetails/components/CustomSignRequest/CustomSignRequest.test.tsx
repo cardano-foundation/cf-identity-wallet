@@ -6,7 +6,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierMapFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { UndpRequest } from "./UndpRequest";
+import { CustomSignRequest } from "./CustomSignRequest";
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -53,7 +53,7 @@ describe("Receive credential", () => {
     };
     const { getAllByText, getByText } = render(
       <Provider store={storeMocked}>
-        <UndpRequest
+        <CustomSignRequest
           pageId="creadential-request"
           activeStatus
           handleBack={jest.fn()}
@@ -62,9 +62,9 @@ describe("Receive credential", () => {
       </Provider>
     );
 
-    expect(getAllByText(EN_TRANSLATIONS.tabs.notifications.details.undp.title)[0]).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.undp.identifier)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.undp.info)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.undp.transaction.data)).toBeVisible();
+    expect(getAllByText(EN_TRANSLATIONS.tabs.notifications.details.sign.title)[0]).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.identifier)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.info)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.transaction.data)).toBeVisible();
   });
 });

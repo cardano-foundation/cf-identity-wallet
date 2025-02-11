@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
-import UserIcon from "../../../../assets/images/undp-logo.png";
+import UserIcon from "../../../../assets/images/sign-logo.png";
 import {
   CardBlock,
   CardDetailsAttributes,
@@ -17,13 +17,13 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { Verification } from "../../../../components/Verification";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import "./UndpRequest.scss";
+import "./CustomSignRequest.scss";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
 }
 
-const UndpRequest = ({
+const CustomSignRequest = ({
   pageId,
   activeStatus,
   notificationDetails,
@@ -133,11 +133,11 @@ const UndpRequest = ({
       <ScrollablePageLayout
         activeStatus={activeStatus}
         pageId={pageId}
-        customClass="undp-request"
+        customClass="custom-sign-request"
         header={
           <PageHeader
             onBack={handleBack}
-            title={`${i18n.t("tabs.notifications.details.undp.title")}`}
+            title={`${i18n.t("tabs.notifications.details.sign.title")}`}
           />
         }
         footer={
@@ -159,10 +159,10 @@ const UndpRequest = ({
           />
           <h2 className="sign-name">{connectionName?.label}</h2>
         </div>
-        <h3 className="sign-info">{i18n.t("tabs.notifications.details.undp.info")}</h3>
+        <h3 className="sign-info">{i18n.t("tabs.notifications.details.sign.info")}</h3>
         <div className="sign-content">
           <CardBlock
-            title={`${i18n.t("tabs.notifications.details.undp.identifier")}`}
+            title={`${i18n.t("tabs.notifications.details.sign.identifier")}`}
             testId="identifier-id-block"
             className="sign-identifier"
           >
@@ -176,7 +176,7 @@ const UndpRequest = ({
             />
           </CardBlock>
           <CardBlock
-            title={i18n.t("tabs.notifications.details.undp.transaction.data")}
+            title={i18n.t("tabs.notifications.details.sign.transaction.data")}
             className={signContentCss}
             testId="sign-data"
           >
@@ -209,4 +209,4 @@ const UndpRequest = ({
   );
 };
 
-export { UndpRequest };
+export { CustomSignRequest };

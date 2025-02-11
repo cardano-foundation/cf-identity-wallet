@@ -62,8 +62,8 @@ const NotificationItem = ({
       return t("tabs.notifications.tab.labels.multisigexn", {
         connection: connectionName || t("connections.unknown"),
       });
-    case NotificationRoute.LocalUndpSign: 
-      return t("tabs.notifications.tab.labels.undp", {
+    case NotificationRoute.LocalSign: 
+      return t("tabs.notifications.tab.labels.sign", {
         connection: connectionName || t("connections.unknown"),
       });
     default:
@@ -78,7 +78,7 @@ const NotificationItem = ({
       return idCardOutline;
     case NotificationRoute.MultiSigIcp:
       return fingerPrintOutline;
-    case NotificationRoute.LocalUndpSign:
+    case NotificationRoute.LocalSign:
       return documentOutline;
     default:
       return idCardOutline;
@@ -91,7 +91,7 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isUNDP = item.a.r === NotificationRoute.LocalUndpSign;
+  const isLocalSign = item.a.r === NotificationRoute.LocalSign;
 
   return (
     <IonItem
@@ -100,7 +100,7 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        {isUNDP ? <div className="undp-logo"/> : <img
+        {isLocalSign ? <div className="sign-logo"/> : <img
           src={KeriLogo}
           alt="notifications-tab-item-logo"
           className="notifications-tab-item-logo"
