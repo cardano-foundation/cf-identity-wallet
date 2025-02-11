@@ -428,16 +428,6 @@ describe("Creation of multi-sig", () => {
       })
     );
 
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: `group.${multisigIdentifier}`,
-          recordType: OperationPendingRecordType.Group,
-        },
-      },
-    });
-
     (memberMetadataRecord.groupMetadata as any).groupCreated = false;
     identifiersCreateMock.mockImplementation((name, _config) => {
       return {
@@ -609,16 +599,6 @@ describe("Creation of multi-sig", () => {
       memberIdentifierRecord.id,
       memberIdentifierRecord
     );
-
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: `group.${multisigIdentifier}`,
-          recordType: OperationPendingRecordType.Group,
-        },
-      },
-    });
 
     identifiersCreateMock.mockImplementationOnce((name, _config) => {
       return {

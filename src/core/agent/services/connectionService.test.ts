@@ -702,15 +702,6 @@ describe("Connection service of agent", () => {
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
     eventEmitter.emit = jest.fn();
     await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`, false);
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: `${oobiPrefix}${failUuid}`,
-          recordType: OperationPendingRecordType.Oobi,
-        },
-      },
-    });
   });
 
   test("Can delete stale local connection", async () => {

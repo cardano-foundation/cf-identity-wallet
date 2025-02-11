@@ -486,13 +486,9 @@ class ConnectionService extends AgentService {
       }
     } else {
       operation = await this.props.signifyClient.oobis().resolve(url, alias);
-      const pendingOperation = await this.operationPendingStorage.save({
+      await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
-      });
-      this.props.eventEmitter.emit<OperationAddedEvent>({
-        type: EventTypes.OperationAdded,
-        payload: { operation: pendingOperation },
       });
     }
     return { op: operation, alias };

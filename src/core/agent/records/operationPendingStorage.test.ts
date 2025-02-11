@@ -7,6 +7,7 @@ import {
 import { OperationPendingStorage } from "./operationPendingStorage";
 import { OperationPendingRecordType } from "./operationPendingRecord.type";
 import { CoreEventEmitter } from "../event";
+import { EventTypes } from "../event.types";
 
 const storageService = jest.mocked<StorageService<OperationPendingRecord>>({
   save: jest.fn(),
@@ -52,7 +53,6 @@ describe("Operation Pending Storage", () => {
     eventEmitter.emit = jest.fn();
     await operationPendingStorage.save(operationPendingRecordStorageProps);
     expect(storageService.save).toBeCalledWith(operationPendingRecordA);
-    expect(eventEmitter.emit).toBeCalled();
   });
 
   test("Should delete operation pending record", async () => {

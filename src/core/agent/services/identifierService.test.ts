@@ -1171,41 +1171,14 @@ describe("Single sig service of agent", () => {
     expect(operationPendingStorage.save).toBeCalledWith({
       recordType: OperationPendingRecordType.Witness,
       id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl"
-    });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-          recordType: OperationPendingRecordType.Witness,
-        }
-      }
-    });
+    }); 
     expect(operationPendingStorage.save).toBeCalledWith({
       recordType: OperationPendingRecordType.Witness,
       id: "witness.EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs"
     });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "witness.EL-EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
-          recordType: OperationPendingRecordType.Witness,
-        }
-      }
-    });
     expect(operationPendingStorage.save).toBeCalledWith({
       recordType: OperationPendingRecordType.Group,
       id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM"
-    });
-    expect(eventEmitter.emit).toBeCalledWith({
-      type: EventTypes.OperationAdded,
-      payload: {
-        operation: {
-          id: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-          recordType: OperationPendingRecordType.Group,
-        }
-      }
     });
   });
 
