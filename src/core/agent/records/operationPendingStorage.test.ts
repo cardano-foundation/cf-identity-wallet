@@ -46,6 +46,7 @@ const operationPendingRecordB = new OperationPendingRecord({
 describe("Operation Pending Storage", () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.spyOn(global, "Date").mockImplementation(() => now as unknown as string);
   });
 
   test("Should save operation pending record", async () => {
@@ -53,6 +54,19 @@ describe("Operation Pending Storage", () => {
     eventEmitter.emit = jest.fn();
     await operationPendingStorage.save(operationPendingRecordStorageProps);
     expect(storageService.save).toBeCalledWith(operationPendingRecordA);
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: operationPendingRecordA.id,
+          recordType: operationPendingRecordA.recordType,
+          createdAt: now,
+          updatedAt: undefined,
+          _tags: {},
+          type: "OperationPendingRecord",
+        }
+      }
+    });
   });
 
   test("Should delete operation pending record", async () => {
