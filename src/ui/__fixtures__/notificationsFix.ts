@@ -1,5 +1,4 @@
 import { KeriaNotification } from "../../core/agent/agent.types";
-import { PeerConnectionEventTypes, PeerConnectSigningEvent } from "../../core/cardano/walletConnect/peerConnection.types";
 
 const now = new Date(Date.now());
 const notificationsFix: KeriaNotification[] = [
@@ -96,9 +95,22 @@ const notificationsFix: KeriaNotification[] = [
     id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMm2",
     createdAt: new Date(now.getTime() + 120 * -60000).toISOString(),
     a: {
-      r: "/undp/sign",
+      r: "/local/undp/sign",
       d: "EMT02ZHUhpnr4gFFk104B-pLwb2bJC8aip2VYmbPztnk",
       m: "",
+      payload: {
+        identifier: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+        payload: JSON.stringify({
+          action: "Sign CSO Certificate",
+          actionText: "Sign CSO Certificate",
+          id: "2658fb7d-cd12-48c3-bc95-23e73616b79f",
+          address:
+            "stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek",
+          event: "Sign CSO Certificate",
+          network: "PREPROD",
+          slot: "40262407",
+        }),
+      },
     },
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
@@ -106,22 +118,4 @@ const notificationsFix: KeriaNotification[] = [
   }
 ];
 
-const signUNDPObjectFix: PeerConnectSigningEvent = {
-  type: PeerConnectionEventTypes.PeerConnectSign,
-  payload: {
-    identifier: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
-    payload: JSON.stringify({
-      action: "Sign CSO Certificate",
-      actionText: "Sign CSO Certificate",
-      id: "2658fb7d-cd12-48c3-bc95-23e73616b79f",
-      address:
-        "stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek",
-      event: "Sign CSO Certificate",
-      network: "PREPROD",
-      slot: "40262407",
-    }),
-    approvalCallback: (approvalStatus: boolean) => approvalStatus,
-  },
-};
-
-export { notificationsFix, signUNDPObjectFix };
+export { notificationsFix };

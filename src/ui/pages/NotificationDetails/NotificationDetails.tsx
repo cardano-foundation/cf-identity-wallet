@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { KeriaNotification, NotificationRoute } from "../../../core/agent/agent.types";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/agent.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppSelector } from "../../../store/hooks";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
@@ -20,16 +23,19 @@ const NotificationDetails = () => {
     return notificationCache.find((notification) => notification.id === id);
   }, [id, notificationCache]);
 
-  const currentNotification = useRef<KeriaNotification | undefined>(notificationDetails);
+  const currentNotification = useRef<KeriaNotification | undefined>(
+    notificationDetails
+  );
 
   const handleBack = useCallback(() => {
     ionicRouter.push(TabsRoutePath.NOTIFICATIONS, "back", "pop");
   }, [ionicRouter]);
 
-  const displayNotification = notificationDetails || currentNotification.current;
+  const displayNotification =
+    notificationDetails || currentNotification.current;
 
   useEffect(() => {
-    if(!displayNotification) handleBack();
+    if (!displayNotification) handleBack();
   }, [handleBack, displayNotification]);
 
   switch (displayNotification?.a?.r) {
@@ -70,13 +76,15 @@ const NotificationDetails = () => {
         multisigExn
       />
     );
-  case NotificationRoute.UndpSign:
-    return <UndpRequest
-      pageId={pageId}
-      activeStatus={!!displayNotification}
-      notificationDetails={displayNotification}
-      handleBack={handleBack}
-    />
+  case NotificationRoute.LocalUndpSign:
+    return (
+      <UndpRequest
+        pageId={pageId}
+        activeStatus={!!displayNotification}
+        notificationDetails={displayNotification}
+        handleBack={handleBack}
+      />
+    );
   default:
     return null;
   }

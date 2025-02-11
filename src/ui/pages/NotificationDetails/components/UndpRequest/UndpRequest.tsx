@@ -17,9 +17,7 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { Verification } from "../../../../components/Verification";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import { UndpSignRequest } from "./Undp.types";
 import "./UndpRequest.scss";
-import { signUNDPObjectFix } from "../../../../__fixtures__/notificationsFix";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
@@ -34,28 +32,26 @@ const UndpRequest = ({
   const connections = useAppSelector(getConnectionsCache);
   const [isSigningObject, setIsSigningObject] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
-  const [requestData, ] = useState<UndpSignRequest>({
-    signTransaction: signUNDPObjectFix,
-  });
   const [isExpand, setExpand] = useState(false);
   const [displayExpandButton, setDisplayExpandButton] = useState(false);
 
   const attributeContainerRef = useRef<HTMLDivElement>(null);
   const attributeRef = useRef<HTMLDivElement>(null);
 
+  const requestData = notificationDetails.a.payload as Record<string, string>;
+
   const connectionName = connections[notificationDetails.connectionId];
-  const signTransaction = requestData.signTransaction;
   const logo = UserIcon;
 
   const signDetails = useMemo(() => {
-    if (!requestData.signTransaction) {
+    if (!requestData?.payload) {
       return {};
     }
 
     let signContent;
     try {
       signContent = JSON.parse(
-        requestData.signTransaction.payload.payload
+        requestData.payload
       );
 
       signContent["id"] = ellipsisText(signContent["id"]);
@@ -63,10 +59,10 @@ const UndpRequest = ({
       
       setIsSigningObject(true);
     } catch (error) {
-      signContent = requestData.signTransaction.payload.payload;
+      signContent = requestData.payload;
     }
     return signContent;
-  }, [requestData.signTransaction]);
+  }, [requestData]);
 
   const handleSign = () => {
     handleBack();
@@ -171,7 +167,7 @@ const UndpRequest = ({
             className="sign-identifier"
           >
             <CardDetailsItem
-              info={ellipsisText(signTransaction?.payload.identifier || "")}
+              info={ellipsisText(requestData.identifier || "")}
               icon={keyOutline}
               testId="identifier-id"
               className="identifier-id"

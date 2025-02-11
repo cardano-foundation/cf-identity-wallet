@@ -62,7 +62,7 @@ const NotificationItem = ({
       return t("tabs.notifications.tab.labels.multisigexn", {
         connection: connectionName || t("connections.unknown"),
       });
-    case NotificationRoute.UndpSign: 
+    case NotificationRoute.LocalUndpSign: 
       return t("tabs.notifications.tab.labels.undp", {
         connection: connectionName || t("connections.unknown"),
       });
@@ -78,7 +78,7 @@ const NotificationItem = ({
       return idCardOutline;
     case NotificationRoute.MultiSigIcp:
       return fingerPrintOutline;
-    case NotificationRoute.UndpSign:
+    case NotificationRoute.LocalUndpSign:
       return documentOutline;
     default:
       return idCardOutline;
@@ -91,7 +91,7 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isUNDP = item.a.r === NotificationRoute.UndpSign;
+  const isUNDP = item.a.r === NotificationRoute.LocalUndpSign;
 
   return (
     <IonItem
