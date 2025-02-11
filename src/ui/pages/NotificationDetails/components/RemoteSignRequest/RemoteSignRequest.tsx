@@ -17,13 +17,13 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { Verification } from "../../../../components/Verification";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import "./CustomSignRequest.scss";
+import "./RemoteSignRequest.scss";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
 }
 
-const CustomSignRequest = ({
+const RemoteSignRequest = ({
   pageId,
   activeStatus,
   notificationDetails,
@@ -209,4 +209,4 @@ const CustomSignRequest = ({
   );
 };
 
-export { CustomSignRequest };
+export { RemoteSignRequest };

@@ -11,7 +11,7 @@ import { useAppIonRouter } from "../../hooks";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
-import { CustomSignRequest } from "./components/CustomSignRequest";
+import { RemoteSignRequest } from "./components/RemoteSignRequest";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -78,7 +78,7 @@ const NotificationDetails = () => {
     );
   case NotificationRoute.LocalSign:
     return (
-      <CustomSignRequest
+      <RemoteSignRequest
         pageId={pageId}
         activeStatus={!!displayNotification}
         notificationDetails={displayNotification}

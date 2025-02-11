@@ -6,7 +6,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierMapFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { CustomSignRequest } from "./CustomSignRequest";
+import { RemoteSignRequest } from "./RemoteSignRequest";
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -53,7 +53,7 @@ describe("Receive credential", () => {
     };
     const { getAllByText, getByText } = render(
       <Provider store={storeMocked}>
-        <CustomSignRequest
+        <RemoteSignRequest
           pageId="creadential-request"
           activeStatus
           handleBack={jest.fn()}
