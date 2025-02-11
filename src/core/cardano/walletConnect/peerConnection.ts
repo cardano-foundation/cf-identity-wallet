@@ -7,10 +7,10 @@ import {KeyStoreKeys, SecureStorage} from "../../storage";
 import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,
+  PeerConnectSigningEvent,
   PeerConnectedEvent,
   PeerConnectionBrokenEvent,
   PeerConnectionEventTypes,
-  PeerConnectSigningEvent,
   PeerDisconnectedEvent,
 } from "./peerConnection.types";
 import { Agent } from "../../agent/agent";
@@ -28,13 +28,9 @@ class PeerConnection {
     requestAutoconnect: true,
   };
 
-  // Trackers repositories
-  private static trackersFileUrls: string[] = [
-    "https://raw.githubusercontent.com/cardano-foundation/cf-identity-wallet/refs/heads/main/trackers.txt"
-  ];
-
   private announce = [
-    "wss://tracker.webtorrent.dev:443/announce"
+    "wss://tracker.webtorrent.dev:443/announce",
+    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"
   ];
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
@@ -82,8 +78,6 @@ class PeerConnection {
 
   async start(selectedAid: string) {
 
-
-    
     const meerkatSeed = await SecureStorage.get(
       KeyStoreKeys.MEERKAT_SEED
     );
@@ -94,9 +88,6 @@ class PeerConnection {
     ) {
       this.disconnectDApp(this.connectedDAppAddress);
     }
-
-    this.announce = await this.getTrackersFromRemoteFiles();
-
     this.identityWalletConnect = new IdentityWalletConnect(
       this.walletInfo,
       meerkatSeed,
@@ -104,7 +95,6 @@ class PeerConnection {
       selectedAid,
       this.eventEmitter
     );
-    
     this.identityWalletConnect.setOnConnect(
       async (connectMessage: IConnectMessage) => {
         if (!connectMessage.error) {
@@ -155,7 +145,7 @@ class PeerConnection {
     this.identityWalletConnect.setEnableExperimentalApi(
       new ExperimentalContainer<ExperimentalAPIFunctions>({
         getKeriIdentifier: this.identityWalletConnect.getKeriIdentifier,
-        signKeri: this.identityWalletConnect.signKeri
+        signKeri: this.identityWalletConnect.signKeri,
       })
     );
   }
@@ -172,7 +162,7 @@ class PeerConnection {
             error.message ===
             PeerConnectionStorage.PEER_CONNECTION_METADATA_RECORD_MISSING
           ) {
-            return Promise.resolve(undefined);
+            return undefined;
           } else {
             throw error;
           }
@@ -193,11 +183,11 @@ class PeerConnection {
     SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
   }
 
-  disconnectDApp(dAppIdentifier?: string | null, isBroken?: boolean) {
+  disconnectDApp(dAppIdentifier: string, isBroken?: boolean) {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
-    this.identityWalletConnect.disconnect(dAppIdentifier ? dAppIdentifier : this.connectedDAppAddress);
+    this.identityWalletConnect.disconnect(dAppIdentifier);
 
     if (isBroken) {
       this.eventEmitter.emit<PeerConnectionBrokenEvent>({
@@ -217,41 +207,6 @@ class PeerConnection {
     }
     return this.identityWalletConnect.getKeriIdentifier();
   }
-
-  private async getTrackersFromRemoteFiles(): Promise<string[]> {
-    const validUrlRegex = /^(wss|https|udp):\/\/[^/\s?#]+(:\d+)?(\/|$)/;
-
-    for (const fileUrl of PeerConnection.trackersFileUrls) {
-      try {
-        const response = await fetch(fileUrl);
-        if (!response.ok) {
-          // eslint-disable-next-line no-console
-          console.warn(`Error loading file ${fileUrl}: Status code ${response.status}`);
-          continue;
-        }
-
-        const text = await response.text();
-        const trackers = text
-          .split("\n")
-          .map(line => line.trim())
-          .filter(line => line && !line.startsWith("#"))
-          .filter(line => validUrlRegex.test(line));
-
-        if (trackers.length > 0) {
-          return trackers;
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn(`File ${fileUrl} loaded successfully but contains no valid trackers.`);
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(`Error processing file ${fileUrl}:`, error);
-      }
-    }
-
-    return this.announce; // Fallback
-  }
-
 }
 
 export { PeerConnection };

@@ -5,6 +5,7 @@ import {
   IWalletInfo,
 } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
+import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
@@ -13,7 +14,6 @@ import {
   TxSignError,
 } from "./peerConnection.types";
 import { CoreEventEmitter } from "../../agent/event";
-import {PeerConnection} from "./peerConnection";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
   private selectedAid: string;
@@ -25,6 +25,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+
   constructor(
     walletInfo: IWalletInfo,
     seed: string | null,
@@ -37,7 +38,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       seed: seed,
       announce: announce,
       discoverySeed: discoverySeed,
-      logLevel: "debug",
+      logLevel: "info",
     });
     this.selectedAid = selectedAid;
     this.eventEmitter = eventService;
