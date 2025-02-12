@@ -26,7 +26,6 @@ import {
   EventTypes,
   IdentifierAddedEvent,
   IdentifierRemovedEvent,
-  OperationAddedEvent,
 } from "../event.types";
 import { StorageMessage } from "../../storage/storage.types";
 
@@ -37,7 +36,7 @@ const UI_THEMES = [
 class IdentifierService extends AgentService {
   static readonly IDENTIFIER_METADATA_RECORD_MISSING =
     "Identifier metadata record does not exist";
-  static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
+  static readonly INVALID_THEME = "Identifier theme was not valid";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
   static readonly FAILED_TO_ROTATE_AID =
@@ -160,23 +159,22 @@ class IdentifierService extends AgentService {
     };
   }
 
-  async resolvePendingIdentifiers() {
-    const pendingIdentifierCreation = await this.basicStorage.findById(
+  async processIdentifiersPendingCreation() {
+    const pendingIdentifiersRecord = await this.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
-    if (!pendingIdentifierCreation) return;
+    if (!pendingIdentifiersRecord) return;
 
     if (
-      !Array.isArray(pendingIdentifierCreation.content.queuedDisplayNames)
+      !Array.isArray(pendingIdentifiersRecord.content.queued)
     ) {
       throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
     }
 
-    for (const queuedDisplayName of pendingIdentifierCreation.content
-      .queuedDisplayNames) {
+    for (const queued of pendingIdentifiersRecord.content.queued) {
       let metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">;
-      const [themeString, rest] = queuedDisplayName.split(":");
+      const [themeString, rest] = queued.split(":");
       const theme = Number(themeString);
       const groupMatch = rest.match(/^(\d)-(.+)-(.+)$/);
       if (groupMatch) {
@@ -209,7 +207,7 @@ class IdentifierService extends AgentService {
     const { toad, witnesses } = await this.getAvailableWitnesses();
 
     if (!UI_THEMES.includes(metadata.theme)) {
-      throw new Error(IdentifierService.THEME_WAS_NOT_VALID);
+      throw new Error(IdentifierService.INVALID_THEME);
     }
 
     // For simplicity, it's up to the UI to provide a unique name
@@ -227,18 +225,18 @@ class IdentifierService extends AgentService {
         MiscRecordId.IDENTIFIERS_PENDING_CREATION
       );
       if (pendingIdentifiersRecord) {
-        const { queuedDisplayNames } = pendingIdentifiersRecord.content;
-        if (!Array.isArray(queuedDisplayNames)) {
+        const { queued } = pendingIdentifiersRecord.content;
+        if (!Array.isArray(queued)) {
           throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
         }
-        processingNames = queuedDisplayNames;
+        processingNames = queued;
       }
       processingNames.push(name);
       
       await this.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
           id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
-          content: { queuedDisplayNames: processingNames },
+          content: { queued: processingNames },
         })
       );
     }
@@ -307,21 +305,21 @@ class IdentifierService extends AgentService {
     });
     
     // Finally, remove from the re-try record
-    const updatedRecord = await this.basicStorage.findById(
+    const pendingIdentifiersRecord = await this.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
 
-    if (updatedRecord) {
-      const { queuedDisplayNames } = updatedRecord.content;
-      if (!Array.isArray(queuedDisplayNames)) {
+    if (pendingIdentifiersRecord) {
+      const { queued } = pendingIdentifiersRecord.content;
+      if (!Array.isArray(queued)) {
         throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
       }
 
-      const index = queuedDisplayNames.indexOf(name);
+      const index = queued.indexOf(name);
       if (index !== -1) {
-        queuedDisplayNames.splice(index, 1);
+        queued.splice(index, 1);
       }
-      await this.basicStorage.update(updatedRecord);
+      await this.basicStorage.update(pendingIdentifiersRecord);
     }
     return { identifier, createdAt: identifierDetail.icp_dt };
   }
@@ -581,6 +579,7 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async rotateIdentifier(identifier: string) {
+    // @TODO - foconnor: Lets not block on the operation here.
     const rotateResult = await this.props.signifyClient
       .identifiers()
       .rotate(identifier);

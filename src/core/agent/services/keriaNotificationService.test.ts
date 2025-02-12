@@ -2078,7 +2078,7 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
-    expect(multiSigs.endRoleAuthorization).toBeCalledWith("id");
+    expect(multiSigs.endRoleAuthorization).toBeCalledWith("AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA");
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {

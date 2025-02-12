@@ -265,6 +265,9 @@ jest.mock("signify-ts", () => ({
   Ilks: {
     iss: "iss",
   },
+  Tier: {
+    low: "low"
+  },
 }));
 
 const eventEmitter = new CoreEventEmitter();

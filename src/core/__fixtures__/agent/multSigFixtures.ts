@@ -1,9 +1,10 @@
+import { CreateIdentifierBody, Tier } from "signify-ts";
 import { ConnectionStatus } from "../../agent/agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../../agent/records";
-import { CreationStatus } from "../../agent/services/identifier.types";
+import { CreationStatus, QueuedGroupCreation } from "../../agent/services/identifier.types";
 
 const now = new Date();
 
@@ -94,6 +95,7 @@ const getMultisigIdentifierResponse = {
     },
     di: "",
   },
+  icp_dt: "2024-08-10T07:23:54.839894+00:00"
 };
 
 const memberIdentifierRecord = {
@@ -515,11 +517,11 @@ const getRequestMultisigIcp = {
     a: {
       gid: "EBHG7UW-48EAF4bMYbaCsPQfSuFk-INidVXLexDMk6pN",
       smids: [
-        "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+        "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
         "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
       ],
       rmids: [
-        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+        "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
         "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
       ],
       rstates: [
@@ -734,6 +736,139 @@ const memberKeyStateRot = {
   },
 };
 
+const inceptionDataFix: CreateIdentifierBody = {
+  name: "id1",
+  icp: {
+    v: "KERI10JSON0001e7_",
+    t: "icp",
+    d: "EP10ooRj0DJF0HWZePEYMLPl-arMV-MAoTKK-o3DXbgX",
+    i: "EP10ooRj0DJF0HWZePEYMLPl-arMV-MAoTKK-o3DXbgX",
+    s: "0",
+    kt: "2",
+    k: [
+      "DGBw7C7AfC7jbD3jLLRS3SzIWFndM947TyNWKQ52iQx5",
+      "DD_bHYFsgWXuCbz3SD0HjCIe_ITjRvEoCGuZ4PcNFFDz"
+    ],
+    nt: "2",
+    n: [
+      "EML5FrjCpz8SEl4dh0U15l8bMRhV_O5iDcR1opLJGBSH",
+      "EJpKquuibYTqpwMDqEFAFs0gwq0PASAHZ_iDmSF3I2Vg"
+    ],
+    bt: "0",
+    b: [],
+    c: [],
+    a: []
+  },
+  sigs: [
+    "AAD9_IgPaUEBjAl1Ck61Jkn78ErzsnVkIxpaFBYSdSEAW4NbtXsLiUn1olijzdTQYn_Byq6MaEk-eoMN3Oc0WEEC",
+    "ABBWJ7KkAXXiRK8JyEUpeARHJTTzlBHu_ev-jUrNEhV9sX4_4lI7wxowrQisumt5r50bUNfYBK7pxSwHk8I4IFQP"
+  ],
+  smids: [
+    "EIwvED_NNIxszmE9FSCnjFrKcXn3mohHbCGYSuZj5Ai1",
+    "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7"
+  ],
+  rmids: [
+    "EIwvED_NNIxszmE9FSCnjFrKcXn3mohHbCGYSuZj5Ai1",
+    "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7"
+  ],
+  group: {
+    mhab: {
+      name: "member2",
+      prefix: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
+      salty: {
+        sxlt: "1AAHxXEH1bVIGCXdySPMIplcq3WF1WcWcoeohQv8h1mBBzF9bOw8894KBhV5vJiW6Nyv0KYsFOZezINCgYO55q8iSw-VbJ-9Cr4z",
+        pidx: 0,
+        kidx: 0,
+        stem: "signify:aid",
+        tier: Tier.low,
+        dcode: "E",
+        icodes: [
+          "A"
+        ],
+        ncodes: [
+          "A"
+        ],
+        transferable: true
+      },
+      icp_dt: "2025-02-12T19:05:15.163405+00:00",
+      transferable: true,
+      state: {
+        vn: [
+          1,
+          0
+        ],
+        i: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
+        s: "0",
+        p: "",
+        d: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
+        f: "0",
+        dt: "2025-02-12T19:05:15.163405+00:00",
+        et: "icp",
+        kt: "1",
+        k: [
+          "DGp2jd7mX6MJ1Feu6QkfUxRtXeZVGTfpg0NygZn3Y-P3"
+        ],
+        nt: "1",
+        n: [
+          "EFTnI8OOKoXTGA9Qunzljn7lkkz-DjcesJgUOqtdIwhd"
+        ],
+        bt: "3",
+        b: [
+          "BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha",
+          "BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM",
+          "BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX"
+        ],
+        c: [],
+        ee: {
+          s: "0",
+          d: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
+        },
+        di: ""
+      },
+      windexes: [
+        0,
+        1,
+        2
+      ]
+    },
+    keys: [
+      "DOYbsl4dwkxEv9nwIQ9D9CF5gWojIb6A4ev7KJmHSwYL",
+      "DGp2jd7mX6MJ1Feu6QkfUxRtXeZVGTfpg0NygZn3Y-P3"
+    ],
+    ndigs: [
+      "EI80i_fWRfVd9e1KArsrZ5moY27TwQD0DmUI1VnzcRvi",
+      "EFTnI8OOKoXTGA9Qunzljn7lkkz-DjcesJgUOqtdIwhd"
+    ]
+  }
+};
+
+const linkedContacts = [
+  {
+    id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+    label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+    oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+    status: ConnectionStatus.CONFIRMED,
+    createdAtUTC: new Date().toISOString(),
+    groupId: "group-id",
+  },
+];
+
+const queuedIdentifier: QueuedGroupCreation & { initiator: true } = {
+  name: "0:Identifier 2",
+  data: inceptionDataFix,
+  initiator: true,
+  groupConnections: linkedContacts,
+  threshold: linkedContacts.length + 1,
+};
+
+const queuedJoin: QueuedGroupCreation & { initiator: false } = {
+  name: "0:Identifier 2",
+  data: inceptionDataFix,
+  initiator: false,
+  notificationId: "notification-id",
+  notificationSaid: "notification-said",
+};
+
 export {
   memberMetadataRecord,
   getMemberIdentifierResponse,
@@ -754,4 +889,8 @@ export {
   getRequestMultisigIcp,
   getExchangeGrantMessage,
   memberMetadataRecordProps,
+  inceptionDataFix,
+  linkedContacts,
+  queuedIdentifier,
+  queuedJoin,
 };

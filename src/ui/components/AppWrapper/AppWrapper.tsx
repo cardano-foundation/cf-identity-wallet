@@ -74,6 +74,7 @@ import {
   notificationStateChanged,
   operationCompleteHandler,
   operationFailureHandler,
+  groupCreatedHandler,
 } from "./coreEventListeners";
 import {
   AcdcStateChangedEvent,
@@ -502,6 +503,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.identifiers.onIdentifierAdded((event) => {
       identifierAddedHandler(event, dispatch);
     });
+
+    Agent.agent.multiSigs.onGroupAdded((event) => {
+      groupCreatedHandler(event, dispatch);
+    })
   };
 
   const initApp = async () => {

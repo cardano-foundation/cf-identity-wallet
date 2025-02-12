@@ -7,17 +7,11 @@ import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps, Stage } from "../CreateGroupIdentifier.types";
 import { Alert } from "../../Alert";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { useAppDispatch } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { Agent } from "../../../../core/agent/agent";
-import {
-  getIdentifiersCache,
-  setIdentifiersCache,
-} from "../../../../store/reducers/identifiersCache";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { createThemeValue } from "../../../utils/theme";
 import { showError } from "../../../utils/error";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
@@ -30,7 +24,6 @@ const Summary = ({
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const ourIdentifier = state.ourIdentifier;
   const [otherIdentifierContacts, setOtherIdentifierContacts] = useState<
@@ -45,38 +38,20 @@ const Summary = ({
       );
       return;
     } else {
-      const selectedTheme = createThemeValue(state.color, state.selectedTheme);
       try {
-        const { identifier, creationStatus } =
-          await Agent.agent.multiSigs.createMultisig(
-            ourIdentifier,
-            otherIdentifierContacts,
-            state.threshold
-          );
-        if (identifier) {
-          const newIdentifier: IdentifierShortDetails = {
-            id: identifier,
-            displayName: state.displayNameValue,
-            createdAtUTC: new Date().toISOString(),
-            theme: selectedTheme,
-            creationStatus,
-            multisigManageAid: ourIdentifier,
-          };
-          const filteredIdentifiersData = Object.values(identifiersData).filter(
-            (item) => item.id !== ourIdentifier
-          );
-          dispatch(
-            setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
-          );
-          dispatch(
-            setToastMsg(
-              state.threshold === 1
-                ? ToastMsgType.IDENTIFIER_CREATED
-                : ToastMsgType.IDENTIFIER_REQUESTED
-            )
-          );
-          resetModal && resetModal();
-        }
+        await Agent.agent.multiSigs.createGroup(
+          ourIdentifier,
+          otherIdentifierContacts,
+          state.threshold
+        );
+        dispatch(
+          setToastMsg(
+            state.threshold === 1
+              ? ToastMsgType.IDENTIFIER_CREATED
+              : ToastMsgType.IDENTIFIER_REQUESTED
+          )
+        );
+        resetModal && resetModal();
       } catch (e) {
         showError("Unable to create multi-sig", e, dispatch);
       }

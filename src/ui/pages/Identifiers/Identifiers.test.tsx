@@ -26,7 +26,7 @@ import {
   failedMultisignIdentifierFix,
   filteredIdentifierFix,
   multisignIdentifierFix,
-  pendingMultisignIdentifierFix,
+  pendingMemberIdentifierFix,
 } from "../../__fixtures__/filteredIdentifierFix";
 import {
   CLEAR_STATE_DELAY,
@@ -818,7 +818,7 @@ describe("Identifiers Tab", () => {
       },
       seedPhraseCache: {},
       identifiersCache: {
-        identifiers: pendingMultisignIdentifierFix,
+        identifiers: pendingMemberIdentifierFix,
       },
       viewTypeCache: {
         identifier: {
@@ -886,7 +886,7 @@ describe("Identifiers Tab", () => {
       },
       seedPhraseCache: {},
       identifiersCache: {
-        identifiers: pendingMultisignIdentifierFix,
+        identifiers: pendingMemberIdentifierFix,
       },
       viewTypeCache: {
         identifier: {

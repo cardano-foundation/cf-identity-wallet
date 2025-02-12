@@ -9,6 +9,8 @@ import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
   EventTypes,
+  GroupCreatedEvent,
+  IdentifierAddedEvent,
 } from "../../../core/agent/event.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import {
@@ -25,7 +27,7 @@ import {
 import { store } from "../../../store";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
-import { updateCreationStatus } from "../../../store/reducers/identifiersCache";
+import { addGroupIdentifierCache, updateCreationStatus, updateOrAddIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
   setQueueIncomingRequest,
   setToastMsg,
@@ -46,8 +48,9 @@ import {
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
 } from "./AppWrapper";
-import { operationCompleteHandler, operationFailureHandler } from "./coreEventListeners";
+import { groupCreatedHandler, identifierAddedHandler, operationCompleteHandler, operationFailureHandler } from "./coreEventListeners";
 import { CreationStatus } from "../../../core/agent/services/identifier.types";
+import { pendingIdentifierFix, pendingGroupIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -70,6 +73,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),
+        onGroupAdded: jest.fn(),
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -151,36 +155,37 @@ describe("App Wrapper", () => {
   });
 });
 
-const connectionStateChangedEventMock = {
+const connectionStateChangedEvent: ConnectionStateChangedEvent = {
   type: EventTypes.ConnectionStateChanged,
   payload: {
     status: ConnectionStatus.PENDING,
   },
-} as ConnectionStateChangedEvent;
+};
 
-const connectionShortDetailsMock = {
+const connectionShortDetails: ConnectionShortDetails = {
   id: "id",
   label: "idw",
   logo: "png",
-} as ConnectionShortDetails;
+  status: ConnectionStatus.PENDING,
+  createdAtUTC: "2024-03-07T11:54:56.886Z",
+};
 
-const peerConnectedEventMock = {
+const peerConnectedEvent: PeerConnectedEvent = {
   type: PeerConnectionEventTypes.PeerConnected,
   payload: {
     identifier: "identifier",
     dAppAddress: "dApp-address",
   },
-} as PeerConnectedEvent;
+};
 
-const peerDisconnectedEventMock = {
+const peerDisconnectedEvent: PeerDisconnectedEvent = {
   type: PeerConnectionEventTypes.PeerDisconnected,
   payload: {
-    identifier: "identifier",
     dAppAddress: "dApp-address",
   },
-} as PeerDisconnectedEvent;
+};
 
-const peerSignRequestEventMock = {
+const peerSignRequestEvent: PeerConnectSigningEvent = {
   type: PeerConnectionEventTypes.PeerConnectSign,
   payload: {
     identifier: "identifier",
@@ -189,168 +194,182 @@ const peerSignRequestEventMock = {
     },
     payload: "Hello",
   },
-} as PeerConnectSigningEvent;
+};
 
-const peerConnectionBrokenEventMock = {
+const peerConnectionBrokenEvent: PeerConnectionBrokenEvent = {
   type: PeerConnectionEventTypes.PeerConnectionBroken,
   payload: {},
-} as PeerConnectionBrokenEvent;
+};
 
-const peerConnectionMock: ConnectionData = {
+const peerConnection: ConnectionData = {
   id: "dApp-address",
   name: "dApp-name",
   iconB64: "icon",
   selectedAid: "identifier",
   url: "http://localhost:3000",
 };
+
+const identifierAddedEvent: IdentifierAddedEvent = {
+  type: EventTypes.IdentifierAdded,
+  payload: {
+    identifier: pendingIdentifierFix
+  },
+};
+
+const groupCreatedEvent: GroupCreatedEvent = {
+  type: EventTypes.GroupCreated,
+  payload: {
+    group: pendingGroupIdentifierFix
+  }
+};
+
 const dispatch = jest.fn();
-describe("AppWrapper handler", () => {
-  describe("Connection state changed handler", () => {
-    beforeAll(() => {
-      const getConnectionShortDetailsSpy = jest.spyOn(
-        Agent.agent.connections,
-        "getConnectionShortDetailById"
-      );
-      getConnectionShortDetailsSpy.mockResolvedValue(
-        connectionShortDetailsMock
-      );
-    });
 
-    test("handles connection state pending", async () => {
-      await connectionStateChangedHandler(
-        connectionStateChangedEventMock,
-        dispatch
-      );
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
-      );
-    });
-
-    test("handles connection state succuss", async () => {
-      const connectionStateChangedEventMockSuccess = {
-        ...connectionStateChangedEventMock,
-        payload: {
-          status: ConnectionStatus.CONFIRMED,
-          connectionId: "connectionId",
-        },
-      };
-      await connectionStateChangedHandler(
-        connectionStateChangedEventMockSuccess,
-        dispatch
-      );
-      expect(dispatch).toBeCalledWith(
-        updateOrAddConnectionCache(connectionShortDetailsMock)
-      );
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED)
-      );
-    });
+describe("Connection state changed handler", () => {
+  beforeAll(() => {
+    const getConnectionShortDetailsSpy = jest.spyOn(
+      Agent.agent.connections,
+      "getConnectionShortDetailById"
+    );
+    getConnectionShortDetailsSpy.mockResolvedValue(
+      connectionShortDetails
+    );
   });
 
-  describe("Credential state changed handler", () => {
-    test("handles credential state pending", async () => {
-      const credentialMock = {} as CredentialShortDetails;
-      const credentialStateChangedEventMock = {
-        type: EventTypes.AcdcStateChanged,
-        payload: {
-          status: CredentialStatus.PENDING,
-          credential: credentialMock,
-        },
-      } as AcdcStateChangedEvent;
-      await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING)
-      );
-    });
-
-    test("handles credential state confirmed", async () => {
-      const credentialMock = {} as CredentialShortDetails;
-      const credentialStateChangedEventMock = {
-        type: EventTypes.AcdcStateChanged,
-        payload: {
-          status: CredentialStatus.CONFIRMED,
-          credential: credentialMock,
-        },
-      } as AcdcStateChangedEvent;
-      await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
-      expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
-      );
-    });
-
-    test("handles credential state revoked", async () => {
-      const credentialMock = {} as CredentialShortDetails;
-      const credentialStateChangedEventMock = {
-        type: EventTypes.AcdcStateChanged,
-        payload: {
-          status: CredentialStatus.REVOKED,
-          credential: credentialMock,
-        },
-      } as AcdcStateChangedEvent;
-      await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
-      expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
-    });
+  test("handles connection state pending", async () => {
+    await connectionStateChangedHandler(
+      connectionStateChangedEvent,
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
+    );
   });
 
-  describe("Peer connection states changed handler", () => {
-    test("handle peer connected event", async () => {
-      Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata = jest
-        .fn()
-        .mockResolvedValue(peerConnectionMock);
-      Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata =
-        jest.fn().mockResolvedValue([peerConnectionMock]);
-      await peerConnectedChangeHandler(peerConnectedEventMock, dispatch);
-      await waitFor(() => {
-        expect(dispatch).toBeCalledWith(setConnectedWallet(peerConnectionMock));
-      });
-      expect(dispatch).toBeCalledWith(
-        setWalletConnectionsCache([peerConnectionMock])
-      );
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
-      );
-    });
+  test("handles connection state succuss", async () => {
+    const connectionStateChangedEventMockSuccess = {
+      ...connectionStateChangedEvent,
+      payload: {
+        status: ConnectionStatus.CONFIRMED,
+        connectionId: "connectionId",
+      },
+    };
+    await connectionStateChangedHandler(
+      connectionStateChangedEventMockSuccess,
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      updateOrAddConnectionCache(connectionShortDetails)
+    );
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED)
+    );
+  });
+});
 
-    test("handle peer disconnected event", async () => {
-      await peerDisconnectedChangeHandler(
-        peerDisconnectedEventMock,
-        peerConnectionMock.id,
-        dispatch
-      );
-      expect(dispatch).toBeCalledWith(setConnectedWallet(null));
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
-      );
-    });
+describe("Credential state changed handler", () => {
+  test("handles credential state pending", async () => {
+    const credentialMock = {} as CredentialShortDetails;
+    const credentialStateChangedEventMock = {
+      type: EventTypes.AcdcStateChanged,
+      payload: {
+        status: CredentialStatus.PENDING,
+        credential: credentialMock,
+      },
+    } as AcdcStateChangedEvent;
+    await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING)
+    );
+  });
 
-    test("handle peer sign request event", async () => {
-      Agent.agent.peerConnectionMetadataStorage.getPeerConnection = jest
-        .fn()
-        .mockResolvedValue(peerConnectionMock);
-      await peerConnectRequestSignChangeHandler(
-        peerSignRequestEventMock,
-        dispatch
-      );
-      expect(dispatch).toBeCalledWith(
-        setQueueIncomingRequest({
-          signTransaction: peerSignRequestEventMock,
-          peerConnection: peerConnectionMock,
-          type: IncomingRequestType.PEER_CONNECT_SIGN,
-        })
-      );
-    });
+  test("handles credential state confirmed", async () => {
+    const credentialMock = {} as CredentialShortDetails;
+    const credentialStateChangedEventMock = {
+      type: EventTypes.AcdcStateChanged,
+      payload: {
+        status: CredentialStatus.CONFIRMED,
+        credential: credentialMock,
+      },
+    } as AcdcStateChangedEvent;
+    await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
+    expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
+    );
+  });
 
-    test("handle peer connection broken event", async () => {
-      await peerConnectionBrokenChangeHandler(
-        peerConnectionBrokenEventMock,
-        dispatch
-      );
-      expect(dispatch).toBeCalledWith(setConnectedWallet(null));
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
-      );
+  test("handles credential state revoked", async () => {
+    const credentialMock = {} as CredentialShortDetails;
+    const credentialStateChangedEventMock = {
+      type: EventTypes.AcdcStateChanged,
+      payload: {
+        status: CredentialStatus.REVOKED,
+        credential: credentialMock,
+      },
+    } as AcdcStateChangedEvent;
+    await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
+    expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
+  });
+});
+
+describe("Peer connection states changed handler", () => {
+  test("handle peer connected event", async () => {
+    Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata = jest
+      .fn()
+      .mockResolvedValue(peerConnection);
+    Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata =
+      jest.fn().mockResolvedValue([peerConnection]);
+    await peerConnectedChangeHandler(peerConnectedEvent, dispatch);
+    await waitFor(() => {
+      expect(dispatch).toBeCalledWith(setConnectedWallet(peerConnection));
     });
+    expect(dispatch).toBeCalledWith(
+      setWalletConnectionsCache([peerConnection])
+    );
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+    );
+  });
+
+  test("handle peer disconnected event", async () => {
+    await peerDisconnectedChangeHandler(
+      peerDisconnectedEvent,
+      peerConnection.id,
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(setConnectedWallet(null));
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
+    );
+  });
+
+  test("handle peer sign request event", async () => {
+    Agent.agent.peerConnectionMetadataStorage.getPeerConnection = jest
+      .fn()
+      .mockResolvedValue(peerConnection);
+    await peerConnectRequestSignChangeHandler(
+      peerSignRequestEvent,
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      setQueueIncomingRequest({
+        signTransaction: peerSignRequestEvent,
+        peerConnection: peerConnection,
+        type: IncomingRequestType.PEER_CONNECT_SIGN,
+      })
+    );
+  });
+
+  test("handle peer connection broken event", async () => {
+    await peerConnectionBrokenChangeHandler(
+      peerConnectionBrokenEvent,
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(setConnectedWallet(null));
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
+    );
   });
 });
 
@@ -380,6 +399,30 @@ describe("KERIA operation state changed handler", () => {
     );
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
+    );
+  });
+});
+
+describe("Identifier state changed handler", () => {
+  test("handles identifier added event", async () => {
+    await identifierAddedHandler(
+      identifierAddedEvent,
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      updateOrAddIdentifiersCache(pendingIdentifierFix)
+    );
+  });
+});
+
+describe("Group state changed handler", () => {
+  test("handles group created event", async () => {
+    await groupCreatedHandler(
+      groupCreatedEvent,
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      addGroupIdentifierCache(pendingGroupIdentifierFix)
     );
   });
 });

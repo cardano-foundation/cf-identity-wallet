@@ -1,5 +1,6 @@
 import {
   EventTypes,
+  GroupCreatedEvent,
   IdentifierAddedEvent,
   NotificationAddedEvent,
   NotificationRemovedEvent,
@@ -10,6 +11,7 @@ import { useAppDispatch } from "../../../store/hooks";
 import {
   updateCreationStatus,
   updateOrAddIdentifiersCache,
+  addGroupIdentifierCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
@@ -66,9 +68,17 @@ const identifierAddedHandler = async (
   dispatch(updateOrAddIdentifiersCache(event.payload.identifier));
 };
 
+const groupCreatedHandler = async (
+  event: GroupCreatedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(addGroupIdentifierCache(event.payload.group));
+};
+
 export {
   notificationStateChanged,
   operationCompleteHandler,
   operationFailureHandler,
   identifierAddedHandler,
+  groupCreatedHandler,
 };

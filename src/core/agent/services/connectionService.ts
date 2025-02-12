@@ -29,7 +29,6 @@ import {
   ConnectionRemovedEvent,
   ConnectionStateChangedEvent,
   EventTypes,
-  OperationAddedEvent,
 } from "../event.types";
 import {
   ConnectionHistoryItem,

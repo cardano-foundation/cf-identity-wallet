@@ -66,6 +66,7 @@ interface StorageApi {
   deleteById(id: string): Promise<void>;
   update(record: BasicRecord): Promise<void>;
   findById(id: string): Promise<BasicRecord | null>;
+  findExpectedById(id: string): Promise<BasicRecord>;
   findAllByQuery(query: Query<BasicRecord>): Promise<BasicRecord[]>;
   getAll(): Promise<BasicRecord[]>;
 }

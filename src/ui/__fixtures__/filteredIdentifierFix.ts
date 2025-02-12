@@ -85,7 +85,7 @@ const failedMultisignIdentifierFix: IdentifierShortDetails[] = [
   },
 ];
 
-const pendingMultisignIdentifierFix: IdentifierShortDetails[] = [
+const pendingMemberIdentifierFix: IdentifierShortDetails[] = [
   {
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
     displayName: "Professional ID",
@@ -100,11 +100,31 @@ const pendingMultisignIdentifierFix: IdentifierShortDetails[] = [
   },
 ];
 
+const pendingGroupIdentifierFix: IdentifierShortDetails = {
+  id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
+  displayName: "Test MS",
+  createdAtUTC: "2024-03-07T11:54:56.886Z",
+  theme: 0,
+  creationStatus: CreationStatus.PENDING,
+  multisigManageAid: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+};
+
+
+const pendingIdentifierFix: IdentifierShortDetails = {
+  id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
+  displayName: "Test MS",
+  createdAtUTC: "2024-03-07T11:54:56.886Z",
+  theme: 0,
+  creationStatus: CreationStatus.PENDING,
+};
+
 export {
   filteredIdentifierMapFix,
   filteredIdentifierFix,
   multisignIdentifierFix,
-  pendingMultisignIdentifierFix,
+  pendingMemberIdentifierFix,
   failedMultisignIdentifierFix,
-  failedFilteredIdentifierMapFix
+  failedFilteredIdentifierMapFix,
+  pendingGroupIdentifierFix,
+  pendingIdentifierFix,
 };

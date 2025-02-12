@@ -42,6 +42,13 @@ const identifiersCacheSlice = createSlice({
         [action.payload.id]: action.payload,
       };
     },
+    addGroupIdentifierCache: (state, action: PayloadAction<IdentifierShortDetails>) => {
+      delete state.identifiers[action.payload.multisigManageAid!];
+      state.identifiers = {
+        ...state.identifiers,
+        [action.payload.id]: action.payload,
+      };
+    },
     updateCreationStatus: (
       state,
       action: PayloadAction<
@@ -115,6 +122,7 @@ export const {
   setScanGroupId,
   setIdentifiersFilters,
   removeIdentifierCache,
+  addGroupIdentifierCache,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>

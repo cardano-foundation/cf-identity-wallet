@@ -17,12 +17,14 @@ import {
   setScanGroupId,
   getIdentifiersFilters,
   setIdentifiersFilters,
+  addGroupIdentifierCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
 import { CreationStatus, IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
+import { multisignIdentifierFix, pendingIdentifierFix, pendingMemberIdentifierFix } from "../../../ui/__fixtures__/filteredIdentifierFix";
 
 describe("identifiersCacheSlice", () => {
   const initialState = {
@@ -32,13 +34,14 @@ describe("identifiersCacheSlice", () => {
     openMultiSigId: undefined,
     filters: IdentifiersFilters.All,
   };
-  it("should return the initial state", () => {
+
+  test("should return the initial state", () => {
     expect(
       identifiersCacheSlice.reducer(undefined, {} as PayloadAction)
     ).toEqual(initialState);
   });
 
-  it("should handle setIdentifiersCache", () => {
+  test("should handle setIdentifiersCache", () => {
     const identifiers: IdentifierShortDetails[] = [
       {
         id: "id-1",
@@ -63,7 +66,7 @@ describe("identifiersCacheSlice", () => {
     });
   });
 
-  it("should handle setMultiSigGroupCache", () => {
+  test("should handle setMultiSigGroupCache", () => {
     const multiSigGroup: MultiSigGroup = {
       groupId: "group-id",
       connections: [
@@ -82,7 +85,8 @@ describe("identifiersCacheSlice", () => {
     );
     expect(newState.multiSigGroup).toEqual(multiSigGroup);
   });
-  it("should handle setFavouritesIdentifiersCache", () => {
+
+  test("should handle setFavouritesIdentifiersCache", () => {
     const favourites: FavouriteIdentifier[] = [
       {
         id: "abcd",
@@ -95,7 +99,8 @@ describe("identifiersCacheSlice", () => {
     );
     expect(newState.favourites).toEqual(favourites);
   });
-  it("should handle addFavouriteIdentifierCache", () => {
+
+  test("should handle addFavouriteIdentifierCache", () => {
     const favourite: FavouriteIdentifier = {
       id: "abcd",
       time: 1,
@@ -106,7 +111,8 @@ describe("identifiersCacheSlice", () => {
     );
     expect(newState.favourites).toEqual([favourite]);
   });
-  it("should handle removeFavouriteIdentifierCache", () => {
+
+  test("should handle removeFavouriteIdentifierCache", () => {
     const initialState = {
       identifiers: {},
       favourites: [
@@ -125,7 +131,7 @@ describe("identifiersCacheSlice", () => {
     expect(newState.favourites).toEqual([]);
   });
 
-  it("should handle setIdentifiersFilters", () => {
+  test("should handle setIdentifiersFilters", () => {
     const filter: IdentifiersFilters = IdentifiersFilters.Individual;
     const newState = identifiersCacheSlice.reducer(
       initialState,
@@ -134,7 +140,7 @@ describe("identifiersCacheSlice", () => {
     expect(newState.filters).toEqual(filter);
   });
 
-  it("should handle updateOrAddIdentifiersCache", () => {
+  test("should handle updateOrAddIdentifiersCache", () => {
     const identifiers: IdentifierShortDetails[] = [
       {
         id: "id-1",
@@ -177,7 +183,7 @@ describe("identifiersCacheSlice", () => {
     });
   });
 
-  it("should handle updateCreationStatus", () => {
+  test("should handle updateCreationStatus", () => {
     const identifiers: IdentifierShortDetails[] = [
       {
         id: "id-1",
@@ -217,7 +223,7 @@ describe("identifiersCacheSlice", () => {
     });
   });
 
-  it("should handle setOpenMultiSigId", () => {
+  test("should handle setOpenMultiSigId", () => {
     const newState = identifiersCacheSlice.reducer(
       initialState,
       setOpenMultiSigId("id")
@@ -225,17 +231,51 @@ describe("identifiersCacheSlice", () => {
     expect(newState.openMultiSigId).toEqual("id");
   });
 
-  it("should handle setScanGroupId", () => {
+  test("should handle setScanGroupId", () => {
     const newState = identifiersCacheSlice.reducer(
       initialState,
       setScanGroupId("id")
     );
     expect(newState.scanGroupId).toEqual("id");
   });
+
+  test("should handle addGroupIdentifierCache", () => {
+    const state = {
+      ...initialState, identifiers: {
+        [pendingMemberIdentifierFix[0].id]: pendingMemberIdentifierFix[0],
+        [pendingIdentifierFix.id]: pendingIdentifierFix,
+      }
+    };
+    const newState = identifiersCacheSlice.reducer(
+      state,
+      addGroupIdentifierCache(multisignIdentifierFix[0])
+    );
+    expect(newState.identifiers).toEqual({
+      [pendingIdentifierFix.id]: pendingIdentifierFix,
+      [multisignIdentifierFix[0].id]: multisignIdentifierFix[0]
+    }); 
+  });
+
+  test("addGroupIdentifierCache should not error if applied twice (idempotent)", () => {
+    const state = {
+      ...initialState, identifiers: {
+        [pendingIdentifierFix.id]: pendingIdentifierFix,
+        [multisignIdentifierFix[0].id]: multisignIdentifierFix[0]
+      }
+    };
+    const newState = identifiersCacheSlice.reducer(
+      state,
+      addGroupIdentifierCache(multisignIdentifierFix[0])
+    );
+    expect(newState.identifiers).toEqual({
+      [pendingIdentifierFix.id]: pendingIdentifierFix,
+      [multisignIdentifierFix[0].id]: multisignIdentifierFix[0]
+    });
+  });
 });
 
 describe("get identifier Cache", () => {
-  it("should return the identifiers cache from RootState", () => {
+  test("should return the identifiers cache from RootState", () => {
     const state = {
       identifiersCache: {
         identifiers: {},
@@ -252,7 +292,8 @@ describe("get identifier Cache", () => {
     const identifiersCache = getIdentifiersCache(state);
     expect(identifiersCache).toEqual(state.identifiersCache.identifiers);
   });
-  it("should return the favourites cache from RootState", () => {
+
+  test("should return the favourites cache from RootState", () => {
     const state = {
       identifiersCache: {
         favourites: [
@@ -270,7 +311,8 @@ describe("get identifier Cache", () => {
     const favouriteCache = getFavouritesIdentifiersCache(state);
     expect(favouriteCache).toEqual(state.identifiersCache.favourites);
   });
-  it("should return the Identifiers Filters from RootState", () => {
+
+  test("should return the Identifiers Filters from RootState", () => {
     const state = {
       identifiersCache: {
         filters: IdentifiersFilters.All,
@@ -279,7 +321,8 @@ describe("get identifier Cache", () => {
     const filtersCache = getIdentifiersFilters(state);
     expect(filtersCache).toEqual(state.identifiersCache.filters);
   });
-  it("should return the multiSigGroupCache from RootState", () => {
+
+  test("should return the multiSigGroupCache from RootState", () => {
     const state = {
       identifiersCache: {
         multiSigGroup: {
@@ -299,7 +342,8 @@ describe("get identifier Cache", () => {
     const identifiersCache = getMultiSigGroupCache(state);
     expect(identifiersCache).toEqual(state.identifiersCache.multiSigGroup);
   });
-  it("should return the openMultiSigId from RootState", () => {
+
+  test("should return the openMultiSigId from RootState", () => {
     const state = {
       identifiersCache: {
         openMultiSigId: "groupId",
@@ -308,7 +352,8 @@ describe("get identifier Cache", () => {
     const openMultiSigId = getOpenMultiSig(state);
     expect(openMultiSigId).toEqual(state.identifiersCache.openMultiSigId);
   });
-  it("should return the scanGroupId from RootState", () => {
+
+  test("should return the scanGroupId from RootState", () => {
     const state = {
       identifiersCache: {
         scanGroupId: "groupId",

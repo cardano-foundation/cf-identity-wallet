@@ -17,16 +17,13 @@ import { CreationStatus } from "../../../../core/agent/services/identifier.types
 setupIonicReact();
 mockIonicReact();
 
-const createMultiSignMock = jest.fn((...args: any) => ({
-  identifier: "mock-id",
-  creationStatus: CreationStatus.PENDING,
-}));
+const createGroupMock = jest.fn();
 
 jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       multiSigs: {
-        createMultisig: (...args: any) => createMultiSignMock(...args),
+        createGroup: (...args: any) => createGroupMock(...args),
       },
     },
   },
@@ -122,7 +119,7 @@ describe("Create group identifier - Summary", () => {
     });
 
     await waitFor(() => {
-      expect(createMultiSignMock).toBeCalledWith(
+      expect(createGroupMock).toBeCalledWith(
         "mock-id",
         [connectionsFix[0], connectionsFix[1]],
         stage4State.threshold
@@ -173,7 +170,7 @@ describe("Create group identifier - Summary", () => {
     });
 
     await waitFor(() => {
-      expect(createMultiSignMock).not.toBeCalled();
+      expect(createGroupMock).not.toBeCalled();
     });
   });
 

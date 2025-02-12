@@ -1029,10 +1029,7 @@ class KeriaNotificationService extends AgentService {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           creationStatus: CreationStatus.COMPLETE,
         });
-        // Trigger add end role authorization for multi-sigs
-        const multisigIdentifier =
-            await this.identifierStorage.getIdentifierMetadata(recordId);
-        await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
+        await this.multiSigs.endRoleAuthorization(recordId);
         break;
       }
       case OperationPendingRecordType.Witness: {
