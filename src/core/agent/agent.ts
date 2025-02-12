@@ -423,6 +423,10 @@ class Agent {
 
   async setupLocalDependencies(): Promise<void> {
     await this.storageSession.open(walletId);
+    this.agentServicesProps = {
+      signifyClient: this.signifyClient,
+      eventEmitter: new CoreEventEmitter(),
+    };
     this.basicStorageService = new BasicStorage(
       this.getStorageService<BasicRecord>(this.storageSession)
     );
@@ -445,10 +449,6 @@ class Agent {
       this.getStorageService<OperationPendingRecord>(this.storageSession),
       this.agentServicesProps.eventEmitter
     );
-    this.agentServicesProps = {
-      signifyClient: this.signifyClient,
-      eventEmitter: new CoreEventEmitter(),
-    };
     this.connections.onConnectionRemoved();
     this.connections.onConnectionAdded();
     this.identifiers.onIdentifierRemoved();
