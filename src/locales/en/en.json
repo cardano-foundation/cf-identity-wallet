@@ -1043,7 +1043,7 @@
           "about": "About {{ type }}"
         },
         "attributes": {
-          "title": "Credential Details",
+          "title": "Credential attributes",
           "label": "Attributes",
           "description": "Essential details shared by the issuer, which verify and describe key information in this credential.",
           "details": "Attribute details",

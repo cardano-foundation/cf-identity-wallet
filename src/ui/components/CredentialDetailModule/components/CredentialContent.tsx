@@ -4,27 +4,30 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import { useState } from "react";
+import { JSONObject } from "../../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../../i18n";
 import { useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { getTheme } from "../../../utils/theme";
 import { Alert } from "../../Alert";
 import {
   CardBlock,
   CardDetailsBlock,
+  CardDetailsExpandAttributes,
   CardDetailsItem,
   FlatBorderType
 } from "../../CardDetails";
+import { CardTheme } from "../../CardTheme";
 import { IdentifierDetailModal } from "../../IdentifierDetailModule";
 import { ListHeader } from "../../ListHeader";
 import { ReadMore } from "../../ReadMore";
-import { CredentialAttributeContent, CredentialAttributeDetailModal } from "./CredentialAttributeDetailModal";
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
-import { CardTheme } from "../../CardTheme";
-import { getTheme } from "../../../utils/theme";
+
+const IGNORE_KEYS = ["i", "dt", "d"];
 
 const CredentialContent = ({
   cardData,
@@ -34,7 +37,6 @@ const CredentialContent = ({
 }: CredentialContentProps) => {
   const identifiers = useAppSelector(getIdentifiersCache);
 
-  const [openDetailModal, setOpenDetailModal] = useState(false);
   const [openIdentifierDetail, setOpenIdentifierDetail] = useState(false);
   const [showMissingIssuerModal, setShowMissingIssuerModal] = useState(false);
 
@@ -86,11 +88,14 @@ const CredentialContent = ({
           ))}
         </CardDetailsBlock>
       )}
-      <CardBlock
+      <ListHeader
         title={i18n.t("tabs.credentials.details.attributes.label")}
-        onClick={() => setOpenDetailModal(true)}
-        testId="attribute-label"
       />
+      <CardBlock
+        title={i18n.t("tabs.credentials.details.attributes.title")}
+      >
+        <CardDetailsExpandAttributes data={cardData.a as JSONObject} ignoreKeys={IGNORE_KEYS}/>
+      </CardBlock>
       <ListHeader
         title={i18n.t("tabs.credentials.details.credentialdetails")}
       />
@@ -157,19 +162,6 @@ const CredentialContent = ({
           )}`}
         </p>
       </CardBlock>
-
-      {cardData.a && (
-        <CredentialAttributeDetailModal
-          isOpen={openDetailModal}
-          setOpen={setOpenDetailModal}
-          title={`${i18n.t("tabs.credentials.details.attributes.label")}`}
-          description={`${i18n.t(
-            "tabs.credentials.details.attributes.description"
-          )}`}
-        >
-          <CredentialAttributeContent data={cardData} />
-        </CredentialAttributeDetailModal>
-      )}
       {identifier && <CardBlock
         title={i18n.t("tabs.credentials.details.relatedidentifier")}
         onClick={() => setOpenIdentifierDetail(true)}
