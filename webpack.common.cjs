@@ -12,6 +12,12 @@ const config = {
   module: {
     rules: [
       {
+        test: /\.js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         test: /\.(ts|tsx)$/,
         use: "ts-loader",
         exclude: /node_modules/,

@@ -101,7 +101,7 @@ jest.mock("@capacitor/device", () => ({
   },
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: jest.fn((options: { key: string }) => {
       return Promise.resolve({ value: "value" });

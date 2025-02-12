@@ -2,7 +2,7 @@ import {
   BarcodeFormat,
   BarcodeScannedEvent,
   BarcodeValueType,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -58,9 +58,9 @@ jest.mock("signify-ts", () => ({
   }))
 }));
 
-jest.mock("@jimcase/barcode-scanning", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@jimcase/barcode-scanning"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () =>
         Promise.resolve({

@@ -1,4 +1,4 @@
-import { SecureStoragePlugin } from "@jimcase/capacitor-secure-storage-plugin";
+import { SecureStoragePlugin } from "@evva/capacitor-secure-storage-plugin";
 
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",

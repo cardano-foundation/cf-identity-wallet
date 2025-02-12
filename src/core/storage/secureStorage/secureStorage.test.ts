@@ -4,7 +4,7 @@ const EXISTING_KEY = "keythatexists";
 const NON_EXISTING_KEY = "keythatdoesnotexist";
 const EXISTING_VALUE = "valuethatexists";
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: jest.fn((options: { key: string }) => {
       if (options.key === EXISTING_KEY) {

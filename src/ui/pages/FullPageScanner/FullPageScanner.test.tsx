@@ -3,7 +3,7 @@ import {
   BarcodeScannedEvent,
   BarcodeValueType,
   LensFacing,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -39,9 +39,9 @@ const addListener = jest.fn(
   }
 );
 
-jest.mock("@jimcase/barcode-scanning", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@jimcase/barcode-scanning"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () =>
         Promise.resolve({
