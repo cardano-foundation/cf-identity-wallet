@@ -8,7 +8,7 @@ import {
   BarcodeFormat,
   BarcodeScannedEvent,
   BarcodeValueType,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import {

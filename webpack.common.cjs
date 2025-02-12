@@ -12,6 +12,12 @@ const config = {
   module: {
     rules: [
       {
+        test: /\.js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         test: /\.(ts|tsx)$/,
         use: "ts-loader",
         exclude: /node_modules/,
@@ -44,10 +50,10 @@ const config = {
     ],
   },
   resolve: {
-    extensions: [".js", ".tsx", ".ts"],
+    extensions: [".js", ".tsx", ".ts", ".mjs"],
     fallback: {
       fs: false,
-    },
+    }
   },
   plugins: [
     new webpack.ProgressPlugin(),

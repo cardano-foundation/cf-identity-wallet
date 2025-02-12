@@ -2,7 +2,7 @@ import {
   BarcodeFormat,
   BarcodeScanner,
   LensFacing,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { Capacitor } from "@capacitor/core";
 import {
   getPlatforms,
@@ -418,8 +418,8 @@ const Scanner = forwardRef(
         if (allowed) {
           await BarcodeScanner.removeAllListeners();
           const listener = await BarcodeScanner.addListener(
-            "barcodeScanned",
-            async (result) => {
+            "barcodesScanned",
+            async (result: any) => {
               await listener.remove();
 
               if(isHandlingQR.current) return;

@@ -3,7 +3,7 @@ import {
   BarcodeScannedEvent,
   BarcodeValueType,
   LensFacing,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
