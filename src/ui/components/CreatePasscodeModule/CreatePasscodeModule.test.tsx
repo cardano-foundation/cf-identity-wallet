@@ -59,7 +59,7 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
   })),
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => Promise.resolve({ value: "121345" })
   },
