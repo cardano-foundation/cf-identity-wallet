@@ -58,9 +58,9 @@ jest.mock("signify-ts", () => ({
   }))
 }));
 
-jest.mock("@jimcase/barcode-scanning", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@jimcase/barcode-scanning"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () =>
         Promise.resolve({

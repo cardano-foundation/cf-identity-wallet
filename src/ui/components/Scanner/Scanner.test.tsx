@@ -90,9 +90,9 @@ const checkPermisson = jest.fn(() =>
 
 const requestPermission = jest.fn();
 const startScan = jest.fn();
-jest.mock("@jimcase/barcode-scanning", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@jimcase/barcode-scanning"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () => checkPermisson(),
       requestPermissions: () => requestPermission(),

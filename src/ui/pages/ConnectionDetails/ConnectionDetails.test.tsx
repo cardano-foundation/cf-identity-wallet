@@ -73,7 +73,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@capacitor-mlkit/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => getMock(options.key),
     remove: jest.fn(),
