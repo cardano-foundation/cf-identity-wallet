@@ -5,7 +5,8 @@ import { CardDetailsExpandAttributesProps } from "./CardDetailsExpandAttributes.
 const CardDetailsExpandAttributes = ({
   data,
   itemProps,
-  ignoreKeys = []
+  ignoreKeys = [],
+  openLevels = []
 }: CardDetailsExpandAttributesProps) => {
   const attributes = Object.entries(data);
 
@@ -15,7 +16,7 @@ const CardDetailsExpandAttributes = ({
         {attributes.map(([key, value]) => {
           if(ignoreKeys.includes(key)) return;
         
-          return <CardDetailsAttribute key={key} attributeKey={key} attributeValue={value} itemProps={itemProps} ignoreKeys={ignoreKeys}/>
+          return <CardDetailsAttribute key={key} attributeKey={key} attributeValue={value} itemProps={itemProps} ignoreKeys={ignoreKeys} openLevels={openLevels}/>
         })}
       </div>
     </div>

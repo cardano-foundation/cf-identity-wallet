@@ -94,7 +94,7 @@ const CredentialContent = ({
       <CardBlock
         title={i18n.t("tabs.credentials.details.attributes.title")}
       >
-        <CardDetailsExpandAttributes data={cardData.a as JSONObject} ignoreKeys={IGNORE_KEYS}/>
+        <CardDetailsExpandAttributes data={cardData.a as JSONObject} ignoreKeys={IGNORE_KEYS} openLevels={[1]}/>
       </CardBlock>
       <ListHeader
         title={i18n.t("tabs.credentials.details.credentialdetails")}
