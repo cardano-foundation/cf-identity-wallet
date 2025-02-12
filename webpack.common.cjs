@@ -50,7 +50,7 @@ const config = {
     ],
   },
   resolve: {
-    extensions: [".js", ".tsx", ".ts", ".mjs"],
+    extensions: [".js", ".tsx", ".ts"],
     fallback: {
       fs: false,
     }
