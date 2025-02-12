@@ -15,7 +15,8 @@ const CardDetailsAttribute = ({
   customAttributeKey,
   itemProps,
   ignoreKeys = [],
-  deepLevel = 0
+  deepLevel = 1,
+  openLevels = []
 }: CardDetailsAttributeProps) => {
   const key = attributeKey.toLowerCase().replace(/\s/g, "-");
   const { className, ...restItemProps } = itemProps || {};
@@ -60,12 +61,14 @@ const CardDetailsAttribute = ({
     <IonAccordionGroup
       data-testid="nested-attributes"
       className="attributes-accordion-group"
+      value={openLevels.map(value => String(value))}
       multiple
     >
       <IonAccordion
         className="accordion nested-attribute"
         toggleIconSlot="start"
         toggleIcon={chevronForwardOutline}
+        value={`${deepLevel}`}
       >
         <IonItem
           className="accordion-header"
@@ -79,7 +82,7 @@ const CardDetailsAttribute = ({
         <div className="nested-list-item" slot="content">
           {
             Object.entries(attributeValue).map(([key, value]) => {
-              return <CardDetailsAttribute deepLevel={deepLevel + 1} attributeKey={key} attributeValue={value} key={key}/>
+              return <CardDetailsAttribute deepLevel={deepLevel + 1} attributeKey={key} attributeValue={value} key={key} openLevels={openLevels}/>
             })
           }
         </div>

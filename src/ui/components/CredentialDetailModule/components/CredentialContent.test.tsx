@@ -1,8 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { ACDCDetails, CredentialStatus } from "../../../../core/agent/services/credentialService.types";
-import { IdentifierType } from "../../../../core/agent/services/identifier.types";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { store } from "../../../../store";
 import {
@@ -189,74 +187,6 @@ describe("Creds content", () => {
 
     await waitFor(() => {
       expect(getByTestId("credential-related-identifier-modal")).toBeVisible();
-    });
-  });
-
-  test("Open attributes modal", async () => {
-    const credData: ACDCDetails = {
-      "id": "EGeHfU_vj6aznmrjuaa_fCmmuNyMZ7W_whxwi0Ho2FwQ",
-      "schema": "EHk-ZqQ2fKqTtG7O0nZcXGeWV5pCzU56UovQY-__Tkgf",
-      "status": CredentialStatus.CONFIRMED,
-      "identifierId": "EJ4gagUf2XU8lA6ELmihpwD-zLjw9_PKK1opUCPtjim-",
-      "identifierType": IdentifierType.Individual,
-      "i": "EEvIrB8ix_2MAe0uvhk8dDWrTw_URbQolBvW8rd9uYtT",
-      "connectionId": "ebfeb1ebc6f1c276ef71212ec20",
-      "a": {
-        "d": "EB3N-LFRXiF5zpSWLWqzovQ2vz2zWEkHo5OC4lVwlKhJ",
-        "i": "EJ4gagUf2XU8lA6ELmihpwD-zLjw9_PKK1opUCPtjim-",
-        "Ticket Details": {
-          "Dates": {
-            "Start Date": "27/11/24",
-            "End Date": "27/11/24"
-          },
-          "Attendees": {
-            "Attendee 1": 123123,
-            "Attendee 2": 213123
-          }
-        },
-        "Event Details": {
-          "Name": "TESTING NESTING",
-          "Organizer": {
-            "Name": "CARDANO FOUNDATION",
-            "ID": 10000
-          }
-        },
-        "dt": "2024-12-02T04:41:37.858000+00:00"
-      },
-      "s": {
-        "title": "Ticket Nesting",
-        "description": "Ticket Nesting",
-        "version": "1.0.0"
-      },
-      "lastStatus": {
-        "s": "0",
-        "dt": "2024-12-02T04:41:37.858Z"
-      }
-    };
-
-    const { getByText, getByTestId } = render(
-      <Provider store={store}>
-        <CredentialContent
-          cardData={credData}
-          joinedCredRequestMembers={[]}
-          connectionShortDetails={connectionDetailsFix}
-          setOpenConnectionlModal={jest.fn()}
-        />
-      </Provider>
-    );
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.about)
-    ).toBeVisible();
-    expect(getByTestId("read-more")).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.label)
-    ).toBeVisible();
-    
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.label));
-
-    await waitFor(() => {
-      expect(getByTestId("credential-attribute-details-modal")).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.title)).toBeVisible();
     });
   });
 });

@@ -1,3 +1,28 @@
+@mixin expand-group {
+  .container-nested-list-item {
+    margin-top: 0.625rem;
+  }
+
+  .nested-list-item {
+    ion-item {
+      display: flex;
+      align-items: center;
+
+      &::part(native) {
+        padding: 0.75rem 0;
+      }
+    }
+
+    &:not(.container-nested-list-item) {
+      padding-left: 1.5rem;
+    }
+  }
+}
+
+.expand-attributes {
+  @include expand-group;
+}
+
 .attributes-accordion-group {
   margin-bottom: 0;
 
@@ -19,6 +44,7 @@
         --background-hover: transparent;
         --background-hover-opacity: transparent;
         align-items: center;
+        text-transform: capitalize;
 
         ion-icon {
           width: 1.3rem;
@@ -29,24 +55,7 @@
       }
     }
 
-    .container-nested-list-item {
-      margin-top: 0.625rem;
-    }
-
-    .nested-list-item {
-      ion-item {
-        display: flex;
-        align-items: center;
-
-        &::part(native) {
-          padding: 0.75rem 0;
-        }
-      }
-
-      &:not(.container-nested-list-item) {
-        padding-left: 1.5rem;
-      }
-    }
+    @include expand-group;
 
     &.nested-attribute.accordion-expanding > [slot=header] .ion-accordion-toggle-icon {
       transform: rotate(90deg);

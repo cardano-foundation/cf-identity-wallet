@@ -8,6 +8,7 @@ export interface CardDetailsExpandAttributesProps {
   data: JSONObject;
   itemProps?: Omit<CardDetailsItemProps, "info">;
   ignoreKeys?: string[];
+  openLevels?: number[];
 }
 
 export interface CardDetailsAttributeProps {
@@ -18,4 +19,5 @@ export interface CardDetailsAttributeProps {
   itemProps?: Omit<CardDetailsItemProps, "info">;
   deepLevel?: number;
   ignoreKeys?: string[];
+  openLevels?: number[];
 }
