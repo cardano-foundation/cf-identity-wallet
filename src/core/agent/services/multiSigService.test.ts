@@ -384,7 +384,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: memberPrefix,
-        createdAt: new Date("2024-08-10T07:23:54.839Z")
+        createdAt: new Date(getMultisigIdentifierResponse.icp_dt)
       })
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(memberMetadataRecord.id, expect.objectContaining({
@@ -517,7 +517,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: memberPrefix,
-        createdAt: new Date("2024-08-10T07:23:54.839Z")
+        createdAt: new Date(getMultisigIdentifierResponse.icp_dt)
       })
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(memberMetadataRecord.id, expect.objectContaining({
@@ -602,7 +602,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: memberPrefix,
-        createdAt: new Date("2024-08-10T07:23:54.839Z")
+        createdAt: new Date(getMultisigIdentifierResponse.icp_dt)
       })
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(memberMetadataRecord.id, expect.objectContaining({
@@ -721,7 +721,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: memberMetadataRecord.id,
-        createdAt: new Date("2024-08-10T07:23:54.839Z")
+        createdAt: new Date(getMultisigIdentifierResponse.icp_dt)
       })
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(memberMetadataRecord.id, expect.objectContaining({
@@ -833,7 +833,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: memberMetadataRecord.id,
-        createdAt: new Date("2024-08-10T07:23:54.839Z")
+        createdAt: new Date(getMultisigIdentifierResponse.icp_dt)
       })
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(memberMetadataRecord.id, expect.objectContaining({
@@ -919,7 +919,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: memberMetadataRecord.id,
-        createdAt: new Date("2024-08-10T07:23:54.839Z")
+        createdAt: new Date(getMultisigIdentifierResponse.icp_dt)
       })
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(memberMetadataRecord.id, expect.objectContaining({
