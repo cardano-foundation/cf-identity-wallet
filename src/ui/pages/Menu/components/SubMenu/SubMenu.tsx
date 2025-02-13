@@ -32,9 +32,12 @@ const SubMenu = ({
     }
   }, [nestedMenu, setShowSubMenu, switchView]);
 
-  const hardwareBackButtonConfig = useMemo(() => ({
-    prevent: !showSubMenu
-  }), [showSubMenu]);
+  const hardwareBackButtonConfig = useMemo(
+    () => ({
+      prevent: !showSubMenu,
+    }),
+    [showSubMenu]
+  );
 
   return (
     <SideSlider

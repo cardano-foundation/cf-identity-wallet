@@ -1,5 +1,8 @@
 import { KeriaNotification } from "../../../../../core/agent/agent.types";
-import { CredentialsMatchingApply, LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
+import {
+  CredentialsMatchingApply,
+  LinkedGroupInfo,
+} from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
 
 interface MemberInfo {
@@ -10,7 +13,7 @@ interface MemberInfo {
 
 type LinkedGroup = LinkedGroupInfo & {
   memberInfos: MemberInfo[];
-}
+};
 
 interface CredentialRequestProps {
   pageId: string;

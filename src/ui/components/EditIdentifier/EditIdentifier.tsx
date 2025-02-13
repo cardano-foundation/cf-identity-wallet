@@ -7,7 +7,7 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifiersCache,
-  updateOrAddIdentifiersCache
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
@@ -45,7 +45,9 @@ const EditIdentifier = ({
 
   const [duplicateName, setDuplicateName] = useState(false);
   const [inputChange, setInputChange] = useState(false);
-  const localValidateMessage = inputChange ? nameChecker.getError(newDisplayName) : undefined;
+  const localValidateMessage = inputChange
+    ? nameChecker.getError(newDisplayName)
+    : undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform() && modalIsOpen) {
@@ -85,15 +87,20 @@ const EditIdentifier = ({
 
   const handleSubmit = async () => {
     try {
-      if(newDisplayName.trim() !== cardData.displayName.trim() && Object.values(identifiersData).some(item => item.displayName === newDisplayName)) {
+      if (
+        newDisplayName.trim() !== cardData.displayName.trim() &&
+        Object.values(identifiersData).some(
+          (item) => item.displayName === newDisplayName
+        )
+      ) {
         throw new Error(DUPLICATE_NAME);
       }
-      
+
       setLoading(true);
       const currentIdentifier = identifiersData[cardData.id];
 
-      if(!currentIdentifier) {
-        throw new Error(`${IDENTIFIER_NOT_EXIST} ${cardData.id}`)
+      if (!currentIdentifier) {
+        throw new Error(`${IDENTIFIER_NOT_EXIST} ${cardData.id}`);
       }
 
       const theme = Number(`${newSelectedColor}${newSelectedTheme}`);
@@ -115,7 +122,7 @@ const EditIdentifier = ({
       dispatch(updateOrAddIdentifiersCache(updatedIdentifier));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     } catch (e) {
-      if((e as Error).message === DUPLICATE_NAME) {
+      if ((e as Error).message === DUPLICATE_NAME) {
         setDuplicateName(true);
         return;
       }
@@ -135,10 +142,11 @@ const EditIdentifier = ({
     setNewDisplayName(value);
     setInputChange(true);
     setDuplicateName(false);
-  }
+  };
 
   const hasError = localValidateMessage || duplicateName;
-  const errorMessage = localValidateMessage || `${i18n.t("nameerror.duplicatename")}`;
+  const errorMessage =
+    localValidateMessage || `${i18n.t("nameerror.duplicatename")}`;
 
   return (
     <IonModal
@@ -170,11 +178,7 @@ const EditIdentifier = ({
           />
         }
       >
-        <div
-          className={`indentifier-input${
-            hasError ? " has-error" : ""
-          }`}
-        >
+        <div className={`indentifier-input${hasError ? " has-error" : ""}`}>
           <CustomInput
             dataTestId="edit-name-input"
             title={`${i18n.t("tabs.identifiers.details.options.inner.label")}`}

@@ -66,9 +66,7 @@ const CreatePasscodeModule = forwardRef<
     const cancelBiometricsConfirmText = setupAndroidBiometricsConfirmtext;
 
     const verifyPasscode = async (pass: string) => {
-      const storedPass = await SecureStorage.get(
-        KeyStoreKeys.APP_PASSCODE
-      );
+      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
 
       if (!storedPass) {
         return false;

@@ -102,7 +102,7 @@ jest.mock("@jimcase/barcode-scanning", () => {
       ) => addListener(eventName, listenerFunc),
       startScan: () => startScan(),
       stopScan: jest.fn(),
-      removeAllListeners: jest.fn()
+      removeAllListeners: jest.fn(),
     },
   };
 });

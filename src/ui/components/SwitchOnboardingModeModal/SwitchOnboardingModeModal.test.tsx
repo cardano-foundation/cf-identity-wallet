@@ -46,29 +46,40 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: { children: unknown }) => children,
   IonCheckbox: (props: any) => {
-    return <input type="checkbox" data-testid={props["data-testid"]} checked={props.checked} onChange={(event) => {
-      props.onIonChange({
-        detail: {
-          checked: event.target.checked
-        }
-      })
-    }}/>
-  }
+    return (
+      <input
+        type="checkbox"
+        data-testid={props["data-testid"]}
+        checked={props.checked}
+        onChange={(event) => {
+          props.onIonChange({
+            detail: {
+              checked: event.target.checked,
+            },
+          });
+        }}
+      />
+    );
+  },
 }));
 
 jest.mock("../../hooks", () => ({
   ...jest.requireActual("../../hooks"),
   useAppIonRouter: () => ({
-    push: jest.fn()
-  })
-}))
+    push: jest.fn(),
+  }),
+}));
 
 describe("Switch onboarding mode", () => {
   test("Render create mode", async () => {
     require("@ionic/react");
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <SwitchOnboardingModeModal isOpen={true} setOpen={jest.fn()} mode={OnboardingMode.Create} />
+        <SwitchOnboardingModeModal
+          isOpen={true}
+          setOpen={jest.fn()}
+          mode={OnboardingMode.Create}
+        />
       </Provider>
     );
 
@@ -93,8 +104,8 @@ describe("Switch onboarding mode", () => {
         getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
           "disabled"
         )
-      ).toBe("")
-    })
+      ).toBe("");
+    });
 
     fireEvent.click(getByTestId("confirm-checkbox"));
 
@@ -103,7 +114,7 @@ describe("Switch onboarding mode", () => {
         getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
           "disabled"
         )
-      ).toBe("false")
+      ).toBe("false");
     });
 
     act(() => {
@@ -119,7 +130,11 @@ describe("Switch onboarding mode", () => {
     require("@ionic/react");
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <SwitchOnboardingModeModal isOpen={true} setOpen={jest.fn()} mode={OnboardingMode.Recovery} />
+        <SwitchOnboardingModeModal
+          isOpen={true}
+          setOpen={jest.fn()}
+          mode={OnboardingMode.Recovery}
+        />
       </Provider>
     );
 
@@ -144,8 +159,8 @@ describe("Switch onboarding mode", () => {
         getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
           "disabled"
         )
-      ).toBe("")
-    })
+      ).toBe("");
+    });
 
     fireEvent.click(getByTestId("confirm-checkbox"));
 
@@ -154,7 +169,7 @@ describe("Switch onboarding mode", () => {
         getByText(EN_TRANSLATIONS.switchmodemodal.button.continue).getAttribute(
           "disabled"
         )
-      ).toBe("false")
+      ).toBe("false");
     });
 
     act(() => {

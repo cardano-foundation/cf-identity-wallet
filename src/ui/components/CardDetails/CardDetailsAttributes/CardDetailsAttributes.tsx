@@ -14,8 +14,14 @@ const CardDetailsAttributes = ({
   return (
     <>
       {attributes.map((item, index) => {
-        const { className, ...restItemProps } = typeof itemProps === "function" ? itemProps(item[0]) : (itemProps || {});
-        const itemClass = combineClassNames("card-details-attribute-item", className);
+        const { className, ...restItemProps } =
+          typeof itemProps === "function"
+            ? itemProps(item[0])
+            : itemProps || {};
+        const itemClass = combineClassNames(
+          "card-details-attribute-item",
+          className
+        );
 
         switch (item[0]) {
         case "id": {
@@ -34,7 +40,8 @@ const CardDetailsAttributes = ({
           return;
         }
         default: {
-          return (typeof item[1] === "string" || typeof item[1] === "number") &&
+          return (typeof item[1] === "string" ||
+              typeof item[1] === "number") &&
               !customType &&
               !`${item[1]}`.includes(" ") &&
               `${item[1]}`[10] !== "T" ? (

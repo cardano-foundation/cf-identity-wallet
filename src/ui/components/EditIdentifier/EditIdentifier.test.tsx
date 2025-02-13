@@ -186,9 +186,7 @@ describe("Edit identifier", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
@@ -196,19 +194,18 @@ describe("Edit identifier", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("edit-name-input"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+      ionFireEvent.ionInput(
+        getByTestId("edit-name-input"),
+        "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke"
+      );
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.maxlength)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.maxlength)).toBeVisible();
     });
 
     act(() => {
@@ -216,9 +213,7 @@ describe("Edit identifier", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)).toBeVisible();
     });
 
     act(() => {
@@ -228,7 +223,7 @@ describe("Edit identifier", () => {
     act(() => {
       fireEvent.click(getByTestId("primary-button-edit-identifier"));
     });
-    
+
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.nameerror.duplicatename)).toBeVisible();
     });

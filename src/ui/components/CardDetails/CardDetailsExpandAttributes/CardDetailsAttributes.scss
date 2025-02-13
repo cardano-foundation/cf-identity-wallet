@@ -57,17 +57,20 @@
 
     @include expand-group;
 
-    &.nested-attribute.accordion-expanding > [slot=header] .ion-accordion-toggle-icon {
+    &.nested-attribute.accordion-expanding
+      > [slot="header"]
+      .ion-accordion-toggle-icon {
       transform: rotate(90deg);
     }
 
-    &.nested-attribute.accordion-expanded > [slot=header] .ion-accordion-toggle-icon {
+    &.nested-attribute.accordion-expanded
+      > [slot="header"]
+      .ion-accordion-toggle-icon {
       transform: rotate(90deg);
     }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-
     .accordion {
       ion-item {
         --min-height: auto;

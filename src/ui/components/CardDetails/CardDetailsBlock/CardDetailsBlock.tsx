@@ -27,7 +27,12 @@ const CardDetailsBlock = ({
         )}
         {action && action}
       </div>
-      <IonCard onClick={onClick} className="card-details-info-block-inner">{children}</IonCard>
+      <IonCard
+        onClick={onClick}
+        className="card-details-info-block-inner"
+      >
+        {children}
+      </IonCard>
     </div>
   );
 };

@@ -76,7 +76,7 @@
       }
     }
 
-    .sign-data {        
+    .sign-data {
       & > .card-details-info-block-inner {
         .content-container {
           height: 0;
@@ -84,12 +84,12 @@
           overflow: hidden;
 
           .content {
-            &  > ion-item:last-of-type {
+            & > ion-item:last-of-type {
               margin-bottom: 0.5rem;
             }
           }
         }
-        
+
         .action-button {
           --color: var(--ion-color-neutral-500);
           width: 1.25rem;

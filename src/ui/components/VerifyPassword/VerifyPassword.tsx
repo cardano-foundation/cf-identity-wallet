@@ -56,7 +56,11 @@ const VerifyPassword = ({
     if (password) {
       setStoredPassword(`${password}`);
     } else {
-      showErrorMessage("Unable to get password", new Error("Unable to get password"), dispatch);
+      showErrorMessage(
+        "Unable to get password",
+        new Error("Unable to get password"),
+        dispatch
+      );
     }
 
     let hint;

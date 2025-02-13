@@ -14,7 +14,7 @@ import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getCurrentOperation,
-  getIsInitialized
+  getIsInitialized,
 } from "../store/reducers/stateCache";
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
@@ -33,7 +33,11 @@ import { showError } from "./utils/error";
 import SystemCompatibilityAlert from "./pages/SystemCompatibilityAlert/SystemCompatibilityAlert";
 import { SecureStorage } from "../core/storage";
 import { compareVersion } from "./utils/version";
-import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "./globals/constants";
+import {
+  ANDROID_MIN_VERSION,
+  IOS_MIN_VERSION,
+  WEBVIEW_MIN_VERSION,
+} from "./globals/constants";
 
 setupIonicReact();
 
@@ -50,21 +54,24 @@ const App = () => {
       // prevent log error to console.
       event.preventDefault();
       event.promise.catch((e) => showError("Unhandled error", e, dispatch));
-    }
+    };
 
     window.addEventListener("unhandledrejection", handleUnknownPromiseError);
 
     const handleUnknownError = (event: ErrorEvent) => {
       event.preventDefault();
       showError("Unhandled error", event.error, dispatch);
-    }
+    };
 
-    window.addEventListener("error", handleUnknownError)
+    window.addEventListener("error", handleUnknownError);
 
     return () => {
-      window.removeEventListener("unhandledrejection", handleUnknownPromiseError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnknownPromiseError
+      );
       window.removeEventListener("error", handleUnknownError);
-    }
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -97,7 +104,6 @@ const App = () => {
     }
   }, []);
 
-
   useEffect(() => {
     const checkCompatibility = async () => {
       if (Capacitor.isNativePlatform()) {
@@ -105,14 +111,17 @@ const App = () => {
         setDeviceInfo(info);
 
         if (info.platform === "android") {
-          const notSupportedOS = compareVersion(info.osVersion, `${ANDROID_MIN_VERSION}`) < 0 || compareVersion(info.webViewVersion, `${WEBVIEW_MIN_VERSION}`) < 0;
+          const notSupportedOS =
+            compareVersion(info.osVersion, `${ANDROID_MIN_VERSION}`) < 0 ||
+            compareVersion(info.webViewVersion, `${WEBVIEW_MIN_VERSION}`) < 0;
           const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
           if (notSupportedOS || !isKeyStoreSupported) {
             setIsCompatible(false);
             return;
           }
         } else if (info.platform === "ios") {
-          const notSupportedOS = compareVersion(info.osVersion, `${IOS_MIN_VERSION}`) < 0;
+          const notSupportedOS =
+            compareVersion(info.osVersion, `${IOS_MIN_VERSION}`) < 0;
           const isKeyStoreSupported = await SecureStorage.isKeyStoreSupported();
           if (notSupportedOS || !isKeyStoreSupported) {
             setIsCompatible(false);
@@ -126,47 +135,47 @@ const App = () => {
     checkCompatibility();
   }, []);
 
-
-
   const renderApp = () => {
-    return <>
-      <AppWrapper>
-        <StrictMode>
-          {initialized ? (
-            <>
-              <IonReactRouter>
-                {showScan ? (
-                  <FullPageScanner
-                    showScan={showScan}
-                    setShowScan={setShowScan}
-                  />
-                ) : (
-                  <div
-                    className="app-spinner-container"
-                    data-testid="app-spinner-container"
-                  >
-                    <IonSpinner name="circular" />
+    return (
+      <>
+        <AppWrapper>
+          <StrictMode>
+            {initialized ? (
+              <>
+                <IonReactRouter>
+                  {showScan ? (
+                    <FullPageScanner
+                      showScan={showScan}
+                      setShowScan={setShowScan}
+                    />
+                  ) : (
+                    <div
+                      className="app-spinner-container"
+                      data-testid="app-spinner-container"
+                    >
+                      <IonSpinner name="circular" />
+                    </div>
+                  )}
+                  <div className={showScan ? "ion-hide" : ""}>
+                    <Routes />
                   </div>
-                )}
-                <div className={showScan ? "ion-hide" : ""}>
-                  <Routes />
-                </div>
-              </IonReactRouter>
-              <LockPage />
-              <AppOffline />
-            </>
-          ) : (
-            <LoadingPage />
-          )}
-          <InputRequest />
-          <SidePage />
-          <GenericError />
-          <NoWitnessAlert />
-          <ToastStack />
-        </StrictMode>
-      </AppWrapper>
-    </>
-  }
+                </IonReactRouter>
+                <LockPage />
+                <AppOffline />
+              </>
+            ) : (
+              <LoadingPage />
+            )}
+            <InputRequest />
+            <SidePage />
+            <GenericError />
+            <NoWitnessAlert />
+            <ToastStack />
+          </StrictMode>
+        </AppWrapper>
+      </>
+    );
+  };
   return (
     <IonApp>
       {isCompatible ? (

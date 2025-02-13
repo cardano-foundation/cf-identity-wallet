@@ -26,7 +26,11 @@ import {
   SwitchOnboardingModeModalProps,
 } from "./SwitchOnboardingModeModal.types";
 
-const SwitchOnboardingModeModal = ({ mode, isOpen, setOpen }: SwitchOnboardingModeModalProps) => {
+const SwitchOnboardingModeModal = ({
+  mode,
+  isOpen,
+  setOpen,
+}: SwitchOnboardingModeModalProps) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [agree, setAgree] = useState(false);

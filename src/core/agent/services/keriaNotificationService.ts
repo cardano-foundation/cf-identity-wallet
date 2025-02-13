@@ -33,7 +33,11 @@ import {
   ConnectionStateChangedEvent,
   OperationFailedEvent,
 } from "../event.types";
-import { deleteNotificationRecordById, isNetworkError, randomSalt } from "./utils";
+import {
+  deleteNotificationRecordById,
+  isNetworkError,
+  randomSalt,
+} from "./utils";
 import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
@@ -42,12 +46,14 @@ import { CreationStatus } from "./identifier.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
-  static readonly OUT_OF_ORDER_NOTIFICATION = "Out of order notification received, unable to process right now";
-  static readonly DUPLICATE_ISSUANCE = "Duplicate IPEX grant message for same credential, may be out-of-order TEL updates for revocation";
+  static readonly OUT_OF_ORDER_NOTIFICATION =
+    "Out of order notification received, unable to process right now";
+  static readonly DUPLICATE_ISSUANCE =
+    "Duplicate IPEX grant message for same credential, may be out-of-order TEL updates for revocation";
 
   static readonly POLL_KERIA_INTERVAL = 2000;
   static readonly CHECK_READINESS_INTERNAL = 25;
-  static readonly FAILED_NOTIFICATIONS_RETRY_INTERVAL = 1000;  // @TODO - foconnor: Optimise with backoff.
+  static readonly FAILED_NOTIFICATIONS_RETRY_INTERVAL = 1000; // @TODO - foconnor: Optimise with backoff.
 
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
@@ -156,10 +162,7 @@ class KeriaNotificationService extends AgentService {
           throw error;
         }
 
-        if (
-          this.getKeriaOnlineStatus() &&
-          isNetworkError(error) 
-        ) {
+        if (this.getKeriaOnlineStatus() && isNetworkError(error)) {
           // Possible that bootAndConnect is called from @OnlineOnly in between loops,
           // so check if its gone down to avoid having 2 bootAndConnect loops
           this.markAgentStatus(false);
@@ -238,7 +241,10 @@ class KeriaNotificationService extends AgentService {
       }
 
       const now = Date.now();
-      if (now - lastFailedNotificationsRetryTime > KeriaNotificationService.FAILED_NOTIFICATIONS_RETRY_INTERVAL) {
+      if (
+        now - lastFailedNotificationsRetryTime >
+        KeriaNotificationService.FAILED_NOTIFICATIONS_RETRY_INTERVAL
+      ) {
         // Retry failed notifications every minute
         await this.retryFailedNotifications();
         lastFailedNotificationsRetryTime = now;
@@ -330,9 +336,13 @@ class KeriaNotificationService extends AgentService {
     }
 
     if (notif.a.r === NotificationRoute.ExnIpexAgree) {
-      const identifier = await this.identifierStorage.getIdentifierMetadata(exn.exn.rp);
+      const identifier = await this.identifierStorage.getIdentifierMetadata(
+        exn.exn.rp
+      );
       if (identifier.multisigManageAid) {
-        const smids = (await this.props.signifyClient.identifiers().members(exn.exn.rp)).signing;
+        const smids = (
+          await this.props.signifyClient.identifiers().members(exn.exn.rp)
+        ).signing;
         if (smids[0].aid !== identifier.multisigManageAid) return;
       }
       await this.ipexCommunications.grantAcdcFromAgree(notif.i);
@@ -356,7 +366,9 @@ class KeriaNotificationService extends AgentService {
       const { attempts, lastAttempt, notification } = notificationData;
       const now = Date.now();
 
-      const backoffDelays = [1000, 2500, 5000, 10000, 30000, 60000, 300000, 900000];
+      const backoffDelays = [
+        1000, 2500, 5000, 10000, 30000, 60000, 300000, 900000,
+      ];
       const delay =
         backoffDelays[Math.min(attempts - 1, backoffDelays.length - 1)];
 
@@ -374,7 +386,12 @@ class KeriaNotificationService extends AgentService {
           );
         } catch (error) {
           /* eslint-disable no-console */
-          console.error(`Error when retrying notification ${notification.i} [attempts: ${attempts + 1}]`, error);
+          console.error(
+            `Error when retrying notification ${notification.i} [attempts: ${
+              attempts + 1
+            }]`,
+            error
+          );
 
           failedNotifications[notificationId] = {
             ...notificationData,
@@ -393,9 +410,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async outboundExchange(
-    exchange: ExnMessage 
-  ): Promise<boolean> {
+  private async outboundExchange(exchange: ExnMessage): Promise<boolean> {
     const ourIdentifier = await this.identifierStorage
       .getIdentifierMetadata(exchange.exn.i)
       .catch((error) => {
@@ -446,17 +461,26 @@ class KeriaNotificationService extends AgentService {
 
     const existingCredential =
       await this.credentialStorage.getCredentialMetadata(exchange.exn.e.acdc.d);
-    const telStatus = (await this.props.signifyClient
-      .credentials()
-      .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d)).et;
-    
-    const oldGrantNotifications = await this.notificationStorage.findAllByQuery({
-      credentialId: exchange.exn.e.acdc.d,
-    });
+    const telStatus = (
+      await this.props.signifyClient
+        .credentials()
+        .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d)
+    ).et;
+
+    const oldGrantNotifications = await this.notificationStorage.findAllByQuery(
+      {
+        credentialId: exchange.exn.e.acdc.d,
+      }
+    );
 
     // IPEX messages and TEL updates are not strictly ordered, so this will put to the failed notifications queue to re-process out of order
-    if (telStatus === Ilks.iss && (existingCredential || oldGrantNotifications.length > 0)) {
-      throw new Error(`${KeriaNotificationService.DUPLICATE_ISSUANCE}: [grant: ${exchange.exn.d}] [credential: ${exchange.exn.e.acdc.d}]`);
+    if (
+      telStatus === Ilks.iss &&
+      (existingCredential || oldGrantNotifications.length > 0)
+    ) {
+      throw new Error(
+        `${KeriaNotificationService.DUPLICATE_ISSUANCE}: [grant: ${exchange.exn.d}] [credential: ${exchange.exn.e.acdc.d}]`
+      );
     }
 
     if (telStatus === Ilks.rev) {
@@ -482,7 +506,7 @@ class KeriaNotificationService extends AgentService {
           exchange.exn.e.acdc.d,
           CredentialStatus.REVOKED
         );
-        
+
         await this.ipexCommunications.createLinkedIpexMessageRecord(
           exchange,
           ConnectionHistoryType.CREDENTIAL_REVOKED
@@ -635,7 +659,7 @@ class KeriaNotificationService extends AgentService {
           await this.notificationStorage.findAllByQuery({
             exnSaid: exchange.exn.e.exn.p,
           });
-      
+
       // Either relates to an processed and deleted grant notification, or is out of order
       if (grantNotificationRecords.length === 0) {
         // @TODO - foconnor: We should do this via connection history
@@ -643,7 +667,11 @@ class KeriaNotificationService extends AgentService {
           .exchanges()
           .get(exchange.exn.e.exn.p);
         const credentialId = grantExn.exn.e.acdc.d;
-        if (await this.credentialStorage.getCredentialMetadata(credentialId) !== null) {
+        if (
+          (await this.credentialStorage.getCredentialMetadata(
+            credentialId
+          )) !== null
+        ) {
           await this.markNotification(notif.i);
           return false;
         }
@@ -899,7 +927,7 @@ class KeriaNotificationService extends AgentService {
 
     for (const record of records) {
       if (!record.linkedRequest.current) continue;
-      
+
       let recordType;
       switch (record.route) {
       case NotificationRoute.ExnIpexApply:
@@ -973,10 +1001,7 @@ class KeriaNotificationService extends AgentService {
         throw error;
       }
 
-      if (
-        isNetworkError(error) &&
-        this.getKeriaOnlineStatus()
-      ) {
+      if (isNetworkError(error) && this.getKeriaOnlineStatus()) {
         this.markAgentStatus(false);
         // This will hang the loop until the connection is secured again
         await this.connect();
@@ -1092,10 +1117,11 @@ class KeriaNotificationService extends AgentService {
             .get(admitExchange.exn.p);
           const credentialId = grantExchange.exn.e.acdc.d;
 
-          const notifications =
-              await this.notificationStorage.findAllByQuery({
-                exnSaid: grantExchange.exn.d,
-              });
+          const notifications = await this.notificationStorage.findAllByQuery(
+            {
+              exnSaid: grantExchange.exn.d,
+            }
+          );
           for (const notification of notifications) {
             await deleteNotificationRecordById(
               this.props.signifyClient,
@@ -1116,7 +1142,7 @@ class KeriaNotificationService extends AgentService {
             credentialId,
             CredentialStatus.CONFIRMED
           );
-          
+
           await this.ipexCommunications.createLinkedIpexMessageRecord(
             admitExchange,
             ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -1137,14 +1163,20 @@ class KeriaNotificationService extends AgentService {
           const holder = await this.identifierStorage.getIdentifierMetadata(
             offerExchange.exn.i
           );
-          const notifications =
-              await this.notificationStorage.findAllByQuery({
-                exnSaid: applyExchange.exn.d,
-              });
-          
+          const notifications = await this.notificationStorage.findAllByQuery(
+            {
+              exnSaid: applyExchange.exn.d,
+            }
+          );
+
           for (const notification of notifications) {
             if (!holder.multisigManageAid) {
-              await deleteNotificationRecordById(this.props.signifyClient, this.notificationStorage, notification.id, notification.a.r as NotificationRoute);
+              await deleteNotificationRecordById(
+                this.props.signifyClient,
+                this.notificationStorage,
+                notification.id,
+                  notification.a.r as NotificationRoute
+              );
               continue;
             }
 
@@ -1200,10 +1232,11 @@ class KeriaNotificationService extends AgentService {
             .exchanges()
             .get(grantExchange.exn.p);
 
-          const notifications =
-              await this.notificationStorage.findAllByQuery({
-                exnSaid: agreeExchange.exn.d,
-              });
+          const notifications = await this.notificationStorage.findAllByQuery(
+            {
+              exnSaid: agreeExchange.exn.d,
+            }
+          );
           for (const notification of notifications) {
             await deleteNotificationRecordById(
               this.props.signifyClient,
@@ -1212,7 +1245,7 @@ class KeriaNotificationService extends AgentService {
                 notification.a.r as NotificationRoute
             );
           }
-          
+
           await this.ipexCommunications.createLinkedIpexMessageRecord(
             grantExchange,
             ConnectionHistoryType.CREDENTIAL_PRESENTED

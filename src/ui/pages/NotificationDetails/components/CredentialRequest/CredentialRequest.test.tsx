@@ -10,7 +10,10 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
-import { filteredIdentifierFix, multisignIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import {
+  filteredIdentifierFix,
+  multisignIdentifierFix,
+} from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { CredentialRequest } from "./CredentialRequest";
 
@@ -26,7 +29,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
         getIpexApplyDetails: () => getIpexApplyDetailsMock(),
         getLinkedGroupFromIpexApply: () => getLinkedGroupFromIpexApplyMock(),
         joinMultisigOffer: jest.fn(),
-        getOfferedCredentialSaid: jest.fn()
+        getOfferedCredentialSaid: jest.fn(),
       },
     },
   },
@@ -181,11 +184,11 @@ describe("Credential request: Multisig", () => {
     },
     identifiersCache: {
       identifiers: {
-        "id": {
+        id: {
           ...multisignIdentifierFix[0],
           multisigManageAid: "member-1",
-          id: "id"
-        }
+          id: "id",
+        },
       },
       favourites: [],
     },
@@ -202,11 +205,11 @@ describe("Credential request: Multisig", () => {
           label: "Member 3",
         },
         "member-4": {
-          label: "Member 4"
+          label: "Member 4",
         },
         "member-5": {
-          label: "Member 5"
-        }
+          label: "Member 5",
+        },
       },
     },
   };
@@ -225,7 +228,7 @@ describe("Credential request: Multisig", () => {
           previous: undefined,
         },
         threshold: "5",
-        members: ["member-1", "member-2", "member-3",  "member-4", "member-5"],
+        members: ["member-1", "member-2", "member-3", "member-4", "member-5"],
         othersJoined: [],
       })
     );

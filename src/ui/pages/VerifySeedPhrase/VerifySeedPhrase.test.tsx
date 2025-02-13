@@ -1,7 +1,5 @@
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
-import {
-  ionFireEvent as fireEvent
-} from "@ionic/react-test-utils";
+import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { act } from "react";
@@ -165,14 +163,20 @@ describe("Verify Seed Phrase Page", () => {
 
     fireEvent.click(continueButton);
 
-    const text = await findByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text);
+    const text = await findByText(
+      EN_TRANSLATIONS.verifyseedphrase.alert.fail.text
+    );
 
     expect(text).toBeVisible();
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.button.confirm));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.button.confirm)
+    );
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)).toBeNull();
+      expect(
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)
+      ).toBeNull();
     });
 
     unmount();
@@ -398,9 +402,12 @@ describe("Verify Seed Phrase Page", () => {
 
     expect(continueButton).toBeDisabled();
 
-    initialState.seedPhraseCache.seedPhrase.split(" ").sort((a, b) => a.localeCompare(b)).forEach(async (word) => {
-      fireEvent.click(getByText(`${word}`));
-    });
+    initialState.seedPhraseCache.seedPhrase
+      .split(" ")
+      .sort((a, b) => a.localeCompare(b))
+      .forEach(async (word) => {
+        fireEvent.click(getByText(`${word}`));
+      });
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(MNEMONIC_WORDS)
@@ -489,6 +496,6 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();
-    })
+    });
   });
 });

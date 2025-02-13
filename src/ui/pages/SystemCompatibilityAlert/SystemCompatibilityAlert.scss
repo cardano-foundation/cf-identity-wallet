@@ -28,7 +28,7 @@
       --padding-top: 0.75rem;
       --padding-bottom: 0.75rem;
       --min-height: auto;
-    
+
       .name {
         width: 64%;
         overflow: hidden;
@@ -37,7 +37,7 @@
         font-weight: 500;
         font-size: 1rem;
         color: var(--ion-color-neutral-700);
-    
+
         &.md {
           margin-inline-end: 0;
         }
@@ -49,7 +49,7 @@
         display: flex;
         align-items: center;
       }
-    
+
       .status {
         border-radius: 50%;
         padding: 0.3125rem;
@@ -57,34 +57,34 @@
         height: 0.75rem;
         color: var(--ion-color-neutral-100);
         margin-left: 0.5rem;
-    
+
         &.md {
           margin-top: 0;
           margin-bottom: 0;
         }
-    
+
         &.met {
           background: var(--ion-color-card-theme-one);
         }
-    
+
         &.not-met {
           background: var(--ion-color-error-800);
         }
       }
-    
+
       @media screen and (min-width: 250px) and (max-width: 370px) {
         --padding-top: 0.5rem;
         --padding-bottom: 0.5rem;
-    
+
         .name {
           font-size: 0.875rem;
         }
-    
+
         .status {
           padding: 0.125rem;
           width: 0.75rem;
           height: 0.75rem;
-    
+
           &.md {
             margin-inline-start: 0.5rem;
           }

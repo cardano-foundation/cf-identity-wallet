@@ -20,7 +20,7 @@ const CustomInput = ({
   action,
   actionIcon,
   className,
-  labelAction
+  labelAction,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
@@ -31,16 +31,18 @@ const CustomInput = ({
   };
 
   const inputClassname = combineClassNames("custom-input", className, {
-    "error": !!error,
-    "has-action": !!labelAction
-  })
+    error: !!error,
+    "has-action": !!labelAction,
+  });
 
   return (
     <IonItem className={inputClassname}>
-      {
-        !labelAction ? <IonLabel
+      {!labelAction ? (
+        <IonLabel
           position="stacked"
-          data-testid={`${title?.toLowerCase().replace(/\s/g, "-")}-input-title`}
+          data-testid={`${title
+            ?.toLowerCase()
+            .replace(/\s/g, "-")}-input-title`}
         >
           {title}
           {optional && (
@@ -48,10 +50,14 @@ const CustomInput = ({
               {i18n.t("custominput.optional")}
             </span>
           )}
-        </IonLabel> : <div className="input-label">
+        </IonLabel>
+      ) : (
+        <div className="input-label">
           <IonLabel
             position="stacked"
-            data-testid={`${title?.toLowerCase().replace(/\s/g, "-")}-input-title`}
+            data-testid={`${title
+              ?.toLowerCase()
+              .replace(/\s/g, "-")}-input-title`}
           >
             {title}
             {optional && (
@@ -60,12 +66,9 @@ const CustomInput = ({
               </span>
             )}
           </IonLabel>
-          {
-            labelAction
-          }
+          {labelAction}
         </div>
-
-      }
+      )}
       <div className="input-line">
         <IonInput
           id={dataTestId}

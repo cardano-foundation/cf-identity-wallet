@@ -48,7 +48,7 @@ const initialState = {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   },
 };
 let mockedStore: Store<unknown, AnyAction>;

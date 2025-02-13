@@ -32,7 +32,9 @@ const ListHeader = ({
       data-testid="list-header"
     >
       <h3
-        data-testid={`list-header-title-${title.replace(/\s+/g, "-").toLowerCase()}`}
+        data-testid={`list-header-title-${title
+          .replace(/\s+/g, "-")
+          .toLowerCase()}`}
         className="list-header-title"
       >
         {title}

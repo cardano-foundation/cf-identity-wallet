@@ -29,7 +29,7 @@ function getCredentialShortDetails(
     schema: metadata.schema,
     identifierType: metadata.identifierType,
     identifierId: metadata.identifierId,
-    connectionId: metadata.connectionId
+    connectionId: metadata.connectionId,
   };
 }
 
@@ -72,7 +72,9 @@ export const deleteNotificationRecordById = async (
   route: NotificationRoute
 ): Promise<void> => {
   if (!/^\/local/.test(route)) {
-    await client.notifications().mark(id)
+    await client
+      .notifications()
+      .mark(id)
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (!/404/gi.test(status)) {
@@ -94,7 +96,7 @@ function isNetworkError(error: Error): boolean {
     /Load failed/gi.test(error.message) ||
     /NetworkError when attempting to fetch resource./gi.test(error.message) ||
     /The Internet connection appears to be offline./gi.test(error.message) ||
-    /504/gi.test(error.message.split(" - ")[1])  // Gateway timeout
+    /504/gi.test(error.message.split(" - ")[1]) // Gateway timeout
   ) {
     return true;
   }
@@ -102,4 +104,10 @@ function isNetworkError(error: Error): boolean {
   return false;
 }
 
-export { OnlineOnly, waitAndGetDoneOp, getCredentialShortDetails, randomSalt, isNetworkError };
+export {
+  OnlineOnly,
+  waitAndGetDoneOp,
+  getCredentialShortDetails,
+  randomSalt,
+  isNetworkError,
+};

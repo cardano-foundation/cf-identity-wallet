@@ -15,7 +15,10 @@ import { i18n } from "../../../../../../i18n";
 import { useAppSelector } from "../../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../../store/reducers/connectionsCache";
 import { getCredsCache } from "../../../../../../store/reducers/credsCache";
-import { getNotificationsCache, setNotificationsCache } from "../../../../../../store/reducers/notificationsCache";
+import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../../../../components/CardDetails";
@@ -64,7 +67,9 @@ const ChooseCredential = ({
 
   const mappedCredentials = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
-      const connection = connections?.[cred.connectionId]?.label || i18n.t("connections.unknown");
+      const connection =
+        connections?.[cred.connectionId]?.label ||
+        i18n.t("connections.unknown");
 
       return {
         id: cred.acdc.d,
@@ -135,7 +140,6 @@ const ChooseCredential = ({
     dispatch(setNotificationsCache(updatedNotifications));
   };
 
-
   const handleRequestCredential = async () => {
     try {
       if (!selectedCred) {
@@ -149,11 +153,17 @@ const ChooseCredential = ({
         selectedCred.acdc
       );
 
-      if(!linkedGroup) {
+      if (!linkedGroup) {
         handleNotificationUpdate();
       }
 
-      dispatch(setToastMsg(!linkedGroup ? ToastMsgType.SHARE_CRED_SUCCESS : ToastMsgType.PROPOSED_CRED_SUCCESS));
+      dispatch(
+        setToastMsg(
+          !linkedGroup
+            ? ToastMsgType.SHARE_CRED_SUCCESS
+            : ToastMsgType.PROPOSED_CRED_SUCCESS
+        )
+      );
       onClose();
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.SHARE_CRED_FAIL));
@@ -170,7 +180,7 @@ const ChooseCredential = ({
   const joinedCredMembers = useMemo(() => {
     if (!viewCredDetail) return [];
 
-    return linkedGroup?.memberInfos.filter(member => member.joined) || [];
+    return linkedGroup?.memberInfos.filter((member) => member.joined) || [];
     // return linkedGroup?.memberInfos.filter(
     //   (item) => item.joinedCred === viewCredDetail.acdc.d
     // ) || [];

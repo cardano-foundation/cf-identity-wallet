@@ -1,6 +1,4 @@
-import {
-  useIonViewWillEnter
-} from "@ionic/react";
+import { useIonViewWillEnter } from "@ionic/react";
 import { useCallback, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -8,7 +6,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
-  setCurrentRoute
+  setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "../../components/CardDetails/CardDetails.scss";
@@ -31,34 +29,37 @@ const IdentifierDetails = () => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const handleDone = useCallback((animation = true) => {
-    setNavAnimation(animation);
-    const { backPath, updateRedux } = getBackRoute(
-      TabsRoutePath.IDENTIFIER_DETAILS,
-      {
-        store: { stateCache },
-      }
-    );
+  const handleDone = useCallback(
+    (animation = true) => {
+      setNavAnimation(animation);
+      const { backPath, updateRedux } = getBackRoute(
+        TabsRoutePath.IDENTIFIER_DETAILS,
+        {
+          store: { stateCache },
+        }
+      );
 
-    updateReduxState(
-      backPath.pathname,
-      { store: { stateCache } },
-      dispatch,
-      updateRedux
-    );
+      updateReduxState(
+        backPath.pathname,
+        { store: { stateCache } },
+        dispatch,
+        updateRedux
+      );
 
-    if (animation) {
-      setTimeout(() => {
+      if (animation) {
+        setTimeout(() => {
+          ionRouter.push(backPath.pathname, "back", "pop");
+        }, NAVIGATION_DELAY);
+      } else {
         ionRouter.push(backPath.pathname, "back", "pop");
-      }, NAVIGATION_DELAY);
-    } else {
-      ionRouter.push(backPath.pathname, "back", "pop");
-    }
+      }
 
-    setTimeout(() => {
-      setNavAnimation(false);
-    }, CLEAR_ANIMATION);
-  }, [dispatch, ionRouter, stateCache]);
+      setTimeout(() => {
+        setNavAnimation(false);
+      }, CLEAR_ANIMATION);
+    },
+    [dispatch, ionRouter, stateCache]
+  );
 
   return (
     <IdentifierDetailModule

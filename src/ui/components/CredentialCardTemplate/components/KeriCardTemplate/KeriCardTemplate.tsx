@@ -57,7 +57,7 @@ const KeriCardTemplate = ({
       style={CredentialCardTemplateStyles}
     >
       <div className="cred-keri-bg">
-        <CardTheme/>
+        <CardTheme />
       </div>
       <div className={`keri-card-template-inner ${cardData.status}`}>
         <div className="card-header">
@@ -76,7 +76,9 @@ const KeriCardTemplate = ({
               <span>{CredentialStatus.PENDING}</span>
             </IonChip>
           ) : (
-            <span className="credential-type card-text">{cardData.credentialType}</span>
+            <span className="credential-type card-text">
+              {cardData.credentialType}
+            </span>
           )}
         </div>
         <div className="card-footer">

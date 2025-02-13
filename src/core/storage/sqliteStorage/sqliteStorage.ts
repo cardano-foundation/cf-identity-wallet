@@ -12,9 +12,8 @@ import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
 class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
-  static readonly SESION_IS_NOT_INITIALIZED =
-    "Session is not initialized";
-  
+  static readonly SESION_IS_NOT_INITIALIZED = "Session is not initialized";
+
   static readonly INSERT_ITEM_TAG_SQL =
     "INSERT INTO items_tags (item_id, name, value, type) VALUES (?,?,?,?)";
   static readonly DELETE_ITEM_TAGS_SQL =
@@ -99,7 +98,9 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     this.checkSession(this.session);
 
     if (!(await this.getItem(id))) {
-      throw new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
+      throw new Error(
+        `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`
+      );
     }
 
     await this.deleteItem(id);

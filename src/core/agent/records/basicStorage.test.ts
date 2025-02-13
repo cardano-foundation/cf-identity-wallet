@@ -37,7 +37,9 @@ const basicRecordB = new BasicRecord({
 describe("Basic Storage", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.spyOn(global, "Date").mockImplementation(() => fixedDate as unknown as string);
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => fixedDate as unknown as string);
   });
 
   afterAll(() => {

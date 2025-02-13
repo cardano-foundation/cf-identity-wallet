@@ -167,7 +167,7 @@ class ConnectionService extends AgentService {
         };
       }
     }
-    
+
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
     if (!multiSigInvite) {

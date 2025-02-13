@@ -1,7 +1,7 @@
 interface CardDetailsContentProps {
-    mainContent: string;
-    subContent?: string;
-    testId?: string;
+  mainContent: string;
+  subContent?: string;
+  testId?: string;
 }
 
-export type { CardDetailsContentProps }
+export type { CardDetailsContentProps };

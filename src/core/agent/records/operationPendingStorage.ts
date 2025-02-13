@@ -1,4 +1,8 @@
-import { Query, StorageMessage, StorageService } from "../../storage/storage.types";
+import {
+  Query,
+  StorageMessage,
+  StorageService,
+} from "../../storage/storage.types";
 import {
   OperationPendingRecord,
   OperationPendingRecordStorageProps,
@@ -10,7 +14,10 @@ class OperationPendingStorage {
   private storageService: StorageService<OperationPendingRecord>;
   private eventEmitter: CoreEventEmitter;
 
-  constructor(storageService: StorageService<OperationPendingRecord>, eventEmitter: CoreEventEmitter) {
+  constructor(
+    storageService: StorageService<OperationPendingRecord>,
+    eventEmitter: CoreEventEmitter
+  ) {
     this.storageService = storageService;
     this.eventEmitter = eventEmitter;
   }
@@ -24,12 +31,13 @@ class OperationPendingStorage {
       this.eventEmitter.emit<OperationAddedEvent>({
         type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
-      }); 
+      });
       return pendingOperation;
     } catch (error) {
       if (
         error instanceof Error &&
-        error.message === `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
+        error.message ===
+          `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
       ) {
         return record;
       } else {

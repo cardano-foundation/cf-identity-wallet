@@ -7,7 +7,8 @@
   line-height: 1.375rem;
   overflow: hidden;
   position: relative;
-  box-shadow: 0.25rem 0.25rem 0.5rem 0rem rgba(var(--ion-color-neutral-500-rgb), 0.2);
+  box-shadow: 0.25rem 0.25rem 0.5rem 0rem
+    rgba(var(--ion-color-neutral-500-rgb), 0.2);
 
   .cred-keri-bg {
     position: absolute;
@@ -40,7 +41,8 @@
 
     .card-text {
       color: var(--ion-color-neutral-200);
-      text-shadow: 0.125rem 0.125rem 0.25rem 0rem rgba(var(--ion-color-neutral-600-rgb), 0.8);
+      text-shadow: 0.125rem 0.125rem 0.25rem 0rem
+        rgba(var(--ion-color-neutral-600-rgb), 0.8);
     }
 
     &.pending .card-footer-column-label {

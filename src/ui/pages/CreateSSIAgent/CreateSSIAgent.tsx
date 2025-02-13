@@ -4,7 +4,7 @@ import {
   informationCircleOutline,
   openOutline,
   scanOutline,
-  refreshOutline
+  refreshOutline,
 } from "ionicons/icons";
 import {
   MouseEvent as ReactMouseEvent,
@@ -146,10 +146,20 @@ const CreateSSIAgent = () => {
       setHasMismatchError(true);
     }
 
-    if([Agent.KERIA_BOOT_FAILED_BAD_NETWORK, Agent.KERIA_CONNECT_FAILED_BAD_NETWORK].includes(errorMessage)) {
-      showError("Unable to boot or connect keria", error, dispatch, ToastMsgType.UNKNOWN_ERROR)
+    if (
+      [
+        Agent.KERIA_BOOT_FAILED_BAD_NETWORK,
+        Agent.KERIA_CONNECT_FAILED_BAD_NETWORK,
+      ].includes(errorMessage)
+    ) {
+      showError(
+        "Unable to boot or connect keria",
+        error,
+        dispatch,
+        ToastMsgType.UNKNOWN_ERROR
+      );
     }
-  }
+  };
 
   const handleRecoveryWallet = async () => {
     setLoading(true);
@@ -282,7 +292,6 @@ const CreateSSIAgent = () => {
     });
   };
 
-
   const mode = isRecoveryMode ? OnboardingMode.Create : OnboardingMode.Recovery;
 
   const buttonLabel = !isRecoveryMode
@@ -396,7 +405,11 @@ const CreateSSIAgent = () => {
               }
               errorMessage={
                 hasMismatchError
-                  ? `${i18n.t(isRecoveryMode ? "ssiagent.error.recoverymismatchconnecturl" : "ssiagent.error.mismatchconnecturl")}`
+                  ? `${i18n.t(
+                    isRecoveryMode
+                      ? "ssiagent.error.recoverymismatchconnecturl"
+                      : "ssiagent.error.mismatchconnecturl"
+                  )}`
                   : displayBootUrlError && !isInvalidConnectUrl
                     ? `${i18n.t("ssiagent.error.invalidurl")}`
                     : `${i18n.t("ssiagent.error.invalidconnecturl")}`
@@ -444,7 +457,11 @@ const CreateSSIAgent = () => {
             : `${i18n.t("ssiagent.button.onboardingdocumentation")}`}
         </IonButton>
       </TermsModal>
-      <SwitchOnboardingModeModal mode={mode} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
+      <SwitchOnboardingModeModal
+        mode={mode}
+        isOpen={showSwitchModeModal}
+        setOpen={setSwitchModeModal}
+      />
     </>
   );
 };

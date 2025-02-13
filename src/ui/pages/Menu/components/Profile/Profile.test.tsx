@@ -143,7 +143,7 @@ describe("Profile page", () => {
       expect(getByTestId("profile-title")).toHaveTextContent(
         EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
       );
-    })
+    });
 
     const actionButton = getByTestId("action-button");
 
@@ -230,7 +230,7 @@ describe("Profile page", () => {
       expect(getByTestId("profile-title")).toHaveTextContent(
         EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
       );
-    })
+    });
 
     const actionButton = getByTestId("action-button");
     expect(
@@ -246,20 +246,20 @@ describe("Profile page", () => {
       EN_TRANSLATIONS.tabs.menu.tab.items.profile.name + "Frank"
     );
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.actionedit)
+    );
 
     await waitFor(() => {
       expect(getByTestId("profile-item-edit-name")).toBeVisible();
-    })
+    });
 
     act(() => {
       ionFireEvent.ionInput(getByTestId("profile-item-edit-name"), "");
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
@@ -267,19 +267,18 @@ describe("Profile page", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("profile-item-edit-name"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+      ionFireEvent.ionInput(
+        getByTestId("profile-item-edit-name"),
+        "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke"
+      );
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.maxlength)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.maxlength)).toBeVisible();
     });
 
     act(() => {
@@ -287,9 +286,7 @@ describe("Profile page", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)).toBeVisible();
     });
   });
 

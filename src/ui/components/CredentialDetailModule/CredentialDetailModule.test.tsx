@@ -35,7 +35,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentials: jest.fn(() => Promise.resolve(true)),
         archiveCredential: () => archiveCredential(),
         deleteCredential: () => deleteCredential(),
-        markCredentialPendingDeletion:() => markCredentialPendingDeletion(),
+        markCredentialPendingDeletion: () => markCredentialPendingDeletion(),
       },
       connections: {
         getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),

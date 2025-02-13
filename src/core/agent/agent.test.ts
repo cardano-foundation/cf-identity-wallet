@@ -23,9 +23,7 @@ const mockAgentServicesProps = {
 };
 
 const mockGetBranValue = "AEsI_2YqNsQlf8brzDJaP";
-jest
-  .spyOn(SecureStorage, "get")
-  .mockResolvedValue(mockGetBranValue);
+jest.spyOn(SecureStorage, "get").mockResolvedValue(mockGetBranValue);
 const mockBasicStorageService = {
   save: jest.fn(),
   update: jest.fn(),
@@ -177,7 +175,7 @@ describe("KERIA connectivity", () => {
     mockCredentialService.removeCredentialsPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
-    
+
     await agent.bootAndConnect(mockAgentUrls);
 
     expect(signifyReady).toHaveBeenCalled();
@@ -310,9 +308,13 @@ describe("Recovery of DB from cloud sync", () => {
     expect(mockConnectionService.syncKeriaContacts).toHaveBeenCalled();
     expect(mockIdentifierService.syncKeriaIdentifiers).toHaveBeenCalled();
     expect(mockCredentialService.syncKeriaCredentials).toHaveBeenCalled();
-    expect(mockKeriaNotificationService.syncIPEXReplyOperations).toHaveBeenCalled();
+    expect(
+      mockKeriaNotificationService.syncIPEXReplyOperations
+    ).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
-    expect(mockBasicStorageService.createOrUpdateBasicRecord).toHaveBeenCalledWith({
+    expect(
+      mockBasicStorageService.createOrUpdateBasicRecord
+    ).toHaveBeenCalledWith({
       _tags: {},
       content: { syncing: false },
       createdAt: now,

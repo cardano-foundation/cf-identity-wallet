@@ -115,7 +115,7 @@ const notificationsFix: KeriaNotification[] = [
     connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     read: false,
     groupReplied: false,
-  }
+  },
 ];
 
 export { notificationsFix };

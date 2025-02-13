@@ -10,7 +10,10 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { showGenericError } from "../../../../../store/reducers/stateCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
-import { filteredIdentifierMapFix, filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import {
+  filteredIdentifierMapFix,
+  filteredIdentifierFix,
+} from "../../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
@@ -23,7 +26,7 @@ const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => mockGet(options.key),
-    set: jest.fn()
+    set: jest.fn(),
   },
 }));
 
@@ -292,12 +295,16 @@ describe("Receive credential", () => {
 
     await waitFor(() => {
       expect(getByTestId("missing-issuer-alert")).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.alert.missingissuer.text)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.identifier.alert
+            .missingissuer.text
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open indentifier detail", async () => {
-
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.NOTIFICATIONS],
@@ -306,7 +313,7 @@ describe("Receive credential", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        isOnline: true
+        isOnline: true,
       },
       credsCache: {
         creds: [],
@@ -347,7 +354,7 @@ describe("Receive credential", () => {
 
     await waitFor(() => {
       expect(getByText("Profess")).toBeVisible();
-    })
+    });
 
     fireEvent.click(getByTestId("related-identifier-detail"));
 
@@ -381,10 +388,10 @@ describe("Receive credential", () => {
 
     getAcdcFromIpexGrantMock.mockImplementation(() => {
       return Promise.reject(new Error("Get acdc failed"));
-    })
+    });
 
     const backMock = jest.fn();
-    const {unmount} = render(
+    const { unmount } = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
           pageId="creadential-request"
@@ -398,7 +405,7 @@ describe("Receive credential", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(showGenericError(true));
       expect(backMock).toBeCalled();
-    })
+    });
 
     unmount();
   });
@@ -457,7 +464,7 @@ describe("Credential request: Multisig", () => {
       othersJoined: [],
       linkedRequest: {
         accepted: false,
-      }
+      },
     });
 
     const { getByText } = render(
@@ -485,14 +492,13 @@ describe("Credential request: Multisig", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.initiatoracceptedalert
+        EN_TRANSLATIONS.tabs.notifications.details.credential.receive
+          .initiatoracceptedalert
       )
     ).toBeVisible();
 
     expect(
-      getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.buttons.ok
-      )
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.ok)
     ).toBeVisible();
   });
 
@@ -516,7 +522,7 @@ describe("Credential request: Multisig", () => {
       othersJoined: ["member-1"],
       linkedRequest: {
         accepted: false,
-      }
+      },
     });
 
     const { getByText, queryByText } = render(
@@ -544,7 +550,8 @@ describe("Credential request: Multisig", () => {
 
     expect(
       queryByText(
-        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.initiatoracceptedalert
+        EN_TRANSLATIONS.tabs.notifications.details.credential.receive
+          .initiatoracceptedalert
       )
     ).toBeNull();
   });
@@ -557,14 +564,14 @@ describe("Credential request: Multisig", () => {
       identifierType: IdentifierType.Group,
       identifierId: filteredIdentifierFix[2].id,
     });
-    
+
     getLinkedGroupFromIpexGrantMock.mockResolvedValue({
       threshold: "2",
       members: ["member-1", "member-2", "member-3"],
       othersJoined: ["member-1", "member-2"],
       linkedRequest: {
         accepted: false,
-      }
+      },
     });
 
     const { getByText, unmount, queryByTestId } = render(
@@ -586,7 +593,7 @@ describe("Credential request: Multisig", () => {
 
     await waitFor(() => {
       expect(queryByTestId("spinner")).toBeNull();
-    })
+    });
 
     unmount();
   });
@@ -606,20 +613,21 @@ describe("Credential request: Multisig", () => {
       othersJoined: ["member-1"],
       linkedRequest: {
         accepted: true,
-        current: "currentadmitsaid"
-      }
+        current: "currentadmitsaid",
+      },
     });
 
-    const { queryByTestId, unmount, findByText, queryByText, getByText } = render(
-      <Provider store={storeMocked}>
-        <ReceiveCredential
-          pageId="creadential-request-1"
-          activeStatus
-          handleBack={backMock}
-          notificationDetails={notificationsFix[0]}
-        />
-      </Provider>
-    );
+    const { queryByTestId, unmount, findByText, queryByText, getByText } =
+      render(
+        <Provider store={storeMocked}>
+          <ReceiveCredential
+            pageId="creadential-request-1"
+            activeStatus
+            handleBack={backMock}
+            notificationDetails={notificationsFix[0]}
+          />
+        </Provider>
+      );
 
     expect(queryByTestId("primary-button-creadential-request")).toBe(null);
     expect(queryByTestId("secondary-button-creadential-request")).toBe(null);
@@ -629,7 +637,7 @@ describe("Credential request: Multisig", () => {
 
     await waitFor(() => {
       expect(getLinkedGroupFromIpexGrantMock).toBeCalled();
-    })
+    });
 
     await waitFor(() => {
       expect(queryByTestId("spinner")).toBeNull();
@@ -641,7 +649,7 @@ describe("Credential request: Multisig", () => {
           EN_TRANSLATIONS.tabs.notifications.details.credential.receive.members
         )
       ).toBeVisible();
-    })
+    });
 
     const memberName1 = await findByText("Member 1");
     const memberName2 = await findByText("Member 2");

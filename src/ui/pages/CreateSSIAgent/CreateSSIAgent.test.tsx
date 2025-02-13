@@ -10,7 +10,10 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
-import { setCurrentOperation, setToastMsg } from "../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
 import { CustomInputProps } from "../../components/CustomInput/CustomInput.types";
 import {
   ONBOARDING_DOCUMENTATION_LINK,
@@ -20,27 +23,26 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { CreateSSIAgent } from "./CreateSSIAgent";
 import { Agent } from "../../../core/agent/agent";
 
-const bootAndConnectMock = jest.fn((...args: unknown[]) => Promise.resolve(args));
+const bootAndConnectMock = jest.fn((...args: unknown[]) =>
+  Promise.resolve(args)
+);
 const recoverKeriaAgentMock = jest.fn();
 const basicStorageDeleteMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   ...jest.requireActual("../../../core/agent/agent"),
   Agent: {
-    KERIA_CONNECTION_BROKEN :
-    "The app is not connected to KERIA at the moment",
-    KERIA_BOOT_FAILED_BAD_NETWORK :
-    "Failed to boot due to network connectivity",
-    KERIA_CONNECT_FAILED_BAD_NETWORK :
-    "Failed to connect due to network connectivity",
-    KERIA_BOOT_FAILED : "Failed to boot signify client",
-    KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT :
-    "KERIA agent is already booted but cannot connect",
-    KERIA_NOT_BOOTED :
-    "Agent has not been booted for a given Signify passcode",
-    INVALID_MNEMONIC : "Seed phrase is invalid",
-    MISSING_DATA_ON_KERIA :
-    "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
+    KERIA_CONNECTION_BROKEN: "The app is not connected to KERIA at the moment",
+    KERIA_BOOT_FAILED_BAD_NETWORK: "Failed to boot due to network connectivity",
+    KERIA_CONNECT_FAILED_BAD_NETWORK:
+      "Failed to connect due to network connectivity",
+    KERIA_BOOT_FAILED: "Failed to boot signify client",
+    KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT:
+      "KERIA agent is already booted but cannot connect",
+    KERIA_NOT_BOOTED: "Agent has not been booted for a given Signify passcode",
+    INVALID_MNEMONIC: "Seed phrase is invalid",
+    MISSING_DATA_ON_KERIA:
+      "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
     agent: {
       bootAndConnect: (...args: unknown[]) => bootAndConnectMock(...args),
       recoverKeriaAgent: (...args: unknown[]) => recoverKeriaAgentMock(...args),
@@ -57,7 +59,7 @@ jest.mock("@ionic/react", () => ({
     const testId = props["data-testid"];
 
     return <div data-testid={testId}>{children}</div>;
-  }
+  },
 }));
 
 const browserMock = jest.fn(({ link }: { link: string }) =>
@@ -420,7 +422,7 @@ describe("SSI agent page", () => {
 
     await waitFor(() => {
       expect(getByTestId("ssi-spinner-container")).toBeVisible();
-    })
+    });
   });
 
   test("Open SSI Agent info modal (Onboarding)", async () => {
@@ -458,13 +460,15 @@ describe("SSI agent page", () => {
       </Provider>
     );
 
-    expect(getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)
+    ).toBeVisible();
 
     fireEvent.click(getByTestId("tertiary-button-create-ssi-agent"));
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();
-    })
+    });
   });
 });
 
@@ -638,7 +642,9 @@ describe("SSI agent page: show error", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.SSI_AGENT);
 
-    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_BOOT_FAILED)))
+    bootAndConnectMock.mockImplementation(() =>
+      Promise.reject(new Error(Agent.KERIA_BOOT_FAILED))
+    );
 
     const { getByTestId, getByText } = render(
       <IonReactMemoryRouter history={history}>
@@ -653,7 +659,9 @@ describe("SSI agent page: show error", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.ssiagent.error.invalidbooturl)).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.ssiagent.error.invalidbooturl)
+      ).toBeVisible();
     });
   });
 
@@ -692,7 +700,9 @@ describe("SSI agent page: show error", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.SSI_AGENT);
 
-    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT)))
+    bootAndConnectMock.mockImplementation(() =>
+      Promise.reject(new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT))
+    );
 
     const { getByTestId, getByText } = render(
       <IonReactMemoryRouter history={history}>
@@ -707,7 +717,9 @@ describe("SSI agent page: show error", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.ssiagent.error.invalidconnecturl)).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.ssiagent.error.invalidconnecturl)
+      ).toBeVisible();
     });
   });
 
@@ -746,7 +758,9 @@ describe("SSI agent page: show error", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.SSI_AGENT);
 
-    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_NOT_BOOTED)))
+    bootAndConnectMock.mockImplementation(() =>
+      Promise.reject(new Error(Agent.KERIA_NOT_BOOTED))
+    );
 
     const { getByTestId, getByText } = render(
       <IonReactMemoryRouter history={history}>
@@ -761,10 +775,11 @@ describe("SSI agent page: show error", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.ssiagent.error.mismatchconnecturl)).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.ssiagent.error.mismatchconnecturl)
+      ).toBeVisible();
     });
   });
-
 
   test("Network error", async () => {
     const mockStore = configureStore();
@@ -801,7 +816,9 @@ describe("SSI agent page: show error", () => {
     const history = createMemoryHistory();
     history.push(RoutePath.SSI_AGENT);
 
-    bootAndConnectMock.mockImplementation(() => Promise.reject(new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK)))
+    bootAndConnectMock.mockImplementation(() =>
+      Promise.reject(new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK))
+    );
 
     const { getByTestId } = render(
       <IonReactMemoryRouter history={history}>
@@ -816,7 +833,9 @@ describe("SSI agent page: show error", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setToastMsg(ToastMsgType.UNKNOWN_ERROR));
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.UNKNOWN_ERROR)
+      );
     });
   });
-})
+});

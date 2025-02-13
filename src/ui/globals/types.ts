@@ -1,4 +1,3 @@
-
 enum CardType {
   CREDENTIALS = "credentials",
   IDENTIFIERS = "identifiers",
@@ -80,7 +79,7 @@ enum ToastMsgType {
   FAILED_UPDATE_CONNECTION = "failedupdateconnectionerror",
   DUPLICATE_CONNECTION = "duplicateconnectionerror",
   GROUP_ID_NOT_MATCH_ERROR = "groupidnotmatcherror",
-  UNKNOWN_ERROR="unknownerror",
+  UNKNOWN_ERROR = "unknownerror",
 }
 
 const PASSCODE_MAPPING = {
@@ -109,7 +108,10 @@ enum BackEventPriorityType {
 }
 
 export {
-  BackEventPriorityType, CardType,
-  OperationType, PASSCODE_MAPPING, RequestType, ToastMsgType
+  BackEventPriorityType,
+  CardType,
+  OperationType,
+  PASSCODE_MAPPING,
+  RequestType,
+  ToastMsgType,
 };
-

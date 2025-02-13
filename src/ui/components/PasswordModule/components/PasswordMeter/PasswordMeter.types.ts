@@ -1,11 +1,11 @@
 enum StrongLevel {
-    Weak,
-    Medium,
-    Strong
+  Weak,
+  Medium,
+  Strong,
 }
 
 interface PasswordMeterProps {
-    password: string;
+  password: string;
 }
 
 export { StrongLevel };

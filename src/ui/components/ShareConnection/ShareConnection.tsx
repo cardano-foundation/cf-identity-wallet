@@ -36,10 +36,10 @@ const ShareConnection = ({
     Share.share({
       text: oobi,
     }).catch((e) => {
-      if(e.message === SHARE_CANCELLED_ERROR) return;
+      if (e.message === SHARE_CANCELLED_ERROR) return;
       throw e;
     });
-  }
+  };
 
   const closeModal = () => setIsOpen(false);
 

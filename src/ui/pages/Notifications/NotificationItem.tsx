@@ -4,7 +4,7 @@ import {
   ellipsisHorizontal,
   fingerPrintOutline,
   idCardOutline,
-  documentOutline
+  documentOutline,
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
@@ -39,14 +39,18 @@ const NotificationItem = ({
       });
     case NotificationRoute.MultiSigIcp:
       return t("tabs.notifications.tab.labels.multisigicp", {
-        connection: multisigConnectionsCache?.[item.connectionId]?.label || t("connections.unknown"),
+        connection:
+            multisigConnectionsCache?.[item.connectionId]?.label ||
+            t("connections.unknown"),
       });
     case NotificationRoute.ExnIpexApply: {
-      if(item.groupReplied && !item.groupInitiator && item.initiatorAid) {
-        const initiator = item.initiatorAid ? multisigConnectionsCache[item.initiatorAid].label :  t("connections.unknown");
+      if (item.groupReplied && !item.groupInitiator && item.initiatorAid) {
+        const initiator = item.initiatorAid
+          ? multisigConnectionsCache[item.initiatorAid].label
+          : t("connections.unknown");
         return t("tabs.notifications.tab.labels.exnipexapplyproposed", {
           connection: connectionName || t("connections.unknown"),
-          initiator
+          initiator,
         });
       }
 
@@ -62,14 +66,23 @@ const NotificationItem = ({
       return t("tabs.notifications.tab.labels.multisigexn", {
         connection: connectionName || t("connections.unknown"),
       });
-    case NotificationRoute.LocalSign: 
+    case NotificationRoute.LocalSign:
       return t("tabs.notifications.tab.labels.sign", {
         connection: connectionName || t("connections.unknown"),
       });
     default:
       return "";
     }
-  }, [connectionsCache, item.a.credentialTitle, item.a.r, item.connectionId, item.groupInitiator, item.groupReplied, item.initiatorAid, multisigConnectionsCache])
+  }, [
+    connectionsCache,
+    item.a.credentialTitle,
+    item.a.r,
+    item.connectionId,
+    item.groupInitiator,
+    item.groupReplied,
+    item.initiatorAid,
+    multisigConnectionsCache,
+  ]);
 
   const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {
@@ -100,12 +113,16 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        {isLocalSign ? <div className="sign-logo"/> : <img
-          src={KeriLogo}
-          alt="notifications-tab-item-logo"
-          className="notifications-tab-item-logo"
-          data-testid="notifications-tab-item-logo"
-        />}
+        {isLocalSign ? (
+          <div className="sign-logo" />
+        ) : (
+          <img
+            src={KeriLogo}
+            alt="notifications-tab-item-logo"
+            className="notifications-tab-item-logo"
+            data-testid="notifications-tab-item-logo"
+          />
+        )}
         <IonIcon
           src={referIcon(item)}
           size="small"

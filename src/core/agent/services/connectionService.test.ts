@@ -291,7 +291,7 @@ describe("Connection service of agent", () => {
       "https://localhost/oobi/1234/agent?name=alias",
       "https://localhost/oobi/1234/witness?name=alias",
       "https://localhost/.well-known/keri/oobi/1234?name=alias",
-      "https://localhost/oobi/EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao?name=alias"
+      "https://localhost/oobi/EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao?name=alias",
     ];
 
     signifyClient.operations().get = jest
@@ -578,9 +578,12 @@ describe("Connection service of agent", () => {
   test("can resolve oobi with no name parameter", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid`;
-    
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    jest.spyOn(require("./utils"), "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+
+    /* eslint-disable @typescript-eslint/no-var-requires */
+    jest
+      .spyOn(require("./utils"), "randomSalt")
+      .mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+    /* eslint-enable @typescript-eslint/no-var-requires */
 
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({

@@ -118,9 +118,7 @@ const LockPageContainer = () => {
   };
 
   const verifyPasscode = async (pass: string) => {
-    const storedPass = await SecureStorage.get(
-      KeyStoreKeys.APP_PASSCODE
-    );
+    const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
     if (!storedPass) {
       return false;
     }
@@ -158,7 +156,7 @@ const LockPageContainer = () => {
       document.getElementById("passcode-button-1")?.focus();
     }
   }, []);
-  
+
   useEffect(() => {
     const handleAppStateChange = async (state: AppState) => {
       if (state.isActive) {
@@ -169,7 +167,9 @@ const LockPageContainer = () => {
     const listener = App.addListener("appStateChange", handleAppStateChange);
 
     return () => {
-      listener.then((value) => value.remove()).catch((e) => showError("Unable to clear listener", e));
+      listener
+        .then((value) => value.remove())
+        .catch((e) => showError("Unable to clear listener", e));
     };
   }, []);
 
@@ -244,11 +244,11 @@ const LockPage = () => {
 
   const isPublicPage = PublicRoutes.includes(currentRoute?.path as RoutePath);
 
-  if(isPublicPage || authentication.loggedIn) {
+  if (isPublicPage || authentication.loggedIn) {
     return null;
   }
 
-  return <LockPageContainer />
-}
+  return <LockPageContainer />;
+};
 
 export { LockPage };

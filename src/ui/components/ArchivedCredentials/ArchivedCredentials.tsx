@@ -159,7 +159,9 @@ const ArchivedCredentialsContainer = forwardRef<
         )
       );
       const deleteRes = await Promise.allSettled(
-        selectedIds.map((id) => Agent.agent.credentials.markCredentialPendingDeletion(id))
+        selectedIds.map((id) =>
+          Agent.agent.credentials.markCredentialPendingDeletion(id)
+        )
       );
 
       const deleteSuccessCrendentials: string[] = [];

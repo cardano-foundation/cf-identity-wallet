@@ -26,7 +26,7 @@ const ConnectionHistoryEvent = ({
     >
       <div className="connection-details-logo">
         {historyItem.type ===
-          ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
+        ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
             <img
               src={connectionDetails?.logo || KeriLogo}
               alt="connection-logo"

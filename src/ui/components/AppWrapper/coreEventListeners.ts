@@ -41,7 +41,12 @@ const operationCompleteHandler = async (
   switch (opType) {
   case OperationPendingRecordType.Witness:
   case OperationPendingRecordType.Group:
-    dispatch(updateCreationStatus({ id: oid, creationStatus: CreationStatus.COMPLETE }));
+    dispatch(
+      updateCreationStatus({
+        id: oid,
+        creationStatus: CreationStatus.COMPLETE,
+      })
+    );
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
   }
@@ -53,10 +58,12 @@ const operationFailureHandler = async (
 ) => {
   switch (opType) {
   case OperationPendingRecordType.Witness:
-    dispatch(updateCreationStatus({ id: oid, creationStatus: CreationStatus.FAILED }));
+    dispatch(
+      updateCreationStatus({ id: oid, creationStatus: CreationStatus.FAILED })
+    );
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
-  } 
+  }
 };
 
 const identifierAddedHandler = async (

@@ -48,7 +48,8 @@ const Notifications = () => {
   );
   const [isOpenCredModal, setIsOpenCredModal] = useState(false);
   const [viewCred, setViewCred] = useState("");
-  const [openUnknownConnectionAlert, setOpenUnknownConnectionAlert] = useState(false);
+  const [openUnknownConnectionAlert, setOpenUnknownConnectionAlert] =
+    useState(false);
 
   const filteredNotification = useMemo(() => {
     if (selectedFilter === NotificationFilters.All) {
@@ -110,7 +111,10 @@ const Notifications = () => {
   const handleNotificationClick = async (item: KeriaNotification) => {
     await maskAsReaded(item);
 
-    if(item.a.r === NotificationRoute.ExnIpexGrant && !connectionsCache?.[item.connectionId]?.label) {
+    if (
+      item.a.r === NotificationRoute.ExnIpexGrant &&
+      !connectionsCache?.[item.connectionId]?.label
+    ) {
       setOpenUnknownConnectionAlert(true);
       return;
     }
@@ -162,7 +166,7 @@ const Notifications = () => {
 
   const closeUnknownConnection = () => {
     setOpenUnknownConnectionAlert(false);
-  }
+  };
 
   return (
     <>
@@ -240,7 +244,9 @@ const Notifications = () => {
         setIsOpen={setOpenUnknownConnectionAlert}
         dataTestId="alert-unknown-issuer"
         headerText={i18n.t("tabs.notifications.tab.unknownissuer.text")}
-        confirmButtonText={`${i18n.t("tabs.notifications.tab.unknownissuer.button")}`}
+        confirmButtonText={`${i18n.t(
+          "tabs.notifications.tab.unknownissuer.button"
+        )}`}
         actionConfirm={closeUnknownConnection}
         actionDismiss={closeUnknownConnection}
       />

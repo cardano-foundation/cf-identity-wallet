@@ -1,7 +1,10 @@
 import { IonCard, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { checkmark } from "ionicons/icons";
 import "./IdentifierThemeSelector.scss";
-import { IdentifierThemeSelectorProps, ThemeItemProps } from "./IdentifierThemeSelector.types";
+import {
+  IdentifierThemeSelectorProps,
+  ThemeItemProps,
+} from "./IdentifierThemeSelector.types";
 import { CardTheme } from "../../../CardTheme";
 
 const IdentifierThemeSelector = ({
@@ -43,7 +46,10 @@ const IdentifierThemeSelector = ({
           className={`theme-input card-theme-${color}`}
         >
           <div>
-            <CardTheme color={color} layout={index} />
+            <CardTheme
+              color={color}
+              layout={index}
+            />
           </div>
           {selectedTheme === index ? <Checkmark /> : <Circle />}
         </IonCard>

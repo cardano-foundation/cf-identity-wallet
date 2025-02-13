@@ -101,7 +101,7 @@ interface IdentifierRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.IdentifierRemoved;
   payload: {
     id: string;
-  }; 
+  };
 }
 
 interface CredentialRemovedEvent extends BaseEventEmitter {

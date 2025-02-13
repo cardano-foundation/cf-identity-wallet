@@ -52,7 +52,8 @@
       --background: var(--ion-color-neutral-300);
       --color: var(--ion-color-neutral-700);
 
-      &:focus-within, &.empty-word:focus-within {
+      &:focus-within,
+      &.empty-word:focus-within {
         border: 1px dashed var(--ion-color-neutral-700);
         background-color: transparent;
       }
@@ -124,7 +125,7 @@
       height: 100%;
       text-align: center;
       background: rgba(var(--ion-color-neutral-800-rgb), 0.8);
-      backdrop-filter: blur(1.25rem)
+      backdrop-filter: blur(1.25rem);
     }
 
     .seed-phrase-container {

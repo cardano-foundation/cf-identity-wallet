@@ -14,7 +14,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
-    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
@@ -24,7 +24,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
-    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
   },
   {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec23",
@@ -34,7 +34,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqbo",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
-    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
   },
   {
     id: "EAzzrBvrVEYt3kvlXTZgulQhFq4CtkO8zA61eg6JtlMj",
@@ -44,7 +44,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Group,
     identifierId: "EIRdVIgcPYj6LbN4DdxzJFnsvELV-7eWDBQ4a-VsRDQb",
-    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
   },
 ];
 
@@ -57,7 +57,7 @@ const revokedCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
-    connectionId: "ebfeb1ebc6f1c276ef71212ec20"
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
   },
 ];
 
