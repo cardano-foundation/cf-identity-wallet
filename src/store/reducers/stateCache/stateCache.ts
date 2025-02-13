@@ -193,7 +193,7 @@ const {
   showGenericError,
   showConnections,
   removeToastMessage,
-  showNoWitnessAlert
+  showNoWitnessAlert,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;

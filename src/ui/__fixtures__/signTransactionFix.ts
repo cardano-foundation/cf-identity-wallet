@@ -40,4 +40,3 @@ const signObjectFix: PeerConnectSigningEvent = {
 };
 
 export { signObjectFix, signTransactionFix };
-

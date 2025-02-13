@@ -15,7 +15,9 @@ import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
 
 const deleteCredentialsMock = jest.fn((id: string) => Promise.resolve(true));
 const deleteNotificationMock = jest.fn(() => Promise.resolve(true));
-const markCredentialPendingDeletionMock = jest.fn((id: string) => Promise.resolve(true));
+const markCredentialPendingDeletionMock = jest.fn((id: string) =>
+  Promise.resolve(true)
+);
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -25,7 +27,8 @@ jest.mock("../../../core/agent/agent", () => ({
         deleteCredential: (id: string) => deleteCredentialsMock(id),
         getCredentials: jest.fn().mockResolvedValue([]),
         archiveCredential: jest.fn(),
-        markCredentialPendingDeletion: (id: string) => markCredentialPendingDeletionMock(id),
+        markCredentialPendingDeletion: (id: string) =>
+          markCredentialPendingDeletionMock(id),
       },
       keriaNotifications: {
         deleteNotificationRecordById: () => deleteNotificationMock(),

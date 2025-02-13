@@ -36,11 +36,11 @@ const SetupThreshold = ({
   };
 
   const decreaseButtonClass = combineClassNames("decrease-threshold-button", {
-    "inactive": state.threshold === 1
+    inactive: state.threshold === 1,
   });
 
   const increaseButtonClass = combineClassNames("increase-threshold-button", {
-    "inactive": state.scannedConections.length + 1 === state.threshold
+    inactive: state.scannedConections.length + 1 === state.threshold,
   });
 
   return (

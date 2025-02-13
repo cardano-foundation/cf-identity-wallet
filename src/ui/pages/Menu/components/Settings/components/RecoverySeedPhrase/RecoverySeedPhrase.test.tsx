@@ -110,7 +110,7 @@ describe("Recovery Phrase", () => {
             .button.hide
         )
       ).toBe(null);
-    })
+    });
 
     expect(
       getByTestId("seed-phrase-module").classList.contains("seed-phrase-hidden")
@@ -179,7 +179,11 @@ describe("Recovery Phrase", () => {
 
     await waitFor(() => {
       expect(queryByText(TRANSLATIONS.verifypasscode.title)).toBeNull();
-      expect(getByTestId("seed-phrase-module").classList.contains("seed-phrase-visible")).toBeTruthy();
+      expect(
+        getByTestId("seed-phrase-module").classList.contains(
+          "seed-phrase-visible"
+        )
+      ).toBeTruthy();
     });
 
     await waitFor(() => {

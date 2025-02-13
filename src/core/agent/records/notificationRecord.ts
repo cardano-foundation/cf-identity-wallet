@@ -14,9 +14,9 @@ interface NotificationRecordStorageProps {
   connectionId: string;
   credentialId?: string;
   linkedRequest?: LinkedRequest;
-  groupReplied?: boolean,
-  initiatorAid?: string,
-  groupInitiator?: boolean,
+  groupReplied?: boolean;
+  initiatorAid?: string;
+  groupInitiator?: boolean;
 }
 
 class NotificationRecord extends BaseRecord {
@@ -30,7 +30,7 @@ class NotificationRecord extends BaseRecord {
   groupReplied?: boolean;
   initiatorAid?: string;
   groupInitiator?: boolean;
-  hidden = false;  // Hide from UI but don't delete (used for reliability while recovering IPEX long running operations)
+  hidden = false; // Hide from UI but don't delete (used for reliability while recovering IPEX long running operations)
 
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;

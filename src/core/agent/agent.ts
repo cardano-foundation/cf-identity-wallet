@@ -338,7 +338,7 @@ class Agent {
           cause: error,
         });
       }
-      
+
       const status = error.message.split(" - ")[1];
       if (/404/gi.test(status)) {
         throw new Error(Agent.KERIA_NOT_BOOTED, {
@@ -377,12 +377,18 @@ class Agent {
 
     const appPasscode = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
     if (!appPasscode) {
-      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, APP_PASSSCODE_DEV_MODE);
+      await SecureStorage.set(
+        KeyStoreKeys.APP_PASSCODE,
+        APP_PASSSCODE_DEV_MODE
+      );
     }
 
     const appSignifyBran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
     if (!appSignifyBran) {
-      await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, randomPasscode().substring(0, 21));
+      await SecureStorage.set(
+        KeyStoreKeys.SIGNIFY_BRAN,
+        randomPasscode().substring(0, 21)
+      );
     }
 
     await this.basicStorage.createOrUpdateBasicRecord(
@@ -480,7 +486,7 @@ class Agent {
 
   private async getBran(): Promise<string> {
     const bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
-    if (!bran){
+    if (!bran) {
       throw new Error(Agent.MISSING_BRAN_SECURE_STORAGE);
     }
     return bran as string;

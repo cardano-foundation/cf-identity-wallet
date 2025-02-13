@@ -10,7 +10,7 @@ const passcodeFiller = async (
   for (let i = 0; i < times; i++) {
     act(() => {
       fireEvent.click(getByText(buttonLabel));
-    })
+    });
 
     await waitFor(() => {
       expect(
@@ -43,4 +43,4 @@ const passcodeFillerWithAct = async (
   });
 };
 
-export { passcodeFiller, passcodeFillerWithAct};
+export { passcodeFiller, passcodeFillerWithAct };

@@ -13,7 +13,6 @@ import { CredentialDetails } from "../../pages/CredentialDetails";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
-
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {

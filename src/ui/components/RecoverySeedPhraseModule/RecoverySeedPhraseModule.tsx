@@ -299,7 +299,11 @@ const RecoverySeedPhraseModule = forwardRef<
               displaySuggestionError ||
               !isMatchAllSuggestion
             }
-            tertiaryButtonText={displaySwitchModeButton ? `${i18n.t("verifyrecoveryseedphrase.button.switch")}` : undefined}
+            tertiaryButtonText={
+              displaySwitchModeButton
+                ? `${i18n.t("verifyrecoveryseedphrase.button.switch")}`
+                : undefined
+            }
             tertiaryButtonAction={() => setSwitchModeModal(true)}
             tertiaryButtonIcon={refreshOutline}
           />
@@ -332,7 +336,11 @@ const RecoverySeedPhraseModule = forwardRef<
           actionCancel={closeClearAlert}
           actionDismiss={closeClearAlert}
         />
-        <SwitchOnboardingModeModal mode={OnboardingMode.Create} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
+        <SwitchOnboardingModeModal
+          mode={OnboardingMode.Create}
+          isOpen={showSwitchModeModal}
+          setOpen={setSwitchModeModal}
+        />
       </>
     );
   }

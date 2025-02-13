@@ -52,7 +52,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "111111" })
+    get: (options: { key: string }) => Promise.resolve({ value: "111111" }),
   },
 }));
 
@@ -336,7 +336,7 @@ describe("Create Identifier modal", () => {
         identifiers: filteredIdentifierMapFix,
       },
     };
-  
+
     const dispatchMock = jest.fn();
     const storeMocked = {
       ...mockStore(initialState),
@@ -388,13 +388,16 @@ describe("Create Identifier modal", () => {
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("display-name-input"), "Professional ID");
+      ionFireEvent.ionInput(
+        getByTestId("display-name-input"),
+        "Professional ID"
+      );
     });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
-    
+
     await waitFor(() => {
       expect(getByText(EN_TRANSLATION.nameerror.duplicatename)).toBeVisible();
     });
@@ -462,7 +465,11 @@ describe("Create Identifier modal", () => {
   });
 
   test("No witness availability", async () => {
-    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE)));
+    createIdentifierMock.mockImplementation(() =>
+      Promise.reject(
+        new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE)
+      )
+    );
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>
@@ -483,7 +490,7 @@ describe("Create Identifier modal", () => {
 
     await waitFor(() => {
       expect(getByTestId("color-1").classList.contains("selected"));
-    })
+    });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
@@ -495,7 +502,11 @@ describe("Create Identifier modal", () => {
   });
 
   test("Misconfigured agent", async () => {
-    createIdentifierMock.mockImplementation(() => Promise.reject(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)));
+    createIdentifierMock.mockImplementation(() =>
+      Promise.reject(
+        new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)
+      )
+    );
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>
@@ -516,7 +527,7 @@ describe("Create Identifier modal", () => {
 
     await waitFor(() => {
       expect(getByTestId("color-1").classList.contains("selected"));
-    })
+    });
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));

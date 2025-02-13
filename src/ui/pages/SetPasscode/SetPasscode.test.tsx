@@ -66,9 +66,7 @@ describe("SetPasscode Page", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
-    await waitFor(() =>
-      expect(text).toBeInTheDocument()
-    );
+    await waitFor(() => expect(text).toBeInTheDocument());
 
     expect(
       getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
@@ -82,14 +80,11 @@ describe("SetPasscode Page", () => {
         <SetPasscode />
       </Provider>
     );
-    
+
     await passcodeFiller(getByText, getByTestId, "1", 6);
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
-    await waitFor(() =>
-      expect(text).toBeInTheDocument()
-    );
-
+    await waitFor(() => expect(text).toBeInTheDocument());
 
     const startOverElement = getByText(
       EN_TRANSLATIONS.createpasscodemodule.cantremember
@@ -113,10 +108,7 @@ describe("SetPasscode Page", () => {
     await passcodeFiller(getByText, getByTestId, "2", 6);
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
-    await waitFor(() =>
-      expect(text).toBeInTheDocument()
-    );
-
+    await waitFor(() => expect(text).toBeInTheDocument());
 
     fireEvent.click(getByTestId("close-button"));
 
@@ -156,9 +148,7 @@ describe("SetPasscode Page", () => {
 
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
-    await waitFor(() =>
-      expect(text).toBeInTheDocument()
-    );
+    await waitFor(() => expect(text).toBeInTheDocument());
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
 

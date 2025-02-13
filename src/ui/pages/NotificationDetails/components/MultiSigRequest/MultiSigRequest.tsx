@@ -6,7 +6,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonRow
+  IonRow,
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
 import { useCallback, useState } from "react";
@@ -177,7 +177,7 @@ const MultiSigRequest = ({
   }
 
   if (!multisigIcpDetails) {
-    return <Spinner show={true}/>;
+    return <Spinner show={true} />;
   }
 
   return (
@@ -286,7 +286,10 @@ const MultiSigRequest = ({
                               size="10.35"
                               className="multisig-connection-info"
                             >
-                              <IonLabel>{connection.label || i18n.t("connections.unknown")}</IonLabel>
+                              <IonLabel>
+                                {connection.label ||
+                                  i18n.t("connections.unknown")}
+                              </IonLabel>
                             </IonCol>
                           </IonRow>
                         </IonGrid>
@@ -326,7 +329,7 @@ const MultiSigRequest = ({
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
       />
-      <Spinner show={spinner}/>
+      <Spinner show={spinner} />
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}

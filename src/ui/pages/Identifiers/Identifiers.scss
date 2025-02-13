@@ -5,7 +5,7 @@
 
   .tab-header,
   .cards-placeholder-container,
-  ion-content>*:not(.identifier-favourite-cards),
+  ion-content > *:not(.identifier-favourite-cards),
   .card-slider-header {
     padding-inline: 1.25rem;
   }
@@ -102,7 +102,6 @@
     }
 
     .identifier-cards {
-
       .list-header,
       .identifiers-tab-chips {
         animation: indentifierFavouriteCardHeaderResize 0.25s ease;
@@ -129,7 +128,7 @@
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .tab-header,
     .cards-placeholder-container,
-    ion-content>*:not(.identifier-favourite-cards),
+    ion-content > *:not(.identifier-favourite-cards),
     .card-slider-header {
       padding-inline: 0.9rem;
     }

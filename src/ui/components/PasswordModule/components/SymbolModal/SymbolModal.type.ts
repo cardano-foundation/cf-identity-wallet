@@ -1,147 +1,147 @@
 interface SymbolModalProps {
-    isOpen: boolean;
-    setOpen: (value: boolean) => void;
+  isOpen: boolean;
+  setOpen: (value: boolean) => void;
 }
 
 const Symbols = [
   {
     key: "",
-    labelKey: "space"
+    labelKey: "space",
   },
   {
     key: "!",
-    labelKey: "doublequote"
+    labelKey: "doublequote",
   },
   {
     key: "#",
-    labelKey: "numbersign"
+    labelKey: "numbersign",
   },
   {
     key: "$",
-    labelKey: "dollarsign"
+    labelKey: "dollarsign",
   },
   {
     key: "£",
-    labelKey: "sterlingsign"
+    labelKey: "sterlingsign",
   },
   {
     key: "€",
-    labelKey: "eurosign"
+    labelKey: "eurosign",
   },
   {
     key: "%",
-    labelKey: "percent"
+    labelKey: "percent",
   },
   {
     key: "&",
-    labelKey: "ampersand"
+    labelKey: "ampersand",
   },
   {
     key: "’",
-    labelKey: "singlequote"
+    labelKey: "singlequote",
   },
   {
     key: "(",
-    labelKey: "leftparenthesis"
+    labelKey: "leftparenthesis",
   },
   {
     key: ")",
-    labelKey: "rightparenthesis"
+    labelKey: "rightparenthesis",
   },
   {
     key: "*",
-    labelKey: "asterisk"
+    labelKey: "asterisk",
   },
   {
     key: "+",
-    labelKey: "plus"
+    labelKey: "plus",
   },
   {
     key: ",",
-    labelKey: "comma"
+    labelKey: "comma",
   },
   {
     key: "-",
-    labelKey: "minus"
+    labelKey: "minus",
   },
   {
     key: ".",
-    labelKey: "fullstop"
+    labelKey: "fullstop",
   },
   {
     key: "/",
-    labelKey: "slash"
+    labelKey: "slash",
   },
   {
     key: ":",
-    labelKey: "colon"
+    labelKey: "colon",
   },
   {
     key: ";",
-    labelKey: "semicolon"
+    labelKey: "semicolon",
   },
   {
     key: "<",
-    labelKey: "lessthan"
+    labelKey: "lessthan",
   },
   {
     key: "=",
-    labelKey: "equal"
+    labelKey: "equal",
   },
   {
     key: ">",
-    labelKey: "greaterthan"
+    labelKey: "greaterthan",
   },
   {
     key: "?",
-    labelKey: "questionmark"
+    labelKey: "questionmark",
   },
   {
     key: "@",
-    labelKey: "atsign"
+    labelKey: "atsign",
   },
   {
     key: "[",
-    labelKey: "leftbracket"
+    labelKey: "leftbracket",
   },
   {
     key: "\\",
-    labelKey: "backslash"
+    labelKey: "backslash",
   },
   {
     key: "]",
-    labelKey: "rightbracket"
+    labelKey: "rightbracket",
   },
   {
     key: "^",
-    labelKey: "caret"
+    labelKey: "caret",
   },
   {
     key: "_",
-    labelKey: "underscore"
+    labelKey: "underscore",
   },
   {
     key: "`",
-    labelKey: "graveaccent"
+    labelKey: "graveaccent",
   },
   {
     key: "{",
-    labelKey: "leftbrace"
+    labelKey: "leftbrace",
   },
   {
     key: "|",
-    labelKey: "verticalbar"
+    labelKey: "verticalbar",
   },
   {
     key: "}",
-    labelKey: "rightbrace"
-  }, 
+    labelKey: "rightbrace",
+  },
   {
     key: "~",
-    labelKey: "tilde"
-  }
-]
+    labelKey: "tilde",
+  },
+];
 
 export type { SymbolModalProps };
 
-export { Symbols }; 
+export { Symbols };

@@ -1,7 +1,10 @@
 import { useCallback } from "react";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getShowNoWitnessAlert, showNoWitnessAlert } from "../../../store/reducers/stateCache";
+import {
+  getShowNoWitnessAlert,
+  showNoWitnessAlert,
+} from "../../../store/reducers/stateCache";
 import { Alert } from "../Alert";
 
 const NoWitnessAlert = () => {
@@ -9,9 +12,9 @@ const NoWitnessAlert = () => {
   const isShowNoWitnessAlert = useAppSelector(getShowNoWitnessAlert);
 
   const closeAlert = useCallback(() => {
-    dispatch(showNoWitnessAlert(false))
-  }, [dispatch])
-    
+    dispatch(showNoWitnessAlert(false));
+  }, [dispatch]);
+
   return (
     <Alert
       isOpen={!!isShowNoWitnessAlert}

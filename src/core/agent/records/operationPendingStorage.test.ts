@@ -20,7 +20,10 @@ const storageService = jest.mocked<StorageService<OperationPendingRecord>>({
 });
 
 const eventEmitter = new CoreEventEmitter();
-const operationPendingStorage = new OperationPendingStorage(storageService, eventEmitter);
+const operationPendingStorage = new OperationPendingStorage(
+  storageService,
+  eventEmitter
+);
 
 const id1 = "id1";
 const id2 = "id2";
@@ -46,7 +49,9 @@ const operationPendingRecordB = new OperationPendingRecord({
 describe("Operation Pending Storage", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.spyOn(global, "Date").mockImplementation(() => now as unknown as string);
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => now as unknown as string);
   });
 
   test("Should save operation pending record", async () => {
@@ -64,8 +69,8 @@ describe("Operation Pending Storage", () => {
           updatedAt: undefined,
           _tags: {},
           type: "OperationPendingRecord",
-        }
-      }
+        },
+      },
     });
   });
 
@@ -139,8 +144,8 @@ describe("Operation Pending Storage", () => {
   test("Should handle finding error", async () => {
     storageService.findById.mockRejectedValue(new Error("Finding error"));
     await expect(
-      operationPendingStorage.findById(operationPendingRecordA.id
-    )).rejects.toThrow("Finding error");
+      operationPendingStorage.findById(operationPendingRecordA.id)
+    ).rejects.toThrow("Finding error");
   });
 
   test("Should handle not found", async () => {
@@ -163,7 +168,9 @@ describe("Operation Pending Storage", () => {
 
   test("Should not raise an error when adding two records with the same ID", async () => {
     await operationPendingStorage.save(operationPendingRecordStorageProps);
-    await expect(operationPendingStorage.save(operationPendingRecordStorageProps)).resolves.not.toThrow();
+    await expect(
+      operationPendingStorage.save(operationPendingRecordStorageProps)
+    ).resolves.not.toThrow();
 
     expect(storageService.save).toBeCalledTimes(2);
   });

@@ -1,10 +1,10 @@
 interface CardThemeBaseProps {
-    className?: string;
+  className?: string;
 }
 
 interface CardThemeProps extends CardThemeBaseProps {
-    layout?: number;
-    color?: number;
+  layout?: number;
+  color?: number;
 }
 
 export type { CardThemeBaseProps, CardThemeProps };

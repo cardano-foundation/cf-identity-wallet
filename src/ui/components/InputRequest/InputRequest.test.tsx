@@ -208,7 +208,6 @@ describe("SetUserName component", () => {
     });
   });
 
-
   test("Display validate error message", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
@@ -221,9 +220,7 @@ describe("SetUserName component", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
@@ -231,19 +228,18 @@ describe("SetUserName component", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.onlyspace)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.onlyspace)).toBeVisible();
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("input-request-input"), "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke");
+      ionFireEvent.ionInput(
+        getByTestId("input-request-input"),
+        "Duke Duke Duke Duke  Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke Duke"
+      );
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.maxlength)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.maxlength)).toBeVisible();
     });
 
     act(() => {
@@ -251,9 +247,7 @@ describe("SetUserName component", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)).toBeVisible();
     });
   });
 });

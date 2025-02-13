@@ -37,7 +37,7 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
     handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
     setBiometricsIsEnabled: jest.fn(),
   })),
-}))
+}));
 
 jest.mock("@capacitor/core", () => {
   return {
@@ -103,13 +103,11 @@ describe("Onboarding Page", () => {
 
     act(() => {
       fireEvent.click(buttonContinue);
-    })
+    });
 
     await waitFor(async () => {
       const text = await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode);
-      expect(
-        text
-      ).toBeVisible()
+      expect(text).toBeVisible();
     });
   });
 
@@ -154,7 +152,7 @@ describe("Onboarding Page", () => {
 
     act(() => {
       fireEvent.click(buttonContinue);
-    })
+    });
 
     await waitFor(() => {
       expect(queryAllByText(EN_TRANSLATIONS.createpassword.title)).toHaveLength(

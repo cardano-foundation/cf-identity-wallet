@@ -45,7 +45,7 @@ jest.mock("../../../../core/agent/agent", () => ({
       connections: {
         getOobi: jest.fn(() => Promise.resolve("oobi")),
         getMultisigConnections: jest.fn().mockResolvedValue([]),
-      }
+      },
     },
   },
 }));
@@ -125,17 +125,19 @@ describe("Creds content", () => {
         />
       </Provider>
     );
-    
-    expect(
-      getByText(EN_TRANSLATIONS.connections.unknown)
-    ).toBeVisible();
-   
+
+    expect(getByText(EN_TRANSLATIONS.connections.unknown)).toBeVisible();
+
     fireEvent.click(getByText(EN_TRANSLATIONS.connections.unknown));
 
     await waitFor(() => {
       expect(getByTestId("cred-missing-issuer-alert")).toBeVisible();
-      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.missingissuer.text)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.missingissuer.text
+        )
+      ).toBeVisible();
+    });
   });
 
   test("Open related identifier", async () => {
@@ -156,11 +158,10 @@ describe("Creds content", () => {
       },
       connectionsCache: {
         multisigConnections: {
-          [connectionDetailsFix.id]: connectionDetailsFix
+          [connectionDetailsFix.id]: connectionDetailsFix,
         },
       },
     };
-
 
     const mockStore = configureStore();
     const storeMocked = {
@@ -180,8 +181,10 @@ describe("Creds content", () => {
     );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.relatedidentifier)).toBeVisible();
-    })
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.relatedidentifier)
+      ).toBeVisible();
+    });
 
     fireEvent.click(getByTestId("related-identifier-name"));
 

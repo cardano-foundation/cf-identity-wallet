@@ -1,5 +1,11 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { setCredentialFavouriteIndex, setCredentialViewTypeCache, setIdentifierFavouriteIndex, setIdentifierViewTypeCache, viewTypeCacheSlice } from "./viewTypeCache";
+import {
+  setCredentialFavouriteIndex,
+  setCredentialViewTypeCache,
+  setIdentifierFavouriteIndex,
+  setIdentifierViewTypeCache,
+  viewTypeCacheSlice,
+} from "./viewTypeCache";
 import { CardListViewType } from "../../../ui/components/SwitchCardView";
 
 describe("identifierViewTypeCache", () => {
@@ -11,12 +17,12 @@ describe("identifierViewTypeCache", () => {
     credential: {
       viewType: null,
       favouriteIndex: 0,
-    }
+    },
   };
   it("should return the initial state", () => {
-    expect(
-      viewTypeCacheSlice.reducer(undefined, {} as PayloadAction)
-    ).toEqual(initialState);
+    expect(viewTypeCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
+      initialState
+    );
   });
 
   it("should handle setViewTypeCache", () => {

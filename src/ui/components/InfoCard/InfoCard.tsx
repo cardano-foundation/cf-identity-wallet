@@ -4,9 +4,9 @@ import { InfoCardProps } from "./InfoCard.types";
 import { combineClassNames } from "../../utils/style";
 import "./InfoCard.scss";
 
-const InfoCard = ({content ,className, icon, danger}: InfoCardProps) => {
+const InfoCard = ({ content, className, icon, danger }: InfoCardProps) => {
   const classes = combineClassNames("info-card", className, {
-    "danger": !!danger
+    danger: !!danger,
   });
 
   return (
@@ -19,7 +19,7 @@ const InfoCard = ({content ,className, icon, danger}: InfoCardProps) => {
         />
       </div>
     </IonCard>
-  )
-}
+  );
+};
 
 export { InfoCard };

@@ -28,7 +28,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
         getIdentifiersCache: jest.fn(),
         createIdentifier: jest.fn(() => ({
           identifier: "mock-id",
-          creationStatus: CreationStatus.COMPLETE
+          creationStatus: CreationStatus.COMPLETE,
         })),
       },
       connections: {

@@ -175,7 +175,9 @@ const GenerateSeedPhrase = () => {
           setAlertConfirmIsOpen(true);
         }}
         primaryButtonDisabled={hideSeedPhrase || !checked}
-        tertiaryButtonText={`${i18n.t("generateseedphrase.onboarding.button.switch")}`}
+        tertiaryButtonText={`${i18n.t(
+          "generateseedphrase.onboarding.button.switch"
+        )}`}
         tertiaryButtonAction={() => setSwitchModeModal(true)}
         tertiaryButtonIcon={refreshOutline}
       />
@@ -202,8 +204,15 @@ const GenerateSeedPhrase = () => {
         )}`}
         actionConfirm={handleContinue}
       />
-      <RecoverySeedPhraseDocumentModal isOpen={openDocument} setIsOpen={setOpenDocument}/>
-      <SwitchOnboardingModeModal mode={OnboardingMode.Recovery} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
+      <RecoverySeedPhraseDocumentModal
+        isOpen={openDocument}
+        setIsOpen={setOpenDocument}
+      />
+      <SwitchOnboardingModeModal
+        mode={OnboardingMode.Recovery}
+        isOpen={showSwitchModeModal}
+        setOpen={setSwitchModeModal}
+      />
     </ScrollablePageLayout>
   );
 };

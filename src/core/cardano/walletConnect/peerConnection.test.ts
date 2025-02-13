@@ -40,10 +40,10 @@ jest.mock("../../storage", () => ({
       return Promise.resolve({ value: null });
     }),
     set: jest.fn(),
-    remove: jest.fn()
+    remove: jest.fn(),
   },
   KeyStoreKeys: {
-    MEERKAT_SEED: "app-meerkat-seed"
+    MEERKAT_SEED: "app-meerkat-seed",
   },
 }));
 

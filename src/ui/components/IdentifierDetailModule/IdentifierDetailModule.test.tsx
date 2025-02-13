@@ -53,12 +53,11 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-
 const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 
 jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
-    get: (options: { key: string }) => getMock(options.key)
+    get: (options: { key: string }) => getMock(options.key),
   },
 }));
 
@@ -432,7 +431,9 @@ describe("Individual Identifier details page", () => {
       ).toBeVisible()
     );
 
-    await act(async () => getMock.mockImplementation(() => Promise.resolve({ value: "111111" })));
+    await act(async () =>
+      getMock.mockImplementation(() => Promise.resolve({ value: "111111" }))
+    );
   });
 
   test("Hide loading after retrieved indetifier data", async () => {
@@ -600,7 +601,7 @@ describe("Group Identifier details page", () => {
     },
     identifiersCache: {
       identifiers: {
-        "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut" : {
+        EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut: {
           displayName: "GG",
           id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
           createdAtUTC: "2024-10-14T13:11:52.963Z",
@@ -673,7 +674,7 @@ describe("Group Identifier details page", () => {
       },
       identifiersCache: {
         identifiers: {
-          "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut" : {
+          EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut: {
             displayName: "GG",
             id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
             createdAtUTC: "2024-10-14T13:11:52.963Z",
@@ -1041,7 +1042,7 @@ describe("Group Identifier details page", () => {
       },
       identifiersCache: {
         identifiers: {
-          [filteredIdentifierFix[2].id]: filteredIdentifierFix[2]
+          [filteredIdentifierFix[2].id]: filteredIdentifierFix[2],
         },
         favourites: [],
       },

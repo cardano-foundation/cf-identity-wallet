@@ -25,7 +25,7 @@ describe("Render alert", () => {
 
     await waitFor(() => {
       expect(getByText("Header")).toBeVisible();
-    })
+    });
     expect(getByText("Confirm")).toBeVisible();
     expect(getByText("Cancel")).toBeVisible();
   });

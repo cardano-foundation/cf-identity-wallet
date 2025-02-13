@@ -222,16 +222,14 @@ describe("Oobi/endrole", () => {
     expect(addEndRoleMock).toBeCalledTimes(1);
     (memberMetadataRecord.groupMetadata as any).groupCreated = false;
 
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      {
-        id: "newMultisigIdentifierAid",
-        displayName: "Identifier 2",
-        theme: 0,
-        creationStatus: CreationStatus.COMPLETE,
-        multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839894+00:00")
-      }
-    )
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith({
+      id: "newMultisigIdentifierAid",
+      displayName: "Identifier 2",
+      theme: 0,
+      creationStatus: CreationStatus.COMPLETE,
+      multisigManageAid: "creatorIdentifier",
+      createdAt: new Date("2024-08-09T07:23:52.839894+00:00"),
+    });
   });
 
   test("Can add end role authorization", async () => {
@@ -418,13 +416,13 @@ describe("Creation of multi-sig", () => {
       creationStatus: CreationStatus.PENDING,
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({ 
+      expect.objectContaining({
         id: multisigIdentifier,
         displayName: "Identifier 2",
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839Z") 
+        createdAt: new Date("2024-08-09T07:23:52.839Z"),
       })
     );
 
@@ -459,7 +457,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839Z")
+        createdAt: new Date("2024-08-09T07:23:52.839Z"),
       })
     );
 
@@ -495,7 +493,7 @@ describe("Creation of multi-sig", () => {
         theme: 0,
         creationStatus: CreationStatus.PENDING,
         multisigManageAid: "creatorIdentifier",
-        createdAt: new Date("2024-08-09T07:23:52.839Z")
+        createdAt: new Date("2024-08-09T07:23:52.839Z"),
       })
     );
 
@@ -573,7 +571,7 @@ describe("Creation of multi-sig", () => {
       id: `group.${multisigIdentifier}`,
       recordType: OperationPendingRecordType.Group,
     });
-    markNotificationMock.mockResolvedValueOnce({status: "done"});
+    markNotificationMock.mockResolvedValueOnce({ status: "done" });
     expect(
       await multiSigService.joinMultisig(
         "id",
@@ -592,7 +590,10 @@ describe("Creation of multi-sig", () => {
     });
 
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({ id: multisigIdentifier, creationStatus: CreationStatus.PENDING })
+      expect.objectContaining({
+        id: multisigIdentifier,
+        creationStatus: CreationStatus.PENDING,
+      })
     );
 
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
@@ -629,7 +630,7 @@ describe("Creation of multi-sig", () => {
       },
     });
 
-    markNotificationMock.mockResolvedValueOnce({status: "done"});
+    markNotificationMock.mockResolvedValueOnce({ status: "done" });
 
     await multiSigService.joinMultisig(
       "id",

@@ -23,7 +23,7 @@ const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => mockGet(options.key),
-    set: jest.fn()
+    set: jest.fn(),
   },
 }));
 
@@ -33,12 +33,12 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children, isOpen, ...props }: any) => {
     const testId = props["data-testid"];
 
-    if(!isOpen) {
+    if (!isOpen) {
       return null;
     }
 
     return <div data-testid={testId}>{children}</div>;
-  }
+  },
 }));
 
 const requestData = {

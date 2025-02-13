@@ -9,11 +9,10 @@ enum KeyStoreKeys {
 }
 
 class SecureStorage {
-  static readonly KEY_NOT_FOUND_ERRORS =
-    [
-      "Item with given key does not exist", // Android/Web
-      "Error key doesn't exist",            // iOS
-    ];
+  static readonly KEY_NOT_FOUND_ERRORS = [
+    "Item with given key does not exist", // Android/Web
+    "Error key doesn't exist", // iOS
+  ];
 
   static async get(key: string): Promise<string | null> {
     try {
@@ -29,7 +28,7 @@ class SecureStorage {
   }
 
   static async set(key: string, value: string): Promise<void> {
-    await SecureStoragePlugin.set({key, value});
+    await SecureStoragePlugin.set({ key, value });
   }
 
   static async delete(key: string) {
@@ -40,7 +39,11 @@ class SecureStorage {
   }
 
   static isErrorKeyNotFound(errorMessage?: string): boolean {
-    return errorMessage ? SecureStorage.KEY_NOT_FOUND_ERRORS.some(err => errorMessage.includes(err)) : false;
+    return errorMessage
+      ? SecureStorage.KEY_NOT_FOUND_ERRORS.some((err) =>
+        errorMessage.includes(err)
+      )
+      : false;
   }
 
   static async isKeyStoreSupported() {

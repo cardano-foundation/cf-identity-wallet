@@ -3,7 +3,7 @@ import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
 import { IdentityWalletConnect } from "./identityWalletConnect";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
-import {KeyStoreKeys, SecureStorage} from "../../storage";
+import { KeyStoreKeys, SecureStorage } from "../../storage";
 import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,
@@ -30,7 +30,7 @@ class PeerConnection {
 
   private announce = [
     "wss://tracker.webtorrent.dev:443/announce",
-    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"
+    "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org",
   ];
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
@@ -77,10 +77,7 @@ class PeerConnection {
   }
 
   async start(selectedAid: string) {
-
-    const meerkatSeed = await SecureStorage.get(
-      KeyStoreKeys.MEERKAT_SEED
-    );
+    const meerkatSeed = await SecureStorage.get(KeyStoreKeys.MEERKAT_SEED);
 
     if (
       this.identityWalletConnect &&

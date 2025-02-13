@@ -13,7 +13,10 @@ import {
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../../../core/agent/agent.types";
-import { CreationStatus, IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import {
+  CreationStatus,
+  IdentifierShortDetails,
+} from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {

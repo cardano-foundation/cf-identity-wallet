@@ -46,7 +46,7 @@ const VerifySeedPhrase = () => {
   }, [originalSeedPhrase]);
 
   const sortCurrentSeedPhrase = useCallback(() => {
-    setSeedPhraseRemaining((originalSeedPhrase) => 
+    setSeedPhraseRemaining((originalSeedPhrase) =>
       [...originalSeedPhrase].sort((a, b) => a.localeCompare(b))
     );
   }, []);
@@ -222,7 +222,9 @@ const VerifySeedPhrase = () => {
           primaryButtonDisabled={
             !(originalSeedPhrase.length == seedPhraseSelected.length)
           }
-          tertiaryButtonText={`${i18n.t("generateseedphrase.onboarding.button.switch")}`}
+          tertiaryButtonText={`${i18n.t(
+            "generateseedphrase.onboarding.button.switch"
+          )}`}
           tertiaryButtonAction={() => setSwitchModeModal(true)}
           tertiaryButtonIcon={refreshOutline}
         />
@@ -252,7 +254,11 @@ const VerifySeedPhrase = () => {
         actionCancel={() => setClearAlertOpen(false)}
         actionDismiss={() => setClearAlertOpen(false)}
       />
-      <SwitchOnboardingModeModal mode={OnboardingMode.Recovery} isOpen={showSwitchModeModal} setOpen={setSwitchModeModal}/>
+      <SwitchOnboardingModeModal
+        mode={OnboardingMode.Recovery}
+        isOpen={showSwitchModeModal}
+        setOpen={setSwitchModeModal}
+      />
     </ScrollablePageLayout>
   );
 };

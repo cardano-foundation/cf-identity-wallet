@@ -5,11 +5,7 @@ import {
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { IonReactRouter } from "@ionic/react-router";
 import { act } from "react";
-import {
-  fireEvent,
-  render,
-  waitFor
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -23,7 +19,7 @@ import { LockPage } from "./LockPage";
 
 const incrementLoginAttemptMock = jest.fn();
 const resetLoginAttemptsMock = jest.fn();
-const getMock = jest.fn((arg) => "111111")
+const getMock = jest.fn((arg) => "111111");
 
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
@@ -281,9 +277,7 @@ describe("Lock Page", () => {
     );
 
     await waitFor(() => {
-      expect(getMock).not.toHaveBeenCalledWith(
-        KeyStoreKeys.APP_PASSCODE
-      );
+      expect(getMock).not.toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {
@@ -337,9 +331,7 @@ describe("Lock Page", () => {
     });
 
     await waitFor(() => {
-      expect(getMock).not.toHaveBeenCalledWith(
-        KeyStoreKeys.APP_PASSCODE
-      );
+      expect(getMock).not.toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {

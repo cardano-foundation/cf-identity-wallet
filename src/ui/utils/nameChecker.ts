@@ -3,7 +3,7 @@ import { i18n } from "../../i18n";
 const nameRequirements = {
   validCharactersPattern: /^[a-zA-Z0-9-_\s]+$/,
   lengthPattern: /^.{1,32}$/,
-  onlySpacePattern: /^\s+$/
+  onlySpacePattern: /^\s+$/,
 };
 
 const nameErrorMessages = {
@@ -11,12 +11,18 @@ const nameErrorMessages = {
   invalidMaxLength: i18n.t("nameerror.maxlength"),
   invalidMinLength: i18n.t("nameerror.onlyspace"),
   invalidSpaceCharacter: i18n.t("nameerror.onlyspace"),
-}
+};
 
 const nameChecker = {
-  isValidCharacters(name: string) { return nameRequirements.validCharactersPattern.test(name); },
-  isValidLength(name: string) { return nameRequirements.lengthPattern.test(name); },
-  hasNonSpaceCharacter(name: string) { return !nameRequirements.onlySpacePattern.test(name); },
+  isValidCharacters(name: string) {
+    return nameRequirements.validCharactersPattern.test(name);
+  },
+  isValidLength(name: string) {
+    return nameRequirements.lengthPattern.test(name);
+  },
+  hasNonSpaceCharacter(name: string) {
+    return !nameRequirements.onlySpacePattern.test(name);
+  },
   getError(name: string) {
     if (name.length > 32) {
       return nameErrorMessages.invalidMaxLength;
@@ -35,8 +41,7 @@ const nameChecker = {
     }
 
     return undefined;
-  }
-}
+  },
+};
 
 export { nameChecker };
-

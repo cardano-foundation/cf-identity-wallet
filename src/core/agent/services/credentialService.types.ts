@@ -6,10 +6,7 @@ enum CredentialStatus {
   REVOKED = "revoked",
 }
 
-type CredentialShortDetails = Omit<
-  CredentialMetadataRecordProps,
- "createdAt"
->;
+type CredentialShortDetails = Omit<CredentialMetadataRecordProps, "createdAt">;
 
 type JSONValue =
   | string

@@ -115,12 +115,14 @@ describe("Verify Password", () => {
   });
 
   test("Verify failed", async () => {
-    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(new BasicRecord({
-      id: "id",
-      content: {
-        value: "1213213"
-      }
-    }));
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(
+      new BasicRecord({
+        id: "id",
+        content: {
+          value: "1213213",
+        },
+      })
+    );
 
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -144,7 +146,7 @@ describe("Verify Password", () => {
 
     await waitFor(() => {
       expect(getByTestId("forgot-hint-btn")).toBeVisible();
-    })
+    });
 
     const passwordInput = await findByTestId("verify-password-value");
 
@@ -169,12 +171,14 @@ describe("Verify Password", () => {
 
   test("Verify success", async () => {
     jest.spyOn(SecureStorage, "get").mockResolvedValue("1111");
-    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(new BasicRecord({
-      id: "id",
-      content: {
-        value: "1213213"
-      }
-    }));
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(
+      new BasicRecord({
+        id: "id",
+        content: {
+          value: "1213213",
+        },
+      })
+    );
 
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -198,7 +202,7 @@ describe("Verify Password", () => {
 
     await waitFor(() => {
       expect(getByTestId("forgot-hint-btn")).toBeVisible();
-    })
+    });
 
     const passwordInput = getByTestId("verify-password-value");
     const confirmButton = getByTestId("action-button");

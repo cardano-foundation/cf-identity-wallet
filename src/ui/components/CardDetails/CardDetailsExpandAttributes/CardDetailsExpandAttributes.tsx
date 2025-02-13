@@ -6,7 +6,7 @@ const CardDetailsExpandAttributes = ({
   data,
   itemProps,
   ignoreKeys = [],
-  openLevels = []
+  openLevels = [],
 }: CardDetailsExpandAttributesProps) => {
   const attributes = Object.entries(data);
 
@@ -14,9 +14,18 @@ const CardDetailsExpandAttributes = ({
     <div className="expand-attributes">
       <div className="nested-list-item container-nested-list-item">
         {attributes.map(([key, value]) => {
-          if(ignoreKeys.includes(key)) return;
-        
-          return <CardDetailsAttribute key={key} attributeKey={key} attributeValue={value} itemProps={itemProps} ignoreKeys={ignoreKeys} openLevels={openLevels}/>
+          if (ignoreKeys.includes(key)) return;
+
+          return (
+            <CardDetailsAttribute
+              key={key}
+              attributeKey={key}
+              attributeValue={value}
+              itemProps={itemProps}
+              ignoreKeys={ignoreKeys}
+              openLevels={openLevels}
+            />
+          );
         })}
       </div>
     </div>

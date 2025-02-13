@@ -31,10 +31,7 @@ import {
   AuthorizationExnPayload,
   InceptMultiSigExnMessage,
 } from "./multiSig.types";
-import {
-  deleteNotificationRecordById,
-  OnlineOnly,
-} from "./utils";
+import { deleteNotificationRecordById, OnlineOnly } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationAddedEvent, EventTypes } from "../event.types";
 import { ConnectionService } from "./connectionService";
@@ -133,11 +130,15 @@ class MultiSigService extends AgentService {
     );
     const op = result.op;
     const multisigId = op.name.split(".")[1];
-    const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
+    const creationStatus = op.done
+      ? op.error
+        ? CreationStatus.FAILED
+        : CreationStatus.COMPLETE
+      : CreationStatus.PENDING;
 
-    const multisigDetail = await this.props.signifyClient
+    const multisigDetail = (await this.props.signifyClient
       .identifiers()
-      .get(multisigId as string) as HabState;
+      .get(multisigId as string)) as HabState;
 
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
@@ -145,7 +146,7 @@ class MultiSigService extends AgentService {
       theme: ourMetadata.theme,
       creationStatus,
       multisigManageAid: ourIdentifier,
-      createdAt: new Date(multisigDetail.icp_dt)
+      createdAt: new Date(multisigDetail.icp_dt),
     });
     ourMetadata.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(
@@ -367,19 +368,23 @@ class MultiSigService extends AgentService {
     const res = await this.joinMultisigKeri(exn, aid, name);
     const op = res.op;
     const multisigId = op.name.split(".")[1];
-    const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
+    const creationStatus = op.done
+      ? op.error
+        ? CreationStatus.FAILED
+        : CreationStatus.COMPLETE
+      : CreationStatus.PENDING;
 
-    const multisigDetail = await this.props.signifyClient
+    const multisigDetail = (await this.props.signifyClient
       .identifiers()
-      .get(multisigId) as HabState;
-    
+      .get(multisigId)) as HabState;
+
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
       theme: meta.theme,
       creationStatus,
       multisigManageAid: identifier.id,
-      createdAt: new Date(multisigDetail.icp_dt)
+      createdAt: new Date(multisigDetail.icp_dt),
     });
     identifier.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(

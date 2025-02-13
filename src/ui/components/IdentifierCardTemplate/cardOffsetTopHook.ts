@@ -11,7 +11,7 @@ const useCardOffsetTop = () => {
 
     const isGreatDevice = width >= 480;
 
-    const marginTop = cardRef.current.offsetWidth * 45 / 100;
+    const marginTop = (cardRef.current.offsetWidth * 45) / 100;
 
     // card height - margin top (rem) (if screen size greater than 480px margin is 12rem, otherwise this value is 45% of card width)
     return cardRef.current.offsetHeight - (isGreatDevice ? 192 : marginTop);

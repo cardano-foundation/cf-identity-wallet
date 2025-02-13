@@ -46,7 +46,10 @@ import {
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
 } from "./AppWrapper";
-import { operationCompleteHandler, operationFailureHandler } from "./coreEventListeners";
+import {
+  operationCompleteHandler,
+  operationFailureHandler,
+} from "./coreEventListeners";
 import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -66,7 +69,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
         onIdentifierAdded: jest.fn(),
-        getAvailableWitnesses: jest.fn()
+        getAvailableWitnesses: jest.fn(),
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),

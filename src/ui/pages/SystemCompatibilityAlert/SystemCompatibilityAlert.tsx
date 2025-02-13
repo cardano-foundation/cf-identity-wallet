@@ -166,9 +166,7 @@ const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({
       }
     }
 
-    return (
-      <p className="no-info">{i18n.t("systemcompatibility.noinfo")}</p>
-    );
+    return <p className="no-info">{i18n.t("systemcompatibility.noinfo")}</p>;
   };
 
   const pageId = "system-comp-alert-page";

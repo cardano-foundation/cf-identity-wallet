@@ -14,7 +14,11 @@ import {
   IdentifierStorage,
   NotificationStorage,
 } from "../records";
-import { AcdcStateChangedEvent, CredentialRemovedEvent, EventTypes } from "../event.types";
+import {
+  AcdcStateChangedEvent,
+  CredentialRemovedEvent,
+  EventTypes,
+} from "../event.types";
 import { IdentifierType } from "./identifier.types";
 
 class CredentialService extends AgentService {
@@ -74,7 +78,7 @@ class CredentialService extends AgentService {
       schema: metadata.schema,
       identifierType: metadata.identifierType,
       identifierId: metadata.identifierId,
-      connectionId: metadata.connectionId
+      connectionId: metadata.connectionId,
     };
   }
 
@@ -146,13 +150,13 @@ class CredentialService extends AgentService {
       .catch(async (error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
-          return  await this.credentialStorage.deleteCredentialMetadata(id)
+          return await this.credentialStorage.deleteCredentialMetadata(id);
         } else {
           throw error;
         }
       });
 
-    await this.credentialStorage.deleteCredentialMetadata(id)
+    await this.credentialStorage.deleteCredentialMetadata(id);
   }
 
   async markCredentialPendingDeletion(id: string) {
@@ -168,12 +172,12 @@ class CredentialService extends AgentService {
       payload: {
         credentialId: id,
       },
-    })
+    });
   }
 
   async removeCredentialsPendingDeletion() {
     const pendingCredentialDeletions =
-    await this.credentialStorage.getCredentialsPendingDeletion();
+      await this.credentialStorage.getCredentialsPendingDeletion();
 
     for (const credential of pendingCredentialDeletions) {
       await this.deleteCredential(credential.id);
@@ -212,7 +216,7 @@ class CredentialService extends AgentService {
     while (returned !== 0) {
       const result = await this.props.signifyClient.credentials().list({
         skip: iteration * 24,
-        limit: 24 + (iteration * 24)
+        limit: 24 + iteration * 24,
       });
       cloudCredentials.push(...result);
 
@@ -222,7 +226,7 @@ class CredentialService extends AgentService {
 
     const localCredentials =
       await this.credentialStorage.getAllCredentialMetadata();
-    
+
     const unSyncedData = cloudCredentials.filter(
       (credential: any) =>
         !localCredentials.find((item) => credential.sad.d === item.id)

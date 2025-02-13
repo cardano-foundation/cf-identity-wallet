@@ -19,12 +19,7 @@ import { SetupThreshold } from "./components/SetupThreshold";
 import { Summary } from "./components/Summary";
 import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
-const stages = [
-  SetupConnections,
-  GroupMembers,
-  SetupThreshold,
-  Summary,
-];
+const stages = [SetupConnections, GroupMembers, SetupThreshold, Summary];
 
 const initialState: IdentifierStageStateProps = {
   identifierCreationStage: 0,
@@ -42,7 +37,7 @@ const initialState: IdentifierStageStateProps = {
     theme: 0,
     creationStatus: CreationStatus.COMPLETE,
   },
-  color: IdentifierColor.One
+  color: IdentifierColor.One,
 };
 
 const CreateGroupIdentifier = ({

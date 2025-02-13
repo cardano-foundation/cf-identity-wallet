@@ -53,7 +53,7 @@ jest.mock("@jimcase/barcode-scanning", () => {
       ) => addListener(eventName, listenerFunc),
       startScan: jest.fn(),
       stopScan: jest.fn(),
-      removeAllListeners: jest.fn()
+      removeAllListeners: jest.fn(),
     },
   };
 });
@@ -72,7 +72,6 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
 }));
-
 
 const addKeyboardEventMock = jest.fn();
 
@@ -310,8 +309,10 @@ describe("Full page scanner", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("qr-code-scanner").classList.contains("no-permission")).toBeFalsy();
-    })
+      expect(
+        getByTestId("qr-code-scanner").classList.contains("no-permission")
+      ).toBeFalsy();
+    });
 
     act(() => {
       fireEvent.click(getByTestId("action-button"));

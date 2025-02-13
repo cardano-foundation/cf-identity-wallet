@@ -56,11 +56,13 @@ const RotateKeyModal = ({
         isOpen={isOpen}
         data-testid="rotate-keys"
       >
-        <ScrollablePageLayout 
+        <ScrollablePageLayout
           header={
-            <PageHeader 
+            <PageHeader
               closeButton
-              closeButtonLabel={`${i18n.t("tabs.identifiers.details.rotatekeys.done")}`}
+              closeButtonLabel={`${i18n.t(
+                "tabs.identifiers.details.rotatekeys.done"
+              )}`}
               closeButtonAction={onClose}
               title={`${i18n.t("tabs.identifiers.details.options.rotatekeys")}`}
             />
@@ -70,7 +72,9 @@ const RotateKeyModal = ({
               customClass="rotate-key-footer"
               pageId="rotate-key"
               primaryButtonIcon={refreshOutline}
-              primaryButtonText={`${i18n.t("tabs.identifiers.details.options.rotatekeys")}`}
+              primaryButtonText={`${i18n.t(
+                "tabs.identifiers.details.options.rotatekeys"
+              )}`}
               primaryButtonAction={handleRotateKey}
               primaryButtonDisabled={loading}
             />
@@ -79,7 +83,9 @@ const RotateKeyModal = ({
           <p className="description">
             {i18n.t("tabs.identifiers.details.rotatekeys.description")}
           </p>
-          <InfoCard content={i18n.t("tabs.identifiers.details.rotatekeys.message")}/>
+          <InfoCard
+            content={i18n.t("tabs.identifiers.details.rotatekeys.message")}
+          />
           <CardDetailsBlock
             title={i18n.t("tabs.identifiers.details.rotatekeys.signingkey")}
           >

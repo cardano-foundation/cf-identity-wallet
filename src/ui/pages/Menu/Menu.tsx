@@ -20,7 +20,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
-  showConnections
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import {
   getShowConnectWallet,

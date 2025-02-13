@@ -62,9 +62,19 @@ describe("Receive credential", () => {
       </Provider>
     );
 
-    expect(getAllByText(EN_TRANSLATIONS.tabs.notifications.details.sign.title)[0]).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.identifier)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.info)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.transaction.data)).toBeVisible();
+    expect(
+      getAllByText(EN_TRANSLATIONS.tabs.notifications.details.sign.title)[0]
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.identifier)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.info)
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.sign.transaction.data
+      )
+    ).toBeVisible();
   });
 });

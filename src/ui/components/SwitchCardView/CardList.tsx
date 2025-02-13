@@ -1,16 +1,13 @@
 import { useCallback, useMemo } from "react";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import {
-  CardType,
-} from "../../globals/types";
+import { CardType } from "../../globals/types";
 import { formatShortDate } from "../../utils/formatters";
 import { getTheme } from "../../utils/theme";
 import { CardList as BaseCardList, CardItem } from "../CardList";
 import { CardTheme } from "../CardTheme";
 import "./SwitchCardView.scss";
 import { CardListProps } from "./SwitchCardView.types";
-
 
 const CardList = ({
   cardsData,
@@ -37,19 +34,33 @@ const CardList = ({
           id: item.id,
           title: cred.credentialType,
           subtitle: formatShortDate(cred.issuanceDate),
-          data: cred
+          data: cred,
         };
       }
     );
   }, [cardsData, cardTypes]);
 
-  const renderStartSlot = useCallback((data: IdentifierShortDetails | CredentialShortDetails) => {
-    if(cardTypes === CardType.CREDENTIALS) {
-      return <CardTheme className="card-logo" layout={0} color={0}/>;
-    }
+  const renderStartSlot = useCallback(
+    (data: IdentifierShortDetails | CredentialShortDetails) => {
+      if (cardTypes === CardType.CREDENTIALS) {
+        return (
+          <CardTheme
+            className="card-logo"
+            layout={0}
+            color={0}
+          />
+        );
+      }
 
-    return <CardTheme {...getTheme((data as IdentifierShortDetails).theme)} className="card-logo" />
-  }, [cardTypes]);
+      return (
+        <CardTheme
+          {...getTheme((data as IdentifierShortDetails).theme)}
+          className="card-logo"
+        />
+      );
+    },
+    [cardTypes]
+  );
 
   return (
     <BaseCardList

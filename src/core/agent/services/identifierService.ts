@@ -52,7 +52,8 @@ class IdentifierService extends AgentService {
     "Misconfigured KERIA agent for this wallet type";
   static readonly INVALID_QUEUED_DISPLAY_NAMES_FORMAT =
     "Queued display names has invalid format";
-  static readonly CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH = "Identifier name taken on KERIA, but cannot be found when iterating over identifier list";
+  static readonly CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH =
+    "Identifier name taken on KERIA, but cannot be found when iterating over identifier list";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
@@ -114,7 +115,10 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-    if (metadata.creationStatus === CreationStatus.PENDING || metadata.creationStatus === CreationStatus.FAILED) {
+    if (
+      metadata.creationStatus === CreationStatus.PENDING ||
+      metadata.creationStatus === CreationStatus.FAILED
+    ) {
       throw new Error(IdentifierService.IDENTIFIER_NOT_COMPLETE);
     }
 
@@ -167,9 +171,7 @@ class IdentifierService extends AgentService {
 
     if (!pendingIdentifierCreation) return;
 
-    if (
-      !Array.isArray(pendingIdentifierCreation.content.queuedDisplayNames)
-    ) {
+    if (!Array.isArray(pendingIdentifierCreation.content.queuedDisplayNames)) {
       throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
     }
 
@@ -204,7 +206,7 @@ class IdentifierService extends AgentService {
   @OnlineOnly
   async createIdentifier(
     metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">,
-    backgroundTask = false,
+    backgroundTask = false
   ): Promise<CreateIdentifierResult> {
     const { toad, witnesses } = await this.getAvailableWitnesses();
 
@@ -229,12 +231,14 @@ class IdentifierService extends AgentService {
       if (pendingIdentifiersRecord) {
         const { queuedDisplayNames } = pendingIdentifiersRecord.content;
         if (!Array.isArray(queuedDisplayNames)) {
-          throw new Error(IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT);
+          throw new Error(
+            IdentifierService.INVALID_QUEUED_DISPLAY_NAMES_FORMAT
+          );
         }
         processingNames = queuedDisplayNames;
       }
       processingNames.push(name);
-      
+
       await this.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
           id: MiscRecordId.IDENTIFIERS_PENDING_CREATION,
@@ -245,13 +249,11 @@ class IdentifierService extends AgentService {
 
     let identifier;
     try {
-      const result = await this.props.signifyClient
-        .identifiers()
-        .create(name, {
-          toad,
-          wits: witnesses,
-        });
-      await result.op();  // @TODO - foconnor: Update Signify to await the POST before returning so error thrown predicably
+      const result = await this.props.signifyClient.identifiers().create(name, {
+        toad,
+        wits: witnesses,
+      });
+      await result.op(); // @TODO - foconnor: Update Signify to await the POST before returning so error thrown predicably
       identifier = result.serder.ked.i;
     } catch (error) {
       if (!(error instanceof Error)) throw error;
@@ -266,7 +268,9 @@ class IdentifierService extends AgentService {
       //  But here we don't know what the identifier is, so we have to manually search.
       const details = await this.searchByName(name);
       if (!details) {
-        throw new Error(IdentifierService.CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH);
+        throw new Error(
+          IdentifierService.CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH
+        );
       }
       identifier = details.prefix;
     }
@@ -282,21 +286,34 @@ class IdentifierService extends AgentService {
 
     const creationStatus = CreationStatus.PENDING;
     try {
-      await this.identifierStorage
-        .createIdentifierMetadataRecord({
-          id: identifier,
-          ...metadata,
-          creationStatus,
-          createdAt: new Date(identifierDetail.icp_dt),
-          sxlt: identifierDetail.salty?.sxlt,
-        });
-      
+      await this.identifierStorage.createIdentifierMetadataRecord({
+        id: identifier,
+        ...metadata,
+        creationStatus,
+        createdAt: new Date(identifierDetail.icp_dt),
+        sxlt: identifierDetail.salty?.sxlt,
+      });
+
       this.props.eventEmitter.emit<IdentifierAddedEvent>({
         type: EventTypes.IdentifierAdded,
-        payload: { identifier: { id: identifier, ...metadata, creationStatus, createdAtUTC: new Date(identifierDetail.icp_dt).toISOString() } },
+        payload: {
+          identifier: {
+            id: identifier,
+            ...metadata,
+            creationStatus,
+            createdAtUTC: new Date(identifierDetail.icp_dt).toISOString(),
+          },
+        },
       });
     } catch (error) {
-      if (!(error instanceof Error && error.message.startsWith(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG))) {
+      if (
+        !(
+          error instanceof Error &&
+          error.message.startsWith(
+            StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
+          )
+        )
+      ) {
         throw error;
       }
     }
@@ -305,7 +322,7 @@ class IdentifierService extends AgentService {
       id: `witness.${identifier}`,
       recordType: OperationPendingRecordType.Witness,
     });
-    
+
     // Finally, remove from the re-try record
     const updatedRecord = await this.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
@@ -448,7 +465,7 @@ class IdentifierService extends AgentService {
 
     const manager = this.props.signifyClient.manager;
     if (manager) {
-      return (manager.get(aid)).signers[0];
+      return manager.get(aid).signers[0];
     } else {
       throw new Error(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
     }
@@ -460,16 +477,18 @@ class IdentifierService extends AgentService {
     let iteration = 0;
 
     while (returned !== 0) {
-      const result = await this.props.signifyClient.identifiers().list(iteration * (24 + 1), 24 + (iteration * (24 + 1)));
+      const result = await this.props.signifyClient
+        .identifiers()
+        .list(iteration * (24 + 1), 24 + iteration * (24 + 1));
       cloudIdentifiers.push(...result.aids);
 
       returned = result.aids.length;
       iteration += 1;
     }
-    
+
     const localIdentifiers =
       await this.identifierStorage.getKeriIdentifiersMetadata();
-    
+
     const unSyncedData = cloudIdentifiers.filter(
       (identifier: IdentifierResult) =>
         !localIdentifiers.find((item) => identifier.prefix === item.id)
@@ -488,8 +507,12 @@ class IdentifierService extends AgentService {
       const op: Operation = await this.props.signifyClient
         .operations()
         .get(`witness.${identifier.prefix}`);
-      
-      const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
+
+      const creationStatus = op.done
+        ? op.error
+          ? CreationStatus.FAILED
+          : CreationStatus.COMPLETE
+        : CreationStatus.PENDING;
       if (creationStatus === CreationStatus.PENDING) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
@@ -503,7 +526,7 @@ class IdentifierService extends AgentService {
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
         .get(identifier.prefix)) as HabState;
-      
+
       if (isMultiSig) {
         const groupId = identifier.name.split(":")[1];
         const groupInitiator = groupId.split("-")[0] === "1";
@@ -538,7 +561,7 @@ class IdentifierService extends AgentService {
       if (identifier.name.startsWith("XX")) {
         continue;
       }
-      
+
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
         .get(identifier.prefix)) as HabState;
@@ -547,12 +570,16 @@ class IdentifierService extends AgentService {
       const groupId = identifier.group.mhab.name.split(":")[1];
       const theme = parseInt(identifier.name.split(":")[0], 10);
       const groupInitiator = groupId.split("-")[0] === "1";
-      
+
       const op = await this.props.signifyClient
         .operations()
         .get(`group.${identifier.prefix}`);
-      
-      const creationStatus = op.done ? (op.error ? CreationStatus.FAILED : CreationStatus.COMPLETE) : CreationStatus.PENDING;
+
+      const creationStatus = op.done
+        ? op.error
+          ? CreationStatus.FAILED
+          : CreationStatus.COMPLETE
+        : CreationStatus.PENDING;
       if (creationStatus === CreationStatus.PENDING) {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
@@ -593,7 +620,10 @@ class IdentifierService extends AgentService {
     }
   }
 
-  async getAvailableWitnesses(): Promise<{ toad: number, witnesses: string[] }> {
+  async getAvailableWitnesses(): Promise<{
+    toad: number;
+    witnesses: string[];
+  }> {
     const config = await this.props.signifyClient.config().get();
     if (!config.iurls) {
       throw new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION);
@@ -608,8 +638,10 @@ class IdentifierService extends AgentService {
     }
 
     const uniquew = [...new Set(witnesses)];
-    if (uniquew.length >= 12) return { toad: 8, witnesses: uniquew.slice(0, 12) };
-    if (uniquew.length >= 10) return { toad: 7, witnesses: uniquew.slice(0, 10) };
+    if (uniquew.length >= 12)
+      return { toad: 8, witnesses: uniquew.slice(0, 12) };
+    if (uniquew.length >= 10)
+      return { toad: 7, witnesses: uniquew.slice(0, 10) };
     if (uniquew.length >= 9) return { toad: 6, witnesses: uniquew.slice(0, 9) };
     if (uniquew.length >= 7) return { toad: 5, witnesses: uniquew.slice(0, 7) };
     if (uniquew.length >= 6) return { toad: 4, witnesses: uniquew.slice(0, 6) };
@@ -622,7 +654,9 @@ class IdentifierService extends AgentService {
     let iteration = 0;
 
     while (returned !== 0) {
-      const result = await this.props.signifyClient.identifiers().list(iteration * (24 + 1), 24 + (iteration * (24 + 1)));
+      const result = await this.props.signifyClient
+        .identifiers()
+        .list(iteration * (24 + 1), 24 + iteration * (24 + 1));
       for (const identifier of result.aids) {
         if (identifier.name === name) return identifier;
       }

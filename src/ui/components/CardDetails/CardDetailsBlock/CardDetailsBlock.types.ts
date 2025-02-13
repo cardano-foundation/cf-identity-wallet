@@ -10,7 +10,7 @@ interface CardDetailsBlockProps {
 
 enum FlatBorderType {
   TOP,
-  BOT
+  BOT,
 }
 
 interface CardBlockProps {

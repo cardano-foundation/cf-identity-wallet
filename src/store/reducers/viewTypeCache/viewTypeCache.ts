@@ -11,20 +11,26 @@ const initialState: ViewTypeCacheProps = {
   credential: {
     viewType: null,
     favouriteIndex: 0,
-  }
+  },
 };
 
 const viewTypeCacheSlice = createSlice({
   name: "viewTypeCacheSlice",
   initialState,
   reducers: {
-    setIdentifierViewTypeCache: (state, action: PayloadAction<CardListViewType>) => {
+    setIdentifierViewTypeCache: (
+      state,
+      action: PayloadAction<CardListViewType>
+    ) => {
       state.identifier.viewType = action.payload;
     },
     setIdentifierFavouriteIndex: (state, action: PayloadAction<number>) => {
       state.identifier.favouriteIndex = action.payload;
     },
-    setCredentialViewTypeCache: (state, action: PayloadAction<CardListViewType>) => {
+    setCredentialViewTypeCache: (
+      state,
+      action: PayloadAction<CardListViewType>
+    ) => {
       state.credential.viewType = action.payload;
     },
     setCredentialFavouriteIndex: (state, action: PayloadAction<number>) => {
@@ -33,15 +39,18 @@ const viewTypeCacheSlice = createSlice({
   },
 });
 
-export const { setIdentifierFavouriteIndex, setIdentifierViewTypeCache, setCredentialFavouriteIndex, setCredentialViewTypeCache } =
-viewTypeCacheSlice.actions;
+export const {
+  setIdentifierFavouriteIndex,
+  setIdentifierViewTypeCache,
+  setCredentialFavouriteIndex,
+  setCredentialViewTypeCache,
+} = viewTypeCacheSlice.actions;
 
 const getIdentifierViewTypeCache = (state: RootState) =>
   state.viewTypeCache.identifier;
 
 const getIdentifierFavouriteIndex = (state: RootState) =>
   state.viewTypeCache.identifier.favouriteIndex;
-
 
 const getCredentialViewTypeCache = (state: RootState) =>
   state.viewTypeCache.credential;
@@ -55,5 +64,5 @@ export {
   getCredentialFavouriteIndex,
   getIdentifierFavouriteIndex,
   getIdentifierViewTypeCache,
-  viewTypeCacheSlice
+  viewTypeCacheSlice,
 };

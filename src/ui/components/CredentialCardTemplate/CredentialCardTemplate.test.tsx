@@ -5,7 +5,6 @@ import { store } from "../../../store";
 import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 import { CredentialCardTemplate } from "./CredentialCardTemplate";
 
-
 describe("Credential Card Template", () => {
   it("Renders Keri Card Template", async () => {
     const handleShowCardDetails = jest.fn();
