@@ -241,8 +241,8 @@ const signifyClient = jest.mocked({
     get: getManagerMock,
   },
   groups: () => ({
-    getRequest: getRequestMock
-  })
+    getRequest: getRequestMock,
+  }),
 });
 
 jest.mock("signify-ts", () => ({
@@ -266,7 +266,7 @@ jest.mock("signify-ts", () => ({
     iss: "iss",
   },
   Tier: {
-    low: "low"
+    low: "low",
   },
 }));
 
@@ -286,7 +286,9 @@ jest.mock("../../../core/agent/agent", () => ({
 const connections = jest.mocked({
   resolveOobi: jest.fn(),
   getConnectionById: jest.fn().mockResolvedValue({
-    serviceEndpoints: ["http://127.0.0.1:3902/oobi/EKSGUkKBfg5PG3nAvWZwY4pax2ZD-9LC7JpXeks7IKEj/agent/EKxIbNtsJytfgJjW_AkXV-XLTg_vSyPUMxuwkP7zbgbu"]
+    serviceEndpoints: [
+      "http://127.0.0.1:3902/oobi/EKSGUkKBfg5PG3nAvWZwY4pax2ZD-9LC7JpXeks7IKEj/agent/EKxIbNtsJytfgJjW_AkXV-XLTg_vSyPUMxuwkP7zbgbu",
+    ],
   }),
 });
 
@@ -304,13 +306,14 @@ let originalFetch;
 beforeAll(() => {
   originalFetch = global.fetch;
   global.fetch = jest.fn().mockResolvedValue({
-    text: () => "{\"v\":\"KERI10JSON00012b_\",\"t\":\"icp\",\"d\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"0\",\"kt\":\"1\",\"k\":[\"DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO\"],\"nt\":\"1\",\"n\":[\"EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh\"],\"bt\":\"0\",\"b\":[],\"c\":[],\"a\":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"1\",\"p\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"a\":[{\"i\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\",\"s\":\"0\",\"d\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"2\",\"p\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"a\":[{\"i\":\"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl\",\"s\":\"0\",\"d\":\"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij\"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"3\",\"p\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"a\":[{\"i\":\"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX\",\"s\":\"0\",\"d\":\"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl\"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"4\",\"p\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"a\":[{\"i\":\"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ\",\"s\":\"0\",\"d\":\"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk\"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"5\",\"p\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"a\":[{\"i\":\"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7\",\"s\":\"0\",\"d\":\"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg\"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{\"v\":\"KERI10JSON00012b_\",\"t\":\"icp\",\"d\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"0\",\"kt\":\"1\",\"k\":[\"DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO\"],\"nt\":\"1\",\"n\":[\"EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh\"],\"bt\":\"0\",\"b\":[],\"c\":[],\"a\":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"1\",\"p\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"a\":[{\"i\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\",\"s\":\"0\",\"d\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"2\",\"p\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"a\":[{\"i\":\"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl\",\"s\":\"0\",\"d\":\"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij\"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"3\",\"p\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"a\":[{\"i\":\"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX\",\"s\":\"0\",\"d\":\"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl\"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"4\",\"p\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"a\":[{\"i\":\"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ\",\"s\":\"0\",\"d\":\"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk\"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"5\",\"p\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"a\":[{\"i\":\"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7\",\"s\":\"0\",\"d\":\"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg\"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{\"v\":\"KERI10JSON0000f9_\",\"t\":\"rpy\",\"d\":\"ELrQF_D6YFL_2SU7RbDOrTYRtGj0v_GlOmi-YWVyChol\",\"dt\":\"2025-01-21T13:24:59.001000+00:00\",\"r\":\"/loc/scheme\",\"a\":{\"eid\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"url\":\"http://127.0.0.1:3001\",\"scheme\":\"http\"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAAA8QzT_XDXtB_5bK8P-dVrCZIlQ69WniFPWkGmGthK683v1E2ymGA7RlkXogXtIEHekVjdl0Tg5r6lr5aREjxcL{\"v\":\"KERI10JSON000113_\",\"t\":\"rpy\",\"d\":\"EA5z8Q3g-llvOK86bvE1QAceLb7g0FzcY9INn4Ch0Hu5\",\"dt\":\"2025-01-21T13:24:58.660000+00:00\",\"r\":\"/end/role/add\",\"a\":{\"cid\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"role\":\"indexer\",\"eid\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAADCsrTysi5_3hhzgP9VUyilJIPE8x-8Yi-lNtyB28tbc0a_S3igdY_v0yLg14tTzOyQn9sv3rGZEt4ZKb4-xl8D"
+    text: () =>
+      '{"v":"KERI10JSON00012b_","t":"icp","d":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"0","kt":"1","k":["DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO"],"nt":"1","n":["EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh"],"bt":"0","b":[],"c":[],"a":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"1","p":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","a":[{"i":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l","s":"0","d":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"2","p":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","a":[{"i":"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl","s":"0","d":"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"3","p":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","a":[{"i":"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX","s":"0","d":"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"4","p":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","a":[{"i":"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ","s":"0","d":"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"5","p":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","a":[{"i":"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7","s":"0","d":"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{"v":"KERI10JSON00012b_","t":"icp","d":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"0","kt":"1","k":["DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO"],"nt":"1","n":["EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh"],"bt":"0","b":[],"c":[],"a":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"1","p":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","a":[{"i":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l","s":"0","d":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"2","p":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","a":[{"i":"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl","s":"0","d":"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"3","p":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","a":[{"i":"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX","s":"0","d":"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"4","p":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","a":[{"i":"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ","s":"0","d":"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"5","p":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","a":[{"i":"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7","s":"0","d":"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{"v":"KERI10JSON0000f9_","t":"rpy","d":"ELrQF_D6YFL_2SU7RbDOrTYRtGj0v_GlOmi-YWVyChol","dt":"2025-01-21T13:24:59.001000+00:00","r":"/loc/scheme","a":{"eid":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","url":"http://127.0.0.1:3001","scheme":"http"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAAA8QzT_XDXtB_5bK8P-dVrCZIlQ69WniFPWkGmGthK683v1E2ymGA7RlkXogXtIEHekVjdl0Tg5r6lr5aREjxcL{"v":"KERI10JSON000113_","t":"rpy","d":"EA5z8Q3g-llvOK86bvE1QAceLb7g0FzcY9INn4Ch0Hu5","dt":"2025-01-21T13:24:58.660000+00:00","r":"/end/role/add","a":{"cid":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","role":"indexer","eid":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAADCsrTysi5_3hhzgP9VUyilJIPE8x-8Yi-lNtyB28tbc0a_S3igdY_v0yLg14tTzOyQn9sv3rGZEt4ZKb4-xl8D',
   }) as jest.Mock;
 });
 
 afterAll(() => {
   global.fetch = originalFetch!;
-})
+});
 
 const DATETIME = new Date();
 
@@ -350,7 +353,11 @@ describe("Receive individual ACDC actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    ipexAdmitMock.mockResolvedValue([{ ked: { d: "admit-said" } }, "sigs", "aend"]);
+    ipexAdmitMock.mockResolvedValue([
+      { ked: { d: "admit-said" } },
+      "sigs",
+      "aend",
+    ]);
 
     const connectionNote = {
       id: "note:id",
@@ -366,7 +373,7 @@ describe("Receive individual ACDC actions", () => {
           JSON.stringify(connectionNote),
       })
     );
-    markNotificationMock.mockResolvedValueOnce({status: "done"});
+    markNotificationMock.mockResolvedValueOnce({ status: "done" });
 
     await ipexCommunicationService.admitAcdcFromGrant(id);
 
@@ -374,7 +381,7 @@ describe("Receive individual ACDC actions", () => {
       ...credentialRecordProps,
       identifierId: "identifierId",
       identifierType: "individual",
-      createdAt: new Date(credentialRecordProps.issuanceDate)
+      createdAt: new Date(credentialRecordProps.issuanceDate),
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -383,7 +390,7 @@ describe("Receive individual ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "identifierId",
           identifierType: "individual",
-          createdAt: new Date(credentialRecordProps.issuanceDate)
+          createdAt: new Date(credentialRecordProps.issuanceDate),
         },
         status: CredentialStatus.PENDING,
       },
@@ -393,7 +400,7 @@ describe("Receive individual ACDC actions", () => {
       message: "",
       senderName: "identifierId",
       recipient: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-      grantSaid: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW"
+      grantSaid: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
     });
     expect(ipexSubmitAdmitMock).toBeCalledWith(
       "identifierId",
@@ -406,26 +413,30 @@ describe("Receive individual ACDC actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id,
-      route: NotificationRoute.ExnIpexGrant,
-      linkedRequest: {
-        accepted: true,
-        current: "admit-said",
-      },
-      hidden: true,
-    }));
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id,
+        route: NotificationRoute.ExnIpexGrant,
+        linkedRequest: {
+          accepted: true,
+          current: "admit-said",
+        },
+        hidden: true,
+      })
+    );
   });
 
   test("Cannot accept ACDC if the notification is missing in the DB", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
-    
-    await expect(ipexCommunicationService.admitAcdcFromGrant(id)).rejects.toThrowError(
+
+    await expect(
+      ipexCommunicationService.admitAcdcFromGrant(id)
+    ).rejects.toThrowError(
       `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
     );
-    
+
     expect(ipexAdmitMock).not.toBeCalled();
     expect(ipexSubmitAdmitMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
@@ -442,17 +453,18 @@ describe("Receive individual ACDC actions", () => {
       a: {
         d: "saidForUuid",
       },
-      linkedRequest: {         
+      linkedRequest: {
         current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
-        accepted: false },
+        accepted: false,
+      },
     });
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(undefined);
-    
-    await expect(ipexCommunicationService.admitAcdcFromGrant(id)).rejects.toThrowError(
-      IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY
-    );
+
+    await expect(
+      ipexCommunicationService.admitAcdcFromGrant(id)
+    ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
 
     expect(ipexAdmitMock).not.toBeCalled();
     expect(ipexSubmitAdmitMock).not.toBeCalled();
@@ -465,7 +477,7 @@ describe("Receive individual ACDC actions", () => {
 describe("Receive group ACDC actions", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
-  }); 
+  });
 
   test("Can begin admitting an ACDC for a group and the notification remains", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
@@ -565,7 +577,7 @@ describe("Receive group ACDC actions", () => {
       ...credentialRecordProps,
       identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       identifierType: "group",
-      createdAt: new Date(credentialRecordProps.issuanceDate)
+      createdAt: new Date(credentialRecordProps.issuanceDate),
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -574,7 +586,7 @@ describe("Receive group ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
           identifierType: "group",
-          createdAt: new Date(credentialRecordProps.issuanceDate)
+          createdAt: new Date(credentialRecordProps.issuanceDate),
         },
         status: CredentialStatus.PENDING,
       },
@@ -589,7 +601,7 @@ describe("Receive group ACDC actions", () => {
         "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
       ]
     );
-    expect(notificationStorage.update).toBeCalledWith({ 
+    expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
       id: id,
       createdAt: DATETIME,
@@ -600,8 +612,8 @@ describe("Receive group ACDC actions", () => {
       route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedRequest: {
-        "accepted": true,
-        "current": "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
+        accepted: true,
+        current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
@@ -629,13 +641,15 @@ describe("Receive group ACDC actions", () => {
       read: true,
       linkedRequest: {
         accepted: true,
-        current: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR"
+        current: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
 
-    await expect(ipexCommunicationService.admitAcdcFromGrant(id)).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
+    await expect(
+      ipexCommunicationService.admitAcdcFromGrant(id)
+    ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
     expect(ipexAdmitMock).not.toBeCalled();
     expect(ipexSubmitAdmitMock).not.toBeCalled();
@@ -663,7 +677,9 @@ describe("Receive group ACDC actions", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
-    getExchangeMock.mockReturnValueOnce(multisigExnAdmitForIssuance).mockReturnValueOnce(grantForIssuanceExnMessage);
+    getExchangeMock
+      .mockReturnValueOnce(multisigExnAdmitForIssuance)
+      .mockReturnValueOnce(grantForIssuanceExnMessage);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(groupIdentifierMetadataRecord);
@@ -715,7 +731,7 @@ describe("Receive group ACDC actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    
+
     (Saider.saidify as jest.Mock).mockImplementation(
       jest.fn().mockReturnValue([{} as Saider, ipexGrantSerder.ked])
     );
@@ -742,7 +758,7 @@ describe("Receive group ACDC actions", () => {
       ...credentialRecordProps,
       identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       identifierType: "group",
-      createdAt: new Date(credentialRecordProps.issuanceDate)
+      createdAt: new Date(credentialRecordProps.issuanceDate),
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -751,19 +767,21 @@ describe("Receive group ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
           identifierType: "group",
-          createdAt: new Date(credentialRecordProps.issuanceDate)
+          createdAt: new Date(credentialRecordProps.issuanceDate),
         },
         status: CredentialStatus.PENDING,
       },
     });
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id: "id",
-      route: NotificationRoute.ExnIpexGrant,
-      linkedRequest: {
-        accepted: true,
-        current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
-      },
-    }));
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id: "id",
+        route: NotificationRoute.ExnIpexGrant,
+        linkedRequest: {
+          accepted: true,
+          current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
+        },
+      })
+    );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -803,7 +821,7 @@ describe("Receive group ACDC actions", () => {
       read: true,
       linkedRequest: {
         accepted: true,
-        current: "current-admit-said"
+        current: "current-admit-said",
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
@@ -812,7 +830,7 @@ describe("Receive group ACDC actions", () => {
     await expect(
       ipexCommunicationService.joinMultisigAdmit(id)
     ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
-    
+
     expect(ipexSubmitAdmitMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.save).not.toBeCalled();
@@ -842,8 +860,10 @@ describe("Receive group ACDC actions", () => {
 
     await expect(
       ipexCommunicationService.joinMultisigAdmit(id)
-    ).rejects.toThrowError(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
-    
+    ).rejects.toThrowError(
+      IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN
+    );
+
     expect(ipexSubmitAdmitMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.save).not.toBeCalled();
@@ -871,15 +891,17 @@ describe("Receive group ACDC actions", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
-    getExchangeMock.mockReturnValueOnce(multisigExnAdmitForIssuance).mockReturnValueOnce(grantForIssuanceExnMessage);
+    getExchangeMock
+      .mockReturnValueOnce(multisigExnAdmitForIssuance)
+      .mockReturnValueOnce(grantForIssuanceExnMessage);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValueOnce(undefined);
-    
+
     await expect(
       ipexCommunicationService.joinMultisigAdmit(id)
     ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
-    
+
     expect(ipexSubmitAdmitMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.save).not.toBeCalled();
@@ -917,7 +939,7 @@ describe("Receive group ACDC progress", () => {
     const grantNoteRecord = {
       linkedRequest: {
         accepted: true,
-        current: "currentsaid"
+        current: "currentsaid",
       },
       a: { d: "d" },
     };
@@ -942,14 +964,14 @@ describe("Receive group ACDC progress", () => {
           aid: "memberB",
         },
         {
-          aid: "memberC"
-        }
+          aid: "memberC",
+        },
       ],
     });
 
     getRequestMock.mockResolvedValueOnce([
-      { exn: { i: "memberB" }},
-      { exn: { i: "memberC" }}
+      { exn: { i: "memberB" } },
+      { exn: { i: "memberC" } },
     ]);
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
@@ -962,8 +984,8 @@ describe("Receive group ACDC progress", () => {
       othersJoined: ["memberB", "memberC"],
       linkedRequest: {
         accepted: true,
-        current: "currentsaid"
-      }
+        current: "currentsaid",
+      },
     });
   });
 
@@ -982,8 +1004,8 @@ describe("Receive group ACDC progress", () => {
           aid: "memberB",
         },
         {
-          aid: "memberC"
-        }
+          aid: "memberC",
+        },
       ],
     });
 
@@ -1008,7 +1030,7 @@ describe("Receive group ACDC progress", () => {
       othersJoined: [],
       linkedRequest: {
         accepted: false,
-      }
+      },
     });
   });
 });
@@ -1017,7 +1039,7 @@ describe("Offer ACDC individual actions", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
-  
+
   test("Can offer ACDC in response to IPEX apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
@@ -1032,7 +1054,10 @@ describe("Offer ACDC individual actions", () => {
       },
       route: NotificationRoute.ExnIpexApply,
       read: true,
-      linkedRequest: { current: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR", accepted: false },
+      linkedRequest: {
+        current: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+        accepted: false,
+      },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: DATETIME,
     });
@@ -1048,15 +1073,22 @@ describe("Offer ACDC individual actions", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
       id: "abc123",
     });
-    ipexOfferMock.mockResolvedValue([{ ked: { d: "offer-said" } }, "sigs", "gend"]);
+    ipexOfferMock.mockResolvedValue([
+      { ked: { d: "offer-said" } },
+      "sigs",
+      "gend",
+    ]);
     ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true });
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    markNotificationMock.mockResolvedValueOnce({status: "done"});
+    markNotificationMock.mockResolvedValueOnce({ status: "done" });
 
-    await ipexCommunicationService.offerAcdcFromApply(id, grantForIssuanceExnMessage.exn.e.acdc);
+    await ipexCommunicationService.offerAcdcFromApply(
+      id,
+      grantForIssuanceExnMessage.exn.e.acdc
+    );
 
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1079,15 +1111,17 @@ describe("Offer ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id,
-      route: NotificationRoute.ExnIpexApply,
-      linkedRequest: {
-        accepted: true,
-        current: "offer-said",
-      },
-      hidden: true,
-    }));
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id,
+        route: NotificationRoute.ExnIpexApply,
+        linkedRequest: {
+          accepted: true,
+          current: "offer-said",
+        },
+        hidden: true,
+      })
+    );
   });
 
   test("Cannot offer ACDC if the apply notification is missing in the DB", async () => {
@@ -1097,11 +1131,14 @@ describe("Offer ACDC individual actions", () => {
     notificationStorage.findById.mockResolvedValueOnce(null);
 
     await expect(
-      ipexCommunicationService.offerAcdcFromApply(id, grantForIssuanceExnMessage.exn.e.acdc)
+      ipexCommunicationService.offerAcdcFromApply(
+        id,
+        grantForIssuanceExnMessage.exn.e.acdc
+      )
     ).rejects.toThrowError(
       `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
     );
-    
+
     expect(ipexOfferMock).not.toBeCalled();
     expect(ipexSubmitOfferMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
@@ -1171,20 +1208,25 @@ describe("Offer ACDC group actions", () => {
       multisigOfferSerder,
       multisigOfferSig,
       multisigOfferEnd,
-      ["ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF", "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5"]
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
     );
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id,
-      route: NotificationRoute.ExnIpexApply,
-      linkedRequest: {
-        accepted: true,
-        current: "EARi8kQ1PkSSRyFEIPOFPdnsnv7P2QZYEQqnmr1Eo2N8",
-      },
-    }));
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id,
+        route: NotificationRoute.ExnIpexApply,
+        linkedRequest: {
+          accepted: true,
+          current: "EARi8kQ1PkSSRyFEIPOFPdnsnv7P2QZYEQqnmr1Eo2N8",
+        },
+      })
+    );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
-    });    
+    });
     expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.deleteById).not.toBeCalled();
   });
@@ -1195,12 +1237,17 @@ describe("Offer ACDC group actions", () => {
     const applyNoteRecord = {
       linkedRequest: {
         accepted: true,
-        current: "currentsaid"
+        current: "currentsaid",
       },
     };
     notificationStorage.findById.mockResolvedValue(applyNoteRecord);
 
-    await expect(ipexCommunicationService.offerAcdcFromApply("id", grantForIssuanceExnMessage.exn.e.acdc)).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
+    await expect(
+      ipexCommunicationService.offerAcdcFromApply(
+        "id",
+        grantForIssuanceExnMessage.exn.e.acdc
+      )
+    ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
     expect(ipexOfferMock).not.toBeCalled();
     expect(ipexSubmitOfferMock).not.toBeCalled();
@@ -1222,7 +1269,7 @@ describe("Offer ACDC group actions", () => {
       read: true,
       linkedRequest: {
         accepted: false,
-        current: "current-offer-said"
+        current: "current-offer-said",
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     };
@@ -1263,8 +1310,13 @@ describe("Offer ACDC group actions", () => {
     expect(createExchangeMessageMock).toBeCalledWith(
       mHab,
       MultiSigRoute.EXN,
-      { gid: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD"},
-      { exn: [{ ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" }}, "d"]},
+      { gid: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD" },
+      {
+        exn: [
+          { ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" } },
+          "d",
+        ],
+      },
       "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn"
     );
     expect(ipexSubmitOfferMock).toBeCalledWith(
@@ -1272,20 +1324,25 @@ describe("Offer ACDC group actions", () => {
       multisigOfferSerder,
       multisigOfferSig,
       multisigOfferEnd,
-      ["ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF", "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5"]
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
     );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id: "id",
-      route: NotificationRoute.ExnIpexApply,
-      linkedRequest: {
-        accepted: true,
-        current: "current-offer-said",
-      },
-    }));
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id: "id",
+        route: NotificationRoute.ExnIpexApply,
+        linkedRequest: {
+          accepted: true,
+          current: "current-offer-said",
+        },
+      })
+    );
   });
 
   test("Cannot join group to offer ACDC if linked apply notification does not exist", async () => {
@@ -1294,7 +1351,7 @@ describe("Offer ACDC group actions", () => {
     await expect(
       ipexCommunicationService.joinMultisigOffer("apply-note-id")
     ).rejects.toThrowError(IpexCommunicationService.NOTIFICATION_NOT_FOUND);
-    
+
     expect(ipexSubmitOfferMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.save).not.toBeCalled();
@@ -1313,7 +1370,7 @@ describe("Offer ACDC group actions", () => {
       read: true,
       linkedRequest: {
         accepted: true,
-        current: "current-offer-said"
+        current: "current-offer-said",
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     };
@@ -1348,7 +1405,9 @@ describe("Offer ACDC group actions", () => {
 
     await expect(
       ipexCommunicationService.joinMultisigOffer("apply-note-id")
-    ).rejects.toThrowError(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
+    ).rejects.toThrowError(
+      IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN
+    );
 
     expect(ipexSubmitOfferMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
@@ -1359,8 +1418,10 @@ describe("Offer ACDC group actions", () => {
   test("Can retrieve the current offered credential SAID", async () => {
     getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
 
-    const result = await ipexCommunicationService.getOfferedCredentialSaid("current-said");
-    
+    const result = await ipexCommunicationService.getOfferedCredentialSaid(
+      "current-said"
+    );
+
     expect(result).toEqual("EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT");
     expect(getExchangeMock).toBeCalledWith("current-said");
   });
@@ -1385,7 +1446,7 @@ describe("Offer ACDC group progress", () => {
     const applyNoteRecord = {
       linkedRequest: {
         accepted: true,
-        current: "current-offer-said"
+        current: "current-offer-said",
       },
       a: { d: "d" },
     };
@@ -1412,8 +1473,8 @@ describe("Offer ACDC group progress", () => {
       ],
     });
     getRequestMock.mockResolvedValueOnce([
-      { exn: { i: "memberB" }},
-      { exn: { i: "memberC" }}
+      { exn: { i: "memberB" } },
+      { exn: { i: "memberC" } },
     ]);
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
@@ -1502,8 +1563,12 @@ describe("Grant ACDC individual actions", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    ipexGrantMock.mockResolvedValue([{ ked: { d: "grant-said" } }, "sigs", "gend"]);
-    markNotificationMock.mockResolvedValueOnce({status: "done"});
+    ipexGrantMock.mockResolvedValue([
+      { ked: { d: "grant-said" } },
+      "sigs",
+      "gend",
+    ]);
+    markNotificationMock.mockResolvedValueOnce({ status: "done" });
 
     await ipexCommunicationService.grantAcdcFromAgree("agree-note-id");
 
@@ -1518,35 +1583,47 @@ describe("Grant ACDC individual actions", () => {
       senderName: "abc123",
       agreeSaid: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
     });
-    expect(ipexSubmitGrantMock).toBeCalledWith("abc123", { ked: { d: "grant-said" } }, "sigs", "gend", ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]);
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id: "note-id",
-      route: NotificationRoute.ExnIpexAgree,
-      linkedRequest: {
-        accepted: true,
-        current: "grant-said",
-      },
-    }));
+    expect(ipexSubmitGrantMock).toBeCalledWith(
+      "abc123",
+      { ked: { d: "grant-said" } },
+      "sigs",
+      "gend",
+      ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
+    );
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id: "note-id",
+        route: NotificationRoute.ExnIpexAgree,
+        linkedRequest: {
+          accepted: true,
+          current: "grant-said",
+        },
+      })
+    );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id: "note-id",
-      hidden: true,
-      linkedRequest: { accepted: true, current: "grant-said" }
-    }));
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id: "note-id",
+        hidden: true,
+        linkedRequest: { accepted: true, current: "grant-said" },
+      })
+    );
   });
 
   test("Cannot present ACDC if the notification is missing in the DB", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
-    
-    await expect(ipexCommunicationService.grantAcdcFromAgree(id)).rejects.toThrowError(
+
+    await expect(
+      ipexCommunicationService.grantAcdcFromAgree(id)
+    ).rejects.toThrowError(
       `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
     );
-    
+
     expect(ipexGrantMock).not.toBeCalled();
     expect(ipexSubmitGrantMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
@@ -1579,9 +1656,9 @@ describe("Grant ACDC individual actions", () => {
       new Error("request - 404 - SignifyClient message")
     );
 
-    await expect(ipexCommunicationService.grantAcdcFromAgree("id")).rejects.toThrowError(
-      IpexCommunicationService.CREDENTIAL_NOT_FOUND
-    );
+    await expect(
+      ipexCommunicationService.grantAcdcFromAgree("id")
+    ).rejects.toThrowError(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
 
     expect(ipexGrantMock).not.toBeCalled();
     expect(ipexSubmitGrantMock).not.toBeCalled();
@@ -1687,16 +1764,21 @@ describe("Grant ACDC group actions", () => {
       ipexSubmitGrantSerder,
       ipexSubmitGrantSig,
       ipexSubmitGrantEnd,
-      ["ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF", "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5"]
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
     );
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id: "note-id",
-      route: NotificationRoute.ExnIpexAgree,
-      linkedRequest: {
-        accepted: true,
-        current: "EEpfEHR6EedLnEzleK7mM3AKJSoPWuSQeREC8xjyq3pa",
-      },
-    }));
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id: "note-id",
+        route: NotificationRoute.ExnIpexAgree,
+        linkedRequest: {
+          accepted: true,
+          current: "EEpfEHR6EedLnEzleK7mM3AKJSoPWuSQeREC8xjyq3pa",
+        },
+      })
+    );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
@@ -1721,7 +1803,9 @@ describe("Grant ACDC group actions", () => {
       updatedAt: DATETIME,
     });
 
-    await expect(ipexCommunicationService.admitAcdcFromGrant("id")).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
+    await expect(
+      ipexCommunicationService.admitAcdcFromGrant("id")
+    ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
     expect(ipexGrantMock).not.toBeCalled();
     expect(ipexSubmitGrantMock).not.toBeCalled();
@@ -1760,53 +1844,9 @@ describe("Grant ACDC group actions", () => {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
 
-    await ipexCommunicationService.joinMultisigGrant(multisigExnGrant, new NotificationRecord({
-      id: "note-id",
-      createdAt: DATETIME,
-      a: {
-        r: NotificationRoute.ExnIpexAgree,
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: NotificationRoute.ExnIpexAgree,
-      read: true,
-      linkedRequest: {
-        accepted: false,
-        current: "current-grant-said"
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-    }));
-
-    expect(createExchangeMessageMock).toBeCalledWith(
-      mHab,
-      MultiSigRoute.EXN,
-      { gid: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD"},
-      { exn: [{ ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" }}, "d"]},
-      "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF"
-    );
-    expect(ipexSubmitGrantMock).toBeCalledWith(
-      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      ipexSubmitGrantSerder,
-      ipexSubmitGrantSig,
-      ipexSubmitGrantEnd,
-      ["ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF", "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5"]
-    );
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "opName",
-      recordType: OperationPendingRecordType.ExchangePresentCredential,
-    });
-    expect(notificationStorage.update).toBeCalledWith(expect.objectContaining({
-      id: "note-id",
-      route: NotificationRoute.ExnIpexAgree,
-      linkedRequest: {
-        accepted: true,
-        current: "current-grant-said",
-      },
-    }));
-  });
-
-  test("Cannot join group to present ACDC twice", async () => {
-    await expect(
-      ipexCommunicationService.joinMultisigGrant(multisigExnGrant, new NotificationRecord({
+    await ipexCommunicationService.joinMultisigGrant(
+      multisigExnGrant,
+      new NotificationRecord({
         id: "note-id",
         createdAt: DATETIME,
         a: {
@@ -1816,11 +1856,71 @@ describe("Grant ACDC group actions", () => {
         route: NotificationRoute.ExnIpexAgree,
         read: true,
         linkedRequest: {
-          accepted: true,
-          current: "current-grant-said"
+          accepted: false,
+          current: "current-grant-said",
         },
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E", 
-      }))
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      })
+    );
+
+    expect(createExchangeMessageMock).toBeCalledWith(
+      mHab,
+      MultiSigRoute.EXN,
+      { gid: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD" },
+      {
+        exn: [
+          { ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" } },
+          "d",
+        ],
+      },
+      "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF"
+    );
+    expect(ipexSubmitGrantMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
+    });
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id: "note-id",
+        route: NotificationRoute.ExnIpexAgree,
+        linkedRequest: {
+          accepted: true,
+          current: "current-grant-said",
+        },
+      })
+    );
+  });
+
+  test("Cannot join group to present ACDC twice", async () => {
+    await expect(
+      ipexCommunicationService.joinMultisigGrant(
+        multisigExnGrant,
+        new NotificationRecord({
+          id: "note-id",
+          createdAt: DATETIME,
+          a: {
+            r: NotificationRoute.ExnIpexAgree,
+            d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+          },
+          route: NotificationRoute.ExnIpexAgree,
+          read: true,
+          linkedRequest: {
+            accepted: true,
+            current: "current-grant-said",
+          },
+          connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        })
+      )
     ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
     expect(ipexSubmitGrantMock).not.toBeCalled();
@@ -1831,20 +1931,25 @@ describe("Grant ACDC group actions", () => {
 
   test("Cannot join group to offer ACDC if there is no current offer", async () => {
     await expect(
-      ipexCommunicationService.joinMultisigGrant(multisigExnGrant, new NotificationRecord({
-        id: "id",
-        a: {
-          r: NotificationRoute.ExnIpexApply,
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: NotificationRoute.ExnIpexApply,
-        read: true,
-        linkedRequest: {
-          accepted: false,
-        },
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      }))
-    ).rejects.toThrowError(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
+      ipexCommunicationService.joinMultisigGrant(
+        multisigExnGrant,
+        new NotificationRecord({
+          id: "id",
+          a: {
+            r: NotificationRoute.ExnIpexApply,
+            d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+          },
+          route: NotificationRoute.ExnIpexApply,
+          read: true,
+          linkedRequest: {
+            accepted: false,
+          },
+          connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        })
+      )
+    ).rejects.toThrowError(
+      IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN
+    );
 
     expect(ipexSubmitGrantMock).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
@@ -1971,33 +2076,34 @@ describe("IPEX communication service of agent", () => {
           }),
       }
     );
-    expect(schemaGetMock).toBeCalledWith(grantForIssuanceExnMessage.exn.e.acdc.s);
+    expect(schemaGetMock).toBeCalledWith(
+      grantForIssuanceExnMessage.exn.e.acdc.s
+    );
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
   test("Can create linked ipex message record with history type is credential revoked", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce(grantForIssuanceExnMessage);
-    
+
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REVOKED
     );
 
-    expect(updateContactMock).toBeCalledWith(
-      grantForIssuanceExnMessage.exn.i,
-      {
-        [`${KeriaContactKeyPrefix.HISTORY_REVOKE}${grantForIssuanceExnMessage.exn.e.acdc.d}`]:
-          JSON.stringify({
-            id: grantForIssuanceExnMessage.exn.d,
-            dt: grantForIssuanceExnMessage.exn.dt,
-            credentialType: QVISchema.title,
-            connectionId: grantForIssuanceExnMessage.exn.i,
-            historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
-          }),
-      }
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+      [`${KeriaContactKeyPrefix.HISTORY_REVOKE}${grantForIssuanceExnMessage.exn.e.acdc.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
+          credentialType: QVISchema.title,
+          connectionId: grantForIssuanceExnMessage.exn.i,
+          historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
+        }),
+    });
+    expect(schemaGetMock).toBeCalledWith(
+      grantForIssuanceExnMessage.exn.e.acdc.s
     );
-    expect(schemaGetMock).toBeCalledWith(grantForIssuanceExnMessage.exn.e.acdc.s);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
@@ -2023,7 +2129,9 @@ describe("IPEX communication service of agent", () => {
           }),
       }
     );
-    expect(schemaGetMock).toBeCalledWith(grantForIssuanceExnMessage.exn.e.acdc.s);
+    expect(schemaGetMock).toBeCalledWith(
+      grantForIssuanceExnMessage.exn.e.acdc.s
+    );
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
@@ -2226,7 +2334,10 @@ describe("IPEX communication service of agent", () => {
       identifierId: memberIdentifierRecord.id,
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
     });
-    expect(connections.resolveOobi).toBeCalledWith("http://127.0.0.1:3001/oobi/EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu", true);
+    expect(connections.resolveOobi).toBeCalledWith(
+      "http://127.0.0.1:3001/oobi/EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      true
+    );
   });
 
   test("Throws error if the schema has not been resolved and with a non-404 error - getAcdcFromIpexGrant", async () => {

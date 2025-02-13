@@ -123,7 +123,7 @@ interface IpexAdmitMultiSigRequest {
   };
   paths: {
     exn: string;
-  }
+  };
 }
 
 interface GrantToJoinMultisigExnPayload {

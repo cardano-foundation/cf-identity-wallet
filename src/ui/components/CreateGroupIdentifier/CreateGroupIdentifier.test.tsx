@@ -19,9 +19,9 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div {...props}>{children}</div> : null,
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "111111" })
+    get: (options: { key: string }) => Promise.resolve({ value: "111111" }),
   },
 }));
 
@@ -33,7 +33,7 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getMultisigLinkedContacts: (args: unknown) =>
           mockGetMultisigConnection(args),
-        getOobi: jest.fn()
+        getOobi: jest.fn(),
       },
     },
   },

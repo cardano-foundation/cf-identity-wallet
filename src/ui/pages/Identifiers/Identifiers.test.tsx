@@ -173,7 +173,7 @@ describe("Identifiers Tab", () => {
       },
       seedPhraseCache: {
         seedPhrase:
-      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
         brand: "brand",
       },
       identifiersCache: {
@@ -201,9 +201,7 @@ describe("Identifiers Tab", () => {
     );
 
     await waitFor(() => {
-      expect(
-        getByText(filteredIdentifierFix[2].displayName)
-      ).toBeVisible();
+      expect(getByText(filteredIdentifierFix[2].displayName)).toBeVisible();
     });
 
     fireEvent.click(getByText(filteredIdentifierFix[2].displayName));
@@ -865,9 +863,7 @@ describe("Identifiers Tab", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("create-group-identifier-modal")
-      ).toBeVisible();
+      expect(getByTestId("create-group-identifier-modal")).toBeVisible();
     });
   });
 

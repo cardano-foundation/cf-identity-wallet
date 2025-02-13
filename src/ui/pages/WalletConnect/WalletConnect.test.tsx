@@ -67,9 +67,9 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "111111" })
+    get: (options: { key: string }) => Promise.resolve({ value: "111111" }),
   },
 }));
 
@@ -176,9 +176,7 @@ describe("Wallet Connect Stage One", () => {
       ).toBeVisible();
     });
 
-    fireEvent.click(
-      getByTestId("alert-decline-connect-confirm-button")
-    );
+    fireEvent.click(getByTestId("alert-decline-connect-confirm-button"));
 
     await waitFor(() => {
       expect(
@@ -239,20 +237,24 @@ describe("Wallet Connect Stage One", () => {
       fireEvent.click(getByTestId("primary-button-connect-wallet-stage-one"));
     });
 
-    const missingIdenTitle = await findByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
-      .missingidentifieralert.message);
+    const missingIdenTitle = await findByText(
+      EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+        .missingidentifieralert.message
+    );
 
     await waitFor(() => {
       expect(missingIdenTitle).toBeVisible();
     });
 
-    fireEvent.click(
-      getByTestId("missing-identifier-alert-confirm-button")
-    );
+    fireEvent.click(getByTestId("missing-identifier-alert-confirm-button"));
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
-        .missingidentifieralert.message)).toBeNull();
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.message
+        )
+      ).toBeNull();
     });
 
     await waitFor(() => {
@@ -470,9 +472,7 @@ describe("Wallet Connect Request", () => {
     });
 
     act(() => {
-      fireEvent.click(
-        getByTestId("secondary-button-connect-wallet-stage-one")
-      );
+      fireEvent.click(getByTestId("secondary-button-connect-wallet-stage-one"));
     });
 
     await waitFor(() => {

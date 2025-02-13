@@ -203,7 +203,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     try {
       await Agent.agent.identifiers.getAvailableWitnesses();
     } catch (e) {
-      if (e instanceof Error && (e.message.includes(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE) || e.message.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION))) {
+      if (
+        e instanceof Error &&
+        (e.message.includes(
+          IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE
+        ) ||
+          e.message.includes(
+            IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION
+          ))
+      ) {
         dispatch(showNoWitnessAlert(true));
         return;
       }
@@ -214,7 +222,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     checkWitness();
-  }, [checkWitness])
+  }, [checkWitness]);
 
   useEffect(() => {
     initApp();
@@ -498,7 +506,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     Agent.agent.keriaNotifications.onLongOperationFailure((event) => {
       operationFailureHandler(event.payload, dispatch);
-    })
+    });
 
     Agent.agent.identifiers.onIdentifierAdded((event) => {
       identifierAddedHandler(event, dispatch);
@@ -506,7 +514,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     Agent.agent.multiSigs.onGroupAdded((event) => {
       groupCreatedHandler(event, dispatch);
-    })
+    });
   };
 
   const initApp = async () => {
@@ -548,7 +556,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         }
       } catch (e) {
         // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (e instanceof Error && e.message === Agent.KERIA_CONNECT_FAILED_BAD_NETWORK) {
+        if (
+          e instanceof Error &&
+          e.message === Agent.KERIA_CONNECT_FAILED_BAD_NETWORK
+        ) {
           await loadDatabase();
           Agent.agent.connect(); // No await, background this task and continue initializing
         } else {

@@ -159,7 +159,9 @@ const ArchivedCredentialsContainer = forwardRef<
         )
       );
       const deleteRes = await Promise.allSettled(
-        selectedIds.map((id) => Agent.agent.credentials.markCredentialPendingDeletion(id))
+        selectedIds.map((id) =>
+          Agent.agent.credentials.markCredentialPendingDeletion(id)
+        )
       );
 
       const deleteSuccessCrendentials: string[] = [];
@@ -415,8 +417,8 @@ const ArchivedCredentialsContainer = forwardRef<
                 {selectedCredentials.length === 1
                   ? i18n.t("tabs.credentials.archived.oneselected")
                   : t("tabs.credentials.archived.manyselected", {
-                    amount: selectedCredentials.length,
-                  })}
+                      amount: selectedCredentials.length,
+                    })}
               </div>
               <IonButtons slot="end">
                 <IonButton

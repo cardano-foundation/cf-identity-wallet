@@ -7,10 +7,17 @@ import { IdentifierService } from "../core/agent/services";
 import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
 import { store } from "../store";
-import { showGenericError, showNoWitnessAlert } from "../store/reducers/stateCache";
+import {
+  showGenericError,
+  showNoWitnessAlert,
+} from "../store/reducers/stateCache";
 import { App } from "./App";
 import { OperationType } from "./globals/types";
-import { ANDROID_MIN_VERSION, IOS_MIN_VERSION, WEBVIEW_MIN_VERSION } from "./globals/constants";
+import {
+  ANDROID_MIN_VERSION,
+  IOS_MIN_VERSION,
+  WEBVIEW_MIN_VERSION,
+} from "./globals/constants";
 
 const mockInitDatabase = jest.fn();
 const getAvailableWitnessesMock = jest.fn();
@@ -30,7 +37,7 @@ jest.mock("../core/agent/agent", () => ({
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
         onIdentifierAdded: jest.fn(),
-        getAvailableWitnesses: () => getAvailableWitnessesMock()
+        getAvailableWitnesses: () => getAvailableWitnessesMock(),
       },
       multiSigs: {
         onGroupAdded: jest.fn(),
@@ -100,11 +107,11 @@ const getDeviceInfo = jest.fn();
 jest.mock("@capacitor/device", () => ({
   ...jest.requireActual("@capacitor/device"),
   Device: {
-    getInfo: () => getDeviceInfo()
+    getInfo: () => getDeviceInfo(),
   },
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: jest.fn((options: { key: string }) => {
       return Promise.resolve({ value: "value" });
@@ -255,7 +262,7 @@ describe("App", () => {
       webViewVersion: "131.0.6778.260",
     };
 
-    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo));
   });
 
   test("Mobile header hidden when app not in preview mode", async () => {
@@ -554,7 +561,9 @@ describe("App", () => {
 
 describe("Witness availability", () => {
   test("No witness availability", async () => {
-    getAvailableWitnessesMock.mockRejectedValue(new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE));
+    getAvailableWitnessesMock.mockRejectedValue(
+      new Error(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE)
+    );
 
     const initialState = {
       stateCache: {
@@ -646,7 +655,9 @@ describe("Witness availability", () => {
   });
 
   test("Throw error", async () => {
-    getAvailableWitnessesMock.mockRejectedValue(new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION));
+    getAvailableWitnessesMock.mockRejectedValue(
+      new Error(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)
+    );
 
     const initialState = {
       stateCache: {
@@ -748,7 +759,7 @@ describe("System copatibility alert", () => {
 
   afterEach(() => {
     getDeviceInfo.mockClear();
-  })
+  });
 
   test("Android", async () => {
     const deviceInfo = {
@@ -761,9 +772,9 @@ describe("System copatibility alert", () => {
       webViewVersion: "131.0.6778.260",
     };
 
-    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo));
 
-    const {getByTestId, getByText} = render(
+    const { getByTestId, getByText } = render(
       <Provider store={store}>
         <App />
       </Provider>
@@ -771,14 +782,22 @@ describe("System copatibility alert", () => {
 
     await waitFor(() => {
       expect(getDeviceInfo).toBeCalled();
-    })
+    });
 
     expect(getByText(Eng_Trans.systemcompatibility.title)).toBeVisible();
     expect(getByText(Eng_Trans.systemcompatibility.android.os)).toBeVisible();
-    expect(getByText(Eng_Trans.systemcompatibility.android.youros)).toBeVisible();
-    expect(getByText(Eng_Trans.systemcompatibility.android.webview)).toBeVisible();
-    expect(getByText(Eng_Trans.systemcompatibility.android.yourwebview)).toBeVisible();
-    expect(getByText(Eng_Trans.systemcompatibility.android.storage)).toBeVisible();
+    expect(
+      getByText(Eng_Trans.systemcompatibility.android.youros)
+    ).toBeVisible();
+    expect(
+      getByText(Eng_Trans.systemcompatibility.android.webview)
+    ).toBeVisible();
+    expect(
+      getByText(Eng_Trans.systemcompatibility.android.yourwebview)
+    ).toBeVisible();
+    expect(
+      getByText(Eng_Trans.systemcompatibility.android.storage)
+    ).toBeVisible();
 
     expect(getByText("9.0")).toBeVisible();
     expect(getByText("131.0.6778.260")).toBeVisible();
@@ -801,9 +820,9 @@ describe("System copatibility alert", () => {
       webViewVersion: "131.0.6778.260",
     };
 
-    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo))
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo));
 
-    const {getByTestId, getByText} = render(
+    const { getByTestId, getByText } = render(
       <Provider store={store}>
         <App />
       </Provider>
@@ -811,7 +830,7 @@ describe("System copatibility alert", () => {
 
     await waitFor(() => {
       expect(getDeviceInfo).toBeCalled();
-    })
+    });
 
     expect(getByText(Eng_Trans.systemcompatibility.title)).toBeVisible();
     expect(getByText(Eng_Trans.systemcompatibility.ios.os)).toBeVisible();
@@ -824,4 +843,4 @@ describe("System copatibility alert", () => {
 
     expect(getByTestId("not-met")).toBeVisible();
   });
-})
+});

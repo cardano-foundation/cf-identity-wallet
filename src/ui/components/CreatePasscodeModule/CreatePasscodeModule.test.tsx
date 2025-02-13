@@ -6,12 +6,7 @@ import {
 import { IonRouterOutlet } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { act } from "react";
-import {
-  cleanup,
-  fireEvent,
-  render,
-  waitFor
-} from "@testing-library/react";
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
@@ -28,7 +23,7 @@ jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
     get: jest.fn(),
-    set: (...arg: unknown[]) => setMock(...arg)
+    set: (...arg: unknown[]) => setMock(...arg),
   },
 }));
 
@@ -59,9 +54,9 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
   })),
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "121345" })
+    get: (options: { key: string }) => Promise.resolve({ value: "121345" }),
   },
 }));
 
@@ -90,7 +85,7 @@ const storeMocked = {
 describe("SetPasscode Page", () => {
   afterEach(() => {
     cleanup();
-  })
+  });
   beforeEach(() => {
     jest.resetModules();
     jest.doMock("@ionic/react", () => {
@@ -160,9 +155,11 @@ describe("SetPasscode Page", () => {
     await passcodeFiller(getByText, getByTestId, "2", 6);
 
     await waitFor(() => {
-      const labelElement = getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
+      const labelElement = getByText(
+        EN_TRANSLATIONS.setpasscode.reenterpasscode
+      );
       expect(labelElement).toBeInTheDocument();
-    })
+    });
 
     await passcodeFiller(getByText, getByTestId, "3", 6);
 
@@ -239,9 +236,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    fireEvent.click(
-      getByTestId("alert-setup-android-biometry-confirm-button")
-    );
+    fireEvent.click(getByTestId("alert-setup-android-biometry-confirm-button"));
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -255,10 +250,7 @@ describe("SetPasscode Page", () => {
     });
 
     await waitFor(() => {
-      expect(setMock).toBeCalledWith(
-        KeyStoreKeys.APP_PASSCODE,
-        "111111"
-      );
+      expect(setMock).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
     });
   });
 

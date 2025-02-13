@@ -114,7 +114,7 @@ describe("Menu Tab", () => {
 
     await waitFor(() => {
       expect(getByTestId("settings-security-items")).toBeVisible();
-    })
+    });
 
     unmount();
   });
@@ -140,7 +140,7 @@ describe("Menu Tab", () => {
       expect(getByTestId("profile-title")).toHaveTextContent(
         EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
       );
-    })
+    });
   });
 
   test("Open Crypto link", async () => {
@@ -215,7 +215,7 @@ describe("Menu Tab", () => {
       expect(
         getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.tabheader)
       ).toBeVisible();
-    })
+    });
   });
 
   test("Open Chat link", async () => {

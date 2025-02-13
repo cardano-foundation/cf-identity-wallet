@@ -21,10 +21,10 @@ mockIonicReact();
 
 const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => mockGet(options.key),
-    set: jest.fn()
+    set: jest.fn(),
   },
 }));
 

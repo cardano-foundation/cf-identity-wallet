@@ -32,9 +32,7 @@ jest.mock("../../components/CustomInput", () => ({
           {props.optional && (
             <span className="custom-input-optional">(optional)</span>
           )}
-          {
-            props.labelAction
-          }
+          {props.labelAction}
         </IonLabel>
         <IonInput
           data-testid={props.dataTestId}

@@ -84,7 +84,7 @@ describe("Notification Options modal", () => {
 
     await waitFor(() => {
       expect(getByTestId("show-notification-detail")).toBeVisible();
-    })
+    });
 
     expect(getByTestId("toogle-read-notification")).toBeVisible();
     expect(getByTestId("delete-notification")).toBeVisible();
@@ -110,7 +110,7 @@ describe("Notification Options modal", () => {
 
     await waitFor(() => {
       expect(getByTestId("delete-notification")).toBeVisible();
-    })
+    });
 
     act(() => {
       fireEvent.click(getByTestId("delete-notification"));
@@ -130,7 +130,9 @@ describe("Notification Options modal", () => {
 
     await waitFor(() => {
       expect(deleteNotificationMock).toBeCalledWith(notification.id);
-      expect(dispatchMock).toBeCalledWith(deleteNotificationById(notification.id));
+      expect(dispatchMock).toBeCalledWith(
+        deleteNotificationById(notification.id)
+      );
     });
   });
 

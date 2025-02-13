@@ -27,7 +27,10 @@ import { CredentialMetadataRecordProps } from "../records/credentialMetadataReco
 import { AgentService } from "./agentService";
 import { OnlineOnly } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
-import { CredentialsMatchingApply, LinkedGroupInfo } from "./ipexCommunicationService.types";
+import {
+  CredentialsMatchingApply,
+  LinkedGroupInfo,
+} from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
@@ -52,8 +55,10 @@ class IpexCommunicationService extends AgentService {
     "Credential not found with this schema";
   static readonly CREDENTIAL_NOT_FOUND = "Credential not found to present";
   static readonly SCHEMA_NOT_FOUND = "Schema not found";
-  static readonly IPEX_ALREADY_REPLIED = "IPEX message has already been responded to or proposed to group";
-  static readonly NO_CURRENT_IPEX_MSG_TO_JOIN = "Cannot join IPEX message as there is no current exn to join from the group leader";
+  static readonly IPEX_ALREADY_REPLIED =
+    "IPEX message has already been responded to or proposed to group";
+  static readonly NO_CURRENT_IPEX_MSG_TO_JOIN =
+    "Cannot join IPEX message as there is no current exn to join from the group leader";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
@@ -82,7 +87,9 @@ class IpexCommunicationService extends AgentService {
 
   @OnlineOnly
   async admitAcdcFromGrant(notificationId: string): Promise<void> {
-    const grantNoteRecord = await this.notificationStorage.findById(notificationId);
+    const grantNoteRecord = await this.notificationStorage.findById(
+      notificationId
+    );
     if (!grantNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
@@ -91,7 +98,9 @@ class IpexCommunicationService extends AgentService {
 
     // For groups only
     if (grantNoteRecord.linkedRequest.accepted) {
-      throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
+      throw new Error(
+        `${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`
+      );
     }
 
     const grantExn = await this.props.signifyClient
@@ -106,8 +115,13 @@ class IpexCommunicationService extends AgentService {
     }
 
     const schemaSaid = grantExn.exn.e.acdc.s;
-    const issuerOobi = (await this.connections.getConnectionById(grantExn.exn.i)).serviceEndpoints[0];
-    await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, grantExn.exn.i, schemaSaid), true);
+    const issuerOobi = (
+      await this.connections.getConnectionById(grantExn.exn.i)
+    ).serviceEndpoints[0];
+    await this.connections.resolveOobi(
+      await this.getSchemaUrl(issuerOobi, grantExn.exn.i, schemaSaid),
+      true
+    );
 
     const allSchemaSaids = Object.keys(grantExn.exn.e.acdc?.e || {}).map(
       // Chained schemas, will be resolved in admit/multisigAdmit
@@ -135,10 +149,7 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (holder.multisigManageAid) {
-      const {
-        op: opMultisigAdmit,
-        exnSaid,
-      } = await this.submitMultisigAdmit(
+      const { op: opMultisigAdmit, exnSaid } = await this.submitMultisigAdmit(
         holder.id,
         grantExn,
         allSchemaSaids
@@ -151,10 +162,7 @@ class IpexCommunicationService extends AgentService {
         current: exnSaid,
       };
     } else {
-      const {
-        op: opAdmit,
-        exnSaid
-      } = await this.admitIpex(
+      const { op: opAdmit, exnSaid } = await this.admitIpex(
         grantNoteRecord.a.d as string,
         holder.id,
         grantExn.exn.i,
@@ -175,13 +183,15 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    
+
     await this.notificationStorage.update(grantNoteRecord);
   }
-  
+
   @OnlineOnly
   async offerAcdcFromApply(notificationId: string, acdc: any) {
-    const applyNoteRecord = await this.notificationStorage.findById(notificationId);
+    const applyNoteRecord = await this.notificationStorage.findById(
+      notificationId
+    );
     if (!applyNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
@@ -190,7 +200,9 @@ class IpexCommunicationService extends AgentService {
 
     // For groups only
     if (applyNoteRecord.linkedRequest.accepted) {
-      throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
+      throw new Error(
+        `${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`
+      );
     }
 
     const msgSaid = applyNoteRecord.a.d as string;
@@ -201,10 +213,7 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (discloser.multisigManageAid) {
-      const {
-        op: opMultisigOffer,
-        exnSaid,
-      } = await this.submitMultisigOffer(
+      const { op: opMultisigOffer, exnSaid } = await this.submitMultisigOffer(
         discloser.id,
         msgSaid,
         acdc,
@@ -246,7 +255,9 @@ class IpexCommunicationService extends AgentService {
 
   @OnlineOnly
   async grantAcdcFromAgree(notificationId: string) {
-    const agreeNoteRecord = await this.notificationStorage.findById(notificationId);
+    const agreeNoteRecord = await this.notificationStorage.findById(
+      notificationId
+    );
     if (!agreeNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notificationId}`
@@ -255,7 +266,9 @@ class IpexCommunicationService extends AgentService {
 
     // For groups only
     if (agreeNoteRecord.linkedRequest.accepted) {
-      throw new Error(`${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`);
+      throw new Error(
+        `${IpexCommunicationService.IPEX_ALREADY_REPLIED} ${notificationId}`
+      );
     }
 
     const msgSaid = agreeNoteRecord.a.d as string;
@@ -287,10 +300,7 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (discloser.multisigManageAid) {
-      const {
-        op: opMultisigGrant,
-        exnSaid,
-      } = await this.submitMultisigGrant(
+      const { op: opMultisigGrant, exnSaid } = await this.submitMultisigGrant(
         discloser.id,
         agreeExn.exn.i,
         agreeExn.exn.d,
@@ -318,7 +328,7 @@ class IpexCommunicationService extends AgentService {
       op = await this.props.signifyClient
         .ipex()
         .submitGrant(discloser.id, grant, sigs, end, [agreeExn.exn.i]);
-      
+
       agreeNoteRecord.linkedRequest = {
         ...agreeNoteRecord.linkedRequest,
         accepted: true,
@@ -339,8 +349,10 @@ class IpexCommunicationService extends AgentService {
   async getIpexApplyDetails(
     notification: KeriaNotification
   ): Promise<CredentialsMatchingApply> {
-    const exchange = await this.props.signifyClient.exchanges().get(notification.a.d as string);
-    
+    const exchange = await this.props.signifyClient
+      .exchanges()
+      .get(notification.a.d as string);
+
     const schemaSaid = exchange.exn.a.s;
     const schema = await this.props.signifyClient
       .schemas()
@@ -360,13 +372,13 @@ class IpexCommunicationService extends AgentService {
       "-a-i": exchange.exn.rp,
       ...(Object.keys(attributes).length > 0
         ? {
-          ...Object.fromEntries(
-            Object.entries(attributes).map(([key, value]) => [
-              "-a-" + key,
-              value,
-            ])
-          ),
-        }
+            ...Object.fromEntries(
+              Object.entries(attributes).map(([key, value]) => [
+                "-a-" + key,
+                value,
+              ])
+            ),
+          }
         : {}),
     };
 
@@ -380,7 +392,7 @@ class IpexCommunicationService extends AgentService {
           $and: [{ pendingDeletion: false }, { isArchived: false }],
         }
       );
-    
+
     return {
       schema: {
         name: schema.title,
@@ -432,9 +444,12 @@ class IpexCommunicationService extends AgentService {
     issuerAid: string,
     issuerOobi: string,
     schemaSaids: string[]
-  ): Promise<{ op: Operation, exnSaid: string }> {
+  ): Promise<{ op: Operation; exnSaid: string }> {
     for (const schemaSaid of schemaSaids) {
-      await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, issuerAid, schemaSaid), true);
+      await this.connections.resolveOobi(
+        await this.getSchemaUrl(issuerOobi, issuerAid, schemaSaid),
+        true
+      );
     }
 
     const dt = new Date().toISOString().replace("Z", "000+00:00");
@@ -455,7 +470,7 @@ class IpexCommunicationService extends AgentService {
   async createLinkedIpexMessageRecord(
     message: ExnMessage,
     historyType: ConnectionHistoryType
-  ): Promise<void> {  
+  ): Promise<void> {
     let schemaSaid;
     const connectionId =
       historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
@@ -476,25 +491,29 @@ class IpexCommunicationService extends AgentService {
       schemaSaid = previousExchange.exn.e.acdc.s;
     }
 
-    const issuerOobi = (await this.connections.getConnectionById(connectionId)).serviceEndpoints[0];
-    await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, connectionId, schemaSaid), true);
+    const issuerOobi = (await this.connections.getConnectionById(connectionId))
+      .serviceEndpoints[0];
+    await this.connections.resolveOobi(
+      await this.getSchemaUrl(issuerOobi, connectionId, schemaSaid),
+      true
+    );
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
 
     let prefix;
     let key;
     switch (historyType) {
-    case ConnectionHistoryType.CREDENTIAL_REVOKED:
-      prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
-      key = message.exn.e.acdc.d;
-      break;
-    case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
-    case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
-    case ConnectionHistoryType.CREDENTIAL_PRESENTED:
-      prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
-      key = message.exn.d;
-      break;
-    default:
-      throw new Error("Invalid history type");
+      case ConnectionHistoryType.CREDENTIAL_REVOKED:
+        prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
+        key = message.exn.e.acdc.d;
+        break;
+      case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
+      case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
+      case ConnectionHistoryType.CREDENTIAL_PRESENTED:
+        prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
+        key = message.exn.d;
+        break;
+      default:
+        throw new Error("Invalid history type");
     }
     const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,
@@ -511,13 +530,15 @@ class IpexCommunicationService extends AgentService {
 
   @OnlineOnly
   async joinMultisigAdmit(grantNotificationId: string): Promise<void> {
-    const grantNoteRecord = await this.notificationStorage.findById(grantNotificationId);
+    const grantNoteRecord = await this.notificationStorage.findById(
+      grantNotificationId
+    );
     if (!grantNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${grantNotificationId}`
       );
     }
-    
+
     if (grantNoteRecord.linkedRequest.accepted) {
       throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
     }
@@ -586,7 +607,9 @@ class IpexCommunicationService extends AgentService {
   }
 
   async joinMultisigOffer(applyNotificationId: string): Promise<void> {
-    const applyNoteRecord = await this.notificationStorage.findById(applyNotificationId);
+    const applyNoteRecord = await this.notificationStorage.findById(
+      applyNotificationId
+    );
     if (!applyNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${applyNotificationId}`
@@ -625,11 +648,14 @@ class IpexCommunicationService extends AgentService {
     await this.notificationStorage.update(applyNoteRecord);
   }
 
-  async joinMultisigGrant(multiSigExn: ExnMessage, agreeNoteRecord: NotificationRecord): Promise<void> {
+  async joinMultisigGrant(
+    multiSigExn: ExnMessage,
+    agreeNoteRecord: NotificationRecord
+  ): Promise<void> {
     if (agreeNoteRecord.linkedRequest.accepted) {
       throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
     }
-    
+
     if (!agreeNoteRecord.linkedRequest.current) {
       throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
     }
@@ -881,8 +907,13 @@ class IpexCommunicationService extends AgentService {
       .catch(async (error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
-          const issuerOobi = (await this.connections.getConnectionById(exchange.exn.i)).serviceEndpoints[0];
-          await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, exchange.exn.i, schemaSaid), true);
+          const issuerOobi = (
+            await this.connections.getConnectionById(exchange.exn.i)
+          ).serviceEndpoints[0];
+          await this.connections.resolveOobi(
+            await this.getSchemaUrl(issuerOobi, exchange.exn.i, schemaSaid),
+            true
+          );
           return await this.props.signifyClient.schemas().get(schemaSaid);
         } else {
           throw error;
@@ -904,7 +935,7 @@ class IpexCommunicationService extends AgentService {
       },
       status: CredentialStatus.PENDING,
       identifierId: exchange.exn.a.i,
-      connectionId: exchange.exn.i
+      connectionId: exchange.exn.i,
     };
   }
 
@@ -918,11 +949,16 @@ class IpexCommunicationService extends AgentService {
     let sigsMes: string[];
     let mend: string;
 
-    const issuerOobi = (await this.connections.getConnectionById(grantExn.exn.i)).serviceEndpoints[0];
+    const issuerOobi = (
+      await this.connections.getConnectionById(grantExn.exn.i)
+    ).serviceEndpoints[0];
     await Promise.all(
       schemaSaids.map(
         async (schemaSaid) =>
-          await this.connections.resolveOobi(await this.getSchemaUrl(issuerOobi, grantExn.exn.i, schemaSaid), true)
+          await this.connections.resolveOobi(
+            await this.getSchemaUrl(issuerOobi, grantExn.exn.i, schemaSaid),
+            true
+          )
       )
     );
 
@@ -1032,7 +1068,9 @@ class IpexCommunicationService extends AgentService {
 
     const othersJoined: string[] = [];
     if (grantNoteRecord.linkedRequest.current) {
-      for (const signal of (await this.props.signifyClient.groups().getRequest(grantNoteRecord.linkedRequest.current))) {
+      for (const signal of await this.props.signifyClient
+        .groups()
+        .getRequest(grantNoteRecord.linkedRequest.current)) {
         othersJoined.push(signal.exn.i);
       }
     }
@@ -1042,7 +1080,7 @@ class IpexCommunicationService extends AgentService {
       members: memberAids,
       othersJoined: othersJoined,
       linkedRequest: grantNoteRecord.linkedRequest,
-    }
+    };
   }
 
   async getLinkedGroupFromIpexApply(id: string): Promise<LinkedGroupInfo> {
@@ -1067,7 +1105,9 @@ class IpexCommunicationService extends AgentService {
 
     const othersJoined: string[] = [];
     if (applyNoteRecord.linkedRequest.current) {
-      for (const signal of (await this.props.signifyClient.groups().getRequest(applyNoteRecord.linkedRequest.current))) {
+      for (const signal of await this.props.signifyClient
+        .groups()
+        .getRequest(applyNoteRecord.linkedRequest.current)) {
         othersJoined.push(signal.exn.i);
       }
     }
@@ -1077,7 +1117,7 @@ class IpexCommunicationService extends AgentService {
       members: memberAids,
       othersJoined: othersJoined,
       linkedRequest: applyNoteRecord.linkedRequest,
-    }
+    };
   }
 
   async getOfferedCredentialSaid(current: string): Promise<string> {
@@ -1086,14 +1126,23 @@ class IpexCommunicationService extends AgentService {
     return offerExn.e.acdc.d;
   }
 
-  private async getSchemaUrl(agentOobi: string, prefix: string, said: string): Promise<string> {
+  private async getSchemaUrl(
+    agentOobi: string,
+    prefix: string,
+    said: string
+  ): Promise<string> {
     // Indexer role indicates issuer site hosting OOBIs for e.g. schemas.
     // This can be improved by resolving the indexer OOBI and using KERIA to retrieve the /loc/scheme URL.
     // For now this works, and doesn't impose security risks since schemas are secured by their SAID.
-    const agentBase = agentOobi.split("/agent")[0].split("/controller")[0].replace("http://keria:3902", "http://127.0.0.1:3902");
+    const agentBase = agentOobi
+      .split("/agent")[0]
+      .split("/controller")[0]
+      .replace("http://keria:3902", "http://127.0.0.1:3902");
 
-    const indexerOobiResult = await (await fetch(`${agentBase}/indexer/${prefix}`)).text();
-    const schemaBase = indexerOobiResult.split("\"url\":\"")[1].split("\"")[0];
+    const indexerOobiResult = await (
+      await fetch(`${agentBase}/indexer/${prefix}`)
+    ).text();
+    const schemaBase = indexerOobiResult.split('"url":"')[1].split('"')[0];
 
     return `${schemaBase}/oobi/${said}`;
   }

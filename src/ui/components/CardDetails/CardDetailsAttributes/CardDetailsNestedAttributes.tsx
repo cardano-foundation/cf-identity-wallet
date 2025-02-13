@@ -28,7 +28,8 @@ const CardDetailsNestedAttributes = ({
     return "";
   }, []);
 
-  const { className, ...restItemProps } = typeof itemProps === "function" ? itemProps(key) : (itemProps || {});
+  const { className, ...restItemProps } =
+    typeof itemProps === "function" ? itemProps(key) : itemProps || {};
   const isObjectItem = typeof item === "object" && item !== null;
   const detailItemsClass = combineClassNames(
     "card-details-attribute-item",

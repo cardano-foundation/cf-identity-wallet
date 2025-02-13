@@ -3,11 +3,7 @@ import {
   mockIonicReact,
   waitForIonicReact,
 } from "@ionic/react-test-utils";
-import {
-  fireEvent,
-  render,
-  waitFor
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -27,7 +23,8 @@ mockIonicReact();
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonInput: (props: any) => {
-    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
+    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } =
+      props;
 
     return (
       <input
@@ -40,7 +37,8 @@ jest.mock("@ionic/react", () => ({
     );
   },
   IonTextarea: (props: any) => {
-    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
+    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } =
+      props;
     return (
       <textarea
         value={value}
@@ -214,19 +212,25 @@ describe("Edit Connection Modal", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deletenote.title
+        )
+      ).toBeVisible();
     });
 
     fireEvent.click(getByTestId("alert-confirm-delete-note-confirm-button"));
-    fireEvent.click(
-      getByTestId("alert-confirm-delete-note-cancel-button")
-    );
+    fireEvent.click(getByTestId("alert-confirm-delete-note-cancel-button"));
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.NOTE_REMOVED)
       );
-      expect(queryByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeNull();
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deletenote.title
+        )
+      ).toBeNull();
     });
 
     unmount();
@@ -480,7 +484,11 @@ describe("Edit Connection Modal", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deletenote.title
+        )
+      ).toBeVisible();
     });
 
     act(() => {
@@ -495,9 +503,7 @@ describe("Edit Connection Modal", () => {
       );
     });
 
-    ionFireEvent.click(
-      getByTestId("alert-confirm-delete-note-cancel-button")
-    );
+    ionFireEvent.click(getByTestId("alert-confirm-delete-note-cancel-button"));
 
     const actionBtn = getByTestId("action-button");
 
@@ -510,7 +516,11 @@ describe("Edit Connection Modal", () => {
       expect(deleteNoteMock).toBeCalledTimes(1);
       expect(updateNoteMock).toBeCalledTimes(1);
       expect(confirmFn).toBeCalledTimes(1);
-      expect(queryByText(EN_TRANSLATIONS.connections.details.options.alert.deletenote.title)).toBeNull();
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deletenote.title
+        )
+      ).toBeNull();
     });
 
     unmount();

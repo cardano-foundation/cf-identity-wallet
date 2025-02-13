@@ -1,8 +1,8 @@
 import { IdentifierColor } from "../IdentifierColorSelector";
 
 interface ThemeItemProps {
-    index: number;
-    color: number;
+  index: number;
+  color: number;
 }
 
 interface IdentifierThemeSelectorProps {
@@ -11,4 +11,4 @@ interface IdentifierThemeSelectorProps {
   setSelectedTheme: (value: number) => void;
 }
 
-export type { ThemeItemProps, IdentifierThemeSelectorProps }
+export type { ThemeItemProps, IdentifierThemeSelectorProps };

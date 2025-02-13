@@ -20,11 +20,19 @@ import {
   addGroupIdentifierCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
-import { CreationStatus, IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import {
+  CreationStatus,
+  IdentifierShortDetails,
+} from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
-import { multisignIdentifierFix, pendingGroupIdentifierFix, pendingIdentifierFix, pendingMemberIdentifierFix } from "../../../ui/__fixtures__/filteredIdentifierFix";
+import {
+  multisignIdentifierFix,
+  pendingGroupIdentifierFix,
+  pendingIdentifierFix,
+  pendingMemberIdentifierFix,
+} from "../../../ui/__fixtures__/filteredIdentifierFix";
 
 describe("identifiersCacheSlice", () => {
   const initialState = {
@@ -56,13 +64,13 @@ describe("identifiersCacheSlice", () => {
       setIdentifiersCache(identifiers)
     );
     expect(newState.identifiers).toEqual({
-      "id-1" : {
+      "id-1": {
         id: "id-1",
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
         creationStatus: CreationStatus.COMPLETE,
-      }
+      },
     });
   });
 
@@ -179,7 +187,7 @@ describe("identifiersCacheSlice", () => {
         createdAtUTC: "example-date",
         theme: 0,
         creationStatus: CreationStatus.COMPLETE,
-      }
+      },
     });
   });
 
@@ -193,7 +201,7 @@ describe("identifiersCacheSlice", () => {
         creationStatus: CreationStatus.PENDING,
       },
     ];
-    
+
     const currentState = identifiersCacheSlice.reducer(
       initialState,
       setIdentifiersCache(identifiers)
@@ -209,17 +217,20 @@ describe("identifiersCacheSlice", () => {
 
     const newState = identifiersCacheSlice.reducer(
       currentState,
-      updateCreationStatus({ id: identifier.id, creationStatus: identifier.creationStatus })
+      updateCreationStatus({
+        id: identifier.id,
+        creationStatus: identifier.creationStatus,
+      })
     );
 
     expect(newState.identifiers).toEqual({
-      "id-1" : {
+      "id-1": {
         id: "id-1",
         displayName: "example-name",
         createdAtUTC: "example-date",
         theme: 0,
         creationStatus: CreationStatus.COMPLETE,
-      }
+      },
     });
   });
 
@@ -241,10 +252,11 @@ describe("identifiersCacheSlice", () => {
 
   test("should handle addGroupIdentifierCache", () => {
     const state = {
-      ...initialState, identifiers: {
+      ...initialState,
+      identifiers: {
         [pendingMemberIdentifierFix[0].id]: pendingMemberIdentifierFix[0],
         [pendingIdentifierFix.id]: pendingIdentifierFix,
-      }
+      },
     };
     const newState = identifiersCacheSlice.reducer(
       state,
@@ -252,16 +264,17 @@ describe("identifiersCacheSlice", () => {
     );
     expect(newState.identifiers).toEqual({
       [pendingIdentifierFix.id]: pendingIdentifierFix,
-      [pendingGroupIdentifierFix.id]: pendingGroupIdentifierFix
-    }); 
+      [pendingGroupIdentifierFix.id]: pendingGroupIdentifierFix,
+    });
   });
 
   test("addGroupIdentifierCache should not error if applied twice (idempotent)", () => {
     const state = {
-      ...initialState, identifiers: {
+      ...initialState,
+      identifiers: {
         [pendingIdentifierFix.id]: pendingIdentifierFix,
-        [multisignIdentifierFix[0].id]: multisignIdentifierFix[0]
-      }
+        [multisignIdentifierFix[0].id]: multisignIdentifierFix[0],
+      },
     };
     const newState = identifiersCacheSlice.reducer(
       state,
@@ -269,7 +282,7 @@ describe("identifiersCacheSlice", () => {
     );
     expect(newState.identifiers).toEqual({
       [pendingIdentifierFix.id]: pendingIdentifierFix,
-      [multisignIdentifierFix[0].id]: multisignIdentifierFix[0]
+      [multisignIdentifierFix[0].id]: multisignIdentifierFix[0],
     });
   });
 });
@@ -284,11 +297,11 @@ describe("get identifier Cache", () => {
     state.identifiersCache.identifiers["id-1"] = {
       id: "id-1",
       displayName: "example-name-1",
-      createdAtUTC: "example-date", 
+      createdAtUTC: "example-date",
       theme: 0,
       creationStatus: CreationStatus.PENDING,
-    }
-  
+    };
+
     const identifiersCache = getIdentifiersCache(state);
     expect(identifiersCache).toEqual(state.identifiersCache.identifiers);
   });

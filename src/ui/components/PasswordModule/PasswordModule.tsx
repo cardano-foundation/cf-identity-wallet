@@ -14,7 +14,10 @@ import {
 } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
-import { errorMessages, passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
+import {
+  errorMessages,
+  passwordStrengthChecker,
+} from "../../utils/passwordStrengthChecker";
 import { Alert as AlertCancel, Alert as AlertExisting } from "../Alert";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
@@ -51,7 +54,6 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
       passwordStrengthChecker.validatePassword(createPasswordValue) &&
       createPasswordValueMatching &&
       hintValue !== createPasswordValue;
-      
 
     const handlePasswordInput = (password: string) => {
       setCreatePasswordValue(password);
@@ -90,7 +92,11 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             KeyStoreKeys.APP_OP_PASSWORD
           );
           if (!currentPassword) {
-            showError("Unable to get current password", new Error("Unable to get current password"), dispatch);
+            showError(
+              "Unable to get current password",
+              new Error("Unable to get current password"),
+              dispatch
+            );
             return;
           }
           if (currentPassword === createPasswordValue) {
@@ -149,8 +155,15 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
       handleClearState();
     };
 
-    const showPasswordMeter = createPasswordValue.length === 0 || createPasswordFocus || !passwordStrengthChecker.validatePassword(createPasswordValue);
-    const isInvalidPassword = !createPasswordFocus && !!createPasswordValue.length && (!passwordStrengthChecker.validatePassword(createPasswordValue) ||!passwordStrengthChecker.isValidCharacters(createPasswordValue));
+    const showPasswordMeter =
+      createPasswordValue.length === 0 ||
+      createPasswordFocus ||
+      !passwordStrengthChecker.validatePassword(createPasswordValue);
+    const isInvalidPassword =
+      !createPasswordFocus &&
+      !!createPasswordValue.length &&
+      (!passwordStrengthChecker.validatePassword(createPasswordValue) ||
+        !passwordStrengthChecker.isValidCharacters(createPasswordValue));
 
     const openSymbolModal = () => setIsOpenSymbol(true);
 
@@ -169,9 +182,13 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             )}
             <CustomInput
               labelAction={
-                <div className="open-symbol-modal" data-testid="open-symbol-modal" onClick={openSymbolModal}>
+                <div
+                  className="open-symbol-modal"
+                  data-testid="open-symbol-modal"
+                  onClick={openSymbolModal}
+                >
                   {i18n.t("createpassword.input.first.symbolguide")}
-                  <IonIcon icon={informationCircleOutline}/>
+                  <IonIcon icon={informationCircleOutline} />
                 </div>
               }
               dataTestId="create-password-input"
@@ -187,19 +204,31 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               value={createPasswordValue}
               error={isInvalidPassword}
               className={combineClassNames("create-password-input", {
-                "normal": !isInvalidPassword && !showPasswordMeter
+                normal: !isInvalidPassword && !showPasswordMeter,
               })}
             />
             {isInvalidPassword && (
               <ErrorMessage
-                message={passwordStrengthChecker.getErrorByPriority(createPasswordValue)}
-                action={passwordStrengthChecker.getErrorByPriority(createPasswordValue) === errorMessages.hasNoSymbol
-                  && <span className="learn-more" onClick={openSymbolModal}>
-                    Learn More
-                  </span>}
+                message={passwordStrengthChecker.getErrorByPriority(
+                  createPasswordValue
+                )}
+                action={
+                  passwordStrengthChecker.getErrorByPriority(
+                    createPasswordValue
+                  ) === errorMessages.hasNoSymbol && (
+                    <span
+                      className="learn-more"
+                      onClick={openSymbolModal}
+                    >
+                      Learn More
+                    </span>
+                  )
+                }
               />
             )}
-            {showPasswordMeter && <PasswordMeter password={createPasswordValue}/>}
+            {showPasswordMeter && (
+              <PasswordMeter password={createPasswordValue} />
+            )}
             <CustomInput
               dataTestId="confirm-password-input"
               title={`${i18n.t("createpassword.input.second.title")}`}
@@ -219,10 +248,10 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             {!confirmPasswordFocus &&
               !!confirmPasswordValue.length &&
               createPasswordValueNotMatching && (
-              <ErrorMessage
-                message={`${i18n.t("createpassword.error.hasNoMatch")}`}
-              />
-            )}
+                <ErrorMessage
+                  message={`${i18n.t("createpassword.error.hasNoMatch")}`}
+                />
+              )}
             <CustomInput
               dataTestId="create-hint-input"
               title={`${i18n.t("createpassword.input.third.title")}`}
@@ -274,7 +303,10 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
           )}`}
           actionConfirm={() => handleClearExisting()}
         />
-        <SymbolModal isOpen={isOpenSymbol} setOpen={setIsOpenSymbol}/>
+        <SymbolModal
+          isOpen={isOpenSymbol}
+          setOpen={setIsOpenSymbol}
+        />
       </>
     );
   }

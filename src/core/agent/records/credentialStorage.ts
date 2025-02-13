@@ -59,7 +59,8 @@ class CredentialStorage {
       if (data.credentialType !== undefined)
         record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
-      if (data.pendingDeletion !== undefined) record.pendingDeletion = data.pendingDeletion;
+      if (data.pendingDeletion !== undefined)
+        record.pendingDeletion = data.pendingDeletion;
       await this.storageService.update(record);
     }
   }

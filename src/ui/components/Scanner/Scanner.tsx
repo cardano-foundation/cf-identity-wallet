@@ -13,12 +13,18 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   KeriConnectionType,
   OOBI_AGENT_ONLY_RE,
-  WOOBI_RE
+  WOOBI_RE,
 } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
@@ -28,7 +34,7 @@ import {
   getConnectionsCache,
   setMissingAliasUrl,
   setOpenConnectionId,
-  updateOrAddMultisigConnectionCache
+  updateOrAddMultisigConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
@@ -44,7 +50,7 @@ import {
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
-  showConnections
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import {
   setPendingConnection,
@@ -94,10 +100,9 @@ const Scanner = forwardRef(
     const [permission, setPermisson] = useState(false);
     const [mobileweb, setMobileweb] = useState(false);
     const [scanUnavailable, setScanUnavailable] = useState(false);
-    const [groupIdentifierOpen, setGroupIdentifierOpen] =
-      useState(false);
+    const [groupIdentifierOpen, setGroupIdentifierOpen] = useState(false);
     const [resumeMultiSig, setResumeMultiSig] =
-        useState<IdentifierShortDetails | null>(null);
+      useState<IdentifierShortDetails | null>(null);
     const isHandlingQR = useRef(false);
 
     useEffect(() => {
@@ -337,10 +342,13 @@ const Scanner = forwardRef(
       try {
         const connectionId = new URL(content).pathname
           .split("/oobi/")
-          .pop()?.split("/")[0];
+          .pop()
+          ?.split("/")[0];
 
-        if(connectionId && connections[connectionId]) {
-          throw new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`);
+        if (connectionId && connections[connectionId]) {
+          throw new Error(
+            `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`
+          );
         }
 
         await Agent.agent.connections.connectByOobiUrl(content);
@@ -422,7 +430,7 @@ const Scanner = forwardRef(
             async (result) => {
               await listener.remove();
 
-              if(isHandlingQR.current) return;
+              if (isHandlingQR.current) return;
               isHandlingQR.current = true;
 
               await processValue(result.barcode.rawValue);
@@ -452,7 +460,10 @@ const Scanner = forwardRef(
 
     useEffect(() => {
       const onLoad = async () => {
-        if(routePath === TabsRoutePath.SCAN && (isShowConnectionsModal || createIdentifierModalIsOpen)) {
+        if (
+          routePath === TabsRoutePath.SCAN &&
+          (isShowConnectionsModal || createIdentifierModalIsOpen)
+        ) {
           await stopScan();
           return;
         }
@@ -467,18 +478,20 @@ const Scanner = forwardRef(
           ].includes(item.message)
         );
 
-        const isScanning = routePath === TabsRoutePath.SCAN ||
-        [
-          OperationType.SCAN_CONNECTION,
-          OperationType.SCAN_WALLET_CONNECTION,
-          OperationType.SCAN_SSI_BOOT_URL,
-          OperationType.SCAN_SSI_CONNECT_URL,
-        ].includes(currentOperation);
+        const isScanning =
+          routePath === TabsRoutePath.SCAN ||
+          [
+            OperationType.SCAN_CONNECTION,
+            OperationType.SCAN_WALLET_CONNECTION,
+            OperationType.SCAN_SSI_BOOT_URL,
+            OperationType.SCAN_SSI_CONNECT_URL,
+          ].includes(currentOperation);
 
-        const isMultisignScan = [
-          OperationType.MULTI_SIG_INITIATOR_SCAN,
-          OperationType.MULTI_SIG_RECEIVER_SCAN,
-        ].includes(currentOperation) && !isDuplicateConnectionToast;
+        const isMultisignScan =
+          [
+            OperationType.MULTI_SIG_INITIATOR_SCAN,
+            OperationType.MULTI_SIG_RECEIVER_SCAN,
+          ].includes(currentOperation) && !isDuplicateConnectionToast;
 
         if ((isScanning && !isRequestPending) || isMultisignScan) {
           await initScan();
@@ -487,7 +500,14 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [currentOperation, routePath, cameraDirection, isShowConnectionsModal, createIdentifierModalIsOpen, currentToastMsgs]);
+    }, [
+      currentOperation,
+      routePath,
+      cameraDirection,
+      isShowConnectionsModal,
+      createIdentifierModalIsOpen,
+      currentToastMsgs,
+    ]);
 
     useEffect(() => {
       return () => {
@@ -507,8 +527,10 @@ const Scanner = forwardRef(
       setPastedValue("");
     };
 
-    const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
-      if(identifier?.groupMetadata || identifier?.multisigManageAid) {
+    const handleCloseCreateIdentifier = (
+      identifier?: IdentifierShortDetails
+    ) => {
+      if (identifier?.groupMetadata || identifier?.multisigManageAid) {
         setResumeMultiSig(identifier);
         setGroupIdentifierOpen(true);
       }
@@ -518,50 +540,50 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-      case OperationType.SCAN_WALLET_CONNECTION:
-        return (
-          <PageFooter
-            customClass="actions-button"
-            secondaryButtonAction={openPasteModal}
-            secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
-          />
-        );
-      case OperationType.MULTI_SIG_INITIATOR_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
-            primaryButtonAction={handlePrimaryButtonAction}
-            primaryButtonDisabled={!multiSigGroupCache?.connections.length}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
-      case OperationType.MULTI_SIG_RECEIVER_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
-      case OperationType.SCAN_SSI_BOOT_URL:
-      case OperationType.SCAN_SSI_CONNECT_URL:
-        return <div></div>;
-      default:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pastecontents"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
+        case OperationType.SCAN_WALLET_CONNECTION:
+          return (
+            <PageFooter
+              customClass="actions-button"
+              secondaryButtonAction={openPasteModal}
+              secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
+            />
+          );
+        case OperationType.MULTI_SIG_INITIATOR_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+              primaryButtonAction={handlePrimaryButtonAction}
+              primaryButtonDisabled={!multiSigGroupCache?.connections.length}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
+        case OperationType.MULTI_SIG_RECEIVER_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
+        case OperationType.SCAN_SSI_BOOT_URL:
+        case OperationType.SCAN_SSI_CONNECT_URL:
+          return <div></div>;
+        default:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pastecontents"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
       }
     };
 
@@ -592,7 +614,9 @@ const Scanner = forwardRef(
                   className="qr-code-scanner-icon"
                 />
                 <span className="qr-code-scanner-permission-text">
-                  {scanUnavailable ? i18n.t("tabs.scan.tab.cameraunavailable") : i18n.t("tabs.scan.tab.permissionalert")}
+                  {scanUnavailable
+                    ? i18n.t("tabs.scan.tab.cameraunavailable")
+                    : i18n.t("tabs.scan.tab.permissionalert")}
                 </span>
               </IonRow>
               <RenderPageFooter />
@@ -612,10 +636,10 @@ const Scanner = forwardRef(
           onClose={handleCloseCreateIdentifier}
           groupId={groupId}
         />
-        <CreateGroupIdentifier 
-          modalIsOpen={groupIdentifierOpen} 
-          setModalIsOpen={setGroupIdentifierOpen} 
-          setResumeMultiSig={setResumeMultiSig} 
+        <CreateGroupIdentifier
+          modalIsOpen={groupIdentifierOpen}
+          setModalIsOpen={setGroupIdentifierOpen}
+          setResumeMultiSig={setResumeMultiSig}
           resumeMultiSig={resumeMultiSig}
         />
         <OptionModal
@@ -632,10 +656,10 @@ const Scanner = forwardRef(
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
                 : currentOperation === OperationType.SCAN_WALLET_CONNECTION
-                  ? i18n.t(
+                ? i18n.t(
                     "tabs.menu.tab.items.connectwallet.inputpidmodal.header"
                   )
-                  : `${i18n.t("createidentifier.scan.pastecontents")}`
+                : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,
             actionButtonDisabled: !pastedValue,

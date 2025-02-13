@@ -33,17 +33,16 @@ jest.mock("../../../core/storage", () => ({
 jest.mock("@ionic/react", () => {
   const { forwardRef, useImperativeHandle } = jest.requireActual("react");
 
-  return ({
+  return {
     ...jest.requireActual("@ionic/react"),
     IonInput: forwardRef((props: any, ref: any) => {
-      const {onIonBlur, onIonFocus, onIonInput, value} = props;
+      const { onIonBlur, onIonFocus, onIonInput, value } = props;
       const testId = props["data-testid"];
-  
-  
+
       useImperativeHandle(ref, () => ({
-        setFocus: jest.fn()
+        setFocus: jest.fn(),
       }));
-  
+
       return (
         <input
           ref={ref}
@@ -55,7 +54,7 @@ jest.mock("@ionic/react", () => {
         />
       );
     }),
-  })
+  };
 });
 
 describe("Recovery Seed Phrase", () => {

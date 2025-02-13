@@ -80,9 +80,7 @@ jest.mock("../../components/CustomInput", () => ({
           {props.optional && (
             <span className="custom-input-optional">(optional)</span>
           )}
-          {
-            props.labelAction
-          }
+          {props.labelAction}
         </IonLabel>
         <IonInput
           data-testid={props.dataTestId}
@@ -167,9 +165,13 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.passwordlength)).toBeVisible()
-      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.weak)).toBeVisible()
-    })
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.passwordlength)
+      ).toBeVisible();
+      expect(
+        getByText(TRANSLATIONS.createpassword.meter.strengthlevel.weak)
+      ).toBeVisible();
+    });
 
     act(() => {
       ionFireEvent.ionInput(input, "passsssssss1@");
@@ -177,9 +179,13 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoUppercase)).toBeVisible();
-      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.medium)).toBeVisible();
-    })
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.hasNoUppercase)
+      ).toBeVisible();
+      expect(
+        getByText(TRANSLATIONS.createpassword.meter.strengthlevel.medium)
+      ).toBeVisible();
+    });
 
     act(() => {
       ionFireEvent.ionInput(input, "PASSSSSSSSS1@");
@@ -187,8 +193,10 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoLowercase)).toBeVisible();
-    })
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.hasNoLowercase)
+      ).toBeVisible();
+    });
 
     act(() => {
       ionFireEvent.ionInput(input, "Passssssssssssss@");
@@ -196,8 +204,10 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoNumber)).toBeVisible();
-    })
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.hasNoNumber)
+      ).toBeVisible();
+    });
 
     act(() => {
       ionFireEvent.ionInput(input, "Passssssssssssss1");
@@ -205,8 +215,10 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoSymbol)).toBeVisible();
-    })
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.hasNoSymbol)
+      ).toBeVisible();
+    });
 
     act(() => {
       ionFireEvent.ionInput(input, "Passssssssssssss@1∞");
@@ -214,9 +226,13 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasSpecialChar)).toBeVisible();
-      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.strong)).toBeVisible();
-    })
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.hasSpecialChar)
+      ).toBeVisible();
+      expect(
+        getByText(TRANSLATIONS.createpassword.meter.strengthlevel.strong)
+      ).toBeVisible();
+    });
   });
 
   test("Confirm password not match", async () => {
@@ -241,7 +257,9 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hasNoMatch)).toBeVisible();
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.hasNoMatch)
+      ).toBeVisible();
     });
   });
 
@@ -269,7 +287,9 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.hintSameAsPassword)).toBeVisible();
+      expect(
+        getByText(TRANSLATIONS.createpassword.error.hintSameAsPassword)
+      ).toBeVisible();
     });
   });
 
@@ -293,7 +313,7 @@ describe("Password Module", () => {
     await waitFor(() => {
       expect(alertTitle).toBeVisible();
     });
-    
+
     const mockDate = new Date(1466424490000);
     const spy = jest
       .spyOn(global, "Date")
@@ -423,8 +443,10 @@ describe("Password Module", () => {
 
     fireEvent.click(getByTestId("primary-button-password-module"));
 
-    const alertTitle = await findByText(TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
-      .page.alert.existingpassword)
+    const alertTitle = await findByText(
+      TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword.page
+        .alert.existingpassword
+    );
 
     await waitFor(() => {
       expect(alertTitle).toBeVisible();
@@ -435,8 +457,13 @@ describe("Password Module", () => {
     );
 
     await waitFor(() => {
-      expect(queryByText(TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword.page.alert.existingpassword)).toBeNull()
-    })
+      expect(
+        queryByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.existingpassword
+        )
+      ).toBeNull();
+    });
 
     await waitFor(() => {
       expect((input as HTMLInputElement).value).toBe("");
@@ -483,16 +510,16 @@ describe("Password Module", () => {
         />
       </Provider>
     );
-    
+
     act(() => {
-      ionFireEvent.click(
-        getByTestId("open-symbol-modal")
-      );
+      ionFireEvent.click(getByTestId("open-symbol-modal"));
     });
 
     await waitFor(() => {
       expect(getByTestId("symbol-modal")).toBeVisible();
-      expect(getByText(TRANSLATIONS.createpassword.symbolmodal.done)).toBeVisible();
+      expect(
+        getByText(TRANSLATIONS.createpassword.symbolmodal.done)
+      ).toBeVisible();
     });
   });
 });

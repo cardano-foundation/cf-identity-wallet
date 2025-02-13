@@ -15,7 +15,8 @@ const showError = (
 
   if (!dispatch) return;
 
-  if (error instanceof Error && error.message === Agent.KERIA_CONNECTION_BROKEN) return;
+  if (error instanceof Error && error.message === Agent.KERIA_CONNECTION_BROKEN)
+    return;
 
   if (toastMessage) {
     dispatch(setToastMsg(toastMessage));

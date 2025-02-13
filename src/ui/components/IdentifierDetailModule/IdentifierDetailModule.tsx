@@ -22,7 +22,7 @@ import {
   addFavouriteIdentifierCache,
   getFavouritesIdentifiersCache,
   removeFavouriteIdentifierCache,
-  removeIdentifierCache
+  removeIdentifierCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   getStateCache,
@@ -50,7 +50,13 @@ import { RotateKeyModal } from "./components/RotateKeyModal";
 import "./IdentifierDetailModule.scss";
 import { IdentifierDetailModuleProps } from "./IdentifierDetailModule.types";
 
-const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAnimation, pageId, hardwareBackButtonConfig }: IdentifierDetailModuleProps) => {
+const IdentifierDetailModule = ({
+  identifierDetailId,
+  onClose: handleDone,
+  navAnimation,
+  pageId,
+  hardwareBackButtonConfig,
+}: IdentifierDetailModuleProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -122,8 +128,8 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
       const filterId = cardData
         ? cardData.id
         : cloudError
-          ? identifierDetailId
-          : undefined;
+        ? identifierDetailId
+        : undefined;
 
       await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
@@ -140,7 +146,9 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
 
   const deleteIdentifier = async () => {
     if (identifierDetailId && cloudError) {
-      await Agent.agent.identifiers.deleteStaleLocalIdentifier(identifierDetailId);
+      await Agent.agent.identifiers.deleteStaleLocalIdentifier(
+        identifierDetailId
+      );
 
       if (isFavourite) {
         handleSetFavourite(identifierDetailId);
@@ -280,11 +288,14 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
     );
   };
 
-  const pageClasses = combineClassNames("card-details identifier-details-module", {
-    "back-animation": navAnimation,
-    "open-animation": !navAnimation,
-    "ion-hide": hidden,
-  });
+  const pageClasses = combineClassNames(
+    "card-details identifier-details-module",
+    {
+      "back-animation": navAnimation,
+      "open-animation": !navAnimation,
+      "ion-hide": hidden,
+    }
+  );
 
   return (
     <>
@@ -380,7 +391,7 @@ const IdentifierDetailModule = ({ identifierDetailId, onClose: handleDone, navAn
         actionCancel={cancelDelete}
         actionDismiss={cancelDelete}
       />
-      <RotateKeyModal 
+      <RotateKeyModal
         identifierId={identifierDetailId}
         onReloadData={getDetails}
         signingKey={cardData?.k[0] || ""}

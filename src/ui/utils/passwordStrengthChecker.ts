@@ -39,7 +39,13 @@ const passwordStrengthChecker = {
     return passwordRequirements.validCharactersPattern.test(password);
   },
   validationRules() {
-    return [this.isUppercaseValid, this.isLowercaseValid, this.isNumberValid, this.isSymbolValid, this.isLengthValid];
+    return [
+      this.isUppercaseValid,
+      this.isLowercaseValid,
+      this.isNumberValid,
+      this.isSymbolValid,
+      this.isLengthValid,
+    ];
   },
   validatePassword(password: string): boolean {
     return (
@@ -54,13 +60,14 @@ const passwordStrengthChecker = {
   getPasswordStrength(password: string) {
     let matchConditionCount = 0;
 
-    this.validationRules().forEach(rule => {
-      if(rule(password)) matchConditionCount++;
-    })
+    this.validationRules().forEach((rule) => {
+      if (rule(password)) matchConditionCount++;
+    });
 
-    if(matchConditionCount < 3) return StrongLevel.Weak;
+    if (matchConditionCount < 3) return StrongLevel.Weak;
 
-    if(matchConditionCount < this.validationRules().length) return StrongLevel.Medium;
+    if (matchConditionCount < this.validationRules().length)
+      return StrongLevel.Medium;
 
     return StrongLevel.Strong;
   },

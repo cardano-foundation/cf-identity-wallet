@@ -1,54 +1,54 @@
 .card-theme {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 
-    &.theme-0 {
-        stop:first-of-type {
-            stop-color: var(--ion-color-theme-one-primary);
-        }
-
-        stop:last-of-type {
-            stop-color: var(--ion-color-theme-one-secondary);
-        }
+  &.theme-0 {
+    stop:first-of-type {
+      stop-color: var(--ion-color-theme-one-primary);
     }
 
-    &.theme-1 {
-        stop:first-of-type {
-            stop-color: var(--ion-color-theme-two-primary);
-        }
+    stop:last-of-type {
+      stop-color: var(--ion-color-theme-one-secondary);
+    }
+  }
 
-        stop:last-of-type {
-            stop-color: var(--ion-color-theme-two-secondary);
-        }
+  &.theme-1 {
+    stop:first-of-type {
+      stop-color: var(--ion-color-theme-two-primary);
     }
 
-    &.theme-2 {
-        stop:first-of-type {
-            stop-color: var(--ion-color-theme-three-primary);
-        }
+    stop:last-of-type {
+      stop-color: var(--ion-color-theme-two-secondary);
+    }
+  }
 
-        stop:last-of-type {
-            stop-color: var(--ion-color-theme-three-secondary);
-        }
+  &.theme-2 {
+    stop:first-of-type {
+      stop-color: var(--ion-color-theme-three-primary);
     }
 
-    &.theme-3 {
-        stop:first-of-type {
-            stop-color: var(--ion-color-theme-four-primary);
-        }
+    stop:last-of-type {
+      stop-color: var(--ion-color-theme-three-secondary);
+    }
+  }
 
-        stop:last-of-type {
-            stop-color: var(--ion-color-theme-four-secondary);
-        }
+  &.theme-3 {
+    stop:first-of-type {
+      stop-color: var(--ion-color-theme-four-primary);
     }
 
-    &.theme-4 {
-        stop:first-of-type {
-            stop-color: var(--ion-color-theme-five-primary);
-        }
-
-        stop:last-of-type {
-            stop-color: var(--ion-color-theme-five-secondary);
-        }
+    stop:last-of-type {
+      stop-color: var(--ion-color-theme-four-secondary);
     }
+  }
+
+  &.theme-4 {
+    stop:first-of-type {
+      stop-color: var(--ion-color-theme-five-primary);
+    }
+
+    stop:last-of-type {
+      stop-color: var(--ion-color-theme-five-secondary);
+    }
+  }
 }

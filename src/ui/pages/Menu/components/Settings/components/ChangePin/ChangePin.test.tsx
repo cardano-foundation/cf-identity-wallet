@@ -1,9 +1,5 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import {
-  fireEvent,
-  render,
-  waitFor
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
@@ -39,12 +35,11 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children }: { children: any }) => children,
 }));
 
-
 jest.mock("signify-ts", () => ({
   ...jest.requireActual("signify-ts"),
   Salter: jest.fn(() => ({
-    qb64: ""
-  }))
+    qb64: "",
+  })),
 }));
 
 describe("ChangePin Modal", () => {
@@ -117,12 +112,12 @@ describe("ChangePin Modal", () => {
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
 
-    const text = await findByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
-      .reenterpasscode);
-
-    await waitFor(() =>
-      expect(text).toBeInTheDocument()
+    const text = await findByText(
+      EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+        .reenterpasscode
     );
+
+    await waitFor(() => expect(text).toBeInTheDocument());
 
     await waitFor(() =>
       expect(
@@ -164,8 +159,10 @@ describe("ChangePin Modal", () => {
     );
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
-    const text = await findByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
-      .reenterpasscode);
+    const text = await findByText(
+      EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+        .reenterpasscode
+    );
 
     await waitFor(() => {
       expect(text).toBeInTheDocument();
@@ -174,7 +171,10 @@ describe("ChangePin Modal", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+      expect(setKeyStoreSpy).toBeCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
     });
   });
 

@@ -32,7 +32,7 @@ describe("credsArchivedCacheSlice", () => {
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierType: IdentifierType.Individual,
         identifierId: memberIdentifierRecord.id,
-        connectionId: "ebfeb1ebc6f1c276ef71212ec20"
+        connectionId: "ebfeb1ebc6f1c276ef71212ec20",
       },
     ];
     const newState = credsArchivedCacheSlice.reducer(

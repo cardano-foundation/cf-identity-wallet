@@ -26,7 +26,11 @@ import {
   SwitchOnboardingModeModalProps,
 } from "./SwitchOnboardingModeModal.types";
 
-const SwitchOnboardingModeModal = ({ mode, isOpen, setOpen }: SwitchOnboardingModeModalProps) => {
+const SwitchOnboardingModeModal = ({
+  mode,
+  isOpen,
+  setOpen,
+}: SwitchOnboardingModeModalProps) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [agree, setAgree] = useState(false);
@@ -39,13 +43,13 @@ const SwitchOnboardingModeModal = ({ mode, isOpen, setOpen }: SwitchOnboardingMo
       const action = isCreateMode
         ? Agent.agent.basicStorage.deleteById(MiscRecordId.APP_RECOVERY_WALLET)
         : Agent.agent.basicStorage.createOrUpdateBasicRecord(
-          new BasicRecord({
-            id: MiscRecordId.APP_RECOVERY_WALLET,
-            content: {
-              value: String(true),
-            },
-          })
-        );
+            new BasicRecord({
+              id: MiscRecordId.APP_RECOVERY_WALLET,
+              content: {
+                value: String(true),
+              },
+            })
+          );
 
       await Promise.all([
         SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN),

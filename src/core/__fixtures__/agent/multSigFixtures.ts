@@ -4,7 +4,10 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../../agent/records";
-import { CreationStatus, QueuedGroupCreation } from "../../agent/services/identifier.types";
+import {
+  CreationStatus,
+  QueuedGroupCreation,
+} from "../../agent/services/identifier.types";
 
 const now = new Date();
 
@@ -60,7 +63,7 @@ const getMemberIdentifierResponse = {
     },
     di: "",
   },
-  icp_dt: "2024-08-09T07:23:52.839894+00:00"
+  icp_dt: "2024-08-09T07:23:52.839894+00:00",
 };
 
 const getMultisigIdentifierResponse = {
@@ -95,7 +98,7 @@ const getMultisigIdentifierResponse = {
     },
     di: "",
   },
-  icp_dt: "2024-08-10T07:23:54.839894+00:00"
+  icp_dt: "2024-08-10T07:23:54.839894+00:00",
 };
 
 const memberIdentifierRecord = {
@@ -367,7 +370,7 @@ const mHab = {
 
 const multisigExnIpexGrantSerder = {
   kind: "JSON",
-  raw: "{\"v\":\"KERI10JSON00025f_\",\"t\":\"exn\",\"d\":\"EFnDzHLeULKSm_jbQSIN427yWWFr82OBkkxg3iUf2FUW\",\"i\":\"EGUORQAs0r1mup1OmX1H23PITDV7td-o2XGdMVL6lmmk\",\"p\":\"\",\"dt\":\"2024-08-02T03:53:30.133000+00:00\",\"r\":\"/multisig/exn\",\"q\":{},\"a\":{\"gid\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\"},\"e\":{\"exn\":{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EMTArfbjevIfB-fbxzsepKO35RWHN2gQxTTU5Lov2Dld\",\"i\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\",\"p\":\"EH-_9IgodejkwXi2Hw--A53rVYcO6bDYnBrbpCId8LOu\",\"dt\":\"2024-08-02T03:53:29.400000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}},\"d\":\"ECxCLDUf8A1y62wf7YkWAcj5RN-KVzNaxRefzgE7oIjq\"}}",
+  raw: '{"v":"KERI10JSON00025f_","t":"exn","d":"EFnDzHLeULKSm_jbQSIN427yWWFr82OBkkxg3iUf2FUW","i":"EGUORQAs0r1mup1OmX1H23PITDV7td-o2XGdMVL6lmmk","p":"","dt":"2024-08-02T03:53:30.133000+00:00","r":"/multisig/exn","q":{},"a":{"gid":"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC"},"e":{"exn":{"v":"KERI10JSON000111_","t":"exn","d":"EMTArfbjevIfB-fbxzsepKO35RWHN2gQxTTU5Lov2Dld","i":"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC","p":"EH-_9IgodejkwXi2Hw--A53rVYcO6bDYnBrbpCId8LOu","dt":"2024-08-02T03:53:29.400000+00:00","r":"/ipex/admit","q":{},"a":{"m":""},"e":{}},"d":"ECxCLDUf8A1y62wf7YkWAcj5RN-KVzNaxRefzgE7oIjq"}}',
   ked: {
     v: "KERI10JSON00066c_",
     t: "exn",
@@ -747,29 +750,29 @@ const inceptionDataFix: CreateIdentifierBody = {
     kt: "2",
     k: [
       "DGBw7C7AfC7jbD3jLLRS3SzIWFndM947TyNWKQ52iQx5",
-      "DD_bHYFsgWXuCbz3SD0HjCIe_ITjRvEoCGuZ4PcNFFDz"
+      "DD_bHYFsgWXuCbz3SD0HjCIe_ITjRvEoCGuZ4PcNFFDz",
     ],
     nt: "2",
     n: [
       "EML5FrjCpz8SEl4dh0U15l8bMRhV_O5iDcR1opLJGBSH",
-      "EJpKquuibYTqpwMDqEFAFs0gwq0PASAHZ_iDmSF3I2Vg"
+      "EJpKquuibYTqpwMDqEFAFs0gwq0PASAHZ_iDmSF3I2Vg",
     ],
     bt: "0",
     b: [],
     c: [],
-    a: []
+    a: [],
   },
   sigs: [
     "AAD9_IgPaUEBjAl1Ck61Jkn78ErzsnVkIxpaFBYSdSEAW4NbtXsLiUn1olijzdTQYn_Byq6MaEk-eoMN3Oc0WEEC",
-    "ABBWJ7KkAXXiRK8JyEUpeARHJTTzlBHu_ev-jUrNEhV9sX4_4lI7wxowrQisumt5r50bUNfYBK7pxSwHk8I4IFQP"
+    "ABBWJ7KkAXXiRK8JyEUpeARHJTTzlBHu_ev-jUrNEhV9sX4_4lI7wxowrQisumt5r50bUNfYBK7pxSwHk8I4IFQP",
   ],
   smids: [
     "EIwvED_NNIxszmE9FSCnjFrKcXn3mohHbCGYSuZj5Ai1",
-    "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7"
+    "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
   ],
   rmids: [
     "EIwvED_NNIxszmE9FSCnjFrKcXn3mohHbCGYSuZj5Ai1",
-    "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7"
+    "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
   ],
   group: {
     mhab: {
@@ -782,21 +785,14 @@ const inceptionDataFix: CreateIdentifierBody = {
         stem: "signify:aid",
         tier: Tier.low,
         dcode: "E",
-        icodes: [
-          "A"
-        ],
-        ncodes: [
-          "A"
-        ],
-        transferable: true
+        icodes: ["A"],
+        ncodes: ["A"],
+        transferable: true,
       },
       icp_dt: "2025-02-12T19:05:15.163405+00:00",
       transferable: true,
       state: {
-        vn: [
-          1,
-          0
-        ],
+        vn: [1, 0],
         i: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
         s: "0",
         p: "",
@@ -805,41 +801,33 @@ const inceptionDataFix: CreateIdentifierBody = {
         dt: "2025-02-12T19:05:15.163405+00:00",
         et: "icp",
         kt: "1",
-        k: [
-          "DGp2jd7mX6MJ1Feu6QkfUxRtXeZVGTfpg0NygZn3Y-P3"
-        ],
+        k: ["DGp2jd7mX6MJ1Feu6QkfUxRtXeZVGTfpg0NygZn3Y-P3"],
         nt: "1",
-        n: [
-          "EFTnI8OOKoXTGA9Qunzljn7lkkz-DjcesJgUOqtdIwhd"
-        ],
+        n: ["EFTnI8OOKoXTGA9Qunzljn7lkkz-DjcesJgUOqtdIwhd"],
         bt: "3",
         b: [
           "BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha",
           "BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM",
-          "BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX"
+          "BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX",
         ],
         c: [],
         ee: {
           s: "0",
           d: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
         },
-        di: ""
+        di: "",
       },
-      windexes: [
-        0,
-        1,
-        2
-      ]
+      windexes: [0, 1, 2],
     },
     keys: [
       "DOYbsl4dwkxEv9nwIQ9D9CF5gWojIb6A4ev7KJmHSwYL",
-      "DGp2jd7mX6MJ1Feu6QkfUxRtXeZVGTfpg0NygZn3Y-P3"
+      "DGp2jd7mX6MJ1Feu6QkfUxRtXeZVGTfpg0NygZn3Y-P3",
     ],
     ndigs: [
       "EI80i_fWRfVd9e1KArsrZ5moY27TwQD0DmUI1VnzcRvi",
-      "EFTnI8OOKoXTGA9Qunzljn7lkkz-DjcesJgUOqtdIwhd"
-    ]
-  }
+      "EFTnI8OOKoXTGA9Qunzljn7lkkz-DjcesJgUOqtdIwhd",
+    ],
+  },
 };
 
 const linkedContacts = [

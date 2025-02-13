@@ -1,15 +1,19 @@
 interface RecoverySeedPhraseDocumentModalProps {
-    isOpen: boolean;
-    setIsOpen: (value: boolean) => void;
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
 }
 
 interface DocumentSectionProps {
-    sectionKey: string;
-    image?: string;
+  sectionKey: string;
+  image?: string;
 }
 
 interface Content {
-    text: string;
+  text: string;
 }
 
-export type { RecoverySeedPhraseDocumentModalProps, DocumentSectionProps, Content };
+export type {
+  RecoverySeedPhraseDocumentModalProps,
+  DocumentSectionProps,
+  Content,
+};

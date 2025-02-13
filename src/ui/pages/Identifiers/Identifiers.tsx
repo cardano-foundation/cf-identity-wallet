@@ -5,7 +5,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records/basicRecord";
-import { CreationStatus, IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import {
+  CreationStatus,
+  IdentifierShortDetails,
+} from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -17,7 +20,7 @@ import {
   getOpenMultiSig,
   removeIdentifierCache,
   setIdentifiersFilters,
-  setOpenMultiSigId
+  setOpenMultiSigId,
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -114,8 +117,7 @@ const Identifiers = () => {
   >([]);
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);
-  const [groupIdentifierOpen, setGroupIdentifierOpen] =
-    useState(false);
+  const [groupIdentifierOpen, setGroupIdentifierOpen] = useState(false);
   const [openGroupAfterCreate, setOpenGroupAfterCreate] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [resumeMultiSig, setResumeMultiSig] =
@@ -128,14 +130,17 @@ const Identifiers = () => {
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
   const selectedFilter = identifiersFiltersCache ?? IdentifiersFilters.All;
 
-  const identifiersData = useMemo(() => Object.values(identifiersDataCache), [identifiersDataCache])
+  const identifiersData = useMemo(
+    () => Object.values(identifiersDataCache),
+    [identifiersDataCache]
+  );
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
 
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
-    if(identifier.creationStatus === CreationStatus.FAILED) {
+    if (identifier.creationStatus === CreationStatus.FAILED) {
       setDeletePendingItem(identifier);
       setOpenDeletePendingAlert(true);
       return;
@@ -183,7 +188,10 @@ const Identifiers = () => {
     const tmpGroupIdentifiers = [];
 
     for (const identifier of identifiersData) {
-      if (identifier.creationStatus !== CreationStatus.COMPLETE && !identifier.groupMetadata) {
+      if (
+        identifier.creationStatus !== CreationStatus.COMPLETE &&
+        !identifier.groupMetadata
+      ) {
         tmpPendingIdentifiers.push(identifier);
         continue;
       }
@@ -193,7 +201,7 @@ const Identifiers = () => {
           ? tmpGroupIdentifiers.push(identifier)
           : tmpIndividualIdentifiers.push(identifier);
       }
-      
+
       if (favouriteIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
         tmpAllIdentifiers.push(identifier);
@@ -246,11 +254,11 @@ const Identifiers = () => {
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"
-        ? "favorite-identifier-nav"
-        : ""
+      ? "favorite-identifier-nav"
+      : ""
   }`;
   const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
-    if(identifier?.groupMetadata || identifier?.multisigManageAid) {
+    if (identifier?.groupMetadata || identifier?.multisigManageAid) {
       handleMultiSigClick(identifier);
       setOpenGroupAfterCreate(true);
     }
@@ -261,7 +269,9 @@ const Identifiers = () => {
     setDeletePendingItem(null);
 
     try {
-      await Agent.agent.identifiers.markIdentifierPendingDelete(deletedPendingItem.id);
+      await Agent.agent.identifiers.markIdentifierPendingDelete(
+        deletedPendingItem.id
+      );
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(removeIdentifierCache(deletedPendingItem.id));
@@ -279,10 +289,11 @@ const Identifiers = () => {
     () => ({
       title: i18n.t("tabs.identifiers.detelepending.title"),
       description: i18n.t(
-        deletedPendingItem?.creationStatus === CreationStatus.FAILED ? "tabs.identifiers.detelepending.witnesserror" :
-          deletedPendingItem?.groupMetadata?.groupId
-            ? "tabs.identifiers.detelepending.mutilsigdescription"
-            : "tabs.identifiers.detelepending.description"
+        deletedPendingItem?.creationStatus === CreationStatus.FAILED
+          ? "tabs.identifiers.detelepending.witnesserror"
+          : deletedPendingItem?.groupMetadata?.groupId
+          ? "tabs.identifiers.detelepending.mutilsigdescription"
+          : "tabs.identifiers.detelepending.description"
       ),
       button: i18n.t("tabs.identifiers.detelepending.button"),
     }),
@@ -377,8 +388,8 @@ const Identifiers = () => {
                   selectedFilter === IdentifiersFilters.All
                     ? allIdentifiers
                     : selectedFilter === IdentifiersFilters.Individual
-                      ? individualIdentifiers
-                      : groupIdentifiers
+                    ? individualIdentifiers
+                    : groupIdentifiers
                 }
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}
@@ -458,13 +469,13 @@ const Identifiers = () => {
         setModalIsOpen={setCreateIdentifierModalIsOpen}
         onClose={handleCloseCreateIdentifier}
       />
-      <CreateGroupIdentifier 
-        modalIsOpen={groupIdentifierOpen} 
+      <CreateGroupIdentifier
+        modalIsOpen={groupIdentifierOpen}
         setModalIsOpen={(value) => {
           setGroupIdentifierOpen(value);
           setOpenGroupAfterCreate(false);
-        }} 
-        setResumeMultiSig={setResumeMultiSig} 
+        }}
+        setResumeMultiSig={setResumeMultiSig}
         resumeMultiSig={resumeMultiSig}
         openAfterCreate={openGroupAfterCreate}
       />

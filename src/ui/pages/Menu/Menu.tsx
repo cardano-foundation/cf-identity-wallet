@@ -20,7 +20,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
-  showConnections
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import {
   getShowConnectWallet,
@@ -56,20 +56,20 @@ const Menu = () => {
 
   const handleOpenUrl = (key: SubMenuKey) => {
     switch (key) {
-    case SubMenuKey.Crypto: {
-      Browser.open({ url: CRYPTO_LINK });
-      break;
-    }
-    case SubMenuKey.Connections: {
-      dispatch(showConnections(true));
-      break;
-    }
-    case SubMenuKey.Chat: {
-      Browser.open({ url: CHAT_LINK });
-      break;
-    }
-    default:
-      return;
+      case SubMenuKey.Crypto: {
+        Browser.open({ url: CRYPTO_LINK });
+        break;
+      }
+      case SubMenuKey.Connections: {
+        dispatch(showConnections(true));
+        break;
+      }
+      case SubMenuKey.Chat: {
+        Browser.open({ url: CHAT_LINK });
+        break;
+      }
+      default:
+        return;
     }
   };
 

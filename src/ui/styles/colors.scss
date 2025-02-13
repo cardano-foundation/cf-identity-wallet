@@ -1,22 +1,22 @@
 :root {
-  --ion-color-primary-100: #E6F1FF;
-  --ion-color-primary-200: #CCE3FF;
-  --ion-color-primary-300: #99C7FF;
-  --ion-color-primary-400: #66AAFF;
-  --ion-color-primary-500: #338DFF;
-  --ion-color-primary-600: #006DDB;
-  --ion-color-primary-700: #0056B3;
+  --ion-color-primary-100: #e6f1ff;
+  --ion-color-primary-200: #cce3ff;
+  --ion-color-primary-300: #99c7ff;
+  --ion-color-primary-400: #66aaff;
+  --ion-color-primary-500: #338dff;
+  --ion-color-primary-600: #006ddb;
+  --ion-color-primary-700: #0056b3;
   --ion-color-primary-800: #004289;
 
-  --ion-color-neutral-100: #F9FAFB;
-  --ion-color-neutral-200: #EEEFF2;
-  --ion-color-neutral-300: #CED3DA;
-  --ion-color-neutral-400: #9EA7B3;
-  --ion-color-neutral-500: #6C7580;
-  --ion-color-neutral-600: #4E5661;
-  --ion-color-neutral-700: #343B45;
-  --ion-color-neutral-800: #1F242B;
-  --ion-color-neutral-900: #0D0F12;
+  --ion-color-neutral-100: #f9fafb;
+  --ion-color-neutral-200: #eeeff2;
+  --ion-color-neutral-300: #ced3da;
+  --ion-color-neutral-400: #9ea7b3;
+  --ion-color-neutral-500: #6c7580;
+  --ion-color-neutral-600: #4e5661;
+  --ion-color-neutral-700: #343b45;
+  --ion-color-neutral-800: #1f242b;
+  --ion-color-neutral-900: #0d0f12;
 
   --ion-color-neutral-500-rgb: 108, 117, 128;
   --ion-color-neutral-600-rgb: 78, 86, 97;
@@ -27,28 +27,28 @@
   --ion-color-theme-one-secondary: var(--ion-color-primary-800);
   --ion-color-theme-two-primary: var(--ion-color-primary-400);
   --ion-color-theme-two-secondary: var(--ion-color-primary-500);
-  --ion-color-theme-three-primary: #28C196;
-  --ion-color-theme-three-secondary: #008A63;
+  --ion-color-theme-three-primary: #28c196;
+  --ion-color-theme-three-secondary: #008a63;
   --ion-color-theme-four-primary: #614200;
-  --ion-color-theme-four-secondary: #3D2A00;
+  --ion-color-theme-four-secondary: #3d2a00;
   --ion-color-theme-five-primary: var(--ion-color-neutral-600);
   --ion-color-theme-five-secondary: var(--ion-color-neutral-700);
 
-  --ion-color-success-100: #E6FAE6;
-  --ion-color-success-400: #4CAF50;
-  --ion-color-success-800: #1E7D32;
+  --ion-color-success-100: #e6fae6;
+  --ion-color-success-400: #4caf50;
+  --ion-color-success-800: #1e7d32;
 
-  --ion-color-warning-100: #FFF5E6;
-  --ion-color-warning-400: #FFB74D;
-  --ion-color-warning-800: #B26800;
+  --ion-color-warning-100: #fff5e6;
+  --ion-color-warning-400: #ffb74d;
+  --ion-color-warning-800: #b26800;
 
-  --ion-color-error-100: #FFE6E6;
-  --ion-color-error-400: #FF6B6B;
-  --ion-color-error-800: #A30000;
+  --ion-color-error-100: #ffe6e6;
+  --ion-color-error-400: #ff6b6b;
+  --ion-color-error-800: #a30000;
 
   --ion-color-error-800-rgb: 163, 0, 0;
 
-  --ion-color-archive-400: #531FAD;
+  --ion-color-archive-400: #531fad;
 
   --ion-color-primary: var(--ion-color-neutral-700);
   --ion-color-secondary: var(--ion-color-neutral-500);
@@ -56,9 +56,29 @@
   --ion-color-danger-contrast: var(--ion-color-neutral-100);
   --ion-item-background: var(--ion-color-neutral-100);
 
-  --ion-color-card-theme-one: linear-gradient(90.04deg, var(--ion-color-theme-one-primary) 28.46%, var(--ion-color-theme-one-secondary) 165.71%);
-  --ion-color-card-theme-two: linear-gradient(90.04deg, var(--ion-color-theme-two-primary) 28.46%, var(--ion-color-theme-two-secondary) 165.71%);
-  --ion-color-card-theme-three: linear-gradient(90.04deg, var(--ion-color-theme-three-primary) 28.46%, var(--ion-color-theme-three-secondary) 165.71%);
-  --ion-color-card-theme-four: linear-gradient(90.04deg, var(--ion-color-theme-four-primary) 28.46%, var(--ion-color-theme-four-secondary) 165.71%);
-  --ion-color-card-theme-five: linear-gradient(90.04deg, var(--ion-color-theme-five-primary) 28.46%, var(--ion-color-theme-five-secondary) 165.71%);
+  --ion-color-card-theme-one: linear-gradient(
+    90.04deg,
+    var(--ion-color-theme-one-primary) 28.46%,
+    var(--ion-color-theme-one-secondary) 165.71%
+  );
+  --ion-color-card-theme-two: linear-gradient(
+    90.04deg,
+    var(--ion-color-theme-two-primary) 28.46%,
+    var(--ion-color-theme-two-secondary) 165.71%
+  );
+  --ion-color-card-theme-three: linear-gradient(
+    90.04deg,
+    var(--ion-color-theme-three-primary) 28.46%,
+    var(--ion-color-theme-three-secondary) 165.71%
+  );
+  --ion-color-card-theme-four: linear-gradient(
+    90.04deg,
+    var(--ion-color-theme-four-primary) 28.46%,
+    var(--ion-color-theme-four-secondary) 165.71%
+  );
+  --ion-color-card-theme-five: linear-gradient(
+    90.04deg,
+    var(--ion-color-theme-five-primary) 28.46%,
+    var(--ion-color-theme-five-secondary) 165.71%
+  );
 }

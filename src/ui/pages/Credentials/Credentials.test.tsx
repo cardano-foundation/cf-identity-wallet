@@ -35,7 +35,8 @@ jest.mock("../../../core/agent/agent", () => ({
         deleteCredential: () => deleteIdentifierMock(),
         archiveCredential: () => archiveIdentifierMock(),
         getCredentials: jest.fn(),
-        markCredentialPendingDeletion: () => markCredentialPendingDeletionMock()
+        markCredentialPendingDeletion: () =>
+          markCredentialPendingDeletionMock(),
       },
       basicStorage: {
         findById: jest.fn(),
@@ -539,7 +540,7 @@ describe("Creds Tab", () => {
     });
 
     await passcodeFiller(getByText, getByTestId, "1", 6);
-  
+
     await waitFor(() => {
       expect(markCredentialPendingDeletionMock).toBeCalled();
       expect(archiveIdentifierMock).toBeCalled();

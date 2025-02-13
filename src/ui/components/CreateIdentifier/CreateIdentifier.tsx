@@ -22,7 +22,7 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifiersCache,
-  setMultiSigGroupCache
+  setMultiSigGroupCache,
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -30,7 +30,11 @@ import {
   setToastMsg,
   showNoWitnessAlert,
 } from "../../../store/reducers/stateCache";
-import { BackEventPriorityType, OperationType, ToastMsgType } from "../../globals/types";
+import {
+  BackEventPriorityType,
+  OperationType,
+  ToastMsgType,
+} from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 import { nameChecker } from "../../utils/nameChecker";
@@ -168,11 +172,17 @@ const CreateIdentifier = ({
     }
     metadata.groupMetadata = groupMetadata;
     try {
-      if(Object.values(identifiers).some(item => item.displayName.trim() === identifierData.displayName.trim())) {
+      if (
+        Object.values(identifiers).some(
+          (item) =>
+            item.displayName.trim() === identifierData.displayName.trim()
+        )
+      ) {
         throw new Error(DUPLICATE_NAME);
       }
-  
-      const { identifier, createdAt } = await Agent.agent.identifiers.createIdentifier(metadata);
+
+      const { identifier, createdAt } =
+        await Agent.agent.identifiers.createIdentifier(metadata);
       if (multiSigGroup) {
         const connections =
           await Agent.agent.connections.getMultisigLinkedContacts(
@@ -199,19 +209,26 @@ const CreateIdentifier = ({
           identifierData.selectedAidType === 1 || multiSigGroup
             ? ToastMsgType.MULTI_SIGN_IDENTIFIER_CREATED
             : identifierData.selectedAidType === 2
-              ? ToastMsgType.DELEGATED_IDENTIFIER_CREATED
-              : ToastMsgType.IDENTIFIER_CREATED
+            ? ToastMsgType.DELEGATED_IDENTIFIER_CREATED
+            : ToastMsgType.IDENTIFIER_CREATED
         )
       );
     } catch (e) {
       const errorMessage = (e as Error).message;
 
-      if(errorMessage === DUPLICATE_NAME) {
+      if (errorMessage === DUPLICATE_NAME) {
         setDuplicateName(true);
         return;
       }
 
-      if(errorMessage.includes(IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE) || errorMessage.includes(IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION)) {
+      if (
+        errorMessage.includes(
+          IdentifierService.INSUFFICIENT_WITNESSES_AVAILABLE
+        ) ||
+        errorMessage.includes(
+          IdentifierService.MISCONFIGURED_AGENT_CONFIGURATION
+        )
+      ) {
         dispatch(showNoWitnessAlert(true));
         return;
       }
@@ -263,9 +280,12 @@ const CreateIdentifier = ({
     "identifier-name-error": !!hasError,
   });
 
-  const hardwareBackButtonConfig = useMemo(() => ({
-    priority: BackEventPriorityType.Modal
-  }), []);
+  const hardwareBackButtonConfig = useMemo(
+    () => ({
+      priority: BackEventPriorityType.Modal,
+    }),
+    []
+  );
 
   return (
     <>
@@ -274,7 +294,7 @@ const CreateIdentifier = ({
         className={`${componentId} full-page-modal ${blur ? "blur" : ""}`}
         data-testid={componentId}
       >
-        <Spinner show={blur}/>
+        <Spinner show={blur} />
         <ScrollablePageLayout
           pageId={componentId + "-content"}
           activeStatus={modalIsOpen}

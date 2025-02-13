@@ -25,10 +25,10 @@ const ShareConnection = ({
 
   const subtitle = useMemo(() => {
     switch (shareLocation) {
-    case ShareType.Connection:
-      return i18n.t("shareidentifier.subtitle.connection");
-    default:
-      return i18n.t("shareidentifier.subtitle.identifier");
+      case ShareType.Connection:
+        return i18n.t("shareidentifier.subtitle.connection");
+      default:
+        return i18n.t("shareidentifier.subtitle.identifier");
     }
   }, [shareLocation]);
 
@@ -36,10 +36,10 @@ const ShareConnection = ({
     Share.share({
       text: oobi,
     }).catch((e) => {
-      if(e.message === SHARE_CANCELLED_ERROR) return;
+      if (e.message === SHARE_CANCELLED_ERROR) return;
       throw e;
     });
-  }
+  };
 
   const closeModal = () => setIsOpen(false);
 

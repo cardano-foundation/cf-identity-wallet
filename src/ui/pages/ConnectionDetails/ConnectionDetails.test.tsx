@@ -70,10 +70,9 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-
 const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => getMock(options.key),
     remove: jest.fn(),
@@ -175,7 +174,6 @@ describe("ConnectionDetails Page", () => {
   });
 
   test("Delete button in the footer triggers a confirmation alert", async () => {
-
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,

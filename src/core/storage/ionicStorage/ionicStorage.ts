@@ -12,7 +12,7 @@ import { BasicRecord } from "../../agent/records";
 class IonicStorage<T extends BaseRecord> implements StorageService<T> {
   private static readonly SESION_IS_NOT_INITIALIZED =
     "Session is not initialized";
-  
+
   private session?: Storage;
 
   constructor(session: Storage) {
@@ -50,7 +50,9 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
   async deleteById(id: string): Promise<void> {
     this.checkSession(this.session);
     if (!(await this.session!.get(id))) {
-      throw new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
+      throw new Error(
+        `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`
+      );
     }
 
     await this.session!.remove(id);

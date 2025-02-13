@@ -25,7 +25,7 @@ import { ChooseCredential } from "./ChooseCredential";
 
 mockIonicReact();
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: jest.fn((options: { key: string }) => {
       if (options.key === KeyStoreKeys.APP_PASSCODE) {
@@ -33,7 +33,7 @@ jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
       }
       return null;
     }),
-    set: jest.fn()
+    set: jest.fn(),
   },
 }));
 
@@ -105,8 +105,8 @@ const initialState = {
     notifications: notificationsFix,
   },
   identifiersCache: {
-    identifiers: filteredIdentifierMapFix
-  }
+    identifiers: filteredIdentifierMapFix,
+  },
 };
 
 describe("Credential request - choose request", () => {

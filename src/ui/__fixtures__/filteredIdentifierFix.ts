@@ -1,4 +1,7 @@
-import { CreationStatus, IdentifierShortDetails } from "../../core/agent/services/identifier.types";
+import {
+  CreationStatus,
+  IdentifierShortDetails,
+} from "../../core/agent/services/identifier.types";
 
 const filteredIdentifierFix: IdentifierShortDetails[] = [
   {
@@ -40,20 +43,26 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
   },
 ];
 
-const filteredIdentifierMapFix = filteredIdentifierFix.reduce((result, next) => {
-  result[next.id] = next;
+const filteredIdentifierMapFix = filteredIdentifierFix.reduce(
+  (result, next) => {
+    result[next.id] = next;
 
-  return result;
-}, {} as Record<string, IdentifierShortDetails>);
+    return result;
+  },
+  {} as Record<string, IdentifierShortDetails>
+);
 
-const failedFilteredIdentifierMapFix = filteredIdentifierFix.reduce((result, next) => {
-  result[next.id] = {
-    ...next,
-    creationStatus: CreationStatus.FAILED
-  };
+const failedFilteredIdentifierMapFix = filteredIdentifierFix.reduce(
+  (result, next) => {
+    result[next.id] = {
+      ...next,
+      creationStatus: CreationStatus.FAILED,
+    };
 
-  return result;
-}, {} as Record<string, IdentifierShortDetails>);
+    return result;
+  },
+  {} as Record<string, IdentifierShortDetails>
+);
 
 const multisignIdentifierFix: IdentifierShortDetails[] = [
   {
@@ -108,7 +117,6 @@ const pendingGroupIdentifierFix: IdentifierShortDetails = {
   creationStatus: CreationStatus.PENDING,
   multisigManageAid: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
 };
-
 
 const pendingIdentifierFix: IdentifierShortDetails = {
   id: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",

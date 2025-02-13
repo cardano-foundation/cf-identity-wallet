@@ -4,7 +4,9 @@ import {
 } from "../../../../core/agent/services/credentialService.types";
 import { CardDetailsItemProps } from "../CardDetailsItem/CardDetailsItem.types";
 
-type ItemProps = Omit<CardDetailsItemProps, "info"> | ((key?: string) =>  Omit<CardDetailsItemProps, "info">);
+type ItemProps =
+  | Omit<CardDetailsItemProps, "info">
+  | ((key?: string) => Omit<CardDetailsItemProps, "info">);
 
 export interface CardDetailsAttributesProps {
   data: JSONObject;

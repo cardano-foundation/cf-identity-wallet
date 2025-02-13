@@ -1,6 +1,4 @@
-import {
-  ionFireEvent as fireEvent
-} from "@ionic/react-test-utils";
+import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { act } from "react";
@@ -165,14 +163,20 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     fireEvent.click(continueButton);
 
-    const alertTitle = await findByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.text);
+    const alertTitle = await findByText(
+      EN_TRANSLATIONS.generateseedphrase.alert.confirm.text
+    );
 
     await waitFor(() => expect(alertTitle).toBeVisible());
 
-    fireEvent.click(getByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.cancel));
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.cancel)
+    );
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.text)).toBeNull();
+      expect(
+        queryByText(EN_TRANSLATIONS.generateseedphrase.alert.confirm.text)
+      ).toBeNull();
     });
 
     unmount();
@@ -187,11 +191,11 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       </Provider>
     );
     const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false\""));
-    fireEvent.ionChange(termsCheckbox, "[checked=\"true\"");
-    expect(termsCheckbox.hasAttribute("[checked=\"true\""));
-    fireEvent.ionChange(termsCheckbox, "[checked=\"false\"");
-    expect(termsCheckbox.hasAttribute("[checked=\"false\""));
+    expect(termsCheckbox.hasAttribute('[checked="false"'));
+    fireEvent.ionChange(termsCheckbox, '[checked="true"');
+    expect(termsCheckbox.hasAttribute('[checked="true"'));
+    fireEvent.ionChange(termsCheckbox, '[checked="false"');
+    expect(termsCheckbox.hasAttribute('[checked="false"'));
     unmount();
   });
   test("Display seed number on seed phrase segment", async () => {
@@ -223,7 +227,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     await waitFor(() => {
       const seedNumberElements = seedPhraseContainer.querySelectorAll(
-        "span[data-testid*=\"word-index-number\"]"
+        'span[data-testid*="word-index-number"]'
       );
       expect(seedNumberElements.length).toBe(18);
     });
@@ -254,13 +258,15 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       </Provider>
     );
 
-    expect(getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.button.switch)
+    ).toBeVisible();
 
     fireEvent.click(getByTestId("tertiary-button-generate-seed-phrase"));
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.switchmodemodal.title)).toBeVisible();
-    })
+    });
   });
 
   test("Show recovery docs", async () => {
@@ -291,7 +297,12 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     fireEvent.click(getByTestId("recovery-phrase-docs-btn"));
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.generateseedphrase.onboarding.recoveryseedphrasedocs.title)).toBeVisible();
-    })
+      expect(
+        getByText(
+          EN_TRANSLATIONS.generateseedphrase.onboarding.recoveryseedphrasedocs
+            .title
+        )
+      ).toBeVisible();
+    });
   });
 });

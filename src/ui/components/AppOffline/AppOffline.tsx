@@ -5,7 +5,10 @@ import "./AppOffline.scss";
 import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import { BackEventPriorityType } from "../../globals/types";
 import { useAppSelector } from "../../../store/hooks";
-import { getAuthentication, getIsOnline } from "../../../store/reducers/stateCache";
+import {
+  getAuthentication,
+  getIsOnline,
+} from "../../../store/reducers/stateCache";
 
 const AppOfflinePage = () => {
   const loggedIn = useAppSelector(getAuthentication).loggedIn;
@@ -34,9 +37,9 @@ const AppOffline = () => {
   const ssiAgentIsSet = useAppSelector(getAuthentication).ssiAgentIsSet;
   const isOnline = useAppSelector(getIsOnline);
 
-  if(!ssiAgentIsSet || isOnline) return null;
+  if (!ssiAgentIsSet || isOnline) return null;
 
-  return <AppOfflinePage />
-}
+  return <AppOfflinePage />;
+};
 
 export { AppOffline };

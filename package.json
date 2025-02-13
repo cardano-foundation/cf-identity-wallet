@@ -8,7 +8,7 @@
     "build:local": "cross-env ENVIRONMENT=local-direct webpack --config webpack.prod.cjs",
     "build:cap": "npm run build && npx cap sync",
     "build:e2e": "npm run build:local && npx cap sync",
-    "prettier": "npx prettier --write '{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx,scss}'",
+    "prettier": "npx prettier --write './src/**/*.{ts,tsx,scss}' 'services/{credential-server,credential-server-ui}/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "wdio:android:s23ultra": "npx wdio tests/config/wdio.emu.android.galaxyS24Ultra.config.ts",
@@ -38,7 +38,7 @@
     "@ionic/react-router": "^7.5.4",
     "@ionic/storage": "^3.0.6",
     "@jimcase/barcode-scanning": "^7.0.0-next.5",
-    "@jimcase/capacitor-secure-storage-plugin": "^3.1.5",
+    "@evva/capacitor-secure-storage-plugin": "^3.1.0",
     "@reduxjs/toolkit": "^1.9.5",
     "bip39": "^3.0.4",
     "capacitor-native-settings": "^6.0.1",
@@ -141,7 +141,8 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": "eslint --cache --fix",
-    "{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx,scss}": "npx prettier --write"
+    "src/**/*.{ts,tsx,scss}": "npx prettier --write",
+    "services/{credential-server,credential-server-ui}/src/**/*.{ts,tsx,scss}": "npx prettier --write"
   },
   "type": "module"
 }

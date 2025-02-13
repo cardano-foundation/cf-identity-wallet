@@ -48,10 +48,10 @@ jest.mock("react-router-dom", () => ({
   useHistory: () => ({
     push: jest.fn(),
     location: {
-      pathname: TabsRoutePath.NOTIFICATIONS
-    }
-  })
-}))
+      pathname: TabsRoutePath.NOTIFICATIONS,
+    },
+  }),
+}));
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -89,8 +89,8 @@ const fullState = {
     notifications: notificationsFix,
   },
   credsCache: {
-    creds: []
-  }
+    creds: [],
+  },
 };
 
 const filterTestData = {

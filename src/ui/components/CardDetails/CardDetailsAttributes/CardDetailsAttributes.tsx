@@ -14,27 +14,34 @@ const CardDetailsAttributes = ({
   return (
     <>
       {attributes.map((item, index) => {
-        const { className, ...restItemProps } = typeof itemProps === "function" ? itemProps(item[0]) : (itemProps || {});
-        const itemClass = combineClassNames("card-details-attribute-item", className);
+        const { className, ...restItemProps } =
+          typeof itemProps === "function"
+            ? itemProps(item[0])
+            : itemProps || {};
+        const itemClass = combineClassNames(
+          "card-details-attribute-item",
+          className
+        );
 
         switch (item[0]) {
-        case "id": {
-          return (
-            <CardDetailsItem
-              key={index}
-              info={item[1] as string}
-              copyButton={true}
-              className={itemClass}
-              testId="card-details-attributes-id"
-              {...restItemProps}
-            />
-          );
-        }
-        case "d": {
-          return;
-        }
-        default: {
-          return (typeof item[1] === "string" || typeof item[1] === "number") &&
+          case "id": {
+            return (
+              <CardDetailsItem
+                key={index}
+                info={item[1] as string}
+                copyButton={true}
+                className={itemClass}
+                testId="card-details-attributes-id"
+                {...restItemProps}
+              />
+            );
+          }
+          case "d": {
+            return;
+          }
+          default: {
+            return (typeof item[1] === "string" ||
+              typeof item[1] === "number") &&
               !customType &&
               !`${item[1]}`.includes(" ") &&
               `${item[1]}`[10] !== "T" ? (
@@ -55,7 +62,7 @@ const CardDetailsAttributes = ({
                 itemProps={itemProps}
               />
             );
-        }
+          }
         }
       })}
     </>

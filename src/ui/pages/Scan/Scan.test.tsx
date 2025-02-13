@@ -54,8 +54,8 @@ jest.mock("@capacitor/keyboard", () => ({
 jest.mock("signify-ts", () => ({
   ...jest.requireActual("signify-ts"),
   Salter: jest.fn(() => ({
-    qb64: ""
-  }))
+    qb64: "",
+  })),
 }));
 
 jest.mock("@jimcase/barcode-scanning", () => {
@@ -72,7 +72,7 @@ jest.mock("@jimcase/barcode-scanning", () => {
       ) => addListener(eventName, listenerFunc),
       startScan: jest.fn(),
       stopScan: jest.fn(),
-      removeAllListeners: jest.fn()
+      removeAllListeners: jest.fn(),
     },
   };
 });
@@ -121,9 +121,10 @@ describe("Scan Tab", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("qr-code-scanner").classList.contains("no-permission")).toBeFalsy();
-    })
-
+      expect(
+        getByTestId("qr-code-scanner").classList.contains("no-permission")
+      ).toBeFalsy();
+    });
 
     expect(getByTestId("scan-tab")).toBeInTheDocument();
   });
@@ -159,7 +160,7 @@ describe("Scan Tab", () => {
     connectByOobiUrlMock.mockImplementation(() => {
       return {
         type: KeriConnectionType.NORMAL,
-        connection: connectionsFix[0]
+        connection: connectionsFix[0],
       };
     });
 
@@ -196,7 +197,7 @@ describe("Scan Tab", () => {
           groupId: "",
           connections: [],
         },
-      },      
+      },
       connectionsCache: {
         connections: {},
         multisigConnections: {},

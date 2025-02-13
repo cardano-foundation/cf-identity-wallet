@@ -349,46 +349,48 @@ describe("Credential service of agent", () => {
   });
 
   test("Can sync ACDCs from KERIA to local", async () => {
-    credentialListMock.mockReturnValueOnce([
-      {
-        sad: {
-          v: "ACDC10JSON000197_",
-          d: "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X",
-          i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
-          ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
-          s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-          a: {
-            d: "EDqWl2zEU2LtoVmP1s2jpWx9oFs3bs0zHxH6kdnIgx3-",
-            i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-            dt: "2023-11-29T02:13:34.858000+00:00",
-            LEI: "5493001KJTIIGC8Y1R17",
+    credentialListMock
+      .mockReturnValueOnce([
+        {
+          sad: {
+            v: "ACDC10JSON000197_",
+            d: "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X",
+            i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+            ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+            s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+            a: {
+              d: "EDqWl2zEU2LtoVmP1s2jpWx9oFs3bs0zHxH6kdnIgx3-",
+              i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+              dt: "2023-11-29T02:13:34.858000+00:00",
+              LEI: "5493001KJTIIGC8Y1R17",
+            },
+          },
+          schema: {
+            $id: "id-1",
+            title: "title1",
           },
         },
-        schema: {
-          $id: "id-1",
-          title: "title1",
-        },
-      },
-      {
-        sad: {
-          v: "ACDC10JSON000197_",
-          d: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",
-          i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
-          ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
-          s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-          a: {
-            d: "EC67QqakhZ1bZgKci_HsGMIKQybEdc9mJqykBecOG4rJ",
-            i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-            dt: "2023-11-29T02:12:35.716000+00:00",
-            LEI: "5493001KJTIIGC8Y1R17",
+        {
+          sad: {
+            v: "ACDC10JSON000197_",
+            d: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",
+            i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+            ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+            s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+            a: {
+              d: "EC67QqakhZ1bZgKci_HsGMIKQybEdc9mJqykBecOG4rJ",
+              i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+              dt: "2023-11-29T02:12:35.716000+00:00",
+              LEI: "5493001KJTIIGC8Y1R17",
+            },
+          },
+          schema: {
+            $id: "id-2",
+            title: "title2",
           },
         },
-        schema: {
-          $id: "id-2",
-          title: "title2",
-        },
-      },
-    ]).mockResolvedValue([]);
+      ])
+      .mockResolvedValue([]);
     credentialStorage.getAllCredentialMetadata = jest.fn().mockReturnValue([]);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...memberIdentifierRecord,
@@ -411,7 +413,8 @@ describe("Credential service of agent", () => {
         identifierId: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
         identifierType: IdentifierType.Individual,
         createdAt: new Date("2023-11-29T02:13:34.858Z"),
-      }));
+      })
+    );
     expect(credentialStorage.saveCredentialMetadataRecord).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",
@@ -557,18 +560,24 @@ describe("Credential service of agent", () => {
   });
 
   test("Should mark credential is pending when start delete credential", async () => {
-    credentialStorage.getCredentialMetadata = jest
-      .fn()
-      .mockResolvedValueOnce({id: "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", isArchived: true});
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValueOnce({
+      id: "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9",
+      isArchived: true,
+    });
     eventEmitter.emit = jest.fn();
 
-    await credentialService.markCredentialPendingDeletion("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9");
+    await credentialService.markCredentialPendingDeletion(
+      "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9"
+    );
 
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9", { pendingDeletion: true });
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9",
+      { pendingDeletion: true }
+    );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.CredentialRemovedEvent,
       payload: {
-        credentialId:"EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9",
+        credentialId: "EAgLOT26GVWE4o56NYRbydwwC_oV46HLiTmhiH4SwDI9",
       },
     });
   });
@@ -592,16 +601,16 @@ describe("Credential service of agent", () => {
       identifierId: "test-identifier-id",
       pendingDeletion: true,
       id: "test-credential-id",
-    }; 
-    credentialService.deleteStaleLocalCredential = jest.fn()
+    };
+    credentialService.deleteStaleLocalCredential = jest.fn();
     deleteCredentialMock.mockResolvedValueOnce(null);
 
     await credentialService.deleteCredential("test-credential-id");
 
-    expect(deleteCredentialMock).toHaveBeenCalledWith(
-      mockMetadata.id,
+    expect(deleteCredentialMock).toHaveBeenCalledWith(mockMetadata.id);
+    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith(
+      "test-credential-id"
     );
-    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith("test-credential-id");
   });
 
   test("should delete local credential if delete from signify throws a 404 error", async () => {
@@ -610,17 +619,17 @@ describe("Credential service of agent", () => {
       pendingDeletion: true,
       id: "test-credential-id",
     };
-    (deleteCredentialMock).mockRejectedValueOnce(
-      new Error("Request failed - 404 Not Found"),
+    deleteCredentialMock.mockRejectedValueOnce(
+      new Error("Request failed - 404 Not Found")
     );
     credentialService.deleteStaleLocalCredential = jest.fn();
 
     await credentialService.deleteCredential("test-credential-id");
 
-    expect(deleteCredentialMock).toHaveBeenCalledWith(
-      mockMetadata.id,
+    expect(deleteCredentialMock).toHaveBeenCalledWith(mockMetadata.id);
+    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith(
+      "test-credential-id"
     );
-    expect(credentialStorage.deleteCredentialMetadata).toHaveBeenCalledWith("test-credential-id");
   });
 
   test("should throw an error if delete from signify throws a non-404 error", async () => {
@@ -629,17 +638,15 @@ describe("Credential service of agent", () => {
       pendingDeletion: true,
       id: "test-credential-id",
     };
-    (deleteCredentialMock).mockRejectedValueOnce(
-      new Error("Request failed - 500 Internal Server Error"),
+    deleteCredentialMock.mockRejectedValueOnce(
+      new Error("Request failed - 500 Internal Server Error")
     );
 
-    await expect(credentialService.deleteCredential("test-credential-id")).rejects.toThrow(
-      "Request failed - 500 Internal Server Error",
-    );
+    await expect(
+      credentialService.deleteCredential("test-credential-id")
+    ).rejects.toThrow("Request failed - 500 Internal Server Error");
 
-    expect(deleteCredentialMock).toHaveBeenCalledWith(
-      mockMetadata.id,
-    );
+    expect(deleteCredentialMock).toHaveBeenCalledWith(mockMetadata.id);
     expect(credentialStorage.deleteCredentialMetadata).not.toHaveBeenCalled();
   });
 
@@ -653,10 +660,10 @@ describe("Credential service of agent", () => {
       .fn()
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(null);
-    credentialService.deleteCredential= jest
+    credentialService.deleteCredential = jest
       .fn()
       .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null);
     credentialStorage.getCredentialsPendingDeletion.mockResolvedValueOnce([
       { id: "id1" },
       { id: "id2" },
@@ -664,7 +671,13 @@ describe("Credential service of agent", () => {
 
     await credentialService.removeCredentialsPendingDeletion();
 
-    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(1, "id1");
-    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(2, "id2");
+    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(
+      1,
+      "id1"
+    );
+    expect(credentialService.deleteCredential).toHaveBeenNthCalledWith(
+      2,
+      "id2"
+    );
   });
 });

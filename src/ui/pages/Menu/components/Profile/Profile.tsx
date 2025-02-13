@@ -32,7 +32,7 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
     }, [authentication.userName]);
 
     const saveChanges = () => {
-      if(errorMessage) return;
+      if (errorMessage) return;
 
       userName.length &&
         userName !== authentication.userName &&
@@ -75,7 +75,7 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
               value={userName}
               error={!!errorMessage}
             />
-            <ErrorMessage message={errorMessage}/>
+            <ErrorMessage message={errorMessage} />
           </div>
         ) : (
           <>
@@ -97,7 +97,9 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
                   className="profile-item"
                   data-testid="profile-item-profile-link"
                 >
-                  <span>{i18n.t("tabs.menu.tab.items.profile.watchvideo")}</span>
+                  <span>
+                    {i18n.t("tabs.menu.tab.items.profile.watchvideo")}
+                  </span>
                   <IonIcon
                     aria-hidden="true"
                     icon={chevronForward}

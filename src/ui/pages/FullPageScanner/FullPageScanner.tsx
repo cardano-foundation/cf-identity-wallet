@@ -10,10 +10,7 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import { Scanner } from "../../components/Scanner";
 import { useCameraDirection } from "../../components/Scanner/hook/useCameraDirection";
-import {
-  BackEventPriorityType,
-  OperationType,
-} from "../../globals/types";
+import { BackEventPriorityType, OperationType } from "../../globals/types";
 import "./FullPageScanner.scss";
 import {
   FullPageScannerProps,

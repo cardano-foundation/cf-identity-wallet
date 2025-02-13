@@ -36,21 +36,23 @@ const CredentialRequest = ({
 
   const reachThreshold =
     linkedGroup &&
-    linkedGroup.othersJoined.length + (linkedGroup.linkedRequest.accepted ? 1 : 0) >= Number(linkedGroup.threshold);
+    linkedGroup.othersJoined.length +
+      (linkedGroup.linkedRequest.accepted ? 1 : 0) >=
+      Number(linkedGroup.threshold);
 
   const userAID = useMemo(() => {
-    if(!credentialRequest) return null;
+    if (!credentialRequest) return null;
 
     const identifier = identifiersData[credentialRequest.identifier];
-    
+
     return identifier ? identifier.multisigManageAid : null;
   }, [credentialRequest, identifiersData]);
 
   const getMultisigInfo = useCallback(async () => {
     const linkedGroup =
-        await Agent.agent.ipexCommunications.getLinkedGroupFromIpexApply(
-          notificationDetails.id
-        );
+      await Agent.agent.ipexCommunications.getLinkedGroupFromIpexApply(
+        notificationDetails.id
+      );
 
     const memberInfos = linkedGroup.members.map((member: string) => {
       const memberConnection = multisignConnectionsCache[member];
@@ -59,19 +61,19 @@ const CredentialRequest = ({
           aid: member,
           name: userName,
           joined: linkedGroup.linkedRequest.accepted,
-        }
+        };
       }
 
       return {
         aid: member,
         name: memberConnection.label || member,
-        joined: linkedGroup.othersJoined.includes(member)
-      }
+        joined: linkedGroup.othersJoined.includes(member),
+      };
     });
 
     setLinkedGroup({
       ...linkedGroup,
-      memberInfos
+      memberInfos,
     });
   }, [multisignConnectionsCache, notificationDetails.id, userName]);
 
@@ -97,7 +99,13 @@ const CredentialRequest = ({
       handleBack();
       showError("Unable to get credential request detail", e, dispatch);
     }
-  }, [notificationDetails, identifiersData, getMultisigInfo, handleBack, dispatch]);
+  }, [
+    notificationDetails,
+    identifiersData,
+    getMultisigInfo,
+    handleBack,
+    dispatch,
+  ]);
 
   useOnlineStatusEffect(getCrendetialRequest);
 

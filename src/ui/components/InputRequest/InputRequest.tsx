@@ -10,7 +10,7 @@ import {
   getConnectionsCache,
   getMissingAliasUrl,
   setMissingAliasUrl,
-  setOpenConnectionId
+  setOpenConnectionId,
 } from "../../../store/reducers/connectionsCache";
 import {
   getAuthentication,
@@ -38,7 +38,9 @@ const InputRequest = () => {
   const [inputChange, setInputChange] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
-  const errorMessage = inputChange ? nameChecker.getError(inputValue) : undefined;
+  const errorMessage = inputChange
+    ? nameChecker.getError(inputValue)
+    : undefined;
 
   const showModal = useMemo(() => {
     return (
@@ -56,19 +58,22 @@ const InputRequest = () => {
   ]);
 
   useEffect(() => {
-    if(!showModal) {
+    if (!showModal) {
       setInputChange(false);
     }
-  }, [showModal])
+  }, [showModal]);
 
   const resolveConnectionOobi = async (content: string) => {
     try {
       const connectionId = new URL(content).pathname
         .split("/oobi/")
-        .pop()?.split("/")[0];
+        .pop()
+        ?.split("/")[0];
 
-      if(connectionId && connections[connectionId]) {
-        throw new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`)        
+      if (connectionId && connections[connectionId]) {
+        throw new Error(
+          `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG}: ${connectionId}`
+        );
       }
 
       await Agent.agent.connections.connectByOobiUrl(content);
@@ -127,7 +132,7 @@ const InputRequest = () => {
   };
 
   const handleConfirm = () => {
-    if(errorMessage) return;
+    if (errorMessage) return;
 
     if (missingAliasUrl) {
       if (!missingAliasUrl) return;
@@ -167,13 +172,13 @@ const InputRequest = () => {
           hiddenInput={false}
           autofocus={true}
           onChangeInput={(value) => {
-            setInputValue(value); 
+            setInputValue(value);
             setInputChange(true);
           }}
           value={inputValue}
           error={!!errorMessage && inputChange}
         />
-        <ErrorMessage message={errorMessage}/>
+        <ErrorMessage message={errorMessage} />
         <PageFooter
           pageId={componentId}
           primaryButtonDisabled={inputValue.length === 0}

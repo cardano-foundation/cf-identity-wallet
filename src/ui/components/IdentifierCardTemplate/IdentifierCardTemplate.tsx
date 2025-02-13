@@ -44,7 +44,7 @@ const IdentifierCardTemplate = ({
       style={identifierCardTemplateStyles}
     >
       <div className="big-card-theme">
-        <CardTheme {...getTheme(cardData.theme)}/>
+        <CardTheme {...getTheme(cardData.theme)} />
       </div>
       <div className="identifier-card-template-inner">
         <div className="card-header">
@@ -57,7 +57,10 @@ const IdentifierCardTemplate = ({
               alt="card-logo"
             />
           </span>
-          <span className="card-text" data-testid={`card-display-name-${index}`}>
+          <span
+            className="card-text"
+            data-testid={`card-display-name-${index}`}
+          >
             {cardData.displayName}
           </span>
         </div>

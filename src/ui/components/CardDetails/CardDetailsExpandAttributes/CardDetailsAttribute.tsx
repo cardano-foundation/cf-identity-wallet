@@ -7,7 +7,8 @@ import { CardDetailsItem } from "../CardDetailsItem";
 import { CardDetailsAttributeProps } from "./CardDetailsExpandAttributes.types";
 import { reservedKeysFilter } from "./CardDetailsExpandAttributes.utils";
 
-const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}([+-]\d{2}:\d{2}|Z)$/;
+const dateRegex =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}([+-]\d{2}:\d{2}|Z)$/;
 
 const CardDetailsAttribute = ({
   attributeKey,
@@ -16,7 +17,7 @@ const CardDetailsAttribute = ({
   itemProps,
   ignoreKeys = [],
   deepLevel = 1,
-  openLevels = []
+  openLevels = [],
 }: CardDetailsAttributeProps) => {
   const key = attributeKey.toLowerCase().replace(/\s/g, "-");
   const { className, ...restItemProps } = itemProps || {};
@@ -24,44 +25,46 @@ const CardDetailsAttribute = ({
   const isObjectAttribute = typeof attributeValue === "object";
 
   const nativeAttribute = useMemo(() => {
-    if(isObjectAttribute) {
+    if (isObjectAttribute) {
       return "";
     }
 
     const attributeValueStr = String(attributeValue);
 
     if (dateRegex.test(attributeValueStr))
-      return `${formatShortDate(attributeValueStr)} - ${formatTimeToSec(attributeValueStr)}`;
+      return `${formatShortDate(attributeValueStr)} - ${formatTimeToSec(
+        attributeValueStr
+      )}`;
 
     return attributeValueStr;
   }, [attributeValue, isObjectAttribute]);
 
-  const detailItemsClass = combineClassNames(
-    "attribute-item",
-    className,
-  );
+  const detailItemsClass = combineClassNames("attribute-item", className);
 
-  const attributeKeyName = customAttributeKey || reservedKeysFilter(attributeKey);
+  const attributeKeyName =
+    customAttributeKey || reservedKeysFilter(attributeKey);
 
-  if(ignoreKeys.includes(attributeKey)) return null;
+  if (ignoreKeys.includes(attributeKey)) return null;
 
-  if(!isObjectAttribute) {
-    return <CardDetailsItem
-      keyValue={`${attributeKeyName}:`}
-      info={nativeAttribute}
-      testId={`attribute-${key}`}
-      className={detailItemsClass}
-      {...restItemProps}
-    />
+  if (!isObjectAttribute) {
+    return (
+      <CardDetailsItem
+        keyValue={`${attributeKeyName}:`}
+        info={nativeAttribute}
+        testId={`attribute-${key}`}
+        className={detailItemsClass}
+        {...restItemProps}
+      />
+    );
   }
 
-  if(!attributeValue) return null;
+  if (!attributeValue) return null;
 
-  return  (
+  return (
     <IonAccordionGroup
       data-testid="nested-attributes"
       className="attributes-accordion-group"
-      value={openLevels.map(value => String(value))}
+      value={openLevels.map((value) => String(value))}
       multiple
     >
       <IonAccordion
@@ -75,16 +78,23 @@ const CardDetailsAttribute = ({
           lines="none"
           slot="header"
         >
-          <span>
-            {attributeKeyName}
-          </span>
+          <span>{attributeKeyName}</span>
         </IonItem>
-        <div className="nested-list-item" slot="content">
-          {
-            Object.entries(attributeValue).map(([key, value]) => {
-              return <CardDetailsAttribute deepLevel={deepLevel + 1} attributeKey={key} attributeValue={value} key={key} openLevels={openLevels}/>
-            })
-          }
+        <div
+          className="nested-list-item"
+          slot="content"
+        >
+          {Object.entries(attributeValue).map(([key, value]) => {
+            return (
+              <CardDetailsAttribute
+                deepLevel={deepLevel + 1}
+                attributeKey={key}
+                attributeValue={value}
+                key={key}
+                openLevels={openLevels}
+              />
+            );
+          })}
         </div>
       </IonAccordion>
     </IonAccordionGroup>

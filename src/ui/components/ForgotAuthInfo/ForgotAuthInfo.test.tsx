@@ -16,7 +16,9 @@ const secureStorageSetFunc = jest.fn();
 const secureStorageDeleteFunc = jest.fn();
 const verifySeedPhraseFnc = jest.fn();
 
-const createOrUpdateBasicStore = jest.fn((arg: unknown) => Promise.resolve(arg));
+const createOrUpdateBasicStore = jest.fn((arg: unknown) =>
+  Promise.resolve(arg)
+);
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -25,7 +27,8 @@ jest.mock("../../../core/agent/agent", () => ({
         findById: jest.fn(),
         save: jest.fn(),
         update: jest.fn(),
-        createOrUpdateBasicRecord: (arg: unknown) => createOrUpdateBasicStore(arg),
+        createOrUpdateBasicRecord: (arg: unknown) =>
+          createOrUpdateBasicStore(arg),
       },
     },
   },
@@ -43,17 +46,16 @@ jest.mock("../../../core/storage", () => ({
 jest.mock("@ionic/react", () => {
   const { forwardRef, useImperativeHandle } = jest.requireActual("react");
 
-  return ({
+  return {
     ...jest.requireActual("@ionic/react"),
     IonInput: forwardRef((props: any, ref: any) => {
-      const {onIonBlur, onIonFocus, onIonInput, value} = props;
+      const { onIonBlur, onIonFocus, onIonInput, value } = props;
       const testId = props["data-testid"];
-  
-  
+
       useImperativeHandle(ref, () => ({
-        setFocus: jest.fn()
+        setFocus: jest.fn(),
       }));
-  
+
       return (
         <input
           ref={ref}
@@ -66,7 +68,7 @@ jest.mock("@ionic/react", () => {
       );
     }),
     IonModal: ({ children }: { children: any }) => children,
-  });
+  };
 });
 
 jest.mock("../../hooks/useBiometricsHook", () => ({
@@ -120,7 +122,9 @@ describe("Forgot Passcode Page", () => {
     );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.forgotauth.passcode.title)).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.forgotauth.passcode.title)
+      ).toBeVisible();
     });
 
     expect(
@@ -185,10 +189,14 @@ describe("Forgot Passcode Page", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(getByTestId("secondary-button-forgot-auth-info-modal")).toBeVisible();
-    })
+      expect(
+        getByTestId("secondary-button-forgot-auth-info-modal")
+      ).toBeVisible();
+    });
 
-    const text = await findByText(EN_TRANSLATIONS.forgotauth.newpasscode.reenterpasscode);
+    const text = await findByText(
+      EN_TRANSLATIONS.forgotauth.newpasscode.reenterpasscode
+    );
 
     await waitFor(() => {
       expect(text).toBeVisible();
@@ -239,8 +247,10 @@ describe("Forgot Password Page", () => {
     );
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.forgotauth.password.title)).toBeVisible();
-    })
+      expect(
+        getByText(EN_TRANSLATIONS.forgotauth.password.title)
+      ).toBeVisible();
+    });
 
     expect(
       getByText(EN_TRANSLATIONS.forgotauth.password.description)

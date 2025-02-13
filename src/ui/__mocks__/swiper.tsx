@@ -9,18 +9,18 @@ interface ComponentProps {
 jest.mock("swiper/react", () => ({
   Swiper: ({ children, ...props }: ComponentProps) => {
     const testId = props["data-testid"];
-    return <div data-testid={testId}>{children}</div>
+    return <div data-testid={testId}>{children}</div>;
   },
   SwiperSlide: ({ children, ...props }: ComponentProps) => {
     const testId = props["data-testid"];
-    return <div data-testid={testId}>{children}</div>
+    return <div data-testid={testId}>{children}</div>;
   },
-  SwiperClass: jest.fn()
-}))
+  SwiperClass: jest.fn(),
+}));
 
 jest.mock("swiper/modules", () => ({
   Pagination: ({ children, ...props }: ComponentProps) => {
     const testId = props["data-testid"];
-    return <div data-testid={testId}>{children}</div>
-  }
+    return <div data-testid={testId}>{children}</div>;
+  },
 }));

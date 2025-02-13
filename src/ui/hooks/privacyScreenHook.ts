@@ -16,7 +16,7 @@ const usePrivacyScreen = (autoEnable = true) => {
   }, []);
 
   useEffect(() => {
-    if(!autoEnable) return;
+    if (!autoEnable) return;
 
     setTimeout(() => {
       if (unmount.current) return;

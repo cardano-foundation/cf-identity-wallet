@@ -1,4 +1,8 @@
-import { Query, StorageMessage, StorageService } from "../../storage/storage.types";
+import {
+  Query,
+  StorageMessage,
+  StorageService,
+} from "../../storage/storage.types";
 import { BasicRecord } from "./basicRecord";
 import { BasicStorage } from "./basicStorage";
 
@@ -37,7 +41,9 @@ const basicRecordB = new BasicRecord({
 describe("Basic Storage", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.spyOn(global, "Date").mockImplementation(() => fixedDate as unknown as string);
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => fixedDate as unknown as string);
   });
 
   afterAll(() => {
@@ -78,7 +84,9 @@ describe("Basic Storage", () => {
 
   test("Should error if we cannot find an expected record by ID", async () => {
     storageService.findById.mockResolvedValue(null);
-    await expect(basicStorage.findExpectedById(basicRecordA.id)).rejects.toThrowError(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG);
+    await expect(
+      basicStorage.findExpectedById(basicRecordA.id)
+    ).rejects.toThrowError(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG);
   });
 
   test("Should find all basic records by query", async () => {
@@ -112,14 +120,18 @@ describe("Basic Storage", () => {
   });
 
   test("createOrUpdateBasicRecord should create record if it does not exist", async () => {
-    storageService.update.mockRejectedValue(new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} id1`));
+    storageService.update.mockRejectedValue(
+      new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} id1`)
+    );
     await basicStorage.createOrUpdateBasicRecord(basicRecordA);
     expect(storageService.save).toBeCalledWith(basicRecordA);
   });
 
   test("createOrUpdateBasicRecord should error for unexpected errors when updating", async () => {
     storageService.update.mockRejectedValue(new Error("Unknown error"));
-    await expect(basicStorage.createOrUpdateBasicRecord(basicRecordA)).rejects.toThrowError("Unknown error");
+    await expect(
+      basicStorage.createOrUpdateBasicRecord(basicRecordA)
+    ).rejects.toThrowError("Unknown error");
     expect(storageService.save).not.toBeCalled();
   });
 });

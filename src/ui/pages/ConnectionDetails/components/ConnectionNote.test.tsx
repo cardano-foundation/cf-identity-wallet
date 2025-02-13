@@ -5,7 +5,8 @@ import { ConnectionNote } from "./ConnectionNote";
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonInput: (props: any) => {
-    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } = props;
+    const { onIonBlur, onIonFocus, onIonInput, value, ...componentProps } =
+      props;
     const testId = componentProps["data-testid"];
 
     return (

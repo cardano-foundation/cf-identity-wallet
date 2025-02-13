@@ -193,11 +193,8 @@ describe("Wallet connect: empty history", () => {
     });
 
     act(() => {
-      fireEvent.click(
-        getByTestId("alert-disconnect-wallet-cancel-button")
-      );
+      fireEvent.click(getByTestId("alert-disconnect-wallet-cancel-button"));
     });
-
 
     await waitFor(() => {
       expect(
@@ -358,7 +355,7 @@ describe("Wallet connect: empty history", () => {
       },
       identifiersCache: {
         identifiers: {
-          "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L": {
+          EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L: {
             displayName: "ms",
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
@@ -366,7 +363,7 @@ describe("Wallet connect: empty history", () => {
             creationStatus: CreationStatus.COMPLETE,
             multisigManageAid: "EBze49sDYvxxtq5eFbX2TKbK7g4SPS7DJVdoTRIyybxN",
           },
-          "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ61": {
+          EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ61: {
             displayName: "ms",
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
@@ -511,15 +508,19 @@ describe("Wallet connect", () => {
       );
     });
 
-    const alerTitle = await findByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
-      .deletealert.message)
+    const alerTitle = await findByText(
+      EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+        .deletealert.message
+    );
 
     await waitFor(() => {
       expect(alerTitle).toBeVisible();
     });
 
-
-    const deleteConfirmButton = await findByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory.deletealert.confirm)
+    const deleteConfirmButton = await findByText(
+      EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
+        .deletealert.confirm
+    );
 
     fireEvent.click(deleteConfirmButton);
 
@@ -752,9 +753,7 @@ describe("Wallet connect", () => {
       ).toBeVisible();
     });
 
-    fireEvent.click(
-      getByTestId("alert-create-keri-confirm-button")
-    );
+    fireEvent.click(getByTestId("alert-create-keri-confirm-button"));
 
     await waitFor(() => {
       expect(getByTestId("create-identifier-modal")).toBeVisible();
@@ -790,7 +789,7 @@ describe("Wallet connect", () => {
       },
       identifiersCache: {
         identifiers: {
-          "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd": {
+          EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd: {
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",
@@ -859,7 +858,7 @@ describe("Wallet connect", () => {
       },
       identifiersCache: {
         identifiers: {
-          "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd": {
+          EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd: {
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",

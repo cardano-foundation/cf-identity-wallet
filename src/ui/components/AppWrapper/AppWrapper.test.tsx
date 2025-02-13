@@ -27,7 +27,11 @@ import {
 import { store } from "../../../store";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
-import { addGroupIdentifierCache, updateCreationStatus, updateOrAddIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import {
+  addGroupIdentifierCache,
+  updateCreationStatus,
+  updateOrAddIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import {
   setQueueIncomingRequest,
   setToastMsg,
@@ -48,9 +52,17 @@ import {
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
 } from "./AppWrapper";
-import { groupCreatedHandler, identifierAddedHandler, operationCompleteHandler, operationFailureHandler } from "./coreEventListeners";
+import {
+  groupCreatedHandler,
+  identifierAddedHandler,
+  operationCompleteHandler,
+  operationFailureHandler,
+} from "./coreEventListeners";
 import { CreationStatus } from "../../../core/agent/services/identifier.types";
-import { pendingIdentifierFix, pendingGroupIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import {
+  pendingIdentifierFix,
+  pendingGroupIdentifierFix,
+} from "../../__fixtures__/filteredIdentifierFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -69,7 +81,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
         onIdentifierAdded: jest.fn(),
-        getAvailableWitnesses: jest.fn()
+        getAvailableWitnesses: jest.fn(),
       },
       multiSigs: {
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),
@@ -129,7 +141,7 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: jest.fn((options: { key: string }) => {
       return Promise.resolve({ value: "value" });
@@ -212,15 +224,15 @@ const peerConnection: ConnectionData = {
 const identifierAddedEvent: IdentifierAddedEvent = {
   type: EventTypes.IdentifierAdded,
   payload: {
-    identifier: pendingIdentifierFix
+    identifier: pendingIdentifierFix,
   },
 };
 
 const groupCreatedEvent: GroupCreatedEvent = {
   type: EventTypes.GroupCreated,
   payload: {
-    group: pendingGroupIdentifierFix
-  }
+    group: pendingGroupIdentifierFix,
+  },
 };
 
 const dispatch = jest.fn();
@@ -231,16 +243,11 @@ describe("Connection state changed handler", () => {
       Agent.agent.connections,
       "getConnectionShortDetailById"
     );
-    getConnectionShortDetailsSpy.mockResolvedValue(
-      connectionShortDetails
-    );
+    getConnectionShortDetailsSpy.mockResolvedValue(connectionShortDetails);
   });
 
   test("handles connection state pending", async () => {
-    await connectionStateChangedHandler(
-      connectionStateChangedEvent,
-      dispatch
-    );
+    await connectionStateChangedHandler(connectionStateChangedEvent, dispatch);
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
     );
@@ -348,10 +355,7 @@ describe("Peer connection states changed handler", () => {
     Agent.agent.peerConnectionMetadataStorage.getPeerConnection = jest
       .fn()
       .mockResolvedValue(peerConnection);
-    await peerConnectRequestSignChangeHandler(
-      peerSignRequestEvent,
-      dispatch
-    );
+    await peerConnectRequestSignChangeHandler(peerSignRequestEvent, dispatch);
     expect(dispatch).toBeCalledWith(
       setQueueIncomingRequest({
         signTransaction: peerSignRequestEvent,
@@ -405,10 +409,7 @@ describe("KERIA operation state changed handler", () => {
 
 describe("Identifier state changed handler", () => {
   test("handles identifier added event", async () => {
-    await identifierAddedHandler(
-      identifierAddedEvent,
-      dispatch
-    );
+    await identifierAddedHandler(identifierAddedEvent, dispatch);
     expect(dispatch).toBeCalledWith(
       updateOrAddIdentifiersCache(pendingIdentifierFix)
     );
@@ -417,10 +418,7 @@ describe("Identifier state changed handler", () => {
 
 describe("Group state changed handler", () => {
   test("handles group created event", async () => {
-    await groupCreatedHandler(
-      groupCreatedEvent,
-      dispatch
-    );
+    await groupCreatedHandler(groupCreatedEvent, dispatch);
     expect(dispatch).toBeCalledWith(
       addGroupIdentifierCache(pendingGroupIdentifierFix)
     );

@@ -38,13 +38,9 @@ const IdentifierColorSelector = ({
   return (
     <div className="color-selector">
       {ColorConfigs.map((color) => {
-        const classes = combineClassNames(
-          "color",
-          `card-theme-${color}`,
-          {
-            selected: value === color,
-          }
-        );
+        const classes = combineClassNames("color", `card-theme-${color}`, {
+          selected: value === color,
+        });
         return (
           <div
             onClick={() => onColorChange(color)}
