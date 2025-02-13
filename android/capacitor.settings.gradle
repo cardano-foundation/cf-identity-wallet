@@ -41,8 +41,8 @@ project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacit
 include ':jimcase-barcode-scanning'
 project(':jimcase-barcode-scanning').projectDir = new File('../node_modules/@jimcase/barcode-scanning/android')
 
-include ':jimcase-capacitor-secure-storage-plugin'
-project(':jimcase-capacitor-secure-storage-plugin').projectDir = new File('../node_modules/@jimcase/capacitor-secure-storage-plugin/android')
+include ':evva-capacitor-secure-storage-plugin'
+project(':evva-capacitor-secure-storage-plugin').projectDir = new File('../node_modules/@evva/capacitor-secure-storage-plugin/android')
 
 include ':capacitor-native-settings'
 project(':capacitor-native-settings').projectDir = new File('../node_modules/capacitor-native-settings/android')
