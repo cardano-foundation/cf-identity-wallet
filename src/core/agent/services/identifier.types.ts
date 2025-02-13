@@ -65,16 +65,16 @@ type QueuedIdentifierCreation = {
 };
 
 type QueuedGroupProps =
-  {
-    initiator: true;
-    groupConnections: ConnectionShortDetails[];
-    threshold: number;
-  } |
-  {
-    initiator: false;
-    notificationId: string;
-    notificationSaid: string;
-  };
+  | {
+      initiator: true;
+      groupConnections: ConnectionShortDetails[];
+      threshold: number;
+    }
+  | {
+      initiator: false;
+      notificationId: string;
+      notificationSaid: string;
+    };
 
 type QueuedGroupCreation = QueuedIdentifierCreation & QueuedGroupProps;
 
