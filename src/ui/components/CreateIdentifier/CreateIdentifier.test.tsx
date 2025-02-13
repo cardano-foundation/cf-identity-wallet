@@ -50,7 +50,7 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => Promise.resolve({ value: "111111" })
   },

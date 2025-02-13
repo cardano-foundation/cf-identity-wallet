@@ -56,7 +56,7 @@ jest.mock("react-router-dom", () => ({
 
 const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
 
-jest.mock("@jimcase/capacitor-secure-storage-plugin", () => ({
+jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
   SecureStoragePlugin: {
     get: (options: { key: string }) => getMock(options.key)
   },

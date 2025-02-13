@@ -22,7 +22,7 @@ dependencies {
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
     implementation project(':jimcase-barcode-scanning')
-    implementation project(':jimcase-capacitor-secure-storage-plugin')
+    implementation project(':evva-capacitor-secure-storage-plugin')
     implementation project(':capacitor-native-settings')
 
 }
