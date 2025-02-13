@@ -14,7 +14,7 @@ FROM nginx:alpine
 RUN rm -rf /etc/nginx/conf.d
 COPY conf /etc/nginx
 
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 
 # Copy .env file and shell script to container
 WORKDIR /usr/share/nginx/html

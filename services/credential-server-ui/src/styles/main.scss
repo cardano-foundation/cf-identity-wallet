@@ -1,0 +1,13 @@
+@use "./colors.scss";
+
+:root {
+  margin: 0 auto;
+  text-align: center;
+  font-family: Lato, sans-serif;
+  color: var(--color-neutral-700);
+  background-color: var(--color-neutral-200);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
