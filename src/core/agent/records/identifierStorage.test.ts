@@ -34,18 +34,23 @@ describe("Identifier storage test", () => {
     jest.resetAllMocks();
   });
 
-  test("Should get all credentials", async () => {
+  test("Should get all identifier records", async () => {
     storageService.findAllByQuery.mockResolvedValue([
       identifierMetadataRecord,
       identifierMetadataRecord2,
     ]);
-    expect(await identifierStorage.getAllIdentifierMetadata()).toEqual([
+    // Unit test can't differentiate these
+    expect(await identifierStorage.getUserFacingIdentifierRecords()).toEqual([
+      identifierMetadataRecord,
+      identifierMetadataRecord2,
+    ]);
+    expect(await identifierStorage.getIdentifierRecords()).toEqual([
       identifierMetadataRecord,
       identifierMetadataRecord2,
     ]);
   });
 
-  test("Should get credential metadata", async () => {
+  test("Should get identifier metadata", async () => {
     storageService.findById.mockResolvedValue(identifierMetadataRecord);
     expect(
       await identifierStorage.getIdentifierMetadata(identifierMetadataRecord.id)
@@ -75,7 +80,7 @@ describe("Identifier storage test", () => {
     expect(storageService.save).toBeCalledWith(identifierMetadataRecord);
   });
 
-  test("Should update credential metadata record", async () => {
+  test("Should update identifier metadata record", async () => {
     storageService.findById.mockResolvedValue(identifierMetadataRecord);
     await identifierStorage.updateIdentifierMetadata(
       identifierMetadataRecord.id,

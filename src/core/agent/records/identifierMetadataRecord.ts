@@ -1,7 +1,7 @@
 import { BaseRecord } from "../../storage/storage.types";
 import { CreationStatus } from "../services/identifier.types";
 
-interface groupMetadata {
+interface GroupMetadata {
   groupId: string;
   groupInitiator: boolean;
   groupCreated: boolean;
@@ -15,7 +15,7 @@ interface IdentifierMetadataRecordProps {
   isDeleted?: boolean;
   theme: number;
   multisigManageAid?: string;
-  groupMetadata?: groupMetadata;
+  groupMetadata?: GroupMetadata;
   sxlt?: string;
 }
 
@@ -26,7 +26,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   isDeleted!: boolean;
   pendingDeletion = false;
   multisigManageAid?: string;
-  groupMetadata?: groupMetadata;
+  groupMetadata?: GroupMetadata;
   sxlt?: string;
 
   static readonly type = "IdentifierMetadataRecord";

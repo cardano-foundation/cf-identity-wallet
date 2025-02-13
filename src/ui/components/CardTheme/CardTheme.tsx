@@ -14,13 +14,13 @@ export const CardTheme = ({
   const classNames = combineClassNames(className, `card-theme theme-${color}`);
 
   switch (layout) {
-  case 0:
-    return <CardThemeOne className={classNames} />;
-  case 1:
-    return <CardThemeTwo className={classNames} />;
-  case 2:
-    return <CardThemeThree className={classNames} />;
-  default:
-    return <CardThemeFour className={classNames} />;
+    case 0:
+      return <CardThemeOne className={classNames} />;
+    case 1:
+      return <CardThemeTwo className={classNames} />;
+    case 2:
+      return <CardThemeThree className={classNames} />;
+    default:
+      return <CardThemeFour className={classNames} />;
   }
 };

@@ -2141,7 +2141,9 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
-    expect(multiSigs.endRoleAuthorization).toBeCalledWith("id");
+    expect(multiSigs.endRoleAuthorization).toBeCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
+    );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
@@ -3035,7 +3037,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test("Should retry connection when \"Failed to fetch\" error occurs when process operation", async () => {
+  test('Should retry connection when "Failed to fetch" error occurs when process operation', async () => {
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",

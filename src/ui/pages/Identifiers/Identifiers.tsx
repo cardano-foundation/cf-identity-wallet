@@ -254,8 +254,8 @@ const Identifiers = () => {
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"
-        ? "favorite-identifier-nav"
-        : ""
+      ? "favorite-identifier-nav"
+      : ""
   }`;
   const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
     if (identifier?.groupMetadata || identifier?.multisigManageAid) {
@@ -292,8 +292,8 @@ const Identifiers = () => {
         deletedPendingItem?.creationStatus === CreationStatus.FAILED
           ? "tabs.identifiers.detelepending.witnesserror"
           : deletedPendingItem?.groupMetadata?.groupId
-            ? "tabs.identifiers.detelepending.mutilsigdescription"
-            : "tabs.identifiers.detelepending.description"
+          ? "tabs.identifiers.detelepending.mutilsigdescription"
+          : "tabs.identifiers.detelepending.description"
       ),
       button: i18n.t("tabs.identifiers.detelepending.button"),
     }),
@@ -388,8 +388,8 @@ const Identifiers = () => {
                   selectedFilter === IdentifiersFilters.All
                     ? allIdentifiers
                     : selectedFilter === IdentifiersFilters.Individual
-                      ? individualIdentifiers
-                      : groupIdentifiers
+                    ? individualIdentifiers
+                    : groupIdentifiers
                 }
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}

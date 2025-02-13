@@ -11,12 +11,12 @@ const PasswordMeter = ({ password }: PasswordMeterProps) => {
 
   const label = useMemo(() => {
     switch (strongLevel) {
-    case StrongLevel.Strong:
-      return i18n.t("createpassword.meter.strengthlevel.strong");
-    case StrongLevel.Medium:
-      return i18n.t("createpassword.meter.strengthlevel.medium");
-    default:
-      return i18n.t("createpassword.meter.strengthlevel.weak");
+      case StrongLevel.Strong:
+        return i18n.t("createpassword.meter.strengthlevel.strong");
+      case StrongLevel.Medium:
+        return i18n.t("createpassword.meter.strengthlevel.medium");
+      default:
+        return i18n.t("createpassword.meter.strengthlevel.weak");
     }
   }, [strongLevel]);
 

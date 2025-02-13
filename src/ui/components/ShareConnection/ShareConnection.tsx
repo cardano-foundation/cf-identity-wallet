@@ -25,10 +25,10 @@ const ShareConnection = ({
 
   const subtitle = useMemo(() => {
     switch (shareLocation) {
-    case ShareType.Connection:
-      return i18n.t("shareidentifier.subtitle.connection");
-    default:
-      return i18n.t("shareidentifier.subtitle.identifier");
+      case ShareType.Connection:
+        return i18n.t("shareidentifier.subtitle.connection");
+      default:
+        return i18n.t("shareidentifier.subtitle.identifier");
     }
   }, [shareLocation]);
 

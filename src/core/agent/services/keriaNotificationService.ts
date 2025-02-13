@@ -654,163 +654,163 @@ class KeriaNotificationService extends AgentService {
     exchange: ExnMessage
   ): Promise<boolean> {
     switch (exchange.exn.e?.exn?.r) {
-    case ExchangeRoute.IpexAdmit: {
-      const grantNotificationRecords =
+      case ExchangeRoute.IpexAdmit: {
+        const grantNotificationRecords =
           await this.notificationStorage.findAllByQuery({
             exnSaid: exchange.exn.e.exn.p,
           });
 
-      // Either relates to an processed and deleted grant notification, or is out of order
-      if (grantNotificationRecords.length === 0) {
-        // @TODO - foconnor: We should do this via connection history
-        const grantExn = await this.props.signifyClient
-          .exchanges()
-          .get(exchange.exn.e.exn.p);
-        const credentialId = grantExn.exn.e.acdc.d;
-        if (
-          (await this.credentialStorage.getCredentialMetadata(
-            credentialId
-          )) !== null
-        ) {
-          await this.markNotification(notif.i);
-          return false;
+        // Either relates to an processed and deleted grant notification, or is out of order
+        if (grantNotificationRecords.length === 0) {
+          // @TODO - foconnor: We should do this via connection history
+          const grantExn = await this.props.signifyClient
+            .exchanges()
+            .get(exchange.exn.e.exn.p);
+          const credentialId = grantExn.exn.e.acdc.d;
+          if (
+            (await this.credentialStorage.getCredentialMetadata(
+              credentialId
+            )) !== null
+          ) {
+            await this.markNotification(notif.i);
+            return false;
+          }
+
+          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
         }
 
-        throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
-      }
+        // Refresh the date and read status for UI, and link
+        const notificationRecord = grantNotificationRecords[0];
+        notificationRecord.linkedRequest = {
+          ...notificationRecord.linkedRequest,
+          current: exchange.exn.d,
+        };
+        notificationRecord.createdAt = new Date();
+        notificationRecord.read = false;
 
-      // Refresh the date and read status for UI, and link
-      const notificationRecord = grantNotificationRecords[0];
-      notificationRecord.linkedRequest = {
-        ...notificationRecord.linkedRequest,
-        current: exchange.exn.d,
-      };
-      notificationRecord.createdAt = new Date();
-      notificationRecord.read = false;
+        await this.notificationStorage.update(notificationRecord);
 
-      await this.notificationStorage.update(notificationRecord);
-
-      this.props.eventEmitter.emit<NotificationRemovedEvent>({
-        type: EventTypes.NotificationRemoved,
-        payload: {
-          id: notificationRecord.id,
-        },
-      });
-      this.props.eventEmitter.emit<NotificationAddedEvent>({
-        type: EventTypes.NotificationAdded,
-        payload: {
-          note: {
+        this.props.eventEmitter.emit<NotificationRemovedEvent>({
+          type: EventTypes.NotificationRemoved,
+          payload: {
             id: notificationRecord.id,
-            createdAt: notificationRecord.createdAt.toISOString(),
-            a: notificationRecord.a,
-            multisigId: notificationRecord.multisigId,
-            connectionId: notificationRecord.connectionId,
-            read: notificationRecord.read,
-            groupReplied: true,
           },
-        },
-      });
+        });
+        this.props.eventEmitter.emit<NotificationAddedEvent>({
+          type: EventTypes.NotificationAdded,
+          payload: {
+            note: {
+              id: notificationRecord.id,
+              createdAt: notificationRecord.createdAt.toISOString(),
+              a: notificationRecord.a,
+              multisigId: notificationRecord.multisigId,
+              connectionId: notificationRecord.connectionId,
+              read: notificationRecord.read,
+              groupReplied: true,
+            },
+          },
+        });
 
-      return false;
-    }
-    case ExchangeRoute.IpexOffer: {
-      const applyExn = await this.props.signifyClient
-        .exchanges()
-        .get(exchange.exn.e.exn.p);
+        return false;
+      }
+      case ExchangeRoute.IpexOffer: {
+        const applyExn = await this.props.signifyClient
+          .exchanges()
+          .get(exchange.exn.e.exn.p);
 
-      const applyNotificationRecords =
+        const applyNotificationRecords =
           await this.notificationStorage.findAllByQuery({
             exnSaid: applyExn.exn.d,
           });
 
-      // Either relates to an processed and deleted apply notification, or is out of order
-      if (applyNotificationRecords.length === 0) {
-        // @TODO - foconnor: For deleted applies, we should track SAID in connection history
-        throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
-      }
+        // Either relates to an processed and deleted apply notification, or is out of order
+        if (applyNotificationRecords.length === 0) {
+          // @TODO - foconnor: For deleted applies, we should track SAID in connection history
+          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+        }
 
-      // Refresh the date and read status for UI, and link
-      const notificationRecord = applyNotificationRecords[0];
-      notificationRecord.linkedRequest = {
-        ...notificationRecord.linkedRequest,
-        current: exchange.exn.d,
-      };
-      notificationRecord.createdAt = new Date();
-      notificationRecord.read = false;
-      const { multisigMembers, ourIdentifier } =
+        // Refresh the date and read status for UI, and link
+        const notificationRecord = applyNotificationRecords[0];
+        notificationRecord.linkedRequest = {
+          ...notificationRecord.linkedRequest,
+          current: exchange.exn.d,
+        };
+        notificationRecord.createdAt = new Date();
+        notificationRecord.read = false;
+        const { multisigMembers, ourIdentifier } =
           await this.multiSigs.getMultisigParticipants(exchange.exn.a.gid);
 
-      const initiatorAid = multisigMembers.map(
-        (member: any) => member.aid
-      )[0];
+        const initiatorAid = multisigMembers.map(
+          (member: any) => member.aid
+        )[0];
 
-      notificationRecord.multisigId = exchange.exn.a.gid;
-      notificationRecord.groupReplied = true;
-      notificationRecord.initiatorAid = initiatorAid;
-      notificationRecord.groupInitiator =
+        notificationRecord.multisigId = exchange.exn.a.gid;
+        notificationRecord.groupReplied = true;
+        notificationRecord.initiatorAid = initiatorAid;
+        notificationRecord.groupInitiator =
           ourIdentifier.groupMetadata?.groupInitiator;
 
-      await this.notificationStorage.update(notificationRecord);
+        await this.notificationStorage.update(notificationRecord);
 
-      this.props.eventEmitter.emit<NotificationRemovedEvent>({
-        type: EventTypes.NotificationRemoved,
-        payload: {
-          id: notificationRecord.id,
-        },
-      });
-
-      this.props.eventEmitter.emit<NotificationAddedEvent>({
-        type: EventTypes.NotificationAdded,
-        payload: {
-          note: {
+        this.props.eventEmitter.emit<NotificationRemovedEvent>({
+          type: EventTypes.NotificationRemoved,
+          payload: {
             id: notificationRecord.id,
-            createdAt: notificationRecord.createdAt.toISOString(),
-            a: notificationRecord.a,
-            multisigId: notificationRecord.multisigId,
-            connectionId: notificationRecord.connectionId,
-            read: notificationRecord.read,
-            groupReplied: notificationRecord.groupReplied,
-            initiatorAid: notificationRecord.initiatorAid,
-            groupInitiator: notificationRecord.groupInitiator,
           },
-        },
-      });
+        });
 
-      return false;
-    }
-    case ExchangeRoute.IpexGrant: {
-      const agreeExn = await this.props.signifyClient
-        .exchanges()
-        .get(exchange.exn.e.exn.p);
+        this.props.eventEmitter.emit<NotificationAddedEvent>({
+          type: EventTypes.NotificationAdded,
+          payload: {
+            note: {
+              id: notificationRecord.id,
+              createdAt: notificationRecord.createdAt.toISOString(),
+              a: notificationRecord.a,
+              multisigId: notificationRecord.multisigId,
+              connectionId: notificationRecord.connectionId,
+              read: notificationRecord.read,
+              groupReplied: notificationRecord.groupReplied,
+              initiatorAid: notificationRecord.initiatorAid,
+              groupInitiator: notificationRecord.groupInitiator,
+            },
+          },
+        });
 
-      const agreeNotificationRecords =
+        return false;
+      }
+      case ExchangeRoute.IpexGrant: {
+        const agreeExn = await this.props.signifyClient
+          .exchanges()
+          .get(exchange.exn.e.exn.p);
+
+        const agreeNotificationRecords =
           await this.notificationStorage.findAllByQuery({
             exnSaid: agreeExn.exn.d,
           });
 
-      // Either relates to an processed and deleted agree notification, or is out of order
-      if (agreeNotificationRecords.length === 0) {
-        // @TODO - foconnor: For deleted agrees, we should track SAID in connection history
-        throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+        // Either relates to an processed and deleted agree notification, or is out of order
+        if (agreeNotificationRecords.length === 0) {
+          // @TODO - foconnor: For deleted agrees, we should track SAID in connection history
+          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+        }
+
+        // @TODO - foconnor: Could be optimised to only update record once but deviates from the other IPEX messages - OK for now.
+        const notificationRecord = agreeNotificationRecords[0];
+        notificationRecord.linkedRequest = {
+          ...notificationRecord.linkedRequest,
+          current: exchange.exn.d,
+        };
+
+        await this.notificationStorage.update(notificationRecord);
+        await this.ipexCommunications.joinMultisigGrant(
+          exchange,
+          notificationRecord
+        );
+        return false;
       }
-
-      // @TODO - foconnor: Could be optimised to only update record once but deviates from the other IPEX messages - OK for now.
-      const notificationRecord = agreeNotificationRecords[0];
-      notificationRecord.linkedRequest = {
-        ...notificationRecord.linkedRequest,
-        current: exchange.exn.d,
-      };
-
-      await this.notificationStorage.update(notificationRecord);
-      await this.ipexCommunications.joinMultisigGrant(
-        exchange,
-        notificationRecord
-      );
-      return false;
-    }
-    default:
-      await this.markNotification(notif.i);
-      return false;
+      default:
+        await this.markNotification(notif.i);
+        return false;
     }
   }
 
@@ -930,17 +930,17 @@ class KeriaNotificationService extends AgentService {
 
       let recordType;
       switch (record.route) {
-      case NotificationRoute.ExnIpexApply:
-        recordType = OperationPendingRecordType.ExchangeOfferCredential;
-        break;
-      case NotificationRoute.ExnIpexAgree:
-        recordType = OperationPendingRecordType.ExchangePresentCredential;
-        break;
-      case NotificationRoute.ExnIpexGrant:
-        recordType = OperationPendingRecordType.ExchangeReceiveCredential;
-        break;
-      default:
-        continue;
+        case NotificationRoute.ExnIpexApply:
+          recordType = OperationPendingRecordType.ExchangeOfferCredential;
+          break;
+        case NotificationRoute.ExnIpexAgree:
+          recordType = OperationPendingRecordType.ExchangePresentCredential;
+          break;
+        case NotificationRoute.ExnIpexGrant:
+          recordType = OperationPendingRecordType.ExchangeReceiveCredential;
+          break;
+        default:
+          continue;
       }
 
       await this.operationPendingStorage.save({
@@ -1021,15 +1021,15 @@ class KeriaNotificationService extends AgentService {
 
     if (operation.done && operation.error) {
       switch (operationRecord.recordType) {
-      case OperationPendingRecordType.Witness: {
-        await this.identifierStorage.updateIdentifierMetadata(recordId, {
-          creationStatus: CreationStatus.FAILED,
-        });
-        break;
-      }
-      default: {
-        break;
-      }
+        case OperationPendingRecordType.Witness: {
+          await this.identifierStorage.updateIdentifierMetadata(recordId, {
+            creationStatus: CreationStatus.FAILED,
+          });
+          break;
+        }
+        default: {
+          break;
+        }
       }
 
       this.props.eventEmitter.emit<OperationFailedEvent>({
@@ -1050,212 +1050,209 @@ class KeriaNotificationService extends AgentService {
 
     if (operation.done) {
       switch (operationRecord.recordType) {
-      case OperationPendingRecordType.Group: {
-        await this.identifierStorage.updateIdentifierMetadata(recordId, {
-          creationStatus: CreationStatus.COMPLETE,
-        });
-        // Trigger add end role authorization for multi-sigs
-        const multisigIdentifier =
-            await this.identifierStorage.getIdentifierMetadata(recordId);
-        await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
-        break;
-      }
-      case OperationPendingRecordType.Witness: {
-        await this.identifierStorage.updateIdentifierMetadata(recordId, {
-          creationStatus: CreationStatus.COMPLETE,
-        });
-        break;
-      }
-      case OperationPendingRecordType.Oobi: {
-        const connectionRecord = await this.connectionStorage.findById(
-          (operation.response as State).i
-        );
+        case OperationPendingRecordType.Group: {
+          await this.identifierStorage.updateIdentifierMetadata(recordId, {
+            creationStatus: CreationStatus.COMPLETE,
+          });
+          await this.multiSigs.endRoleAuthorization(recordId);
+          break;
+        }
+        case OperationPendingRecordType.Witness: {
+          await this.identifierStorage.updateIdentifierMetadata(recordId, {
+            creationStatus: CreationStatus.COMPLETE,
+          });
+          break;
+        }
+        case OperationPendingRecordType.Oobi: {
+          const connectionRecord = await this.connectionStorage.findById(
+            (operation.response as State).i
+          );
           // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
           // Also unskip tests for this
 
-        // const existingConnection = await this.props.signifyClient
-        //   .contacts()
-        //   .get((operation.response as State).i)
-        //   .catch(() => undefined);
-        //if (connectionRecord && !existingConnection) {
-        if (connectionRecord && !connectionRecord.pendingDeletion) {
-          connectionRecord.pending = false;
-          connectionRecord.createdAt = new Date(
-            (operation.response as State).dt
-          );
-          await this.connectionStorage.update(connectionRecord);
-
-          const alias = connectionRecord.alias;
-          await this.props.signifyClient
-            .contacts()
-            .update((operation.response as State).i, {
-              alias,
-              createdAt: new Date((operation.response as State).dt),
-            });
-
-          this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
-            type: EventTypes.ConnectionStateChanged,
-            payload: {
-              connectionId: connectionRecord.id,
-              status: ConnectionStatus.CONFIRMED,
-            },
-          });
-        } else {
-          await this.props.signifyClient
-            .contacts()
-            .delete((operation.response as State).i);
-        }
-        break;
-      }
-      case OperationPendingRecordType.ExchangeReceiveCredential: {
-        const admitExchange = await this.props.signifyClient
-          .exchanges()
-          .get(operation.metadata?.said);
-        if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
-          const grantExchange = await this.props.signifyClient
-            .exchanges()
-            .get(admitExchange.exn.p);
-          const credentialId = grantExchange.exn.e.acdc.d;
-
-          const notifications = await this.notificationStorage.findAllByQuery(
-            {
-              exnSaid: grantExchange.exn.d,
-            }
-          );
-          for (const notification of notifications) {
-            await deleteNotificationRecordById(
-              this.props.signifyClient,
-              this.notificationStorage,
-              notification.id,
-                notification.a.r as NotificationRoute
+          // const existingConnection = await this.props.signifyClient
+          //   .contacts()
+          //   .get((operation.response as State).i)
+          //   .catch(() => undefined);
+          //if (connectionRecord && !existingConnection) {
+          if (connectionRecord && !connectionRecord.pendingDeletion) {
+            connectionRecord.pending = false;
+            connectionRecord.createdAt = new Date(
+              (operation.response as State).dt
             );
+            await this.connectionStorage.update(connectionRecord);
 
-            this.props.eventEmitter.emit<NotificationRemovedEvent>({
-              type: EventTypes.NotificationRemoved,
+            const alias = connectionRecord.alias;
+            await this.props.signifyClient
+              .contacts()
+              .update((operation.response as State).i, {
+                alias,
+                createdAt: new Date((operation.response as State).dt),
+              });
+
+            this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+              type: EventTypes.ConnectionStateChanged,
               payload: {
-                id: notification.id,
+                connectionId: connectionRecord.id,
+                status: ConnectionStatus.CONFIRMED,
               },
             });
+          } else {
+            await this.props.signifyClient
+              .contacts()
+              .delete((operation.response as State).i);
           }
-
-          await this.credentialService.markAcdc(
-            credentialId,
-            CredentialStatus.CONFIRMED
-          );
-
-          await this.ipexCommunications.createLinkedIpexMessageRecord(
-            admitExchange,
-            ConnectionHistoryType.CREDENTIAL_ISSUANCE
-          );
+          break;
         }
-        break;
-      }
-      case OperationPendingRecordType.ExchangeOfferCredential: {
-        const offerExchange = await this.props.signifyClient
-          .exchanges()
-          .get(operation.metadata?.said);
-
-        if (offerExchange.exn.r === ExchangeRoute.IpexOffer) {
-          const applyExchange = await this.props.signifyClient
+        case OperationPendingRecordType.ExchangeReceiveCredential: {
+          const admitExchange = await this.props.signifyClient
             .exchanges()
-            .get(offerExchange.exn.p);
+            .get(operation.metadata?.said);
+          if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
+            const grantExchange = await this.props.signifyClient
+              .exchanges()
+              .get(admitExchange.exn.p);
+            const credentialId = grantExchange.exn.e.acdc.d;
 
-          const holder = await this.identifierStorage.getIdentifierMetadata(
-            offerExchange.exn.i
-          );
-          const notifications = await this.notificationStorage.findAllByQuery(
-            {
-              exnSaid: applyExchange.exn.d,
-            }
-          );
-
-          for (const notification of notifications) {
-            if (!holder.multisigManageAid) {
+            const notifications = await this.notificationStorage.findAllByQuery(
+              {
+                exnSaid: grantExchange.exn.d,
+              }
+            );
+            for (const notification of notifications) {
               await deleteNotificationRecordById(
                 this.props.signifyClient,
                 this.notificationStorage,
                 notification.id,
-                  notification.a.r as NotificationRoute
+                notification.a.r as NotificationRoute
               );
-              continue;
+
+              this.props.eventEmitter.emit<NotificationRemovedEvent>({
+                type: EventTypes.NotificationRemoved,
+                payload: {
+                  id: notification.id,
+                },
+              });
             }
 
-            // "Refresh" the notification so user is aware offer is successfully sent
-            notification.createdAt = new Date();
-            notification.read = false;
+            await this.credentialService.markAcdc(
+              credentialId,
+              CredentialStatus.CONFIRMED
+            );
 
-            const { multisigMembers, ourIdentifier } =
+            await this.ipexCommunications.createLinkedIpexMessageRecord(
+              admitExchange,
+              ConnectionHistoryType.CREDENTIAL_ISSUANCE
+            );
+          }
+          break;
+        }
+        case OperationPendingRecordType.ExchangeOfferCredential: {
+          const offerExchange = await this.props.signifyClient
+            .exchanges()
+            .get(operation.metadata?.said);
+
+          if (offerExchange.exn.r === ExchangeRoute.IpexOffer) {
+            const applyExchange = await this.props.signifyClient
+              .exchanges()
+              .get(offerExchange.exn.p);
+
+            const holder = await this.identifierStorage.getIdentifierMetadata(
+              offerExchange.exn.i
+            );
+            const notifications = await this.notificationStorage.findAllByQuery(
+              {
+                exnSaid: applyExchange.exn.d,
+              }
+            );
+
+            for (const notification of notifications) {
+              if (!holder.multisigManageAid) {
+                await deleteNotificationRecordById(
+                  this.props.signifyClient,
+                  this.notificationStorage,
+                  notification.id,
+                  notification.a.r as NotificationRoute
+                );
+                continue;
+              }
+
+              // "Refresh" the notification so user is aware offer is successfully sent
+              notification.createdAt = new Date();
+              notification.read = false;
+
+              const { multisigMembers, ourIdentifier } =
                 await this.multiSigs.getMultisigParticipants(
                   applyExchange.exn.rp
                 );
 
-            notification.groupReplied = true;
-            notification.initiatorAid = multisigMembers[0].aid;
-            notification.groupInitiator =
+              notification.groupReplied = true;
+              notification.initiatorAid = multisigMembers[0].aid;
+              notification.groupInitiator =
                 ourIdentifier.groupMetadata?.groupInitiator;
 
-            await this.notificationStorage.update(notification);
+              await this.notificationStorage.update(notification);
 
-            this.props.eventEmitter.emit<NotificationRemovedEvent>({
-              type: EventTypes.NotificationRemoved,
-              payload: {
-                id: notification.id,
-              },
-            });
-
-            this.props.eventEmitter.emit<NotificationAddedEvent>({
-              type: EventTypes.NotificationAdded,
-              payload: {
-                note: {
+              this.props.eventEmitter.emit<NotificationRemovedEvent>({
+                type: EventTypes.NotificationRemoved,
+                payload: {
                   id: notification.id,
-                  createdAt: notification.createdAt.toISOString(),
-                  a: notification.a,
-                  multisigId: notification.multisigId,
-                  connectionId: notification.connectionId,
-                  read: notification.read,
-                  groupReplied: notification.groupReplied,
-                  initiatorAid: notification.initiatorAid,
-                  groupInitiator: notification.groupInitiator,
                 },
-              },
-            });
-          }
-        }
-        break;
-      }
-      case OperationPendingRecordType.ExchangePresentCredential: {
-        const grantExchange = await this.props.signifyClient
-          .exchanges()
-          .get(operation.metadata?.said);
-        if (grantExchange.exn.r === ExchangeRoute.IpexGrant) {
-          const agreeExchange = await this.props.signifyClient
-            .exchanges()
-            .get(grantExchange.exn.p);
+              });
 
-          const notifications = await this.notificationStorage.findAllByQuery(
-            {
-              exnSaid: agreeExchange.exn.d,
+              this.props.eventEmitter.emit<NotificationAddedEvent>({
+                type: EventTypes.NotificationAdded,
+                payload: {
+                  note: {
+                    id: notification.id,
+                    createdAt: notification.createdAt.toISOString(),
+                    a: notification.a,
+                    multisigId: notification.multisigId,
+                    connectionId: notification.connectionId,
+                    read: notification.read,
+                    groupReplied: notification.groupReplied,
+                    initiatorAid: notification.initiatorAid,
+                    groupInitiator: notification.groupInitiator,
+                  },
+                },
+              });
             }
-          );
-          for (const notification of notifications) {
-            await deleteNotificationRecordById(
-              this.props.signifyClient,
-              this.notificationStorage,
-              notification.id,
+          }
+          break;
+        }
+        case OperationPendingRecordType.ExchangePresentCredential: {
+          const grantExchange = await this.props.signifyClient
+            .exchanges()
+            .get(operation.metadata?.said);
+          if (grantExchange.exn.r === ExchangeRoute.IpexGrant) {
+            const agreeExchange = await this.props.signifyClient
+              .exchanges()
+              .get(grantExchange.exn.p);
+
+            const notifications = await this.notificationStorage.findAllByQuery(
+              {
+                exnSaid: agreeExchange.exn.d,
+              }
+            );
+            for (const notification of notifications) {
+              await deleteNotificationRecordById(
+                this.props.signifyClient,
+                this.notificationStorage,
+                notification.id,
                 notification.a.r as NotificationRoute
+              );
+            }
+
+            await this.ipexCommunications.createLinkedIpexMessageRecord(
+              grantExchange,
+              ConnectionHistoryType.CREDENTIAL_PRESENTED
             );
           }
-
-          await this.ipexCommunications.createLinkedIpexMessageRecord(
-            grantExchange,
-            ConnectionHistoryType.CREDENTIAL_PRESENTED
-          );
+          break;
         }
-        break;
-      }
-      default: {
-        break;
-      }
+        default: {
+          break;
+        }
       }
 
       this.props.eventEmitter.emit<OperationCompleteEvent>({

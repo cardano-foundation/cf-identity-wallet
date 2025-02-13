@@ -2,7 +2,6 @@ import { SignifyClient } from "signify-ts";
 import { CoreEventEmitter } from "./event";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./services/connectionService.types";
-import { CreationStatus } from "./services/identifier.types";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -42,6 +41,7 @@ enum MiscRecordId {
   FAILED_NOTIFICATIONS = "failed-notifications",
   CLOUD_RECOVERY_STATUS = "cloud-recovery-status",
   IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
+  MULTISIG_IDENTIFIERS_PENDING_CREATION = "multisig-identifiers-pending-creation",
 }
 
 interface ConnectionShortDetails {
@@ -152,12 +152,6 @@ interface AgentServicesProps {
   eventEmitter: CoreEventEmitter;
 }
 
-interface CreateGroupIdentifierResult {
-  identifier: string;
-  creationStatus: CreationStatus;
-  multisigManageAid?: string;
-}
-
 interface IdentifierResult {
   name: string;
   prefix: string;
@@ -230,7 +224,6 @@ export type {
   OobiScan,
   KeriaNotificationMarker,
   AgentServicesProps,
-  CreateGroupIdentifierResult,
   IdentifierResult,
   AgentUrls,
   BranAndMnemonic,

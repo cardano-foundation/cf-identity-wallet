@@ -1,3 +1,4 @@
+import { CreateIdentifierBody } from "signify-ts";
 import { ConnectionShortDetails } from "../agent.types";
 
 enum CreationStatus {
@@ -58,6 +59,25 @@ enum IdentifierType {
   Group = "group",
 }
 
+type QueuedIdentifierCreation = {
+  name: string;
+  data: CreateIdentifierBody;
+};
+
+type QueuedGroupProps =
+  | {
+      initiator: true;
+      groupConnections: ConnectionShortDetails[];
+      threshold: number;
+    }
+  | {
+      initiator: false;
+      notificationId: string;
+      notificationSaid: string;
+    };
+
+type QueuedGroupCreation = QueuedIdentifierCreation & QueuedGroupProps;
+
 export type {
   IdentifierShortDetails,
   IdentifierDetails,
@@ -67,3 +87,4 @@ export type {
 };
 
 export { IdentifierType, CreationStatus };
+export type { QueuedIdentifierCreation, QueuedGroupProps, QueuedGroupCreation };

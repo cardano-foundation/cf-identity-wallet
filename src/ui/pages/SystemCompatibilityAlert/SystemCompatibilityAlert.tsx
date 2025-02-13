@@ -27,12 +27,12 @@ const RequirementItem = ({ name, value, status }: RequirementItemProps) => {
 
   const icon = useMemo(() => {
     switch (status) {
-    case MetRequirementStatus.MetRequirement:
-      return checkmark;
-    case MetRequirementStatus.NotMetRequirement:
-      return closeOutline;
-    default:
-      return null;
+      case MetRequirementStatus.MetRequirement:
+        return checkmark;
+      case MetRequirementStatus.NotMetRequirement:
+        return closeOutline;
+      default:
+        return null;
     }
   }, [status]);
 
@@ -127,8 +127,8 @@ const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({
                 isKeyStoreSupported === undefined
                   ? "N/A"
                   : isKeyStoreSupported
-                    ? "Yes"
-                    : "No"
+                  ? "Yes"
+                  : "No"
               }
             />
           </>
@@ -157,8 +157,8 @@ const SystemCompatibilityAlert: React.FC<SystemCompatibilityAlertProps> = ({
                 isKeyStoreSupported === undefined
                   ? "N/A"
                   : isKeyStoreSupported
-                    ? "Yes"
-                    : "No"
+                  ? "Yes"
+                  : "No"
               }
             />
           </>

@@ -372,13 +372,13 @@ class IpexCommunicationService extends AgentService {
       "-a-i": exchange.exn.rp,
       ...(Object.keys(attributes).length > 0
         ? {
-          ...Object.fromEntries(
-            Object.entries(attributes).map(([key, value]) => [
-              "-a-" + key,
-              value,
-            ])
-          ),
-        }
+            ...Object.fromEntries(
+              Object.entries(attributes).map(([key, value]) => [
+                "-a-" + key,
+                value,
+              ])
+            ),
+          }
         : {}),
     };
 
@@ -502,18 +502,18 @@ class IpexCommunicationService extends AgentService {
     let prefix;
     let key;
     switch (historyType) {
-    case ConnectionHistoryType.CREDENTIAL_REVOKED:
-      prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
-      key = message.exn.e.acdc.d;
-      break;
-    case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
-    case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
-    case ConnectionHistoryType.CREDENTIAL_PRESENTED:
-      prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
-      key = message.exn.d;
-      break;
-    default:
-      throw new Error("Invalid history type");
+      case ConnectionHistoryType.CREDENTIAL_REVOKED:
+        prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
+        key = message.exn.e.acdc.d;
+        break;
+      case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
+      case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
+      case ConnectionHistoryType.CREDENTIAL_PRESENTED:
+        prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
+        key = message.exn.d;
+        break;
+      default:
+        throw new Error("Invalid history type");
     }
     const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,
@@ -1142,7 +1142,7 @@ class IpexCommunicationService extends AgentService {
     const indexerOobiResult = await (
       await fetch(`${agentBase}/indexer/${prefix}`)
     ).text();
-    const schemaBase = indexerOobiResult.split("\"url\":\"")[1].split("\"")[0];
+    const schemaBase = indexerOobiResult.split('"url":"')[1].split('"')[0];
 
     return `${schemaBase}/oobi/${said}`;
   }

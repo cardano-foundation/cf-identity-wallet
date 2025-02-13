@@ -24,23 +24,23 @@ const CardDetailsAttributes = ({
         );
 
         switch (item[0]) {
-        case "id": {
-          return (
-            <CardDetailsItem
-              key={index}
-              info={item[1] as string}
-              copyButton={true}
-              className={itemClass}
-              testId="card-details-attributes-id"
-              {...restItemProps}
-            />
-          );
-        }
-        case "d": {
-          return;
-        }
-        default: {
-          return (typeof item[1] === "string" ||
+          case "id": {
+            return (
+              <CardDetailsItem
+                key={index}
+                info={item[1] as string}
+                copyButton={true}
+                className={itemClass}
+                testId="card-details-attributes-id"
+                {...restItemProps}
+              />
+            );
+          }
+          case "d": {
+            return;
+          }
+          default: {
+            return (typeof item[1] === "string" ||
               typeof item[1] === "number") &&
               !customType &&
               !`${item[1]}`.includes(" ") &&
@@ -62,7 +62,7 @@ const CardDetailsAttributes = ({
                 itemProps={itemProps}
               />
             );
-        }
+          }
         }
       })}
     </>

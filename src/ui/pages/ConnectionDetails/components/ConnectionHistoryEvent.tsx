@@ -27,13 +27,13 @@ const ConnectionHistoryEvent = ({
       <div className="connection-details-logo">
         {historyItem.type ===
         ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
-            <img
-              src={connectionDetails?.logo || KeriLogo}
-              alt="connection-logo"
-            />
-          ) : (
-            <CardTheme />
-          )}
+          <img
+            src={connectionDetails?.logo || KeriLogo}
+            alt="connection-logo"
+          />
+        ) : (
+          <CardTheme />
+        )}
       </div>
       <p className="connection-details-history-event-info">
         <span className="connection-details-history-text">

@@ -22,24 +22,39 @@ class BasicStorage implements StorageApi {
     });
     return this.storageService.save(record);
   }
+
   delete(record: BasicRecord): Promise<void> {
     return this.storageService.delete(record);
   }
+
   deleteById(id: string): Promise<void> {
     return this.storageService.deleteById(id);
   }
+
   update(record: BasicRecord): Promise<void> {
     return this.storageService.update(record);
   }
+
   findById(id: string): Promise<BasicRecord | null> {
     return this.storageService.findById(id, BasicRecord);
   }
+
+  async findExpectedById(id: string): Promise<BasicRecord> {
+    const record = await this.findById(id);
+    if (!record) {
+      throw new Error(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG);
+    }
+    return record;
+  }
+
   findAllByQuery(query: Query<BasicRecord>): Promise<BasicRecord[]> {
     return this.storageService.findAllByQuery(query, BasicRecord);
   }
+
   getAll(): Promise<BasicRecord[]> {
     return this.storageService.getAll(BasicRecord);
   }
+
   async createOrUpdateBasicRecord(record: BasicRecord): Promise<void> {
     try {
       await this.update(record);

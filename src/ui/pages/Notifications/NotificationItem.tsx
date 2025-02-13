@@ -33,45 +33,45 @@ const NotificationItem = ({
     const connectionName = connectionsCache?.[item.connectionId]?.label;
 
     switch (item.a.r) {
-    case NotificationRoute.ExnIpexGrant:
-      return t("tabs.notifications.tab.labels.exnipexgrant", {
-        connection: connectionName || t("connections.unknown"),
-      });
-    case NotificationRoute.MultiSigIcp:
-      return t("tabs.notifications.tab.labels.multisigicp", {
-        connection:
+      case NotificationRoute.ExnIpexGrant:
+        return t("tabs.notifications.tab.labels.exnipexgrant", {
+          connection: connectionName || t("connections.unknown"),
+        });
+      case NotificationRoute.MultiSigIcp:
+        return t("tabs.notifications.tab.labels.multisigicp", {
+          connection:
             multisigConnectionsCache?.[item.connectionId]?.label ||
             t("connections.unknown"),
-      });
-    case NotificationRoute.ExnIpexApply: {
-      if (item.groupReplied && !item.groupInitiator && item.initiatorAid) {
-        const initiator = item.initiatorAid
-          ? multisigConnectionsCache[item.initiatorAid].label
-          : t("connections.unknown");
-        return t("tabs.notifications.tab.labels.exnipexapplyproposed", {
+        });
+      case NotificationRoute.ExnIpexApply: {
+        if (item.groupReplied && !item.groupInitiator && item.initiatorAid) {
+          const initiator = item.initiatorAid
+            ? multisigConnectionsCache[item.initiatorAid].label
+            : t("connections.unknown");
+          return t("tabs.notifications.tab.labels.exnipexapplyproposed", {
+            connection: connectionName || t("connections.unknown"),
+            initiator,
+          });
+        }
+
+        return t("tabs.notifications.tab.labels.exnipexapply", {
           connection: connectionName || t("connections.unknown"),
-          initiator,
         });
       }
-
-      return t("tabs.notifications.tab.labels.exnipexapply", {
-        connection: connectionName || t("connections.unknown"),
-      });
-    }
-    case NotificationRoute.LocalAcdcRevoked:
-      return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
-        credential: item.a.credentialTitle,
-      });
-    case NotificationRoute.MultiSigExn:
-      return t("tabs.notifications.tab.labels.multisigexn", {
-        connection: connectionName || t("connections.unknown"),
-      });
-    case NotificationRoute.LocalSign:
-      return t("tabs.notifications.tab.labels.sign", {
-        connection: connectionName || t("connections.unknown"),
-      });
-    default:
-      return "";
+      case NotificationRoute.LocalAcdcRevoked:
+        return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
+          credential: item.a.credentialTitle,
+        });
+      case NotificationRoute.MultiSigExn:
+        return t("tabs.notifications.tab.labels.multisigexn", {
+          connection: connectionName || t("connections.unknown"),
+        });
+      case NotificationRoute.LocalSign:
+        return t("tabs.notifications.tab.labels.sign", {
+          connection: connectionName || t("connections.unknown"),
+        });
+      default:
+        return "";
     }
   }, [
     connectionsCache,
@@ -86,15 +86,15 @@ const NotificationItem = ({
 
   const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {
-    case NotificationRoute.ExnIpexGrant:
-    case NotificationRoute.ExnIpexApply:
-      return idCardOutline;
-    case NotificationRoute.MultiSigIcp:
-      return fingerPrintOutline;
-    case NotificationRoute.LocalSign:
-      return documentOutline;
-    default:
-      return idCardOutline;
+      case NotificationRoute.ExnIpexGrant:
+      case NotificationRoute.ExnIpexApply:
+        return idCardOutline;
+      case NotificationRoute.MultiSigIcp:
+        return fingerPrintOutline;
+      case NotificationRoute.LocalSign:
+        return documentOutline;
+      default:
+        return idCardOutline;
     }
   };
 

@@ -43,13 +43,13 @@ const SwitchOnboardingModeModal = ({
       const action = isCreateMode
         ? Agent.agent.basicStorage.deleteById(MiscRecordId.APP_RECOVERY_WALLET)
         : Agent.agent.basicStorage.createOrUpdateBasicRecord(
-          new BasicRecord({
-            id: MiscRecordId.APP_RECOVERY_WALLET,
-            content: {
-              value: String(true),
-            },
-          })
-        );
+            new BasicRecord({
+              id: MiscRecordId.APP_RECOVERY_WALLET,
+              content: {
+                value: String(true),
+              },
+            })
+          );
 
       await Promise.all([
         SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN),

@@ -41,7 +41,7 @@ const multisigIcpDetails = {
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const getMultiSignMock = jest.fn().mockResolvedValue(multisigIcpDetails);
-const joinMultisignMock = jest.fn((...params: unknown[]) =>
+const joinGroupMock = jest.fn((...params: unknown[]) =>
   Promise.resolve({
     identifier: "identifier-id",
   })
@@ -63,7 +63,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
       multiSigs: {
         getMultisigIcpDetails: () => getMultiSignMock(),
-        joinMultisig: (...params: unknown[]) => joinMultisignMock(...params),
+        joinGroup: (...params: unknown[]) => joinGroupMock(...params),
       },
     },
   },
@@ -184,14 +184,9 @@ describe("Multisign request", () => {
     });
 
     await waitFor(() => {
-      expect(joinMultisignMock).toBeCalledWith(
+      expect(joinGroupMock).toBeCalledWith(
         notificationsFix[3].id,
-        notificationsFix[3].a.r,
-        notificationsFix[3].a.d,
-        {
-          theme: multisigIcpDetails.ourIdentifier.theme,
-          displayName: multisigIcpDetails.ourIdentifier.displayName,
-        }
+        notificationsFix[3].a.d
       );
     });
 

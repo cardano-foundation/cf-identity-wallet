@@ -24,8 +24,8 @@ class IdentifierStorage {
     return metadata;
   }
 
-  async getAllIdentifierMetadata(): Promise<IdentifierMetadataRecord[]> {
-    const records = await this.storageService.findAllByQuery(
+  async getUserFacingIdentifierRecords(): Promise<IdentifierMetadataRecord[]> {
+    return await this.storageService.findAllByQuery(
       {
         isDeleted: false,
         pendingDeletion: false,
@@ -35,7 +35,16 @@ class IdentifierStorage {
       },
       IdentifierMetadataRecord
     );
-    return records;
+  }
+
+  async getIdentifierRecords(): Promise<IdentifierMetadataRecord[]> {
+    return await this.storageService.findAllByQuery(
+      {
+        isDeleted: false,
+        pendingDeletion: false,
+      },
+      IdentifierMetadataRecord
+    );
   }
 
   async getIdentifiersPendingDeletion(): Promise<IdentifierMetadataRecord[]> {

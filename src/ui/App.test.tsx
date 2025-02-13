@@ -39,6 +39,9 @@ jest.mock("../core/agent/agent", () => ({
         onIdentifierAdded: jest.fn(),
         getAvailableWitnesses: () => getAvailableWitnessesMock(),
       },
+      multiSigs: {
+        onGroupAdded: jest.fn(),
+      },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
         getMultisigConnections: jest.fn().mockResolvedValue([]),

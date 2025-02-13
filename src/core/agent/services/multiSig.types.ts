@@ -1,5 +1,3 @@
-import { State } from "signify-ts";
-
 interface CommonExn {
   v: string;
   t: "exn";
@@ -74,18 +72,6 @@ interface RotationMultiSigExnMessage {
   };
 }
 
-interface CreateMultisigExnPayload {
-  gid: string;
-  smids: string[];
-  rmids: string[];
-  rstates: State[];
-  name: string;
-}
-
-interface AuthorizationExnPayload {
-  gid: string;
-}
-
 enum MultiSigRoute {
   EXN = "/multisig/exn",
   ICP = "/multisig/icp",
@@ -149,8 +135,6 @@ export { MultiSigRoute };
 
 export type {
   RotationMultiSigExnMessage,
-  CreateMultisigExnPayload,
-  AuthorizationExnPayload,
   GrantToJoinMultisigExnPayload,
   IpexGrantMultiSigExn,
   InceptMultiSigExnMessage,

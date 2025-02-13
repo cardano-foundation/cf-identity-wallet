@@ -36,7 +36,7 @@ const mockConnectionService = {
   syncKeriaContacts: jest.fn(),
 };
 const mockIdentifierService = {
-  resolvePendingIdentifiers: jest.fn(),
+  processIdentifiersPendingCreation: jest.fn(),
   removeIdentifiersPendingDeletion: jest.fn(),
   syncKeriaIdentifiers: jest.fn(),
 };
@@ -46,6 +46,9 @@ const mockCredentialService = {
 };
 const mockKeriaNotificationService = {
   syncIPEXReplyOperations: jest.fn(),
+};
+const mockMultiSigService = {
+  processGroupsPendingCreation: jest.fn(),
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -67,6 +70,7 @@ describe("KERIA connectivity", () => {
     (agent as any).connectionService = mockConnectionService;
     (agent as any).identifierService = mockIdentifierService;
     (agent as any).credentialService = mockCredentialService;
+    (agent as any).multiSigService = mockMultiSigService;
 
     mockAgentUrls = {
       url: "http://127.0.0.1:3901",
@@ -169,7 +173,7 @@ describe("KERIA connectivity", () => {
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
-    mockIdentifierService.resolvePendingIdentifiers = jest
+    mockIdentifierService.processIdentifiersPendingCreation = jest
       .fn()
       .mockReturnValue(undefined);
     mockCredentialService.removeCredentialsPendingDeletion = jest
@@ -293,7 +297,7 @@ describe("Recovery of DB from cloud sync", () => {
     mockIdentifierService.removeIdentifiersPendingDeletion = jest
       .fn()
       .mockReturnValue(undefined);
-    mockIdentifierService.resolvePendingIdentifiers = jest
+    mockIdentifierService.processIdentifiersPendingCreation = jest
       .fn()
       .mockReturnValue(undefined);
 

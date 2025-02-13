@@ -11,21 +11,11 @@ import {
 import { personCircleOutline } from "ionicons/icons";
 import { useCallback, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
-import {
-  CreateGroupIdentifierResult,
-  NotificationRoute,
-} from "../../../../../core/agent/agent.types";
-import {
-  IdentifierShortDetails,
-  MultiSigIcpRequestDetails,
-} from "../../../../../core/agent/services/identifier.types";
+import { NotificationRoute } from "../../../../../core/agent/agent.types";
+import { MultiSigIcpRequestDetails } from "../../../../../core/agent/services/identifier.types";
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
-import {
-  getIdentifiersCache,
-  setIdentifiersCache,
-} from "../../../../../store/reducers/identifiersCache";
 import {
   getNotificationsCache,
   setNotificationsCache,
@@ -57,7 +47,6 @@ const MultiSigRequest = ({
   const notificationsCache = useAppSelector(getNotificationsCache);
   const [notifications, setNotifications] = useState(notificationsCache);
   const [spinner, setSpinner] = useState(false);
-  const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [multisigIcpDetails, setMultisigIcpDetails] =
     useState<MultiSigIcpRequestDetails | null>(null);
@@ -105,36 +94,13 @@ const MultiSigRequest = ({
         );
       }
 
-      const { identifier, multisigManageAid, creationStatus } =
-        (await Agent.agent.multiSigs.joinMultisig(
-          notificationDetails.id,
-          notificationDetails.a.r as NotificationRoute,
-          notificationDetails.a.d as string,
-          {
-            theme: multisigIcpDetails.ourIdentifier.theme,
-            displayName: multisigIcpDetails.ourIdentifier.displayName,
-          }
-        )) as CreateGroupIdentifierResult;
-
-      if (identifier) {
-        const newIdentifier: IdentifierShortDetails = {
-          id: identifier,
-          displayName: multisigIcpDetails.ourIdentifier.displayName,
-          createdAtUTC: `${notificationDetails?.createdAt}`,
-          theme: multisigIcpDetails.ourIdentifier.theme,
-          creationStatus,
-          multisigManageAid,
-        };
-        const filteredIdentifiersData = Object.values(identifiersData).filter(
-          (item) => item.id !== multisigIcpDetails?.ourIdentifier.id
-        );
-        dispatch(
-          setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
-        );
-        multisigIcpDetails.threshold === 1
-          ? ToastMsgType.IDENTIFIER_CREATED
-          : ToastMsgType.IDENTIFIER_REQUESTED;
-      }
+      await Agent.agent.multiSigs.joinGroup(
+        notificationDetails.id,
+        notificationDetails.a.d as string
+      );
+      multisigIcpDetails.threshold === 1
+        ? ToastMsgType.IDENTIFIER_CREATED
+        : ToastMsgType.IDENTIFIER_REQUESTED;
       handleNotificationUpdate();
       handleBack();
     } catch (e) {
