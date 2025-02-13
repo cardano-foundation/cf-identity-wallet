@@ -111,7 +111,7 @@ const pendingGroupIdentifierFix: IdentifierShortDetails = {
 
 
 const pendingIdentifierFix: IdentifierShortDetails = {
-  id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
+  id: "EB3VkeAMhhPh2GZnDYs68N8-jJ1xrB6ptX5JxPuPFpZ7",
   displayName: "Test MS",
   createdAtUTC: "2024-03-07T11:54:56.886Z",
   theme: 0,

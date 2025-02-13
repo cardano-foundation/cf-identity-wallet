@@ -374,7 +374,7 @@ class MultiSigService extends AgentService {
       });
     const exn = icpMsg[0].exn;
     
-    const identifiers = await this.identifiers.getIdentifiers();
+    const identifiers = await this.identifiers.getIdentifiers(false);
     const mHabRecord = identifiers.find((identifier) => {
       return exn.a.smids.find((member) => identifier.id === member);
     });

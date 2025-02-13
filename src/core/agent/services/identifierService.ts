@@ -85,13 +85,13 @@ class IdentifierService extends AgentService {
     this.props.eventEmitter.on(EventTypes.IdentifierAdded, callback);
   }
 
-  async getIdentifiers(): Promise<IdentifierShortDetails[]> {
+  async getIdentifiers(userFacing = true): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
-    const listMetadata: IdentifierMetadataRecord[] =
-      await this.identifierStorage.getAllIdentifierMetadata();
+    const records: IdentifierMetadataRecord[] =
+      userFacing ? await this.identifierStorage.getUserFacingIdentifierRecords() : await this.identifierStorage.getIdentifierRecords();
 
-    for (let i = 0; i < listMetadata.length; i++) {
-      const metadata = listMetadata[i];
+    for (let i = 0; i < records.length; i++) {
+      const metadata = records[i];
       const identifier: IdentifierShortDetails = {
         displayName: metadata.displayName,
         id: metadata.id,

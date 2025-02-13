@@ -24,7 +24,7 @@ import { CreationStatus, IdentifierShortDetails } from "../../../core/agent/serv
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
-import { multisignIdentifierFix, pendingIdentifierFix, pendingMemberIdentifierFix } from "../../../ui/__fixtures__/filteredIdentifierFix";
+import { multisignIdentifierFix, pendingGroupIdentifierFix, pendingIdentifierFix, pendingMemberIdentifierFix } from "../../../ui/__fixtures__/filteredIdentifierFix";
 
 describe("identifiersCacheSlice", () => {
   const initialState = {
@@ -248,11 +248,11 @@ describe("identifiersCacheSlice", () => {
     };
     const newState = identifiersCacheSlice.reducer(
       state,
-      addGroupIdentifierCache(multisignIdentifierFix[0])
+      addGroupIdentifierCache(pendingGroupIdentifierFix)
     );
     expect(newState.identifiers).toEqual({
       [pendingIdentifierFix.id]: pendingIdentifierFix,
-      [multisignIdentifierFix[0].id]: multisignIdentifierFix[0]
+      [pendingGroupIdentifierFix.id]: pendingGroupIdentifierFix
     }); 
   });
 

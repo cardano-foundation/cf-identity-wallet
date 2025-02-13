@@ -116,7 +116,8 @@ const signifyClient = jest.mocked({
 
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
-  getAllIdentifierMetadata: jest.fn(),
+  getUserFacingIdentifierRecords: jest.fn(),
+  getIdentifierRecords: jest.fn(),
   getKeriIdentifiersMetadata: jest.fn(),
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
@@ -279,8 +280,8 @@ describe("Single sig service of agent", () => {
     });
   });
 
-  test("can get all identifiers", async () => {
-    identifierStorage.getAllIdentifierMetadata = jest
+  test("can get all user facing identifiers", async () => {
+    identifierStorage.getUserFacingIdentifierRecords = jest
       .fn()
       .mockResolvedValue([keriMetadataRecord]);
     expect(await identifierService.getIdentifiers()).toStrictEqual([
@@ -295,8 +296,24 @@ describe("Single sig service of agent", () => {
     ]);
   });
 
+  test("can get all identifier records, even non user facing", async () => {
+    identifierStorage.getIdentifierRecords = jest
+      .fn()
+      .mockResolvedValue([keriMetadataRecord]);
+    expect(await identifierService.getIdentifiers(false)).toStrictEqual([
+      {
+        id: keriMetadataRecord.id,
+        displayName: "Identifier 2",
+        createdAtUTC: nowISO,
+        theme: 0,
+        creationStatus: CreationStatus.COMPLETE,
+        groupMetadata,
+      },
+    ]);
+  });
+
   test("can get all identifiers without error if there are none", async () => {
-    identifierStorage.getAllIdentifierMetadata = jest
+    identifierStorage.getUserFacingIdentifierRecords = jest
       .fn()
       .mockResolvedValue([]);
     expect(await identifierService.getIdentifiers()).toStrictEqual([]);
