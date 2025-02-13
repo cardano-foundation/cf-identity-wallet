@@ -101,13 +101,20 @@ const Demo: React.FC = () => {
     }
   }, []);
 
-  const disconnectWallet = () => {
+  const disconnectWallet = async () => {
     disconnect();
     setPeerConnectWalletInfo(defautlWallet);
     setShowAcceptButton(false);
     setWalletIsConnected(false);
     setError("");
+
+    const api =
+        window.cardano && window.cardano[peerConnectWalletInfo.name];
+    if (!api) return;
+    const enabledApi = await api.enable();
+    await enabledApi.experimental.disable();
   }
+
   const handleAcceptWallet = () => {
     if (peerConnectWalletInfo) {
       onPeerConnectAccept();
@@ -119,7 +126,6 @@ const Demo: React.FC = () => {
 
           const checkApi = setInterval(async () => {
             const api =
-                // @ts-ignore
                 window.cardano && window.cardano[peerConnectWalletInfo.name];
             if (api || Date.now() - start > timeout) {
               clearInterval(checkApi);
@@ -201,7 +207,7 @@ const Demo: React.FC = () => {
             showAcceptButton ? <button className="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg"
                                        onClick={handleAcceptWallet} disabled={!showAcceptButton}>
               Accept connection with {peerConnectWalletInfo.name}
-            </button> : walletIsConnected ? <button className="bg-red-600 text-white font-bold py-3 px-6 rounded-lg"
+            </button> : peerConnectWalletInfo.name.length && walletIsConnected ? <button className="bg-red-600 text-white font-bold py-3 px-6 rounded-lg"
                                 onClick={disconnectWallet}>
               Disconnect Wallet
             </button> : null
