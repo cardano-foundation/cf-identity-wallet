@@ -4,7 +4,7 @@ import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/pee
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 import { ConnectionData } from "../walletConnectionsCache";
 
-interface PayloadData<T = any> {
+interface PayloadData<T = unknown> {
   [key: string]: T;
 }
 interface CurrentRouteCacheProps {

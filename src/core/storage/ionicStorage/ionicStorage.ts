@@ -1,4 +1,4 @@
-import { Storage, Drivers } from "@ionic/storage";
+import { Storage } from "@ionic/storage";
 import {
   Query,
   BaseRecord,
