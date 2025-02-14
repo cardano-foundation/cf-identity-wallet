@@ -1084,8 +1084,9 @@ class KeriaNotificationService extends AgentService {
                   alias: connectionRecord.alias,
                   createdAt: new Date((operation.response as State).dt),
                 });
-              await this.connectionStorage.update(connectionRecord);
             }
+
+            await this.connectionStorage.update(connectionRecord);
 
             this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
               type: EventTypes.ConnectionStateChanged,
