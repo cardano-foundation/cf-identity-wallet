@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Contact, Operation, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
@@ -462,12 +463,15 @@ class ConnectionService extends AgentService {
     ) {
       throw new Error(ConnectionService.OOBI_INVALID);
     }
-    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
+    const urlObj = new URL(url);
+    const alias = urlObj.searchParams.get("name") ?? randomSalt();
+    urlObj.searchParams.delete("name");
+    const strippedUrl = urlObj.toString();
     let operation: Operation & { response: State };
     if (waitForCompletion) {
       operation = (await waitAndGetDoneOp(
         this.props.signifyClient,
-        await this.props.signifyClient.oobis().resolve(url, alias),
+        await this.props.signifyClient.oobis().resolve(strippedUrl),
         5000
       )) as Operation & { response: State };
       if (!operation.done) {
@@ -477,14 +481,19 @@ class ConnectionService extends AgentService {
       }
       if (operation.response && operation.response.i) {
         const connectionId = operation.response.i;
-        await this.props.signifyClient.contacts().update(connectionId, {
-          alias,
-          groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
-          createdAt: new Date().toISOString(),
-        });
+        const contact = await this.props.signifyClient
+          .contacts()
+          .get(connectionId);
+        if (!contact) {
+          await this.props.signifyClient.contacts().update(connectionId, {
+            alias,
+            groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
+            createdAt: new Date((operation.response as State).dt),
+          });
+        }
       }
     } else {
-      operation = await this.props.signifyClient.oobis().resolve(url, alias);
+      operation = await this.props.signifyClient.oobis().resolve(strippedUrl);
       await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,

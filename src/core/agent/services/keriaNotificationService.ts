@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Ilks, State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
@@ -1067,19 +1068,19 @@ class KeriaNotificationService extends AgentService {
           const connectionRecord = await this.connectionStorage.findById(
             (operation.response as State).i
           );
-          // @TODO: Until https://github.com/WebOfTrust/keripy/pull/882 merged, we can't add this logic (which is meant to stop createdAt from being updated with re-resolves.)
-          // Also unskip tests for this
 
-          // const existingConnection = await this.props.signifyClient
-          //   .contacts()
-          //   .get((operation.response as State).i)
-          //   .catch(() => undefined);
-          //if (connectionRecord && !existingConnection) {
+          const existingConnection = await this.props.signifyClient
+            .contacts()
+            .get((operation.response as State).i)
+            .catch(() => undefined);
+
           if (connectionRecord && !connectionRecord.pendingDeletion) {
             connectionRecord.pending = false;
-            connectionRecord.createdAt = new Date(
-              (operation.response as State).dt
-            );
+            if (!existingConnection) {
+              connectionRecord.createdAt = new Date(
+                (operation.response as State).dt
+              );
+            }
             await this.connectionStorage.update(connectionRecord);
 
             const alias = connectionRecord.alias;
@@ -1087,7 +1088,7 @@ class KeriaNotificationService extends AgentService {
               .contacts()
               .update((operation.response as State).i, {
                 alias,
-                createdAt: new Date((operation.response as State).dt),
+                createdAt: connectionRecord.createdAt,
               });
 
             this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
