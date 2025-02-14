@@ -2343,7 +2343,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test("Cannot create connection if the connection is already created", async () => {
+  test("Should not update connection if it already exists", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const operationMock = {
       metadata: {
