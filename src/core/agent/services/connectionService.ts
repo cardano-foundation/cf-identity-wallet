@@ -486,7 +486,7 @@ class ConnectionService extends AgentService {
             connectionId
           );
           if (existingContact) {
-            contact.createdAt = existingContact.createdAt.toISOString(); // Preserve the original createdAt
+            contact.createdAt = existingContact.createdAt;
           }
           await this.props.signifyClient.contacts().update(connectionId, {
             alias,
