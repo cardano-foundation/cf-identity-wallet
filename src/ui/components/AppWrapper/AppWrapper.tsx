@@ -46,6 +46,7 @@ import {
   getAuthentication,
   getIsInitialized,
   getIsOnline,
+  getRecoveryCompleteNoInterruption,
   setAuthentication,
   setCameraDirection,
   setCurrentOperation,
@@ -187,6 +188,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const initAppSuccess = useAppSelector(getIsInitialized);
+  const recoveryCompleteNoInterruption = useAppSelector(
+    getRecoveryCompleteNoInterruption
+  );
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
@@ -263,6 +267,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
     };
   }, [connectedWallet?.id, dispatch]);
+
+  useEffect(() => {
+    if (recoveryCompleteNoInterruption) {
+      loadDb();
+    }
+  }, [recoveryCompleteNoInterruption]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -544,24 +554,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (keriaConnectUrlRecord) {
       try {
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
-        if (keriaConnectUrlRecord?.content?.url) {
-          const recoveryStatus = await Agent.agent.basicStorage.findById(
-            MiscRecordId.CLOUD_RECOVERY_STATUS
-          );
-          if (recoveryStatus?.content?.syncing) {
-            await Agent.agent.syncWithKeria();
-          }
-          await loadDatabase();
-          Agent.agent.markAgentStatus(true);
-        }
+        await recoverAndLoadDb();
       } catch (e) {
         // If the error is failed to fetch with signify, we retry until the connection is secured
         if (
           e instanceof Error &&
           e.message === Agent.KERIA_CONNECT_FAILED_BAD_NETWORK
         ) {
-          await loadDatabase();
-          Agent.agent.connect(); // No await, background this task and continue initializing
+          // No await, background this task and continue initializing
+          Agent.agent
+            .connect(Agent.DEFAULT_RECONNECT_INTERVAL, false)
+            .then(recoverAndLoadDb);
         } else {
           throw e;
         }
@@ -569,9 +572,26 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     // Begin background polling of KERIA or local DB items
+    // If we are still onboarding or in offline mode, won't call KERIA until online
     Agent.agent.keriaNotifications.pollNotifications();
     Agent.agent.keriaNotifications.pollLongOperations();
     dispatch(setInitialized(true));
+  };
+
+  const recoverAndLoadDb = async () => {
+    const recoveryStatus = await Agent.agent.basicStorage.findById(
+      MiscRecordId.CLOUD_RECOVERY_STATUS
+    );
+    if (recoveryStatus?.content?.syncing) {
+      await Agent.agent.syncWithKeria();
+    }
+
+    await loadDb();
+  };
+
+  const loadDb = async () => {
+    await loadDatabase();
+    Agent.agent.markAgentStatus(true);
   };
 
   return (

@@ -33,7 +33,7 @@ const GenerateSeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
-  const [brandNMnemonic, setBrandNMnemonic] = useState<BranAndMnemonic>();
+  const [branNMnemonic, setBranNMnemonic] = useState<BranAndMnemonic>();
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [hideSeedPhrase, setHideSeedPhrase] = useState(true);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
@@ -47,7 +47,7 @@ const GenerateSeedPhrase = () => {
     setHideSeedPhrase(true);
     if (seedPhraseStore.seedPhrase.length > 0) {
       setSeedPhrase(seedPhraseStore.seedPhrase.split(" "));
-      setBrandNMnemonic({
+      setBranNMnemonic({
         mnemonic: seedPhraseStore.seedPhrase,
         bran: seedPhraseStore.bran,
       });
@@ -55,7 +55,7 @@ const GenerateSeedPhrase = () => {
       try {
         const branAndMnemonic = await Agent.agent.getBranAndMnemonic();
         setSeedPhrase(branAndMnemonic.mnemonic.split(" "));
-        setBrandNMnemonic(branAndMnemonic);
+        setBranNMnemonic(branAndMnemonic);
       } catch (e) {
         showError("Unable to get mnemonic", e, dispatch);
       }
@@ -103,8 +103,8 @@ const GenerateSeedPhrase = () => {
     const data: DataProps = {
       store: { stateCache },
       state: {
-        seedPhrase: brandNMnemonic?.mnemonic,
-        bran: brandNMnemonic?.bran,
+        seedPhrase: branNMnemonic?.mnemonic,
+        bran: branNMnemonic?.bran,
       },
     };
     const { nextPath, updateRedux } = getNextRoute(

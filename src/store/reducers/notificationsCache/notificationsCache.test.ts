@@ -104,6 +104,7 @@ describe("Notifications cache", () => {
       stateCache: {
         isOnline: true,
         initialized: true,
+        recoveryCompleteNoInterruption: false,
         routes: [],
         authentication: {
           loggedIn: false,

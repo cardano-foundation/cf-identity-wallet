@@ -26,6 +26,7 @@ describe("NextRoute", () => {
       stateCache: {
         isOnline: true,
         initialized: true,
+        recoveryCompleteNoInterruption: false,
         routes: [],
         authentication: {
           loggedIn: false,
@@ -286,6 +287,7 @@ describe("getNextRoute", () => {
     stateCache: {
       isOnline: true,
       initialized: true,
+      recoveryCompleteNoInterruption: false,
       routes: [],
       authentication: {
         loggedIn: false,

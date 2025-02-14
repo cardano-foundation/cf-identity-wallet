@@ -1,5 +1,4 @@
 import { Capacitor } from "@capacitor/core";
-import { EventEmitter } from "events";
 import {
   randomPasscode,
   SignifyClient,
@@ -66,6 +65,7 @@ class Agent {
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
   static readonly BUFFER_ALLOC_SIZE = 3;
+  static readonly DEFAULT_RECONNECT_INTERVAL = 1000;
 
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
@@ -463,7 +463,10 @@ class Agent {
     this.credentials.onCredentialRemoved();
   }
 
-  async connect(retryInterval = 1000) {
+  async connect(
+    retryInterval = Agent.DEFAULT_RECONNECT_INTERVAL,
+    updateAgentStatus = true
+  ) {
     try {
       if (Agent.isOnline) {
         Agent.isOnline = false;
@@ -475,7 +478,10 @@ class Agent {
         });
       }
       await this.signifyClient.connect();
-      this.markAgentStatus(true);
+
+      if (updateAgentStatus) {
+        this.markAgentStatus(true);
+      }
     } catch (error) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
       await this.connect(retryInterval);

@@ -14,6 +14,7 @@ import {
 
 const initialState: StateCacheProps = {
   initialized: false,
+  recoveryCompleteNoInterruption: false,
   isOnline: false,
   routes: [],
   authentication: {
@@ -51,6 +52,12 @@ const stateCacheSlice = createSlice({
     },
     setInitialized: (state, action: PayloadAction<boolean>) => {
       state.initialized = action.payload;
+    },
+    setRecoveryCompleteNoInterruption: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.recoveryCompleteNoInterruption = action.payload;
     },
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
       const filteredRoutes = state.routes.filter(
@@ -173,6 +180,7 @@ const stateCacheSlice = createSlice({
 
 const {
   setInitialized,
+  setRecoveryCompleteNoInterruption,
   setCurrentRoute,
   removeCurrentRoute,
   removeSetPasscodeRoute,
@@ -198,6 +206,8 @@ const {
 
 const getStateCache = (state: RootState) => state.stateCache;
 const getIsInitialized = (state: RootState) => state.stateCache.initialized;
+const getRecoveryCompleteNoInterruption = (state: RootState) =>
+  state.stateCache.recoveryCompleteNoInterruption;
 const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
   state.stateCache.routes.length ? state.stateCache.routes[0] : undefined;
@@ -260,6 +270,7 @@ export {
   setCurrentOperation,
   setCurrentRoute,
   setInitialized,
+  setRecoveryCompleteNoInterruption,
   setIsOnline,
   setLoginAttempt,
   setFirstAppLaunch,
@@ -269,4 +280,5 @@ export {
   showGenericError,
   showConnections,
   stateCacheSlice,
+  getRecoveryCompleteNoInterruption,
 };

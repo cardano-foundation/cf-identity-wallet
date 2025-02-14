@@ -50,6 +50,7 @@ interface ToastStackItem {
 
 interface StateCacheProps {
   initialized: boolean;
+  recoveryCompleteNoInterruption: boolean;
   isOnline: boolean;
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
