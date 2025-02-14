@@ -31,6 +31,7 @@ describe("getBackRoute", () => {
       stateCache: {
         isOnline: true,
         initialized: true,
+        recoveryCompleteNoInterruption: false,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
@@ -183,6 +184,7 @@ describe("getPreviousRoute", () => {
       stateCache: {
         isOnline: true,
         initialized: true,
+        recoveryCompleteNoInterruption: false,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,

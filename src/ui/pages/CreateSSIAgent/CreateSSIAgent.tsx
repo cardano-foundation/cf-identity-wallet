@@ -29,6 +29,7 @@ import {
 import {
   getStateCache,
   setCurrentOperation,
+  setRecoveryCompleteNoInterruption,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { CustomInput } from "../../components/CustomInput";
@@ -176,6 +177,8 @@ const CreateSSIAgent = () => {
         seedPhraseCache.seedPhrase.split(" "),
         ssiAgent.connectUrl
       );
+
+      dispatch(setRecoveryCompleteNoInterruption(true));
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
         store: { stateCache },
@@ -406,13 +409,13 @@ const CreateSSIAgent = () => {
               errorMessage={
                 hasMismatchError
                   ? `${i18n.t(
-                      isRecoveryMode
-                        ? "ssiagent.error.recoverymismatchconnecturl"
-                        : "ssiagent.error.mismatchconnecturl"
-                    )}`
+                    isRecoveryMode
+                      ? "ssiagent.error.recoverymismatchconnecturl"
+                      : "ssiagent.error.mismatchconnecturl"
+                  )}`
                   : displayBootUrlError && !isInvalidConnectUrl
-                  ? `${i18n.t("ssiagent.error.invalidurl")}`
-                  : `${i18n.t("ssiagent.error.invalidconnecturl")}`
+                    ? `${i18n.t("ssiagent.error.invalidurl")}`
+                    : `${i18n.t("ssiagent.error.invalidconnecturl")}`
               }
             />
           </div>
