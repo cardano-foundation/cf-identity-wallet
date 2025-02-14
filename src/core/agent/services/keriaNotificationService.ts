@@ -1069,27 +1069,23 @@ class KeriaNotificationService extends AgentService {
             (operation.response as State).i
           );
 
-          const existingConnection = await this.props.signifyClient
+          const keriaContact = await this.props.signifyClient
             .contacts()
             .get((operation.response as State).i)
             .catch(() => undefined);
 
           if (connectionRecord && !connectionRecord.pendingDeletion) {
             connectionRecord.pending = false;
-            if (!existingConnection) {
-              connectionRecord.createdAt = new Date(
-                (operation.response as State).dt
-              );
-            }
-            await this.connectionStorage.update(connectionRecord);
 
-            const alias = connectionRecord.alias;
-            await this.props.signifyClient
-              .contacts()
-              .update((operation.response as State).i, {
-                alias,
-                createdAt: connectionRecord.createdAt,
-              });
+            if (!keriaContact) {
+              await this.props.signifyClient
+                .contacts()
+                .update((operation.response as State).i, {
+                  alias: connectionRecord.alias,
+                  createdAt: new Date((operation.response as State).dt),
+                });
+              await this.connectionStorage.update(connectionRecord);
+            }
 
             this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
               type: EventTypes.ConnectionStateChanged,
