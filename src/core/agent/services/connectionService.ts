@@ -463,11 +463,12 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.OOBI_INVALID);
     }
     const alias = new URL(url).searchParams.get("name") ?? randomSalt();
+    const strippedUrl = url.split("?")[0]; // Strip alias from URL
     let operation: Operation & { response: State };
     if (waitForCompletion) {
       operation = (await waitAndGetDoneOp(
         this.props.signifyClient,
-        await this.props.signifyClient.oobis().resolve(url, alias),
+        await this.props.signifyClient.oobis().resolve(strippedUrl),
         5000
       )) as Operation & { response: State };
       if (!operation.done) {
@@ -477,14 +478,25 @@ class ConnectionService extends AgentService {
       }
       if (operation.response && operation.response.i) {
         const connectionId = operation.response.i;
-        await this.props.signifyClient.contacts().update(connectionId, {
-          alias,
-          groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
-          createdAt: new Date().toISOString(),
-        });
+        const contact = await this.props.signifyClient
+          .contacts()
+          .get(connectionId);
+        if (contact) {
+          const existingContact = await this.connectionStorage.findById(
+            connectionId
+          );
+          if (existingContact) {
+            contact.createdAt = existingContact.createdAt.toISOString(); // Preserve the original createdAt
+          }
+          await this.props.signifyClient.contacts().update(connectionId, {
+            alias,
+            groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
+            createdAt: contact.createdAt,
+          });
+        }
       }
     } else {
-      operation = await this.props.signifyClient.oobis().resolve(url, alias);
+      operation = await this.props.signifyClient.oobis().resolve(strippedUrl);
       await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,

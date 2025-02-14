@@ -302,7 +302,7 @@ describe("Connection service of agent", () => {
       expect(op).toEqual({
         op: {
           response: { i: "id", dt: now },
-          name: url,
+          name: url.split("?")[0],
           metadata: {
             oobi: `${oobiPrefix}${failUuid}`,
           },
@@ -575,7 +575,7 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("can resolve oobi with no name parameter", async () => {
+  test("can resolve oobi with and witout name parameter", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid`;
 
@@ -609,7 +609,7 @@ describe("Connection service of agent", () => {
     expect(op).toEqual({
       op: {
         response: { i: "id", dt: now },
-        name: url,
+        name: url.split("?")[0],
         metadata: {
           oobi: `${oobiPrefix}${failUuid}`,
         },
