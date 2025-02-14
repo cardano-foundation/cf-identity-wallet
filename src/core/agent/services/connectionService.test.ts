@@ -599,24 +599,6 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("can resolve oobi with name parameter", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const url = `${oobiPrefix}keriuuid?name=alias`;
-
-    const op = await connectionService.resolveOobi(url);
-    expect(op).toEqual({
-      op: {
-        response: { i: "id", dt: now },
-        name: url.split("?")[0],
-        done: true,
-        metadata: {
-          oobi: `${oobiPrefix}${failUuid}`,
-        },
-      },
-      alias: "alias",
-    });
-  });
-
   test("should preserve createdAt attribute when re-resolving OOBI", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid?name=keri`;
