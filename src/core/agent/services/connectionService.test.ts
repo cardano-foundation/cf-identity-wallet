@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Salter } from "signify-ts";
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
@@ -603,16 +604,16 @@ describe("Connection service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid?name=keri`;
 
-    connectionStorage.findById = jest.fn().mockResolvedValue({
-      id: keriContacts[0].id,
-      createdAt: now,
+    contactGetMock.mockResolvedValueOnce({
       alias: "keri",
-      getTag: jest.fn(),
+      oobi: url,
+      id: "id",
+      createdAt: now,
     });
 
     const op = await connectionService.resolveOobi(url);
 
-    expect(connectionStorage.update).not.toBeCalled();
+    expect(updateContactMock).not.toBeCalled();
     expect(op).toEqual({
       op: {
         response: { i: "id", dt: now },
