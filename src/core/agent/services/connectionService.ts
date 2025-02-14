@@ -462,8 +462,10 @@ class ConnectionService extends AgentService {
     ) {
       throw new Error(ConnectionService.OOBI_INVALID);
     }
-    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
-    const strippedUrl = url.split("?")[0];
+    const urlObj = new URL(url);
+    const alias = urlObj.searchParams.get("name") ?? randomSalt();
+    urlObj.searchParams.delete("name");
+    const strippedUrl = urlObj.toString();
     let operation: Operation & { response: State };
     if (waitForCompletion) {
       operation = (await waitAndGetDoneOp(
@@ -490,7 +492,7 @@ class ConnectionService extends AgentService {
           }
           await this.props.signifyClient.contacts().update(connectionId, {
             alias,
-            groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
+            groupCreationId: urlObj.searchParams.get("groupId") ?? "",
             createdAt: contact.createdAt,
           });
         }
