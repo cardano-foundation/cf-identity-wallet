@@ -463,7 +463,7 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.OOBI_INVALID);
     }
     const alias = new URL(url).searchParams.get("name") ?? randomSalt();
-    const strippedUrl = url.split("?")[0]; // Strip alias from URL
+    const strippedUrl = url.split("?")[0];
     let operation: Operation & { response: State };
     if (waitForCompletion) {
       operation = (await waitAndGetDoneOp(
