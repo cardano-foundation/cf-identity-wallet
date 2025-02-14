@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Contact, Operation, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
@@ -483,17 +484,11 @@ class ConnectionService extends AgentService {
         const contact = await this.props.signifyClient
           .contacts()
           .get(connectionId);
-        if (contact) {
-          const existingContact = await this.connectionStorage.findById(
-            connectionId
-          );
-          if (existingContact) {
-            contact.createdAt = existingContact.createdAt;
-          }
+        if (!contact) {
           await this.props.signifyClient.contacts().update(connectionId, {
             alias,
-            groupCreationId: urlObj.searchParams.get("groupId") ?? "",
-            createdAt: contact.createdAt,
+            groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
+            createdAt: new Date((operation.response as State).dt),
           });
         }
       }
