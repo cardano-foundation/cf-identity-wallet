@@ -611,6 +611,8 @@ describe("Connection service of agent", () => {
     });
 
     const op = await connectionService.resolveOobi(url);
+
+    expect(connectionStorage.update).not.toBeCalled();
     expect(op).toEqual({
       op: {
         response: { i: "id", dt: now },

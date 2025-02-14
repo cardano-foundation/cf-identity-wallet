@@ -2381,8 +2381,8 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
-    expect(connectionStorage.update).toBeCalledTimes(1);
-    expect(contactsUpdateMock).toBeCalledTimes(1);
+    expect(connectionStorage.update).toBeCalledTimes(0);
+    expect(contactsUpdateMock).toBeCalledTimes(0);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
