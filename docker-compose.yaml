@@ -3,9 +3,7 @@ services:
   keria:
     container_name: idw-keria
     restart: unless-stopped
-    build:
-      context: https://github.com/cardano-foundation/keria.git#0e547be4d228b37b8a4e4f4d02b73d30ae019777
-      dockerfile: ./images/keria.dockerfile
+    image: cardanofoundation/cf-idw-keria:0.1.1-PR960-04d7d858-GHRUN13372990297
     environment:
       - KERI_AGENT_CORS=true
     volumes:
