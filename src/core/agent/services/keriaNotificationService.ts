@@ -1083,6 +1083,7 @@ class KeriaNotificationService extends AgentService {
                 .update((operation.response as State).i, {
                   alias: connectionRecord.alias,
                   createdAt: new Date((operation.response as State).dt),
+                  oobi: connectionRecord.oobi,
                 });
             }
 
