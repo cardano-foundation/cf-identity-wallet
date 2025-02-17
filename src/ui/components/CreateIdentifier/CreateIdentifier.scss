@@ -15,10 +15,9 @@ ion-modal.create-identifier-modal {
 
   ion-toolbar {
     &.page-footer {
-      z-index: 102;
-      bottom: calc(-100vh + 5rem);
-      padding-inline: 0.9rem;
+      padding-inline: 0;
       --background: var(--ion-color-neutral-200);
+      padding-bottom: 0.75rem;
     }
   }
 
@@ -257,16 +256,6 @@ ion-modal.create-identifier-modal {
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    .scrollable-page-layout {
-      &:not(.keyboard-is-open) {
-        padding-bottom: 3rem;
-
-        &.receiver-view {
-          padding-bottom: 0;
-        }
-      }
-    }
-
     .scrollable-page-content {
       p.multisig-share-note {
         padding: 0 2rem;
@@ -290,9 +279,6 @@ ion-modal.create-identifier-modal {
     }
 
     ion-toolbar.page-footer {
-      bottom: calc(-100vh + 3.5rem);
-      padding-top: 0.1rem;
-
       ion-button {
         margin: 0.25rem 0 0;
       }

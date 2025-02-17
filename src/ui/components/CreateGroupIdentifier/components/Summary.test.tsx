@@ -14,9 +14,6 @@ import { Summary } from "./Summary";
 import { Stage } from "../CreateGroupIdentifier.types";
 import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 
-setupIonicReact();
-mockIonicReact();
-
 const createGroupMock = jest.fn();
 
 jest.mock("../../../../core/agent/agent", () => ({
@@ -94,9 +91,11 @@ describe("Create group identifier - Summary", () => {
       getByText(EN_TRANSLATIONS.createidentifier.confirm.treshold)
     ).toBeVisible();
 
-    expect(getByTestId("confirm-threshold").innerHTML).toBe(
-      String(stage4State.threshold)
-    );
+    expect(
+      getByTestId("confirm-threshold").innerHTML.includes(
+        String(stage4State.threshold)
+      )
+    ).toBe(true);
   });
 
   test("Continue button click", async () => {

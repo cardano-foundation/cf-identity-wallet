@@ -1,5 +1,7 @@
 :root[mode="ios"],
 :root[mode="md"] {
+  // Ionic v8 include dynamic font scaling enabled by default -> disable to avoid break app UI
+  --ion-dynamic-font: initial;
   --ion-font-family: "Roboto" !important;
   font-family: "Roboto" !important;
 }

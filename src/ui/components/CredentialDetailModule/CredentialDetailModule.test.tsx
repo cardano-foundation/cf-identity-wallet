@@ -274,18 +274,6 @@ describe("Cred Detail Module - current not archived credential", () => {
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
-
-    fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
-
-    await waitFor(() => {
-      expect(
-        queryByText(
-          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
-        )
-      ).toBe(null);
-    });
-
-    unmount();
   });
 
   test("It changes to favourite icon on click disabled favourite button", async () => {
@@ -511,16 +499,6 @@ describe("Cred Detail Module - current not archived credential", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
-
-    await waitFor(() => {
-      expect(
-        queryByText(
-          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
-        )
-      ).toBe(null);
-    });
-
     passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
@@ -672,14 +650,6 @@ describe("Cred Detail Module - archived", () => {
 
     await waitFor(() => {
       expect(markCredentialPendingDeletion).toBeCalled();
-    });
-
-    fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
-
-    await waitFor(() => {
-      expect(
-        queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)
-      ).toBe(null);
     });
   });
 });

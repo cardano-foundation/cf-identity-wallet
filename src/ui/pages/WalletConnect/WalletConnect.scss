@@ -78,6 +78,7 @@
 
     .identifier-list {
       .checkbox {
+        flex: none;
         width: fit-content;
         --checkbox-background-checked: var(--ion-color-primary-700);
         --checkmark-color: var(--ion-color-primary-100);

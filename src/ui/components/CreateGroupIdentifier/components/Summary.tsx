@@ -128,19 +128,19 @@ const Summary = ({
                       data-testid={`identifier-stage-3-connection-logo-${index}`}
                     />
                     <span className="connection-name">{connection.label}</span>
-                    <IonIcon
-                      data-testid={`confirm-back-connection-button-${index}`}
-                      aria-hidden="true"
-                      icon={pencilOutline}
-                      slot="end"
-                      onClick={() =>
-                        setState((prevState) => ({
-                          ...prevState,
-                          identifierCreationStage: Stage.Members,
-                        }))
-                      }
-                    />
                   </IonLabel>
+                  <IonIcon
+                    data-testid={`confirm-back-connection-button-${index}`}
+                    aria-hidden="true"
+                    icon={pencilOutline}
+                    slot="end"
+                    onClick={() =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        identifierCreationStage: Stage.Members,
+                      }))
+                    }
+                  />
                 </IonItem>
               );
             })}
