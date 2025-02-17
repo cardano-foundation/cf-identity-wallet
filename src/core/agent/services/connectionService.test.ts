@@ -647,10 +647,24 @@ describe("Connection service of agent", () => {
     });
   });
 
+  test("should update KERIA contact directly if waiting for completion", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
+
+    await connectionService.resolveOobi(
+      `${oobiPrefix}test?name=alias&groupId=1234`,
+      true
+    );
+
+    expect(updateContactMock).toBeCalledWith("id", {
+      alias: "alias",
+      createdAt: expect.any(Date),
+      groupCreationId: "1234",
+      oobi: `${oobiPrefix}test?name=alias&groupId=1234`,
+    });
+  });
+
   test("should throw if oobi is not resolving and we explicitly wait for completion", async () => {
-    signifyClient.operations().get = jest
-      .fn()
-      .mockResolvedValue({ done: false });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
     await expect(

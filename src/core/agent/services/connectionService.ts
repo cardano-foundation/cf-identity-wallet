@@ -489,6 +489,7 @@ class ConnectionService extends AgentService {
             alias,
             groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
             createdAt: new Date((operation.response as State).dt),
+            oobi: url,
           });
         }
       }
