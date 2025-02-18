@@ -794,13 +794,11 @@ describe("Scanner", () => {
     );
 
     await waitFor(() => {
-      // Verify that setToastMsg is called with the correct payload
       expect(dispatchMock).toHaveBeenCalledWith({
         type: "stateCache/setToastMsg",
         payload: ToastMsgType.DUPLICATE_CONNECTION,
       });
 
-      // Verify that setOpenConnectionId is called with the correct payload
       expect(dispatchMock).toHaveBeenCalledWith({
         type: "connectionsCache/setOpenConnectionId",
         payload: "connectionId",
