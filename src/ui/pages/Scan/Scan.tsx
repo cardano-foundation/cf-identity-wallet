@@ -24,7 +24,7 @@ const Scan = () => {
   const [cameraKey, setCameraKey] = useState(cameraDirection);
 
   useEffect(() => {
-    setCameraKey(cameraDirection); // Cambiar el estado derivado provoca un re-renderizado
+    setCameraKey(cameraDirection);
   }, [cameraDirection]);
 
   useIonViewWillEnter(() => {
