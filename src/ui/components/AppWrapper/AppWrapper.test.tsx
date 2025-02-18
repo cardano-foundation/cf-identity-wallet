@@ -141,16 +141,6 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: jest.fn((options: { key: string }) => {
-      return Promise.resolve({ value: "value" });
-    }),
-    set: jest.fn(),
-    remove: jest.fn(),
-  },
-}));
-
 describe("App Wrapper", () => {
   test("renders children components", async () => {
     const { getByText } = render(

@@ -19,12 +19,6 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div {...props}>{children}</div> : null,
 }));
 
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "111111" }),
-  },
-}));
-
 const mockGetMultisigConnection = jest.fn((args) => Promise.resolve([]));
 
 jest.mock("../../../core/agent/agent", () => ({

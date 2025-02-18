@@ -1,3 +1,6 @@
+const storeSecretMock = jest.fn();
+const verifySecretMock = jest.fn();
+
 import { IonButton, IonIcon, IonInput, IonLabel } from "@ionic/react";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
@@ -40,6 +43,7 @@ const initialState = {
 const createOrUpdateBasicRecordMock = jest.fn((agr: unknown) =>
   Promise.resolve(agr)
 );
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -49,21 +53,19 @@ jest.mock("../../../core/agent/agent", () => ({
         createOrUpdateBasicRecord: (arg: unknown) =>
           createOrUpdateBasicRecordMock(arg),
       },
+      auth: {
+        storeSecret: storeSecretMock,
+        verifySecret: verifySecretMock,
+      },
     },
   },
 }));
 
-const secureStorageGetFunc = jest.fn((...arg: unknown[]) =>
-  Promise.resolve("Passssssss1@")
-);
-const secureStorageSetFunc = jest.fn();
 const secureStorageDeleteFunc = jest.fn();
 
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: (...args: unknown[]) => secureStorageGetFunc(...args),
-    set: (...args: unknown[]) => secureStorageSetFunc(...args),
     delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
 }));
@@ -120,6 +122,10 @@ const storeMocked = (initialState: StoreMockedProps) => {
 
 describe("Password Module", () => {
   const onCreateSuccesMock = jest.fn();
+  beforeAll(() => {
+    verifySecretMock.mockResolvedValue(false);
+  });
+
   test("Render", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked(initialState)}>
@@ -377,7 +383,7 @@ describe("Password Module", () => {
     });
 
     await waitFor(() => {
-      expect(secureStorageSetFunc).toBeCalledWith(
+      expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_OP_PASSWORD,
         "Passssssssss1@"
       );
@@ -393,6 +399,7 @@ describe("Password Module", () => {
   });
 
   test("Submit password on manage password page", async () => {
+    verifySecretMock.mockResolvedValueOnce(true);
     const initialState = {
       stateCache: {
         routes: [RoutePath.TABS_MENU],

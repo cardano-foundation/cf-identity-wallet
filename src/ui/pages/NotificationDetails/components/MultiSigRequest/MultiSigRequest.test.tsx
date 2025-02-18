@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn().mockResolvedValue(true);
+
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -18,15 +20,6 @@ import { KeyStoreKeys } from "../../../../../core/storage";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 mockIonicReact();
-
-const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
-
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => mockGet(options.key),
-    set: jest.fn(),
-  },
-}));
 
 const multisigIcpDetails = {
   sender: {
@@ -64,6 +57,9 @@ jest.mock("../../../../../core/agent/agent", () => ({
       multiSigs: {
         getMultisigIcpDetails: () => getMultiSignMock(),
         joinGroup: (...params: unknown[]) => joinGroupMock(...params),
+      },
+      auth: {
+        verifySecret: verifySecretMock,
       },
     },
   },
@@ -180,7 +176,10 @@ describe("Multisign request", () => {
     passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(verifySecretMock).toHaveBeenCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
     });
 
     await waitFor(() => {

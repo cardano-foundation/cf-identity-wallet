@@ -26,7 +26,6 @@ const VerifyPassword = ({
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
   const [alertHintIsOpen, setAlertHintIsOpen] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [storedPassword, setStoredPassword] = useState("");
   const [storedHint, setStoredHint] = useState("");
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
 
@@ -49,19 +48,8 @@ const VerifyPassword = ({
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
   };
 
-  const handleFetchStoredValues = useCallback(async () => {
+  const handleFetchHint = useCallback(async () => {
     if (!isOpen) return;
-
-    const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
-    if (password) {
-      setStoredPassword(`${password}`);
-    } else {
-      showErrorMessage(
-        "Unable to get password",
-        new Error("Unable to get password"),
-        dispatch
-      );
-    }
 
     let hint;
     try {
@@ -81,25 +69,24 @@ const VerifyPassword = ({
   };
 
   useEffect(() => {
-    handleFetchStoredValues();
-  }, [handleFetchStoredValues]);
+    handleFetchHint();
+  }, [handleFetchHint]);
 
   useEffect(() => {
-    if (
-      verifyPasswordValue.length > 0 &&
-      verifyPasswordValue !== storedPassword
-    ) {
-      setShowError(true);
-      setTimeout(() => {
-        setShowError(false);
-      }, MESSAGE_MILLISECONDS * 1.5);
-    }
-    if (
-      verifyPasswordValue.length > 0 &&
-      verifyPasswordValue === storedPassword
-    ) {
-      resetModal();
-      onVerify();
+    if (verifyPasswordValue.length > 0) {
+      Agent.agent.auth
+        .verifySecret(KeyStoreKeys.APP_OP_PASSWORD, verifyPasswordValue)
+        .then((verified) => {
+          if (verified) {
+            resetModal();
+            onVerify();
+          } else {
+            setShowError(true);
+            setTimeout(() => {
+              setShowError(false);
+            }, MESSAGE_MILLISECONDS * 1.5);
+          }
+        });
     }
   }, [attempts]);
 

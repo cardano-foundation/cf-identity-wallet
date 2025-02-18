@@ -48,6 +48,9 @@ jest.mock("../../../core/agent/agent", () => ({
       keriaNotifications: {
         deleteNotificationRecordById: () => deleteNotificationRecordById(),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
     },
   },
 }));
@@ -70,13 +73,6 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
-}));
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: () => "111111",
-  },
 }));
 
 const mockStore = configureStore();

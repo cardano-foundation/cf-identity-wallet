@@ -5,7 +5,6 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { useAppDispatch } from "../../../store/hooks";
 import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
@@ -22,6 +21,8 @@ import {
   CreatePasscodeModuleRef,
 } from "./CreatePasscodeModule.types";
 import { showError } from "../../utils/error";
+import { KeyStoreKeys } from "../../../core/storage";
+import { AuthService } from "../../../core/agent/services";
 
 const CreatePasscodeModule = forwardRef<
   CreatePasscodeModuleRef,
@@ -64,16 +65,6 @@ const CreatePasscodeModule = forwardRef<
     const alertClasses = overrideAlertZIndex ? "max-zindex" : undefined;
     const cancelBiometricsHeaderText = i18n.t("biometry.cancelbiometryheader");
     const cancelBiometricsConfirmText = setupAndroidBiometricsConfirmtext;
-
-    const verifyPasscode = async (pass: string) => {
-      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-
-      if (!storedPass) {
-        return false;
-      }
-
-      return storedPass === pass;
-    };
 
     useEffect(() => {
       if (passcodeMatch) {
@@ -131,7 +122,10 @@ const CreatePasscodeModule = forwardRef<
 
     const handlePassAuth = async () => {
       try {
-        await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
+        await Agent.agent.auth.storeSecret(
+          KeyStoreKeys.APP_PASSCODE,
+          originalPassCode
+        );
         onCreateSuccess();
       } catch (e) {
         showError("Unable to save app passcode", e, dispatch);
@@ -171,17 +165,31 @@ const CreatePasscodeModule = forwardRef<
       onPasscodeChange?.(passcode, originalPassCode);
 
       if (passcode.length === 6 && originalPassCode === "") {
-        verifyPasscode(passcode).then((match) => {
-          if (match) {
-            setPasscodeMatch(true);
-            setTimeout(() => {
+        Agent.agent.auth
+          .verifySecret(KeyStoreKeys.APP_PASSCODE, passcode)
+          .then((match) => {
+            if (match) {
+              setPasscodeMatch(true);
+              setTimeout(() => {
+                setPasscode("");
+              }, MESSAGE_MILLISECONDS);
+            } else {
+              setOriginalPassCode(passcode);
               setPasscode("");
-            }, MESSAGE_MILLISECONDS);
-          } else {
+            }
+          })
+          .catch((error) => {
+            if (
+              !(
+                error instanceof Error &&
+                error.message.startsWith(AuthService.SECRET_NOT_STORED)
+              )
+            ) {
+              throw error;
+            }
             setOriginalPassCode(passcode);
             setPasscode("");
-          }
-        });
+          });
       }
     }, [originalPassCode, passcode]);
 

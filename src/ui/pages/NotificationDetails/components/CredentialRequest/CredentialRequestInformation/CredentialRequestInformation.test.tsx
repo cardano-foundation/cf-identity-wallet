@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  getAllByTestId,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -21,14 +16,6 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: jest.fn((options: { key: string }) => {
-      return Promise.resolve({ value: "111111" });
-    }),
-  },
-}));
-
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const joinMultisigOfferMock = jest.fn();
 
@@ -42,6 +29,9 @@ jest.mock("../../../../../../core/agent/agent", () => ({
       ipexCommunications: {
         joinMultisigOffer: () => joinMultisigOfferMock(),
         getOfferedCredentialSaid: jest.fn(() => "cred-id"),
+      },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
       },
     },
   },

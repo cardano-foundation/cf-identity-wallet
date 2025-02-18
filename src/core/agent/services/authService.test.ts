@@ -1,8 +1,12 @@
+import { ready, Salter } from "signify-ts";
 import { CoreEventEmitter } from "../event";
 import { MiscRecordId } from "../agent.types";
 import { LoginAttempts } from "./auth.types";
 import { AuthService } from "./authService";
 import { BasicRecord } from "../../agent/records";
+import { KeyStoreKeys, SecureStorage } from "../../storage";
+
+jest.mock("../../storage/SecureStorage");
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -109,9 +113,28 @@ const basicStorage = jest.mocked({
 
 const authService = new AuthService(agentServicesProps, basicStorage as any);
 
+const PASSCODE = "123456";
+const PASSWORD = "test1234";
+const HASHED_PASSCODE =
+  "0ABdxlN9dAHBzcC8ch-7YegiEGk13YQBfx4BmiPCfHscGK4W4G7UYpRRdbFkLBY9wxT0";
+const HASHED_PASSWORD =
+  "0ABdxlN9dAHBzcC8ch-7YegiECGdi2G0Anm6zz-61gmL7v6r4FBmb9tgMnw_Acg_6OUB";
+
 describe("Auth service of agent", () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
+  beforeAll(async () => {
+    await ready();
+
+    jest
+      .spyOn(Salter.prototype, "raw", "get")
+      .mockReturnValue(
+        new Uint8Array([
+          93, 198, 83, 125, 116, 1, 193, 205, 192, 188, 114, 31, 187, 97, 232,
+          34,
+        ])
+      );
+    jest
+      .spyOn(Salter.prototype, "qb64", "get")
+      .mockReturnValue("0ABdxlN9dAHBzcC8ch-7Yegi");
   });
 
   test("Should return existing login attempts", async () => {
@@ -243,5 +266,47 @@ describe("Auth service of agent", () => {
     await expect(authService.resetLoginAttempts()).rejects.toThrow(
       AuthService.LOGIN_ATTEMPT_RECORD_NOT_FOUND
     );
+  });
+
+  test("Should store secret as hashed with a salt", async () => {
+    await authService.storeSecret(KeyStoreKeys.APP_PASSCODE, PASSCODE);
+    expect(SecureStorage.set).toBeCalledWith(
+      KeyStoreKeys.APP_PASSCODE,
+      HASHED_PASSCODE
+    );
+
+    await authService.storeSecret(KeyStoreKeys.APP_OP_PASSWORD, PASSWORD);
+    expect(SecureStorage.set).toBeCalledWith(
+      KeyStoreKeys.APP_OP_PASSWORD,
+      HASHED_PASSWORD
+    );
+  });
+
+  test("Cannot verify against missing secret", async () => {
+    SecureStorage.get = jest.fn().mockResolvedValue(null);
+    await expect(
+      authService.verifySecret(KeyStoreKeys.APP_PASSCODE, PASSCODE)
+    ).rejects.toThrowError(AuthService.SECRET_NOT_STORED);
+  });
+
+  test("Can verify against stored secret", async () => {
+    SecureStorage.get = jest.fn().mockImplementation((type: KeyStoreKeys) => {
+      return type === KeyStoreKeys.APP_PASSCODE
+        ? HASHED_PASSCODE
+        : HASHED_PASSWORD;
+    });
+
+    expect(
+      await authService.verifySecret(KeyStoreKeys.APP_PASSCODE, "111111")
+    ).toBe(false);
+    expect(
+      await authService.verifySecret(KeyStoreKeys.APP_PASSCODE, PASSCODE)
+    ).toBe(true);
+    expect(
+      await authService.verifySecret(KeyStoreKeys.APP_OP_PASSWORD, "wrongpass")
+    ).toBe(false);
+    expect(
+      await authService.verifySecret(KeyStoreKeys.APP_OP_PASSWORD, PASSWORD)
+    ).toBe(true);
   });
 });

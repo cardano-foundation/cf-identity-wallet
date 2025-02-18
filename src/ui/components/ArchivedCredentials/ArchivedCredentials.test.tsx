@@ -33,14 +33,10 @@ jest.mock("../../../core/agent/agent", () => ({
       keriaNotifications: {
         deleteNotificationRecordById: () => deleteNotificationMock(),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
     },
-  },
-}));
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: () => "111111",
   },
 }));
 
@@ -74,8 +70,6 @@ describe("Archived and revoked credentials", () => {
   const dispatchMock = jest.fn();
 
   beforeEach(() => {
-    jest.resetAllMocks();
-
     mockedStore = {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,

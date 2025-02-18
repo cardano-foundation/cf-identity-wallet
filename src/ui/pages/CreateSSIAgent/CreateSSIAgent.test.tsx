@@ -113,15 +113,6 @@ jest.mock("../../components/CustomInput", () => ({
   },
 }));
 
-const secureStorageDeleteFunc = jest.fn();
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
-  },
-}));
-
 describe("SSI agent page", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
