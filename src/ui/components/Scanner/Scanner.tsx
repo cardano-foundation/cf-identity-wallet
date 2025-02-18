@@ -74,6 +74,7 @@ const OPEN_CONNECTION_TIME = 250;
 const Scanner = forwardRef(
   (
     {
+      key,
       routePath,
       setIsValueCaptured,
       handleReset,
@@ -435,6 +436,12 @@ const Scanner = forwardRef(
               await processValue(result.barcodes[0].rawValue);
             }
           );
+          const listenerError = await BarcodeScanner.addListener(
+            "scanError",
+            async (result) => {
+              await listenerError.remove();
+            }
+          );
           try {
             await BarcodeScanner.startScan({
               formats: [BarcodeFormat.QrCode],
@@ -593,6 +600,7 @@ const Scanner = forwardRef(
     return (
       <>
         <IonGrid
+          key={key}
           className={containerClass}
           data-testid="qr-code-scanner"
         >
