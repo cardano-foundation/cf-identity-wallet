@@ -5,7 +5,6 @@ import {
   IWalletInfo,
 } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
-import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
@@ -97,13 +96,13 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     throw new Error("Method not implemented.");
   }
   protected getUtxos(
-    amount?: string | undefined,
-    paginate?: Paginate | undefined
+    amount?: string | undefined, // eslint-disable-line @typescript-eslint/no-unused-vars
+    paginate?: Paginate | undefined // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<string[] | null> {
     throw new Error("Method not implemented.");
   }
   protected getCollateral(
-    params?: { amount?: string | undefined } | undefined
+    params?: { amount?: string | undefined } | undefined // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<string[] | null> {
     throw new Error("Method not implemented.");
   }
@@ -122,15 +121,17 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   protected async getRewardAddresses(): Promise<string[]> {
     throw new Error("Method not implemented.");
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected signTx(tx: string, partialSign: boolean): Promise<string> {
     throw new Error("Method not implemented.");
   }
   protected async signData(
-    addr: string,
-    payload: string
+    addr: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+    payload: string // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<Cip30DataSignature> {
     throw new Error("Method not implemented.");
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected submitTx(tx: string): Promise<string> {
     throw new Error("Method not implemented.");
   }

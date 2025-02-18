@@ -8,7 +8,6 @@ import { randomPasscode } from "signify-ts";
 import { versionCompare } from "./utils";
 import { MIGRATIONS } from "./migrations";
 import { MigrationType } from "./migrations/migrations.types";
-import { Agent } from "../../agent/agent";
 import { KeyStoreKeys, SecureStorage } from "../secureStorage";
 
 class SqliteSession {
@@ -99,8 +98,12 @@ class SqliteSession {
           migrationStatements.push({ statement: sqlStatement });
         }
       } else {
-        const statements = await migration.migrationStatements(this.session!);
-        migrationStatements.push(...statements);
+        if (this.session) {
+          const statements = await migration.migrationStatements(this.session);
+          migrationStatements.push(...statements);
+        } else {
+          throw new Error("Session instance is not initialized.");
+        }
       }
 
       migrationStatements.push({
@@ -110,7 +113,11 @@ class SqliteSession {
           JSON.stringify(migration.version),
         ],
       });
-      await this.session!.executeTransaction(migrationStatements);
+      if (this.session) {
+        await this.session.executeTransaction(migrationStatements);
+      } else {
+        throw new Error("Session instance is not initialized.");
+      }
     }
   }
 }

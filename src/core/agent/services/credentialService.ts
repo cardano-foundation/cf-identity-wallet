@@ -50,8 +50,11 @@ class CredentialService extends AgentService {
   onCredentialRemoved() {
     this.props.eventEmitter.on(
       EventTypes.CredentialRemovedEvent,
-      (data: CredentialRemovedEvent) =>
-        this.deleteCredential(data.payload.credentialId!)
+      (data: CredentialRemovedEvent) => {
+        if (data.payload.credentialId) {
+          this.deleteCredential(data.payload.credentialId);
+        }
+      }
     );
   }
 

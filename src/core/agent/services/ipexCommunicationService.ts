@@ -8,7 +8,6 @@ import {
   Serder,
   Siger,
 } from "signify-ts";
-import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
   ExnMessage,
@@ -707,12 +706,16 @@ class IpexCommunicationService extends AgentService {
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
-    const [_, acdc] = Saider.saidify(acdcDetail);
+    const [, acdc] = Saider.saidify(acdcDetail);
 
     if (offerExnToJoin) {
       const [, ked] = Saider.saidify(offerExnToJoin);
       const offer = new Serder(ked);
-      const keeper = this.props.signifyClient.manager!.get(gHab);
+      const manager = this.props.signifyClient.manager;
+      if (!manager) {
+        throw new Error("Manager is not available");
+      }
+      const keeper = manager.get(gHab);
       const sigs = await keeper.sign(b(new Serder(offerExnToJoin).raw));
 
       const mstateNew = gHab["state"];

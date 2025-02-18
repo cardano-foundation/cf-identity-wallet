@@ -10,7 +10,6 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, NextRoute, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { OperationType } from "../../ui/globals/types";
 
 const getNextRootRoute = (data: DataProps) => {
   const authentication = data.store.stateCache.authentication;

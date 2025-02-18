@@ -504,9 +504,15 @@ class Agent {
     instance: IonicSession | SqliteSession
   ) {
     if (instance instanceof IonicSession) {
-      return new IonicStorage<T>(instance.session!);
+      if (!instance.session) {
+        throw new Error("IonicSession session is null or undefined");
+      }
+      return new IonicStorage<T>(instance.session);
     }
-    return new SqliteStorage<T>(instance.session!);
+    if (!instance.session) {
+      throw new Error("SqliteSession session is null or undefined");
+    }
+    return new SqliteStorage<T>(instance.session);
   }
 
   getBranAndMnemonic(): BranAndMnemonic {

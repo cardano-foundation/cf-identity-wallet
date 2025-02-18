@@ -5,8 +5,7 @@ import {
   IonGrid,
   IonIcon,
   IonModal,
-  IonRow,
-  IonSpinner,
+  IonRow
 } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
