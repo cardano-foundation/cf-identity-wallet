@@ -429,13 +429,9 @@ const Scanner = forwardRef(
             "barcodesScanned",
             async (result) => {
               await listener.remove();
-
               if (isHandlingQR.current) return;
               isHandlingQR.current = true;
-
-              if (result.barcodes.length > 0) {
-                await processValue(result.barcodes[0].rawValue);
-              }
+              await processValue(result.barcodes[0].rawValue);
             }
           );
 
