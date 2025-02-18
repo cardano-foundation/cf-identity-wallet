@@ -481,17 +481,21 @@ class ConnectionService extends AgentService {
       }
       if (operation.response && operation.response.i) {
         const connectionId = operation.response.i;
-        const contact = await this.props.signifyClient
+        await this.props.signifyClient
           .contacts()
-          .get(connectionId);
-        if (!contact) {
-          await this.props.signifyClient.contacts().update(connectionId, {
-            alias,
-            groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
-            createdAt: new Date((operation.response as State).dt),
-            oobi: url,
+          .get(connectionId)
+          .catch(async (error) => {
+            const status = error.message.split(" - ")[1];
+            if (!/404/gi.test(status)) {
+              throw error;
+            }
+            await this.props.signifyClient.contacts().update(connectionId, {
+              alias,
+              groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
+              createdAt: new Date((operation.response as State).dt),
+              oobi: url,
+            });
           });
-        }
       }
     } else {
       operation = await this.props.signifyClient.oobis().resolve(strippedUrl);
