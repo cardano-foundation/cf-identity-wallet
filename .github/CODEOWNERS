@@ -5,20 +5,24 @@ docker* @rcmorano @iFergal
 
 *.js @jimcase @iFergal
 *.cjs @jimcase @iFergal
-
-.husky/* @jimcase @iFergal @jorgenavben
+./*.json @jimcase @iFergal
+./*.ts @jimcase @iFergal
 
 ios/* @jimcase @iFergal
 android/* @jimcase @iFergal
 
 configs/* @iFergal
-
 docs/* @jorgenavben
 
+src/core/* @jimcase @iFergal @jorgenavben
+.husky/* @jimcase @iFergal @jorgenavben
 services/* @jimcase @iFergal @jorgenavben
+
 services/credential-server-ui @sdisalvo-crd
 
 src/ui/* @sdisalvo-crd
-src/core/* @jimcase @iFergal @jorgenavben
+src/assets/* @sdisalvo-crd
+src/locales/* @sdisalvo-crd
+src/routes/* @sdisalvo-crd
 
 tests/* @obstar
