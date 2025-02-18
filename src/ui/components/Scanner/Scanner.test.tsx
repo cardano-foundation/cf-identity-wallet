@@ -500,7 +500,16 @@ describe("Scanner", () => {
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcodes,
+            barcodes: [
+              {
+                displayValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
           });
         }, 100);
 
@@ -747,6 +756,7 @@ describe("Scanner", () => {
 
     const handleReset = jest.fn();
 
+    // Mock connectByOobiUrl to throw a duplicate connection error
     connectByOobiUrlMock.mockImplementation(() => {
       throw new Error("Record already exists with id connectionId");
     });
@@ -758,7 +768,16 @@ describe("Scanner", () => {
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcodes,
+            barcodes: [
+              {
+                displayValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
           });
         }, 100);
 
@@ -770,15 +789,22 @@ describe("Scanner", () => {
 
     render(
       <Provider store={storeMocked}>
-        <Scanner
-          setIsValueCaptured={setIsValueCaptured}
-          handleReset={handleReset}
-        />
+        <Scanner routePath={TabsRoutePath.SCAN} />
       </Provider>
     );
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setOpenConnectionId("connectionId"));
+      // Verify that setToastMsg is called with the correct payload
+      expect(dispatchMock).toHaveBeenCalledWith({
+        type: "stateCache/setToastMsg",
+        payload: ToastMsgType.DUPLICATE_CONNECTION,
+      });
+
+      // Verify that setOpenConnectionId is called with the correct payload
+      expect(dispatchMock).toHaveBeenCalledWith({
+        type: "connectionsCache/setOpenConnectionId",
+        payload: "connectionId",
+      });
     });
   });
 
@@ -822,7 +848,16 @@ describe("Scanner", () => {
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcodes,
+            barcodes: [
+              {
+                displayValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
           });
         }, 100);
 

@@ -1,6 +1,6 @@
 import {
   BarcodeFormat,
-  BarcodeScannedEvent,
+  BarcodesScannedEvent,
   BarcodeValueType,
   LensFacing,
 } from "@capacitor-mlkit/barcode-scanning";
@@ -19,17 +19,19 @@ import { OperationType } from "../../globals/types";
 import { FullPageScanner } from "./FullPageScanner";
 
 const addListener = jest.fn(
-  (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+  (eventName: string, listenerFunc: (result: BarcodesScannedEvent) => void) => {
     setTimeout(() => {
       listenerFunc({
-        barcode: {
-          displayValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-          format: BarcodeFormat.QrCode,
-          rawValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-          valueType: BarcodeValueType.Url,
-        },
+        barcodes: [
+          {
+            displayValue:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            format: BarcodeFormat.QrCode,
+            rawValue:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            valueType: BarcodeValueType.Url,
+          },
+        ],
       });
     }, 100);
 
@@ -49,7 +51,7 @@ jest.mock("@capacitor-mlkit/barcode-scanning", () => {
         }),
       addListener: (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => addListener(eventName, listenerFunc),
       startScan: jest.fn(),
       stopScan: jest.fn(),
@@ -99,24 +101,28 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
+const barcodes = [
+  {
+    displayValue:
+      "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+    format: BarcodeFormat.QrCode,
+    rawValue:
+      "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+    valueType: BarcodeValueType.Url,
+  },
+];
+
 describe("Full page scanner", () => {
   beforeEach(() => {
     isNativeMock.mockImplementation(() => false);
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 100);
 
@@ -274,18 +280,20 @@ describe("Full page scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes: [
+              {
+                displayValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
           });
         }, 10000000);
 

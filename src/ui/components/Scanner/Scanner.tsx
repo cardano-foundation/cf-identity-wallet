@@ -431,12 +431,10 @@ const Scanner = forwardRef(
               await listener.remove();
               if (isHandlingQR.current) return;
               isHandlingQR.current = true;
-              if (result.barcodes?.length) {
-                await processValue(result.barcodes[0].rawValue);
-              }
+              if (!result.barcodes?.length) return;
+              await processValue(result.barcodes[0].rawValue);
             }
           );
-
           try {
             await BarcodeScanner.startScan({
               formats: [BarcodeFormat.QrCode],
