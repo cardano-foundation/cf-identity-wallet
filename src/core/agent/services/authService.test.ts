@@ -6,7 +6,7 @@ import { AuthService } from "./authService";
 import { BasicRecord } from "../../agent/records";
 import { KeyStoreKeys, SecureStorage } from "../../storage";
 
-jest.mock("../../storage/SecureStorage");
+jest.mock("../../storage/secureStorage");
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
