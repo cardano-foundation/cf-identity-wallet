@@ -479,23 +479,36 @@ class ConnectionService extends AgentService {
           `${ConnectionService.FAILED_TO_RESOLVE_OOBI} [url: ${url}]`
         );
       }
-      if (operation.response && operation.response.i) {
+      if (operation.response?.i) {
         const connectionId = operation.response.i;
-        await this.props.signifyClient
-          .contacts()
-          .get(connectionId)
-          .catch(async (error) => {
-            const status = error.message.split(" - ")[1];
-            if (!/404/gi.test(status)) {
-              throw error;
-            }
-            await this.props.signifyClient.contacts().update(connectionId, {
-              alias,
-              groupCreationId: new URL(url).searchParams.get("groupId") ?? "",
-              createdAt: new Date((operation.response as State).dt),
-              oobi: url,
-            });
+        const signifyClient = this.props.signifyClient.contacts();
+        const groupCreationId = new URL(url).searchParams.get("groupId") ?? "";
+        const createdAt = new Date((operation.response as State).dt);
+
+        const updateContact = async () => {
+          await signifyClient.update(connectionId, {
+            alias,
+            groupCreationId,
+            createdAt,
+            oobi: url,
           });
+        };
+
+        try {
+          const contact = await signifyClient.get(connectionId);
+          if (!contact) {
+            await updateContact();
+          }
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            /404/gi.test(error.message.split(" - ")[1])
+          ) {
+            await updateContact();
+          } else {
+            throw error;
+          }
+        }
       }
     } else {
       operation = await this.props.signifyClient.oobis().resolve(strippedUrl);
