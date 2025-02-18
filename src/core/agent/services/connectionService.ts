@@ -282,8 +282,9 @@ class ConnectionService extends AgentService {
       historyItems: historyItems
         .sort((a, b) => new Date(b.dt).getTime() - new Date(a.dt).getTime())
         .map((messageRecord) => {
-          const { historyType, dt, credentialType } = messageRecord;
+          const { historyType, dt, credentialType, id } = messageRecord;
           return {
+            id,
             type: historyType,
             timestamp: dt,
             credentialType,

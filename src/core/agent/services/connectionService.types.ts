@@ -19,7 +19,7 @@ enum ConnectionHistoryType {
   CREDENTIAL_REQUEST_PRESENT,
   CREDENTIAL_REVOKED,
   CREDENTIAL_PRESENTED,
-  IPEX_AGREE_COMPLETE, // New history type added
+  IPEX_AGREE_COMPLETE,
 }
 
 export { ConnectionHistoryType, KeriaContactKeyPrefix };

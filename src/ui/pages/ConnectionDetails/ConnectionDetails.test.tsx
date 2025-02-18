@@ -132,6 +132,7 @@ describe("ConnectionDetails Page", () => {
           ],
           historyItems: [
             {
+              id: "1",
               type: 3,
               timestamp: "2024-08-07T15:33:18.204Z",
               credentialType: "Qualified vLEI Issuer Credential",
@@ -443,6 +444,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
           ],
           historyItems: [
             {
+              id: "1",
               type: 1,
               timestamp: "2017-01-14T19:23:24Z",
               credentialType: "Qualified vLEI Issuer Credential",
@@ -490,21 +492,25 @@ describe("Checking the Connection Details Page when notes are available", () => 
   test("Get all connection history items", async () => {
     const historyEvents = [
       {
+        id: "3",
         type: 3,
         timestamp: "2024-08-07T15:33:18.204Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
       {
+        id: "4",
         type: 2,
         timestamp: "2024-08-07T15:32:26.006Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
       {
+        id: "1",
         type: 1,
         timestamp: "2024-08-07T15:32:13.597Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
       {
+        id: "0",
         type: 0,
         timestamp: "2024-08-07T15:31:17.382Z",
         credentialType: "Qualified vLEI Issuer Credential",

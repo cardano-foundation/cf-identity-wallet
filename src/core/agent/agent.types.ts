@@ -11,6 +11,7 @@ enum ConnectionStatus {
 }
 
 interface ConnectionHistoryItem {
+  id: string;
   type: ConnectionHistoryType;
   credentialType?: string;
   timestamp: string;
@@ -94,6 +95,7 @@ type ExnMessage = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
+  id: string;
   serviceEndpoints: string[];
   notes: ConnectionNoteDetails[];
   historyItems: ConnectionHistoryItem[];
