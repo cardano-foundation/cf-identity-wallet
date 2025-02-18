@@ -142,6 +142,7 @@ const VerifyPassword = ({
         customClasses="verify-password-modal"
         onDismiss={() => resetModal()}
         header={headerOptions}
+        backdropDismiss={false}
       >
         <form className="password-input-container">
           <CustomInput
