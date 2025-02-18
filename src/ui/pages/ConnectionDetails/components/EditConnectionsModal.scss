@@ -31,9 +31,12 @@
     }
   }
 
+  .connection-details-content {
+    min-height: calc(100vh - (5.425rem + var(--ion-safe-area-top)));
+  }
+
   .connection-details-info-block {
     margin-top: 1.5rem;
-    padding-bottom: 10rem;
     color: var(--ion-color-neutral-700);
 
     h3 {

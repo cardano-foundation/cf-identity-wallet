@@ -4,6 +4,10 @@
   margin-bottom: 0 !important;
   --background: var(--ion-color-neutral-300);
 
+  &.md {
+    margin-top: 0.75rem !important;
+  }
+
   .searchbar-cancel-button {
     font-weight: 700;
   }
@@ -14,6 +18,10 @@
 
     .searchbar-cancel-button {
       font-size: 0.95rem;
+    }
+
+    &.md {
+      margin-top: 0.5rem !important;
     }
   }
 }

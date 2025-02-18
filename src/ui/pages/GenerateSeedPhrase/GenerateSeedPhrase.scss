@@ -1,5 +1,11 @@
 .generate-seed-phrase {
   .scrollable-page-content {
+    .seed-phrase-module {
+      ion-chip {
+        pointer-events: none;
+      }
+    }
+
     .mnemonic-length-segment {
       margin-bottom: 0.94rem;
     }

@@ -1,34 +1,7 @@
 ion-modal.create-group-identifier-modal {
-  .responsive-page-content {
-    justify-content: space-evenly;
-
-    .share-identifier-scan-button {
-      text-align: center;
-
-      ion-button {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 1.875rem;
-
-        &::part(native) {
-          padding: 0;
-          background: var(--ion-color-primary-700);
-        }
-
-        ion-icon {
-          width: 1.5rem;
-          height: 1.5rem;
-          color: var(--ion-color-neutral-100);
-        }
-      }
-    }
-  }
-
   .scrollable-page-layout {
-    &:not(.keyboard-is-open) {
-      &.initiator-view {
-        padding-bottom: 4rem;
-      }
+    &.initiator-view {
+      padding-bottom: 4rem;
     }
 
     &.keyboard-is-open ion-content.scrollable-page-content {
@@ -44,10 +17,29 @@ ion-modal.create-group-identifier-modal {
       font-weight: 500;
       padding: 0;
     }
-  }
 
-  ion-title.md {
-    margin-left: -3rem;
+    &.init-body {
+      .share-identifier-scan-button {
+        text-align: center;
+
+        ion-button {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 1.875rem;
+
+          &::part(native) {
+            padding: 0;
+            background: var(--ion-color-primary-700);
+          }
+
+          ion-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: var(--ion-color-neutral-100);
+          }
+        }
+      }
+    }
   }
 
   .multisig-share-qr-code {
@@ -266,6 +258,7 @@ ion-modal.create-group-identifier-modal {
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: left;
+        font-weight: 500;
       }
     }
 
@@ -289,6 +282,7 @@ ion-modal.create-group-identifier-modal {
           width: 1.938rem;
           height: 1.938rem;
           min-height: 1.938rem;
+          min-width: 1.938rem;
           --padding-start: 0;
           --padding-end: 0;
           border-radius: 2rem;
@@ -347,7 +341,7 @@ ion-modal.create-group-identifier-modal {
 
           .connection-name {
             font-weight: 500;
-            margin-left: 0.25rem;
+            margin-left: 0.5rem;
             width: 100%;
           }
         }
@@ -366,7 +360,7 @@ ion-modal.create-group-identifier-modal {
   }
 
   @media screen and (min-width: 250px) and (max-width: 375px) {
-    .create-identifier-modal-content {
+    .create-group-identifier-modal-content {
       ion-item,
       ion-label,
       ion-item .native-input,
@@ -447,6 +441,7 @@ ion-modal.create-group-identifier-modal {
           width: 1.55rem;
           height: 1.55rem;
           min-height: 1.55rem;
+          min-width: 1.55rem;
 
           ion-icon {
             font-size: 0.96rem;
@@ -475,12 +470,8 @@ ion-modal.create-group-identifier-modal {
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .scrollable-page-layout {
-      &:not(.keyboard-is-open) {
-        padding-bottom: 3rem;
-
-        &.receiver-view {
-          padding-bottom: 0;
-        }
+      &.receiver-view {
+        padding-bottom: 0;
       }
     }
 
@@ -488,6 +479,14 @@ ion-modal.create-group-identifier-modal {
     .scrollable-page-content {
       p.multisig-share-note {
         padding: 0 2rem;
+      }
+
+      .multisig-share-qr-code {
+        ion-button.copy-button {
+          ion-icon {
+            margin-left: 5vw;
+          }
+        }
       }
 
       #react-qrcode-logo,

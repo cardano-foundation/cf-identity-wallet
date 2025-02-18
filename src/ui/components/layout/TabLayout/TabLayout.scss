@@ -88,6 +88,10 @@
         }
       }
 
+      ion-button {
+        min-width: auto;
+      }
+
       .back-button,
       ion-button:not(.action-button-label),
       ion-button.md:not(.action-button-label) {

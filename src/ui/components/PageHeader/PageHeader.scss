@@ -110,6 +110,8 @@
     ion-toolbar,
     ion-toolbar.md {
       ion-buttons ion-button {
+        min-width: auto;
+
         &.button-has-icon-only,
         &.back-button {
           width: 2.25rem;

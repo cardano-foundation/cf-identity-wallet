@@ -1,19 +1,19 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { copyOutline, scanOutline } from "ionicons/icons";
+import { useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { useState, useEffect } from "react";
+import { CreationStatus } from "../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { PageHeader } from "../../PageHeader";
 import { Spinner } from "../../Spinner";
 import { SpinnerConverage } from "../../Spinner/Spinner.type";
-import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
+import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
-import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 
 const SetupConnectionBodyInit = ({
   componentId,
@@ -38,8 +38,9 @@ const SetupConnectionBodyInit = ({
   };
 
   return (
-    <ResponsivePageLayout
+    <ScrollablePageLayout
       pageId={componentId + "-content"}
+      customClass="init-body"
       header={
         <PageHeader
           closeButton={true}
@@ -130,7 +131,7 @@ const SetupConnectionBodyInit = ({
           />
         </IonButton>
       </div>
-    </ResponsivePageLayout>
+    </ScrollablePageLayout>
   );
 };
 
