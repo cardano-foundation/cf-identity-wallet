@@ -32,7 +32,6 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
     ref
   ) => {
     const seedInputs = useRef<(HTMLElement | null)[]>([]);
-    usePrivacyScreen();
 
     useImperativeHandle(ref, () => ({
       focusInputByIndex: (index) => {
