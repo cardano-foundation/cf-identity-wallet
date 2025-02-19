@@ -1,7 +1,6 @@
 import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 
 interface ScannerProps {
-  key?: string;
   routePath?: string;
   cameraDirection?: LensFacing;
   setIsValueCaptured?: (value: boolean) => void;

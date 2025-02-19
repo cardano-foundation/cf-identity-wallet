@@ -74,7 +74,6 @@ const OPEN_CONNECTION_TIME = 250;
 const Scanner = forwardRef(
   (
     {
-      key,
       routePath,
       setIsValueCaptured,
       handleReset,
@@ -600,7 +599,6 @@ const Scanner = forwardRef(
     return (
       <>
         <IonGrid
-          key={key}
           className={containerClass}
           data-testid="qr-code-scanner"
         >

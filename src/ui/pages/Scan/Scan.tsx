@@ -21,11 +21,6 @@ const Scan = () => {
   const { cameraDirection, changeCameraDirection, supportMultiCamera } =
     useCameraDirection();
   const [enableCameraDirection, setEnableCameraDirection] = useState(false);
-  const [cameraKey, setCameraKey] = useState(cameraDirection);
-
-  useEffect(() => {
-    setCameraKey(cameraDirection);
-  }, [cameraDirection]);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }));
@@ -70,7 +65,6 @@ const Scan = () => {
       }
     >
       <Scanner
-        key={cameraKey}
         routePath={history.location.pathname}
         setIsValueCaptured={setIsValueCaptured}
         handleReset={handleAfterScan}
