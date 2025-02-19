@@ -44,6 +44,7 @@ import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { CreationStatus } from "./identifier.types";
+import { ConnectionService } from "./connectionService";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -65,6 +66,7 @@ class KeriaNotificationService extends AgentService {
   protected readonly multiSigs: MultiSigService;
   protected readonly ipexCommunications: IpexCommunicationService;
   protected readonly credentialService: CredentialService;
+  protected readonly connectionService: ConnectionService;
   protected readonly getKeriaOnlineStatus: () => boolean;
   protected readonly markAgentStatus: (online: boolean) => void;
   protected readonly connect: (retryInterval?: number) => Promise<void>;
@@ -83,6 +85,7 @@ class KeriaNotificationService extends AgentService {
     multiSigs: MultiSigService,
     ipexCommunications: IpexCommunicationService,
     credentialService: CredentialService,
+    connectionService: ConnectionService,
     getKeriaOnlineStatus: () => boolean,
     markAgentStatus: (online: boolean) => void,
     connect: (retryInterval?: number) => Promise<void>
@@ -97,6 +100,7 @@ class KeriaNotificationService extends AgentService {
     this.multiSigs = multiSigs;
     this.ipexCommunications = ipexCommunications;
     this.credentialService = credentialService;
+    this.connectionService = connectionService;
     this.getKeriaOnlineStatus = getKeriaOnlineStatus;
     this.markAgentStatus = markAgentStatus;
     this.connect = connect;
@@ -663,21 +667,17 @@ class KeriaNotificationService extends AgentService {
 
         // Either relates to an processed and deleted grant notification, or is out of order
         if (grantNotificationRecords.length === 0) {
-          // @TODO - foconnor: We should do this via connection history
-          const grantExn = await this.props.signifyClient
-            .exchanges()
-            .get(exchange.exn.e.exn.p);
-          const credentialId = grantExn.exn.e.acdc.d;
-          if (
-            (await this.credentialStorage.getCredentialMetadata(
-              credentialId
-            )) !== null
-          ) {
+          const connectionInCloud =
+            await this.connectionService.getConnectionById(exchange.exn.i);
+          const historyExists = connectionInCloud.historyItems?.some(
+            (item) => item.id === exchange.exn.i
+          );
+          if (historyExists) {
             await this.markNotification(notif.i);
             return false;
+          } else {
+            throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
           }
-
-          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
         }
 
         // Refresh the date and read status for UI, and link

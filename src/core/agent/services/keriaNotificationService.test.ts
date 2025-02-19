@@ -40,6 +40,7 @@ import { ConnectionHistoryType } from "./connectionService.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { CreationStatus } from "./identifier.types";
+import { ConnectionService } from "./connectionService";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -226,6 +227,14 @@ const credentialService = jest.mocked({
   markAcdc: jest.fn(),
 });
 
+const connectionsService = jest.mocked({
+  resolveOobi: jest.fn(),
+  getConnectionById: jest.fn().mockResolvedValue({
+    serviceEndpoints: [
+      "http://127.0.0.1:3902/oobi/EKSGUkKBfg5PG3nAvWZwY4pax2ZD-9LC7JpXeks7IKEj/agent/EKxIbNtsJytfgJjW_AkXV-XLTg_vSyPUMxuwkP7zbgbu",
+    ],
+  }),
+});
 const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
   notificationStorage as any,
@@ -237,6 +246,7 @@ const keriaNotificationService = new KeriaNotificationService(
   multiSigs as any,
   ipexCommunications as any,
   credentialService as any,
+  connectionsService as any,
   Agent.agent.getKeriaOnlineStatus,
   Agent.agent.markAgentStatus,
   Agent.agent.connect
