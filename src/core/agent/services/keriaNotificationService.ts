@@ -791,8 +791,17 @@ class KeriaNotificationService extends AgentService {
 
         // Either relates to an processed and deleted agree notification, or is out of order
         if (agreeNotificationRecords.length === 0) {
-          // @TODO - foconnor: For deleted agrees, we should track SAID in connection history
-          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          const connectionInCloud =
+            await this.connectionService.getConnectionById(exchange.exn.i);
+          const historyExists = connectionInCloud.historyItems?.some(
+            (item) => item.id === exchange.exn.i
+          );
+          if (historyExists) {
+            await this.markNotification(notif.i);
+            return false;
+          } else {
+            throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          }
         }
 
         // @TODO - foconnor: Could be optimised to only update record once but deviates from the other IPEX messages - OK for now.
