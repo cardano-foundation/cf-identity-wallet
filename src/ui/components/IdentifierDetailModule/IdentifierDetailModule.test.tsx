@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn().mockResolvedValue(true);
+
 import { Clipboard } from "@capacitor/clipboard";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import {
@@ -53,14 +55,6 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-const getMock = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
-
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => getMock(options.key),
-  },
-}));
-
 const deleteStaleLocalIdentifierMock = jest.fn();
 
 jest.mock("@ionic/react", () => ({
@@ -94,6 +88,9 @@ jest.mock("../../../core/agent/agent", () => ({
         findById: jest.fn(),
         save: jest.fn(),
         createOrUpdateBasicRecord: () => createOrUpdateMock(),
+      },
+      auth: {
+        verifySecret: verifySecretMock,
       },
     },
   },
@@ -144,9 +141,10 @@ describe("Individual Identifier details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
+
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
-    getMock.mockImplementation(() => Promise.resolve({ value: "111111" }));
+    verifySecretMock.mockResolvedValue(true);
   });
 
   test("It renders Identifier Details", async () => {
@@ -312,7 +310,7 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It asks to verify the password when users try to delete the identifier using the button in the modal", async () => {
-    getMock.mockImplementation(() => Promise.resolve({ value: "" }));
+    verifySecretMock.mockResolvedValue(false);
 
     const { getByTestId, getByText, unmount, findByText, queryByText } = render(
       <Provider store={storeMockedAidKeri}>
@@ -429,10 +427,6 @@ describe("Individual Identifier details page", () => {
       expect(
         getByTestId("identifier-card-detail-spinner-container")
       ).toBeVisible()
-    );
-
-    await act(async () =>
-      getMock.mockImplementation(() => Promise.resolve({ value: "111111" }))
     );
   });
 
@@ -1084,6 +1078,7 @@ describe("Checking the Identifier Details Page when information is missing from 
     getIndentifier.mockImplementation(() => {
       throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`);
     });
+    verifySecretMock.mockResolvedValue(true);
   });
 
   test("Identifier exists in the database but not on Signify", async () => {
@@ -1179,10 +1174,12 @@ describe("Favourite identifier", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
+
   beforeEach(() => {
     getIndentifier.mockReturnValue(identifierFix[0]);
-    getMock.mockImplementation(() => Promise.resolve({ value: "111111" }));
+    verifySecretMock.mockResolvedValue(true);
   });
+
   test("It changes to favourite icon on click favourite button", async () => {
     const spy = jest
       .spyOn(global.Date, "now")

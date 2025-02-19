@@ -8,9 +8,6 @@ import { RecoverySeedPhraseModule } from "./RecoverySeedPhraseModule";
 
 const SEED_PHRASE_LENGTH = 18;
 
-const secureStorageGetFunc = jest.fn();
-const secureStorageSetFunc = jest.fn();
-const secureStorageDeleteFunc = jest.fn();
 const verifySeedPhraseFnc = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -18,15 +15,6 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       isMnemonicValid: () => verifySeedPhraseFnc(),
     },
-  },
-}));
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: (...args: unknown[]) => secureStorageGetFunc(...args),
-    set: (...args: unknown[]) => secureStorageSetFunc(...args),
-    delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
 }));
 

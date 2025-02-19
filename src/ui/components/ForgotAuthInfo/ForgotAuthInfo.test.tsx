@@ -11,9 +11,6 @@ import { ForgotType } from "./ForgotAuthInfo.types";
 
 const SEED_PHRASE_LENGTH = 18;
 
-const secureStorageGetFunc = jest.fn();
-const secureStorageSetFunc = jest.fn();
-const secureStorageDeleteFunc = jest.fn();
 const verifySeedPhraseFnc = jest.fn();
 
 const createOrUpdateBasicStore = jest.fn((arg: unknown) =>
@@ -30,16 +27,11 @@ jest.mock("../../../core/agent/agent", () => ({
         createOrUpdateBasicRecord: (arg: unknown) =>
           createOrUpdateBasicStore(arg),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(false),
+        storeSecret: jest.fn(),
+      },
     },
-  },
-}));
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: (...args: unknown[]) => secureStorageGetFunc(...args),
-    set: (...args: unknown[]) => secureStorageSetFunc(...args),
-    delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
 }));
 

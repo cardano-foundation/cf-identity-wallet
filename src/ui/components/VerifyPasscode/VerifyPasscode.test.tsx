@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn();
+
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
@@ -30,6 +32,9 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       connections: {
         getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
+      },
+      auth: {
+        verifySecret: verifySecretMock,
       },
     },
   },
@@ -78,6 +83,7 @@ describe("Verify Passcode on Cards Details page", () => {
       dispatch: dispatchMock,
     };
   });
+
   test("Render passcode", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();

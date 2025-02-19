@@ -1,3 +1,9 @@
+// Before imports to avoid hoisting issues
+const incrementLoginAttemptMock = jest.fn();
+const resetLoginAttemptsMock = jest.fn();
+const storeSecretMock = jest.fn();
+const verifySecretMock = jest.fn();
+
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import {
   BiometryError,
@@ -9,32 +15,23 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
-
-const incrementLoginAttemptMock = jest.fn();
-const resetLoginAttemptsMock = jest.fn();
-const getMock = jest.fn((arg) => "111111");
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: (arg: unknown) => getMock(arg),
-  },
-}));
+import { KeyStoreKeys } from "../../../core/storage";
 
 jest.mock("../../../core/agent/agent", () => ({
   ...jest.requireActual("../../../core/agent/agent"),
   Agent: {
     agent: {
       auth: {
-        incrementLoginAttempts: () => incrementLoginAttemptMock(),
-        resetLoginAttempts: () => resetLoginAttemptsMock(),
+        incrementLoginAttempts: incrementLoginAttemptMock,
+        resetLoginAttempts: resetLoginAttemptsMock,
+        storeSecret: storeSecretMock,
+        verifySecret: verifySecretMock,
       },
     },
   },
@@ -238,6 +235,7 @@ describe("Lock Page", () => {
         setBiometricsIsEnabled: jest.fn(),
       })),
     }));
+    verifySecretMock.mockResolvedValueOnce(true);
 
     const { getByText, queryByTestId, getByTestId } = render(
       <Provider store={storeMocked(initialState)}>
@@ -248,13 +246,17 @@ describe("Lock Page", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(getMock).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(verifySecretMock).toHaveBeenCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
     });
 
     await waitFor(() => {
       expect(queryByTestId("lock-page")).not.toBeInTheDocument();
     });
   });
+
   test("Login using biometrics", async () => {
     jest.doMock("../../hooks/useBiometricsHook", () => ({
       useBiometricAuth: jest.fn(() => ({
@@ -275,10 +277,6 @@ describe("Lock Page", () => {
         <LockPage />
       </Provider>
     );
-
-    await waitFor(() => {
-      expect(getMock).not.toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
-    });
 
     await waitFor(() => {
       expect(queryByTestId("lock-page")).not.toBeInTheDocument();
@@ -328,10 +326,6 @@ describe("Lock Page", () => {
 
     act(() => {
       fireEvent.click(getByTestId("passcode-button-#"));
-    });
-
-    await waitFor(() => {
-      expect(getMock).not.toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {
@@ -415,6 +409,7 @@ describe("Lock Page: Max login attempt", () => {
   });
 
   test("Reset login attempt", async () => {
+    verifySecretMock.mockResolvedValueOnce(true);
     initialState.stateCache.authentication.loginAttempt.attempts = 2;
 
     const storeMocked = {

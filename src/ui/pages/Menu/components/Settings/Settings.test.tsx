@@ -32,15 +32,6 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-jest.mock("../../../../../core/storage", () => ({
-  ...jest.requireActual("../../../../../core/storage"),
-  SecureStorage: {
-    get: (key: string) => {
-      return "111111";
-    },
-  },
-}));
-
 const browserMock = jest.fn(({ link }: { link: string }) =>
   Promise.resolve(link)
 );
@@ -91,15 +82,14 @@ jest.mock("../../../../../core/agent/agent", () => ({
         update: jest.fn(),
         createOrUpdateBasicRecord: jest.fn(),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
     },
   },
 }));
 
 describe("Settings page", () => {
-  beforeEach(() => {
-    jest.resetModules();
-  });
-
   test("Renders Settings page", () => {
     const { getByText } = render(
       <Provider store={store}>

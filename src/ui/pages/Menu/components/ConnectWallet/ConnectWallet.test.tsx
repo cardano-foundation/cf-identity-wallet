@@ -25,6 +25,9 @@ jest.mock("../../../../../core/agent/agent", () => ({
         getAllPeerConnectionMetadata: jest.fn(),
         deletePeerConnectionMetadataRecord: jest.fn(),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
     },
   },
 }));
@@ -47,17 +50,6 @@ jest.mock("@ionic/react", () => ({
       {children}
     </div>
   ),
-}));
-
-jest.mock("../../../../../core/storage", () => ({
-  ...jest.requireActual("../../../../../core/storage"),
-  SecureStorage: {
-    get: (key: string) => {
-      return "111111";
-    },
-    remove: () => jest.fn(),
-    set: () => jest.fn(),
-  },
 }));
 
 const mockStore = configureStore();

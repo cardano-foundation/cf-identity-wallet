@@ -7,7 +7,6 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../../../../../core/agent/agent";
 import { BasicRecord } from "../../../../../../../core/agent/records";
-import { KeyStoreKeys } from "../../../../../../../core/storage";
 import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { CustomInputProps } from "../../../../../../components/CustomInput/CustomInput.types";
@@ -20,11 +19,6 @@ const deletePasswordMock = jest.fn();
 jest.mock("../../../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../../../core/storage"),
   SecureStorage: {
-    get: jest.fn((type: KeyStoreKeys) => {
-      if (type === KeyStoreKeys.APP_OP_PASSWORD)
-        return Promise.resolve("Password@123");
-      return Promise.resolve("111111");
-    }),
     delete: () => deletePasswordMock(),
   },
 }));
@@ -37,6 +31,9 @@ jest.mock("../../../../../../../core/agent/agent", () => ({
         save: jest.fn(),
         update: jest.fn(),
         createOrUpdateBasicRecord: jest.fn(),
+      },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
       },
     },
   },

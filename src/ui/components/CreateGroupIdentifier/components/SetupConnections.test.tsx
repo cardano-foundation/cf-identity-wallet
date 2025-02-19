@@ -49,6 +49,9 @@ jest.mock("../../../../core/agent/agent", () => ({
         deleteIdentifier: () => deleteIdentifier(),
         markIdentifierPendingDelete: () => markIdentifierPendingDelete(),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
     },
   },
 }));
@@ -62,13 +65,6 @@ jest.mock("react-router-dom", () => ({
       historyPushMock(args);
     },
   }),
-}));
-
-jest.mock("../../../../core/storage", () => ({
-  ...jest.requireActual("../../../../core/storage"),
-  SecureStorage: {
-    get: () => "111111",
-  },
 }));
 
 describe("Create group identifier - Setup Connection", () => {

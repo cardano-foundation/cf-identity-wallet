@@ -43,6 +43,9 @@ jest.mock("../../../core/agent/agent", () => ({
         save: jest.fn(),
         createOrUpdateBasicRecord: () => Promise.resolve(),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
     },
   },
 }));
@@ -51,13 +54,6 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
     isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
-}));
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: () => "111111",
-  },
 }));
 
 const initialStateEmpty = {
@@ -196,7 +192,6 @@ describe("Creds Tab", () => {
   const dispatchMock = jest.fn();
 
   beforeEach(() => {
-    jest.resetAllMocks();
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
 

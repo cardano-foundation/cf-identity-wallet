@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn().mockResolvedValue(true);
+
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
@@ -24,18 +26,6 @@ import { ACDC } from "../CredentialRequest.types";
 import { ChooseCredential } from "./ChooseCredential";
 
 mockIonicReact();
-
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: jest.fn((options: { key: string }) => {
-      if (options.key === KeyStoreKeys.APP_PASSCODE) {
-        return { value: "111111" };
-      }
-      return null;
-    }),
-    set: jest.fn(),
-  },
-}));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const offerAcdcFromApplyMock = jest.fn(
@@ -68,6 +58,9 @@ jest.mock("../../../../../../core/agent/agent", () => ({
       },
       connections: {
         getConnectionShortDetailById: jest.fn(),
+      },
+      auth: {
+        verifySecret: verifySecretMock,
       },
     },
   },
@@ -469,7 +462,10 @@ describe("Credential request - choose request", () => {
     passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(SecureStorage.get).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(verifySecretMock).toHaveBeenCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
     });
 
     await waitFor(() => {

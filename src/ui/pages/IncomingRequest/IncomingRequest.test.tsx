@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn().mockResolvedValue(true);
+
 import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import { act } from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
@@ -18,12 +20,13 @@ mockIonicReact();
 
 const mockApprovalCallback = jest.fn((status: boolean) => status);
 
-const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
-
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => mockGet(options.key),
-    set: jest.fn(),
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      auth: {
+        verifySecret: verifySecretMock,
+      },
+    },
   },
 }));
 
@@ -199,7 +202,10 @@ describe("Sign request", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(verifySecretMock).toHaveBeenCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
     });
 
     await waitFor(() => {

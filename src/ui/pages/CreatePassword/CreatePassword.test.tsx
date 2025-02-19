@@ -72,21 +72,19 @@ jest.mock("../../../core/agent/agent", () => ({
         createOrUpdateBasicRecord: (arg: unknown) =>
           createOrUpdateBasicRecordMock(arg),
       },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+        storeSecret: jest.fn(),
+      },
     },
   },
 }));
 
-const secureStorageGetFunc = jest.fn((...arg: unknown[]) =>
-  Promise.resolve("Passssssss1@")
-);
-const secureStorageSetFunc = jest.fn();
 const secureStorageDeleteFunc = jest.fn();
 
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: (...args: unknown[]) => secureStorageGetFunc(...args),
-    set: (...args: unknown[]) => secureStorageSetFunc(...args),
     delete: (...args: unknown[]) => secureStorageDeleteFunc(...args),
   },
 }));

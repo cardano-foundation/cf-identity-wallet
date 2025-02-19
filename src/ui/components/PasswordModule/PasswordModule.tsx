@@ -5,7 +5,7 @@ import { IonIcon } from "@ionic/react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { KeyStoreKeys } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { useAppDispatch } from "../../../store/hooks";
 import {
@@ -27,6 +27,7 @@ import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
 import { PasswordMeter } from "./components/PasswordMeter";
 import { combineClassNames } from "../../utils/style";
 import { SymbolModal } from "./components/SymbolModal";
+import { AuthService } from "../../../core/agent/services";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
   ({ title, isOnboarding, description, testId, onCreateSuccess }, ref) => {
@@ -88,23 +89,33 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
           });
       } else {
         if (authentication.passwordIsSet) {
-          const currentPassword = await SecureStorage.get(
-            KeyStoreKeys.APP_OP_PASSWORD
-          );
-          if (!currentPassword) {
-            showError(
-              "Unable to get current password",
-              new Error("Unable to get current password"),
-              dispatch
-            );
-            return;
-          }
-          if (currentPassword === createPasswordValue) {
-            setAlertExistingIsOpen(true);
-            return;
+          try {
+            if (
+              await Agent.agent.auth.verifySecret(
+                KeyStoreKeys.APP_OP_PASSWORD,
+                createPasswordValue
+              )
+            ) {
+              setAlertExistingIsOpen(true);
+              return;
+            }
+          } catch (error) {
+            if (
+              error instanceof Error &&
+              error.message.startsWith(AuthService.SECRET_NOT_STORED)
+            ) {
+              showError(
+                "Unable to get current password",
+                new Error("Unable to get current password"),
+                dispatch
+              );
+              return;
+            }
+            throw error;
           }
         }
-        await SecureStorage.set(
+
+        await Agent.agent.auth.storeSecret(
           KeyStoreKeys.APP_OP_PASSWORD,
           createPasswordValue
         );
@@ -248,10 +259,10 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             {!confirmPasswordFocus &&
               !!confirmPasswordValue.length &&
               createPasswordValueNotMatching && (
-                <ErrorMessage
-                  message={`${i18n.t("createpassword.error.hasNoMatch")}`}
-                />
-              )}
+              <ErrorMessage
+                message={`${i18n.t("createpassword.error.hasNoMatch")}`}
+              />
+            )}
             <CustomInput
               dataTestId="create-hint-input"
               title={`${i18n.t("createpassword.input.third.title")}`}

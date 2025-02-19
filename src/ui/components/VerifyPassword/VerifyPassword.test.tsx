@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn();
+
 import { IonInput } from "@ionic/react";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
@@ -32,15 +34,10 @@ jest.mock("../../../core/agent/agent", () => ({
       basicStorage: {
         findById: jest.fn(),
       },
+      auth: {
+        verifySecret: verifySecretMock,
+      },
     },
-  },
-}));
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: () => jest.fn(),
-    delete: () => jest.fn(),
   },
 }));
 
@@ -115,6 +112,7 @@ describe("Verify Password", () => {
   });
 
   test("Verify failed", async () => {
+    verifySecretMock.mockResolvedValue(false);
     jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(
       new BasicRecord({
         id: "id",
@@ -170,6 +168,7 @@ describe("Verify Password", () => {
   });
 
   test("Verify success", async () => {
+    verifySecretMock.mockResolvedValue(true);
     jest.spyOn(SecureStorage, "get").mockResolvedValue("1111");
     jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(
       new BasicRecord({

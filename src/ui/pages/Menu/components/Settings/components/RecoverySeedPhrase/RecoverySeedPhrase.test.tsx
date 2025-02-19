@@ -3,28 +3,19 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { KeyStoreKeys } from "../../../../../../../core/storage";
 import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { OperationType } from "../../../../../../globals/types";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { RecoverySeedPhrase } from "./RecoverySeedPhrase";
 
-jest.mock("../../../../../../../core/storage", () => ({
-  ...jest.requireActual("../../../../../../../core/storage"),
-  SecureStorage: {
-    get: jest.fn((type: KeyStoreKeys) => {
-      if (type === KeyStoreKeys.APP_OP_PASSWORD)
-        return Promise.resolve("Password@123");
-      return Promise.resolve("111111");
-    }),
-  },
-}));
-
 jest.mock("../../../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getMnemonic: jest.fn(() => Promise.resolve("")),
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
     },
   },
 }));

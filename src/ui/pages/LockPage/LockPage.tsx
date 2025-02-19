@@ -4,7 +4,6 @@ import { Keyboard } from "@capacitor/keyboard";
 import i18n from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { PublicRoutes, RoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
@@ -35,6 +34,8 @@ import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import "./LockPage.scss";
 import { showError } from "../../utils/error";
+import { Agent } from "../../../core/agent/agent";
+import { KeyStoreKeys } from "../../../core/storage";
 
 const LockPageContainer = () => {
   const pageId = "lock-page";
@@ -97,7 +98,10 @@ const LockPageContainer = () => {
     if (updatedPasscode.length <= 6) setPasscode(updatedPasscode);
 
     if (updatedPasscode.length === 6) {
-      const verified = await verifyPasscode(updatedPasscode);
+      const verified = await Agent.agent.auth.verifySecret(
+        KeyStoreKeys.APP_PASSCODE,
+        updatedPasscode
+      );
 
       if (verified) {
         await resetLoginAttempt();
@@ -115,14 +119,6 @@ const LockPageContainer = () => {
     if (passcode.length >= 1) {
       setPasscode(passcode.substring(0, passcode.length - 1));
     }
-  };
-
-  const verifyPasscode = async (pass: string) => {
-    const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-    if (!storedPass) {
-      return false;
-    }
-    return storedPass === pass;
   };
 
   const handleBiometrics = async () => {

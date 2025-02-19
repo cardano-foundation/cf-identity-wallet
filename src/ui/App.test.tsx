@@ -111,16 +111,6 @@ jest.mock("@capacitor/device", () => ({
   },
 }));
 
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: jest.fn((options: { key: string }) => {
-      return Promise.resolve({ value: "value" });
-    }),
-    set: jest.fn(),
-    remove: jest.fn(),
-  },
-}));
-
 const setStyleMock = jest.fn();
 jest.mock("@capacitor/status-bar", () => ({
   ...jest.requireActual("@capacitor/status-bar"),
