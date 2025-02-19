@@ -1,8 +1,8 @@
 import {
   BarcodeFormat,
-  BarcodeScannedEvent,
+  BarcodesScannedEvent,
   BarcodeValueType,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -16,17 +16,19 @@ import { Scan } from "./Scan";
 import { StorageMessage } from "../../../core/storage/storage.types";
 
 const addListener = jest.fn(
-  (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+  (eventName: string, listenerFunc: (result: BarcodesScannedEvent) => void) => {
     setTimeout(() => {
       listenerFunc({
-        barcode: {
-          displayValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
-          format: BarcodeFormat.QrCode,
-          rawValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
-          valueType: BarcodeValueType.Url,
-        },
+        barcodes: [
+          {
+            displayValue:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+            format: BarcodeFormat.QrCode,
+            rawValue:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+            valueType: BarcodeValueType.Url,
+          },
+        ],
       });
     }, 100);
 
@@ -58,9 +60,9 @@ jest.mock("signify-ts", () => ({
   })),
 }));
 
-jest.mock("@jimcase/barcode-scanning", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@jimcase/barcode-scanning"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () =>
         Promise.resolve({
@@ -68,7 +70,7 @@ jest.mock("@jimcase/barcode-scanning", () => {
         }),
       addListener: (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => addListener(eventName, listenerFunc),
       startScan: jest.fn(),
       stopScan: jest.fn(),

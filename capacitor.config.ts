@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: "org.cardanofoundation.idw",
   appName: "ID Wallet",
   webDir: "build",
-  bundledWebRuntime: false,
   android: {
     webContentsDebuggingEnabled: true,
   },

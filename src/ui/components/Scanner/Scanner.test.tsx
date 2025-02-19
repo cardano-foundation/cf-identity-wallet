@@ -6,9 +6,9 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import {
   BarcodeFormat,
-  BarcodeScannedEvent,
+  BarcodesScannedEvent,
   BarcodeValueType,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import {
@@ -62,17 +62,19 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const addListener = jest.fn(
-  (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+  (eventName: string, listenerFunc: (result: BarcodesScannedEvent) => void) => {
     setTimeout(() => {
       listenerFunc({
-        barcode: {
-          displayValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-          format: BarcodeFormat.QrCode,
-          rawValue:
-            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-          valueType: BarcodeValueType.Url,
-        },
+        barcodes: [
+          {
+            displayValue:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            format: BarcodeFormat.QrCode,
+            rawValue:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            valueType: BarcodeValueType.Url,
+          },
+        ],
       });
     }, 100);
 
@@ -90,15 +92,15 @@ const checkPermisson = jest.fn(() =>
 
 const requestPermission = jest.fn();
 const startScan = jest.fn();
-jest.mock("@jimcase/barcode-scanning", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@jimcase/barcode-scanning"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
       checkPermissions: () => checkPermisson(),
       requestPermissions: () => requestPermission(),
       addListener: (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => addListener(eventName, listenerFunc),
       startScan: () => startScan(),
       stopScan: jest.fn(),
@@ -134,6 +136,17 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
+const barcodes = [
+  {
+    displayValue:
+      "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+    format: BarcodeFormat.QrCode,
+    rawValue:
+      "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+    valueType: BarcodeValueType.Url,
+  },
+];
 
 describe("Scanner", () => {
   const mockStore = configureStore();
@@ -186,18 +199,11 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 10000);
 
@@ -224,18 +230,11 @@ describe("Scanner", () => {
   addListener.mockImplementation(
     (
       eventName: string,
-      listenerFunc: (result: BarcodeScannedEvent) => void
+      listenerFunc: (result: BarcodesScannedEvent) => void
     ) => {
       setTimeout(() => {
         listenerFunc({
-          barcode: {
-            displayValue:
-              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-            format: BarcodeFormat.QrCode,
-            rawValue:
-              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-            valueType: BarcodeValueType.Url,
-          },
+          barcodes,
         });
       }, 100);
 
@@ -369,18 +368,11 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 100);
 
@@ -504,18 +496,20 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes: [
+              {
+                displayValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
           });
         }, 100);
 
@@ -631,18 +625,11 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 100);
 
@@ -708,18 +695,11 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 100);
 
@@ -776,6 +756,7 @@ describe("Scanner", () => {
 
     const handleReset = jest.fn();
 
+    // Mock connectByOobiUrl to throw a duplicate connection error
     connectByOobiUrlMock.mockImplementation(() => {
       throw new Error("Record already exists with id connectionId");
     });
@@ -783,18 +764,20 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes: [
+              {
+                displayValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
           });
         }, 100);
 
@@ -806,15 +789,20 @@ describe("Scanner", () => {
 
     render(
       <Provider store={storeMocked}>
-        <Scanner
-          setIsValueCaptured={setIsValueCaptured}
-          handleReset={handleReset}
-        />
+        <Scanner routePath={TabsRoutePath.SCAN} />
       </Provider>
     );
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setOpenConnectionId("connectionId"));
+      expect(dispatchMock).toHaveBeenCalledWith({
+        type: "stateCache/setToastMsg",
+        payload: ToastMsgType.DUPLICATE_CONNECTION,
+      });
+
+      expect(dispatchMock).toHaveBeenCalledWith({
+        type: "connectionsCache/setOpenConnectionId",
+        payload: "connectionId",
+      });
     });
   });
 
@@ -854,18 +842,20 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes: [
+              {
+                displayValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi/string1/agent/string2?groupId=72e2f089cef6",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
           });
         }, 100);
 
@@ -921,17 +911,11 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue: "Invalid URL",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 100);
 
@@ -1001,17 +985,11 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue: "Invalid URL",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 100);
 
@@ -1079,17 +1057,11 @@ describe("Scanner", () => {
     addListener.mockImplementation(
       (
         eventName: string,
-        listenerFunc: (result: BarcodeScannedEvent) => void
+        listenerFunc: (result: BarcodesScannedEvent) => void
       ) => {
         setTimeout(() => {
           listenerFunc({
-            barcode: {
-              displayValue:
-                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-              format: BarcodeFormat.QrCode,
-              rawValue: "Invalid URL",
-              valueType: BarcodeValueType.Url,
-            },
+            barcodes,
           });
         }, 100);
 
