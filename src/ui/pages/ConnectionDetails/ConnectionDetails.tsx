@@ -41,6 +41,7 @@ import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
 import { showError } from "../../utils/error";
 import { ConnectionDetailsProps } from "./ConnectionDetails.types";
+import { ConnectionHistoryType } from "../../../core/agent/services/connectionService.types";
 
 const ConnectionDetails = ({
   connectionShortDetails,
@@ -72,9 +73,15 @@ const ConnectionDetails = ({
       const connectionDetails = await Agent.agent.connections.getConnectionById(
         connectionShortDetails.id
       );
+      const connectionHistoryWithoutIpexAgreeComplete =
+        connectionDetails.historyItems.filter(
+          (historyItem) =>
+            historyItem.type !== ConnectionHistoryType.IPEX_AGREE_COMPLETE
+        );
+
       setConnectionDetails(connectionDetails);
       setNotes(connectionDetails.notes);
-      setConnectionHistory(connectionDetails.historyItems);
+      setConnectionHistory(connectionHistoryWithoutIpexAgreeComplete);
     } catch (error) {
       if (
         error instanceof Error &&
