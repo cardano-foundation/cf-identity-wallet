@@ -2,8 +2,8 @@
 
 android {
   compileOptions {
-      sourceCompatibility JavaVersion.VERSION_17
-      targetCompatibility JavaVersion.VERSION_17
+      sourceCompatibility JavaVersion.VERSION_21
+      targetCompatibility JavaVersion.VERSION_21
   }
 }
 
@@ -21,8 +21,8 @@ dependencies {
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
-    implementation project(':jimcase-barcode-scanning')
     implementation project(':evva-capacitor-secure-storage-plugin')
+    implementation project(':capacitor-mlkit-barcode-scanning')
     implementation project(':capacitor-native-settings')
 
 }

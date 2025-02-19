@@ -2,7 +2,7 @@ import {
   BarcodeFormat,
   BarcodeScanner,
   LensFacing,
-} from "@jimcase/barcode-scanning";
+} from "@capacitor-mlkit/barcode-scanning";
 import { Capacitor } from "@capacitor/core";
 import {
   getPlatforms,
@@ -426,17 +426,21 @@ const Scanner = forwardRef(
         if (allowed) {
           await BarcodeScanner.removeAllListeners();
           const listener = await BarcodeScanner.addListener(
-            "barcodeScanned",
+            "barcodesScanned",
             async (result) => {
               await listener.remove();
-
               if (isHandlingQR.current) return;
               isHandlingQR.current = true;
-
-              await processValue(result.barcode.rawValue);
+              if (!result.barcodes?.length) return;
+              await processValue(result.barcodes[0].rawValue);
             }
           );
-
+          const listenerError = await BarcodeScanner.addListener(
+            "scanError",
+            async (result) => {
+              await listenerError.remove();
+            }
+          );
           try {
             await BarcodeScanner.startScan({
               formats: [BarcodeFormat.QrCode],
@@ -540,50 +544,50 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-        case OperationType.SCAN_WALLET_CONNECTION:
-          return (
-            <PageFooter
-              customClass="actions-button"
-              secondaryButtonAction={openPasteModal}
-              secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
-            />
-          );
-        case OperationType.MULTI_SIG_INITIATOR_SCAN:
-          return (
-            <PageFooter
-              pageId={componentId}
-              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
-              primaryButtonAction={handlePrimaryButtonAction}
-              primaryButtonDisabled={!multiSigGroupCache?.connections.length}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pasteoobi"
-              )}`}
-              secondaryButtonAction={openPasteModal}
-            />
-          );
-        case OperationType.MULTI_SIG_RECEIVER_SCAN:
-          return (
-            <PageFooter
-              pageId={componentId}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pasteoobi"
-              )}`}
-              secondaryButtonAction={openPasteModal}
-            />
-          );
-        case OperationType.SCAN_SSI_BOOT_URL:
-        case OperationType.SCAN_SSI_CONNECT_URL:
-          return <div></div>;
-        default:
-          return (
-            <PageFooter
-              pageId={componentId}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pastecontents"
-              )}`}
-              secondaryButtonAction={openPasteModal}
-            />
-          );
+      case OperationType.SCAN_WALLET_CONNECTION:
+        return (
+          <PageFooter
+            customClass="actions-button"
+            secondaryButtonAction={openPasteModal}
+            secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
+          />
+        );
+      case OperationType.MULTI_SIG_INITIATOR_SCAN:
+        return (
+          <PageFooter
+            pageId={componentId}
+            primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+            primaryButtonAction={handlePrimaryButtonAction}
+            primaryButtonDisabled={!multiSigGroupCache?.connections.length}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pasteoobi"
+            )}`}
+            secondaryButtonAction={openPasteModal}
+          />
+        );
+      case OperationType.MULTI_SIG_RECEIVER_SCAN:
+        return (
+          <PageFooter
+            pageId={componentId}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pasteoobi"
+            )}`}
+            secondaryButtonAction={openPasteModal}
+          />
+        );
+      case OperationType.SCAN_SSI_BOOT_URL:
+      case OperationType.SCAN_SSI_CONNECT_URL:
+        return <div></div>;
+      default:
+        return (
+          <PageFooter
+            pageId={componentId}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pastecontents"
+            )}`}
+            secondaryButtonAction={openPasteModal}
+          />
+        );
       }
     };
 
@@ -656,10 +660,10 @@ const Scanner = forwardRef(
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
                 : currentOperation === OperationType.SCAN_WALLET_CONNECTION
-                ? i18n.t(
+                  ? i18n.t(
                     "tabs.menu.tab.items.connectwallet.inputpidmodal.header"
                   )
-                : `${i18n.t("createidentifier.scan.pastecontents")}`
+                  : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,
             actionButtonDisabled: !pastedValue,
