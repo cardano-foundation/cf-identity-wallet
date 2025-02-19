@@ -669,7 +669,7 @@ class KeriaNotificationService extends AgentService {
         if (grantNotificationRecords.length === 0) {
           const connectionInCloud =
             await this.connectionService.getConnectionById(exchange.exn.i);
-          const historyExists = connectionInCloud.historyItems?.some(
+          const historyExists = connectionInCloud?.historyItems?.some(
             (item) => item.id === exchange.exn.i
           );
           if (historyExists) {
@@ -726,8 +726,17 @@ class KeriaNotificationService extends AgentService {
 
         // Either relates to an processed and deleted apply notification, or is out of order
         if (applyNotificationRecords.length === 0) {
-          // @TODO - foconnor: For deleted applies, we should track SAID in connection history
-          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          const connectionInCloud =
+            await this.connectionService.getConnectionById(exchange.exn.i);
+          const historyExists = connectionInCloud?.historyItems?.some(
+            (item) => item.id === exchange.exn.i
+          );
+          if (historyExists) {
+            await this.markNotification(notif.i);
+            return false;
+          } else {
+            throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          }
         }
 
         // Refresh the date and read status for UI, and link
@@ -793,7 +802,7 @@ class KeriaNotificationService extends AgentService {
         if (agreeNotificationRecords.length === 0) {
           const connectionInCloud =
             await this.connectionService.getConnectionById(exchange.exn.i);
-          const historyExists = connectionInCloud.historyItems?.some(
+          const historyExists = connectionInCloud?.historyItems?.some(
             (item) => item.id === exchange.exn.i
           );
           if (historyExists) {
