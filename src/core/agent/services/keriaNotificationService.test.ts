@@ -2216,6 +2216,7 @@ describe("Long running operation tracker", () => {
       pending: true,
       createdAt: new Date(),
       alias: "CF Credential Issuance",
+      oobi: "http://oobi.com/",
     };
     connectionStorage.findById.mockResolvedValueOnce(connectionMock);
     const operationRecord = {
@@ -2225,19 +2226,21 @@ describe("Long running operation tracker", () => {
       recordType: "oobi",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-
     contactGetMock.mockResolvedValueOnce(null);
 
     await keriaNotificationService.processOperation(operationRecord);
+
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
       pending: false,
       createdAt: operationMock.response.dt,
       alias: connectionMock.alias,
+      oobi: "http://oobi.com/",
     });
     expect(contactsUpdateMock).toBeCalledWith(connectionMock.id, {
       alias: "CF Credential Issuance",
       createdAt: operationMock.response.dt,
+      oobi: "http://oobi.com/",
     });
     expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
       type: EventTypes.ConnectionStateChanged,
@@ -2343,7 +2346,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test.skip("Cannot create connection if the connection is already created", async () => {
+  test("Should not update connection if it already exists", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const operationMock = {
       metadata: {
@@ -2381,7 +2384,7 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
-    expect(connectionStorage.update).toBeCalledTimes(0);
+    expect(connectionStorage.update).toHaveBeenCalledWith(connectionMock);
     expect(contactsUpdateMock).toBeCalledTimes(0);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
@@ -3037,7 +3040,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test('Should retry connection when "Failed to fetch" error occurs when process operation', async () => {
+  test("Should retry connection when \"Failed to fetch\" error occurs when process operation", async () => {
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",

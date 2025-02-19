@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Salter } from "signify-ts";
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
@@ -302,7 +303,7 @@ describe("Connection service of agent", () => {
       expect(op).toEqual({
         op: {
           response: { i: "id", dt: now },
-          name: url,
+          name: url.split("?")[0],
           metadata: {
             oobi: `${oobiPrefix}${failUuid}`,
           },
@@ -575,7 +576,7 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("can resolve oobi with no name parameter", async () => {
+  test("can resolve oobi without name parameter", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid`;
 
@@ -599,6 +600,33 @@ describe("Connection service of agent", () => {
     });
   });
 
+  test("should preserve createdAt attribute when re-resolving OOBI", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const url = `${oobiPrefix}keriuuid?name=keri`;
+
+    contactGetMock.mockResolvedValueOnce({
+      alias: "keri",
+      oobi: url,
+      id: "id",
+      createdAt: now,
+    });
+
+    const op = await connectionService.resolveOobi(url);
+
+    expect(updateContactMock).not.toBeCalled();
+    expect(op).toEqual({
+      op: {
+        response: { i: "id", dt: now },
+        name: url.split("?")[0],
+        done: true,
+        metadata: {
+          oobi: `${oobiPrefix}${failUuid}`,
+        },
+      },
+      alias: "keri",
+    });
+  });
+
   test("can resolve oobi with a name parameter (URL decoded)", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
@@ -609,7 +637,7 @@ describe("Connection service of agent", () => {
     expect(op).toEqual({
       op: {
         response: { i: "id", dt: now },
-        name: url,
+        name: url.split("?")[0],
         metadata: {
           oobi: `${oobiPrefix}${failUuid}`,
         },
@@ -619,10 +647,24 @@ describe("Connection service of agent", () => {
     });
   });
 
+  test("should update KERIA contact directly if waiting for completion", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
+
+    await connectionService.resolveOobi(
+      `${oobiPrefix}test?name=alias&groupId=1234`,
+      true
+    );
+
+    expect(updateContactMock).toBeCalledWith("id", {
+      alias: "alias",
+      createdAt: expect.any(Date),
+      groupCreationId: "1234",
+      oobi: `${oobiPrefix}test?name=alias&groupId=1234`,
+    });
+  });
+
   test("should throw if oobi is not resolving and we explicitly wait for completion", async () => {
-    signifyClient.operations().get = jest
-      .fn()
-      .mockResolvedValue({ done: false });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
     await expect(

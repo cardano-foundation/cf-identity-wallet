@@ -64,6 +64,7 @@
       }
 
       .toggle-button {
+        flex: none;
         width: fit-content;
         &.toggle-checked {
           --track-background-checked: var(--ion-color-primary-700);

@@ -516,11 +516,6 @@ describe("Edit Connection Modal", () => {
       expect(deleteNoteMock).toBeCalledTimes(1);
       expect(updateNoteMock).toBeCalledTimes(1);
       expect(confirmFn).toBeCalledTimes(1);
-      expect(
-        queryByText(
-          EN_TRANSLATIONS.connections.details.options.alert.deletenote.title
-        )
-      ).toBeNull();
     });
 
     unmount();

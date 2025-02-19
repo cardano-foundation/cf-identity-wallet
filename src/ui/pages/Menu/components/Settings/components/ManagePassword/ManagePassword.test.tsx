@@ -110,7 +110,7 @@ describe("Manage password", () => {
   });
 
   test("Cancel alert", async () => {
-    const { queryByTestId, getByTestId } = render(
+    const { queryByTestId, getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -151,10 +151,18 @@ describe("Manage password", () => {
 
       expect(queryByTestId("create-password-modal")).toBe(null);
     });
+
+    unmount();
   });
 
   test("Password not set", async () => {
-    const { queryByTestId, getByTestId, getByText, findByText } = render(
+    const {
+      queryByTestId,
+      getByTestId,
+      getByText,
+      findByText,
+      getAllByTestId,
+    } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -180,7 +188,7 @@ describe("Manage password", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId("alert-cancel-enable-password-confirm-button")
+        getAllByTestId("alert-cancel-enable-password-confirm-button")[0]
       );
     });
 

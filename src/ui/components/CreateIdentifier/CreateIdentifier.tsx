@@ -1,13 +1,6 @@
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
-import {
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonModal,
-  IonRow,
-  IonSpinner,
-} from "@ionic/react";
+import { IonCol, IonGrid, IonIcon, IonModal, IonRow } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Salter } from "signify-ts";
@@ -209,8 +202,8 @@ const CreateIdentifier = ({
           identifierData.selectedAidType === 1 || multiSigGroup
             ? ToastMsgType.MULTI_SIGN_IDENTIFIER_CREATED
             : identifierData.selectedAidType === 2
-            ? ToastMsgType.DELEGATED_IDENTIFIER_CREATED
-            : ToastMsgType.IDENTIFIER_CREATED
+              ? ToastMsgType.DELEGATED_IDENTIFIER_CREATED
+              : ToastMsgType.IDENTIFIER_CREATED
         )
       );
     } catch (e) {
@@ -319,6 +312,22 @@ const CreateIdentifier = ({
               )}`}
             />
           }
+          footer={
+            <PageFooter
+              pageId={componentId}
+              customClass={keyboardIsOpen ? "ion-hide" : ""}
+              primaryButtonText={`${i18n.t(
+                multiSigGroup
+                  ? "createidentifier.receive.confirmbutton"
+                  : "createidentifier.add.confirmbutton"
+              )}`}
+              primaryButtonAction={handleContinue}
+              primaryButtonDisabled={
+                identifierData.displayName.length === 0 ||
+                !!localValidateMessage
+              }
+            />
+          }
         >
           <div className={inputContainerClass}>
             <CustomInput
@@ -417,19 +426,6 @@ const CreateIdentifier = ({
             />
           </div>
         </ScrollablePageLayout>
-        <PageFooter
-          pageId={componentId}
-          customClass={keyboardIsOpen ? "ion-hide" : ""}
-          primaryButtonText={`${i18n.t(
-            multiSigGroup
-              ? "createidentifier.receive.confirmbutton"
-              : "createidentifier.add.confirmbutton"
-          )}`}
-          primaryButtonAction={handleContinue}
-          primaryButtonDisabled={
-            identifierData.displayName.length === 0 || !!localValidateMessage
-          }
-        />
       </IonModal>
       <IADTypeInfoModal
         isOpen={openAIDInfo}

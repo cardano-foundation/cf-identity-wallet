@@ -10,5 +10,13 @@
   "1101851": {
     "active": true,
     "notes": "Ignored since is related just to appium e2e"
+  },
+  "1102339": {
+    "active": true,
+    "notes": "Ignored since is related to webpack build"
+  },
+  "1102341": {
+    "active": true,
+    "notes": "Ignored since is related to wdio/cli"
   }
 }
