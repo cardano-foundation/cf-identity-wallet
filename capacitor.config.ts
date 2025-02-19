@@ -24,7 +24,7 @@ const config: CapacitorConfig = {
       backgroundColor: "#92FFC0"
     },
     PrivacyScreen: {
-      enable: false,
+      enable: true,
       imageName: "Splashscreen",
       preventScreenshots: true
     }
