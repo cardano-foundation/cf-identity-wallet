@@ -298,11 +298,11 @@ class IpexCommunicationService extends AgentService {
       agreeExn.exn.a.i
     );
 
-    // Check if the history item already exists
+    // Check if the history item related to agreeExn already exists
     const connectionDetails = await this.connections.getConnectionById(
       agreeExn.exn.i
     );
-    const historyExists = connectionDetails.historyItems.some(
+    const historyExists = connectionDetails.historyItems?.some(
       (item) =>
         item.type === ConnectionHistoryType.IPEX_AGREE_COMPLETE &&
         item.id === agreeExn.exn.d
