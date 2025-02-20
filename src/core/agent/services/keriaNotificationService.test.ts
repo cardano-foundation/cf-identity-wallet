@@ -1041,16 +1041,15 @@ describe("Signify notification service of agent", () => {
       ...notificationMultisigExnProp,
       a: {
         ...notificationMultisigExnProp.a,
-        r: NotificationRoute.MultiSigExn, // Ensure it's a MultiSigExn notification
-        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO", // SAID of the exchange
+        r: NotificationRoute.MultiSigExn,
+        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
       },
     };
-    const exchange = multisigExnAdmitForIssuance; // Fixture for an admit message
+    const exchange = multisigExnAdmitForIssuance;
 
     exchangesGetMock.mockResolvedValueOnce(exchange);
-    notificationStorage.findAllByQuery.mockResolvedValue([]); // No existing grant notifications
+    notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    // Mock connection service to return a connection with history indicating credential was received
     connectionsService.getConnectionById.mockResolvedValue({
       id: exchange.exn.i,
       historyItems: [
@@ -1092,7 +1091,7 @@ describe("Signify notification service of agent", () => {
 
     connectionsService.getConnectionById.mockResolvedValue({
       id: exchange.exn.i,
-      historyItems: [], // No history indicating credential received
+      historyItems: [],
     });
 
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
@@ -3453,7 +3452,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test("Should retry connection when \"Failed to fetch\" error occurs when process operation", async () => {
+  test('Should retry connection when "Failed to fetch" error occurs when process operation', async () => {
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
