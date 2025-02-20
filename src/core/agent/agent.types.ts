@@ -95,7 +95,6 @@ type ExnMessage = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  id: string;
   serviceEndpoints: string[];
   notes: ConnectionNoteDetails[];
   historyItems: ConnectionHistoryItem[];
