@@ -42,6 +42,7 @@ import { StorageMessage } from "../../storage/storage.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { CreationStatus } from "./identifier.types";
 import {
+  getMemberIdentifierResponse,
   getMultisigIdentifierResponse,
   getRequestMultisigIcp,
 } from "../../__fixtures__/agent/multiSigFixtures";
@@ -318,9 +319,9 @@ describe("Signify notification service of agent", () => {
       linkedRequest: { accepted: false },
     });
     identifiersGetMock.mockReset();
-    identifiersGetMock.mockRejectedValue(
-      new Error("Not Found - 404 - not found")
-    );
+    identifiersGetMock
+      .mockResolvedValueOnce(getMemberIdentifierResponse)
+      .mockRejectedValue(new Error("Not Found - 404 - not found"));
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
 
     for (const notif of notes) {
@@ -479,14 +480,14 @@ describe("Signify notification service of agent", () => {
       exn: {
         r: NotificationRoute.MultiSigIcp,
         p: "p",
-        a: { i: "i" },
+        a: { gid: "i", smids: ["a", "b"], rmids: ["a", "b"] },
         e: { icp: { i: "i" } },
       },
     });
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
       new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
     );
-    identifiersGetMock.mockResolvedValue({});
+    identifiersGetMock.mockResolvedValue(getMemberIdentifierResponse);
 
     await keriaNotificationService.processNotification(
       notificationMultisigIcpProp
@@ -500,7 +501,7 @@ describe("Signify notification service of agent", () => {
       exn: {
         r: NotificationRoute.MultiSigIcp,
         p: "p",
-        a: { i: "i" },
+        a: { gid: "i", smids: ["a", "b"], rmids: ["a", "b"] },
         e: { icp: { i: "i" } },
       },
     });
@@ -508,9 +509,9 @@ describe("Signify notification service of agent", () => {
       new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
     );
     identifiersGetMock.mockReset();
-    identifiersGetMock.mockRejectedValue(
-      new Error("Not Found - 404 - not found")
-    );
+    identifiersGetMock
+      .mockResolvedValueOnce(getMemberIdentifierResponse)
+      .mockRejectedValue(new Error("Not Found - 404 - not found"));
     notificationStorage.save.mockReturnValue({
       id: "id",
       createdAt: new Date(),
@@ -1598,6 +1599,30 @@ describe("Signify notification service of agent", () => {
       multisigExnAdmitForIssuance.exn.a.gid
     );
     expect(markNotificationMock).toBeCalledWith(notificationMultisigExnProp.i);
+    expect(notificationStorage.save).not.toBeCalled();
+  });
+
+  test("Should ignore multisig icp if local member deleted already", async () => {
+    exchangesGetMock.mockResolvedValue(getRequestMultisigIcp);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    identifiersGetMock.mockReset();
+    identifiersGetMock.mockResolvedValue({
+      ...hab,
+      name: `${IdentifierService.DELETED_IDENTIFIER_THEME}:deletedIdentifier`,
+    });
+
+    await keriaNotificationService.processNotification(
+      notificationMultisigIcpProp
+    );
+
+    expect(identifiersGetMock).toBeCalledWith(
+      getRequestMultisigIcp.exn.a.smids[0]
+    );
+    expect(markNotificationMock).toBeCalledWith(notificationMultisigIcpProp.i);
     expect(notificationStorage.save).not.toBeCalled();
   });
 });

@@ -289,24 +289,12 @@ class KeriaNotificationService extends AgentService {
     }
 
     const exn = await this.props.signifyClient.exchanges().get(notif.a.d);
-    if (await this.outboundExchange(exn)) {
+    if (
+      (await this.outboundExchange(exn)) ||
+      !(await this.identifierNotDeleted(notif, exn))
+    ) {
       await this.markNotification(notif.i);
       return;
-    }
-
-    // rp field not being properly utilised yet, so will be potentially incorrect for groups > 2 members
-    if (notif.a.r !== NotificationRoute.MultiSigIcp) {
-      const receivingPre = exn.exn.r.startsWith("/multisig")
-        ? exn.exn.a.gid
-        : exn.exn.rp;
-      if (
-        (
-          await this.props.signifyClient.identifiers().get(receivingPre)
-        ).name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
-      ) {
-        await this.markNotification(notif.i);
-        return;
-      }
     }
 
     let shouldCreateRecord = true;
@@ -442,6 +430,44 @@ class KeriaNotificationService extends AgentService {
       });
 
     return ourIdentifier !== undefined;
+  }
+
+  private async identifierNotDeleted(
+    notif: Notification,
+    exn: ExnMessage
+  ): Promise<boolean> {
+    // rp field not being properly utilised yet (open issue on Signify/KERIA), so will be potentially incorrect for groups > 2 members
+    if (notif.a.r === NotificationRoute.MultiSigIcp) {
+      for (const smid of exn.exn.a.smids) {
+        try {
+          const hab = await this.props.signifyClient.identifiers().get(smid);
+          return hab.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
+            ? false
+            : true;
+        } catch (error) {
+          if (
+            !(
+              error instanceof Error &&
+              /404/gi.test(error.message.split(" - ")[1])
+            )
+          ) {
+            throw error;
+          }
+        }
+      }
+    } else {
+      const receivingPre = exn.exn.r.startsWith("/multisig")
+        ? exn.exn.a.gid
+        : exn.exn.rp;
+      const hab = await this.props.signifyClient
+        .identifiers()
+        .get(receivingPre);
+      return hab.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
+        ? false
+        : true;
+    }
+
+    return false;
   }
 
   private async processExnIpexApplyNotification(
