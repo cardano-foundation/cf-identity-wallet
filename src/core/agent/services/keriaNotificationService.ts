@@ -44,6 +44,7 @@ import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { CreationStatus } from "./identifier.types";
+import { IdentifierService } from "./identifierService";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -293,6 +294,21 @@ class KeriaNotificationService extends AgentService {
       return;
     }
 
+    // rp field not being properly utilised yet, so will be potentially incorrect for groups > 2 members
+    if (notif.a.r !== NotificationRoute.MultiSigIcp) {
+      const receivingPre = exn.exn.r.startsWith("/multisig")
+        ? exn.exn.a.gid
+        : exn.exn.rp;
+      if (
+        (
+          await this.props.signifyClient.identifiers().get(receivingPre)
+        ).name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
+      ) {
+        await this.markNotification(notif.i);
+        return;
+      }
+    }
+
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
       shouldCreateRecord = await this.processExnIpexApplyNotification(exn);
@@ -304,7 +320,7 @@ class KeriaNotificationService extends AgentService {
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
       shouldCreateRecord = await this.processMultiSigRpyNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigIcp) {
-      shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
+      shouldCreateRecord = await this.processMultiSigIcpNotification(exn);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(
         notif,
@@ -444,7 +460,7 @@ class KeriaNotificationService extends AgentService {
   ): Promise<boolean> {
     // Only consider issuances for now
     const ourIdentifier = await this.identifierStorage
-      .getIdentifierMetadata(exchange.exn.a.i)
+      .getIdentifierMetadata(exchange.exn.e.acdc.a.i)
       .catch((error) => {
         if (
           (error as Error).message ===
@@ -456,7 +472,6 @@ class KeriaNotificationService extends AgentService {
         }
       });
     if (!ourIdentifier) {
-      await this.markNotification(notif.i);
       return false;
     }
 
@@ -497,6 +512,14 @@ class KeriaNotificationService extends AgentService {
             id: notificationRecord.id,
           },
         });
+      }
+
+      // In case credential gets revoked before
+      if (
+        existingCredential &&
+        existingCredential.status === CredentialStatus.PENDING
+      ) {
+        throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
       }
 
       if (
@@ -540,27 +563,37 @@ class KeriaNotificationService extends AgentService {
           credentialId: existingCredential.id,
         };
 
-        const notificationRecord = await this.notificationStorage.save(
-          metadata
-        );
+        try {
+          const notificationRecord = await this.notificationStorage.save(
+            metadata
+          );
 
-        this.props.eventEmitter.emit<NotificationAddedEvent>({
-          type: EventTypes.NotificationAdded,
-          payload: {
-            note: {
-              id: notificationRecord.id,
-              createdAt: new Date().toISOString(),
-              a: {
-                r: NotificationRoute.LocalAcdcRevoked,
-                credentialId: existingCredential.id,
-                credentialTitle: existingCredential.credentialType,
+          this.props.eventEmitter.emit<NotificationAddedEvent>({
+            type: EventTypes.NotificationAdded,
+            payload: {
+              note: {
+                id: notificationRecord.id,
+                createdAt: new Date().toISOString(),
+                a: {
+                  r: NotificationRoute.LocalAcdcRevoked,
+                  credentialId: existingCredential.id,
+                  credentialTitle: existingCredential.credentialType,
+                },
+                read: false,
+                connectionId: exchange.exn.i,
+                groupReplied: false,
               },
-              read: false,
-              connectionId: exchange.exn.i,
-              groupReplied: false,
             },
-          },
-        });
+          });
+        } catch (error) {
+          if (
+            !(error as Error).message.startsWith(
+              StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
+            )
+          ) {
+            throw error;
+          }
+        }
 
         await this.markNotification(notif.i);
         return false;
@@ -572,7 +605,7 @@ class KeriaNotificationService extends AgentService {
   private async processMultiSigRpyNotification(
     notif: Notification
   ): Promise<boolean> {
-    const multisigNotification = await this.props.signifyClient
+    const groupRequests = await this.props.signifyClient
       .groups()
       .getRequest(notif.a.d)
       .catch((error) => {
@@ -583,71 +616,47 @@ class KeriaNotificationService extends AgentService {
           throw error;
         }
       });
-    if (!multisigNotification || !multisigNotification.length) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const multisigId = multisigNotification[0]?.exn?.a?.gid;
-    if (!multisigId) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const multisigIdentifier = await this.identifierStorage
-      .getIdentifierMetadata(multisigId)
-      .catch((error) => {
-        if (
-          error.message === IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-        ) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
-    if (!multisigIdentifier) {
+    if (!groupRequests || !groupRequests.length) {
       await this.markNotification(notif.i);
       return false;
     }
 
-    const rpyRoute = multisigNotification[0].exn.e.rpy.r;
-    if (rpyRoute === "/end/role/add") {
-      await this.multiSigs.joinAuthorization(multisigNotification[0].exn);
+    const multisigId = groupRequests[0].exn!.a!.gid;
+
+    // If deleted, skip - XX indicates identifier was deleted
+    // This is safer than checking for the local metadata record in case
+    // We have incepted on the cloud but still haven't created the metadata record locally
+    const gHab = await this.props.signifyClient.identifiers().get(multisigId);
+    if (gHab.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)) {
       await this.markNotification(notif.i);
       return false;
     }
-    return true;
+
+    const rpyRoute = groupRequests[0].exn.e.rpy.r;
+    if (rpyRoute === "/end/role/add") {
+      await this.multiSigs.joinAuthorization(groupRequests[0].exn);
+      await this.markNotification(notif.i);
+    }
+    return false;
   }
 
   private async processMultiSigIcpNotification(
-    notif: Notification
+    exchange: ExnMessage
   ): Promise<boolean> {
-    const multisigNotification = await this.props.signifyClient
-      .groups()
-      .getRequest(notif.a.d)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return [];
-        } else {
-          throw error;
-        }
-      });
-    if (!multisigNotification || !multisigNotification.length) {
-      await this.markNotification(notif.i);
-      return false;
+    // Otherwise group initiator gets notification
+    try {
+      await this.props.signifyClient.identifiers().get(exchange.exn.e.icp.i);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        /404/gi.test(error.message.split(" - ")[1])
+      ) {
+        return true;
+      } else {
+        throw error;
+      }
     }
-    const multisigId = multisigNotification[0]?.exn?.a?.gid;
-    if (!multisigId) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const hasMultisig = await this.multiSigs.hasMultisig(multisigId);
-    const notificationsForThisMultisig =
-      await this.findNotificationsByMultisigId(multisigId);
-    if (hasMultisig || notificationsForThisMultisig.length) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    return true;
+    return false;
   }
 
   private async processMultiSigExnNotification(
@@ -686,7 +695,7 @@ class KeriaNotificationService extends AgentService {
           ...notificationRecord.linkedRequest,
           current: exchange.exn.d,
         };
-        notificationRecord.createdAt = new Date();
+        notificationRecord.createdAt = new Date(notif.dt);
         notificationRecord.read = false;
 
         await this.notificationStorage.update(notificationRecord);
@@ -736,9 +745,10 @@ class KeriaNotificationService extends AgentService {
           ...notificationRecord.linkedRequest,
           current: exchange.exn.d,
         };
-        notificationRecord.createdAt = new Date();
+        notificationRecord.createdAt = new Date(notif.dt);
         notificationRecord.read = false;
-        const { multisigMembers, ourIdentifier } =
+
+        const { ourIdentifier, multisigMembers } =
           await this.multiSigs.getMultisigParticipants(exchange.exn.a.gid);
 
         const initiatorAid = multisigMembers.map(
@@ -807,47 +817,33 @@ class KeriaNotificationService extends AgentService {
           exchange,
           notificationRecord
         );
+
         return false;
       }
       default:
-        await this.markNotification(notif.i);
         return false;
     }
   }
 
   private async createNotificationRecord(
-    event: Notification
+    notif: Notification
   ): Promise<KeriaNotification> {
-    const exchange = await this.props.signifyClient.exchanges().get(event.a.d);
-
+    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     const metadata: NotificationRecordStorageProps = {
-      id: event.i,
-      a: event.a,
+      id: notif.i,
+      a: notif.a,
       read: false,
-      route: event.a.r as NotificationRoute,
+      route: notif.a.r as NotificationRoute,
       connectionId: exchange.exn.i,
-      createdAt: new Date(event.dt),
+      createdAt: new Date(notif.dt),
       credentialId: exchange.exn.e?.acdc?.d,
     };
 
     if (
-      event.a.r === NotificationRoute.MultiSigIcp ||
-      event.a.r === NotificationRoute.MultiSigRpy
+      notif.a.r === NotificationRoute.MultiSigIcp ||
+      notif.a.r === NotificationRoute.MultiSigRpy
     ) {
-      const multisigNotification = await this.props.signifyClient
-        .groups()
-        .getRequest(event.a.d)
-        .catch((error) => {
-          const status = error.message.split(" - ")[1];
-          if (/404/gi.test(status)) {
-            return [];
-          } else {
-            throw error;
-          }
-        });
-      if (multisigNotification && multisigNotification.length) {
-        metadata.multisigId = multisigNotification[0].exn?.a?.gid;
-      }
+      metadata.multisigId = exchange.exn.e.icp.i;
     }
 
     const result = await this.notificationStorage.save(metadata);
@@ -912,13 +908,6 @@ class KeriaNotificationService extends AgentService {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
-  async findNotificationsByMultisigId(multisigId: string) {
-    const notificationRecord = await this.notificationStorage.findAllByQuery({
-      multisigId,
-    });
-    return notificationRecord;
-  }
-
   async syncIPEXReplyOperations(): Promise<void> {
     const records = await this.notificationStorage.findAllByQuery({
       $not: {
@@ -974,15 +963,14 @@ class KeriaNotificationService extends AgentService {
         continue;
       }
 
-      if (this.pendingOperations.length > 0) {
-        for (const pendingOperation of this.pendingOperations) {
-          try {
-            await this.processOperation(pendingOperation);
-          } catch (error) {
-            console.error("Error when process a operation", error);
-          }
+      for (const pendingOperation of this.pendingOperations) {
+        try {
+          await this.processOperation(pendingOperation);
+        } catch (error) {
+          console.error("Error when process a operation", error);
         }
       }
+
       await new Promise((rs) => {
         setTimeout(() => {
           rs(true);
@@ -1052,16 +1040,44 @@ class KeriaNotificationService extends AgentService {
     if (operation.done) {
       switch (operationRecord.recordType) {
         case OperationPendingRecordType.Group: {
-          await this.identifierStorage.updateIdentifierMetadata(recordId, {
-            creationStatus: CreationStatus.COMPLETE,
-          });
+          await this.identifierStorage
+            .updateIdentifierMetadata(recordId, {
+              creationStatus: CreationStatus.COMPLETE,
+            })
+            .catch((error) => {
+              // In case user deleted pending identifier
+              if (
+                !(
+                  error instanceof Error &&
+                  error.message.startsWith(
+                    IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+                  )
+                )
+              ) {
+                throw error;
+              }
+            });
           await this.multiSigs.endRoleAuthorization(recordId);
           break;
         }
         case OperationPendingRecordType.Witness: {
-          await this.identifierStorage.updateIdentifierMetadata(recordId, {
-            creationStatus: CreationStatus.COMPLETE,
-          });
+          await this.identifierStorage
+            .updateIdentifierMetadata(recordId, {
+              creationStatus: CreationStatus.COMPLETE,
+            })
+            .catch((error) => {
+              // In case user deleted pending identifier
+              if (
+                !(
+                  error instanceof Error &&
+                  error.message.startsWith(
+                    IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+                  )
+                )
+              ) {
+                throw error;
+              }
+            });
           break;
         }
         case OperationPendingRecordType.Oobi: {
@@ -1069,13 +1085,13 @@ class KeriaNotificationService extends AgentService {
             (operation.response as State).i
           );
 
-          const keriaContact = await this.props.signifyClient
-            .contacts()
-            .get((operation.response as State).i)
-            .catch(() => undefined);
-
           if (connectionRecord && !connectionRecord.pendingDeletion) {
             connectionRecord.pending = false;
+
+            const keriaContact = await this.props.signifyClient
+              .contacts()
+              .get((operation.response as State).i)
+              .catch(() => undefined);
 
             if (!keriaContact) {
               await this.props.signifyClient
@@ -1096,10 +1112,6 @@ class KeriaNotificationService extends AgentService {
                 status: ConnectionStatus.CONFIRMED,
               },
             });
-          } else {
-            await this.props.signifyClient
-              .contacts()
-              .delete((operation.response as State).i);
           }
           break;
         }
@@ -1134,10 +1146,21 @@ class KeriaNotificationService extends AgentService {
               });
             }
 
-            await this.credentialService.markAcdc(
-              credentialId,
-              CredentialStatus.CONFIRMED
-            );
+            await this.credentialService
+              .markAcdc(credentialId, CredentialStatus.CONFIRMED)
+              .catch((error) => {
+                // In case user deleted pending credential in UI
+                if (
+                  !(
+                    error instanceof Error &&
+                    error.message.startsWith(
+                      CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+                    )
+                  )
+                ) {
+                  throw error;
+                }
+              });
 
             await this.ipexCommunications.createLinkedIpexMessageRecord(
               admitExchange,

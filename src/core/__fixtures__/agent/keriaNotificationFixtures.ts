@@ -1,5 +1,6 @@
 import { ExchangeRoute, NotificationRoute } from "../../agent/agent.types";
 import { CredentialStatus } from "../../agent/services/credentialService.types";
+import { MultiSigRoute } from "../../agent/services/multiSig.types";
 
 const credentialMetadataMock = {
   type: "CredentialMetadataRecord",
@@ -201,6 +202,10 @@ const multisigExnOfferForPresenting = {
 
 const multisigExnApplyForPresenting = {
   exn: {
+    r: MultiSigRoute.EXN,
+    a: {
+      gid: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvP",
+    },
     e: {
       exn: {
         p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
@@ -254,7 +259,7 @@ const multisigExnGrant = {
 
 const notificationMultisigRpyProp = {
   i: "string",
-  dt: "string",
+  dt: "2023-06-12T14:07:53.224866+00:00",
   r: false,
   a: {
     r: NotificationRoute.MultiSigRpy,
@@ -265,7 +270,7 @@ const notificationMultisigRpyProp = {
 
 const notificationMultisigExnProp = {
   i: "string",
-  dt: "string",
+  dt: "2023-06-12T14:07:53.224866+00:00",
   r: false,
   a: {
     r: NotificationRoute.MultiSigExn,
@@ -276,7 +281,7 @@ const notificationMultisigExnProp = {
 
 const notificationMultisigIcpProp = {
   i: "string",
-  dt: "string",
+  dt: "2023-06-12T14:07:53.224866+00:00",
   r: false,
   a: {
     r: NotificationRoute.MultiSigIcp,
@@ -287,7 +292,7 @@ const notificationMultisigIcpProp = {
 
 const notificationIpexGrantProp = {
   i: "string",
-  dt: "string",
+  dt: "2023-06-12T14:07:53.224866+00:00",
   r: false,
   a: {
     r: NotificationRoute.ExnIpexGrant,
@@ -309,7 +314,7 @@ const notificationIpexAgreeProp = {
 
 const notificationIpexApplyProp = {
   i: "string",
-  dt: "string",
+  dt: "2023-06-12T14:07:53.224866+00:00",
   r: false,
   a: {
     r: NotificationRoute.ExnIpexApply,
@@ -335,7 +340,7 @@ const credentialStateIssued = {
 
 const notificationIpexOfferProp = {
   i: "string",
-  dt: "string",
+  dt: "2023-06-12T14:07:53.224866+00:00",
   r: false,
   a: {
     r: NotificationRoute.ExnIpexOffer,
@@ -351,6 +356,36 @@ const groupIdentifierMetadataRecord = {
   multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
   createdAt: new Date(),
   updatedAt: new Date(),
+};
+
+const hab = {
+  name: "00:Display name",
+  prefix: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+  state: {
+    vn: [1, 0],
+    i: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+    s: "0",
+    p: "",
+    d: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+    f: "0",
+    dt: "2024-08-09T07:23:52.839894+00:00",
+    et: "icp",
+    kt: "1",
+    k: ["DM_vaN_p23a0DpK7brjTgaVWvIuL84G5UwNxY6M-Mv8Y"],
+    nt: "1",
+    n: ["EOvYVOWhxNxjlm5NYaxX0ivrZ7TqU9syRZPQdU1Yykzk"],
+    bt: "3",
+    b: [],
+    c: [],
+    ee: {
+      s: "0",
+      d: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+      br: [],
+      ba: [],
+    },
+    di: "",
+  },
+  icp_dt: "2024-08-09T07:23:52.839894+00:00",
 };
 
 export {
@@ -372,4 +407,5 @@ export {
   credentialStateIssued,
   notificationIpexOfferProp,
   groupIdentifierMetadataRecord,
+  hab,
 };

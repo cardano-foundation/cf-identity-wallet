@@ -650,6 +650,9 @@ describe("Connection service of agent", () => {
   test("should update KERIA contact directly if waiting for completion", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
+    contactGetMock.mockRejectedValueOnce(
+      new Error("Not Found - 404 - not found")
+    );
 
     await connectionService.resolveOobi(
       `${oobiPrefix}test?name=alias&groupId=1234`,

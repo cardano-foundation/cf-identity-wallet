@@ -24,7 +24,7 @@ import {
   linkedContacts,
   queuedIdentifier,
   queuedJoin,
-} from "../../__fixtures__/agent/multSigFixtures";
+} from "../../__fixtures__/agent/multiSigFixtures";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { EventTypes } from "../event.types";
 import { CreationStatus } from "./identifier.types";
@@ -239,51 +239,38 @@ describe("Oobi/endrole", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(memberIdentifierRecord);
-    identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
+    identifiersGetMock
+      .mockResolvedValueOnce(getMultisigIdentifierResponse)
+      .mockResolvedValueOnce(getMemberIdentifierResponse);
     addEndRoleMock.mockResolvedValue({
       op: jest.fn(),
       serder: { size: 1 },
       sigs: [],
     });
+
     await multiSigService.joinAuthorization(mockRequestExn);
-    expect(sendExchangesMock).toBeCalledTimes(1);
+
+    expect(sendExchangesMock).toBeCalledWith(
+      memberIdentifierRecord.id,
+      "multisig",
+      getMemberIdentifierResponse,
+      MultiSigRoute.RPY,
+      { gid: getMultisigIdentifierResponse.prefix },
+      {
+        rpy: [
+          { size: 1 },
+          "FABELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY0AAAAAAAAAAAAAAAAAAAAAAAELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY-AAA",
+        ],
+      },
+      [
+        getMultisigMembersResponse.signing[0].aid,
+        getMultisigMembersResponse.signing[1].aid,
+      ]
+    );
   });
 });
 
 describe("Usage of multi-sig", () => {
-  test("Should return true if there is a multisig with the provided multisigId", async () => {
-    const multisigId = "multisig-id";
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      id: multisigId,
-      displayName: "Multisig",
-      multisigManageAid: "aid",
-      createdAt: now,
-      theme: 0,
-    });
-    expect(await multiSigService.hasMultisig(multisigId)).toEqual(true);
-  });
-
-  test("Should return false if there is no multisig with the provided multisigId", async () => {
-    const multisigId = "multisig-id";
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValue(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      );
-    expect(await multiSigService.hasMultisig(multisigId)).toEqual(false);
-  });
-
-  test("Should throw if there is an unknown error in hasMultisig", async () => {
-    const multisigId = "multisig-id";
-    const error = new Error("other error");
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValue(error);
-    await expect(multiSigService.hasMultisig(multisigId)).rejects.toThrowError(
-      error
-    );
-  });
-
   test("Can get participants with a multi-sig identifier", async () => {
     identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
 
