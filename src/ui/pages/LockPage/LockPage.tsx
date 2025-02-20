@@ -1,9 +1,14 @@
+import {
+  BiometryError,
+  BiometryErrorType,
+} from "@aparajita/capacitor-biometric-auth";
 import { App, AppState } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
-import i18n from "i18next";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { Agent } from "../../../core/agent/agent";
+import { KeyStoreKeys } from "../../../core/storage";
 import { PublicRoutes, RoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
@@ -32,10 +37,9 @@ import { BackEventPriorityType } from "../../globals/types";
 import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
-import "./LockPage.scss";
 import { showError } from "../../utils/error";
-import { Agent } from "../../../core/agent/agent";
-import { KeyStoreKeys } from "../../../core/storage";
+import "./LockPage.scss";
+import { i18n } from "../../../i18n";
 
 const LockPageContainer = () => {
   const pageId = "lock-page";
@@ -43,6 +47,8 @@ const LockPageContainer = () => {
   const [passcode, setPasscode] = useState("");
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
+  const userCancelBiometricsAuth = useRef(false);
+
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const firstAppLaunch = useSelector(geFirstAppLaunch);
@@ -123,9 +129,15 @@ const LockPageContainer = () => {
 
   const handleBiometrics = async () => {
     await disablePrivacy();
-    const isAuthenticated = await handleBiometricAuth();
+    const authenResult = await handleBiometricAuth();
     await enablePrivacy();
-    if (isAuthenticated === true) {
+
+    if (authenResult instanceof BiometryError) {
+      userCancelBiometricsAuth.current =
+        authenResult.code === BiometryErrorType.userCancel;
+    }
+
+    if (authenResult === true) {
       dispatch(login());
       dispatch(setFirstAppLaunch(false));
     }
@@ -155,7 +167,7 @@ const LockPageContainer = () => {
 
   useEffect(() => {
     const handleAppStateChange = async (state: AppState) => {
-      if (state.isActive) {
+      if (state.isActive && !userCancelBiometricsAuth.current) {
         await handleUseBiometrics();
       }
     };
