@@ -353,7 +353,7 @@ describe("Wallet connect: empty history", () => {
             createdAtUTC: "2024-07-25T13:33:20.323Z",
             theme: 0,
             creationStatus: CreationStatus.COMPLETE,
-            multisigManageAid: "EBze49sDYvxxtq5eFbX2TKbK7g4SPS7DJVdoTRIyybxN",
+            groupMemberPre: "EBze49sDYvxxtq5eFbX2TKbK7g4SPS7DJVdoTRIyybxN",
           },
           EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ61: {
             displayName: "ms",

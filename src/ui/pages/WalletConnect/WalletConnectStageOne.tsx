@@ -26,7 +26,7 @@ const WalletConnectStageOne = ({
   const defaultIdentifierCache = Object.values(
     useAppSelector(getIdentifiersCache)
   ).filter(
-    (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
+    (identifier) => !identifier.groupMemberPre && !identifier.groupMetadata
   );
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);

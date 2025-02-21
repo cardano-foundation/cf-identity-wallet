@@ -534,7 +534,7 @@ const Scanner = forwardRef(
     const handleCloseCreateIdentifier = (
       identifier?: IdentifierShortDetails
     ) => {
-      if (identifier?.groupMetadata || identifier?.multisigManageAid) {
+      if (identifier?.groupMetadata || identifier?.groupMemberPre) {
         setResumeMultiSig(identifier);
         setGroupIdentifierOpen(true);
       }

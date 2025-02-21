@@ -158,7 +158,7 @@ class MultiSigService extends AgentService {
         displayName: mHabRecord.displayName,
         theme: mHabRecord.theme,
         creationStatus,
-        multisigManageAid: memberPrefix,
+        groupMemberPre: memberPrefix,
         createdAt: new Date(multisigDetail.icp_dt),
       });
     } catch (error) {
@@ -187,7 +187,7 @@ class MultiSigService extends AgentService {
           displayName: mHabRecord.displayName,
           theme: mHabRecord.theme,
           creationStatus,
-          multisigManageAid: memberPrefix,
+          groupMemberPre: memberPrefix,
           createdAtUTC: multisigDetail.icp_dt,
         },
       },
@@ -454,7 +454,7 @@ class MultiSigService extends AgentService {
         displayName: mHabRecord.displayName,
         theme: mHabRecord.theme,
         creationStatus,
-        multisigManageAid: mHabRecord.id,
+        groupMemberPre: mHabRecord.id,
         createdAt: new Date(multisigDetail.icp_dt),
       });
     } catch (error) {
@@ -483,7 +483,7 @@ class MultiSigService extends AgentService {
           displayName: mHabRecord.displayName,
           theme: mHabRecord.theme,
           creationStatus,
-          multisigManageAid: mHabRecord.id,
+          groupMemberPre: mHabRecord.id,
           createdAtUTC: multisigDetail.icp_dt,
         },
       },
@@ -531,7 +531,7 @@ class MultiSigService extends AgentService {
     const members = await this.props.signifyClient
       .identifiers()
       .members(multisigId);
-    const multisigMembers = members["signing"];
+    const multisigMembers = members.signing;
 
     let ourIdentifier;
     for (const member of multisigMembers) {

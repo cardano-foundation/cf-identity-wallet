@@ -26,7 +26,7 @@ interface IdentifierShortDetails {
   theme: number;
   creationStatus: CreationStatus;
   groupMetadata?: GroupMetadata;
-  multisigManageAid?: string;
+  groupMemberPre?: string;
 }
 
 interface IdentifierDetails extends IdentifierShortDetails {

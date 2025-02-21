@@ -164,7 +164,7 @@ class IpexCommunicationService extends AgentService {
     }
 
     let op: Operation;
-    if (holder.multisigManageAid) {
+    if (holder.groupMemberPre) {
       const { op: opMultisigAdmit, exnSaid } = await this.submitMultisigAdmit(
         holder.id,
         grantExn,
@@ -227,7 +227,7 @@ class IpexCommunicationService extends AgentService {
     );
 
     let op: Operation;
-    if (discloser.multisigManageAid) {
+    if (discloser.groupMemberPre) {
       const { op: opMultisigOffer, exnSaid } = await this.submitMultisigOffer(
         discloser.id,
         msgSaid,
@@ -314,7 +314,7 @@ class IpexCommunicationService extends AgentService {
     );
 
     let op: Operation;
-    if (discloser.multisigManageAid) {
+    if (discloser.groupMemberPre) {
       const { op: opMultisigGrant, exnSaid } = await this.submitMultisigGrant(
         discloser.id,
         agreeExn.exn.i,
@@ -442,7 +442,7 @@ class IpexCommunicationService extends AgentService {
       connectionId,
       schema,
       identifierId: holder.id,
-      identifierType: holder.multisigManageAid
+      identifierType: holder.groupMemberPre
         ? IdentifierType.Group
         : IdentifierType.Individual,
       createdAt: new Date(dateTime),

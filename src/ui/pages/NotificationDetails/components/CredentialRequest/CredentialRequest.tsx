@@ -45,7 +45,7 @@ const CredentialRequest = ({
 
     const identifier = identifiersData[credentialRequest.identifier];
 
-    return identifier ? identifier.multisigManageAid : null;
+    return identifier ? identifier.groupMemberPre : null;
   }, [credentialRequest, identifiersData]);
 
   const getMultisigInfo = useCallback(async () => {
@@ -86,7 +86,7 @@ const CredentialRequest = ({
       const identifier = identifiersData[request.identifier];
 
       const identifierType =
-        identifier?.multisigManageAid || identifier?.groupMetadata
+        identifier?.groupMemberPre || identifier?.groupMetadata
           ? IdentifierType.Group
           : IdentifierType.Individual;
 

@@ -402,7 +402,7 @@ describe("Creation of multi-sig", () => {
         displayName: "Identifier 2",
         theme: 0,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: memberPrefix,
+        groupMemberPre: memberPrefix,
         createdAt: new Date(getMultisigIdentifierResponse.icp_dt),
       })
     );
@@ -422,7 +422,7 @@ describe("Creation of multi-sig", () => {
           displayName: "Identifier 2",
           creationStatus: CreationStatus.PENDING,
           createdAtUTC: "2024-08-10T07:23:54.839894+00:00",
-          multisigManageAid: memberPrefix,
+          groupMemberPre: memberPrefix,
           theme: 0,
         },
       },
@@ -559,7 +559,7 @@ describe("Creation of multi-sig", () => {
         displayName: "Identifier 2",
         theme: 0,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: memberPrefix,
+        groupMemberPre: memberPrefix,
         createdAt: new Date(getMultisigIdentifierResponse.icp_dt),
       })
     );
@@ -579,7 +579,7 @@ describe("Creation of multi-sig", () => {
           displayName: "Identifier 2",
           creationStatus: CreationStatus.PENDING,
           createdAtUTC: "2024-08-10T07:23:54.839894+00:00",
-          multisigManageAid: memberPrefix,
+          groupMemberPre: memberPrefix,
           theme: 0,
         },
       },
@@ -665,7 +665,7 @@ describe("Creation of multi-sig", () => {
         displayName: "Identifier 2",
         theme: 0,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: memberPrefix,
+        groupMemberPre: memberPrefix,
         createdAt: new Date(getMultisigIdentifierResponse.icp_dt),
       })
     );
@@ -685,7 +685,7 @@ describe("Creation of multi-sig", () => {
           displayName: "Identifier 2",
           creationStatus: CreationStatus.PENDING,
           createdAtUTC: "2024-08-10T07:23:54.839894+00:00",
-          multisigManageAid: memberPrefix,
+          groupMemberPre: memberPrefix,
           theme: 0,
         },
       },
@@ -817,7 +817,7 @@ describe("Creation of multi-sig", () => {
         displayName: memberMetadataRecord.displayName,
         theme: 0,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: memberMetadataRecord.id,
+        groupMemberPre: memberMetadataRecord.id,
         createdAt: new Date(getMultisigIdentifierResponse.icp_dt),
       })
     );
@@ -837,7 +837,7 @@ describe("Creation of multi-sig", () => {
           displayName: memberMetadataRecord.displayName,
           creationStatus: CreationStatus.PENDING,
           createdAtUTC: "2024-08-10T07:23:54.839894+00:00",
-          multisigManageAid: memberMetadataRecord.id,
+          groupMemberPre: memberMetadataRecord.id,
           theme: 0,
         },
       },
@@ -948,7 +948,7 @@ describe("Creation of multi-sig", () => {
         displayName: memberMetadataRecord.displayName,
         theme: 0,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: memberMetadataRecord.id,
+        groupMemberPre: memberMetadataRecord.id,
         createdAt: new Date(getMultisigIdentifierResponse.icp_dt),
       })
     );
@@ -968,7 +968,7 @@ describe("Creation of multi-sig", () => {
           displayName: memberMetadataRecord.displayName,
           creationStatus: CreationStatus.PENDING,
           createdAtUTC: "2024-08-10T07:23:54.839894+00:00",
-          multisigManageAid: memberMetadataRecord.id,
+          groupMemberPre: memberMetadataRecord.id,
           theme: 0,
         },
       },
@@ -1058,7 +1058,7 @@ describe("Creation of multi-sig", () => {
         displayName: memberMetadataRecord.displayName,
         theme: 0,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: memberMetadataRecord.id,
+        groupMemberPre: memberMetadataRecord.id,
         createdAt: new Date(getMultisigIdentifierResponse.icp_dt),
       })
     );
@@ -1078,7 +1078,7 @@ describe("Creation of multi-sig", () => {
           displayName: memberMetadataRecord.displayName,
           creationStatus: CreationStatus.PENDING,
           createdAtUTC: "2024-08-10T07:23:54.839894+00:00",
-          multisigManageAid: memberMetadataRecord.id,
+          groupMemberPre: memberMetadataRecord.id,
           theme: 0,
         },
       },
