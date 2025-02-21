@@ -376,7 +376,7 @@ describe("Single sig service of agent", () => {
       createdAtUTC: nowISO,
       theme: 0,
       groupMetadata: keriMetadataRecord.groupMetadata,
-      multisigManageAid: keriMetadataRecord.multisigManageAid,
+      groupMemberPre: keriMetadataRecord.groupMemberPre,
       ...identifierStateKeria.state,
       creationStatus: CreationStatus.COMPLETE,
       members: undefined,
@@ -399,7 +399,7 @@ describe("Single sig service of agent", () => {
       createdAtUTC: nowISO,
       theme: 0,
       groupMetadata: keriMetadataRecord.groupMetadata,
-      multisigManageAid: keriMetadataRecord.multisigManageAid,
+      groupMemberPre: keriMetadataRecord.groupMemberPre,
       ...identifierStateKeria.state,
       creationStatus: CreationStatus.COMPLETE,
       members: [
@@ -907,13 +907,13 @@ describe("Single sig service of agent", () => {
       theme: 0,
       groupMetadata,
       creationStatus: CreationStatus.PENDING,
-      multisigManageAid: "manageAid",
+      groupMemberPre: "manageAid",
     };
     identifierStorage.getIdentifierMetadata
       .mockReturnValueOnce({
         ...keriMetadataRecord,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: "manageAid",
+        groupMemberPre: "manageAid",
         groupMetadata: undefined,
       })
       .mockReturnValueOnce(localMember);
@@ -1116,7 +1116,7 @@ describe("Single sig service of agent", () => {
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       displayName: "1-group1",
       theme: 15,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      groupMemberPre: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
@@ -1245,7 +1245,7 @@ describe("Single sig service of agent", () => {
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       displayName: "1-group1",
       theme: 15,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      groupMemberPre: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       creationStatus: CreationStatus.PENDING,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });
@@ -1387,7 +1387,7 @@ describe("Single sig service of agent", () => {
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       displayName: "1-group1",
       theme: 15,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      groupMemberPre: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       creationStatus: CreationStatus.FAILED,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
     });

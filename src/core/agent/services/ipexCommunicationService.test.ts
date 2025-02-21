@@ -2049,6 +2049,7 @@ describe("Grant ACDC group actions", () => {
           current: "current-grant-said",
         },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        receivingPre: "EI8fS00-AxbbqXmwoivpw-0ui0qgZtGbh8Ue-ZVbxYSZ",
       })
     );
 
@@ -2105,7 +2106,9 @@ describe("Grant ACDC group actions", () => {
           linkedRequest: {
             accepted: false,
           },
+          createdAt: new Date(),
           connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+          receivingPre: "EI8fS00-AxbbqXmwoivpw-0ui0qgZtGbh8Ue-ZVbxYSZ",
         })
       )
     ).rejects.toThrowError(

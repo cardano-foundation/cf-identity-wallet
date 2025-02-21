@@ -186,7 +186,7 @@ describe("Credential request: Multisig", () => {
       identifiers: {
         id: {
           ...multisignIdentifierFix[0],
-          multisigManageAid: "member-1",
+          groupMemberPre: "member-1",
           id: "id",
         },
       },
@@ -248,10 +248,7 @@ describe("Credential request: Multisig", () => {
             pageId="multi-sign"
             activeStatus
             handleBack={jest.fn()}
-            notificationDetails={{
-              ...notificationsFix[4],
-              multisigId: "multisig-id",
-            }}
+            notificationDetails={notificationsFix[4]}
           />
         </IonReactMemoryRouter>
       </Provider>

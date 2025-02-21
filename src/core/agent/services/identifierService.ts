@@ -101,8 +101,8 @@ class IdentifierService extends AgentService {
         creationStatus: metadata.creationStatus ?? false,
         groupMetadata: metadata.groupMetadata,
       };
-      if (metadata.multisigManageAid) {
-        identifier.multisigManageAid = metadata.multisigManageAid;
+      if (metadata.groupMemberPre) {
+        identifier.groupMemberPre = metadata.groupMemberPre;
       }
       identifiers.push(identifier);
     }
@@ -147,7 +147,7 @@ class IdentifierService extends AgentService {
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
-      multisigManageAid: metadata.multisigManageAid,
+      groupMemberPre: metadata.groupMemberPre,
       creationStatus: metadata.creationStatus,
       groupMetadata: metadata.groupMetadata,
       s: aid.state.s,
@@ -349,12 +349,12 @@ class IdentifierService extends AgentService {
       await this.deleteGroupLinkedConnections(metadata.groupMetadata.groupId);
     }
 
-    if (metadata.multisigManageAid) {
+    if (metadata.groupMemberPre) {
       const localMember = await this.identifierStorage.getIdentifierMetadata(
-        metadata.multisigManageAid
+        metadata.groupMemberPre
       );
       await this.identifierStorage.updateIdentifierMetadata(
-        metadata.multisigManageAid,
+        metadata.groupMemberPre,
         {
           isDeleted: true,
           pendingDeletion: false,
@@ -516,7 +516,7 @@ class IdentifierService extends AgentService {
           : CreationStatus.COMPLETE
         : CreationStatus.PENDING;
       if (creationStatus === CreationStatus.PENDING) {
-        const pendingOperation = await this.operationPendingStorage.save({
+        await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
         });
@@ -570,7 +570,7 @@ class IdentifierService extends AgentService {
         .identifiers()
         .get(identifier.prefix)) as HabState;
 
-      const multisigManageAid = identifier.group.mhab.prefix;
+      const groupMemberPre = identifier.group.mhab.prefix;
       const groupId = identifier.group.mhab.name.split(":")[1];
       const theme = parseInt(identifier.name.split(":")[0], 10);
       const groupInitiator = groupId.split("-")[0] === "1";
@@ -585,13 +585,13 @@ class IdentifierService extends AgentService {
           : CreationStatus.COMPLETE
         : CreationStatus.PENDING;
       if (creationStatus === CreationStatus.PENDING) {
-        const pendingOperation = await this.operationPendingStorage.save({
+        await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Group,
         });
       }
 
-      await this.identifierStorage.updateIdentifierMetadata(multisigManageAid, {
+      await this.identifierStorage.updateIdentifierMetadata(groupMemberPre, {
         groupMetadata: {
           groupId,
           groupCreated: true,
@@ -603,7 +603,7 @@ class IdentifierService extends AgentService {
         id: identifier.prefix,
         displayName: groupId,
         theme,
-        multisigManageAid,
+        groupMemberPre,
         creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
       });

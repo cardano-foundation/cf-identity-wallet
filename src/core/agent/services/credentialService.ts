@@ -244,7 +244,7 @@ class CredentialService extends AgentService {
         connectionId: credential.sad.i,
         schema: credential.schema.$id,
         identifierId: credential.sad.a.i,
-        identifierType: identifier.multisigManageAid
+        identifierType: identifier.groupMemberPre
           ? IdentifierType.Group
           : IdentifierType.Individual,
         createdAt: new Date(credential.sad.a.dt),

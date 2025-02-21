@@ -321,7 +321,9 @@ describe("Signify notification service of agent", () => {
     identifiersGetMock.mockReset();
     identifiersGetMock
       .mockResolvedValueOnce(getMemberIdentifierResponse)
-      .mockRejectedValue(new Error("Not Found - 404 - not found"));
+      .mockRejectedValueOnce(new Error("Not Found - 404 - not found"))
+      .mockResolvedValueOnce(getMemberIdentifierResponse)
+      .mockRejectedValueOnce(new Error("Not Found - 404 - not found"));
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
 
     for (const notif of notes) {
@@ -341,7 +343,6 @@ describe("Signify notification service of agent", () => {
           connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
           createdAt: "2024-09-20T02:51:24.930Z",
           id: "0AC0W27tnnd2WyHWUh-368EI",
-          multisigId: undefined,
           read: false,
           groupReplied: false,
         },
@@ -529,7 +530,6 @@ describe("Signify notification service of agent", () => {
           m: "",
           r: MultiSigRoute.ICP,
         },
-        multisigId: "i",
         route: MultiSigRoute.ICP,
         read: false,
       })
@@ -631,8 +631,13 @@ describe("Signify notification service of agent", () => {
     });
     notificationStorage.save = jest.fn().mockReturnValue({
       id: "id",
-      createdAt: new Date(),
+      createdAt: new Date("2024-07-30T04:19:55.348000+00:00"),
       linkedRequest: { accepted: false },
+      a: {
+        r: NotificationRoute.LocalAcdcRevoked,
+        credentialId: credentialMetadataMock.id,
+        credentialTitle: credentialMetadataMock.credentialType,
+      },
     });
     credentialStorage.getCredentialMetadata.mockResolvedValue(
       credentialMetadataMock
@@ -691,9 +696,7 @@ describe("Signify notification service of agent", () => {
       payload: {
         note: {
           id: "id",
-          createdAt: expect.stringMatching(
-            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/
-          ),
+          createdAt: "2024-07-30T04:19:55.348Z",
           a: {
             r: NotificationRoute.LocalAcdcRevoked,
             credentialId: credentialMetadataMock.id,
@@ -1146,7 +1149,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W27tnnd2WyHWUh-368EI",
         createdAt: DATETIME,
         a: { r: NotificationRoute.ExnIpexGrant },
-        multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
         linkedRequest: { accepted: false },
@@ -1156,7 +1158,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W34tnnd2WyUCOy-790AY",
         createdAt: DATETIME,
         a: { r: NotificationRoute.ExnIpexOffer },
-        multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
         linkedRequest: { accepted: false },
@@ -1181,7 +1182,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W27tnnd2WyHWUh-368EI",
         createdAt: DATETIME.toISOString(),
         a: { r: NotificationRoute.ExnIpexGrant },
-        multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
         groupReplied: false,
@@ -1190,7 +1190,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W34tnnd2WyUCOy-790AY",
         createdAt: DATETIME.toISOString(),
         a: { r: NotificationRoute.ExnIpexOffer },
-        multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
         groupReplied: false,
@@ -1204,7 +1203,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W27tnnd2WyHWUh-368EI",
         createdAt: DATETIME,
         a: { r: NotificationRoute.ExnIpexGrant },
-        multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
         linkedRequest: { accepted: false },
@@ -1213,7 +1211,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W34tnnd2WyUCOy-790AY",
         createdAt: DATETIME,
         a: { r: NotificationRoute.ExnIpexGrant },
-        multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
         linkedRequest: { accepted: false, current: "current-admit-said" },
@@ -1237,7 +1234,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W27tnnd2WyHWUh-368EI",
         createdAt: DATETIME.toISOString(),
         a: { r: NotificationRoute.ExnIpexGrant },
-        multisigId: "multisig1",
         read: false,
         connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
         groupReplied: false,
@@ -1246,7 +1242,6 @@ describe("Signify notification service of agent", () => {
         id: "0AC0W34tnnd2WyUCOy-790AY",
         createdAt: DATETIME.toISOString(),
         a: { r: NotificationRoute.ExnIpexGrant },
-        multisigId: "multisig2",
         read: false,
         connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
         groupReplied: true,
@@ -1515,6 +1510,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
+      receivingPre: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
       route: NotificationRoute.ExnIpexAgree,
       createdAt: new Date(notificationIpexAgreeProp.dt),
     });
@@ -1547,6 +1543,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
+      receivingPre: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
       route: NotificationRoute.ExnIpexAgree,
       createdAt: new Date(notificationIpexAgreeProp.dt),
     });
@@ -1869,6 +1866,7 @@ describe("Group IPEX presentation", () => {
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
       route: NotificationRoute.ExnIpexAgree,
+      receivingPre: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
       createdAt: new Date(notificationIpexAgreeProp.dt),
     });
     expect(eventEmitter.emit).not.toBeCalled();
@@ -1917,6 +1915,7 @@ describe("Group IPEX presentation", () => {
       credentialId: undefined,
       id: notificationIpexAgreeProp.i,
       route: NotificationRoute.ExnIpexAgree,
+      receivingPre: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
       createdAt: new Date(notificationIpexAgreeProp.dt),
     });
     expect(eventEmitter.emit).not.toBeCalled();
@@ -2810,7 +2809,7 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+      groupMemberPre: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
       updatedAt: new Date(),
     });
@@ -2883,7 +2882,7 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+      groupMemberPre: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -2903,7 +2902,7 @@ describe("Long running operation tracker", () => {
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
         groupReplied: true,
-        initiatorAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+        groupInitiatorPre: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
         groupInitiator: true,
       },
     ]);
@@ -3010,7 +3009,7 @@ describe("Long running operation tracker", () => {
       type: "IdentifierMetadataRecord",
       id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       displayName: "holder",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+      groupMemberPre: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
       createdAt: new Date(),
       updatedAt: new Date(),
     });

@@ -581,7 +581,7 @@ describe("Create group identifier - Setup Connection", () => {
             resetModal={resetModal}
             resumeMultiSig={stage1State.newIdentifier}
             multiSigGroup={{
-              groupId: pendingIdentifier.multisigManageAid || "",
+              groupId: pendingIdentifier.groupMemberPre || "",
               connections: [],
             }}
             openAfterCreate
@@ -625,7 +625,7 @@ describe("Create group identifier - Setup Connection", () => {
             resetModal={resetModal}
             resumeMultiSig={stage1State.newIdentifier}
             multiSigGroup={{
-              groupId: identifierFix[4].multisigManageAid || "",
+              groupId: identifierFix[4].groupMemberPre || "",
               connections: [],
             }}
             openAfterCreate

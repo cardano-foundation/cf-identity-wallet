@@ -108,7 +108,7 @@ const ReceiveCredential = ({
   }, [credDetail?.identifierId, identifiersData]);
 
   const groupInitiatorAid = multisigMemberStatus.members[0] || "";
-  const isGroupInitiator = identifier?.multisigManageAid === groupInitiatorAid;
+  const isGroupInitiator = identifier?.groupMemberPre === groupInitiatorAid;
   const displayInitiatorNotAcceptedAlert =
     isMultisig &&
     !isRevoked &&
@@ -156,7 +156,7 @@ const ReceiveCredential = ({
 
       // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
       const identifierType =
-        identifier?.groupMetadata || identifier?.multisigManageAid
+        identifier?.groupMetadata || identifier?.groupMemberPre
           ? IdentifierType.Group
           : IdentifierType.Individual;
 
@@ -263,7 +263,7 @@ const ReceiveCredential = ({
 
       if (
         multisigMemberStatus.linkedRequest.accepted &&
-        identifier?.multisigManageAid === member
+        identifier?.groupMemberPre === member
       ) {
         return MemberAcceptStatus.Accepted;
       }
