@@ -25,6 +25,7 @@ import {
   removeIdentifierCache,
 } from "../../../store/reducers/identifiersCache";
 import {
+  getAuthentication,
   getStateCache,
   setCurrentOperation,
   setCurrentRoute,
@@ -63,6 +64,8 @@ const IdentifierDetailModule = ({
   const favouritesIdentifiersData = useAppSelector(
     getFavouritesIdentifiersCache
   );
+  const passwordAuthentication =
+    useAppSelector(getAuthentication).passwordIsSet;
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [identifierOptionsIsOpen, setIdentifierOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -122,14 +125,15 @@ const IdentifierDetailModule = ({
 
   const handleDelete = async () => {
     handleDone?.(false);
+    setHidden(true);
 
     try {
       setVerifyIsOpen(false);
       const filterId = cardData
         ? cardData.id
         : cloudError
-        ? identifierDetailId
-        : undefined;
+          ? identifierDetailId
+          : undefined;
 
       await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
@@ -213,7 +217,7 @@ const IdentifierDetailModule = ({
   };
 
   const handleAuthentication = () => {
-    setHidden(true);
+    setHidden(!passwordAuthentication);
     setVerifyIsOpen(true);
   };
 

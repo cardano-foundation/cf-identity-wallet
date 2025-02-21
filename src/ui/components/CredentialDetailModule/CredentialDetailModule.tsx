@@ -27,6 +27,7 @@ import {
   setNotificationsCache,
 } from "../../../store/reducers/notificationsCache";
 import {
+  getAuthentication,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -69,6 +70,8 @@ const CredentialDetailModule = ({
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favouritesCredsCache = useAppSelector(getFavouritesCredsCache);
+  const passwordAuthentication =
+    useAppSelector(getAuthentication).passwordIsSet;
   const notifications = useAppSelector(getNotificationsCache);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
@@ -393,7 +396,7 @@ const CredentialDetailModule = ({
   };
 
   const handleAuthentication = () => {
-    setHidden(true);
+    setHidden(!passwordAuthentication);
     setVerifyIsOpen(true);
   };
 
