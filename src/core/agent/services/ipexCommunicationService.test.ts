@@ -41,13 +41,14 @@ import {
   gHab,
   mHab,
   memberIdentifierRecord,
-} from "../../__fixtures__/agent/multSigFixtures";
+} from "../../__fixtures__/agent/multiSigFixtures";
 import {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
 import { MultiSigRoute } from "./multiSig.types";
 import { NotificationRecord } from "../records";
+import { StorageMessage } from "../../storage/storage.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -151,7 +152,6 @@ const ipexSubmitOfferMock = jest.fn().mockResolvedValue({
 const ipexSubmitGrantMock = jest
   .fn()
   .mockResolvedValue({ name: "opName", done: true });
-const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const ipexSubmitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
   done: true,
@@ -279,6 +279,7 @@ const agentServicesProps = {
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
+    MISSING_DATA_ON_KERIA: "Missing data error msg mock",
     agent: {},
   },
 }));
@@ -307,7 +308,7 @@ beforeAll(() => {
   originalFetch = global.fetch;
   global.fetch = jest.fn().mockResolvedValue({
     text: () =>
-      '{"v":"KERI10JSON00012b_","t":"icp","d":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"0","kt":"1","k":["DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO"],"nt":"1","n":["EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh"],"bt":"0","b":[],"c":[],"a":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"1","p":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","a":[{"i":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l","s":"0","d":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"2","p":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","a":[{"i":"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl","s":"0","d":"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"3","p":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","a":[{"i":"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX","s":"0","d":"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"4","p":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","a":[{"i":"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ","s":"0","d":"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"5","p":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","a":[{"i":"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7","s":"0","d":"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{"v":"KERI10JSON00012b_","t":"icp","d":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"0","kt":"1","k":["DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO"],"nt":"1","n":["EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh"],"bt":"0","b":[],"c":[],"a":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"1","p":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","a":[{"i":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l","s":"0","d":"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"2","p":"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL","a":[{"i":"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl","s":"0","d":"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"3","p":"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG","a":[{"i":"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX","s":"0","d":"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"4","p":"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S","a":[{"i":"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ","s":"0","d":"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{"v":"KERI10JSON00013a_","t":"ixn","d":"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn","i":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","s":"5","p":"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx","a":[{"i":"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7","s":"0","d":"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{"v":"KERI10JSON0000f9_","t":"rpy","d":"ELrQF_D6YFL_2SU7RbDOrTYRtGj0v_GlOmi-YWVyChol","dt":"2025-01-21T13:24:59.001000+00:00","r":"/loc/scheme","a":{"eid":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","url":"http://127.0.0.1:3001","scheme":"http"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAAA8QzT_XDXtB_5bK8P-dVrCZIlQ69WniFPWkGmGthK683v1E2ymGA7RlkXogXtIEHekVjdl0Tg5r6lr5aREjxcL{"v":"KERI10JSON000113_","t":"rpy","d":"EA5z8Q3g-llvOK86bvE1QAceLb7g0FzcY9INn4Ch0Hu5","dt":"2025-01-21T13:24:58.660000+00:00","r":"/end/role/add","a":{"cid":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8","role":"indexer","eid":"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAADCsrTysi5_3hhzgP9VUyilJIPE8x-8Yi-lNtyB28tbc0a_S3igdY_v0yLg14tTzOyQn9sv3rGZEt4ZKb4-xl8D',
+      "{\"v\":\"KERI10JSON00012b_\",\"t\":\"icp\",\"d\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"0\",\"kt\":\"1\",\"k\":[\"DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO\"],\"nt\":\"1\",\"n\":[\"EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh\"],\"bt\":\"0\",\"b\":[],\"c\":[],\"a\":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"1\",\"p\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"a\":[{\"i\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\",\"s\":\"0\",\"d\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"2\",\"p\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"a\":[{\"i\":\"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl\",\"s\":\"0\",\"d\":\"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij\"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"3\",\"p\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"a\":[{\"i\":\"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX\",\"s\":\"0\",\"d\":\"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl\"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"4\",\"p\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"a\":[{\"i\":\"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ\",\"s\":\"0\",\"d\":\"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk\"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"5\",\"p\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"a\":[{\"i\":\"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7\",\"s\":\"0\",\"d\":\"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg\"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{\"v\":\"KERI10JSON00012b_\",\"t\":\"icp\",\"d\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"0\",\"kt\":\"1\",\"k\":[\"DGKzvhMMz2_MYhXyV5lGso_akvBYpGnOG5fTD299IsmO\"],\"nt\":\"1\",\"n\":[\"EBhg4MS4f4GZpuNZxk1D4mln9sv9l30rbtsk17AVOEmh\"],\"bt\":\"0\",\"b\":[],\"c\":[],\"a\":[]}-VAn-AABAADt-Cs8HoN9KBS5Kk23JCAaJzOl1InvbZ4FT0AQ0muKe6pSr8QvUJNNFTUImZg8XtBFqT75AY184rX3mKPKKgYI-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2025-01-21T13c24c58d219360p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"1\",\"p\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"a\":[{\"i\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\",\"s\":\"0\",\"d\":\"EHm5kvOMHAdKkLBYazkUG54cyusm8d6SODrnJ2ZOP9-l\"}]}-VAn-AABAADGIyEdPqQ4wJw6KWgFOF3guadzJYWTzy9EjDbxqnBEBmUIiGquNZvNtk--gDOYcOf_EsgIsmfZ8jwIvP0xICgL-EAB0AAAAAAAAAAAAAAAAAAAAAAB1AAG2025-01-21T13c24c59d693615p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"2\",\"p\":\"EE_oRQa2Lq6g9C4jItfGPa9BMFsnmSPgS8_oB747-KHL\",\"a\":[{\"i\":\"EMcWk38kBLvGdKH2b93HMujB_Xx5-ugwD-vrQJVVIJIl\",\"s\":\"0\",\"d\":\"EIlV2FfP39_0EOLUKDi2_ljF9FMty8OCp9myBepidVij\"}]}-VAn-AABAACDrd4dm-E3OT2IlRwu4A3M7OzLkOgsoYi2-FPfS9Tmwr3awoCP2R-718qVHHUPNCb0MsnzQ2rTqVnNEw0QLWUB-EAB0AAAAAAAAAAAAAAAAAAAAAAC1AAG2025-01-21T13c47c06d452176p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"3\",\"p\":\"EHfvjSm2o673Ps3dPy6FI_80OjvJicpwZG6FMQoARllG\",\"a\":[{\"i\":\"EDR-8z0CviOyrntUK3pyabMTiIuKn0AXGhQvD0C12gkX\",\"s\":\"0\",\"d\":\"EGCPj1fDEsyLgRAXwDoD9qrX6lJkwxXfBx0XNoDHtMLl\"}]}-VAn-AABAAD6qIPXPrbqhKNPDRuU91_-EzQi01V53f1RFw0AV1sMe4JBjQmOdIwn4-FW88Lo-oht6e7C7sObbgk3-aJbQS4H-EAB0AAAAAAAAAAAAAAAAAAAAAAD1AAG2025-01-21T14c03c51d890362p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"4\",\"p\":\"EJRetyFJqp1yRs3hbleyAnqE3VqQQC2o4L3JDhIL0j2S\",\"a\":[{\"i\":\"EGsSqpbkJ-0SQnhyS-1FxNChZ7p1NV6yTXPPHIdyvjkZ\",\"s\":\"0\",\"d\":\"EMNJNkHlDqyrOHWbafUGPpHVrvvj5VbrCZML_ZgXk-Rk\"}]}-VAn-AABAAAVj_8Zldpds_naKbRyuIOef3RKABaF23AHjkEKfc_Gb2j1559uY6NA8BV6ZmCKQU1_mpJbLbtaBMes-Oub2yUL-EAB0AAAAAAAAAAAAAAAAAAAAAAE1AAG2025-01-21T14c11c23d141088p00c00{\"v\":\"KERI10JSON00013a_\",\"t\":\"ixn\",\"d\":\"EC0Gh5X0JGSEkhUllR5sINwapxeAzYoKOWwP9UU7KdLn\",\"i\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"s\":\"5\",\"p\":\"EBVYE7oXrSUvo2wNSTzXOK28SMEg6v_qrh2s_8Jk7Jdx\",\"a\":[{\"i\":\"ENMi3aqTIgCSuXROeMywH7VFuUD1-ubK3EMlumKkRkc7\",\"s\":\"0\",\"d\":\"EKdvQCM1oSTgjcPezvOw2YanOe8Wdi6wkbViE6vHpEjg\"}]}-VAn-AABAABAaL6bwARu41XPQHGnHXuxmvPrIPP8vkghXhQbOTd07xdRZ5X2_kjMXu4UsHNyQcR7mNOht0kPeUPmafGx23EP-EAB0AAAAAAAAAAAAAAAAAAAAAAF1AAG2025-01-21T14c14c51d268032p00c00{\"v\":\"KERI10JSON0000f9_\",\"t\":\"rpy\",\"d\":\"ELrQF_D6YFL_2SU7RbDOrTYRtGj0v_GlOmi-YWVyChol\",\"dt\":\"2025-01-21T13:24:59.001000+00:00\",\"r\":\"/loc/scheme\",\"a\":{\"eid\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"url\":\"http://127.0.0.1:3001\",\"scheme\":\"http\"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAAA8QzT_XDXtB_5bK8P-dVrCZIlQ69WniFPWkGmGthK683v1E2ymGA7RlkXogXtIEHekVjdl0Tg5r6lr5aREjxcL{\"v\":\"KERI10JSON000113_\",\"t\":\"rpy\",\"d\":\"EA5z8Q3g-llvOK86bvE1QAceLb7g0FzcY9INn4Ch0Hu5\",\"dt\":\"2025-01-21T13:24:58.660000+00:00\",\"r\":\"/end/role/add\",\"a\":{\"cid\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\",\"role\":\"indexer\",\"eid\":\"EKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8\"}}-VA0-FABEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--80AAAAAAAAAAAAAAAAAAAAAAAEKxN8WjtIewcbCp_cGih5Dd42PJ-IZ8KTPbc5Xx5q--8-AABAADCsrTysi5_3hhzgP9VUyilJIPE8x-8Yi-lNtyB28tbc0a_S3igdY_v0yLg14tTzOyQn9sv3rGZEt4ZKb4-xl8D",
   }) as jest.Mock;
 });
 
@@ -325,7 +326,6 @@ describe("Receive individual ACDC actions", () => {
   test("Can accept ACDC from individual identifier and remove notification", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
-
     notificationStorage.findById = jest.fn().mockResolvedValue({
       type: "NotificationRecord",
       id: id,
@@ -358,21 +358,6 @@ describe("Receive individual ACDC actions", () => {
       "sigs",
       "aend",
     ]);
-
-    const connectionNote = {
-      id: "note:id",
-      title: "title",
-      message: "message",
-    };
-    signifyClient.contacts().update = jest.fn().mockReturnValue(
-      Promise.resolve({
-        alias: "alias",
-        oobi: "oobi",
-        id: "id",
-        [`${KeriaContactKeyPrefix.CONNECTION_NOTE}:id`]:
-          JSON.stringify(connectionNote),
-      })
-    );
     markNotificationMock.mockResolvedValueOnce({ status: "done" });
 
     await ipexCommunicationService.admitAcdcFromGrant(id);
@@ -395,6 +380,86 @@ describe("Receive individual ACDC actions", () => {
         status: CredentialStatus.PENDING,
       },
     });
+    expect(ipexAdmitMock).toBeCalledWith({
+      datetime: expect.any(String),
+      message: "",
+      senderName: "identifierId",
+      recipient: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      grantSaid: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+    });
+    expect(ipexSubmitAdmitMock).toBeCalledWith(
+      "identifierId",
+      { ked: { d: "admit-said" } },
+      "sigs",
+      "aend",
+      ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
+    );
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id,
+        route: NotificationRoute.ExnIpexGrant,
+        linkedRequest: {
+          accepted: true,
+          current: "admit-said",
+        },
+        hidden: true,
+      })
+    );
+  });
+
+  test("Can accept ACDC from individual identifier even if already exists (idempotent)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const id = "uuid";
+    notificationStorage.findById = jest.fn().mockResolvedValue({
+      type: "NotificationRecord",
+      id: id,
+      createdAt: DATETIME,
+      a: {
+        r: NotificationRoute.ExnIpexGrant,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: NotificationRoute.ExnIpexGrant,
+      read: true,
+      linkedRequest: { accepted: false },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: DATETIME,
+    });
+    getExchangeMock = jest.fn().mockReturnValue(grantForIssuanceExnMessage);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      id: "identifierId",
+    });
+    schemaGetMock.mockResolvedValue(QVISchema);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
+    eventEmitter.emit = jest.fn();
+    saveOperationPendingMock.mockResolvedValue({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    ipexAdmitMock.mockResolvedValue([
+      { ked: { d: "admit-said" } },
+      "sigs",
+      "aend",
+    ]);
+    markNotificationMock.mockResolvedValueOnce({ status: "done" });
+    credentialStorage.saveCredentialMetadataRecord.mockRejectedValueOnce(
+      new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
+    );
+
+    await ipexCommunicationService.admitAcdcFromGrant(id);
+
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      ...credentialRecordProps,
+      identifierId: "identifierId",
+      identifierType: "individual",
+      createdAt: new Date(credentialRecordProps.issuanceDate),
+    });
+    expect(eventEmitter.emit).not.toBeCalled();
     expect(ipexAdmitMock).toBeCalledWith({
       datetime: expect.any(String),
       message: "",
@@ -772,6 +837,130 @@ describe("Receive group ACDC actions", () => {
         status: CredentialStatus.PENDING,
       },
     });
+    expect(notificationStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        id: "id",
+        route: NotificationRoute.ExnIpexGrant,
+        linkedRequest: {
+          accepted: true,
+          current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
+        },
+      })
+    );
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    expect(notificationStorage.deleteById).not.toBeCalled();
+  });
+
+  test("Can join group admit of an ACDC even if ACDC already exists (idempotent)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+
+    notificationStorage.findById = jest.fn().mockResolvedValue({
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: DATETIME,
+      a: {
+        r: NotificationRoute.ExnIpexGrant,
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: NotificationRoute.ExnIpexGrant,
+      read: true,
+      linkedRequest: {
+        accepted: false,
+        current: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: DATETIME,
+    });
+    getExchangeMock
+      .mockReturnValueOnce(multisigExnAdmitForIssuance)
+      .mockReturnValueOnce(grantForIssuanceExnMessage);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(groupIdentifierMetadataRecord);
+    multisigService.getMultisigParticipants.mockResolvedValue({
+      ourIdentifier: {
+        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+        displayName: "Identifier 2",
+        createdAt: "2024-09-23T08:53:11.981Z",
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      },
+      multisigMembers: [
+        {
+          aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+          ends: [],
+        },
+        {
+          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+          ends: [],
+        },
+      ],
+    });
+    getManagerMock.mockReturnValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    createExchangeMessageMock.mockResolvedValue([
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
+    ]);
+    schemaGetMock.mockResolvedValue(QVISchema);
+    ipexAdmitMock.mockResolvedValue([
+      ipexAdmitSerder,
+      ipexAdmitSig,
+      ipexAdmitEnd,
+    ]);
+    eventEmitter.emit = jest.fn();
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+
+    (Saider.saidify as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue([{} as Saider, ipexGrantSerder.ked])
+    );
+    (Serder as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue({
+        ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
+      })
+    );
+    credentialStorage.saveCredentialMetadataRecord.mockRejectedValueOnce(
+      new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
+    );
+
+    await ipexCommunicationService.joinMultisigAdmit("id");
+
+    expect(getManagerMock).toBeCalledWith(gHab);
+    expect(ipexSubmitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      ...credentialRecordProps,
+      identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      identifierType: "group",
+      createdAt: new Date(credentialRecordProps.issuanceDate),
+    });
+    expect(eventEmitter.emit).not.toBeCalled();
     expect(notificationStorage.update).toBeCalledWith(
       expect.objectContaining({
         id: "id",
@@ -1317,7 +1506,7 @@ describe("Offer ACDC group actions", () => {
           "d",
         ],
       },
-      "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn"
+      "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF"
     );
     expect(ipexSubmitOfferMock).toBeCalledWith(
       "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
@@ -1901,34 +2090,6 @@ describe("Grant ACDC group actions", () => {
     );
   });
 
-  test("Cannot join group to present ACDC twice", async () => {
-    await expect(
-      ipexCommunicationService.joinMultisigGrant(
-        multisigExnGrant,
-        new NotificationRecord({
-          id: "note-id",
-          createdAt: DATETIME,
-          a: {
-            r: NotificationRoute.ExnIpexAgree,
-            d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-          },
-          route: NotificationRoute.ExnIpexAgree,
-          read: true,
-          linkedRequest: {
-            accepted: true,
-            current: "current-grant-said",
-          },
-          connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        })
-      )
-    ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
-
-    expect(ipexSubmitGrantMock).not.toBeCalled();
-    expect(notificationStorage.save).not.toBeCalled();
-    expect(operationPendingStorage.save).not.toBeCalled();
-    expect(eventEmitter.emit).not.toBeCalled();
-  });
-
   test("Cannot join group to offer ACDC if there is no current offer", async () => {
     await expect(
       ipexCommunicationService.joinMultisigGrant(
@@ -2135,6 +2296,20 @@ describe("IPEX communication service of agent", () => {
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
+  test("Should return early without error if there's no existing connection", async () => {
+    connections.getConnectionById.mockRejectedValueOnce(
+      new Error(Agent.MISSING_DATA_ON_KERIA)
+    );
+
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      admitForIssuanceExnMessage,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+
+    expect(updateContactMock).not.toBeCalled();
+    expect(connections.resolveOobi).not.toBeCalled();
+  });
+
   test("Should throw error if history type invalid", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
@@ -2143,7 +2318,7 @@ describe("IPEX communication service of agent", () => {
         agreeForPresentingExnMessage,
         "invalid" as any
       )
-    ).rejects.toThrowError("Invalid history type");
+    ).rejects.toThrowError(IpexCommunicationService.INVALID_HISTORY_TYPE);
   });
 
   test("Should throw error if schemas.get has an unexpected error", async () => {

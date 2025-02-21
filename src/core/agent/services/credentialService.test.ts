@@ -5,7 +5,7 @@ import { CoreEventEmitter } from "../event";
 import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
 import { IdentifierType } from "./identifier.types";
-import { memberIdentifierRecord } from "../../__fixtures__/agent/multSigFixtures";
+import { memberIdentifierRecord } from "../../__fixtures__/agent/multiSigFixtures";
 import { EventTypes } from "../event.types";
 
 const identifiersListMock = jest.fn();

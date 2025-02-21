@@ -10,7 +10,7 @@ import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
 class IonicStorage<T extends BaseRecord> implements StorageService<T> {
-  private static readonly SESION_IS_NOT_INITIALIZED =
+  private static readonly SESSION_IS_NOT_INITIALIZED =
     "Session is not initialized";
 
   private session?: Storage;
@@ -125,7 +125,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
 
   private checkSession(session?: Storage) {
     if (!session) {
-      throw new Error(IonicStorage.SESION_IS_NOT_INITIALIZED);
+      throw new Error(IonicStorage.SESSION_IS_NOT_INITIALIZED);
     }
   }
 

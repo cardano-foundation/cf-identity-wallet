@@ -10,7 +10,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { OnlineOnly, randomSalt, waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, randomSalt } from "./utils";
 import {
   AgentServicesProps,
   IdentifierResult,
@@ -39,8 +39,6 @@ class IdentifierService extends AgentService {
   static readonly INVALID_THEME = "Identifier theme was not valid";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
-  static readonly FAILED_TO_ROTATE_AID =
-    "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
   static readonly IDENTIFIER_NOT_COMPLETE =
@@ -53,6 +51,7 @@ class IdentifierService extends AgentService {
     "Queued display names has invalid format";
   static readonly CANNOT_FIND_EXISTING_IDENTIFIER_BY_SEARCH =
     "Identifier name taken on KERIA, but cannot be found when iterating over identifier list";
+  static readonly DELETED_IDENTIFIER_THEME = "XX";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
@@ -362,9 +361,9 @@ class IdentifierService extends AgentService {
         }
       );
       await this.props.signifyClient.identifiers().update(localMember.id, {
-        name: `XX-${randomSalt()}:${localMember.groupMetadata?.groupId}:${
-          localMember.displayName
-        }`,
+        name: `${IdentifierService.DELETED_IDENTIFIER_THEME}-${randomSalt()}:${
+          localMember.groupMetadata?.groupId
+        }:${localMember.displayName}`,
       });
       await this.deleteGroupLinkedConnections(
         localMember.groupMetadata!.groupId
@@ -372,7 +371,9 @@ class IdentifierService extends AgentService {
     }
 
     await this.props.signifyClient.identifiers().update(identifier, {
-      name: `XX-${randomSalt()}:${metadata.displayName}`,
+      name: `${IdentifierService.DELETED_IDENTIFIER_THEME}-${randomSalt()}:${
+        metadata.displayName
+      }`,
     });
 
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
@@ -499,7 +500,9 @@ class IdentifierService extends AgentService {
     ];
 
     for (const identifier of unSyncedDataWithoutGroup) {
-      if (identifier.name.startsWith("XX")) {
+      if (
+        identifier.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
+      ) {
         continue;
       }
 
@@ -557,7 +560,9 @@ class IdentifierService extends AgentService {
     }
 
     for (const identifier of unSyncedDataWithGroup) {
-      if (identifier.name.startsWith("XX")) {
+      if (
+        identifier.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
+      ) {
         continue;
       }
 
@@ -607,17 +612,10 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async rotateIdentifier(identifier: string) {
-    // @TODO - foconnor: Lets not block on the operation here.
     const rotateResult = await this.props.signifyClient
       .identifiers()
       .rotate(identifier);
-    const operation = await waitAndGetDoneOp(
-      this.props.signifyClient,
-      await rotateResult.op()
-    );
-    if (!operation.done) {
-      throw new Error(IdentifierService.FAILED_TO_ROTATE_AID);
-    }
+    await rotateResult.op();
   }
 
   async getAvailableWitnesses(): Promise<{

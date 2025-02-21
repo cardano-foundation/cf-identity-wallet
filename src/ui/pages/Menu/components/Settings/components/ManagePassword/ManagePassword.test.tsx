@@ -174,10 +174,12 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("settings-item-toggle-password"));
     });
 
-    const text = await findByText(
-      TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword.page
-        .alert.enablemessage
-    );
+    const text = await waitFor(async () => {
+      return await findByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+          .page.alert.enablemessage
+      );
+    });
 
     await waitFor(() => {
       expect(text).toBeVisible();
@@ -187,6 +189,10 @@ describe("Manage password", () => {
       fireEvent.click(
         getAllByTestId("alert-cancel-enable-password-confirm-button")[0]
       );
+    });
+
+    await waitFor(() => {
+      expect(getByText("1")).toBeVisible();
     });
 
     await passcodeFiller(getByText, getByTestId, "1", 6);

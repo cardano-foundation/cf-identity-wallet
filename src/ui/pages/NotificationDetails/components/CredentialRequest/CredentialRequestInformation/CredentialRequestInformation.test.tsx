@@ -562,7 +562,7 @@ describe("Credential request information: multisig", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId("multisig-request-alert-decline-confirm-button")
+        getAllByTestId("multisig-request-alert-decline-confirm-button")[0]
       );
     });
 
