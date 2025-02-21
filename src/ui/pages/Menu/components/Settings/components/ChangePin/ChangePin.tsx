@@ -72,6 +72,7 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
             )}`}
             ref={ref}
             testId={pageId}
+            changePasscodeMode
             onCreateSuccess={handlePassAuth}
             onPasscodeChange={(passcode, originalPasscode) => {
               setPassCodeValue({
