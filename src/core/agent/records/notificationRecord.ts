@@ -20,13 +20,13 @@ interface NotificationRecordStorageProps {
 }
 
 class NotificationRecord extends BaseRecord {
-  a: Record<string, unknown>;
-  route: NotificationRoute;
-  read: boolean;
-  hidden: boolean; // Hide from UI but don't delete (used for reliability while recovering IPEX long running operations)
-  connectionId: string;
-  receivingPre: string;
-  linkedRequest: LinkedRequest;
+  a!: Record<string, unknown>;
+  route!: NotificationRoute;
+  read!: boolean;
+  hidden!: boolean; // Hide from UI but don't delete (used for reliability while recovering IPEX long running operations)
+  connectionId!: string;
+  receivingPre!: string;
+  linkedRequest!: LinkedRequest;
 
   credentialId?: string;
   groupReplied?: boolean;
@@ -38,20 +38,22 @@ class NotificationRecord extends BaseRecord {
 
   constructor(props: NotificationRecordStorageProps) {
     super();
-    this.id = props.id;
-    this.createdAt = props.createdAt;
-    this._tags = props.tags ?? {};
-    this.a = props.a;
-    this.route = props.route;
-    this.read = props.read;
-    this.hidden = props.hidden ?? false;
-    this.connectionId = props.connectionId;
-    this.receivingPre = props.receivingPre;
-    this.linkedRequest = props.linkedRequest ?? { accepted: false };
-    this.credentialId = props.credentialId;
-    this.groupReplied = props.groupReplied;
-    this.groupInitiatorPre = props.groupInitiatorPre;
-    this.groupInitiator = props.groupInitiator;
+    if (props) {
+      this.id = props.id;
+      this.createdAt = props.createdAt;
+      this._tags = props.tags ?? {};
+      this.a = props.a;
+      this.route = props.route;
+      this.read = props.read;
+      this.hidden = props.hidden ?? false;
+      this.connectionId = props.connectionId;
+      this.receivingPre = props.receivingPre;
+      this.linkedRequest = props.linkedRequest ?? { accepted: false };
+      this.credentialId = props.credentialId;
+      this.groupReplied = props.groupReplied;
+      this.groupInitiatorPre = props.groupInitiatorPre;
+      this.groupInitiator = props.groupInitiator;
+    }
   }
 
   getTags() {
