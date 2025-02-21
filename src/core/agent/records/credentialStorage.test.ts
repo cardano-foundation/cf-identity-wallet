@@ -1,4 +1,4 @@
-import { memberIdentifierRecord } from "../../__fixtures__/agent/multSigFixtures";
+import { memberIdentifierRecord } from "../../__fixtures__/agent/multiSigFixtures";
 import { CredentialStatus } from "../services/credentialService.types";
 import { IdentifierType } from "../services/identifier.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";

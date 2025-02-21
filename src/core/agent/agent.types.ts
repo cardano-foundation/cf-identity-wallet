@@ -165,17 +165,17 @@ interface AgentUrls {
 
 enum NotificationRoute {
   // "Real" notifications from KERIA
-  ExnIpexGrant = "/exn/ipex/grant",
-  MultiSigExn = "/multisig/exn",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  MultiSigExn = "/multisig/exn",
   MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
-  ExnIpexAgree = "/exn/ipex/agree",
   ExnIpexOffer = "/exn/ipex/offer",
+  ExnIpexAgree = "/exn/ipex/agree",
+  ExnIpexGrant = "/exn/ipex/grant",
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
-  LocalSign = "/local/signrequest/",
+  LocalSign = "/local/signrequest",
 }
 
 enum ExchangeRoute {

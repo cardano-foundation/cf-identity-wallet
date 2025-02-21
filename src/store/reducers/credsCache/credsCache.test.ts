@@ -18,7 +18,7 @@ import {
 } from "../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
-import { multisigMetadataRecord } from "../../../core/__fixtures__/agent/multSigFixtures";
+import { multisigMetadataRecord } from "../../../core/__fixtures__/agent/multiSigFixtures";
 import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
 
 describe("credsCacheSlice", () => {
