@@ -3,41 +3,79 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import { Badge, Icon } from "@mui/material";
+import {
+  Badge,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import WindowIcon from "@mui/icons-material/Window";
+import CreditCardOutlined from "@mui/icons-material/CreditCardOutlined";
 import Logo from "../../assets/Logo.svg";
+import "./NavBar.scss";
+import { CustomMenu } from "../Menu";
 
-const pages = ["Overview", "Contacts", "Credentials"];
+interface Props {
+  window?: () => Window;
+}
 
-const NavBar = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
+const drawerWidth = 240;
+const drawerItems = ["Overview", "Contacts", "Credentials"];
+const drawerIcons = [
+  <WindowIcon />,
+  <PeopleOutlinedIcon />,
+  <CreditCardOutlined />,
+];
+
+const NavBar = (props: Props) => {
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen((prevState) => !prevState);
+  };
+
+  const drawer = (
+    <Box
+      onClick={handleDrawerToggle}
+      sx={{ textAlign: "left" }}
+    >
+      <Typography
+        variant="h6"
+        sx={{ my: 2 }}
+      >
+        Menu
+      </Typography>
+      <Divider />
+      <List>
+        {drawerItems.map((text, index) => (
+          <ListItem
+            key={text}
+            disablePadding
+          >
+            <ListItemButton>
+              <ListItemIcon>{drawerIcons[index]}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
 
   return (
     <AppBar
@@ -48,65 +86,60 @@ const NavBar = () => {
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
               color="inherit"
+              aria-label="open drawer menu"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { md: "none" } }}
             >
               <MenuIcon />
+              <Typography>Menu</Typography>
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
+            <img
+              className="header-logo"
+              alt="veridian logo"
+              src={Logo}
+            />
+          </Box>
+          <Box
+            component="nav"
+            sx={{ width: { md: drawerWidth }, display: { md: "none" } }}
+            aria-label="mobile menu"
+          >
+            <Drawer
+              container={container}
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true,
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
+              sx={{
+                display: { xs: "block", sm: "block", md: "none" },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: drawerWidth,
+                },
               }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
-                <MenuItem
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                >
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-            <Icon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}>
+              {drawer}
+            </Drawer>
+          </Box>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            <Button
+              onClick={handleDrawerToggle}
+              sx={{ color: "white", display: "block" }}
+            >
               <img
                 className="header-logo"
                 alt="veridian-logo"
                 src={Logo}
               />
-            </Icon>
-          </Box>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            <Button
-              onClick={handleCloseNavMenu}
-              sx={{ my: 2, color: "white", display: "block" }}
-            >
-              <Icon>
-                <img
-                  className="header-logo"
-                  alt="veridian-logo"
-                  src={Logo}
-                />
-              </Icon>
             </Button>
-            {pages.map((page) => (
+            {drawerItems.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={handleDrawerToggle}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}
@@ -116,11 +149,11 @@ const NavBar = () => {
           <Box>
             <IconButton
               size="large"
-              aria-label="show 17 new notifications"
+              aria-label="show new notifications"
               color="inherit"
             >
               <Badge
-                badgeContent={17}
+                badgeContent={0}
                 color="error"
               >
                 <NotificationsIcon />
@@ -128,17 +161,18 @@ const NavBar = () => {
             </IconButton>
             <IconButton
               size="large"
-              aria-label="show 4 new mails"
+              aria-label="show settings"
               color="inherit"
             >
               <Badge
-                badgeContent={4}
+                badgeContent={0}
                 color="error"
               >
                 <SettingsIcon />
               </Badge>
             </IconButton>
           </Box>
+          <CustomMenu />
         </Toolbar>
       </Container>
     </AppBar>
