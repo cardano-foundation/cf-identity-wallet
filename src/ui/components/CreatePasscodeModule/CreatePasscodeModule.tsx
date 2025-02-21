@@ -34,6 +34,7 @@ const CreatePasscodeModule = forwardRef<
       title,
       description,
       overrideAlertZIndex,
+      changePasscodeMode,
       onCreateSuccess,
       onPasscodeChange,
     },
@@ -79,7 +80,10 @@ const CreatePasscodeModule = forwardRef<
         setPasscode(passcode + digit);
         if (originalPassCode !== "" && passcode.length === 5) {
           if (originalPassCode === passcode + digit) {
-            if (biometricInfo?.strongBiometryIsAvailable) {
+            if (
+              biometricInfo?.strongBiometryIsAvailable &&
+              !changePasscodeMode
+            ) {
               if (isAndroidDevice) {
                 setShowSetupAndroidBiometricsAlert(true);
               } else {
