@@ -102,8 +102,9 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.connections,
-        this.basicStorage
+        this.basicStorage,
+        this.notificationStorage,
+        this.connections
       );
     }
     return this.identifierService;

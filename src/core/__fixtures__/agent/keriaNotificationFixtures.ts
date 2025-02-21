@@ -388,6 +388,29 @@ const hab = {
   icp_dt: "2024-08-09T07:23:52.839894+00:00",
 };
 
+const findNotificationsResult = [
+  {
+    id: "0AC0W27tnnd2WyHWUh-368EI",
+    createdAt: new Date("2024-08-09T07:23:52.839894+00:00"),
+    a: { r: NotificationRoute.ExnIpexGrant },
+    read: false,
+    connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+    receivingPre: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+    linkedRequest: { accepted: false },
+    hidden: false,
+  },
+  {
+    id: "0AC0W34tnnd2WyUCOy-790AY",
+    createdAt: new Date("2024-08-09T07:23:52.839894+00:00"),
+    a: { r: NotificationRoute.ExnIpexOffer },
+    read: false,
+    connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
+    receivingPre: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+    linkedRequest: { accepted: false },
+    hidden: false,
+  },
+];
+
 export {
   credentialMetadataMock,
   grantForIssuanceExnMessage,
@@ -408,4 +431,5 @@ export {
   notificationIpexOfferProp,
   groupIdentifierMetadataRecord,
   hab,
+  findNotificationsResult,
 };
