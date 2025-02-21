@@ -47,7 +47,7 @@ const LockPageContainer = () => {
   const [passcode, setPasscode] = useState("");
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
-  const userCancelBiometricsAuth = useRef(false);
+  const preventBiometricOnEvent = useRef(false);
 
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
@@ -130,12 +130,11 @@ const LockPageContainer = () => {
   const handleBiometrics = async () => {
     await disablePrivacy();
     const authenResult = await handleBiometricAuth();
+    preventBiometricOnEvent.current =
+      (authenResult instanceof BiometryError &&
+        authenResult.code === BiometryErrorType.userCancel) ||
+      authenResult === true;
     await enablePrivacy();
-
-    if (authenResult instanceof BiometryError) {
-      userCancelBiometricsAuth.current =
-        authenResult.code === BiometryErrorType.userCancel;
-    }
 
     if (authenResult === true) {
       dispatch(login());
@@ -167,8 +166,8 @@ const LockPageContainer = () => {
 
   useEffect(() => {
     const handleAppStateChange = async (state: AppState) => {
-      if (state.isActive && !userCancelBiometricsAuth.current) {
-        await handleUseBiometrics();
+      if (state.isActive && !preventBiometricOnEvent.current) {
+        handleUseBiometrics();
       }
     };
 
