@@ -672,7 +672,7 @@ class KeriaNotificationService extends AgentService {
           const grantExn = await this.props.signifyClient
             .exchanges()
             .get(exchange.exn.e.exn.p);
-          const historyExists = connectionInCloud?.historyItems?.some(
+          const historyExists = connectionInCloud.historyItems.some(
             (item) => item.id === grantExn.exn.i
           );
           if (historyExists) {
@@ -734,7 +734,7 @@ class KeriaNotificationService extends AgentService {
           const grantExn = await this.props.signifyClient
             .exchanges()
             .get(exchange.exn.e.exn.p);
-          const historyExists = connectionInCloud?.historyItems?.some(
+          const historyExists = connectionInCloud.historyItems.some(
             (item) => item.id === grantExn.exn.i
           );
           if (historyExists) {
@@ -811,7 +811,7 @@ class KeriaNotificationService extends AgentService {
           const grantExn = await this.props.signifyClient
             .exchanges()
             .get(exchange.exn.e.exn.p);
-          const historyExists = connectionInCloud?.historyItems?.some(
+          const historyExists = connectionInCloud.historyItems.some(
             (item) => item.id === grantExn.exn.i
           );
           if (historyExists) {
