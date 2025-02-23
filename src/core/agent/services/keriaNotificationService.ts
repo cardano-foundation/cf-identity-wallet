@@ -731,11 +731,8 @@ class KeriaNotificationService extends AgentService {
         if (applyNotificationRecords.length === 0) {
           const connectionInCloud =
             await this.connectionService.getConnectionById(exchange.exn.i);
-          const grantExn = await this.props.signifyClient
-            .exchanges()
-            .get(exchange.exn.e.exn.p);
           const historyExists = connectionInCloud.historyItems.some(
-            (item) => item.id === grantExn.exn.i
+            (item) => item.id === applyExn.exn.i
           );
           if (historyExists) {
             await this.markNotification(notif.i);
@@ -808,11 +805,8 @@ class KeriaNotificationService extends AgentService {
         if (agreeNotificationRecords.length === 0) {
           const connectionInCloud =
             await this.connectionService.getConnectionById(exchange.exn.i);
-          const grantExn = await this.props.signifyClient
-            .exchanges()
-            .get(exchange.exn.e.exn.p);
           const historyExists = connectionInCloud.historyItems.some(
-            (item) => item.id === grantExn.exn.i
+            (item) => item.id === agreeExn.exn.i
           );
           if (historyExists) {
             await this.markNotification(notif.i);
