@@ -298,24 +298,6 @@ class IpexCommunicationService extends AgentService {
       agreeExn.exn.a.i
     );
 
-    // Check if the history item related to agreeExn already exists
-    const connectionDetails = await this.connections.getConnectionById(
-      agreeExn.exn.i
-    );
-    const historyExists = connectionDetails.historyItems?.some(
-      (item) =>
-        item.type === ConnectionHistoryType.IPEX_AGREE_COMPLETE &&
-        item.id === agreeExn.exn.d
-    );
-
-    if (historyExists) {
-      // Mark the notification as processed and ignore it
-      agreeNoteRecord.linkedRequest.accepted = true;
-      agreeNoteRecord.hidden = true;
-      await this.notificationStorage.update(agreeNoteRecord);
-      return;
-    }
-
     let op: Operation;
     if (discloser.multisigManageAid) {
       const { op: opMultisigGrant, exnSaid } = await this.submitMultisigGrant(
