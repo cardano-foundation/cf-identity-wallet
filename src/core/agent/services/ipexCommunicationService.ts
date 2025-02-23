@@ -342,18 +342,10 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
 
-    const historyItem: ConnectionHistoryItem = {
-      id: agreeExn.exn.d,
-      dt: agreeExn.exn.dt,
-      credentialType: pickedCred.sad.s,
-      connectionId: agreeExn.exn.i,
-      historyType: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
-    };
-
-    await this.props.signifyClient.contacts().update(agreeExn.exn.i, {
-      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeExn.exn.d}`]:
-        JSON.stringify(historyItem),
-    });
+    await this.createLinkedIpexMessageRecord(
+      agreeExn,
+      ConnectionHistoryType.IPEX_AGREE_COMPLETE
+    );
 
     await this.notificationStorage.update(agreeNoteRecord);
   }
