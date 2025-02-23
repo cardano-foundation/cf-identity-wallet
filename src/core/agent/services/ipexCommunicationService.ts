@@ -360,8 +360,6 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
 
-    await this.notificationStorage.update(agreeNoteRecord);
-
     const historyItem: ConnectionHistoryItem = {
       id: agreeExn.exn.d,
       dt: agreeExn.exn.dt,
@@ -374,6 +372,8 @@ class IpexCommunicationService extends AgentService {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeExn.exn.d}`]:
         JSON.stringify(historyItem),
     });
+
+    await this.notificationStorage.update(agreeNoteRecord);
   }
 
   @OnlineOnly
