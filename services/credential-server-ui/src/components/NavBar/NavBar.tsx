@@ -8,7 +8,6 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import {
   Badge,
-  Divider,
   Drawer,
   List,
   ListItem,
@@ -17,26 +16,27 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import WindowIcon from "@mui/icons-material/Window";
-import CreditCardOutlined from "@mui/icons-material/CreditCardOutlined";
+import DashboardFilled from "@mui/icons-material/Dashboard";
+import GroupOutlined from "@mui/icons-material/GroupOutlined";
+import BadgeOutlined from "@mui/icons-material/BadgeOutlined";
+import NotificationsOutlined from "@mui/icons-material/NotificationsOutlined";
+import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import Logo from "../../assets/Logo.svg";
 import "./NavBar.scss";
-import { CustomMenu } from "../Menu";
+import { SwitchAccount } from "../SwitchAccount";
+import { i18n } from "../../i18n";
 
 interface Props {
   window?: () => Window;
 }
 
 const drawerWidth = 240;
-const drawerItems = ["Overview", "Contacts", "Credentials"];
-const drawerIcons = [
-  <WindowIcon />,
-  <PeopleOutlinedIcon />,
-  <CreditCardOutlined />,
+const drawerItems = [
+  i18n.t("navbar.overview"),
+  i18n.t("navbar.connections"),
+  i18n.t("navbar.credentials"),
 ];
+const drawerIcons = [<DashboardFilled />, <GroupOutlined />, <BadgeOutlined />];
 
 const NavBar = (props: Props) => {
   const { window } = props;
@@ -48,6 +48,7 @@ const NavBar = (props: Props) => {
 
   const drawer = (
     <Box
+      id="drawer"
       onClick={handleDrawerToggle}
       sx={{ textAlign: "left" }}
     >
@@ -55,9 +56,8 @@ const NavBar = (props: Props) => {
         variant="h6"
         sx={{ my: 2 }}
       >
-        Menu
+        {i18n.t("navbar.menu")}
       </Typography>
-      <Divider />
       <List>
         {drawerItems.map((text, index) => (
           <ListItem
@@ -79,8 +79,9 @@ const NavBar = (props: Props) => {
 
   return (
     <AppBar
+      id="navBar"
       position="static"
-      className="navbar"
+      sx={{ boxShadow: 0 }}
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -92,8 +93,8 @@ const NavBar = (props: Props) => {
               onClick={handleDrawerToggle}
               sx={{ mr: 2, display: { md: "none" } }}
             >
-              <MenuIcon />
-              <Typography>Menu</Typography>
+              <MenuIcon className="menu-icon" />
+              <Typography>{i18n.t("navbar.menu")}</Typography>
             </IconButton>
             <img
               className="header-logo"
@@ -126,22 +127,19 @@ const NavBar = (props: Props) => {
             </Drawer>
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            <Button
-              onClick={handleDrawerToggle}
-              sx={{ color: "white", display: "block" }}
-            >
+            <Button onClick={handleDrawerToggle}>
               <img
                 className="header-logo"
                 alt="veridian-logo"
                 src={Logo}
               />
             </Button>
-            {drawerItems.map((page) => (
+            {drawerItems.map((page, index) => (
               <Button
                 key={page}
                 onClick={handleDrawerToggle}
-                sx={{ my: 2, color: "white", display: "block" }}
               >
+                {drawerIcons[index]}
                 {page}
               </Button>
             ))}
@@ -156,7 +154,7 @@ const NavBar = (props: Props) => {
                 badgeContent={0}
                 color="error"
               >
-                <NotificationsIcon />
+                <NotificationsOutlined />
               </Badge>
             </IconButton>
             <IconButton
@@ -168,11 +166,11 @@ const NavBar = (props: Props) => {
                 badgeContent={0}
                 color="error"
               >
-                <SettingsIcon />
+                <SettingsOutlined />
               </Badge>
             </IconButton>
           </Box>
-          <CustomMenu />
+          <SwitchAccount />
         </Toolbar>
       </Container>
     </AppBar>

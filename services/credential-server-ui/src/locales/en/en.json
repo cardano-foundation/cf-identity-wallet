@@ -1,1 +1,25 @@
-{}
+{
+  "navbar": {
+    "menu": "Menu",
+    "overview": "Overview",
+    "connections": "Connections",
+    "credentials": "Credentials",
+    "switchaccount": {
+      "title": "Switch account",
+      "issuer": "Issuer",
+      "verifier": "Verifier",
+      "holder": "Holder"
+    }
+  },
+  "pages": {
+    "overview": {
+      "title": "Overview"
+    },
+    "connections": {
+      "title": "Connections"
+    },
+    "credentials": {
+      "title": "Credentials"
+    }
+  }
+}
