@@ -73,15 +73,10 @@ const ConnectionDetails = ({
       const connectionDetails = await Agent.agent.connections.getConnectionById(
         connectionShortDetails.id
       );
-      const connectionHistoryWithoutIpexAgreeComplete =
-        connectionDetails.historyItems.filter(
-          (historyItem) =>
-            historyItem.type !== ConnectionHistoryType.IPEX_AGREE_COMPLETE
-        );
 
       setConnectionDetails(connectionDetails);
       setNotes(connectionDetails.notes);
-      setConnectionHistory(connectionHistoryWithoutIpexAgreeComplete);
+      setConnectionHistory(connectionDetails.historyItems);
     } catch (error) {
       if (
         error instanceof Error &&

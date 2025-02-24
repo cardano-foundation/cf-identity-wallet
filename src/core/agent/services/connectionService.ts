@@ -33,6 +33,7 @@ import {
 } from "../event.types";
 import {
   ConnectionHistoryItem,
+  ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
 
@@ -243,7 +244,10 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async getConnectionById(id: string): Promise<ConnectionDetails> {
+  async getConnectionById(
+    id: string,
+    full = false
+  ): Promise<ConnectionDetails> {
     const connection = await this.props.signifyClient
       .contacts()
       .get(id)
@@ -275,6 +279,24 @@ class ConnectionService extends AgentService {
       }
     });
 
+    let updatedHistoryItems = historyItems
+      .sort((a, b) => new Date(b.dt).getTime() - new Date(a.dt).getTime())
+      .map((messageRecord) => {
+        const { historyType, dt, credentialType, id } = messageRecord;
+        return {
+          id,
+          type: historyType,
+          timestamp: dt,
+          credentialType,
+        };
+      });
+
+    if (!full) {
+      updatedHistoryItems = updatedHistoryItems.filter(
+        (item) => item.type !== ConnectionHistoryType.IPEX_AGREE_COMPLETE
+      );
+    }
+
     return {
       label: connection?.alias,
       id: connection.id,
@@ -282,17 +304,7 @@ class ConnectionService extends AgentService {
       createdAtUTC: connection.createdAt as string,
       serviceEndpoints: [connection.oobi],
       notes,
-      historyItems: historyItems
-        .sort((a, b) => new Date(b.dt).getTime() - new Date(a.dt).getTime())
-        .map((messageRecord) => {
-          const { historyType, dt, credentialType, id } = messageRecord;
-          return {
-            id,
-            type: historyType,
-            timestamp: dt,
-            credentialType,
-          };
-        }),
+      historyItems: updatedHistoryItems,
     };
   }
 
