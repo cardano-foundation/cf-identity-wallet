@@ -1403,7 +1403,9 @@ describe("Single sig service of agent", () => {
         done: true,
       }),
     });
+
     await identifierService.rotateIdentifier(identifierId);
+
     expect(rotateIdentifierMock).toHaveBeenCalledWith(identifierId);
   });
 
@@ -1413,6 +1415,7 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockResolvedValue(keriMetadataRecord);
     getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+
     await expect(
       identifierService.getSigner(keriMetadataRecord.id)
     ).rejects.toThrowError(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
@@ -1429,6 +1432,7 @@ describe("Single sig service of agent", () => {
       await identifierService.getSigner(keriMetadataRecord.id)
     ).toStrictEqual(mockSigner);
   });
+
   test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(

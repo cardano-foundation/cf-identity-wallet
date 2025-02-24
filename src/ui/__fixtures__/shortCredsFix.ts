@@ -1,4 +1,4 @@
-import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multSigFixtures";
+import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multiSigFixtures";
 import {
   CredentialShortDetails,
   CredentialStatus,

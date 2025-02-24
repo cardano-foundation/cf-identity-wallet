@@ -184,7 +184,6 @@ const ReceiveCredential = ({
   }, [
     dispatch,
     getMultiSigMemberStatus,
-    handleBack,
     identifiersData,
     notificationDetails.a.d,
   ]);
@@ -309,12 +308,12 @@ const ReceiveCredential = ({
   const primaryButtonText = isRevoked
     ? undefined
     : `${i18n.t(
-        displayInitiatorNotAcceptedAlert
-          ? "tabs.notifications.details.buttons.ok"
-          : maxThreshold
+      displayInitiatorNotAcceptedAlert
+        ? "tabs.notifications.details.buttons.ok"
+        : maxThreshold
           ? "tabs.notifications.details.buttons.addcred"
           : "tabs.notifications.details.buttons.accept"
-      )}`;
+    )}`;
 
   const secondaryButtonText =
     maxThreshold || isRevoked || displayInitiatorNotAcceptedAlert

@@ -133,16 +133,16 @@ class MultiSigService extends AgentService {
     const inceptionData = backgroundTask
       ? await this.getInceptionData(groupName)
       : await this.generateAndStoreInceptionData(
-          mHab,
-          states,
-          groupName,
+        mHab,
+        states,
+        groupName,
+        threshold,
+        {
+          initiator: true,
+          groupConnections,
           threshold,
-          {
-            initiator: true,
-            groupConnections,
-            threshold,
-          }
-        );
+        }
+      );
     await this.inceptGroup(mHab, states, inceptionData);
 
     const multisigId = inceptionData.icp.i;
@@ -430,16 +430,16 @@ class MultiSigService extends AgentService {
     const inceptionData = backgroundTask
       ? await this.getInceptionData(groupName)
       : await this.generateAndStoreInceptionData(
-          mHab,
-          states,
-          groupName,
-          Number(exn.e.icp.kt),
-          {
-            initiator: false,
-            notificationId,
-            notificationSaid,
-          }
-        );
+        mHab,
+        states,
+        groupName,
+        Number(exn.e.icp.kt),
+        {
+          initiator: false,
+          notificationId,
+          notificationSaid,
+        }
+      );
     await this.inceptGroup(mHab, states, inceptionData);
 
     const multisigId = inceptionData.icp.i;
@@ -527,29 +527,12 @@ class MultiSigService extends AgentService {
     await this.basicStorage.update(pendingGroupsRecord);
   }
 
-  async hasMultisig(multisigId: string): Promise<boolean> {
-    const multiSig = await this.identifierStorage
-      .getIdentifierMetadata(multisigId)
-      .catch((error) => {
-        if (
-          error.message === IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-        ) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
-    if (!multiSig) {
-      return false;
-    }
-    return true;
-  }
-
   async getMultisigParticipants(multisigId: string) {
     const members = await this.props.signifyClient
       .identifiers()
       .members(multisigId);
     const multisigMembers = members["signing"];
+
     let ourIdentifier;
     for (const member of multisigMembers) {
       const identifier = await this.identifierStorage
@@ -573,6 +556,7 @@ class MultiSigService extends AgentService {
     if (!ourIdentifier) {
       throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
+
     return {
       ourIdentifier,
       multisigMembers,
@@ -634,27 +618,22 @@ class MultiSigService extends AgentService {
   }
 
   async joinAuthorization(requestExn: AuthorizationRequestExn): Promise<void> {
-    const multisigAid = requestExn.a.gid;
-    const multisigMetadataRecord =
-      await this.identifierStorage.getIdentifierMetadata(multisigAid);
-
-    const multisigId = multisigMetadataRecord.id;
-    // stamp, eid and role are provided in the exn message
+    const multisigId = requestExn.a.gid;
     const rpystamp = requestExn.e.rpy.dt;
     const rpyrole = requestExn.e.rpy.a.role;
     const rpyeid = requestExn.e.rpy.a.eid;
+
     const endRoleRes = await this.props.signifyClient
       .identifiers()
       .addEndRole(multisigId, rpyrole, rpyeid, rpystamp);
-
     await endRoleRes.op();
     const rpy = endRoleRes.serder;
 
-    const hab = await this.props.signifyClient.identifiers().get(multisigId);
-    const mstate = hab["state"];
+    const gHab = await this.props.signifyClient.identifiers().get(multisigId);
+    const mstate = gHab["state"];
     const seal = [
       "SealEvent",
-      { i: hab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+      { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
     ];
     const sigers = endRoleRes.sigs.map((sig) => new Siger({ qb64: sig }));
     const roleims = d(
@@ -680,7 +659,7 @@ class MultiSigService extends AgentService {
       mHab,
       MultiSigRoute.RPY,
       {
-        gid: hab.prefix,
+        gid: gHab.prefix,
       },
       roleEmbeds,
       recp
