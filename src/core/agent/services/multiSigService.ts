@@ -547,6 +547,7 @@ class MultiSigService extends AgentService {
             throw error;
           }
         });
+
       if (identifier && identifier.groupMetadata?.groupCreated) {
         ourIdentifier = identifier;
         break;
