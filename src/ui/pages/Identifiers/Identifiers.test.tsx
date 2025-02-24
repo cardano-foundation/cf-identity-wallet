@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn();
+
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import {
@@ -61,14 +63,10 @@ jest.mock("../../../core/agent/agent", () => ({
         save: jest.fn(),
         createOrUpdateBasicRecord: () => Promise.resolve(),
       },
+      auth: {
+        verifySecret: verifySecretMock,
+      },
     },
-  },
-}));
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: () => "111111",
   },
 }));
 
@@ -134,6 +132,8 @@ describe("Identifiers Tab", () => {
 
     store.dispatch(setIdentifiersCache([]));
     store.dispatch(setIdentifiersFilters(IdentifiersFilters.All));
+
+    verifySecretMock.mockResolvedValue(true);
   });
 
   test("Renders favourites in Identifiers", () => {

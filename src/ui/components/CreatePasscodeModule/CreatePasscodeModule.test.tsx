@@ -1,3 +1,6 @@
+const storeSecretMock = jest.fn();
+const verifySecretMock = jest.fn();
+
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import {
   BiometryError,
@@ -17,16 +20,6 @@ import { store } from "../../../store";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { CreatePasscodeModule } from "./CreatePasscodeModule";
 
-const setMock = jest.fn();
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: jest.fn(),
-    set: (...arg: unknown[]) => setMock(...arg),
-  },
-}));
-
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -35,6 +28,10 @@ jest.mock("../../../core/agent/agent", () => ({
         save: jest.fn(),
         update: jest.fn(),
         createOrUpdateBasicRecord: jest.fn(),
+      },
+      auth: {
+        storeSecret: storeSecretMock,
+        verifySecret: verifySecretMock,
       },
     },
   },
@@ -52,12 +49,6 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
     handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
     setBiometricsIsEnabled: jest.fn(),
   })),
-}));
-
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "121345" }),
-  },
 }));
 
 const mockStore = configureStore();
@@ -140,6 +131,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Entering a wrong passcode at the passcode confirmation returns an error", async () => {
+    verifySecretMock.mockResolvedValue(false);
     require("@ionic/react");
     const { getByText, queryByText, getByTestId } = render(
       <Provider store={store}>
@@ -171,6 +163,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Entering an existing passcode returns an error", async () => {
+    verifySecretMock.mockResolvedValue(true);
     require("@ionic/react");
     const { getByText, queryByText, getByTestId } = render(
       <Provider store={storeMocked}>
@@ -193,6 +186,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Setup passcode and Android biometrics", async () => {
+    verifySecretMock.mockResolvedValue(false);
     jest.doMock("@ionic/react", () => {
       const actualIonicReact = jest.requireActual("@ionic/react");
       return {
@@ -250,11 +244,15 @@ describe("SetPasscode Page", () => {
     });
 
     await waitFor(() => {
-      expect(setMock).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+      expect(storeSecretMock).toBeCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
     });
   });
 
   test("Setup passcode and cancel Android biometrics", async () => {
+    verifySecretMock.mockResolvedValue(false);
     jest.doMock("@ionic/react", () => {
       const actualIonicReact = jest.requireActual("@ionic/react");
       return {
@@ -313,6 +311,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Setup passcode and iOS biometrics", async () => {
+    verifySecretMock.mockResolvedValue(false);
     jest.doMock("../../hooks/useBiometricsHook", () => ({
       useBiometricAuth: jest.fn(() => ({
         biometricsIsEnabled: false,
@@ -376,11 +375,15 @@ describe("SetPasscode Page", () => {
     });
 
     await waitFor(() =>
-      expect(setMock).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
+      expect(storeSecretMock).toBeCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      )
     );
   });
 
   test("Setup passcode and cancel iOS biometrics", async () => {
+    verifySecretMock.mockResolvedValue(false);
     jest.doMock("../../hooks/useBiometricsHook", () => ({
       useBiometricAuth: jest.fn(() => ({
         biometricsIsEnabled: false,

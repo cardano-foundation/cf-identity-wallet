@@ -1,6 +1,5 @@
 import { IonModal } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
 import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
@@ -12,6 +11,8 @@ import { PasscodeModule } from "../PasscodeModule";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import "./VerifyPasscode.scss";
 import { VerifyPasscodeProps } from "./VerifyPasscode.types";
+import { Agent } from "../../../core/agent/agent";
+import { KeyStoreKeys } from "../../../core/storage";
 
 const VerifyPasscode = ({
   isOpen,
@@ -39,7 +40,8 @@ const VerifyPasscode = ({
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
       if (passcode.length === 5) {
-        verifyPasscode(passcode + digit)
+        Agent.agent.auth
+          .verifySecret(KeyStoreKeys.APP_PASSCODE, passcode + digit)
           .then((verified) => {
             if (verified) {
               onVerify();
@@ -67,12 +69,6 @@ const VerifyPasscode = ({
       }, MESSAGE_MILLISECONDS);
     }
   }, [passcodeIncorrect]);
-
-  const verifyPasscode = async (pass: string) => {
-    const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-    if (!storedPass) return false;
-    return storedPass === pass;
-  };
 
   const resetPasscode = () => {
     setOpenRecoveryAuth(true);

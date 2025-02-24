@@ -7,7 +7,6 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../../../../../core/agent/agent";
 import { BasicRecord } from "../../../../../../../core/agent/records";
-import { KeyStoreKeys } from "../../../../../../../core/storage";
 import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { CustomInputProps } from "../../../../../../components/CustomInput/CustomInput.types";
@@ -20,11 +19,6 @@ const deletePasswordMock = jest.fn();
 jest.mock("../../../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../../../core/storage"),
   SecureStorage: {
-    get: jest.fn((type: KeyStoreKeys) => {
-      if (type === KeyStoreKeys.APP_OP_PASSWORD)
-        return Promise.resolve("Password@123");
-      return Promise.resolve("111111");
-    }),
     delete: () => deletePasswordMock(),
   },
 }));
@@ -37,6 +31,9 @@ jest.mock("../../../../../../../core/agent/agent", () => ({
         save: jest.fn(),
         update: jest.fn(),
         createOrUpdateBasicRecord: jest.fn(),
+      },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
       },
     },
   },
@@ -177,10 +174,12 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("settings-item-toggle-password"));
     });
 
-    const text = await findByText(
-      TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword.page
-        .alert.enablemessage
-    );
+    const text = await waitFor(async () => {
+      return await findByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+          .page.alert.enablemessage
+      );
+    });
 
     await waitFor(() => {
       expect(text).toBeVisible();
@@ -190,6 +189,10 @@ describe("Manage password", () => {
       fireEvent.click(
         getAllByTestId("alert-cancel-enable-password-confirm-button")[0]
       );
+    });
+
+    await waitFor(() => {
+      expect(getByText("1")).toBeVisible();
     });
 
     await passcodeFiller(getByText, getByTestId, "1", 6);

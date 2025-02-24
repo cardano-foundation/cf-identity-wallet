@@ -380,7 +380,7 @@ class Agent {
 
     const appPasscode = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
     if (!appPasscode) {
-      await SecureStorage.set(
+      await this.auth.storeSecret(
         KeyStoreKeys.APP_PASSCODE,
         APP_PASSSCODE_DEV_MODE
       );

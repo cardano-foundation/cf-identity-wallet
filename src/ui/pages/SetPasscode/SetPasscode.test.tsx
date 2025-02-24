@@ -1,3 +1,6 @@
+const verifySecretMock = jest.fn();
+const storeSecretMock = jest.fn();
+
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { IonRouterOutlet } from "@ionic/react";
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
@@ -6,15 +9,14 @@ import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "./SetPasscode";
 import { passcodeFiller } from "../../utils/passcodeFiller";
-
-const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
+import { AuthService } from "../../../core/agent/services";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -24,6 +26,10 @@ jest.mock("../../../core/agent/agent", () => ({
         save: jest.fn(() => Promise.resolve()),
         update: jest.fn(),
         createOrUpdateBasicRecord: jest.fn(),
+      },
+      auth: {
+        verifySecret: verifySecretMock,
+        storeSecret: storeSecretMock,
       },
     },
   },
@@ -53,6 +59,9 @@ describe("SetPasscode Page", () => {
         getPlatforms: () => ["mobileweb"],
       };
     });
+    verifySecretMock.mockRejectedValue(
+      new Error(AuthService.SECRET_NOT_STORED)
+    );
   });
 
   test("Renders Re-enter Passcode title and start over button when passcode is set", async () => {
@@ -159,9 +168,13 @@ describe("SetPasscode Page", () => {
     );
 
     await waitFor(() =>
-      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
+      expect(storeSecretMock).toBeCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      )
     );
   });
+
   test("calls handleOnBack when back button is clicked", async () => {
     require("@ionic/react");
     const mockStore = configureStore();

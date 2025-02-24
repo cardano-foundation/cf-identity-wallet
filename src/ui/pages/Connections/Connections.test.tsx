@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn();
+
 import { ionFireEvent } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
@@ -29,6 +31,9 @@ jest.mock("../../../core/agent/agent", () => ({
         deleteStaleLocalConnectionById: () => deleteConnectionByIdMock(),
         getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
       },
+      auth: {
+        verifySecret: verifySecretMock,
+      },
     },
   },
 }));
@@ -39,13 +44,6 @@ jest.mock("react-qrcode-logo", () => {
     QRCode: () => <div></div>,
   };
 });
-
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
-  SecureStorage: {
-    get: () => "111111",
-  },
-}));
 
 jest.mock("@ionic/react", () => {
   const { forwardRef } = jest.requireActual("react");
@@ -122,6 +120,8 @@ describe("Connections page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
+    verifySecretMock.mockResolvedValue(true);
   });
 
   test("Render connections page empty", async () => {
@@ -463,6 +463,8 @@ describe("Connections page from Credentials tab", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
+    verifySecretMock.mockResolvedValue(true);
   });
 
   test("It allows to create an Identifier when no Identifiers are available", async () => {

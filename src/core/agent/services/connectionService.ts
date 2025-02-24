@@ -257,8 +257,10 @@ class ConnectionService extends AgentService {
           throw error;
         }
       });
+
     const notes: Array<ConnectionNoteDetails> = [];
     const historyItems: Array<ConnectionHistoryItem> = [];
+
     Object.keys(connection).forEach((key) => {
       if (
         key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
@@ -486,26 +488,19 @@ class ConnectionService extends AgentService {
         const groupCreationId = new URL(url).searchParams.get("groupId") ?? "";
         const createdAt = new Date((operation.response as State).dt);
 
-        const updateContact = async () => {
-          await signifyClient.update(connectionId, {
-            alias,
-            groupCreationId,
-            createdAt,
-            oobi: url,
-          });
-        };
-
         try {
-          const contact = await signifyClient.get(connectionId);
-          if (!contact) {
-            await updateContact();
-          }
+          await signifyClient.get(connectionId);
         } catch (error) {
           if (
             error instanceof Error &&
             /404/gi.test(error.message.split(" - ")[1])
           ) {
-            await updateContact();
+            await signifyClient.update(connectionId, {
+              alias,
+              groupCreationId,
+              createdAt,
+              oobi: url,
+            });
           } else {
             throw error;
           }

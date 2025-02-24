@@ -27,15 +27,6 @@ jest.mock("../../../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("../../../../../core/storage", () => ({
-  ...jest.requireActual("../../../../../core/storage"),
-  SecureStorage: {
-    get: () => {
-      return "Frank";
-    },
-  },
-}));
-
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: { children: any }) => children,

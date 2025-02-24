@@ -1,3 +1,5 @@
+const verifySecretMock = jest.fn().mockResolvedValue(true);
+
 import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
@@ -20,15 +22,6 @@ import { passcodeFillerWithAct } from "../../../../utils/passcodeFiller";
 import { ReceiveCredential } from "./ReceiveCredential";
 
 jest.useFakeTimers();
-
-const mockGet = jest.fn((arg: unknown) => Promise.resolve({ value: "111111" }));
-
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => mockGet(options.key),
-    set: jest.fn(),
-  },
-}));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const admitAcdcFromGrantMock = jest.fn(
@@ -60,6 +53,9 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
       connections: {
         getOobi: jest.fn(),
+      },
+      auth: {
+        verifySecret: verifySecretMock,
       },
     },
   },
@@ -207,7 +203,10 @@ describe("Receive credential", () => {
     await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(verifySecretMock).toHaveBeenCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
     });
 
     await waitFor(() => {

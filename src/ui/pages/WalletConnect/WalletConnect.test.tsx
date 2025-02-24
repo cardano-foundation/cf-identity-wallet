@@ -67,12 +67,6 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "111111" }),
-  },
-}));
-
 describe("Wallet Connect Stage One", () => {
   const initialState = {
     stateCache: {

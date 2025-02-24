@@ -1,10 +1,14 @@
+import { b, Diger, Salter } from "signify-ts";
 import { AgentService } from "./agentService";
 import { AgentServicesProps, MiscRecordId } from "../agent.types";
 import { LoginAttempts } from "./auth.types";
 import { BasicRecord, BasicStorage } from "../records";
+import { KeyStoreKeys, SecureStorage } from "../../storage";
 
 class AuthService extends AgentService {
   static readonly MIN_LOCK_TIME = 60 * 1000;
+  static readonly SECRET_NOT_STORED =
+    "Cannot verify auth as it's not stored in the secure storage";
   protected readonly basicStorage: BasicStorage;
 
   constructor(
@@ -18,7 +22,7 @@ class AuthService extends AgentService {
   static readonly LOGIN_ATTEMPT_RECORD_NOT_FOUND =
     "Login attempt record not found";
 
-  async getLoginAttempts() {
+  async getLoginAttempts(): Promise<LoginAttempts> {
     const attemptInfo = await this.basicStorage.findById(
       MiscRecordId.LOGIN_METADATA
     );
@@ -43,7 +47,7 @@ class AuthService extends AgentService {
     };
   }
 
-  async incrementLoginAttempts() {
+  async incrementLoginAttempts(): Promise<LoginAttempts> {
     const attemptInfo = await this.basicStorage.findById(
       MiscRecordId.LOGIN_METADATA
     );
@@ -92,7 +96,7 @@ class AuthService extends AgentService {
     return { attempts, lockedUntil };
   }
 
-  async resetLoginAttempts() {
+  async resetLoginAttempts(): Promise<void> {
     const attemptInfo = await this.basicStorage.findById(
       MiscRecordId.LOGIN_METADATA
     );
@@ -105,6 +109,41 @@ class AuthService extends AgentService {
     attemptInfo.content.lockedUntil = Date.now();
 
     await this.basicStorage.update(attemptInfo);
+  }
+
+  async storeSecret(
+    type: KeyStoreKeys.APP_PASSCODE | KeyStoreKeys.APP_OP_PASSWORD,
+    value: string
+  ): Promise<void> {
+    const salt = new Salter({});
+    const secret = b(value);
+
+    const result = new Uint8Array(salt.raw.length + secret.length);
+    result.set(salt.raw);
+    result.set(secret, salt.raw.length);
+
+    const dig = new Diger({}, result);
+    await SecureStorage.set(type, `${salt.qb64}${dig.qb64}`);
+  }
+
+  async verifySecret(
+    type: KeyStoreKeys.APP_PASSCODE | KeyStoreKeys.APP_OP_PASSWORD,
+    secret: string
+  ): Promise<boolean> {
+    const qb64 = await SecureStorage.get(type);
+    if (!qb64) {
+      throw new Error(`${AuthService.SECRET_NOT_STORED} [${type}]`);
+    }
+
+    const salt = new Salter({ qb64: qb64.substring(0, 24) });
+    const p = b(secret);
+
+    const result = new Uint8Array(salt.raw.length + p.length);
+    result.set(salt.raw);
+    result.set(p, salt.raw.length);
+
+    const dig = new Diger({ qb64: qb64.substring(24) });
+    return new Diger({}, result).qb64 === dig.qb64;
   }
 }
 

@@ -1,14 +1,16 @@
+const verifySecretMock = jest.fn();
+const storeSecretMock = jest.fn();
+
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
-import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
+import { KeyStoreKeys } from "../../../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { store } from "../../../../../../../store";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { ChangePin } from "./ChangePin";
 
-const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 const mockSetIsOpen = jest.fn();
 
 jest.mock("../../../../../../../core/agent/agent", () => ({
@@ -19,6 +21,10 @@ jest.mock("../../../../../../../core/agent/agent", () => ({
         save: jest.fn(),
         update: jest.fn(),
         createOrUpdateBasicRecord: jest.fn(),
+      },
+      auth: {
+        verifySecret: verifySecretMock,
+        storeSecret: storeSecretMock,
       },
     },
   },
@@ -63,6 +69,7 @@ describe("ChangePin Modal", () => {
       handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
       setBiometricsIsEnabled: jest.fn(),
     }));
+    verifySecretMock.mockResolvedValue(false);
   });
 
   test("Renders ChangePin Modal and initial UI components", async () => {
@@ -171,7 +178,7 @@ describe("ChangePin Modal", () => {
     await passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
-      expect(setKeyStoreSpy).toBeCalledWith(
+      expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
         "111111"
       );

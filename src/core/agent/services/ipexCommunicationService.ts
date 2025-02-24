@@ -8,7 +8,6 @@ import {
   Serder,
   Siger,
 } from "signify-ts";
-import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
   ExnMessage,
@@ -46,6 +45,8 @@ import {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
+import { Agent } from "../agent";
+import { StorageMessage } from "../../storage/storage.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -59,6 +60,7 @@ class IpexCommunicationService extends AgentService {
     "IPEX message has already been responded to or proposed to group";
   static readonly NO_CURRENT_IPEX_MSG_TO_JOIN =
     "Cannot join IPEX message as there is no current exn to join from the group leader";
+  static readonly INVALID_HISTORY_TYPE = "Invalid history type";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
@@ -130,22 +132,36 @@ class IpexCommunicationService extends AgentService {
     allSchemaSaids.push(schemaSaid);
 
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    const credential = await this.saveAcdcMetadataRecord(
-      holder,
-      grantExn.exn.e.acdc.d,
-      grantExn.exn.e.acdc.a.dt,
-      schema.title,
-      grantExn.exn.i,
-      schemaSaid
-    );
+    try {
+      const credential = await this.saveAcdcMetadataRecord(
+        holder,
+        grantExn.exn.e.acdc.d,
+        grantExn.exn.e.acdc.a.dt,
+        schema.title,
+        grantExn.exn.i,
+        schemaSaid
+      );
 
-    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
-      type: EventTypes.AcdcStateChanged,
-      payload: {
-        credential,
-        status: CredentialStatus.PENDING,
-      },
-    });
+      this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+        type: EventTypes.AcdcStateChanged,
+        payload: {
+          credential,
+          status: CredentialStatus.PENDING,
+        },
+      });
+    } catch (error) {
+      // Ignore this as we might have failed before we deleted the notification and need to retry in the UI
+      if (
+        !(
+          error instanceof Error &&
+          error.message.startsWith(
+            StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
+          )
+        )
+      ) {
+        throw error;
+      }
+    }
 
     let op: Operation;
     if (holder.multisigManageAid) {
@@ -183,7 +199,6 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-
     await this.notificationStorage.update(grantNoteRecord);
   }
 
@@ -476,12 +491,30 @@ class IpexCommunicationService extends AgentService {
     message: ExnMessage,
     historyType: ConnectionHistoryType
   ): Promise<void> {
-    let schemaSaid;
     const connectionId =
       historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
       historyType === ConnectionHistoryType.CREDENTIAL_ISSUANCE
         ? message.exn.rp
         : message.exn.i;
+
+    const connection = await this.connections
+      .getConnectionById(connectionId)
+      .catch((error) => {
+        if (
+          error instanceof Error &&
+          error.message.startsWith(Agent.MISSING_DATA_ON_KERIA)
+        ) {
+          return undefined;
+        }
+        throw error;
+      });
+
+    // Handles case where we receive IPEX messages from unknown or previously deleted connections
+    if (!connection) {
+      return;
+    }
+
+    let schemaSaid;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
@@ -496,10 +529,12 @@ class IpexCommunicationService extends AgentService {
       schemaSaid = previousExchange.exn.e.acdc.s;
     }
 
-    const issuerOobi = (await this.connections.getConnectionById(connectionId))
-      .serviceEndpoints[0];
     await this.connections.resolveOobi(
-      await this.getSchemaUrl(issuerOobi, connectionId, schemaSaid),
+      await this.getSchemaUrl(
+        connection.serviceEndpoints[0],
+        connectionId,
+        schemaSaid
+      ),
       true
     );
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
@@ -518,7 +553,7 @@ class IpexCommunicationService extends AgentService {
       key = message.exn.d;
       break;
     default:
-      throw new Error("Invalid history type");
+      throw new Error(IpexCommunicationService.INVALID_HISTORY_TYPE);
     }
     const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,
@@ -582,22 +617,36 @@ class IpexCommunicationService extends AgentService {
     );
 
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    const credential = await this.saveAcdcMetadataRecord(
-      holder,
-      credentialId,
-      grantExn.exn.e.acdc.a.dt,
-      schema.title,
-      connectionId,
-      schemaSaid
-    );
+    try {
+      const credential = await this.saveAcdcMetadataRecord(
+        holder,
+        credentialId,
+        grantExn.exn.e.acdc.a.dt,
+        schema.title,
+        connectionId,
+        schemaSaid
+      );
 
-    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
-      type: EventTypes.AcdcStateChanged,
-      payload: {
-        credential,
-        status: CredentialStatus.PENDING,
-      },
-    });
+      this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+        type: EventTypes.AcdcStateChanged,
+        payload: {
+          credential,
+          status: CredentialStatus.PENDING,
+        },
+      });
+    } catch (error) {
+      // Ignore this as we might have failed before we deleted the notification and need to retry in the UI
+      if (
+        !(
+          error instanceof Error &&
+          error.message.startsWith(
+            StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
+          )
+        )
+      ) {
+        throw error;
+      }
+    }
 
     await this.operationPendingStorage.save({
       id: op.name,
@@ -657,10 +706,6 @@ class IpexCommunicationService extends AgentService {
     multiSigExn: ExnMessage,
     agreeNoteRecord: NotificationRecord
   ): Promise<void> {
-    if (agreeNoteRecord.linkedRequest.accepted) {
-      throw new Error(IpexCommunicationService.IPEX_ALREADY_REPLIED);
-    }
-
     if (!agreeNoteRecord.linkedRequest.current) {
       throw new Error(IpexCommunicationService.NO_CURRENT_IPEX_MSG_TO_JOIN);
     }
@@ -744,7 +789,7 @@ class IpexCommunicationService extends AgentService {
           MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds,
-          discloseePrefix
+          recp[0]
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
@@ -905,6 +950,7 @@ class IpexCommunicationService extends AgentService {
     const credentialState = await this.props.signifyClient
       .credentials()
       .state(exchange.exn.e.acdc.ri, exchange.exn.e.acdc.d);
+
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient
       .schemas()
@@ -924,6 +970,7 @@ class IpexCommunicationService extends AgentService {
           throw error;
         }
       });
+
     return {
       id: exchange.exn.e.acdc.d,
       schema: exchange.exn.e.acdc.s,

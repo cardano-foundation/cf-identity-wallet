@@ -303,7 +303,6 @@ describe("Recovery of DB from cloud sync", () => {
 
     await agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl);
 
-    const now = new Date();
     expect(SignifyClient).toHaveBeenCalledWith(
       mockConnectUrl,
       expectedBran,
@@ -318,14 +317,12 @@ describe("Recovery of DB from cloud sync", () => {
     expect(mockSignifyClient.connect).toHaveBeenCalled();
     expect(
       mockBasicStorageService.createOrUpdateBasicRecord
-    ).toHaveBeenCalledWith({
-      _tags: {},
-      content: { syncing: false },
-      createdAt: now,
-      id: MiscRecordId.CLOUD_RECOVERY_STATUS,
-      type: "BasicRecord",
-      updatedAt: undefined,
-    });
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.CLOUD_RECOVERY_STATUS,
+        content: { syncing: false },
+      })
+    );
     expect(SecureStorage.set).toHaveBeenCalledWith(
       KeyStoreKeys.SIGNIFY_BRAN,
       expectedBran

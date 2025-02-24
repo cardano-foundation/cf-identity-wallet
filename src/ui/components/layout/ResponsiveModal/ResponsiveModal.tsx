@@ -7,6 +7,7 @@ const ResponsiveModal = ({
   modalIsOpen,
   customClasses,
   children,
+  backdropDismiss,
   onDismiss,
 }: ResponsiveModalProps) => {
   return (
@@ -17,6 +18,7 @@ const ResponsiveModal = ({
       data-testid={componentId}
       className={`responsive-modal ${customClasses}`}
       onDidDismiss={onDismiss}
+      backdropDismiss={backdropDismiss}
     >
       <div className={`responsive-modal-content ${componentId}-content`}>
         {children}

@@ -50,12 +50,6 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("@evva/capacitor-secure-storage-plugin", () => ({
-  SecureStoragePlugin: {
-    get: (options: { key: string }) => Promise.resolve({ value: "111111" }),
-  },
-}));
-
 const addKeyboardEventMock = jest.fn();
 
 jest.mock("@capacitor/keyboard", () => ({

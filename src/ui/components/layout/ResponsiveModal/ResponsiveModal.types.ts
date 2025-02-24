@@ -5,6 +5,7 @@ interface ResponsiveModalProps {
   modalIsOpen: boolean;
   customClasses?: string;
   children?: ReactNode;
+  backdropDismiss?: boolean;
   onDismiss: () => void;
 }
 

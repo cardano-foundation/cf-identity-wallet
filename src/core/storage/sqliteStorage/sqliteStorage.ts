@@ -12,8 +12,7 @@ import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
 class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
-  static readonly SESION_IS_NOT_INITIALIZED = "Session is not initialized";
-
+  static readonly SESSION_IS_NOT_INITIALIZED = "Session is not initialized";
   static readonly INSERT_ITEM_TAG_SQL =
     "INSERT INTO items_tags (item_id, name, value, type) VALUES (?,?,?,?)";
   static readonly DELETE_ITEM_TAGS_SQL =
@@ -302,7 +301,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
 
   private checkSession(session?: SQLiteDBConnection) {
     if (!session) {
-      throw new Error(SqliteStorage.SESION_IS_NOT_INITIALIZED);
+      throw new Error(SqliteStorage.SESSION_IS_NOT_INITIALIZED);
     }
   }
 }

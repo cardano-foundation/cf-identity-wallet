@@ -17,7 +17,10 @@ import {
   AndroidSettings,
   IOSSettings,
 } from "capacitor-native-settings";
-import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import {
+  BiometryError,
+  BiometryErrorType,
+} from "@aparajita/capacitor-biometric-auth";
 import { Browser } from "@capacitor/browser";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
@@ -149,7 +152,7 @@ const Settings = ({ switchView }: SettingsProps) => {
   const biometricAuth = async () => {
     try {
       const result = await handleBiometricAuth();
-      if (result) handleToggleBiometricAuth();
+      if (result === true) handleToggleBiometricAuth();
     } catch (e) {
       showError("Unable to enable/disable biometric auth", e, dispatch);
     }
