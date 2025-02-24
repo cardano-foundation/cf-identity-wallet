@@ -1316,6 +1316,11 @@
             "security": {
               "title": "Security",
               "biometry": "Biometric authentication",
+              "biometricsalert": {
+                "message": "In order to use biometrics you need to enable this in your settings. Would you like to do this?",
+                "ok": "Go to settings",
+                "cancel": "Setup later"
+              },
               "changepin": {
                 "title": "Change passcode",
                 "createpasscode": "Create new passcode",

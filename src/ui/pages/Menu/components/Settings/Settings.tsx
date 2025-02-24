@@ -28,6 +28,7 @@ import {
   getBiometricsCacheCache,
   setEnableBiometricsCache,
 } from "../../../../../store/reducers/biometricsCache";
+import { Alert } from "../../../../components/Alert";
 import { Verification } from "../../../../components/Verification";
 import {
   DISCORD_LINK,
@@ -51,6 +52,7 @@ const Settings = ({ switchView }: SettingsProps) => {
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
   const { disablePrivacy, enablePrivacy } = usePrivacyScreen();
+  const [openBiometricAlert, setOpenBiometricAlert] = useState(false);
 
   const securityItems: OptionProps[] = [
     {
@@ -135,13 +137,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       !biometricInfo?.strongBiometryIsAvailable &&
       biometricInfo?.code === BiometryErrorType.biometryNotEnrolled
     ) {
-      NativeSettings.open({
-        optionAndroid: AndroidSettings.Security,
-        optionIOS: IOSSettings.TouchIdPasscode,
-      }).then((result) => {
-        inBiometricSetup.current = result.status;
-      });
-
+      setOpenBiometricAlert(true);
       return;
     }
 
@@ -157,6 +153,15 @@ const Settings = ({ switchView }: SettingsProps) => {
     } catch (e) {
       showError("Unable to enable/disable biometric auth", e, dispatch);
     }
+  };
+
+  const openSetting = () => {
+    NativeSettings.open({
+      optionAndroid: AndroidSettings.Security,
+      optionIOS: IOSSettings.TouchIdPasscode,
+    }).then((result) => {
+      inBiometricSetup.current = result.status;
+    });
   };
 
   useEffect(() => {
@@ -221,6 +226,10 @@ const Settings = ({ switchView }: SettingsProps) => {
     setOption(null);
   };
 
+  const closeAlert = () => {
+    setOpenBiometricAlert(false);
+  };
+
   return (
     <>
       <div className="settings-section-title">
@@ -269,6 +278,23 @@ const Settings = ({ switchView }: SettingsProps) => {
       <ChangePin
         isOpen={changePinIsOpen}
         setIsOpen={setChangePinIsOpen}
+      />
+      <Alert
+        isOpen={openBiometricAlert}
+        setIsOpen={setOpenBiometricAlert}
+        dataTestId="biometric-enable-alert"
+        headerText={i18n.t(
+          "tabs.menu.tab.settings.sections.security.biometricsalert.message"
+        )}
+        confirmButtonText={`${i18n.t(
+          "tabs.menu.tab.settings.sections.security.biometricsalert.ok"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "tabs.menu.tab.settings.sections.security.biometricsalert.cancel"
+        )}`}
+        actionConfirm={openSetting}
+        actionCancel={closeAlert}
+        actionDismiss={closeAlert}
       />
     </>
   );
