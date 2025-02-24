@@ -243,6 +243,7 @@ const connectionsService = jest.mocked({
     serviceEndpoints: [
       "http://127.0.0.1:3902/oobi/EKSGUkKBfg5PG3nAvWZwY4pax2ZD-9LC7JpXeks7IKEj/agent/EKxIbNtsJytfgJjW_AkXV-XLTg_vSyPUMxuwkP7zbgbu",
     ],
+    historyItems: [],
   }),
 });
 const keriaNotificationService = new KeriaNotificationService(
@@ -283,6 +284,10 @@ describe("Signify notification service of agent", () => {
     jest.resetAllMocks();
     markNotificationMock.mockResolvedValue({ status: "done" });
     identifiersGetMock.mockResolvedValueOnce(hab);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   test("Should emit new event for new notification", async () => {
@@ -1109,15 +1114,18 @@ describe("Signify notification service of agent", () => {
       },
     };
     const exchange = multisigExnAdmitForIssuance;
+    const grantExn = grantForIssuanceExnMessage;
 
     exchangesGetMock.mockResolvedValueOnce(exchange);
+    exchangesGetMock.mockResolvedValueOnce(grantExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
       id: exchange.exn.i,
       historyItems: [
-        { id: exchange.exn.i, type: ConnectionHistoryType.CREDENTIAL_ISSUANCE },
+        { id: grantExn.exn.i, type: ConnectionHistoryType.CREDENTIAL_ISSUANCE },
       ],
+      serviceEndpoints: [],
     });
 
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
@@ -1248,19 +1256,21 @@ describe("Signify notification service of agent", () => {
       },
     };
     const exchange = multisigExnOfferForPresenting;
+    const applyExn = applyForPresentingExnMessage;
 
     exchangesGetMock.mockResolvedValueOnce(exchange);
-    exchangesGetMock.mockResolvedValueOnce(applyForPresentingExnMessage);
+    exchangesGetMock.mockResolvedValueOnce(applyExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
       id: exchange.exn.i,
       historyItems: [
         {
-          id: exchange.exn.i,
+          id: applyExn.exn.i,
           type: ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT,
         },
       ],
+      serviceEndpoints: [],
     });
 
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
@@ -1400,19 +1410,21 @@ describe("Signify notification service of agent", () => {
       },
     };
     const exchange = multisigExnGrant;
+    const agreeExn = agreeForPresentingExnMessage;
 
     exchangesGetMock.mockResolvedValueOnce(exchange);
-    exchangesGetMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    exchangesGetMock.mockResolvedValueOnce(agreeExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
       id: exchange.exn.i,
       historyItems: [
         {
-          id: exchange.exn.i,
+          id: agreeExn.exn.i,
           type: ConnectionHistoryType.CREDENTIAL_PRESENTED,
         },
       ],
+      serviceEndpoints: [],
     });
 
     identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
@@ -1541,6 +1553,13 @@ describe("Signify notification service of agent", () => {
     );
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     credentialStorage.getCredentialMetadata.mockResolvedValue(null);
+    connectionsService.getConnectionById.mockResolvedValueOnce({
+      id: multisigExnAdmitForIssuance.exn.i,
+      historyItems: [],
+      serviceEndpoints: [
+        "http://127.0.0.1:3902/oobi/EKSGUkKBfg5PG3nAvWZwY4pax2ZD-9LC7JpXeks7IKEj/agent/EKxIbNtsJytfgJjW_AkXV-XLTg_vSyPUMxuwkP7zbgbu",
+      ],
+    });
 
     await expect(
       keriaNotificationService.processNotification(notificationMultisigExnProp)
@@ -2165,6 +2184,14 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValueOnce(applyForPresentingExnMessage);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
+    connectionsService.getConnectionById.mockResolvedValueOnce({
+      id: multisigExnOfferForPresenting.exn.i,
+      historyItems: [],
+      serviceEndpoints: [
+        "http://127.0.0.1:3902/oobi/EKSGUkKBfg5PG3nAvWZwY4pax2ZD-9LC7JpXeks7IKEj/agent/EKxIbNtsJytfgJjW_AkXV-XLTg_vSyPUMxuwkP7zbgbu",
+      ],
+    });
+
     await expect(
       keriaNotificationService.processNotification(notificationMultisigExnProp)
     ).rejects.toThrowError(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
@@ -2233,6 +2260,14 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValueOnce(multisigExnGrant)
       .mockResolvedValueOnce(agreeForPresentingExnMessage);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+
+    connectionsService.getConnectionById.mockResolvedValueOnce({
+      id: multisigExnGrant.exn.i,
+      historyItems: [],
+      serviceEndpoints: [
+        "http://127.0.0.1:3902/oobi/EKSGUkKBfg5PG3nAvWZwY4pax2ZD-9LC7JpXeks7IKEj/agent/EKxIbNtsJytfgJjW_AkXV-XLTg_vSyPUMxuwkP7zbgbu",
+      ],
+    });
 
     await expect(
       keriaNotificationService.processNotification(notificationMultisigExnProp)
