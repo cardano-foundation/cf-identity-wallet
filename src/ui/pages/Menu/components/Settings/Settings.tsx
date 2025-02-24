@@ -1,48 +1,46 @@
+import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import { Browser } from "@capacitor/browser";
 import { IonCard, IonList, IonToggle } from "@ionic/react";
 import {
-  lockClosedOutline,
-  informationCircleOutline,
-  keyOutline,
-  logoDiscord,
-  libraryOutline,
-  checkboxOutline,
-  layersOutline,
-  fingerPrintOutline,
-} from "ionicons/icons";
-import "./Settings.scss";
-import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
-import {
-  NativeSettings,
   AndroidSettings,
   IOSSettings,
+  NativeSettings,
 } from "capacitor-native-settings";
 import {
-  BiometryError,
-  BiometryErrorType,
-} from "@aparajita/capacitor-biometric-auth";
-import { Browser } from "@capacitor/browser";
-import { i18n } from "../../../../../i18n";
+  checkboxOutline,
+  fingerPrintOutline,
+  informationCircleOutline,
+  keyOutline,
+  layersOutline,
+  libraryOutline,
+  lockClosedOutline,
+  logoDiscord,
+} from "ionicons/icons";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import pJson from "../../../../../../package.json";
-import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
+import { Agent } from "../../../../../core/agent/agent";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
+import { i18n } from "../../../../../i18n";
 import { useAppDispatch } from "../../../../../store/hooks";
 import {
   getBiometricsCacheCache,
   setEnableBiometricsCache,
 } from "../../../../../store/reducers/biometricsCache";
-import { Agent } from "../../../../../core/agent/agent";
-import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
-import { ChangePin } from "./components/ChangePin";
-import { SettingsItem } from "./components/SettingsItem";
-import { SubMenuKey } from "../../Menu.types";
+import { Alert } from "../../../../components/Alert";
+import { Verification } from "../../../../components/Verification";
 import {
   DISCORD_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
-import { Verification } from "../../../../components/Verification";
+import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { showError } from "../../../../utils/error";
+import { SubMenuKey } from "../../Menu.types";
+import { ChangePin } from "./components/ChangePin";
+import { SettingsItem } from "./components/SettingsItem";
+import "./Settings.scss";
+import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
 
 const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
@@ -52,6 +50,7 @@ const Settings = ({ switchView }: SettingsProps) => {
   const inBiometricSetup = useRef(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
+  const [openBiometricAlert, setOpenBiometricAlert] = useState(false);
 
   const securityItems: OptionProps[] = [
     {
@@ -136,13 +135,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       !biometricInfo?.strongBiometryIsAvailable &&
       biometricInfo?.code === BiometryErrorType.biometryNotEnrolled
     ) {
-      NativeSettings.open({
-        optionAndroid: AndroidSettings.Security,
-        optionIOS: IOSSettings.TouchIdPasscode,
-      }).then((result) => {
-        inBiometricSetup.current = result.status;
-      });
-
+      setOpenBiometricAlert(true);
       return;
     }
 
@@ -156,6 +149,15 @@ const Settings = ({ switchView }: SettingsProps) => {
     } catch (e) {
       showError("Unable to enable/disable biometric auth", e, dispatch);
     }
+  };
+
+  const openSetting = () => {
+    NativeSettings.open({
+      optionAndroid: AndroidSettings.Security,
+      optionIOS: IOSSettings.TouchIdPasscode,
+    }).then((result) => {
+      inBiometricSetup.current = result.status;
+    });
   };
 
   useEffect(() => {
@@ -220,6 +222,10 @@ const Settings = ({ switchView }: SettingsProps) => {
     setOption(null);
   };
 
+  const closeAlert = () => {
+    setOpenBiometricAlert(false);
+  };
+
   return (
     <>
       <div className="settings-section-title">
@@ -268,6 +274,23 @@ const Settings = ({ switchView }: SettingsProps) => {
       <ChangePin
         isOpen={changePinIsOpen}
         setIsOpen={setChangePinIsOpen}
+      />
+      <Alert
+        isOpen={openBiometricAlert}
+        setIsOpen={setOpenBiometricAlert}
+        dataTestId="biometric-enable-alert"
+        headerText={i18n.t(
+          "tabs.menu.tab.settings.sections.security.biometricsalert.message"
+        )}
+        confirmButtonText={`${i18n.t(
+          "tabs.menu.tab.settings.sections.security.biometricsalert.ok"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "tabs.menu.tab.settings.sections.security.biometricsalert.cancel"
+        )}`}
+        actionConfirm={openSetting}
+        actionCancel={closeAlert}
+        actionDismiss={closeAlert}
       />
     </>
   );
