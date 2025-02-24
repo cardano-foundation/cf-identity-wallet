@@ -16,7 +16,7 @@ import {
   lockClosedOutline,
   logoDiscord,
 } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import pJson from "../../../../../../package.json";
 import { Agent } from "../../../../../core/agent/agent";
@@ -42,17 +42,18 @@ import { ChangePin } from "./components/ChangePin";
 import { SettingsItem } from "./components/SettingsItem";
 import "./Settings.scss";
 import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
+import { usePrivacyScreen } from "../../../../hooks/privacyScreenHook";
 
 const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const [option, setOption] = useState<number | null>(null);
   const { biometricInfo, handleBiometricAuth } = useBiometricAuth();
-  const inBiometricSetup = useRef(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
   const { disablePrivacy, enablePrivacy } = usePrivacyScreen();
   const [openBiometricAlert, setOpenBiometricAlert] = useState(false);
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen(false);
 
   const securityItems: OptionProps[] = [
     {
@@ -126,8 +127,6 @@ const Settings = ({ switchView }: SettingsProps) => {
   };
 
   const handleBiometricUpdate = () => {
-    inBiometricSetup.current = false;
-
     if (biometricsCache.enabled) {
       handleToggleBiometricAuth();
       return;
@@ -159,16 +158,8 @@ const Settings = ({ switchView }: SettingsProps) => {
     NativeSettings.open({
       optionAndroid: AndroidSettings.Security,
       optionIOS: IOSSettings.TouchIdPasscode,
-    }).then((result) => {
-      inBiometricSetup.current = result.status;
     });
   };
-
-  useEffect(() => {
-    if (biometricInfo?.strongBiometryIsAvailable && inBiometricSetup.current) {
-      handleBiometricUpdate();
-    }
-  }, [biometricInfo]);
 
   const handleChangePin = () => {
     setVerifyIsOpen(true);
