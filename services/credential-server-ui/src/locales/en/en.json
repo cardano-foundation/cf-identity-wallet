@@ -20,6 +20,12 @@
     },
     "credentials": {
       "title": "Credentials"
+    },
+    "notifications": {
+      "title": "Notifications"
+    },
+    "settings": {
+      "title": "Settings"
     }
   }
 }

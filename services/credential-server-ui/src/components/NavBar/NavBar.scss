@@ -1,22 +1,55 @@
 #navBar {
-  background-color: var(--color-neutral-200);
-
-  button {
+  a,
+  button,
+  li {
+    font-weight: 600;
     color: var(--text-color);
     text-transform: none;
+    text-decoration: none;
+    border-radius: 1rem;
     padding: 0.75rem 1rem 0.75rem 1.25rem;
 
-    .menu-icon {
+    &:hover {
+      background-color: var(--color-primary-200);
+    }
+
+    &:active {
+      background-color: var(--color-primary-200);
+    }
+
+    .active-bar {
+      height: 0.125rem;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      border-radius: 0.125rem 0.125rem 0rem 0rem;
+      background-color: var(--color-primary-700);
+    }
+
+    .menu-icon,
+    svg {
       margin-right: 0.5rem;
+      vertical-align: text-bottom;
+    }
+
+    img {
+      vertical-align: text-bottom;
+    }
+  }
+
+  .nav-left,
+  .nav-right {
+    button,
+    li {
+      padding: 0;
     }
   }
 }
 
 #drawer {
-  padding-left: 1rem;
-
   h6 {
-    padding-left: 0.5rem;
+    padding-left: 1.5rem;
     margin: 1.25rem 0;
   }
 
@@ -24,10 +57,20 @@
     padding: 0;
 
     .MuiButtonBase-root {
-      padding: 0.75rem 0;
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+
+      &:hover {
+        background-color: var(--color-primary-200);
+      }
+
+      .MuiTypography-root,
+      .MuiListItemIcon-root {
+        font-weight: 600;
+        color: var(--text-color);
+      }
 
       .MuiListItemIcon-root {
-        color: var(--text-color);
         min-width: 1.5rem;
         margin-right: 0.5rem;
       }

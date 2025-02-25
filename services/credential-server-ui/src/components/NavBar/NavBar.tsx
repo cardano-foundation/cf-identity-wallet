@@ -1,4 +1,3 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -14,6 +13,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  MenuItem,
   Typography,
 } from "@mui/material";
 import DashboardFilled from "@mui/icons-material/Dashboard";
@@ -25,22 +25,39 @@ import Logo from "../../assets/Logo.svg";
 import "./NavBar.scss";
 import { SwitchAccount } from "../SwitchAccount";
 import { i18n } from "../../i18n";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 interface Props {
   window?: () => Window;
 }
 
 const drawerWidth = 240;
-const drawerItems = [
-  i18n.t("navbar.overview"),
-  i18n.t("navbar.connections"),
-  i18n.t("navbar.credentials"),
+const menuItems = [
+  {
+    key: "overview",
+    label: i18n.t("navbar.overview"),
+    path: "/",
+    icon: <DashboardFilled />,
+  },
+  {
+    key: "connections",
+    label: i18n.t("navbar.connections"),
+    path: "/connections",
+    icon: <GroupOutlined />,
+  },
+  {
+    key: "credentials",
+    label: i18n.t("navbar.credentials"),
+    path: "/credentials",
+    icon: <BadgeOutlined />,
+  },
 ];
-const drawerIcons = [<DashboardFilled />, <GroupOutlined />, <BadgeOutlined />];
 
 const NavBar = (props: Props) => {
   const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -50,7 +67,11 @@ const NavBar = (props: Props) => {
     <Box
       id="drawer"
       onClick={handleDrawerToggle}
-      sx={{ textAlign: "left" }}
+      sx={{
+        textAlign: "left",
+        backgroundColor: "background.default",
+        height: "100%",
+      }}
     >
       <Typography
         variant="h6"
@@ -59,14 +80,18 @@ const NavBar = (props: Props) => {
         {i18n.t("navbar.menu")}
       </Typography>
       <List>
-        {drawerItems.map((text, index) => (
+        {menuItems.map((item) => (
           <ListItem
-            key={text}
+            key={item.key}
+            component={Link}
+            to={item.path}
             disablePadding
           >
-            <ListItemButton>
-              <ListItemIcon>{drawerIcons[index]}</ListItemIcon>
-              <ListItemText primary={text} />
+            <ListItemButton
+              className={location.pathname === item.path ? "active" : ""}
+            >
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.label} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -81,11 +106,14 @@ const NavBar = (props: Props) => {
     <AppBar
       id="navBar"
       position="static"
-      sx={{ boxShadow: 0 }}
+      sx={{ boxShadow: 0, backgroundColor: "background.default" }}
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box
+            className="nav-tablet"
+            sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
+          >
             <IconButton
               color="inherit"
               aria-label="open drawer menu"
@@ -96,11 +124,16 @@ const NavBar = (props: Props) => {
               <MenuIcon className="menu-icon" />
               <Typography>{i18n.t("navbar.menu")}</Typography>
             </IconButton>
-            <img
-              className="header-logo"
-              alt="veridian logo"
-              src={Logo}
-            />
+            <Button
+              component={Link}
+              to={"/"}
+            >
+              <img
+                className="header-logo"
+                alt="veridian-logo"
+                src={Logo}
+              />
+            </Button>
           </Box>
           <Box
             component="nav"
@@ -126,29 +159,46 @@ const NavBar = (props: Props) => {
               {drawer}
             </Drawer>
           </Box>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            <Button onClick={handleDrawerToggle}>
+          <Box
+            className="nav-left"
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+          >
+            <Button
+              component={Link}
+              to={"/"}
+            >
               <img
                 className="header-logo"
                 alt="veridian-logo"
                 src={Logo}
               />
             </Button>
-            {drawerItems.map((page, index) => (
-              <Button
-                key={page}
-                onClick={handleDrawerToggle}
+            {menuItems.map((item) => (
+              <MenuItem
+                key={item.key}
+                component={Link}
+                to={item.path}
               >
-                {drawerIcons[index]}
-                {page}
-              </Button>
+                <Typography textAlign="center">
+                  {item.icon}
+                  {item.label}
+                  {location.pathname === item.path && (
+                    <div className="active-bar" />
+                  )}
+                </Typography>
+              </MenuItem>
             ))}
           </Box>
-          <Box>
+          <Box
+            className="nav-right"
+            sx={{ display: { xs: "none", sm: "flex" } }}
+          >
             <IconButton
               size="large"
               aria-label="show new notifications"
               color="inherit"
+              component={Link}
+              to={"/notifications"}
             >
               <Badge
                 badgeContent={0}
@@ -161,11 +211,10 @@ const NavBar = (props: Props) => {
               size="large"
               aria-label="show settings"
               color="inherit"
+              component={Link}
+              to={"/settings"}
             >
-              <Badge
-                badgeContent={0}
-                color="error"
-              >
+              <Badge>
                 <SettingsOutlined />
               </Badge>
             </IconButton>

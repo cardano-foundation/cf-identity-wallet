@@ -7,6 +7,8 @@ import { Overview } from "./pages/Overview";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import "./styles/colors.scss";
+import { Notifications } from "./pages/Notifications";
+import { Settings } from "./pages/Settings";
 
 const rootStyle = getComputedStyle(document.documentElement);
 
@@ -15,6 +17,18 @@ const theme = createTheme({
     fontFamily: `"Manrope", sans-serif`,
     fontSize: 16,
     fontWeightMedium: 600,
+    h6: {
+      fontSize: 24,
+    },
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 610,
+      md: 1000,
+      lg: 1200,
+      xl: 1536,
+    },
   },
   palette: {
     primary: {
@@ -47,12 +61,20 @@ const App = () => {
               element={<Overview />}
             />
             <Route
-              path="connections"
+              path="/connections"
               element={<Connections />}
             />
             <Route
-              path="credentials"
+              path="/credentials"
               element={<Credentials />}
+            />
+            <Route
+              path="/notifications"
+              element={<Notifications />}
+            />
+            <Route
+              path="/settings"
+              element={<Settings />}
             />
             <Route
               path="*"
