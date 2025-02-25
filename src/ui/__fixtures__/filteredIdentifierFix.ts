@@ -24,7 +24,7 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     createdAtUTC: "2024-03-07T11:54:56.886Z",
     theme: 0,
     creationStatus: CreationStatus.PENDING,
-    multisigManageAid: "123",
+    groupMemberPre: "123",
   },
   {
     displayName: "GID 1",
@@ -32,7 +32,7 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     createdAtUTC: "2024-10-21T11:15:58.673Z",
     theme: 0,
     creationStatus: CreationStatus.COMPLETE,
-    multisigManageAid: "EHzi_GBx0jIgd3G0Qqcjg3ZaLJ6d84wp6q0qUvC_iOQ4",
+    groupMemberPre: "EHzi_GBx0jIgd3G0Qqcjg3ZaLJ6d84wp6q0qUvC_iOQ4",
   },
   {
     displayName: "Profess",
@@ -115,7 +115,7 @@ const pendingGroupIdentifierFix: IdentifierShortDetails = {
   createdAtUTC: "2024-03-07T11:54:56.886Z",
   theme: 0,
   creationStatus: CreationStatus.PENDING,
-  multisigManageAid: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+  groupMemberPre: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
 };
 
 const pendingIdentifierFix: IdentifierShortDetails = {

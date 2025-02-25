@@ -289,10 +289,8 @@ class KeriaNotificationService extends AgentService {
     }
 
     const exn = await this.props.signifyClient.exchanges().get(notif.a.d);
-    if (
-      (await this.outboundExchange(exn)) ||
-      !(await this.identifierNotDeleted(notif, exn))
-    ) {
+    const deletedCheckResult = await this.identifierDeleted(notif, exn);
+    if ((await this.outboundExchange(exn)) || deletedCheckResult.deleted) {
       await this.markNotification(notif.i);
       return;
     }
@@ -321,7 +319,10 @@ class KeriaNotificationService extends AgentService {
     }
 
     try {
-      const note = await this.createNotificationRecord(notif);
+      const note = await this.createNotificationRecord(
+        notif,
+        deletedCheckResult.receivingPre
+      );
       if (notif.a.r !== NotificationRoute.ExnIpexAgree) {
         // Hidden from UI, so don't emit
         this.props.eventEmitter.emit<NotificationAddedEvent>({
@@ -344,11 +345,11 @@ class KeriaNotificationService extends AgentService {
       const identifier = await this.identifierStorage.getIdentifierMetadata(
         exn.exn.rp
       );
-      if (identifier.multisigManageAid) {
+      if (identifier.groupMemberPre) {
         const smids = (
           await this.props.signifyClient.identifiers().members(exn.exn.rp)
         ).signing;
-        if (smids[0].aid !== identifier.multisigManageAid) return;
+        if (smids[0].aid !== identifier.groupMemberPre) return;
       }
       await this.ipexCommunications.grantAcdcFromAgree(notif.i);
     }
@@ -432,18 +433,18 @@ class KeriaNotificationService extends AgentService {
     return ourIdentifier !== undefined;
   }
 
-  private async identifierNotDeleted(
+  private async identifierDeleted(
     notif: Notification,
     exn: ExnMessage
-  ): Promise<boolean> {
+  ): Promise<{ deleted: true } | { deleted: false; receivingPre: string }> {
     // rp field not being properly utilised yet (open issue on Signify/KERIA), so will be potentially incorrect for groups > 2 members
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
       for (const smid of exn.exn.a.smids) {
         try {
           const hab = await this.props.signifyClient.identifiers().get(smid);
           return hab.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
-            ? false
-            : true;
+            ? { deleted: true }
+            : { deleted: false, receivingPre: smid };
         } catch (error) {
           if (
             !(
@@ -463,16 +464,16 @@ class KeriaNotificationService extends AgentService {
         .identifiers()
         .get(receivingPre);
       return hab.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
-        ? false
-        : true;
+        ? { deleted: true }
+        : { deleted: false, receivingPre };
     }
 
-    return false;
+    return { deleted: true };
   }
 
   private async processExnIpexApplyNotification(
     exchange: ExnMessage
-  ): Promise<boolean> {
+  ): Promise<true> {
     await this.ipexCommunications.createLinkedIpexMessageRecord(
       exchange,
       ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
@@ -578,12 +579,14 @@ class KeriaNotificationService extends AgentService {
 
         const metadata: NotificationRecordStorageProps = {
           id: randomSalt(),
+          createdAt: new Date(notif.dt),
           a: {
             r: NotificationRoute.LocalAcdcRevoked,
             credentialId: existingCredential.id,
             credentialTitle: existingCredential.credentialType,
           },
           connectionId: existingCredential.connectionId,
+          receivingPre: exchange.exn.rp,
           read: false,
           route: NotificationRoute.LocalAcdcRevoked,
           credentialId: existingCredential.id,
@@ -599,12 +602,8 @@ class KeriaNotificationService extends AgentService {
             payload: {
               note: {
                 id: notificationRecord.id,
-                createdAt: new Date().toISOString(),
-                a: {
-                  r: NotificationRoute.LocalAcdcRevoked,
-                  credentialId: existingCredential.id,
-                  credentialTitle: existingCredential.credentialType,
-                },
+                createdAt: notificationRecord.createdAt.toISOString(),
+                a: notificationRecord.a,
                 read: false,
                 connectionId: exchange.exn.i,
                 groupReplied: false,
@@ -630,7 +629,7 @@ class KeriaNotificationService extends AgentService {
 
   private async processMultiSigRpyNotification(
     notif: Notification
-  ): Promise<boolean> {
+  ): Promise<false> {
     const groupRequests = await this.props.signifyClient
       .groups()
       .getRequest(notif.a.d)
@@ -688,7 +687,7 @@ class KeriaNotificationService extends AgentService {
   private async processMultiSigExnNotification(
     notif: Notification,
     exchange: ExnMessage
-  ): Promise<boolean> {
+  ): Promise<false> {
     switch (exchange.exn.e?.exn?.r) {
       case ExchangeRoute.IpexAdmit: {
         const grantNotificationRecords =
@@ -739,7 +738,6 @@ class KeriaNotificationService extends AgentService {
               id: notificationRecord.id,
               createdAt: notificationRecord.createdAt.toISOString(),
               a: notificationRecord.a,
-              multisigId: notificationRecord.multisigId,
               connectionId: notificationRecord.connectionId,
               read: notificationRecord.read,
               groupReplied: true,
@@ -777,13 +775,8 @@ class KeriaNotificationService extends AgentService {
         const { ourIdentifier, multisigMembers } =
           await this.multiSigs.getMultisigParticipants(exchange.exn.a.gid);
 
-        const initiatorAid = multisigMembers.map(
-          (member: any) => member.aid
-        )[0];
-
-        notificationRecord.multisigId = exchange.exn.a.gid;
         notificationRecord.groupReplied = true;
-        notificationRecord.initiatorAid = initiatorAid;
+        notificationRecord.groupInitiatorPre = multisigMembers[0].aid;
         notificationRecord.groupInitiator =
           ourIdentifier.groupMetadata?.groupInitiator;
 
@@ -803,11 +796,10 @@ class KeriaNotificationService extends AgentService {
               id: notificationRecord.id,
               createdAt: notificationRecord.createdAt.toISOString(),
               a: notificationRecord.a,
-              multisigId: notificationRecord.multisigId,
               connectionId: notificationRecord.connectionId,
               read: notificationRecord.read,
               groupReplied: notificationRecord.groupReplied,
-              initiatorAid: notificationRecord.initiatorAid,
+              groupInitiatorPre: notificationRecord.groupInitiatorPre,
               groupInitiator: notificationRecord.groupInitiator,
             },
           },
@@ -852,33 +844,26 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async createNotificationRecord(
-    notif: Notification
+    notif: Notification,
+    receivingPre: string
   ): Promise<KeriaNotification> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     const metadata: NotificationRecordStorageProps = {
       id: notif.i,
+      createdAt: new Date(notif.dt),
       a: notif.a,
       read: false,
       route: notif.a.r as NotificationRoute,
       connectionId: exchange.exn.i,
-      createdAt: new Date(notif.dt),
+      receivingPre,
       credentialId: exchange.exn.e?.acdc?.d,
     };
 
-    if (
-      notif.a.r === NotificationRoute.MultiSigIcp ||
-      notif.a.r === NotificationRoute.MultiSigRpy
-    ) {
-      metadata.multisigId = exchange.exn.e.icp.i;
-    }
-
     const result = await this.notificationStorage.save(metadata);
-
     return {
       id: result.id,
       createdAt: result.createdAt.toISOString(),
       a: result.a,
-      multisigId: result.multisigId,
       connectionId: result.connectionId,
       read: result.read,
       groupReplied: result.linkedRequest.current !== undefined,
@@ -920,12 +905,11 @@ class KeriaNotificationService extends AgentService {
         id: notification.id,
         createdAt: notification.createdAt.toISOString(),
         a: notification.a,
-        multisigId: notification.multisigId,
         connectionId: notification.connectionId,
         read: notification.read,
         groupReplied: notification.linkedRequest.current !== undefined,
         groupInitiator: notification.groupInitiator,
-        initiatorAid: notification.initiatorAid,
+        groupInitiatorPre: notification.groupInitiatorPre,
       };
     });
   }
@@ -1215,7 +1199,7 @@ class KeriaNotificationService extends AgentService {
             );
 
             for (const notification of notifications) {
-              if (!holder.multisigManageAid) {
+              if (!holder.groupMemberPre) {
                 await deleteNotificationRecordById(
                   this.props.signifyClient,
                   this.notificationStorage,
@@ -1229,15 +1213,15 @@ class KeriaNotificationService extends AgentService {
               notification.createdAt = new Date();
               notification.read = false;
 
-              const { multisigMembers, ourIdentifier } =
+              const { ourIdentifier, multisigMembers } =
                 await this.multiSigs.getMultisigParticipants(
                   applyExchange.exn.rp
                 );
 
               notification.groupReplied = true;
-              notification.initiatorAid = multisigMembers[0].aid;
+              notification.groupInitiatorPre = multisigMembers[0].aid;
               notification.groupInitiator =
-                ourIdentifier.groupMetadata?.groupInitiator;
+                ourIdentifier.groupMetadata!.groupInitiator;
 
               await this.notificationStorage.update(notification);
 
@@ -1255,11 +1239,10 @@ class KeriaNotificationService extends AgentService {
                     id: notification.id,
                     createdAt: notification.createdAt.toISOString(),
                     a: notification.a,
-                    multisigId: notification.multisigId,
                     connectionId: notification.connectionId,
                     read: notification.read,
                     groupReplied: notification.groupReplied,
-                    initiatorAid: notification.initiatorAid,
+                    groupInitiatorPre: notification.groupInitiatorPre,
                     groupInitiator: notification.groupInitiator,
                   },
                 },

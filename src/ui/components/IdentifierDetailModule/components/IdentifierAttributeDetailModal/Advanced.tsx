@@ -25,7 +25,7 @@ const Advanced = ({ data, currentUserIndex }: AdvancedProps) => {
   const [isShowSigningList, setShowSigningList] = useState(false);
   const [isShowRotationKey, setShowRotationKey] = useState(false);
 
-  const isMultisig = !!(data.groupMetadata || data.multisigManageAid);
+  const isMultisig = !!(data.groupMetadata || data.groupMemberPre);
 
   const signingKeys = data.k?.map((key, index) => {
     return {

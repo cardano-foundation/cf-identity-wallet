@@ -13,7 +13,7 @@ interface BaseEventEmitter {
 }
 
 enum EventTypes {
-  NotificationAdded = "NotificationAdded ",
+  NotificationAdded = "NotificationAdded",
   OperationComplete = "OperationComplete",
   OperationFailed = "OperationFailed",
   OperationAdded = "OperationAdded",

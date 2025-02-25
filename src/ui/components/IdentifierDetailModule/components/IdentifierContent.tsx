@@ -44,10 +44,8 @@ const IdentifierContent = ({
   const isMultiSig = useMemo(() => {
     const identifier = identifiersData[cardData.id];
 
-    return (
-      cardData.multisigManageAid || (identifier && identifier.multisigManageAid)
-    );
-  }, [cardData.id, cardData.multisigManageAid, identifiersData]);
+    return cardData.groupMemberPre || (identifier && identifier.groupMemberPre);
+  }, [cardData.id, cardData.groupMemberPre, identifiersData]);
 
   const members = useMemo(() => {
     return cardData.members
