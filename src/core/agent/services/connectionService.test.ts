@@ -901,6 +901,7 @@ describe("Connection service of agent", () => {
       notes: [connectionNote],
       historyItems: [mockHistoryIpexMessage, mockHistoryRevokeMessage].map(
         (item) => ({
+          id: item.id,
           type: item.historyType,
           timestamp: item.dt,
           credentialType: item.credentialType,
