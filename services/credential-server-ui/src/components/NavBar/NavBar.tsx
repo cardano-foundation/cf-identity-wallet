@@ -121,6 +121,7 @@ const NavBar = (props: Props) => {
               color="inherit"
               aria-label="open drawer menu"
               edge="start"
+              className="menu-button"
               onClick={handleDrawerToggle}
               sx={{ mr: 2, display: { md: "none" } }}
             >
