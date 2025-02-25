@@ -300,6 +300,11 @@ const ReceiveCredential = ({
       return;
     }
 
+    if (isRevoked) {
+      handleDelete();
+      return;
+    }
+
     setVerifyIsOpen(true);
   };
 
@@ -537,7 +542,7 @@ const ReceiveCredential = ({
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}
-        onVerify={isRevoked ? handleDelete : handleAccept}
+        onVerify={handleAccept}
       />
       <CredentialDetailModal
         pageId="receive-credential-detail"
