@@ -706,12 +706,15 @@ class KeriaNotificationService extends AgentService {
       // Either relates to an processed and deleted grant notification, or is out of order
       if (grantNotificationRecords.length === 0) {
         const connectionInCloud =
-            await this.connectionService.getConnectionById(exchange.exn.i);
+            await this.connectionService.getConnectionById(
+              exchange.exn.i,
+              true
+            );
         const grantExn = await this.props.signifyClient
           .exchanges()
           .get(exchange.exn.e.exn.p);
         const historyExists = connectionInCloud.historyItems.some(
-          (item) => item.id === grantExn.exn.i
+          (item) => item.id === grantExn.exn.d
         );
         if (historyExists) {
           await this.markNotification(notif.i);
@@ -768,9 +771,12 @@ class KeriaNotificationService extends AgentService {
       // Either relates to an processed and deleted apply notification, or is out of order
       if (applyNotificationRecords.length === 0) {
         const connectionInCloud =
-            await this.connectionService.getConnectionById(exchange.exn.i);
+            await this.connectionService.getConnectionById(
+              exchange.exn.i,
+              true
+            );
         const historyExists = connectionInCloud.historyItems.some(
-          (item) => item.id === applyExn.exn.i
+          (item) => item.id === applyExn.exn.d
         );
         if (historyExists) {
           await this.markNotification(notif.i);
@@ -843,9 +849,12 @@ class KeriaNotificationService extends AgentService {
       // Either relates to an processed and deleted agree notification, or is out of order
       if (agreeNotificationRecords.length === 0) {
         const connectionInCloud =
-            await this.connectionService.getConnectionById(exchange.exn.i);
+            await this.connectionService.getConnectionById(
+              exchange.exn.i,
+              true
+            );
         const historyExists = connectionInCloud.historyItems.some(
-          (item) => item.id === agreeExn.exn.i
+          (item) => item.id === agreeExn.exn.d
         );
         if (historyExists) {
           await this.markNotification(notif.i);
