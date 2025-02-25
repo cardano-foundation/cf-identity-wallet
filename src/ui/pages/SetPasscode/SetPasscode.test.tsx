@@ -78,7 +78,7 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() => expect(text).toBeInTheDocument());
@@ -96,7 +96,7 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() => expect(text).toBeInTheDocument());
@@ -120,7 +120,8 @@ describe("SetPasscode Page", () => {
         <SetPasscode />
       </Provider>
     );
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
+
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() => expect(text).toBeInTheDocument());
@@ -159,13 +160,13 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     const text = await findByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
 
     await waitFor(() => expect(text).toBeInTheDocument());
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -176,7 +177,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() =>
       expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       )
     );
   });

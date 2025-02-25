@@ -157,7 +157,7 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
 
     await waitFor(() => {
       const labelElement = getByText(
@@ -166,7 +166,7 @@ describe("SetPasscode Page", () => {
       expect(labelElement).toBeInTheDocument();
     });
 
-    await passcodeFiller(getByText, getByTestId, "3", 6);
+    await passcodeFiller(getByText, getByTestId, "193214");
 
     await waitFor(
       () =>
@@ -189,7 +189,7 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
 
     await waitFor(
       () =>
@@ -212,7 +212,7 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
 
     await waitFor(
       () =>
@@ -235,7 +235,7 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
 
     await waitFor(
       () =>
@@ -273,7 +273,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -281,7 +281,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -305,7 +305,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() => {
       expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       );
     });
   });
@@ -336,7 +336,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -348,7 +348,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -408,7 +408,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -420,7 +420,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -436,7 +436,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() =>
       expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       )
     );
   });
@@ -483,7 +483,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -495,7 +495,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(

@@ -123,7 +123,7 @@ describe("ChangePin Modal", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     const text = await findByText(
       EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
@@ -171,7 +171,7 @@ describe("ChangePin Modal", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
     const text = await findByText(
       EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
         .reenterpasscode
@@ -181,12 +181,12 @@ describe("ChangePin Modal", () => {
       expect(text).toBeInTheDocument();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       );
     });
   });
