@@ -11,6 +11,7 @@ import {
 } from "./notificationsCache";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
+import { InitializationPhase } from "../stateCache/stateCache.types";
 
 const notification: KeriaNotification = {
   id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
@@ -103,7 +104,7 @@ describe("Notifications cache", () => {
     const state: RootState = {
       stateCache: {
         isOnline: true,
-        initialized: true,
+        initializationPhase: InitializationPhase.PHASE_TWO,
         recoveryCompleteNoInterruption: false,
         routes: [],
         authentication: {
@@ -115,6 +116,7 @@ describe("Notifications cache", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           ssiAgentIsSet: false,
+          ssiAgentUrl: "",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,

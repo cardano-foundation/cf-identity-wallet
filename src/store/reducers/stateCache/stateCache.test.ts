@@ -106,6 +106,7 @@ describe("State Cache", () => {
       passwordIsSet: false,
       passwordIsSkipped: false,
       ssiAgentIsSet: false,
+      ssiAgentUrl: "",
       recoveryWalletProgress: false,
       loginAttempt: {
         attempts: 0,

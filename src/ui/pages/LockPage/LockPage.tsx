@@ -13,11 +13,11 @@ import { PublicRoutes, RoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
 import {
-  geFirstAppLaunch,
+  getFirstAppLaunch,
   getAuthentication,
   getCurrentRoute,
   login,
-  setFirstAppLaunch,
+  setFirstAppLaunchComplete,
 } from "../../../store/reducers/stateCache";
 import { Alert } from "../../components/Alert";
 import {
@@ -51,7 +51,7 @@ const LockPageContainer = () => {
 
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
-  const firstAppLaunch = useSelector(geFirstAppLaunch);
+  const firstAppLaunch = useSelector(getFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
   const { enablePrivacy, disablePrivacy } = usePrivacyScreen(false);
 
@@ -112,7 +112,7 @@ const LockPageContainer = () => {
       if (verified) {
         await resetLoginAttempt();
         dispatch(login());
-        dispatch(setFirstAppLaunch(false));
+        dispatch(setFirstAppLaunchComplete());
         handleClearState();
       } else {
         await incrementLoginAttempt();
@@ -138,7 +138,7 @@ const LockPageContainer = () => {
 
     if (authenResult === true) {
       dispatch(login());
-      dispatch(setFirstAppLaunch(false));
+      dispatch(setFirstAppLaunchComplete());
     }
   };
 

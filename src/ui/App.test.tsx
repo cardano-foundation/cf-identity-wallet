@@ -18,6 +18,7 @@ import {
   IOS_MIN_VERSION,
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
+import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
 
 const mockInitDatabase = jest.fn();
 const getAvailableWitnessesMock = jest.fn();
@@ -27,6 +28,7 @@ jest.mock("../core/agent/agent", () => ({
     agent: {
       start: jest.fn(),
       setupLocalDependencies: () => mockInitDatabase(),
+      markAgentStatus: jest.fn(),
       getBranAndMnemonic: jest.fn(() =>
         Promise.resolve({
           bran: "",
@@ -319,81 +321,33 @@ describe("App", () => {
   });
 
   test("Should show offline page", async () => {
-    const initialState = {
-      seedPhraseCache: {
-        seedPhrase: "",
-        bran: "",
-      },
-      ssiAgentCache: {
-        bootUrl: "",
-        connectUrl: "",
-      },
+    const state = {
+      ...initialState,
       stateCache: {
+        ...initialState.stateCache,
         isOnline: false,
-        initialized: true,
-        routes: [{ path: "/" }, { path: "/route2" }, { path: "/route3" }],
+        initializationPhase: InitializationPhase.PHASE_TWO,
         authentication: {
           passcodeIsSet: true,
           seedPhraseIsSet: false,
           passwordIsSet: false,
           passwordIsSkipped: true,
-          loggedIn: false,
+          loggedIn: true,
           userName: "",
           time: 0,
           ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
             lockedUntil: Date.now(),
           },
         },
-        currentOperation: OperationType.IDLE,
-        queueIncomingRequest: {
-          isProcessing: false,
-          queues: [],
-          isPaused: false,
-        },
-        toastMsgs: [],
-      },
-      identifiersCache: {
-        identifiers: {},
-        favourites: [],
-        multiSigGroup: {
-          groupId: "",
-          connections: [],
-        },
-      },
-      credsCache: { creds: [], favourites: [] },
-      credsArchivedCache: { creds: [] },
-      connectionsCache: {
-        connections: {},
-        multisigConnections: {},
-      },
-      walletConnectionsCache: {
-        walletConnections: [],
-        connectedWallet: null,
-        pendingConnection: null,
-      },
-      viewTypeCache: {
-        identifier: {
-          viewType: null,
-          favouriteIndex: 0,
-        },
-        credential: {
-          viewType: null,
-          favouriteIndex: 0,
-        },
-      },
-      biometricsCache: {
-        enabled: false,
-      },
-      notificationsCache: {
-        notifications: [],
       },
     };
 
     const storeMocked = {
-      ...mockStore(initialState),
+      ...mockStore(state),
       dispatch: dispatchMock,
     };
 
@@ -405,6 +359,48 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(getByTestId("offline-page")).toBeVisible();
+    });
+  });
+
+  test("Should show spinner after login while booting agent", async () => {
+    const state = {
+      ...initialState,
+      stateCache: {
+        ...initialState.stateCache,
+        isOnline: false,
+        initializationPhase: InitializationPhase.PHASE_ONE,
+        authentication: {
+          passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          loggedIn: true,
+          userName: "",
+          time: 0,
+          ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(state),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("loading-page")).toBeVisible();
     });
   });
 
@@ -470,6 +466,7 @@ describe("App", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
@@ -568,6 +565,7 @@ describe("Witness availability", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
@@ -662,6 +660,7 @@ describe("Witness availability", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,

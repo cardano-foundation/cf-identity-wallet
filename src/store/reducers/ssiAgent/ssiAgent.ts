@@ -11,10 +11,6 @@ const ssiAgentSlice = createSlice({
   name: "ssiAgent",
   initialState,
   reducers: {
-    setSSIAgent: (state, action: PayloadAction<SSIAgentState>) => {
-      state.connectUrl = action.payload.connectUrl;
-      state.bootUrl = action.payload.bootUrl;
-    },
     setConnectUrl: (state, action: PayloadAction<string | undefined>) => {
       state.connectUrl = action.payload;
     },
@@ -28,16 +24,8 @@ const ssiAgentSlice = createSlice({
   },
 });
 
-const { setSSIAgent, clearSSIAgent, setBootUrl, setConnectUrl } =
-  ssiAgentSlice.actions;
+const { clearSSIAgent, setBootUrl, setConnectUrl } = ssiAgentSlice.actions;
 
 const getSSIAgent = (state: RootState) => state.ssiAgentCache;
 
-export {
-  clearSSIAgent,
-  getSSIAgent,
-  setSSIAgent,
-  ssiAgentSlice,
-  setBootUrl,
-  setConnectUrl,
-};
+export { clearSSIAgent, getSSIAgent, ssiAgentSlice, setBootUrl, setConnectUrl };

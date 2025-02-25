@@ -3,7 +3,10 @@ import "./LoadingPage.scss";
 
 const LoadingPage = () => {
   return (
-    <div className="loading-page">
+    <div
+      data-testid="loading-page"
+      className="loading-page"
+    >
       <IonSpinner name="crescent" />
     </div>
   );

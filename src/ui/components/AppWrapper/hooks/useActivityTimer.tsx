@@ -6,6 +6,7 @@ import { logout } from "../../../../store/reducers/stateCache";
 
 const timeout = process.env.NODE_ENV === "development" ? 3600000 : 60000; // 1h/1min
 const pauseTimeout = timeout / 2;
+
 const useActivityTimer = () => {
   const dispatch = useAppDispatch();
   const [pauseTimestamp, setPauseTimestamp] = useState(new Date().getTime());
