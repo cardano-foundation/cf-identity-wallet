@@ -92,6 +92,9 @@ const NavBar = (props: Props) => {
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
+              {location.pathname === item.path && (
+                <div className="active-bar" />
+              )}
             </ListItemButton>
           </ListItem>
         ))}
@@ -127,9 +130,9 @@ const NavBar = (props: Props) => {
             <Button
               component={Link}
               to={"/"}
+              className="header-logo"
             >
               <img
-                className="header-logo"
                 alt="veridian-logo"
                 src={Logo}
               />
@@ -182,10 +185,10 @@ const NavBar = (props: Props) => {
                 <Typography textAlign="center">
                   {item.icon}
                   {item.label}
-                  {location.pathname === item.path && (
-                    <div className="active-bar" />
-                  )}
                 </Typography>
+                {location.pathname === item.path && (
+                  <div className="active-bar" />
+                )}
               </MenuItem>
             ))}
           </Box>

@@ -9,20 +9,20 @@
     border-radius: 1rem;
     padding: 0.75rem 1rem 0.75rem 1.25rem;
 
-    &:hover {
+    &:hover:not(.header-logo) {
       background-color: var(--color-primary-200);
     }
 
-    &:active {
+    &:active:not(.header-logo) {
       background-color: var(--color-primary-200);
     }
 
     .active-bar {
       height: 0.125rem;
-      width: 100%;
+      width: 80%;
       position: absolute;
       bottom: 0;
-      left: 0;
+      left: 1rem;
       border-radius: 0.125rem 0.125rem 0rem 0rem;
       background-color: var(--color-primary-700);
     }
@@ -62,6 +62,16 @@
 
       &:hover {
         background-color: var(--color-primary-200);
+      }
+
+      .active-bar {
+        height: 0.125rem;
+        width: calc(100% - 2.25rem);
+        position: absolute;
+        bottom: 0;
+        left: 1rem;
+        border-radius: 0.125rem 0.125rem 0rem 0rem;
+        background-color: var(--color-primary-700);
       }
 
       .MuiTypography-root,

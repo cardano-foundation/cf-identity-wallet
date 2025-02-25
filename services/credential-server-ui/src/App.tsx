@@ -9,6 +9,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import "./styles/colors.scss";
 import { Notifications } from "./pages/Notifications";
 import { Settings } from "./pages/Settings";
+import "@fontsource/manrope/600.css";
 
 const rootStyle = getComputedStyle(document.documentElement);
 
@@ -16,7 +17,10 @@ const theme = createTheme({
   typography: {
     fontFamily: `"Manrope", sans-serif`,
     fontSize: 16,
-    fontWeightMedium: 600,
+    body1: {
+      fontSize: 16,
+      fontWeight: 600,
+    },
     h6: {
       fontSize: 24,
     },
