@@ -11,6 +11,12 @@ import { store } from "../../../../../../../store";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 import { ChangePin } from "./ChangePin";
 
+jest.mock("../../../../../../utils/passcodeChecker", () => ({
+  isRepeat: () => false,
+  isConsecutive: () => false,
+  isReverseConsecutive: () => false,
+}));
+
 const mockSetIsOpen = jest.fn();
 
 jest.mock("../../../../../../../core/agent/agent", () => ({

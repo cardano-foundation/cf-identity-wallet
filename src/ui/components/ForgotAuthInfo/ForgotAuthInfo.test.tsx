@@ -8,8 +8,15 @@ import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ForgotAuthInfo } from "./ForgotAuthInfo";
 import { ForgotType } from "./ForgotAuthInfo.types";
+import { isRepeat } from "../../utils/passcodeChecker";
 
 const SEED_PHRASE_LENGTH = 18;
+
+jest.mock("../../utils/passcodeChecker", () => ({
+  isRepeat: () => false,
+  isConsecutive: () => false,
+  isReverseConsecutive: () => false,
+}));
 
 const verifySeedPhraseFnc = jest.fn();
 
