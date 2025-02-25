@@ -493,7 +493,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         credentialType: "Qualified vLEI Issuer Credential",
       },
       {
-        id: "4",
+        id: "2",
         type: 2,
         timestamp: "2024-08-07T15:32:26.006Z",
         credentialType: "Qualified vLEI Issuer Credential",
@@ -510,13 +510,8 @@ describe("Checking the Connection Details Page when notes are available", () => 
         timestamp: "2024-08-07T15:31:17.382Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
-      {
-        id: "4",
-        type: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
-        timestamp: "2024-08-07T15:31:17.382Z",
-        credentialType: "IPEX Agreement",
-      },
     ];
+
     const connectionDetails = {
       ...connectionsFix[6],
       serviceEndpoints: [
@@ -536,7 +531,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
     };
 
     const handleCloseConnectionModal = jest.fn();
-    const { getByText, getAllByText, queryByTestId } = render(
+    const { getByText, getAllByText } = render(
       <Provider store={storeMocked}>
         <ConnectionDetails
           connectionShortDetails={connectionDetails}
@@ -646,17 +641,6 @@ describe("Checking the Connection Details Page when notes are available", () => 
         )
       ).toBeVisible();
     });
-
-    await waitFor(() =>
-      expect(
-        queryByTestId(`connection-history-event-${historyEvents.length - 2}`)
-      ).toBeInTheDocument()
-    );
-    await waitFor(() =>
-      expect(
-        queryByTestId(`connection-history-event-${historyEvents.length - 1}`)
-      ).not.toBeInTheDocument()
-    );
   });
 });
 

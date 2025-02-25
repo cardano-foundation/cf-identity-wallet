@@ -41,7 +41,6 @@ import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
 import { showError } from "../../utils/error";
 import { ConnectionDetailsProps } from "./ConnectionDetails.types";
-import { ConnectionHistoryType } from "../../../core/agent/services/connectionService.types";
 
 const ConnectionDetails = ({
   connectionShortDetails,
