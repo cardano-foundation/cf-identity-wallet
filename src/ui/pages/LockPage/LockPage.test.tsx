@@ -204,7 +204,7 @@ describe("Lock Page", () => {
         </MemoryRouter>
       </Provider>
     );
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
     expect(await findByText(EN_TRANSLATIONS.lockpage.error)).toBeVisible();
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
     expect(
@@ -243,12 +243,12 @@ describe("Lock Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(verifySecretMock).toHaveBeenCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       );
     });
 
@@ -379,7 +379,7 @@ describe("Lock Page: Max login attempt", () => {
     expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
 
-    passcodeFiller(getByText, getByTestId, "2", 6);
+    passcodeFiller(getByText, getByTestId, "193213");
 
     await waitFor(() => {
       expect(getByText("3 attempt remaining")).toBeInTheDocument();
@@ -426,7 +426,7 @@ describe("Lock Page: Max login attempt", () => {
     expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(resetLoginAttemptsMock).toBeCalled();

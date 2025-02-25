@@ -200,12 +200,12 @@ describe("Receive credential", () => {
       expect(getByTestId("passcode-button-1")).toBeVisible();
     });
 
-    await passcodeFillerWithAct(getByText, getByTestId, "1", 6);
+    await passcodeFillerWithAct(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(verifySecretMock).toHaveBeenCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       );
     });
 

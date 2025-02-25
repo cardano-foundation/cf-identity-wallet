@@ -20,6 +20,16 @@ import { store } from "../../../store";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { CreatePasscodeModule } from "./CreatePasscodeModule";
 
+const isRepeativeMock = jest.fn(() => false);
+const isConsecutiveMock = jest.fn(() => false);
+const isReverseConsecutiveMock = jest.fn(() => false);
+
+jest.mock("../../utils/passcodeChecker", () => ({
+  isRepeat: () => isRepeativeMock(),
+  isConsecutive: () => isConsecutiveMock(),
+  isReverseConsecutive: () => isReverseConsecutiveMock(),
+}));
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -86,6 +96,9 @@ describe("SetPasscode Page", () => {
         getPlatforms: () => ["mobileweb"],
       };
     });
+    isReverseConsecutiveMock.mockImplementation(() => false);
+    isConsecutiveMock.mockImplementation(() => false);
+    isRepeativeMock.mockImplementation(() => false);
   });
 
   test("Renders Create Passcode page with title and description", () => {
@@ -144,7 +157,7 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
 
     await waitFor(() => {
       const labelElement = getByText(
@@ -153,7 +166,7 @@ describe("SetPasscode Page", () => {
       expect(labelElement).toBeInTheDocument();
     });
 
-    await passcodeFiller(getByText, getByTestId, "3", 6);
+    await passcodeFiller(getByText, getByTestId, "193214");
 
     await waitFor(
       () =>
@@ -176,11 +189,57 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
 
-    await passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "193213");
 
     await waitFor(
       () =>
         expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.errornomatch))
+          .toBeVisible
+    );
+  });
+
+  test("Display repeat passcode message", async () => {
+    verifySecretMock.mockResolvedValue(true);
+    isRepeativeMock.mockImplementation(() => true);
+    const { getByText, queryByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreatePasscodeModule
+          title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
+          testId="set-passcode"
+          onCreateSuccess={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await passcodeFiller(getByText, getByTestId, "193213");
+
+    await waitFor(
+      () =>
+        expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.repeat))
+          .toBeVisible
+    );
+  });
+
+  test("Display an consecutive passcode", async () => {
+    verifySecretMock.mockResolvedValue(true);
+    isReverseConsecutiveMock.mockImplementation(() => true);
+    const { getByText, queryByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreatePasscodeModule
+          title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
+          testId="set-passcode"
+          onCreateSuccess={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await passcodeFiller(getByText, getByTestId, "193213");
+
+    await waitFor(
+      () =>
+        expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.consecutive))
           .toBeVisible
     );
   });
@@ -214,7 +273,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -222,7 +281,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -246,7 +305,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() => {
       expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       );
     });
   });
@@ -277,7 +336,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -289,7 +348,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -349,7 +408,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -361,7 +420,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -377,7 +436,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() =>
       expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       )
     );
   });
@@ -424,7 +483,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -436,7 +495,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(

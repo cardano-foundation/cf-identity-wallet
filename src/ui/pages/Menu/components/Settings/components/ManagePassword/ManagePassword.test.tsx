@@ -195,7 +195,7 @@ describe("Manage password", () => {
       expect(getByText("1")).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(getByTestId("create-password-modal")).toBeVisible();

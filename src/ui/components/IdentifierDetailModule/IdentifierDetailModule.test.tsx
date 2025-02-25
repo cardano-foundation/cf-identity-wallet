@@ -1160,7 +1160,7 @@ describe("Checking the Identifier Details Page when information is missing from 
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(deleteStaleLocalIdentifierMock).toBeCalled();
@@ -1445,7 +1445,7 @@ describe("Favourite identifier", () => {
       expect(getByTestId("verify-passcode")).toBeInTheDocument();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(markIdentifierPendingDelete).toBeCalled();

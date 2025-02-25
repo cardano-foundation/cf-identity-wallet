@@ -186,7 +186,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode-content-page")).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -437,7 +437,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(
