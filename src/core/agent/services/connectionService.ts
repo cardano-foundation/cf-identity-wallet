@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { Contact, Operation, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
