@@ -36,7 +36,9 @@
   "createpasscodemodule": {
     "errornomatch": "Passcode didn’t match",
     "errormatch": "Passcode already in use",
-    "cantremember": "Can't remember?"
+    "cantremember": "Can't remember?",
+    "repeat": "Avoid matching numbers e.g. 111111",
+    "consecutive": "Avoid consecutive numbers e.g. 123456"
   },
   "setpasscode": {
     "enterpasscode": "Create your Passcode",

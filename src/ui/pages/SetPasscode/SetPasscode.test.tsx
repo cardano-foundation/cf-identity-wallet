@@ -18,6 +18,12 @@ import { SetPasscode } from "./SetPasscode";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { AuthService } from "../../../core/agent/services";
 
+jest.mock("../../utils/passcodeChecker", () => ({
+  isRepeat: () => false,
+  isConsecutive: () => false,
+  isReverseConsecutive: () => false,
+}));
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {

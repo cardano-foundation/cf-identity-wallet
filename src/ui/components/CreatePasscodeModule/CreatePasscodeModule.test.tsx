@@ -20,6 +20,16 @@ import { store } from "../../../store";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { CreatePasscodeModule } from "./CreatePasscodeModule";
 
+const isRepeativeMock = jest.fn(() => false);
+const isConsecutiveMock = jest.fn(() => false);
+const isReverseConsecutiveMock = jest.fn(() => false);
+
+jest.mock("../../utils/passcodeChecker", () => ({
+  isRepeat: () => isRepeativeMock(),
+  isConsecutive: () => isConsecutiveMock(),
+  isReverseConsecutive: () => isReverseConsecutiveMock(),
+}));
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -86,6 +96,9 @@ describe("SetPasscode Page", () => {
         getPlatforms: () => ["mobileweb"],
       };
     });
+    isReverseConsecutiveMock.mockImplementation(() => false);
+    isConsecutiveMock.mockImplementation(() => false);
+    isRepeativeMock.mockImplementation(() => false);
   });
 
   test("Renders Create Passcode page with title and description", () => {
@@ -181,6 +194,52 @@ describe("SetPasscode Page", () => {
     await waitFor(
       () =>
         expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.errornomatch))
+          .toBeVisible
+    );
+  });
+
+  test("Display repeat passcode message", async () => {
+    verifySecretMock.mockResolvedValue(true);
+    isRepeativeMock.mockImplementation(() => true);
+    const { getByText, queryByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreatePasscodeModule
+          title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
+          testId="set-passcode"
+          onCreateSuccess={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await passcodeFiller(getByText, getByTestId, "2", 6);
+
+    await waitFor(
+      () =>
+        expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.repeat))
+          .toBeVisible
+    );
+  });
+
+  test("Display an consecutive passcode", async () => {
+    verifySecretMock.mockResolvedValue(true);
+    isReverseConsecutiveMock.mockImplementation(() => true);
+    const { getByText, queryByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreatePasscodeModule
+          title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
+          testId="set-passcode"
+          onCreateSuccess={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await passcodeFiller(getByText, getByTestId, "2", 6);
+
+    await waitFor(
+      () =>
+        expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.consecutive))
           .toBeVisible
     );
   });
