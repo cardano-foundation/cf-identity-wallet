@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
-import * as React from "react";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
-import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useEffect, useState, MouseEvent } from "react";
+import { Button, Menu, MenuItem, Divider, Typography } from "@mui/material";
+import {
+  OpenInNewOutlined,
+  KeyboardArrowDown,
+  CheckCircle,
+} from "@mui/icons-material";
 import "./SwitchAccount.scss";
 import { i18n } from "../../i18n";
-import Typography from "@mui/material/Typography";
 import { HolderModal } from "./components/HolderModal";
 
 const SwitchAccount = () => {
@@ -22,7 +19,7 @@ const SwitchAccount = () => {
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = (index: number) => {
@@ -53,7 +50,7 @@ const SwitchAccount = () => {
         variant="contained"
         disableElevation
         onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}
+        endIcon={<KeyboardArrowDown />}
       >
         {selectedView}
       </Button>
@@ -81,14 +78,14 @@ const SwitchAccount = () => {
           disableRipple
         >
           {i18n.t("navbar.switchaccount.issuer")}
-          {selectedIndex === 0 && <CheckCircleIcon color={"primary"} />}
+          {selectedIndex === 0 && <CheckCircle color={"primary"} />}
         </MenuItem>
         <MenuItem
           onClick={() => handleClose(1)}
           disableRipple
         >
           {i18n.t("navbar.switchaccount.verifier")}
-          {selectedIndex === 1 && <CheckCircleIcon color={"primary"} />}
+          {selectedIndex === 1 && <CheckCircle color={"primary"} />}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
         <MenuItem
@@ -96,7 +93,7 @@ const SwitchAccount = () => {
           disableRipple
         >
           {i18n.t("navbar.switchaccount.holder")}
-          <OpenInNewOutlinedIcon className="open-new-icon" />
+          <OpenInNewOutlined className="open-new-icon" />
         </MenuItem>
       </Menu>
       <HolderModal

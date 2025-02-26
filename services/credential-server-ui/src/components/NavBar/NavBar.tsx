@@ -1,11 +1,12 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Container,
+  Button,
   Badge,
   Drawer,
   List,
@@ -16,17 +17,23 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import DashboardFilled from "@mui/icons-material/Dashboard";
-import GroupOutlined from "@mui/icons-material/GroupOutlined";
-import BadgeOutlined from "@mui/icons-material/BadgeOutlined";
-import NotificationsOutlined from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
+import {
+  Dashboard as DashboardFull,
+  DashboardOutlined,
+  Group as GroupFull,
+  GroupOutlined,
+  Badge as BadgeFull,
+  BadgeOutlined,
+  Notifications as NotificationsFull,
+  NotificationsOutlined,
+  Settings as SettingsFull,
+  SettingsOutlined,
+} from "@mui/icons-material";
 import Logo from "../../assets/Logo.svg";
 import "./NavBar.scss";
 import { SwitchAccount } from "../SwitchAccount";
 import { i18n } from "../../i18n";
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 
 interface Props {
   window?: () => Window;
@@ -38,19 +45,19 @@ const menuItems = [
     key: "overview",
     label: i18n.t("navbar.overview"),
     path: "/",
-    icon: <DashboardFilled />,
+    icon: [<DashboardFull />, <DashboardOutlined />],
   },
   {
     key: "connections",
     label: i18n.t("navbar.connections"),
     path: "/connections",
-    icon: <GroupOutlined />,
+    icon: [<GroupFull />, <GroupOutlined />],
   },
   {
     key: "credentials",
     label: i18n.t("navbar.credentials"),
     path: "/credentials",
-    icon: <BadgeOutlined />,
+    icon: [<BadgeFull />, <BadgeOutlined />],
   },
 ];
 
@@ -90,7 +97,9 @@ const NavBar = (props: Props) => {
             <ListItemButton
               className={location.pathname === item.path ? "active" : ""}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemIcon>
+                {item.icon[location.pathname === item.path ? 0 : 1]}
+              </ListItemIcon>
               <ListItemText primary={item.label} />
               {location.pathname === item.path && (
                 <div className="active-bar" />
@@ -185,7 +194,7 @@ const NavBar = (props: Props) => {
                 className={location.pathname === item.path ? "active" : ""}
               >
                 <Typography textAlign="center">
-                  {item.icon}
+                  {item.icon[location.pathname === item.path ? 0 : 1]}
                   {item.label}
                 </Typography>
                 {location.pathname === item.path && (
@@ -210,7 +219,11 @@ const NavBar = (props: Props) => {
                 badgeContent={0}
                 color="error"
               >
-                <NotificationsOutlined />
+                {location.pathname === "/notifications" ? (
+                  <NotificationsFull />
+                ) : (
+                  <NotificationsOutlined />
+                )}
               </Badge>
             </IconButton>
             <IconButton
@@ -222,7 +235,11 @@ const NavBar = (props: Props) => {
               className={location.pathname === "/settings" ? "active" : ""}
             >
               <Badge>
-                <SettingsOutlined />
+                {location.pathname === "/settings" ? (
+                  <SettingsFull />
+                ) : (
+                  <SettingsOutlined />
+                )}
               </Badge>
             </IconButton>
           </Box>

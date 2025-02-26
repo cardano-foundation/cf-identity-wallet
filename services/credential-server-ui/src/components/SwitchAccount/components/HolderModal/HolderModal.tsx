@@ -1,9 +1,8 @@
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
 import { HolderModalProps } from "./HolderModal.types";
-import Typography from "@mui/material/Typography";
-import Fade from "@mui/material/Fade";
 import "./HolderModal.scss";
+import Grid from "@mui/material/Grid2";
+import { ChevronLeft } from "@mui/icons-material";
+import { Modal, Fade, Box, IconButton, Typography } from "@mui/material";
 
 const HolderModal = ({ openModal, setOpenModal }: HolderModalProps) => {
   const handleCloseModal = () => setOpenModal(false);
@@ -21,19 +20,36 @@ const HolderModal = ({ openModal, setOpenModal }: HolderModalProps) => {
           bgcolor="background.default"
           className="holder-modal-container"
         >
-          <Typography
-            id="holder-modal-title"
-            variant="h6"
-            component="h2"
+          <Grid
+            container
+            spacing={1}
           >
-            Text in a modal
-          </Typography>
-          <Typography
-            id="holderl-modal-description"
-            onClick={handleCloseModal}
-          >
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
+            <Grid size={1}>
+              <IconButton
+                size="large"
+                aria-label="close modal"
+                color="inherit"
+              >
+                <ChevronLeft />
+              </IconButton>
+              <Typography
+                id="holderl-modal-description"
+                onClick={handleCloseModal}
+              >
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+              </Typography>
+            </Grid>
+            <Grid size={10}>
+              <Typography
+                id="holder-modal-title"
+                variant="h6"
+                component="h2"
+              >
+                Text in a modal
+              </Typography>
+            </Grid>
+            <Grid size={1} />
+          </Grid>
         </Box>
       </Fade>
     </Modal>
