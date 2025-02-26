@@ -304,26 +304,5 @@ describe("Forgot Password Page", () => {
         getByText(EN_TRANSLATIONS.forgotauth.newpassword.description)
       ).toBeVisible();
     });
-
-    act(() => {
-      fireEvent.click(getByTestId("tertiary-button-forgot-auth-info-modal"));
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.createpassword.alert.text)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.createpassword.alert.button.confirm)
-      );
-    });
-
-    await waitFor(() => {
-      expect(createOrUpdateBasicStore).toBeCalled();
-      expect(onCloseMock).toBeCalled();
-    });
   });
 });

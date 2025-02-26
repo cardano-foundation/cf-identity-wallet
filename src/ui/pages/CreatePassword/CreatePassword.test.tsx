@@ -338,7 +338,7 @@ describe("Create Password Page", () => {
   test("Hidden skip button", async () => {
     const initialStateNoPassword = {
       stateCache: {
-        routes: [{ path: RoutePath.CREATE_PASSWORD }],
+        routes: [{ path: RoutePath.TABS_MENU }],
         authentication: {
           loggedIn: true,
           time: Date.now(),
@@ -360,7 +360,7 @@ describe("Create Password Page", () => {
     const handleClear = jest.fn();
     const setPasswordIsSet = jest.fn();
     const { queryByText } = render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <CreatePassword
             handleClear={handleClear}
