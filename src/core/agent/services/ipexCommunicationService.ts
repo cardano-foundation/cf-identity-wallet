@@ -492,8 +492,7 @@ class IpexCommunicationService extends AgentService {
     historyType: ConnectionHistoryType
   ): Promise<void> {
     const connectionId =
-      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
-      historyType === ConnectionHistoryType.CREDENTIAL_ISSUANCE
+      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED
         ? message.exn.rp
         : message.exn.i;
 

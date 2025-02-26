@@ -2998,8 +2998,13 @@ describe("Long running operation tracker", () => {
     expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
       {
         exn: {
-          r: ExchangeRoute.IpexAdmit,
-          p: "p",
+          r: ExchangeRoute.IpexGrant,
+          d: "d",
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
         },
       },
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -3075,8 +3080,13 @@ describe("Long running operation tracker", () => {
     expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
       {
         exn: {
-          r: ExchangeRoute.IpexAdmit,
-          p: "p",
+          r: ExchangeRoute.IpexGrant,
+          d: "d",
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
         },
       },
       ConnectionHistoryType.CREDENTIAL_ISSUANCE

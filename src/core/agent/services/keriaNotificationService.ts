@@ -1222,7 +1222,7 @@ class KeriaNotificationService extends AgentService {
             });
 
           await this.ipexCommunications.createLinkedIpexMessageRecord(
-            admitExchange,
+            grantExchange,
             ConnectionHistoryType.CREDENTIAL_ISSUANCE
           );
         }
