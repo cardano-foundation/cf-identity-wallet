@@ -182,6 +182,7 @@ const NavBar = (props: Props) => {
                 key={item.key}
                 component={Link}
                 to={item.path}
+                className={location.pathname === item.path ? "active" : ""}
               >
                 <Typography textAlign="center">
                   {item.icon}
@@ -203,6 +204,7 @@ const NavBar = (props: Props) => {
               color="inherit"
               component={Link}
               to={"/notifications"}
+              className={location.pathname === "/notifications" ? "active" : ""}
             >
               <Badge
                 badgeContent={0}
@@ -217,6 +219,7 @@ const NavBar = (props: Props) => {
               color="inherit"
               component={Link}
               to={"/settings"}
+              className={location.pathname === "/settings" ? "active" : ""}
             >
               <Badge>
                 <SettingsOutlined />
