@@ -23,11 +23,8 @@ const DrawerContent = ({
     <Box
       id="drawer"
       onClick={handleDrawerToggle}
-      sx={{
-        textAlign: "left",
-        backgroundColor: "background.default",
-        height: "100%",
-      }}
+      color="text.primary"
+      bgcolor="background.default"
     >
       <Typography
         variant="h6"

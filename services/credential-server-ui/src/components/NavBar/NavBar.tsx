@@ -86,6 +86,7 @@ const NavBar = ({ window }: Props) => {
           >
             <IconButton
               color="inherit"
+              disableRipple
               aria-label="open drawer menu"
               edge="start"
               className="menu-button"
@@ -140,6 +141,7 @@ const NavBar = ({ window }: Props) => {
             <Button
               component={Link}
               to={"/"}
+              disableRipple
             >
               <img
                 className="header-logo"
@@ -152,6 +154,7 @@ const NavBar = ({ window }: Props) => {
                 key={item.key}
                 component={Link}
                 to={item.path}
+                disableRipple
                 className={location.pathname === item.path ? "active" : ""}
               >
                 <Typography textAlign="center">
@@ -174,6 +177,7 @@ const NavBar = ({ window }: Props) => {
               color="inherit"
               component={Link}
               to={"/notifications"}
+              disableRipple
               className={location.pathname === "/notifications" ? "active" : ""}
             >
               <Badge
@@ -193,6 +197,7 @@ const NavBar = ({ window }: Props) => {
               color="inherit"
               component={Link}
               to={"/settings"}
+              disableRipple
               className={location.pathname === "/settings" ? "active" : ""}
             >
               <Badge>

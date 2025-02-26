@@ -28,16 +28,11 @@ const HolderModal = ({ openModal, setOpenModal }: HolderModalProps) => {
               <IconButton
                 size="large"
                 aria-label="close modal"
-                color="inherit"
+                disableRipple
+                onClick={handleCloseModal}
               >
                 <ChevronLeft />
               </IconButton>
-              <Typography
-                id="holderl-modal-description"
-                onClick={handleCloseModal}
-              >
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-              </Typography>
             </Grid>
             <Grid size={10}>
               <Typography

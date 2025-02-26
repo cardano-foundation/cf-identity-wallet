@@ -1,4 +1,4 @@
-import { useEffect, useState, MouseEvent } from "react";
+import { useState, MouseEvent } from "react";
 import { Button, Menu, MenuItem, Divider, Typography } from "@mui/material";
 import {
   OpenInNewOutlined,
@@ -24,20 +24,16 @@ const SwitchAccount = () => {
   };
   const handleClose = (index: number) => {
     setAnchorEl(null);
-    setSelectedIndex(index);
-  };
-
-  useEffect(() => {
-    if (selectedIndex === 0) {
+    if (index === 0) {
+      setSelectedIndex(index);
       setSelectedView(i18n.t("navbar.switchaccount.issuer"));
-    } else if (selectedIndex === 1) {
+    } else if (index === 1) {
+      setSelectedIndex(index);
       setSelectedView(i18n.t("navbar.switchaccount.verifier"));
     } else {
-      setSelectedView(i18n.t("navbar.switchaccount.holder"));
-      setSelectedIndex(0);
       handleOpenModal();
     }
-  }, [selectedIndex]);
+  };
 
   return (
     <div>
@@ -49,6 +45,7 @@ const SwitchAccount = () => {
         aria-expanded={open ? "true" : undefined}
         variant="contained"
         disableElevation
+        disableRipple
         onClick={handleClick}
         endIcon={<KeyboardArrowDown />}
       >
