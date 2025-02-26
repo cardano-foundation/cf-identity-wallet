@@ -1,4 +1,5 @@
 import { RootState } from "../../store";
+import { InitializationPhase } from "../../store/reducers/stateCache/stateCache.types";
 import { OperationType } from "../../ui/globals/types";
 import { CredentialsFilters } from "../../ui/pages/Credentials/Credentials.types";
 import { IdentifiersFilters } from "../../ui/pages/Identifiers/Identifiers.types";
@@ -30,7 +31,7 @@ describe("getBackRoute", () => {
       },
       stateCache: {
         isOnline: true,
-        initialized: true,
+        initializationPhase: InitializationPhase.PHASE_TWO,
         recoveryCompleteNoInterruption: false,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
@@ -42,6 +43,7 @@ describe("getBackRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
+          ssiAgentUrl: "",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
@@ -183,7 +185,7 @@ describe("getPreviousRoute", () => {
       },
       stateCache: {
         isOnline: true,
-        initialized: true,
+        initializationPhase: InitializationPhase.PHASE_TWO,
         recoveryCompleteNoInterruption: false,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
@@ -195,6 +197,7 @@ describe("getPreviousRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
+          ssiAgentUrl: "",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,

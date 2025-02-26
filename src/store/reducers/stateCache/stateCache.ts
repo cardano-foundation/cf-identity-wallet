@@ -9,11 +9,12 @@ import {
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
   IncomingRequestProps,
+  InitializationPhase,
   StateCacheProps,
 } from "./stateCache.types";
 
 const initialState: StateCacheProps = {
-  initialized: false,
+  initializationPhase: InitializationPhase.PHASE_ZERO,
   recoveryCompleteNoInterruption: false,
   isOnline: false,
   routes: [],
@@ -26,6 +27,7 @@ const initialState: StateCacheProps = {
     passwordIsSet: false,
     passwordIsSkipped: false,
     ssiAgentIsSet: false,
+    ssiAgentUrl: "",
     recoveryWalletProgress: false,
     loginAttempt: {
       attempts: 0,
@@ -50,14 +52,14 @@ const stateCacheSlice = createSlice({
     setIsOnline: (state, action: PayloadAction<boolean>) => {
       state.isOnline = action.payload;
     },
-    setInitialized: (state, action: PayloadAction<boolean>) => {
-      state.initialized = action.payload;
-    },
-    setRecoveryCompleteNoInterruption: (
+    setInitializationPhase: (
       state,
-      action: PayloadAction<boolean>
+      action: PayloadAction<InitializationPhase>
     ) => {
-      state.recoveryCompleteNoInterruption = action.payload;
+      state.initializationPhase = action.payload;
+    },
+    setRecoveryCompleteNoInterruption: (state) => {
+      state.recoveryCompleteNoInterruption = true;
     },
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
       const filteredRoutes = state.routes.filter(
@@ -81,8 +83,8 @@ const stateCacheSlice = createSlice({
     setLoginAttempt: (state, action: PayloadAction<LoginAttempts>) => {
       state.authentication.loginAttempt = { ...action.payload };
     },
-    setFirstAppLaunch: (state, action: PayloadAction<boolean>) => {
-      state.authentication.firstAppLaunch = action.payload;
+    setFirstAppLaunchComplete: (state) => {
+      state.authentication.firstAppLaunch = false;
     },
     login: (state) => {
       state.authentication = {
@@ -179,7 +181,7 @@ const stateCacheSlice = createSlice({
 });
 
 const {
-  setInitialized,
+  setInitializationPhase,
   setRecoveryCompleteNoInterruption,
   setCurrentRoute,
   removeCurrentRoute,
@@ -196,7 +198,7 @@ const {
   enqueueIncomingRequest,
   setIsOnline,
   setLoginAttempt,
-  setFirstAppLaunch,
+  setFirstAppLaunchComplete,
   setCameraDirection,
   showGenericError,
   showConnections,
@@ -205,7 +207,8 @@ const {
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
-const getIsInitialized = (state: RootState) => state.stateCache.initialized;
+const getInitializationPhase = (state: RootState) =>
+  state.stateCache.initializationPhase;
 const getRecoveryCompleteNoInterruption = (state: RootState) =>
   state.stateCache.recoveryCompleteNoInterruption;
 const getRoutes = (state: RootState) => state.stateCache.routes;
@@ -220,7 +223,7 @@ const getQueueIncomingRequest = (state: RootState) =>
 const getIsOnline = (state: RootState) => state.stateCache.isOnline;
 const getLoginAttempt = (state: RootState) =>
   state.stateCache.authentication.loginAttempt;
-const geFirstAppLaunch = (state: RootState) =>
+const getFirstAppLaunch = (state: RootState) =>
   state.stateCache.authentication.firstAppLaunch;
 const getCameraDirection = (state: RootState) =>
   state.stateCache.cameraDirection;
@@ -247,10 +250,10 @@ export {
   getCameraDirection,
   getCurrentOperation,
   getCurrentRoute,
-  getIsInitialized,
+  getInitializationPhase,
   getIsOnline,
   getLoginAttempt,
-  geFirstAppLaunch,
+  getFirstAppLaunch,
   getQueueIncomingRequest,
   getRoutes,
   getShowCommonError,
@@ -269,11 +272,11 @@ export {
   setCameraDirection,
   setCurrentOperation,
   setCurrentRoute,
-  setInitialized,
+  setInitializationPhase,
   setRecoveryCompleteNoInterruption,
   setIsOnline,
   setLoginAttempt,
-  setFirstAppLaunch,
+  setFirstAppLaunchComplete,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,

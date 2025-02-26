@@ -178,7 +178,7 @@ const CreateSSIAgent = () => {
         ssiAgent.connectUrl
       );
 
-      dispatch(setRecoveryCompleteNoInterruption(true));
+      dispatch(setRecoveryCompleteNoInterruption());
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
         store: { stateCache },
