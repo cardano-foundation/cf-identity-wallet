@@ -1121,7 +1121,7 @@ describe("Signify notification service of agent", () => {
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
-      id: exchange.exn.i,
+      id: grantExn.exn.i,
       historyItems: [
         { id: grantExn.exn.d, type: ConnectionHistoryType.CREDENTIAL_ISSUANCE },
       ],
@@ -1139,7 +1139,7 @@ describe("Signify notification service of agent", () => {
       exnSaid: exchange.exn.e.exn.p,
     });
     expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
-      exchange.exn.i,
+      grantExn.exn.i,
       true
     );
     expect(markNotificationMock).toHaveBeenCalledWith(notif.i);
@@ -1157,12 +1157,14 @@ describe("Signify notification service of agent", () => {
       },
     };
     const exchange = multisigExnAdmitForIssuance;
+    const grantExn = grantForIssuanceExnMessage;
 
     exchangesGetMock.mockResolvedValueOnce(exchange);
+    exchangesGetMock.mockResolvedValueOnce(grantExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
-      id: exchange.exn.i,
+      id: grantExn.exn.i,
       historyItems: [],
     });
 
@@ -1179,7 +1181,7 @@ describe("Signify notification service of agent", () => {
       exnSaid: exchange.exn.e.exn.p,
     });
     expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
-      exchange.exn.i,
+      grantExn.exn.i,
       true
     );
     expect(markNotificationMock).not.toHaveBeenCalled();
@@ -1265,7 +1267,7 @@ describe("Signify notification service of agent", () => {
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
-      id: exchange.exn.i,
+      id: applyExn.exn.i,
       historyItems: [
         {
           id: applyExn.exn.d,
@@ -1287,7 +1289,7 @@ describe("Signify notification service of agent", () => {
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
     expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
-      exchange.exn.i,
+      applyExn.exn.i,
       true
     );
     expect(markNotificationMock).toHaveBeenCalledWith(notif.i);
@@ -1305,13 +1307,14 @@ describe("Signify notification service of agent", () => {
       },
     };
     const exchange = multisigExnOfferForPresenting;
+    const applyExn = applyForPresentingExnMessage;
 
     exchangesGetMock.mockResolvedValueOnce(exchange);
-    exchangesGetMock.mockResolvedValueOnce(applyForPresentingExnMessage);
+    exchangesGetMock.mockResolvedValueOnce(applyExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
-      id: exchange.exn.i,
+      id: applyExn.exn.i,
       historyItems: [],
     });
 
@@ -1329,7 +1332,7 @@ describe("Signify notification service of agent", () => {
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
     expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
-      exchange.exn.i,
+      applyExn.exn.i,
       true
     );
     expect(markNotificationMock).not.toHaveBeenCalled();
@@ -1443,7 +1446,7 @@ describe("Signify notification service of agent", () => {
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
     expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
-      exchange.exn.i,
+      agreeExn.exn.i,
       true
     );
     expect(markNotificationMock).toHaveBeenCalledWith(notif.i);
@@ -1461,13 +1464,14 @@ describe("Signify notification service of agent", () => {
       },
     };
     const exchange = multisigExnGrant;
+    const agreeExn = agreeForPresentingExnMessage;
 
     exchangesGetMock.mockResolvedValueOnce(exchange);
-    exchangesGetMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    exchangesGetMock.mockResolvedValueOnce(agreeExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
     connectionsService.getConnectionById.mockResolvedValue({
-      id: exchange.exn.i,
+      id: agreeExn.exn.i,
       historyItems: [],
     });
 
@@ -1485,7 +1489,7 @@ describe("Signify notification service of agent", () => {
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
     expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
-      exchange.exn.i,
+      agreeExn.exn.i,
       true
     );
     expect(markNotificationMock).not.toHaveBeenCalled();
@@ -3653,7 +3657,7 @@ describe("Long running operation tracker", () => {
     );
   });
 
-  test('Should retry connection when "Failed to fetch" error occurs when process operation', async () => {
+  test("Should retry connection when \"Failed to fetch\" error occurs when process operation", async () => {
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",

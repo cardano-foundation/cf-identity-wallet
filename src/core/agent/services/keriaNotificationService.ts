@@ -705,14 +705,14 @@ class KeriaNotificationService extends AgentService {
 
       // Either relates to an processed and deleted grant notification, or is out of order
       if (grantNotificationRecords.length === 0) {
-        const connectionInCloud =
-            await this.connectionService.getConnectionById(
-              exchange.exn.i,
-              true
-            );
         const grantExn = await this.props.signifyClient
           .exchanges()
           .get(exchange.exn.e.exn.p);
+        const connectionInCloud =
+            await this.connectionService.getConnectionById(
+              grantExn.exn.i,
+              true
+            );
         const historyExists = connectionInCloud.historyItems.some(
           (item) => item.id === grantExn.exn.d
         );
@@ -772,7 +772,7 @@ class KeriaNotificationService extends AgentService {
       if (applyNotificationRecords.length === 0) {
         const connectionInCloud =
             await this.connectionService.getConnectionById(
-              exchange.exn.i,
+              applyExn.exn.i,
               true
             );
         const historyExists = connectionInCloud.historyItems.some(
@@ -850,7 +850,7 @@ class KeriaNotificationService extends AgentService {
       if (agreeNotificationRecords.length === 0) {
         const connectionInCloud =
             await this.connectionService.getConnectionById(
-              exchange.exn.i,
+              agreeExn.exn.i,
               true
             );
         const historyExists = connectionInCloud.historyItems.some(
