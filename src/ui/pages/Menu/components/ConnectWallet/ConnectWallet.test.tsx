@@ -16,7 +16,7 @@ import { walletConnectionsFix } from "../../../../__fixtures__/walletConnections
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { ConnectWallet } from "./ConnectWallet";
-import { CreationStatus } from "../../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../../core/agent/agent.types";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {

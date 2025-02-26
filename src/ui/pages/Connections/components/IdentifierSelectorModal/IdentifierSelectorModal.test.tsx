@@ -7,7 +7,7 @@ import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { IdentifierSelectorModal } from "./IdentifierSelectorModal";
-import { CreationStatus } from "../../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../../core/agent/agent.types";
 
 setupIonicReact();
 mockIonicReact();

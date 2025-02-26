@@ -17,7 +17,7 @@ import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { Stage } from "../CreateGroupIdentifier.types";
 import { SetupConnections } from "./SetupConnections";
 import { passcodeFiller } from "../../../utils/passcodeFiller";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../core/agent/agent.types";
 import { transformGroupIdentifier } from "../../../../utils/transformGroupIdentifier";
 import { identifierFix } from "../../../__fixtures__/identifierFix";
 

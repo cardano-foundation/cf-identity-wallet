@@ -32,15 +32,16 @@ const AlphabeticList = ({
       onCardClick={handleShowConnectionDetails}
       data={displayConnection}
       onRenderEndSlot={(data) =>
-        data.status === ConnectionStatus.PENDING ? (
-          <IonChip>
-            <IonIcon
-              icon={hourglassOutline}
-              color="primary"
-            ></IonIcon>
-            <span>{data.status}</span>
-          </IonChip>
-        ) : null
+        data.status === ConnectionStatus.PENDING ||
+        data.status === ConnectionStatus.FAILED ? (
+            <IonChip>
+              <IonIcon
+                icon={hourglassOutline}
+                color="primary"
+              ></IonIcon>
+              <span>{ConnectionStatus.PENDING}</span>
+            </IonChip>
+          ) : null
       }
     />
   );

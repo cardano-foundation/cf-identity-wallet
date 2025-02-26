@@ -116,7 +116,7 @@ describe("ConnectionDetails Page", () => {
           label: "Cambridge University",
           createdAtUTC: "2017-08-14T19:23:24Z",
           logo: ".png",
-          status: ConnectionStatus.ACCEPTED,
+          status: ConnectionStatus.CONFIRMED,
           notes: [
             {
               id: "ebfeb1ebc6f1c276ef71212ec20",

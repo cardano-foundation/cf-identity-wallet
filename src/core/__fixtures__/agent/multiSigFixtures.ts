@@ -1,13 +1,10 @@
 import { CreateIdentifierBody, Tier } from "signify-ts";
-import { ConnectionStatus } from "../../agent/agent.types";
+import { ConnectionStatus , CreationStatus } from "../../agent/agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../../agent/records";
-import {
-  CreationStatus,
-  QueuedGroupCreation,
-} from "../../agent/services/identifier.types";
+import { QueuedGroupCreation } from "../../agent/services/identifier.types";
 
 const now = new Date();
 

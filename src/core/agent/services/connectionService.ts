@@ -8,6 +8,7 @@ import {
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  CreationStatus,
   DOOBI_RE,
   KeriConnectionType,
   OOBI_AGENT_ONLY_RE,
@@ -226,13 +227,18 @@ class ConnectionService extends AgentService {
   private getConnectionShortDetails(
     record: ConnectionRecord
   ): ConnectionShortDetails {
+    let status = ConnectionStatus.PENDING;
+    if (record.creationStatus === CreationStatus.COMPLETE) {
+      status = ConnectionStatus.CONFIRMED;
+    } else if (record.creationStatus === CreationStatus.FAILED) {
+      status = ConnectionStatus.FAILED;
+    }
+
     const connection: ConnectionShortDetails = {
       id: record.id,
       label: record.alias,
       createdAtUTC: record.createdAt.toISOString(),
-      status: record.pending
-        ? ConnectionStatus.PENDING
-        : ConnectionStatus.CONFIRMED,
+      status,
       oobi: record.oobi,
     };
     const groupId = record.getTag("groupId");
@@ -408,14 +414,14 @@ class ConnectionService extends AgentService {
 
   private async createConnectionMetadata(
     connectionId: string,
-    metadata: Record<string, unknown>
+    metadata: Record<string, unknown> // @TODO - foconnor: Proper typing here.
   ): Promise<void> {
     await this.connectionStorage.save({
       id: connectionId,
       alias: metadata.alias as string,
       oobi: metadata.oobi as string,
       groupId: metadata.groupId as string,
-      pending: !!metadata.pending,
+      creationStatus: metadata.creationStatus as CreationStatus,
       createdAt: new Date(metadata.createdAtUTC as string),
     });
   }

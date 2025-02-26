@@ -28,7 +28,7 @@ import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierDetailModule } from "./IdentifierDetailModule";
-import { CreationStatus } from "../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../core/agent/agent.types";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,

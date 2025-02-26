@@ -4,7 +4,7 @@ import {
   ExchangeRoute,
   MiscRecordId,
   NotificationRoute,
-} from "../agent.types";
+  CreationStatus } from "../agent.types";
 import {
   BasicRecord,
   IdentifierStorage,
@@ -40,7 +40,6 @@ import {
 import { ConnectionHistoryType } from "./connectionService.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { CreationStatus } from "./identifier.types";
 import {
   getMemberIdentifierResponse,
   getMultisigIdentifierResponse,
@@ -2380,7 +2379,7 @@ describe("Long running operation tracker", () => {
     operationsGetMock.mockResolvedValue(operationMock);
     const connectionMock = {
       id: "id",
-      pending: true,
+      creationStatus: CreationStatus.PENDING,
       createdAt: new Date(),
       alias: "CF Credential Issuance",
       oobi: "http://oobi.com/",
@@ -2399,7 +2398,7 @@ describe("Long running operation tracker", () => {
 
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
-      pending: false,
+      creationStatus: CreationStatus.COMPLETE,
       createdAt: operationMock.response.dt,
       alias: connectionMock.alias,
       oobi: "http://oobi.com/",
@@ -3292,7 +3291,7 @@ describe("Handling of failed long running operations", () => {
     });
     const operationRecord = {
       type: "OperationPendingRecord",
-      id: "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      id: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
       recordType: "witness",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
@@ -3314,13 +3313,123 @@ describe("Handling of failed long running operations", () => {
       },
     });
     expect(operationPendingStorage.deleteById).toBeCalledWith(
-      "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
     );
     expect(identifierStorage.updateIdentifierMetadata).not.toBeCalledWith(
       "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       {
         creationStatus: CreationStatus.COMPLETE,
       }
+    );
+    expect(eventEmitter.emit).not.toBeCalledWith(
+      expect.objectContaining({
+        type: EventTypes.OperationComplete,
+      })
+    );
+  });
+
+  test("Should handle failed longer oobi operations and exit early", async () => {
+    operationsGetMock.mockResolvedValue({
+      done: true,
+      error: { code: 400 },
+      metadata: {
+        oobi: "http://keria.com/oobi/EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU/agent/EMXchkqpJKegnObFGUAt7Cqj9yggGNZIpc5PbS7Igwip?name=CF%20Credential%20Issuance",
+      },
+    });
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "AOCUvGbpidkplC7gA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    connectionStorage.findById.mockResolvedValueOnce({
+      id: "id",
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date(),
+      alias: "CF Credential Issuance",
+      oobi: "http://keria.com/oobi/EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU/agent/EMXchkqpJKegnObFGUAt7Cqj9yggGNZIpc5PbS7Igwip?name=CF%20Credential%20Issuance",
+    });
+
+    await keriaNotificationService.processOperation(operationRecord);
+
+    expect(connectionStorage.findById).toBeCalledWith(
+      "EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU"
+    );
+    expect(connectionStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        creationStatus: CreationStatus.FAILED,
+      })
+    );
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationFailed,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledWith(
+      "AOCUvGbpidkplC7gA"
+    );
+    expect(connectionStorage.update).not.toBeCalledWith(
+      expect.objectContaining({
+        creationStatus: CreationStatus.COMPLETE,
+      })
+    );
+    expect(eventEmitter.emit).not.toBeCalledWith(
+      expect.objectContaining({
+        type: EventTypes.OperationComplete,
+      })
+    );
+  });
+
+  test("Should handle failed short oobi operations and exit early", async () => {
+    operationsGetMock.mockResolvedValue({
+      done: true,
+      error: { code: 400 },
+      metadata: {
+        oobi: "http://keria.com/oobi/EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU",
+      },
+    });
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "AOCUvGbpidkplC7gA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    connectionStorage.findById.mockResolvedValueOnce({
+      id: "id",
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date(),
+      alias: "CF Credential Issuance",
+      oobi: "http://keria.com/oobi/EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU",
+    });
+
+    await keriaNotificationService.processOperation(operationRecord);
+
+    expect(connectionStorage.findById).toBeCalledWith(
+      "EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU"
+    );
+    expect(connectionStorage.update).toBeCalledWith(
+      expect.objectContaining({
+        creationStatus: CreationStatus.FAILED,
+      })
+    );
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationFailed,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "EMoQKrOjmuOGgoqBuPB5goSZiEqjYNN5hb9sAt1HHVrU",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledWith(
+      "AOCUvGbpidkplC7gA"
+    );
+    expect(connectionStorage.update).not.toBeCalledWith(
+      expect.objectContaining({
+        creationStatus: CreationStatus.COMPLETE,
+      })
     );
     expect(eventEmitter.emit).not.toBeCalledWith(
       expect.objectContaining({
@@ -3344,13 +3453,6 @@ describe("Handling of failed long running operations", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.OperationFailed,
-      payload: {
-        opType: operationRecord.recordType,
-        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      },
-    });
     expect(operationPendingStorage.deleteById).toBeCalledWith(
       "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
     );
