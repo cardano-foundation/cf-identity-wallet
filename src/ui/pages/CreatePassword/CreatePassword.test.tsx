@@ -334,4 +334,45 @@ describe("Create Password Page", () => {
       });
     });
   });
+
+  test("Hidden skip button", async () => {
+    const initialStateNoPassword = {
+      stateCache: {
+        routes: [{ path: RoutePath.CREATE_PASSWORD }],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: false,
+        },
+        toastMsgs: [],
+      },
+    };
+
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const storeMocked = {
+      ...mockStore(initialStateNoPassword),
+      dispatch: dispatchMock,
+    };
+
+    const handleClear = jest.fn();
+    const setPasswordIsSet = jest.fn();
+    const { queryByText } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <CreatePassword
+            handleClear={handleClear}
+            setPasswordIsSet={setPasswordIsSet}
+            userAction={{
+              current: "enable",
+            }}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(queryByText(EN_TRANSLATIONS.createpassword.button.skip)).toBeNull();
+  });
 });

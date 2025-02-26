@@ -103,7 +103,7 @@ describe("Forgot Passcode Page", () => {
 
     const onCloseMock = jest.fn();
 
-    const { getByTestId, getByText, findByText } = render(
+    const { getByTestId, getByText, findByText, queryByText } = render(
       <Provider store={storeMocked}>
         <ForgotAuthInfo
           isOpen
@@ -122,6 +122,8 @@ describe("Forgot Passcode Page", () => {
     expect(
       getByText(EN_TRANSLATIONS.forgotauth.passcode.description)
     ).toBeVisible();
+
+    expect(queryByText(EN_TRANSLATIONS.createpassword.button.skip)).toBeNull();
 
     for (let i = 0; i < SEED_PHRASE_LENGTH; i++) {
       act(() => {
