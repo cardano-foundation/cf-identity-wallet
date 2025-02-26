@@ -47,19 +47,32 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-jest.mock("../../hooks/useBiometricsHook", () => ({
-  useBiometricAuth: jest.fn(() => ({
-    biometricsIsEnabled: false,
-    biometricInfo: {
-      isAvailable: true,
-      hasCredentials: false,
-      biometryType: BiometryType.fingerprintAuthentication,
-      strongBiometryIsAvailable: true,
-    },
-    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
-    setBiometricsIsEnabled: jest.fn(),
-  })),
+const handleBiometricAuthMock = jest.fn(() => Promise.resolve(true));
+
+const useBiometricInfoMock = jest.fn(() => ({
+  biometricsIsEnabled: false,
+  biometricInfo: {
+    isAvailable: true,
+    hasCredentials: false,
+    biometryType: BiometryType.fingerprintAuthentication,
+    strongBiometryIsAvailable: true,
+  },
+  handleBiometricAuth: () => handleBiometricAuthMock(),
+  setBiometricsIsEnabled: jest.fn(),
 }));
+
+jest.mock("../../hooks/useBiometricsHook", () => ({
+  useBiometricAuth: () => useBiometricInfoMock(),
+}));
+
+const getPlatformsMock = jest.fn(() => ["android"]);
+
+jest.mock("@ionic/react", () => {
+  return {
+    ...jest.requireActual("@ionic/react"),
+    getPlatforms: () => getPlatformsMock(),
+  };
+});
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -89,16 +102,22 @@ describe("SetPasscode Page", () => {
   });
   beforeEach(() => {
     jest.resetModules();
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["mobileweb"],
-      };
-    });
+    getPlatformsMock.mockImplementation(() => ["mobileweb"]);
     isReverseConsecutiveMock.mockImplementation(() => false);
     isConsecutiveMock.mockImplementation(() => false);
     isRepeativeMock.mockImplementation(() => false);
+    handleBiometricAuthMock.mockImplementation(() => Promise.resolve(true));
+    useBiometricInfoMock.mockImplementation(() => ({
+      biometricsIsEnabled: false,
+      biometricInfo: {
+        isAvailable: true,
+        hasCredentials: false,
+        biometryType: BiometryType.fingerprintAuthentication,
+        strongBiometryIsAvailable: true,
+      },
+      handleBiometricAuth: () => handleBiometricAuthMock(),
+      setBiometricsIsEnabled: jest.fn(),
+    }));
   });
 
   test("Renders Create Passcode page with title and description", () => {
@@ -245,14 +264,8 @@ describe("SetPasscode Page", () => {
   });
 
   test("Setup passcode and Android biometrics", async () => {
+    getPlatformsMock.mockImplementation(() => ["android"]);
     verifySecretMock.mockResolvedValue(false);
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["android"],
-      };
-    });
 
     const { getByText, queryByText, getByTestId } = render(
       <IonReactRouter>
@@ -312,13 +325,7 @@ describe("SetPasscode Page", () => {
 
   test("Setup passcode and cancel Android biometrics", async () => {
     verifySecretMock.mockResolvedValue(false);
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["android"],
-      };
-    });
+    getPlatformsMock.mockImplementation(() => ["android"]);
     require("@ionic/react");
 
     const { getByText, queryByText, getByTestId } = render(
@@ -336,19 +343,19 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "193212");
+    await passcodeFiller(getByText, getByTestId, "193212");
 
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
+      ).toBeInTheDocument();
 
-    await waitFor(() =>
       expect(
         getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
-      ).toBeInTheDocument()
-    );
+      ).toBeInTheDocument();
+    });
 
-    passcodeFiller(getByText, getByTestId, "193212");
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() =>
       expect(
@@ -371,26 +378,18 @@ describe("SetPasscode Page", () => {
 
   test("Setup passcode and iOS biometrics", async () => {
     verifySecretMock.mockResolvedValue(false);
-    jest.doMock("../../hooks/useBiometricsHook", () => ({
-      useBiometricAuth: jest.fn(() => ({
-        biometricsIsEnabled: false,
-        biometricInfo: {
-          isAvailable: true,
-          hasCredentials: false,
-          biometryType: BiometryType.faceId,
-          strongBiometryIsAvailable: true,
-        },
-        handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
-        setBiometricsIsEnabled: jest.fn(),
-      })),
+    useBiometricInfoMock.mockImplementation(() => ({
+      biometricsIsEnabled: false,
+      biometricInfo: {
+        isAvailable: true,
+        hasCredentials: false,
+        biometryType: BiometryType.faceId,
+        strongBiometryIsAvailable: true,
+      },
+      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+      setBiometricsIsEnabled: jest.fn(),
     }));
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["ios"],
-      };
-    });
+    getPlatformsMock.mockImplementation(() => ["ios"]);
     require("@ionic/react");
 
     const { getByText, getByTestId } = render(
@@ -410,15 +409,15 @@ describe("SetPasscode Page", () => {
 
     passcodeFiller(getByText, getByTestId, "193212");
 
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-    ).toBeInTheDocument();
-
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
-      ).toBeInTheDocument()
-    );
+      ).toBeInTheDocument();
+
+      expect(
+        getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
+      ).toBeInTheDocument();
+    });
 
     passcodeFiller(getByText, getByTestId, "193212");
 
@@ -458,14 +457,7 @@ describe("SetPasscode Page", () => {
         setBiometricsIsEnabled: jest.fn(),
       })),
     }));
-
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["ios"],
-      };
-    });
+    getPlatformsMock.mockImplementation(() => ["ios"]);
     require("@ionic/react");
 
     const { getByText, queryByText, getByTestId } = render(
