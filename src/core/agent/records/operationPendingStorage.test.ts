@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { Query, StorageService } from "../../storage/storage.types";
 import {
   OperationPendingRecord,
