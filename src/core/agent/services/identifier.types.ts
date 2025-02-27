@@ -1,11 +1,5 @@
 import { CreateIdentifierBody } from "signify-ts";
-import { ConnectionShortDetails } from "../agent.types";
-
-enum CreationStatus {
-  PENDING = "PENDING",
-  COMPLETE = "COMPLETE",
-  FAILED = "FAILED",
-}
+import { ConnectionShortDetails, CreationStatus } from "../agent.types";
 
 interface GroupMetadata {
   groupId: string;
@@ -86,5 +80,5 @@ export type {
   CreateIdentifierResult,
 };
 
-export { IdentifierType, CreationStatus };
+export { IdentifierType };
 export type { QueuedIdentifierCreation, QueuedGroupProps, QueuedGroupCreation };

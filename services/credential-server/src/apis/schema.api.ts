@@ -5,9 +5,10 @@ async function schemaApi(req: Request, res: Response) {
   const { id } = req.params;
   const data = ACDC_SCHEMAS[id];
   if (!data) {
-    return res.status(404).send("Schema for given SAID not found");
+    res.status(404).send("Schema for given SAID not found");
+    return;
   }
-  return res.send(data);
+  res.send(data);
 }
 
 export { schemaApi };

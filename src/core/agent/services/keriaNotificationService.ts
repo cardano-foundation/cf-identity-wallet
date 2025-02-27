@@ -9,7 +9,7 @@ import {
   KeriaNotificationMarker,
   MiscRecordId,
   NotificationRoute,
-} from "../agent.types";
+ CreationStatus } from "../agent.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
   BasicRecord,
@@ -43,7 +43,6 @@ import { CredentialService } from "./credentialService";
 import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
 import { StorageMessage } from "../../storage/storage.types";
-import { CreationStatus } from "./identifier.types";
 import { IdentifierService } from "./identifierService";
 
 class KeriaNotificationService extends AgentService {
@@ -1040,6 +1039,33 @@ class KeriaNotificationService extends AgentService {
           await this.identifierStorage.updateIdentifierMetadata(recordId, {
             creationStatus: CreationStatus.FAILED,
           });
+          this.props.eventEmitter.emit<OperationFailedEvent>({
+            type: EventTypes.OperationFailed,
+            payload: {
+              opType: operationRecord.recordType,
+              oid: recordId,
+            },
+          });
+          break;
+        }
+        case OperationPendingRecordType.Oobi: {
+          const oobi = operation.metadata?.oobi?.split("/oobi/")[1];
+          const connectionId = oobi.includes("/") ? oobi.split("/")[0] : oobi;
+          const connectionRecord = await this.connectionStorage.findById(
+            connectionId
+          );
+
+          if (connectionRecord && !connectionRecord.pendingDeletion) {
+            connectionRecord.creationStatus = CreationStatus.FAILED;
+            await this.connectionStorage.update(connectionRecord);
+          }
+          this.props.eventEmitter.emit<OperationFailedEvent>({
+            type: EventTypes.OperationFailed,
+            payload: {
+              opType: operationRecord.recordType,
+              oid: connectionId,
+            },
+          });
           break;
         }
         default: {
@@ -1047,13 +1073,6 @@ class KeriaNotificationService extends AgentService {
         }
       }
 
-      this.props.eventEmitter.emit<OperationFailedEvent>({
-        type: EventTypes.OperationFailed,
-        payload: {
-          opType: operationRecord.recordType,
-          oid: recordId,
-        },
-      });
       await this.operationPendingStorage.deleteById(operationRecord.id);
       this.pendingOperations.splice(
         this.pendingOperations.indexOf(operationRecord),
@@ -1112,7 +1131,7 @@ class KeriaNotificationService extends AgentService {
           );
 
           if (connectionRecord && !connectionRecord.pendingDeletion) {
-            connectionRecord.pending = false;
+            connectionRecord.creationStatus = CreationStatus.COMPLETE;
 
             const keriaContact = await this.props.signifyClient
               .contacts()

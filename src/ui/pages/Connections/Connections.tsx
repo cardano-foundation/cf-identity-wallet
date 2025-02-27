@@ -12,11 +12,8 @@ import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-} from "../../../core/agent/agent.types";
-import {
-  CreationStatus,
-  IdentifierShortDetails,
-} from "../../../core/agent/services/identifier.types";
+  CreationStatus } from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -101,7 +98,11 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
         if (openDetailId === undefined) return;
         const connection = connectionsCache[openDetailId];
         dispatch(setOpenConnectionId(undefined));
-        if (!connection || connection.status === ConnectionStatus.PENDING) {
+        if (
+          !connection ||
+          connection.status === ConnectionStatus.PENDING ||
+          connection.status === ConnectionStatus.FAILED
+        ) {
           return;
         } else {
           await getConnectionShortDetails(openDetailId);
@@ -197,7 +198,10 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     };
 
     const handleShowConnectionDetails = (item: ConnectionShortDetails) => {
-      if (item.status === ConnectionStatus.PENDING) {
+      if (
+        item.status === ConnectionStatus.PENDING ||
+        item.status === ConnectionStatus.FAILED
+      ) {
         setDeletePendingItem(item);
         setOpenDeletePendingAlert(true);
         return;

@@ -12,7 +12,7 @@ import { ToastMsgType } from "../../../globals/types";
 import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
 import { Summary } from "./Summary";
 import { Stage } from "../CreateGroupIdentifier.types";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../core/agent/agent.types";
 
 const createGroupMock = jest.fn();
 

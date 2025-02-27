@@ -1,4 +1,4 @@
-import { CreationStatus } from "../core/agent/services/identifier.types";
+import { CreationStatus } from "../core/agent/agent.types";
 import { transformGroupIdentifier } from "./transformGroupIdentifier";
 
 describe("transformGroupIdentifier", () => {

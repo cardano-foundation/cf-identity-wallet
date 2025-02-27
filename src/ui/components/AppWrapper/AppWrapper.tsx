@@ -105,6 +105,7 @@ const connectionStateChangedHandler = async (
     );
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
+    // @TODO - foconnor: Should be able to just update Redux without fetching from DB.
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
       await Agent.agent.connections.getConnectionShortDetailById(

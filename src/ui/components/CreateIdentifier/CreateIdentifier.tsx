@@ -8,9 +8,9 @@ import { Agent } from "../../../core/agent/agent";
 import { IdentifierService } from "../../../core/agent/services";
 import {
   CreateIdentifierInputs,
-  CreationStatus,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {

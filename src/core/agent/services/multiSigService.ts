@@ -12,7 +12,7 @@ import {
   NotificationRoute,
   AgentServicesProps,
   MiscRecordId,
-} from "../agent.types";
+  CreationStatus } from "../agent.types";
 import type {
   ConnectionShortDetails,
   AuthorizationRequestExn,
@@ -26,7 +26,6 @@ import {
 } from "../records";
 import { AgentService } from "./agentService";
 import {
-  CreationStatus,
   MultiSigIcpRequestDetails,
   QueuedGroupCreation,
   QueuedGroupProps,

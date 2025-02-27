@@ -1,6 +1,10 @@
 /* eslint-disable indent */
 import { Salter } from "signify-ts";
-import { ConnectionStatus, KeriConnectionType } from "../agent.types";
+import {
+  ConnectionStatus,
+  CreationStatus,
+  KeriConnectionType,
+} from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
@@ -202,6 +206,7 @@ describe("Connection service of agent", () => {
     });
 
     const result = await connectionService.connectByOobiUrl(oobi);
+
     expect(result).toStrictEqual({
       type: KeriConnectionType.MULTI_SIG_INITIATOR,
       groupId,
@@ -222,7 +227,6 @@ describe("Connection service of agent", () => {
       id: "id",
       createdAt: new Date(now),
       groupId,
-      pending: false,
     });
   });
 
@@ -322,7 +326,7 @@ describe("Connection service of agent", () => {
         alias: "keri",
         oobi: "oobi",
         getTag: jest.fn(),
-        pending: false,
+        creationStatus: CreationStatus.COMPLETE,
         pendingDeletion: false,
       },
       {
@@ -331,7 +335,7 @@ describe("Connection service of agent", () => {
         alias: "keri",
         oobi: "oobi",
         getTag: jest.fn(),
-        pending: true,
+        creationStatus: CreationStatus.PENDING,
         pendingDeletion: false,
       },
     ]);
@@ -368,6 +372,7 @@ describe("Connection service of agent", () => {
       createdAt: new Date(),
       getTag: jest.fn().mockReturnValue(groupId),
       pendingDeletion: false,
+      creationStatus: CreationStatus.COMPLETE,
     };
     connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([metadata]);
     expect(await connectionService.getMultisigConnections()).toEqual([
@@ -487,12 +492,13 @@ describe("Connection service of agent", () => {
     expect(KeriOobi).toEqual(`${oobiPrefix}${id}?name=alias&groupId=123`);
   });
 
-  test("can get connection keri (short detail view) by id", async () => {
+  test("can get connection short details by id", async () => {
     connectionStorage.findById = jest.fn().mockResolvedValue({
       id: keriContacts[0].id,
       createdAt: now,
       alias: "keri",
       getTag: jest.fn(),
+      creationStatus: CreationStatus.COMPLETE,
     });
     expect(
       await connectionService.getConnectionShortDetailById(keriContacts[0].id)
@@ -501,6 +507,25 @@ describe("Connection service of agent", () => {
       createdAtUTC: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
+    });
+    expect(connectionStorage.findById).toBeCalledWith(keriContacts[0].id);
+  });
+
+  test("can get failed connection short details by id", async () => {
+    connectionStorage.findById = jest.fn().mockResolvedValue({
+      id: keriContacts[0].id,
+      createdAt: now,
+      alias: "keri",
+      getTag: jest.fn(),
+      creationStatus: CreationStatus.FAILED,
+    });
+    expect(
+      await connectionService.getConnectionShortDetailById(keriContacts[0].id)
+    ).toMatchObject({
+      id: keriContacts[0].id,
+      createdAtUTC: nowISO,
+      label: "keri",
+      status: ConnectionStatus.FAILED,
     });
     expect(connectionStorage.findById).toBeCalledWith(keriContacts[0].id);
   });
@@ -556,6 +581,7 @@ describe("Connection service of agent", () => {
       createdAt: new Date(),
       getTag: jest.fn().mockReturnValue(groupId),
       pendingDeletion: false,
+      creationStatus: CreationStatus.COMPLETE,
     };
     connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([metadata]);
     expect(

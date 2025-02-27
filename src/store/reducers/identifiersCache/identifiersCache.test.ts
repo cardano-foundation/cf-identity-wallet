@@ -20,12 +20,9 @@ import {
   addGroupIdentifierCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
-import {
-  CreationStatus,
-  IdentifierShortDetails,
-} from "../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { CreationStatus , ConnectionStatus } from "../../../core/agent/agent.types";
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 import {
   multisignIdentifierFix,

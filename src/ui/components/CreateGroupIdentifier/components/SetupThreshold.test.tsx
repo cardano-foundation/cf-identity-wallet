@@ -10,7 +10,7 @@ import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { SetupThreshold } from "./SetupThreshold";
 import { IdentifierColor } from "../../CreateIdentifier/components/IdentifierColorSelector";
 import { Stage } from "../CreateGroupIdentifier.types";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../core/agent/agent.types";
 
 setupIonicReact();
 mockIonicReact();

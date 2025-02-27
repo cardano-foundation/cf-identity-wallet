@@ -1,6 +1,6 @@
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
-import { ConnectionStatus, MiscRecordId } from "../agent.types";
+import { ConnectionStatus, MiscRecordId , CreationStatus } from "../agent.types";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { CoreEventEmitter } from "../event";
 import { IdentifierService } from "./identifierService";
@@ -9,7 +9,6 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import * as utils from "./utils";
 import { BasicRecord } from "../records";
 import { StorageMessage } from "../../storage/storage.types";
-import { CreationStatus } from "./identifier.types";
 
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
