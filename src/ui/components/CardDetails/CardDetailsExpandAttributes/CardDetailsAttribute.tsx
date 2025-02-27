@@ -1,7 +1,11 @@
 import { IonAccordion, IonAccordionGroup, IonItem } from "@ionic/react";
 import { chevronForwardOutline } from "ionicons/icons";
 import { useMemo } from "react";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../../utils/formatters";
 import { combineClassNames } from "../../../utils/style";
 import { CardDetailsItem } from "../CardDetailsItem";
 import { CardDetailsAttributeProps } from "./CardDetailsExpandAttributes.types";
@@ -34,7 +38,7 @@ const CardDetailsAttribute = ({
     if (dateRegex.test(attributeValueStr))
       return `${formatShortDate(attributeValueStr)} - ${formatTimeToSec(
         attributeValueStr
-      )}`;
+      )} (${getUTCOffset(attributeValueStr)})`;
 
     return attributeValueStr;
   }, [attributeValue, isObjectAttribute]);

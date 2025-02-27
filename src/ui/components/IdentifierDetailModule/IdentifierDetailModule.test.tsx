@@ -24,7 +24,11 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierDetailModule } from "./IdentifierDetailModule";
@@ -222,7 +226,7 @@ describe("Individual Identifier details page", () => {
           formatShortDate(identifierFix[0].dt) +
           " - " +
           formatTimeToSec(identifierFix[0].dt)
-        }`
+        } (${getUTCOffset(identifierFix[0].dt)})`
       )
     ).toBeInTheDocument();
   });
@@ -870,7 +874,7 @@ describe("Group Identifier details page", () => {
           formatShortDate(identifierFix[0].dt) +
           " - " +
           formatTimeToSec(identifierFix[0].dt)
-        }`
+        } (${getUTCOffset(identifierFix[0].dt)})`
       )
     ).toBeInTheDocument();
 
@@ -882,7 +886,7 @@ describe("Group Identifier details page", () => {
           formatShortDate(identifierFix[2].dt) +
           " - " +
           formatTimeToSec(identifierFix[2].dt)
-        }`
+        } (${getUTCOffset(identifierFix[0].dt)})`
       )
     ).toBeInTheDocument();
 
