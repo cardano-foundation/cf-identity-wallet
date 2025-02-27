@@ -723,6 +723,7 @@
     "change": "New password",
     "cancel": "Cancel",
     "description": "Add an extra layer of security for sensitive actions in your wallet by creating an optional password.",
+    "learnmore": "Learn More",
     "input": {
       "first": {
         "symbolguide": "Symbol guide",
