@@ -81,7 +81,7 @@ ion-grid.qr-code-scanner {
 
   &.transitioning {
     .scanner-spinner-container {
-      background: #000000;
+      background: var(--ion-color-black-900);
     }
   }
 
