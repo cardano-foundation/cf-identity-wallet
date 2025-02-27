@@ -18,7 +18,7 @@ describe("transformGroupIdentifier", () => {
       bt: "1",
       b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
       di: "test",
-      multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9y",
+      groupMemberPre: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9y",
       members: [
         "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
         "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB2",
@@ -37,7 +37,7 @@ describe("transformGroupIdentifier", () => {
           groupInitiator: true,
           groupCreated: false,
         },
-        multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9y",
+        groupMemberPre: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9y",
       },
     };
 
@@ -70,7 +70,7 @@ describe("transformGroupIdentifier", () => {
         theme: 0,
         creationStatus: CreationStatus.COMPLETE,
         groupMetadata: undefined,
-        multisigManageAid: undefined,
+        groupMemberPre: undefined,
       },
     };
 
