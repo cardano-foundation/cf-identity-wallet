@@ -811,7 +811,7 @@ describe("SSI agent page: show error", () => {
       Promise.reject(new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK))
     );
 
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <IonReactMemoryRouter history={history}>
         <Provider store={storeMocked}>
           <CreateSSIAgent />
@@ -824,9 +824,9 @@ describe("SSI agent page: show error", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.UNKNOWN_ERROR)
-      );
+      expect(
+        getByText(EN_TRANSLATIONS.ssiagent.error.unknownissue)
+      ).toBeVisible();
     });
   });
 });

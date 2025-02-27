@@ -54,7 +54,7 @@
       },
       "button": {
         "continue": "Continue",
-        "switch": "Switch to recover a wallet",
+        "switch": "Recover existing wallet",
         "recoverydocumentation": "What’s a recovery phrase?"
       },
       "recoveryseedphrasedocs": {
@@ -646,7 +646,7 @@
       "continue": "Confirm",
       "lock": "Try again in 1 minute",
       "clear": "Clear all",
-      "switch": "Switch to create new wallet"
+      "switch": "Create new wallet"
     },
     "paragraph": {
       "top": "Please verify your recovery phrase to recover your wallet. To start typing click on the first option."
@@ -839,7 +839,8 @@
       "invalidbooturl": "Enter a valid boot URL",
       "invalidconnecturl": "Enter a valid connect URL",
       "mismatchconnecturl": "This connect URL doesn’t match the boot URL",
-      "recoverymismatchconnecturl": "Please check this connect URL matches the original boot URL used for onboarding and that your agent is still active"
+      "recoverymismatchconnecturl": "Please check this connect URL matches the original boot URL used for onboarding and that your agent is still active",
+      "unknownissue": "We could not reach this server. Either the server is down, you have entered an incorrect URL or you have internet connectivity issues."
     }
   },
   "operationspasswordregex": {
