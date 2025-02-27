@@ -84,14 +84,21 @@ const SwitchAccount = () => {
           {i18n.t("navbar.switchaccount.verifier")}
           {selectedIndex === 1 && <CheckCircle color={"primary"} />}
         </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem
-          onClick={() => handleClose(2)}
-          disableRipple
-        >
-          {i18n.t("navbar.switchaccount.holder")}
-          <OpenInNewOutlined className="open-new-icon" />
-        </MenuItem>
+        <>
+          {/* TODO: Hiding these for now until we decide to show the Holder screen again */}
+          <Divider
+            sx={{ my: 0.5 }}
+            className="hidden"
+          />
+          <MenuItem
+            onClick={() => handleClose(2)}
+            disableRipple
+            className="hidden"
+          >
+            {i18n.t("navbar.switchaccount.holder")}
+            <OpenInNewOutlined className="open-new-icon" />
+          </MenuItem>
+        </>
       </Menu>
       <HolderModal
         openModal={openModal}
