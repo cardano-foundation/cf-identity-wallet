@@ -113,18 +113,82 @@ const Scanner = forwardRef(
       }
     }, [platforms]);
 
-    const checkPermission = async () => {
-      const status = await BarcodeScanner.checkPermissions();
-      if (status.camera === "granted") {
-        return true;
-      }
-      if (
-        status.camera === "prompt" ||
-        status.camera == "prompt-with-rationale"
-      ) {
-        return (await BarcodeScanner.requestPermissions()).camera === "granted";
-      }
-    };
+    useImperativeHandle(ref, () => ({
+      stopScan,
+    }));
+
+    useEffect(() => {
+      const onLoad = async () => {
+        if (
+          routePath === TabsRoutePath.SCAN &&
+          (isShowConnectionsModal || createIdentifierModalIsOpen)
+        ) {
+          await stopScan();
+          return;
+        }
+
+        const isDuplicateConnectionToast = currentToastMsgs.some(
+          (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
+        );
+        const isRequestPending = currentToastMsgs.some((item) =>
+          [
+            ToastMsgType.CONNECTION_REQUEST_PENDING,
+            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
+          ].includes(item.message)
+        );
+
+        const isScanning =
+          routePath === TabsRoutePath.SCAN ||
+          [
+            OperationType.SCAN_CONNECTION,
+            OperationType.SCAN_WALLET_CONNECTION,
+            OperationType.SCAN_SSI_BOOT_URL,
+            OperationType.SCAN_SSI_CONNECT_URL,
+          ].includes(currentOperation);
+
+        const isMultisignScan =
+          [
+            OperationType.MULTI_SIG_INITIATOR_SCAN,
+            OperationType.MULTI_SIG_RECEIVER_SCAN,
+          ].includes(currentOperation) && !isDuplicateConnectionToast;
+
+        if ((isScanning && !isRequestPending) || isMultisignScan) {
+          await initScan();
+        } else {
+          await stopScan();
+        }
+      };
+      onLoad();
+    }, [
+      currentOperation,
+      routePath,
+      isShowConnectionsModal,
+      createIdentifierModalIsOpen,
+      currentToastMsgs,
+    ]);
+
+    useEffect(() => {
+      const handleCameraChange = async () => {
+        if (
+          !scanning ||
+          !Capacitor.isNativePlatform() ||
+          isTransitioning ||
+          scannerState.current === "starting"
+        ) {
+          return;
+        }
+
+        setIsTransitioning(true);
+        if (scannerState.current === "running") {
+          await stopScan();
+        }
+
+        await initScan();
+        setIsTransitioning(false);
+      };
+
+      handleCameraChange();
+    }, [cameraDirection]);
 
     const stopScan = async () => {
       if (!permission || !Capacitor.isNativePlatform()) {
@@ -142,29 +206,58 @@ const Scanner = forwardRef(
       setGroupId("");
     };
 
-    useImperativeHandle(ref, () => ({
-      stopScan,
-    }));
+    const initScan = async () => {
+      if (!Capacitor.isNativePlatform() || mobileweb) return;
 
-    useEffect(() => {
-      const handleCameraChange = async () => {
-        if (
-          !scanning ||
-          !Capacitor.isNativePlatform() ||
-          isTransitioning ||
-          scannerState.current === "starting"
-        )
-          return;
+      const allowed = await checkPermission();
+      setPermisson(!!allowed);
+      onCheckPermissionFinish?.(!!allowed);
 
-        setIsTransitioning(true);
+      if (!allowed) return;
+
+      if (scannerState.current !== "stopped") {
         await stopScan();
+      }
 
-        await initScan();
-        setIsTransitioning(false);
-      };
+      try {
+        scannerState.current = "starting";
+        const listener = await BarcodeScanner.addListener(
+          "barcodesScanned",
+          async (result) => {
+            await listener.remove();
+            if (isHandlingQR.current || !result.barcodes?.length) return;
+            isHandlingQR.current = true;
+            await processValue(result.barcodes[0].rawValue);
+          }
+        );
 
-      handleCameraChange();
-    }, [cameraDirection]);
+        await BarcodeScanner.startScan({
+          formats: [BarcodeFormat.QrCode],
+          lensFacing: cameraDirection,
+        });
+
+        scannerState.current = "running";
+        setScanning(true);
+        document?.querySelector("body")?.classList.add("scanner-active");
+      } catch (error) {
+        setScanUnavailable(true);
+        await stopScan();
+        showError("Error starting barcode scan:", error, dispatch);
+      }
+    };
+
+    const checkPermission = async () => {
+      const status = await BarcodeScanner.checkPermissions();
+      if (status.camera === "granted") {
+        return true;
+      }
+      if (
+        status.camera === "prompt" ||
+        status.camera == "prompt-with-rationale"
+      ) {
+        return (await BarcodeScanner.requestPermissions()).camera === "granted";
+      }
+    };
 
     const handleConnectWallet = (id: string) => {
       if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(id)) {
@@ -444,96 +537,6 @@ const Scanner = forwardRef(
       handleResolveOobi(content);
     };
 
-    const initScan = async () => {
-      if (!Capacitor.isNativePlatform() || mobileweb) return;
-
-      const allowed = await checkPermission();
-      setPermisson(!!allowed);
-      onCheckPermissionFinish?.(!!allowed);
-
-      if (!allowed) return;
-
-      if (scannerState.current !== "stopped") {
-        await stopScan();
-      }
-
-      try {
-        scannerState.current = "starting";
-        const listener = await BarcodeScanner.addListener(
-          "barcodesScanned",
-          async (result) => {
-            await listener.remove();
-            if (isHandlingQR.current || !result.barcodes?.length) return;
-            isHandlingQR.current = true;
-            await processValue(result.barcodes[0].rawValue);
-          }
-        );
-
-        await BarcodeScanner.startScan({
-          formats: [BarcodeFormat.QrCode],
-          lensFacing: cameraDirection,
-        });
-
-        scannerState.current = "running";
-        setScanning(true);
-        document?.querySelector("body")?.classList.add("scanner-active");
-      } catch (error) {
-        setScanUnavailable(true);
-        await stopScan();
-        showError("Error starting barcode scan:", error, dispatch);
-      }
-    };
-
-    useEffect(() => {
-      const onLoad = async () => {
-        if (
-          routePath === TabsRoutePath.SCAN &&
-          (isShowConnectionsModal || createIdentifierModalIsOpen)
-        ) {
-          await stopScan();
-          return;
-        }
-
-        const isDuplicateConnectionToast = currentToastMsgs.some(
-          (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
-        );
-        const isRequestPending = currentToastMsgs.some((item) =>
-          [
-            ToastMsgType.CONNECTION_REQUEST_PENDING,
-            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
-          ].includes(item.message)
-        );
-
-        const isScanning =
-          routePath === TabsRoutePath.SCAN ||
-          [
-            OperationType.SCAN_CONNECTION,
-            OperationType.SCAN_WALLET_CONNECTION,
-            OperationType.SCAN_SSI_BOOT_URL,
-            OperationType.SCAN_SSI_CONNECT_URL,
-          ].includes(currentOperation);
-
-        const isMultisignScan =
-          [
-            OperationType.MULTI_SIG_INITIATOR_SCAN,
-            OperationType.MULTI_SIG_RECEIVER_SCAN,
-          ].includes(currentOperation) && !isDuplicateConnectionToast;
-
-        if ((isScanning && !isRequestPending) || isMultisignScan) {
-          await initScan();
-        } else {
-          await stopScan();
-        }
-      };
-      onLoad();
-    }, [
-      currentOperation,
-      routePath,
-      isShowConnectionsModal,
-      createIdentifierModalIsOpen,
-      currentToastMsgs,
-    ]);
-
     useEffect(() => {
       return () => {
         stopScan();
@@ -654,6 +657,7 @@ const Scanner = forwardRef(
             </>
           ) : (
             <div
+              style={{ background: "black" }}
               className="scanner-spinner-container"
               data-testid="scanner-spinner-container"
             >
