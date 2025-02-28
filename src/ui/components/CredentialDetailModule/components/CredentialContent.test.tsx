@@ -9,7 +9,11 @@ import {
 } from "../../../__fixtures__/credsFix";
 import { filteredIdentifierMapFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { identifierFix } from "../../../__fixtures__/identifierFix";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../../utils/formatters";
 import { CredentialContent } from "./CredentialContent";
 
 Object.defineProperty(window, "matchMedia", {
@@ -80,7 +84,9 @@ describe("Creds content", () => {
       formatShortDate(credsFixAcdc[0].a.dt)
     );
     expect(getByTestId("credential-issued-section-text-value").innerHTML).toBe(
-      formatTimeToSec(credsFixAcdc[0].a.dt)
+      `${formatTimeToSec(credsFixAcdc[0].a.dt)} (${getUTCOffset(
+        credsFixAcdc[0].a.dt
+      )})`
     );
     expect(
       getByText(EN_TRANSLATIONS.tabs.credentials.details.issuer)
@@ -108,7 +114,7 @@ describe("Creds content", () => {
       EN_TRANSLATIONS.tabs.credentials.details.status.timestamp
     } ${formatShortDate(credsFixAcdc[0].lastStatus.dt)} - ${formatTimeToSec(
       credsFixAcdc[0].lastStatus.dt
-    )}`;
+    )} (${getUTCOffset(identifierFix[0].dt)})`;
     expect(
       getByTestId("credential-details-last-status-timestamp").innerHTML
     ).toBe(lastStatus);

@@ -76,6 +76,23 @@ const ellipsisText = (raw: string, length: number, suffix = "...") => {
   return raw.substring(0, length || raw.length) + suffix;
 };
 
+function getUTCOffset(value?: Date | string | number) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  let result = "";
+
+  result += date.getTimezoneOffset() > 0 ? "-" : "+";
+  const offset = Math.abs(date.getTimezoneOffset());
+  result += Math.floor(offset / 60);
+  const minutes = offset % 60;
+  if (minutes > 0) {
+    result += ":" + minutes;
+  }
+
+  return "UTC " + result;
+}
+
 export {
   formatShortDate,
   formatLongDate,
@@ -84,4 +101,5 @@ export {
   timeDifference,
   formatCurrencyUSD,
   ellipsisText,
+  getUTCOffset,
 };

@@ -14,7 +14,11 @@ import {
   CardDetailsItem,
 } from "../../../../components/CardDetails";
 import { ListHeader } from "../../../../components/ListHeader";
-import { formatShortDate, formatTimeToSec } from "../../../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../../../utils/formatters";
 import { combineClassNames } from "../../../../utils/style";
 import {
   AccordionKey,
@@ -154,7 +158,9 @@ const Advanced = ({ data, currentUserIndex }: AdvancedProps) => {
             mainContent={data.s}
             subContent={`${i18n.t(
               "tabs.identifiers.details.keyrotation.sequencenumber.lastrotate"
-            )}: ${formatShortDate(data.dt)} - ${formatTimeToSec(data.dt)}`}
+            )}: ${formatShortDate(data.dt)} - ${formatTimeToSec(
+              data.dt
+            )} (${getUTCOffset(data.dt)})`}
           />
         </CardBlock>
       )}
