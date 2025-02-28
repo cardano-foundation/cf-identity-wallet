@@ -16,7 +16,7 @@ const DrawerContent = ({
   menuItems,
 }: DrawerContentProps) => {
   const location = useLocation();
-  const getIcon = (icons: JSX.Element[], isActive: boolean) =>
+  const getIcon = (icons: React.ReactElement[], isActive: boolean) =>
     isActive ? icons[0] : icons[1];
 
   return (

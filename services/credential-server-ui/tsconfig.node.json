@@ -3,11 +3,11 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2022",
     "lib": ["ES2023"],
-    "module": "ESNext",
+    "module": "commonjs", // Use commonjs for Node.js
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node", // Use node module resolution
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",

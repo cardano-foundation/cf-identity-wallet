@@ -2,7 +2,7 @@ interface MenuItem {
   key: string;
   path: string;
   label: string;
-  icons: JSX.Element[];
+  icons: React.ReactElement[];
 }
 
 interface DrawerContentProps {
