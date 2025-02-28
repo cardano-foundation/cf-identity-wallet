@@ -7,7 +7,6 @@
 
 # Basic ProGuard rules for optimization and minification
 -optimizationpasses 5
--allowaccessmodification
 -dontpreverify
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
