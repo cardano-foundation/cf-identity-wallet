@@ -1,48 +1,46 @@
+import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import { Browser } from "@capacitor/browser";
 import { IonCard, IonList, IonToggle } from "@ionic/react";
 import {
-  lockClosedOutline,
-  informationCircleOutline,
-  keyOutline,
-  logoDiscord,
-  libraryOutline,
-  checkboxOutline,
-  layersOutline,
-  fingerPrintOutline,
-} from "ionicons/icons";
-import "./Settings.scss";
-import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
-import {
-  NativeSettings,
   AndroidSettings,
   IOSSettings,
+  NativeSettings,
 } from "capacitor-native-settings";
 import {
-  BiometryError,
-  BiometryErrorType,
-} from "@aparajita/capacitor-biometric-auth";
-import { Browser } from "@capacitor/browser";
-import { i18n } from "../../../../../i18n";
+  checkboxOutline,
+  fingerPrintOutline,
+  informationCircleOutline,
+  keyOutline,
+  layersOutline,
+  libraryOutline,
+  lockClosedOutline,
+  logoDiscord,
+} from "ionicons/icons";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import pJson from "../../../../../../package.json";
-import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
+import { Agent } from "../../../../../core/agent/agent";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
+import { i18n } from "../../../../../i18n";
 import { useAppDispatch } from "../../../../../store/hooks";
 import {
   getBiometricsCacheCache,
   setEnableBiometricsCache,
 } from "../../../../../store/reducers/biometricsCache";
-import { Agent } from "../../../../../core/agent/agent";
-import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
-import { ChangePin } from "./components/ChangePin";
-import { SettingsItem } from "./components/SettingsItem";
-import { SubMenuKey } from "../../Menu.types";
+import { Verification } from "../../../../components/Verification";
 import {
   DISCORD_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
-import { Verification } from "../../../../components/Verification";
+import { usePrivacyScreen } from "../../../../hooks/privacyScreenHook";
+import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { showError } from "../../../../utils/error";
+import { SubMenuKey } from "../../Menu.types";
+import { ChangePin } from "./components/ChangePin";
+import { SettingsItem } from "./components/SettingsItem";
+import "./Settings.scss";
+import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
 
 const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
@@ -52,6 +50,7 @@ const Settings = ({ switchView }: SettingsProps) => {
   const inBiometricSetup = useRef(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
+  const { disablePrivacy, enablePrivacy } = usePrivacyScreen();
 
   const securityItems: OptionProps[] = [
     {
@@ -151,7 +150,9 @@ const Settings = ({ switchView }: SettingsProps) => {
 
   const biometricAuth = async () => {
     try {
+      await disablePrivacy();
       const result = await handleBiometricAuth();
+      await enablePrivacy();
       if (result === true) handleToggleBiometricAuth();
     } catch (e) {
       showError("Unable to enable/disable biometric auth", e, dispatch);
