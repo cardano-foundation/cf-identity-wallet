@@ -173,7 +173,6 @@ If you encounter any issues or have questions, please drop us a message on our D
 
 ## Standards, Frameworks and Governance
 - [SSI Frameworks Overview](https://europeanblockchainassociation.org/ssi-frameworks-sdks-overview/)
+- [Trust over IP](https://trustoverip.org/)
 - [Global Legal Entity Identifier Foundation (GLIEF)](https://www.gleif.org/en)
-- [Decentralized Identity Foundation](https://identity.foundation/)
-- [eIDAS Regulation](https://digital-strategy.ec.europa.eu/en/policies/eidas-regulation)
-- [European Blockchain Services Infrastructure (EBSI)](https://ec.europa.eu/digital-building-blocks/wikis/display/EBSI/Home)
+- [vLEI ISO Standarization](https://www.gleif.org/media/pages/newsroom/press-releases/iso-standardizes-gleif-s-pioneering-digital-organizational-identity-offering-with-publication-of-vlei-technical-standard/42372c4929-1740658674/2024-10-14_iso-standardizes-gleif-s-pioneering-digital-organizational-identity-offering-with-publication-of-vlei-technical-stand.pdf)
