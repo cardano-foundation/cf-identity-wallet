@@ -52,5 +52,8 @@ module.exports = merge(require("./webpack.common.cjs"), {
             });
          }
       },
-   ]
+   ],
+   optimization: {
+      minimize: false,
+    },
 });
