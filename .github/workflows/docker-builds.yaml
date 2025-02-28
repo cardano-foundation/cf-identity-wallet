@@ -73,40 +73,22 @@ jobs:
           DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
 
       - name: Set docker image targets based on path changes from last commit
-        id: metadata
-        run: |
-          set -x
-
-          if [ ${{github.event_name}} == "workflow_dispatch" ]
-          then
-            case "${{ github.event.inputs.images }}" in
-              idw-keria)
-                DOCKER_IMAGES_TARGETS="idw-keria"
-                ;;
-              idw-witness)
-                DOCKER_IMAGES_TARGETS="idw-witness"
-                ;;
-              cred-issuance)
-                DOCKER_IMAGES_TARGETS="cred-issuance"
-                ;;
-              cred-issuance-ui)
-                DOCKER_IMAGES_TARGETS="cred-issuance-ui"
-                ;;
-              cip45-sample-dapp)
-                DOCKER_IMAGES_TARGETS="cip45-sample-dapp"
-                ;;
-              all)
-                DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui cip45-sample-dapp"
-                ;;
-              *)
-                echo "Invalid option, exiting..."
-                exit 1
-                ;;
-            esac
-
-            echo "DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
-            echo "DOCKER_IMAGES_TARGETS_$(echo ${{ matrix.platform }} | sed 's|/|_|g')=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
-          fi
+  id: metadata
+  run: |
+    set -x
+    if [ ${{github.event_name}} == "workflow_dispatch" ]; then
+      case "${{ github.event.inputs.images }}" in
+        idw-keria) DOCKER_IMAGES_TARGETS="idw-keria" ;;
+        idw-witness) DOCKER_IMAGES_TARGETS="idw-witness" ;;
+        cred-issuance) DOCKER_IMAGES_TARGETS="cred-issuance" ;;
+        cred-issuance-ui) DOCKER_IMAGES_TARGETS="cred-issuance-ui" ;;
+        cip45-sample-dapp) DOCKER_IMAGES_TARGETS="cip45-sample-dapp" ;;
+        all) DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui cip45-sample-dapp" ;;
+        *) echo "Invalid option, exiting..." ; exit 1 ;;
+      esac
+      echo "DOCKER_IMAGES_TARGETS=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+      echo "DOCKER_IMAGES_TARGETS_$(echo ${{ matrix.platform }} | sed 's|/|_|g')=${DOCKER_IMAGES_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+    fi
           
           if [ ${{github.event_name}} == "pull_request" ]
           then

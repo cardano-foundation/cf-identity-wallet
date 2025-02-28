@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   AppBar,
@@ -58,7 +58,7 @@ const menuItems = [
   },
 ];
 
-const getIcon = (icons: JSX.Element[], isActive: boolean) =>
+const getIcon = (icons: React.ReactElement[], isActive: boolean) =>
   isActive ? icons[0] : icons[1];
 
 const NavBar = ({ window }: Props) => {
