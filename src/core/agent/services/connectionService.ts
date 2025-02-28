@@ -91,7 +91,7 @@ class ConnectionService extends AgentService {
     this.props.eventEmitter.on(
       EventTypes.ConnectionRemoved,
       (data: ConnectionRemovedEvent) =>
-        this.deleteConnectionById(data.payload.connectionId!)
+        this.deleteConnectionById(data.payload.connectionId)
     );
   }
 
@@ -282,7 +282,7 @@ class ConnectionService extends AgentService {
     });
 
     return {
-      label: connection?.alias,
+      label: connection.alias,
       id: connection.id,
       status: ConnectionStatus.CONFIRMED,
       createdAtUTC: connection.createdAt as string,
@@ -315,9 +315,10 @@ class ConnectionService extends AgentService {
     await this.connectionStorage.deleteById(id);
   }
 
-  async markConnectionPendingDelete(id: string) {
+  async markConnectionPendingDelete(id: string): Promise<void> {
     const connectionProps = await this.connectionStorage.findById(id);
     if (!connectionProps) return;
+
     connectionProps.pendingDeletion = true;
     await this.connectionStorage.update(connectionProps);
 
@@ -329,7 +330,7 @@ class ConnectionService extends AgentService {
     });
   }
 
-  async getConnectionsPendingDeletion() {
+  async getConnectionsPendingDeletion(): Promise<string[]> {
     const connections = await this.connectionStorage.findAllByQuery({
       pendingDeletion: true,
     });
@@ -337,7 +338,7 @@ class ConnectionService extends AgentService {
     return connections.map((connection) => connection.id);
   }
 
-  async getConnectionsPending() {
+  async getConnectionsPending(): Promise<ConnectionRecord[]> {
     const connections = await this.connectionStorage.findAllByQuery({
       pending: true,
       groupId: undefined,
@@ -375,7 +376,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     connectionNoteId: string,
     note: ConnectionNoteProps
-  ) {
+  ): Promise<void> {
     await this.props.signifyClient.contacts().update(connectionId, {
       [connectionNoteId]: JSON.stringify(note),
     });
@@ -384,7 +385,7 @@ class ConnectionService extends AgentService {
   async deleteConnectionNoteById(
     connectionId: string,
     connectionNoteId: string
-  ) {
+  ): Promise<Contact> {
     return this.props.signifyClient.contacts().update(connectionId, {
       [connectionNoteId]: null,
     });
@@ -393,13 +394,14 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async getOobi(id: string, alias?: string, groupId?: string): Promise<string> {
     const result = await this.props.signifyClient.oobis().get(id);
-
     if (!result.oobis[0]) {
       throw new Error(ConnectionService.CANNOT_GET_OOBI);
     }
+
     const oobi = new URL(result.oobis[0]);
     const identifier = await this.props.signifyClient.identifiers().get(id);
-    //This condition is used for multi-sig oobi
+
+    // This condition is used for multi-sig oobi
     if (identifier && identifier.group) {
       const pathName = oobi.pathname;
       const agentIndex = pathName.indexOf("/agent/");
@@ -409,6 +411,7 @@ class ConnectionService extends AgentService {
     }
     if (alias !== undefined) oobi.searchParams.set("name", alias);
     if (groupId !== undefined) oobi.searchParams.set("groupId", groupId);
+
     return oobi.toString();
   }
 
@@ -437,7 +440,7 @@ class ConnectionService extends AgentService {
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
-  async syncKeriaContacts() {
+  async syncKeriaContacts(): Promise<void> {
     const cloudContacts = await this.props.signifyClient.contacts().list();
     const localContacts = await this.connectionStorage.getAll();
 
@@ -471,10 +474,12 @@ class ConnectionService extends AgentService {
     ) {
       throw new Error(ConnectionService.OOBI_INVALID);
     }
+
     const urlObj = new URL(url);
     const alias = urlObj.searchParams.get("name") ?? randomSalt();
     urlObj.searchParams.delete("name");
     const strippedUrl = urlObj.toString();
+
     let operation: Operation & { response: State };
     if (waitForCompletion) {
       operation = (await waitAndGetDoneOp(
@@ -482,33 +487,32 @@ class ConnectionService extends AgentService {
         await this.props.signifyClient.oobis().resolve(strippedUrl),
         5000
       )) as Operation & { response: State };
+
       if (!operation.done) {
         throw new Error(
           `${ConnectionService.FAILED_TO_RESOLVE_OOBI} [url: ${url}]`
         );
       }
-      if (operation.response?.i) {
-        const connectionId = operation.response.i;
-        const signifyClient = this.props.signifyClient.contacts();
-        const groupCreationId = new URL(url).searchParams.get("groupId") ?? "";
-        const createdAt = new Date((operation.response as State).dt);
 
-        try {
-          await signifyClient.get(connectionId);
-        } catch (error) {
-          if (
-            error instanceof Error &&
-            /404/gi.test(error.message.split(" - ")[1])
-          ) {
-            await signifyClient.update(connectionId, {
-              alias,
-              groupCreationId,
-              createdAt,
-              oobi: url,
-            });
-          } else {
-            throw error;
-          }
+      const connectionId = operation.response.i;
+      const groupCreationId = new URL(url).searchParams.get("groupId") ?? "";
+      const createdAt = new Date((operation.response as State).dt);
+
+      try {
+        await this.props.signifyClient.contacts().get(connectionId);
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          /404/gi.test(error.message.split(" - ")[1])
+        ) {
+          await this.props.signifyClient.contacts().update(connectionId, {
+            alias,
+            groupCreationId,
+            createdAt,
+            oobi: url,
+          });
+        } else {
+          throw error;
         }
       }
     } else {
@@ -521,7 +525,7 @@ class ConnectionService extends AgentService {
     return { op: operation, alias };
   }
 
-  async removeConnectionsPendingDeletion() {
+  async removeConnectionsPendingDeletion(): Promise<string[]> {
     const pendingDeletions = await this.getConnectionsPendingDeletion();
     for (const id of pendingDeletions) {
       await this.deleteConnectionById(id);
@@ -530,7 +534,7 @@ class ConnectionService extends AgentService {
     return pendingDeletions;
   }
 
-  async resolvePendingConnections() {
+  async resolvePendingConnections(): Promise<void> {
     const pendingConnections = await this.getConnectionsPending();
     for (const pendingConnection of pendingConnections) {
       await this.resolveOobi(pendingConnection.oobi);

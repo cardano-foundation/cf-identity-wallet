@@ -526,6 +526,15 @@ describe("Connection service of agent", () => {
     expect(connectionStorage.findById).toBeCalledWith(keriContacts[0].id);
   });
 
+  test("cannot get connection short details if it does not exist", async () => {
+    connectionStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      connectionService.getConnectionShortDetailById(keriContacts[0].id)
+    ).rejects.toThrowError(
+      ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND
+    );
+  });
+
   test("can get KERI OOBI", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     getOobiMock.mockImplementation((name: string) => {

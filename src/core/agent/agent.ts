@@ -69,6 +69,7 @@ class Agent {
 
   private static instance: Agent;
   private agentServicesProps!: AgentServicesProps;
+  private signifyClient!: SignifyClient;
 
   private storageSession!: SqliteSession | IonicSession;
 
@@ -80,9 +81,6 @@ class Agent {
   private peerConnectionStorage!: PeerConnectionStorage;
   private operationPendingStorage!: OperationPendingStorage;
 
-  private signifyClient!: SignifyClient;
-
-  // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
   private multiSigService!: MultiSigService;
   private ipexCommunicationService!: IpexCommunicationService;

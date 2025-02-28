@@ -4,7 +4,7 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import { useState } from "react";
-import { JSONObject } from "../../../../core/agent/services/credentialService.types";
+import { JSONObject } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";

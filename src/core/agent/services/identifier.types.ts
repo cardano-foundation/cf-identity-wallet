@@ -1,5 +1,6 @@
 import { CreateIdentifierBody } from "signify-ts";
 import { ConnectionShortDetails, CreationStatus } from "../agent.types";
+import { IdentifierMetadataRecord } from "../records";
 
 interface GroupMetadata {
   groupId: string;
@@ -72,6 +73,11 @@ type QueuedGroupProps =
 
 type QueuedGroupCreation = QueuedIdentifierCreation & QueuedGroupProps;
 
+interface GroupParticipants {
+  ourIdentifier: IdentifierMetadataRecord;
+  multisigMembers: any;
+}
+
 export type {
   IdentifierShortDetails,
   IdentifierDetails,
@@ -81,4 +87,9 @@ export type {
 };
 
 export { IdentifierType };
-export type { QueuedIdentifierCreation, QueuedGroupProps, QueuedGroupCreation };
+export type {
+  QueuedIdentifierCreation,
+  QueuedGroupProps,
+  QueuedGroupCreation,
+  GroupParticipants,
+};

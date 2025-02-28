@@ -67,7 +67,12 @@ interface JSONObject {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface JSONArray extends Array<JSONValue> {}
 
-type JSONValue = string | number | boolean | JSONObject | JSONArray;
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | JSONArray;
 
 type ExnMessage = {
   exn: {
@@ -79,8 +84,8 @@ type ExnMessage = {
     dt: string;
     r: string;
     q: JSONValue;
-    a: JSONValue;
-    e: JSONValue;
+    a: any;
+    e: any;
     rp: string;
   };
   pathed: {
@@ -155,7 +160,7 @@ interface AgentServicesProps {
 interface IdentifierResult {
   name: string;
   prefix: string;
-  salty: JSONValue;
+  salty: any;
 }
 
 interface AgentUrls {
@@ -238,4 +243,6 @@ export type {
   NotificationRpy,
   AuthorizationRequestExn,
   OperationCallback,
+  JSONValue,
+  JSONObject,
 };

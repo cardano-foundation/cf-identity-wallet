@@ -4,7 +4,8 @@ import {
   ExchangeRoute,
   MiscRecordId,
   NotificationRoute,
-  CreationStatus } from "../agent.types";
+  CreationStatus,
+} from "../agent.types";
 import {
   BasicRecord,
   IdentifierStorage,
@@ -252,7 +253,6 @@ const keriaNotificationService = new KeriaNotificationService(
   Agent.agent.connect
 );
 
-// @TODO - foconnor: Tests shouldn't rely on Agent.agent here, revisit.
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
