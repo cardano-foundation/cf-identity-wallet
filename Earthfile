@@ -159,7 +159,7 @@ cred-issuance-ui:
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
-    FROM DOCKERFILE ./services/credential-server-ui
+    FROM DOCKERFILE ./services/credential-server-ui-old
   END
   WAIT
     DO functions+DOCKER_LABELS --LABELS="${DOCKER_IMAGES_LABELS}"

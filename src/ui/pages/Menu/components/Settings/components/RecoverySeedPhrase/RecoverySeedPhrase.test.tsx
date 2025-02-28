@@ -166,7 +166,7 @@ describe("Recovery Phrase", () => {
       expect(getByText(TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(queryByText(TRANSLATIONS.verifypasscode.title)).toBeNull();
