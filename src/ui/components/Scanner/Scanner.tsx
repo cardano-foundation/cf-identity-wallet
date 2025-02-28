@@ -103,13 +103,148 @@ const Scanner = forwardRef(
     const [groupIdentifierOpen, setGroupIdentifierOpen] = useState(false);
     const [resumeMultiSig, setResumeMultiSig] =
       useState<IdentifierShortDetails | null>(null);
+    const [isTransitioning, setIsTransitioning] = useState(false);
     const isHandlingQR = useRef(false);
+    const scannerState = useRef<"stopped" | "starting" | "running">("stopped");
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
         setMobileweb(true);
       }
     }, [platforms]);
+
+    useImperativeHandle(ref, () => ({
+      stopScan,
+    }));
+
+    useEffect(() => {
+      const onLoad = async () => {
+        if (
+          routePath === TabsRoutePath.SCAN &&
+          (isShowConnectionsModal || createIdentifierModalIsOpen)
+        ) {
+          await stopScan();
+          return;
+        }
+
+        const isDuplicateConnectionToast = currentToastMsgs.some(
+          (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
+        );
+        const isRequestPending = currentToastMsgs.some((item) =>
+          [
+            ToastMsgType.CONNECTION_REQUEST_PENDING,
+            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
+          ].includes(item.message)
+        );
+
+        const isScanning =
+          routePath === TabsRoutePath.SCAN ||
+          [
+            OperationType.SCAN_CONNECTION,
+            OperationType.SCAN_WALLET_CONNECTION,
+            OperationType.SCAN_SSI_BOOT_URL,
+            OperationType.SCAN_SSI_CONNECT_URL,
+          ].includes(currentOperation);
+
+        const isMultisignScan =
+          [
+            OperationType.MULTI_SIG_INITIATOR_SCAN,
+            OperationType.MULTI_SIG_RECEIVER_SCAN,
+          ].includes(currentOperation) && !isDuplicateConnectionToast;
+
+        if ((isScanning && !isRequestPending) || isMultisignScan) {
+          await initScan();
+        } else {
+          await stopScan();
+        }
+      };
+      onLoad();
+    }, [
+      currentOperation,
+      routePath,
+      isShowConnectionsModal,
+      createIdentifierModalIsOpen,
+      currentToastMsgs,
+    ]);
+
+    useEffect(() => {
+      const handleCameraChange = async () => {
+        if (
+          !scanning ||
+          !Capacitor.isNativePlatform() ||
+          isTransitioning ||
+          scannerState.current === "starting"
+        ) {
+          return;
+        }
+
+        setIsTransitioning(true);
+        if (scannerState.current === "running") {
+          await stopScan();
+        }
+
+        await initScan();
+        setIsTransitioning(false);
+      };
+
+      handleCameraChange();
+    }, [cameraDirection]);
+
+    const stopScan = async () => {
+      if (!permission || !Capacitor.isNativePlatform()) {
+        setScanning(false);
+        document?.querySelector("body")?.classList.remove("scanner-active");
+        scannerState.current = "stopped";
+        return;
+      }
+
+      await BarcodeScanner.stopScan();
+      await BarcodeScanner.removeAllListeners();
+      scannerState.current = "stopped";
+      setScanning(false);
+      document?.querySelector("body")?.classList.remove("scanner-active");
+      setGroupId("");
+    };
+
+    const initScan = async () => {
+      if (!Capacitor.isNativePlatform() || mobileweb) return;
+
+      const allowed = await checkPermission();
+      setPermisson(!!allowed);
+      onCheckPermissionFinish?.(!!allowed);
+
+      if (!allowed) return;
+
+      if (scannerState.current !== "stopped") {
+        await stopScan();
+      }
+
+      try {
+        scannerState.current = "starting";
+        const listener = await BarcodeScanner.addListener(
+          "barcodesScanned",
+          async (result) => {
+            await listener.remove();
+            if (isHandlingQR.current || !result.barcodes?.length) return;
+            isHandlingQR.current = true;
+            await processValue(result.barcodes[0].rawValue);
+          }
+        );
+
+        await BarcodeScanner.startScan({
+          formats: [BarcodeFormat.QrCode],
+          lensFacing: cameraDirection,
+        });
+
+        scannerState.current = "running";
+        setScanning(true);
+        document?.querySelector("body")?.classList.add("scanner-active");
+      } catch (error) {
+        setScanUnavailable(true);
+        await stopScan();
+        showError("Error starting barcode scan:", error, dispatch);
+      }
+    };
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermissions();
@@ -123,21 +258,6 @@ const Scanner = forwardRef(
         return (await BarcodeScanner.requestPermissions()).camera === "granted";
       }
     };
-
-    const stopScan = async () => {
-      if (permission) {
-        await BarcodeScanner.stopScan();
-        await BarcodeScanner.removeAllListeners();
-      }
-
-      setScanning(false);
-      document?.querySelector("body")?.classList.remove("scanner-active");
-      setGroupId("");
-    };
-
-    useImperativeHandle(ref, () => ({
-      stopScan,
-    }));
 
     const handleConnectWallet = (id: string) => {
       if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(id)) {
@@ -417,102 +537,6 @@ const Scanner = forwardRef(
       handleResolveOobi(content);
     };
 
-    const initScan = async () => {
-      if (Capacitor.isNativePlatform()) {
-        const allowed = await checkPermission();
-        setPermisson(!!allowed);
-        onCheckPermissionFinish?.(!!allowed);
-
-        if (allowed) {
-          await BarcodeScanner.removeAllListeners();
-          const listener = await BarcodeScanner.addListener(
-            "barcodesScanned",
-            async (result) => {
-              await listener.remove();
-              if (isHandlingQR.current) return;
-              isHandlingQR.current = true;
-              if (!result.barcodes?.length) return;
-              await processValue(result.barcodes[0].rawValue);
-            }
-          );
-          const listenerError = await BarcodeScanner.addListener(
-            "scanError",
-            async (result) => {
-              await listenerError.remove();
-            }
-          );
-          try {
-            await BarcodeScanner.startScan({
-              formats: [BarcodeFormat.QrCode],
-              lensFacing: cameraDirection,
-            });
-          } catch (error) {
-            showError("Error starting barcode scan:", error);
-            setScanUnavailable(true);
-            stopScan();
-          }
-        }
-
-        document?.querySelector("body")?.classList.add("scanner-active");
-        setScanning(true);
-        document?.querySelector("body")?.classList.add("scanner-active");
-        document
-          ?.querySelector("body.scanner-active > div:last-child")
-          ?.classList.remove("hide");
-      }
-    };
-
-    useEffect(() => {
-      const onLoad = async () => {
-        if (
-          routePath === TabsRoutePath.SCAN &&
-          (isShowConnectionsModal || createIdentifierModalIsOpen)
-        ) {
-          await stopScan();
-          return;
-        }
-
-        const isDuplicateConnectionToast = currentToastMsgs.some(
-          (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
-        );
-        const isRequestPending = currentToastMsgs.some((item) =>
-          [
-            ToastMsgType.CONNECTION_REQUEST_PENDING,
-            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
-          ].includes(item.message)
-        );
-
-        const isScanning =
-          routePath === TabsRoutePath.SCAN ||
-          [
-            OperationType.SCAN_CONNECTION,
-            OperationType.SCAN_WALLET_CONNECTION,
-            OperationType.SCAN_SSI_BOOT_URL,
-            OperationType.SCAN_SSI_CONNECT_URL,
-          ].includes(currentOperation);
-
-        const isMultisignScan =
-          [
-            OperationType.MULTI_SIG_INITIATOR_SCAN,
-            OperationType.MULTI_SIG_RECEIVER_SCAN,
-          ].includes(currentOperation) && !isDuplicateConnectionToast;
-
-        if ((isScanning && !isRequestPending) || isMultisignScan) {
-          await initScan();
-        } else {
-          await stopScan();
-        }
-      };
-      onLoad();
-    }, [
-      currentOperation,
-      routePath,
-      cameraDirection,
-      isShowConnectionsModal,
-      createIdentifierModalIsOpen,
-      currentToastMsgs,
-    ]);
-
     useEffect(() => {
       return () => {
         stopScan();
@@ -544,56 +568,57 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-      case OperationType.SCAN_WALLET_CONNECTION:
-        return (
-          <PageFooter
-            customClass="actions-button"
-            secondaryButtonAction={openPasteModal}
-            secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
-          />
-        );
-      case OperationType.MULTI_SIG_INITIATOR_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
-            primaryButtonAction={handlePrimaryButtonAction}
-            primaryButtonDisabled={!multiSigGroupCache?.connections.length}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
-      case OperationType.MULTI_SIG_RECEIVER_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
-      case OperationType.SCAN_SSI_BOOT_URL:
-      case OperationType.SCAN_SSI_CONNECT_URL:
-        return <div></div>;
-      default:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pastecontents"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
+        case OperationType.SCAN_WALLET_CONNECTION:
+          return (
+            <PageFooter
+              customClass="actions-button"
+              secondaryButtonAction={openPasteModal}
+              secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
+            />
+          );
+        case OperationType.MULTI_SIG_INITIATOR_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+              primaryButtonAction={handlePrimaryButtonAction}
+              primaryButtonDisabled={!multiSigGroupCache?.connections.length}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
+        case OperationType.MULTI_SIG_RECEIVER_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
+        case OperationType.SCAN_SSI_BOOT_URL:
+        case OperationType.SCAN_SSI_CONNECT_URL:
+          return <div></div>;
+        default:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pastecontents"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
       }
     };
 
     const containerClass = combineClassNames("qr-code-scanner", {
       "no-permission": !permission || mobileweb,
       "scan-unavailable": scanUnavailable,
+      transitioning: isTransitioning,
     });
 
     return (
@@ -602,7 +627,12 @@ const Scanner = forwardRef(
           className={containerClass}
           data-testid="qr-code-scanner"
         >
-          {scanning || mobileweb || scanUnavailable ? (
+          {isTransitioning ? (
+            <div
+              className="scanner-spinner-container"
+              data-testid="scanner-spinner-container"
+            />
+          ) : scanning || mobileweb || scanUnavailable ? (
             <>
               <IonRow>
                 <IonCol size="12">
@@ -660,10 +690,10 @@ const Scanner = forwardRef(
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
                 : currentOperation === OperationType.SCAN_WALLET_CONNECTION
-                  ? i18n.t(
+                ? i18n.t(
                     "tabs.menu.tab.items.connectwallet.inputpidmodal.header"
                   )
-                  : `${i18n.t("createidentifier.scan.pastecontents")}`
+                : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,
             actionButtonDisabled: !pastedValue,
