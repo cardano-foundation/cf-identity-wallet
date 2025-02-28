@@ -1,106 +1,73 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Container,
+  Button,
   Badge,
   Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   MenuItem,
   Typography,
 } from "@mui/material";
-import DashboardFilled from "@mui/icons-material/Dashboard";
-import GroupOutlined from "@mui/icons-material/GroupOutlined";
-import BadgeOutlined from "@mui/icons-material/BadgeOutlined";
-import NotificationsOutlined from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
+import {
+  Menu as MenuIcon,
+  Dashboard as DashboardFull,
+  DashboardOutlined,
+  Group as GroupFull,
+  GroupOutlined,
+  Badge as BadgeFull,
+  BadgeOutlined,
+  Notifications as NotificationsFull,
+  NotificationsOutlined,
+  Settings as SettingsFull,
+  SettingsOutlined,
+} from "@mui/icons-material";
 import Logo from "../../assets/Logo.svg";
 import "./NavBar.scss";
 import { SwitchAccount } from "../SwitchAccount";
 import { i18n } from "../../i18n";
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { DrawerContent } from "./components/DrawerContent";
 
 interface Props {
   window?: () => Window;
 }
 
 const drawerWidth = 240;
+
 const menuItems = [
   {
     key: "overview",
     label: i18n.t("navbar.overview"),
     path: "/",
-    icon: <DashboardFilled />,
+    icons: [<DashboardFull />, <DashboardOutlined />],
   },
   {
     key: "connections",
     label: i18n.t("navbar.connections"),
     path: "/connections",
-    icon: <GroupOutlined />,
+    icons: [<GroupFull />, <GroupOutlined />],
   },
   {
     key: "credentials",
     label: i18n.t("navbar.credentials"),
     path: "/credentials",
-    icon: <BadgeOutlined />,
+    icons: [<BadgeFull />, <BadgeOutlined />],
   },
 ];
 
-const NavBar = (props: Props) => {
-  const { window } = props;
+const getIcon = (icons: JSX.Element[], isActive: boolean) =>
+  isActive ? icons[0] : icons[1];
+
+const NavBar = ({ window }: Props) => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
-
-  const drawer = (
-    <Box
-      id="drawer"
-      onClick={handleDrawerToggle}
-      sx={{
-        textAlign: "left",
-        backgroundColor: "background.default",
-        height: "100%",
-      }}
-    >
-      <Typography
-        variant="h6"
-        sx={{ my: 2 }}
-      >
-        {i18n.t("navbar.menu")}
-      </Typography>
-      <List>
-        {menuItems.map((item) => (
-          <ListItem
-            key={item.key}
-            component={Link}
-            to={item.path}
-            disablePadding
-          >
-            <ListItemButton
-              className={location.pathname === item.path ? "active" : ""}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-              {location.pathname === item.path && (
-                <div className="active-bar" />
-              )}
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -119,6 +86,7 @@ const NavBar = (props: Props) => {
           >
             <IconButton
               color="inherit"
+              disableRipple
               aria-label="open drawer menu"
               edge="start"
               className="menu-button"
@@ -160,7 +128,10 @@ const NavBar = (props: Props) => {
                 },
               }}
             >
-              {drawer}
+              <DrawerContent
+                handleDrawerToggle={handleDrawerToggle}
+                menuItems={menuItems}
+              />
             </Drawer>
           </Box>
           <Box
@@ -170,6 +141,7 @@ const NavBar = (props: Props) => {
             <Button
               component={Link}
               to={"/"}
+              disableRipple
             >
               <img
                 className="header-logo"
@@ -182,10 +154,11 @@ const NavBar = (props: Props) => {
                 key={item.key}
                 component={Link}
                 to={item.path}
+                disableRipple
                 className={location.pathname === item.path ? "active" : ""}
               >
                 <Typography textAlign="center">
-                  {item.icon}
+                  {getIcon(item.icons, location.pathname === item.path)}
                   {item.label}
                 </Typography>
                 {location.pathname === item.path && (
@@ -204,13 +177,18 @@ const NavBar = (props: Props) => {
               color="inherit"
               component={Link}
               to={"/notifications"}
+              disableRipple
               className={location.pathname === "/notifications" ? "active" : ""}
             >
               <Badge
                 badgeContent={0}
                 color="error"
               >
-                <NotificationsOutlined />
+                {location.pathname === "/notifications" ? (
+                  <NotificationsFull />
+                ) : (
+                  <NotificationsOutlined />
+                )}
               </Badge>
             </IconButton>
             <IconButton
@@ -219,10 +197,15 @@ const NavBar = (props: Props) => {
               color="inherit"
               component={Link}
               to={"/settings"}
+              disableRipple
               className={location.pathname === "/settings" ? "active" : ""}
             >
               <Badge>
-                <SettingsOutlined />
+                {location.pathname === "/settings" ? (
+                  <SettingsFull />
+                ) : (
+                  <SettingsOutlined />
+                )}
               </Badge>
             </IconButton>
           </Box>
