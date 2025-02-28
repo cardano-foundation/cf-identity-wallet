@@ -12,8 +12,8 @@ enum ConnectionStatus {
 
 interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
-  credentialType?: string;
   timestamp: string;
+  credentialType?: string;
 }
 
 enum MiscRecordId {
@@ -48,8 +48,8 @@ interface ConnectionShortDetails {
   id: string;
   label: string;
   createdAtUTC: string;
-  logo?: string;
   status: ConnectionStatus;
+  logo?: string;
   oobi?: string;
   groupId?: string;
 }
@@ -79,8 +79,8 @@ type ExnMessage = {
     dt: string;
     r: string;
     q: JSONValue;
-    a: any;
-    e: any;
+    a: JSONValue;
+    e: JSONValue;
     rp: string;
   };
   pathed: {
@@ -121,23 +121,23 @@ interface KeriaNotification {
   id: string;
   createdAt: string;
   a: Record<string, unknown>;
-  multisigId?: string;
   connectionId: string;
   read: boolean;
   groupReplied: boolean;
+  multisigId?: string;
   initiatorAid?: string;
   groupInitiator?: boolean;
 }
 
-enum KeriConnectionType {
+enum OobiType {
   NORMAL = "NORMAL",
   MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
 }
 
 type OobiScan =
-  | { type: KeriConnectionType.NORMAL; connection: ConnectionShortDetails }
+  | { type: OobiType.NORMAL; connection: ConnectionShortDetails }
   | {
-      type: KeriConnectionType.MULTI_SIG_INITIATOR;
+      type: OobiType.MULTI_SIG_INITIATOR;
       groupId: string;
       connection: ConnectionShortDetails;
     };
@@ -155,7 +155,7 @@ interface AgentServicesProps {
 interface IdentifierResult {
   name: string;
   prefix: string;
-  salty: any;
+  salty: JSONValue;
 }
 
 interface AgentUrls {
@@ -217,7 +217,7 @@ export {
   MiscRecordId,
   NotificationRoute,
   ExchangeRoute,
-  KeriConnectionType,
+  OobiType,
   CreationStatus,
 };
 

@@ -10,7 +10,7 @@ import {
   ConnectionStatus,
   CreationStatus,
   DOOBI_RE,
-  KeriConnectionType,
+  OobiType,
   OOBI_AGENT_ONLY_RE,
   OOBI_RE,
   OobiScan,
@@ -162,7 +162,7 @@ class ConnectionService extends AgentService {
           }
         });
         return {
-          type: KeriConnectionType.MULTI_SIG_INITIATOR,
+          type: OobiType.MULTI_SIG_INITIATOR,
           groupId,
           connection,
         };
@@ -184,7 +184,7 @@ class ConnectionService extends AgentService {
       });
     }
 
-    return { type: KeriConnectionType.NORMAL, connection };
+    return { type: OobiType.NORMAL, connection };
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {

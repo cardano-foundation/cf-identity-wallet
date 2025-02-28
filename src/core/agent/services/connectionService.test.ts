@@ -1,10 +1,6 @@
 /* eslint-disable indent */
 import { Salter } from "signify-ts";
-import {
-  ConnectionStatus,
-  CreationStatus,
-  KeriConnectionType,
-} from "../agent.types";
+import { ConnectionStatus, CreationStatus, OobiType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
@@ -208,7 +204,7 @@ describe("Connection service of agent", () => {
     const result = await connectionService.connectByOobiUrl(oobi);
 
     expect(result).toStrictEqual({
-      type: KeriConnectionType.MULTI_SIG_INITIATOR,
+      type: OobiType.MULTI_SIG_INITIATOR,
       groupId,
       connection: {
         groupId,

@@ -83,8 +83,7 @@ class PeerConnectionStorage {
   }
 
   async deletePeerConnectionMetadataRecord(id: string): Promise<void> {
-    const record = await this.getPeerConnectionMetadata(id);
-    await this.storageService.delete(record);
+    await this.storageService.deleteById(id);
   }
 }
 

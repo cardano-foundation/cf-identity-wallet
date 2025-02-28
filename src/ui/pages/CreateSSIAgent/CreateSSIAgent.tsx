@@ -222,7 +222,7 @@ const CreateSSIAgent = () => {
       }
 
       await Agent.agent.bootAndConnect({
-        bootUrl: ssiAgent.bootUrl || "",
+        bootUrl: ssiAgent.bootUrl,
         url: ssiAgent.connectUrl,
       });
 

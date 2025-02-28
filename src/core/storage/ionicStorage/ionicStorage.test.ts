@@ -64,7 +64,6 @@ const forEachMock = jest.fn().mockImplementation((fn: () => void) => {
       }),
       tags: { firstTag: "exists3", secondTag: "exists3" },
     },
-
     {
       category: BasicRecord.type,
       name: existingRecord.id,
@@ -128,6 +127,7 @@ const newRecord = new BasicRecord({
 });
 
 const storageService = new IonicStorage<BasicRecord>(storageMock as any);
+
 describe("Ionic Storage Module: Basic Storage Service", () => {
   test("should be able to store a new record", async () => {
     await storageService.save(newRecord);
@@ -233,6 +233,13 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
     const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        id: existingRecord.id,
+        content: { test: "1" },
+        _tags: { firstTag: "exists", secondTag: "exists" },
+      })
+    );
   });
 
   test("should find an item if every query tag is part of the record tags", async () => {
@@ -240,6 +247,13 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
     const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        id: existingRecord.id,
+        content: { test: "1" },
+        _tags: { firstTag: "exists", secondTag: "exists" },
+      })
+    );
   });
 
   test("should not find an item by tag that doesn't exist", async () => {
@@ -302,6 +316,13 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
     const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        id: existingRecord.id,
+        content: { test: "1" },
+        _tags: { firstTag: "exists", secondTag: "exists" },
+      })
+    );
   });
 
   test("should find an item with null query", async () => {
@@ -309,5 +330,29 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
     const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        id: "test-0",
+        content: { test: "1" },
+        _tags: { firstTag: null, secondTag: "exists3" },
+      })
+    );
+  });
+
+  test("should find an item with multiple queries", async () => {
+    const tags = {
+      $and: [{ firstTag: "exists" }],
+      $not: [{ secondTag: null }],
+    };
+    const result = await storageService.findAllByQuery(tags, BasicRecord);
+    expect(forEachMock).toBeCalled();
+    expect(result.length).toEqual(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        id: existingRecord.id,
+        content: { test: "1" },
+        _tags: { firstTag: "exists", secondTag: "exists" },
+      })
+    );
   });
 });
