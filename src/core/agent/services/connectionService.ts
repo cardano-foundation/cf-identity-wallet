@@ -494,25 +494,28 @@ class ConnectionService extends AgentService {
         );
       }
 
-      const connectionId = operation.response.i;
-      const groupCreationId = new URL(url).searchParams.get("groupId") ?? "";
-      const createdAt = new Date((operation.response as State).dt);
+      if (operation.response.i) {
+        // Excludes schemas
+        const connectionId = operation.response.i;
+        const groupCreationId = new URL(url).searchParams.get("groupId") ?? "";
+        const createdAt = new Date((operation.response as State).dt);
 
-      try {
-        await this.props.signifyClient.contacts().get(connectionId);
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          /404/gi.test(error.message.split(" - ")[1])
-        ) {
-          await this.props.signifyClient.contacts().update(connectionId, {
-            alias,
-            groupCreationId,
-            createdAt,
-            oobi: url,
-          });
-        } else {
-          throw error;
+        try {
+          await this.props.signifyClient.contacts().get(connectionId);
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            /404/gi.test(error.message.split(" - ")[1])
+          ) {
+            await this.props.signifyClient.contacts().update(connectionId, {
+              alias,
+              groupCreationId,
+              createdAt,
+              oobi: url,
+            });
+          } else {
+            throw error;
+          }
         }
       }
     } else {
