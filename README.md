@@ -12,17 +12,8 @@
 # Disclaimer
 
 <div align="justify"> 
-<b> Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development with security audits and threat modelling still pending. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions. Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
+<b> Currently, the Identity Wallet is in its final stage of development for an initial release. We are conducting third-party security audits, threat modeling, and penetration testing in preparation for deployment to the iOS and Android App Stores. Some of the information and visuals below are being updated as we move towards the release. </b>
 </div>
-<br>
-<div align="center">   
- <b>   :heavy_exclamation_mark:  The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis.  </b>
-</div>
-<br>
-<div align="justify">    
-<b> While we strive for high functionality and user satisfaction and endeavour to maintain reliability and accuracy, unforeseen issues may arise due to the experimental nature of this product. For detailed information on the terms and conditions that govern your use of the Open-Source Identity Wallet, we encourage you to read our Terms of Use. </b>
-</div>
-
 <br>
 
 # Overview
@@ -47,10 +38,10 @@
 - :cloud: High messaging availability with a KERIA cloud agent
 - :closed_lock_with_key: Secure Enclave (SE) / Trusted Execution Environment (TEE) usage for seeds & secrets
 - :id: KERI autonomic identifiers
-  - Direct-mode, witness-backed, Cardano-backed
+  - Securely backed by a combination of KERI native witnesses and Cardano
   - Single-sig, multi-sig
 - :ticket: ACDC credentials exchanged using the IPEX protocol
-- :zap: Efficient over-the-wine communications using CESR encoding
+- :zap: Efficient over-the-wire communications using CESR encoding
 - :desktop_computer: dApp integration using [CIP-45](https://cips.cardano.org/cip/CIP-0045)
   
  # Future Developments
@@ -161,7 +152,7 @@ Please read [Contributing](CONTRIBUTING.md) in advance.  Thank you for contribut
 
 # Troubleshooting
 <div align="justify"> 
-Please be aware that from time-to-time the hosted pre-production KERI services require restarting.  When this occurs it causes a white-screen when launching the application.  If you experience the white-screen issue please wait for the services to restart and the application will load as expected.   If you have any questions, there is also a Discord Channel available for the Identity Wallet.   
+If you encounter any issues or have questions, please drop us a message on our Discord channel. We are here to help!
 </div>
 
 <br>
