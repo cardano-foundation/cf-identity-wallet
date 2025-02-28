@@ -8,8 +8,15 @@ import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ForgotAuthInfo } from "./ForgotAuthInfo";
 import { ForgotType } from "./ForgotAuthInfo.types";
+import { isRepeat } from "../../utils/passcodeChecker";
 
 const SEED_PHRASE_LENGTH = 18;
+
+jest.mock("../../utils/passcodeChecker", () => ({
+  isRepeat: () => false,
+  isConsecutive: () => false,
+  isReverseConsecutive: () => false,
+}));
 
 const verifySeedPhraseFnc = jest.fn();
 
@@ -180,7 +187,7 @@ describe("Forgot Passcode Page", () => {
       ).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(
@@ -196,7 +203,7 @@ describe("Forgot Passcode Page", () => {
       expect(text).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(onCloseMock).toBeCalled();

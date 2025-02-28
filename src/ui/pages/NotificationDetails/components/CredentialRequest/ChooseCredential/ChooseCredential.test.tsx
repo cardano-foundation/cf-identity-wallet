@@ -398,7 +398,7 @@ describe("Credential request - choose request", () => {
       dispatch: dispatchMock,
     };
 
-    jest.spyOn(SecureStorage, "get").mockResolvedValue("111111");
+    jest.spyOn(SecureStorage, "get").mockResolvedValue("193212");
 
     const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationsFix[4].id}`;
     const history = createMemoryHistory();
@@ -459,12 +459,12 @@ describe("Credential request - choose request", () => {
       expect(getByTestId("passcode-button-1")).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(verifySecretMock).toHaveBeenCalledWith(
         KeyStoreKeys.APP_PASSCODE,
-        "111111"
+        "193212"
       );
     });
 
