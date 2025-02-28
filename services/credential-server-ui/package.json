@@ -16,11 +16,13 @@
     "@emotion/styled": "^11.14.0",
     "@fontsource/manrope": "^5.1.1",
     "@mui/icons-material": "^6.4.2",
+    "@reduxjs/toolkit": "^2.6.0",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.4.0",
+    "react-redux": "^9.2.0",
     "react-router": "^7.1.5"
   },
   "devDependencies": {
