@@ -11,10 +11,7 @@
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 
-# Preserve useful attributes for debugging (optional)
--keepattributes Exceptions,InnerClasses,Signature
-#-keepattributes SourceFile,LineNumberTable  # Uncomment if you need readable stack traces
-#-renamesourcefileattribute SourceFile       # Uncomment to hide original source file names for extra obfuscation
+-renamesourcefileattribute SourceFile       # Uncomment to hide original source file names for extra obfuscation
 
 # Rules for WebView with JavaScript (if your app uses WebView)
 -keepclassmembers class * {
