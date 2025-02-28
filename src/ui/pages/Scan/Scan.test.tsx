@@ -6,7 +6,7 @@ import {
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { KeriConnectionType } from "../../../core/agent/agent.types";
+import { OobiType } from "../../../core/agent/agent.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { store } from "../../../store";
 import { showConnections } from "../../../store/reducers/stateCache";
@@ -161,7 +161,7 @@ describe("Scan Tab", () => {
 
     connectByOobiUrlMock.mockImplementation(() => {
       return {
-        type: KeriConnectionType.NORMAL,
+        type: OobiType.NORMAL,
         connection: connectionsFix[0],
       };
     });

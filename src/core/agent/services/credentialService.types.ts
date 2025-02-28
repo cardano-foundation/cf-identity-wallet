@@ -8,17 +8,6 @@ enum CredentialStatus {
 
 type CredentialShortDetails = Omit<CredentialMetadataRecordProps, "createdAt">;
 
-type JSONValue =
-  | string
-  | number
-  | boolean
-  | { [x: string]: JSONValue }
-  | Array<JSONValue>;
-
-interface JSONObject {
-  [x: string]: JSONValue;
-}
-
 interface ACDCDetails
   extends Omit<CredentialShortDetails, "credentialType" | "issuanceDate"> {
   i: string;
@@ -50,10 +39,4 @@ interface Notification {
 }
 
 export { CredentialStatus };
-export type {
-  CredentialShortDetails,
-  ACDCDetails,
-  Notification,
-  JSONObject,
-  JSONValue,
-};
+export type { CredentialShortDetails, ACDCDetails, Notification };

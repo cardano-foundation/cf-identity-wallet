@@ -1,7 +1,4 @@
-import {
-  JSONObject,
-  JSONValue,
-} from "../../../../core/agent/services/credentialService.types";
+import { JSONObject, JSONValue } from "../../../../core/agent/agent.types";
 import { CardDetailsItemProps } from "../CardDetailsItem/CardDetailsItem.types";
 
 type ItemProps =

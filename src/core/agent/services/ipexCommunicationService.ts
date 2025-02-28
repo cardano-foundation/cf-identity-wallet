@@ -29,15 +29,12 @@ import { CredentialStatus, ACDCDetails } from "./credentialService.types";
 import {
   CredentialsMatchingApply,
   LinkedGroupInfo,
+  SubmitIPEXResult,
 } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
-import {
-  AcdcStateChangedEvent,
-  OperationAddedEvent,
-  EventTypes,
-} from "../event.types";
+import { AcdcStateChangedEvent, EventTypes } from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { IdentifierType } from "./identifier.types";
 import {
@@ -203,7 +200,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async offerAcdcFromApply(notificationId: string, acdc: any) {
+  async offerAcdcFromApply(notificationId: string, acdc: any): Promise<void> {
     const applyNoteRecord = await this.notificationStorage.findById(
       notificationId
     );
@@ -269,7 +266,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async grantAcdcFromAgree(notificationId: string) {
+  async grantAcdcFromAgree(notificationId: string): Promise<void> {
     const agreeNoteRecord = await this.notificationStorage.findById(
       notificationId
     );
@@ -459,7 +456,7 @@ class IpexCommunicationService extends AgentService {
     issuerAid: string,
     issuerOobi: string,
     schemaSaids: string[]
-  ): Promise<{ op: Operation; exnSaid: string }> {
+  ): Promise<SubmitIPEXResult> {
     for (const schemaSaid of schemaSaids) {
       await this.connections.resolveOobi(
         await this.getSchemaUrl(issuerOobi, issuerAid, schemaSaid),
@@ -735,7 +732,7 @@ class IpexCommunicationService extends AgentService {
     acdcDetail: any,
     discloseePrefix: string,
     offerExnToJoin?: any
-  ) {
+  ): Promise<SubmitIPEXResult> {
     let exn: Serder;
     let sigsMes: string[];
     let mend: string;
@@ -752,7 +749,7 @@ class IpexCommunicationService extends AgentService {
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
-    const [_, acdc] = Saider.saidify(acdcDetail);
+    const [, acdc] = Saider.saidify(acdcDetail);
 
     if (offerExnToJoin) {
       const [, ked] = Saider.saidify(offerExnToJoin);
@@ -769,7 +766,7 @@ class IpexCommunicationService extends AgentService {
           d: mstateNew["ee"]["d"],
         },
       ];
-      const signer = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const signer = sigs.map((sig: string) => new Siger({ qb64: sig }));
       const ims = d(messagize(offer, signer, seal));
       const atc = ims.substring(offer.size);
 
@@ -806,7 +803,7 @@ class IpexCommunicationService extends AgentService {
         "SealEvent",
         { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
       ];
-      const sigers = offerSigs.map((sig: any) => new Siger({ qb64: sig }));
+      const sigers = offerSigs.map((sig: string) => new Siger({ qb64: sig }));
       const ims = d(messagize(offer, sigers, seal));
       let atc = ims.substring(offer.size);
       atc += offerEnd;
@@ -839,7 +836,7 @@ class IpexCommunicationService extends AgentService {
     agreeSaid: string,
     acdcDetail: any,
     grantToJoin?: GrantToJoinMultisigExnPayload
-  ) {
+  ): Promise<SubmitIPEXResult> {
     let exn: Serder;
     let sigsMes: string[];
     let mend: string;
@@ -871,7 +868,7 @@ class IpexCommunicationService extends AgentService {
         },
       ];
 
-      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
       const ims = d(messagize(grant, sigers, seal));
       let newAtc = ims.substring(grant.size);
 
@@ -912,7 +909,7 @@ class IpexCommunicationService extends AgentService {
         "SealEvent",
         { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
       ];
-      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
       const ims = d(messagize(grant, sigers, seal));
       let atc = ims.substring(grant.size);
       atc += end;
@@ -991,7 +988,7 @@ class IpexCommunicationService extends AgentService {
     grantExn: ExnMessage,
     schemaSaids: string[],
     admitExnToJoin?: any
-  ) {
+  ): Promise<SubmitIPEXResult> {
     let exn: Serder;
     let sigsMes: string[];
     let mend: string;
@@ -1067,7 +1064,7 @@ class IpexCommunicationService extends AgentService {
         { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
       ];
 
-      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
       const ims = d(messagize(admit, sigers, seal));
       let atc = ims.substring(admit.size);
       atc += end;
