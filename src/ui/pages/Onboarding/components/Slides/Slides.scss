@@ -5,7 +5,9 @@
 .slides-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
+  height: 100%;
+  padding-top: 28%;
 
   .slides {
     .swiper-slide {
@@ -112,5 +114,9 @@
       opacity: 1;
       transform: translate3d(0, 0, 0);
     }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    padding-top: 14%;
   }
 }
