@@ -105,6 +105,7 @@ const Scanner = forwardRef(
       useState<IdentifierShortDetails | null>(null);
     const isHandlingQR = useRef(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [isAlreadyLoaded, setIsAlreadyLoaded] = useState(false);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -196,6 +197,7 @@ const Scanner = forwardRef(
         } else {
           await stopScan();
         }
+        setIsAlreadyLoaded(true);
       };
       onLoad();
     }, [
@@ -214,6 +216,7 @@ const Scanner = forwardRef(
         setIsTransitioning(false);
       };
 
+      if (!isAlreadyLoaded) return;
       handleCameraChange();
     }, [cameraDirection]);
 
