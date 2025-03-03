@@ -354,6 +354,11 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
 
+    await this.createLinkedIpexMessageRecord(
+      agreeExn,
+      ConnectionHistoryType.IPEX_AGREE_COMPLETE
+    );
+
     await this.notificationStorage.update(agreeNoteRecord);
   }
 
@@ -484,8 +489,7 @@ class IpexCommunicationService extends AgentService {
     historyType: ConnectionHistoryType
   ): Promise<void> {
     const connectionId =
-      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ||
-      historyType === ConnectionHistoryType.CREDENTIAL_ISSUANCE
+      historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED
         ? message.exn.rp
         : message.exn.i;
 
@@ -541,6 +545,7 @@ class IpexCommunicationService extends AgentService {
     case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
     case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
     case ConnectionHistoryType.CREDENTIAL_PRESENTED:
+    case ConnectionHistoryType.IPEX_AGREE_COMPLETE:
       prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
       key = message.exn.d;
       break;

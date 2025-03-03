@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { Contact, Operation, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
@@ -34,6 +33,7 @@ import {
 } from "../event.types";
 import {
   ConnectionHistoryItem,
+  ConnectionHistoryType,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
 
@@ -249,7 +249,10 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async getConnectionById(id: string): Promise<ConnectionDetails> {
+  async getConnectionById(
+    id: string,
+    full = false
+  ): Promise<ConnectionDetails> {
     const connection = await this.props.signifyClient
       .contacts()
       .get(id)
@@ -267,6 +270,8 @@ class ConnectionService extends AgentService {
     const notes: Array<ConnectionNoteDetails> = [];
     const historyItems: Array<ConnectionHistoryItem> = [];
 
+    const skippedHistoryTypes = [ConnectionHistoryType.IPEX_AGREE_COMPLETE];
+
     Object.keys(connection).forEach((key) => {
       if (
         key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
@@ -277,7 +282,10 @@ class ConnectionService extends AgentService {
         key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
         key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
       ) {
-        historyItems.push(JSON.parse(connection[key] as string));
+        const historyItem = JSON.parse(connection[key] as string);
+        if (full || !skippedHistoryTypes.includes(historyItem.type)) {
+          historyItems.push(historyItem);
+        }
       }
     });
 
@@ -291,8 +299,9 @@ class ConnectionService extends AgentService {
       historyItems: historyItems
         .sort((a, b) => new Date(b.dt).getTime() - new Date(a.dt).getTime())
         .map((messageRecord) => {
-          const { historyType, dt, credentialType } = messageRecord;
+          const { historyType, dt, credentialType, id } = messageRecord;
           return {
+            id,
             type: historyType,
             timestamp: dt,
             credentialType,

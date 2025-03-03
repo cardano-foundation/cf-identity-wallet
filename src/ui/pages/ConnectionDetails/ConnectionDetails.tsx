@@ -72,6 +72,7 @@ const ConnectionDetails = ({
       const connectionDetails = await Agent.agent.connections.getConnectionById(
         connectionShortDetails.id
       );
+
       setConnectionDetails(connectionDetails);
       setNotes(connectionDetails.notes);
       setConnectionHistory(connectionDetails.historyItems);
