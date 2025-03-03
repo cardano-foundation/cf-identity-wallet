@@ -11,6 +11,7 @@ const connectionMock = {
   query: jest.fn(),
   close: jest.fn(),
   executeTransaction: jest.fn(),
+  isDBOpen: jest.fn().mockResolvedValue(true),
 };
 // ------ MOCKS ------
 const setMock = jest
@@ -129,9 +130,9 @@ const newRecord = new BasicRecord({
   },
 });
 
-const storageService = new SqliteStorage<BasicRecord>({} as any);
+const storageService = new SqliteStorage<BasicRecord>(connectionMock as any);
 
-describe("Aries - Sqlite Storage Module: Storage Service", () => {
+describe("Sqlite Storage Module: Storage Service", () => {
   test("should be able to store a new record", async () => {
     await storageService.save(newRecord);
     expect(setMock).toBeCalledWith(newRecord.id, {
@@ -359,7 +360,7 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
   });
 });
 
-describe("Aries - Sqlite Storage Module: Util", () => {
+describe("Sqlite Storage Module: Util", () => {
   test("convertDbQuery should work correctly", () => {
     const query = {
       field1: undefined,

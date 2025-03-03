@@ -1,10 +1,6 @@
 /* eslint-disable indent */
 import { Salter } from "signify-ts";
-import {
-  ConnectionStatus,
-  CreationStatus,
-  KeriConnectionType,
-} from "../agent.types";
+import { ConnectionStatus, CreationStatus, OobiType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
@@ -208,7 +204,7 @@ describe("Connection service of agent", () => {
     const result = await connectionService.connectByOobiUrl(oobi);
 
     expect(result).toStrictEqual({
-      type: KeriConnectionType.MULTI_SIG_INITIATOR,
+      type: OobiType.MULTI_SIG_INITIATOR,
       groupId,
       connection: {
         groupId,
@@ -528,6 +524,15 @@ describe("Connection service of agent", () => {
       status: ConnectionStatus.FAILED,
     });
     expect(connectionStorage.findById).toBeCalledWith(keriContacts[0].id);
+  });
+
+  test("cannot get connection short details if it does not exist", async () => {
+    connectionStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      connectionService.getConnectionShortDetailById(keriContacts[0].id)
+    ).rejects.toThrowError(
+      ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND
+    );
   });
 
   test("can get KERI OOBI", async () => {

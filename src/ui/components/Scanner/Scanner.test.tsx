@@ -9,7 +9,7 @@ import {
   BarcodesScannedEvent,
   BarcodeValueType,
 } from "@capacitor-mlkit/barcode-scanning";
-import { KeriConnectionType } from "../../../core/agent/agent.types";
+import { OobiType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import {
   setMultiSigGroupCache,
@@ -361,7 +361,7 @@ describe("Scanner", () => {
 
     connectByOobiUrlMock.mockImplementation(() => {
       return {
-        type: KeriConnectionType.MULTI_SIG_INITIATOR,
+        type: OobiType.MULTI_SIG_INITIATOR,
       };
     });
 
@@ -490,7 +490,7 @@ describe("Scanner", () => {
 
     connectByOobiUrlMock.mockImplementation(() => {
       return {
-        type: KeriConnectionType.NORMAL,
+        type: OobiType.NORMAL,
       };
     });
     addListener.mockImplementation(
@@ -618,7 +618,7 @@ describe("Scanner", () => {
 
     connectByOobiUrlMock.mockImplementation(() => {
       return {
-        type: KeriConnectionType.NORMAL,
+        type: OobiType.NORMAL,
       };
     });
 
@@ -688,7 +688,7 @@ describe("Scanner", () => {
 
     connectByOobiUrlMock.mockImplementation(() => {
       return {
-        type: KeriConnectionType.NORMAL,
+        type: OobiType.NORMAL,
       };
     });
 

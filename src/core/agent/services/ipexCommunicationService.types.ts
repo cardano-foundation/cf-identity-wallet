@@ -1,3 +1,4 @@
+import { Operation } from "signify-ts";
 import { LinkedRequest } from "../records/notificationRecord.types";
 
 interface CredentialsMatchingApply {
@@ -20,4 +21,9 @@ interface LinkedGroupInfo {
   linkedRequest: LinkedRequest;
 }
 
-export type { CredentialsMatchingApply, LinkedGroupInfo };
+interface SubmitIPEXResult {
+  op: Operation;
+  exnSaid: string;
+}
+
+export type { CredentialsMatchingApply, LinkedGroupInfo, SubmitIPEXResult };
