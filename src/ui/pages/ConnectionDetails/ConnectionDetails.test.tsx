@@ -18,7 +18,11 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ConnectionDetails } from "./ConnectionDetails";
 
@@ -549,7 +553,9 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(
             connectionDetails.createdAtUTC
-          )} - ${formatTimeToSec(connectionDetails.createdAtUTC)}`
+          )} - ${formatTimeToSec(
+            connectionDetails.createdAtUTC
+          )} (${getUTCOffset(connectionDetails.createdAtUTC)})`
         )
       ).toBeVisible();
     });
@@ -571,7 +577,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[0].timestamp)} - ${formatTimeToSec(
             historyEvents[0].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[0].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -590,7 +596,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[1].timestamp)} - ${formatTimeToSec(
             historyEvents[1].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[1].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -608,7 +614,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
             historyEvents[3].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[3].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -629,7 +635,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
             historyEvents[3].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[3].timestamp)})`
         )
       ).toBeVisible();
     });
