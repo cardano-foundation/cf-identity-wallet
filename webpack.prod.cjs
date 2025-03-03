@@ -3,6 +3,7 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 let { merge } = require("webpack-merge");
+const TerserPlugin = require("terser-webpack-plugin"); 
 
 module.exports = merge(require("./webpack.common.cjs"), {
    mode: "production",
@@ -52,6 +53,13 @@ module.exports = merge(require("./webpack.common.cjs"), {
    ],
    optimization: {
       minimizer: [
+         new TerserPlugin({
+            extractComments: false,
+            terserOptions: {
+              compress: true,
+              mangle: true,
+            },
+          }),
          new CssMinimizerPlugin()
       ],
       minimize: true,
