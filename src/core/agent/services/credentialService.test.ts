@@ -1,3 +1,4 @@
+import { Ilks } from "signify-ts";
 import { CredentialService } from "./credentialService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
@@ -26,6 +27,7 @@ let credentialListMock = jest.fn();
 let getCredentialMock = jest.fn();
 const revokeCredentialMock = jest.fn();
 let deleteCredentialMock = jest.fn();
+const credentialStateMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -77,6 +79,7 @@ const signifyClient = jest.mocked({
     list: credentialListMock,
     revoke: revokeCredentialMock,
     delete: deleteCredentialMock,
+    state: credentialStateMock,
   }),
   exchanges: () => ({
     get: jest.fn(),
@@ -89,9 +92,9 @@ const signifyClient = jest.mocked({
     query: queryKeyStateMock,
     get: jest.fn(),
   }),
-
   groups: () => ({ getRequest: groupGetRequestMock }),
 });
+
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
   getUserFacingIdentifierRecords: jest.fn(),
@@ -414,6 +417,9 @@ describe("Credential service of agent", () => {
         },
       ])
       .mockResolvedValue([]);
+    credentialStateMock
+      .mockResolvedValueOnce({ et: Ilks.iss })
+      .mockResolvedValueOnce({ et: Ilks.rev });
     credentialStorage.getAllCredentialMetadata = jest
       .fn()
       .mockReturnValue([
@@ -445,13 +451,21 @@ describe("Credential service of agent", () => {
         isArchived: false,
         issuanceDate: "2023-11-29T02:12:35.716Z",
         credentialType: "title2",
-        status: CredentialStatus.CONFIRMED,
+        status: CredentialStatus.REVOKED,
         connectionId: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
         schema: "id-2",
         identifierId: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD",
         identifierType: IdentifierType.Group,
         createdAt: new Date("2023-11-29T02:12:35.716Z"),
       })
+    );
+    expect(credentialStateMock).toBeCalledWith(
+      "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+      "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X"
+    );
+    expect(credentialStateMock).toBeCalledWith(
+      "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+      "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY"
     );
   });
 
