@@ -1,5 +1,9 @@
 import { useMemo } from "react";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../../utils/formatters";
 import { CardDetailsItem } from "../CardDetailsItem";
 import { CardDetailsNestedAttributesProps } from "./CardDetailsAttributes.types";
 import { reservedKeysFilter } from "./CardDetailsAttributes.utils";
@@ -19,7 +23,9 @@ const CardDetailsNestedAttributes = ({
 
   const cardDetailInfo = useMemo(() => {
     if (dateRegex.test(item))
-      return `${formatShortDate(item)} - ${formatTimeToSec(item)}`;
+      return `${formatShortDate(item)} - ${formatTimeToSec(
+        item
+      )} (${getUTCOffset(item)}))`;
 
     const isValuedType = typeof item === "string" || typeof item === "number";
 

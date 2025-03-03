@@ -2030,7 +2030,7 @@ describe("Grant ACDC group actions", () => {
     });
 
     await expect(
-      ipexCommunicationService.admitAcdcFromGrant("id")
+      ipexCommunicationService.grantAcdcFromAgree("id")
     ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
     expect(ipexGrantMock).not.toBeCalled();
@@ -2253,7 +2253,7 @@ describe("IPEX communication service of agent", () => {
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
-  test("can link credential presentation history items to the correct connection", async () => {
+  test("Can link credential presentation history items to the correct connection", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
 
     await ipexCommunicationService.createLinkedIpexMessageRecord(

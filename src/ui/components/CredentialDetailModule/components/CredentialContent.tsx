@@ -4,12 +4,16 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import { useState } from "react";
-import { JSONObject } from "../../../../core/agent/services/credentialService.types";
+import { JSONObject } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../../utils/formatters";
 import { getTheme } from "../../../utils/theme";
 import { Alert } from "../../Alert";
 import {
@@ -105,7 +109,9 @@ const CredentialContent = ({
       >
         <CardDetailsItem
           keyValue={formatShortDate(cardData.a.dt)}
-          info={formatTimeToSec(cardData.a.dt)}
+          info={`${formatTimeToSec(cardData.a.dt)} (${getUTCOffset(
+            cardData.a.dt
+          )})`}
           testId={"credential-issued-section"}
           icon={calendarNumberOutline}
           className="credential-issued-section"
@@ -166,7 +172,7 @@ const CredentialContent = ({
             "tabs.credentials.details.status.timestamp"
           )} ${formatShortDate(cardData.lastStatus.dt)} - ${formatTimeToSec(
             cardData.lastStatus.dt
-          )}`}
+          )} (${getUTCOffset(cardData.lastStatus.dt)})`}
         </p>
       </CardBlock>
       {identifier && (

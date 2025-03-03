@@ -89,6 +89,7 @@ describe("SetUserName component", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
         ssiAgentIsSet: true,
+        ssiAgentUrl: "http://keria.com",
         recoveryWalletProgress: false,
         loginAttempt: {
           attempts: 0,
@@ -156,6 +157,7 @@ describe("SetUserName component", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
@@ -266,6 +268,7 @@ describe("Set connection alias", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
         ssiAgentIsSet: true,
+        ssiAgentUrl: "http://keria.com",
         recoveryWalletProgress: false,
         loginAttempt: {
           attempts: 0,

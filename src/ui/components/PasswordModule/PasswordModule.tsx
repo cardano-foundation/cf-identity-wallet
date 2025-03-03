@@ -231,7 +231,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
                       className="learn-more"
                       onClick={openSymbolModal}
                     >
-                      Learn More
+                      {i18n.t("createpassword.learnmore")}
                     </span>
                   )
                 }

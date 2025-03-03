@@ -8,6 +8,7 @@ import {
   KeriaNotificationMarker,
   MiscRecordId,
   NotificationRoute,
+  CreationStatus,
 } from "../agent.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
@@ -46,7 +47,6 @@ import {
 } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
 import { StorageMessage } from "../../storage/storage.types";
-import { CreationStatus } from "./identifier.types";
 import { IdentifierService } from "./identifierService";
 import { ConnectionService } from "./connectionService";
 
@@ -116,7 +116,7 @@ class KeriaNotificationService extends AgentService {
     );
   }
 
-  async pollNotifications() {
+  async pollNotifications(): Promise<void> {
     try {
       await this._pollNotifications();
     } catch (error) {
@@ -129,7 +129,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async _pollNotifications() {
+  private async _pollNotifications(): Promise<void> {
     let notificationQuery = {
       nextIndex: 0,
       lastNotificationId: "",
@@ -181,10 +181,12 @@ class KeriaNotificationService extends AgentService {
           throw error;
         }
       }
+
       if (!notifications) {
         // KERIA went down while querying, now back online
         continue;
       }
+
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||
@@ -287,7 +289,7 @@ class KeriaNotificationService extends AgentService {
     );
   }
 
-  async processNotification(notif: Notification) {
+  async processNotification(notif: Notification): Promise<void> {
     if (
       notif.r ||
       !Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
@@ -361,7 +363,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async retryFailedNotifications() {
+  async retryFailedNotifications(): Promise<void> {
     const failedNotificationsRecord = await this.basicStorage.findById(
       MiscRecordId.FAILED_NOTIFICATIONS
     );
@@ -654,7 +656,7 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
 
-    const multisigId = groupRequests[0].exn!.a!.gid;
+    const multisigId = groupRequests[0].exn.a.gid;
 
     // If deleted, skip - XX indicates identifier was deleted
     // This is safer than checking for the local metadata record in case
@@ -918,7 +920,7 @@ class KeriaNotificationService extends AgentService {
     };
   }
 
-  async readNotification(notificationId: string) {
+  async readNotification(notificationId: string): Promise<void> {
     const notificationRecord = await this.notificationStorage.findById(
       notificationId
     );
@@ -929,7 +931,7 @@ class KeriaNotificationService extends AgentService {
     await this.notificationStorage.update(notificationRecord);
   }
 
-  async unreadNotification(notificationId: string) {
+  async unreadNotification(notificationId: string): Promise<void> {
     const notificationRecord = await this.notificationStorage.findById(
       notificationId
     );
@@ -963,7 +965,7 @@ class KeriaNotificationService extends AgentService {
     });
   }
 
-  private async markNotification(notiSaid: string) {
+  private async markNotification(notiSaid: string): Promise<string> {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
@@ -999,7 +1001,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async pollLongOperations() {
+  async pollLongOperations(): Promise<void> {
     try {
       await this._pollLongOperations();
     } catch (error) {
@@ -1011,7 +1013,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async _pollLongOperations() {
+  async _pollLongOperations(): Promise<void> {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -1038,7 +1040,9 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async processOperation(operationRecord: OperationPendingRecord) {
+  async processOperation(
+    operationRecord: OperationPendingRecord
+  ): Promise<void> {
     let operation;
     try {
       operation = await this.props.signifyClient
@@ -1073,6 +1077,33 @@ class KeriaNotificationService extends AgentService {
           await this.identifierStorage.updateIdentifierMetadata(recordId, {
             creationStatus: CreationStatus.FAILED,
           });
+          this.props.eventEmitter.emit<OperationFailedEvent>({
+            type: EventTypes.OperationFailed,
+            payload: {
+              opType: operationRecord.recordType,
+              oid: recordId,
+            },
+          });
+          break;
+        }
+        case OperationPendingRecordType.Oobi: {
+          const oobi = operation.metadata?.oobi?.split("/oobi/")[1];
+          const connectionId = oobi.includes("/") ? oobi.split("/")[0] : oobi;
+          const connectionRecord = await this.connectionStorage.findById(
+            connectionId
+          );
+
+          if (connectionRecord && !connectionRecord.pendingDeletion) {
+            connectionRecord.creationStatus = CreationStatus.FAILED;
+            await this.connectionStorage.update(connectionRecord);
+          }
+          this.props.eventEmitter.emit<OperationFailedEvent>({
+            type: EventTypes.OperationFailed,
+            payload: {
+              opType: operationRecord.recordType,
+              oid: connectionId,
+            },
+          });
           break;
         }
         default: {
@@ -1080,13 +1111,6 @@ class KeriaNotificationService extends AgentService {
         }
       }
 
-      this.props.eventEmitter.emit<OperationFailedEvent>({
-        type: EventTypes.OperationFailed,
-        payload: {
-          opType: operationRecord.recordType,
-          oid: recordId,
-        },
-      });
       await this.operationPendingStorage.deleteById(operationRecord.id);
       this.pendingOperations.splice(
         this.pendingOperations.indexOf(operationRecord),
@@ -1145,7 +1169,7 @@ class KeriaNotificationService extends AgentService {
           );
 
           if (connectionRecord && !connectionRecord.pendingDeletion) {
-            connectionRecord.pending = false;
+            connectionRecord.creationStatus = CreationStatus.COMPLETE;
 
             const keriaContact = await this.props.signifyClient
               .contacts()
@@ -1189,6 +1213,7 @@ class KeriaNotificationService extends AgentService {
                 exnSaid: grantExchange.exn.d,
               }
             );
+
             for (const notification of notifications) {
               await deleteNotificationRecordById(
                 this.props.signifyClient,

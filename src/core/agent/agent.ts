@@ -11,8 +11,10 @@ import {
   ConnectionService,
   CredentialService,
   IdentifierService,
+  KeriaNotificationService,
+  MultiSigService,
+  IpexCommunicationService,
 } from "./services";
-import { KeriaNotificationService } from "./services/keriaNotificationService";
 import {
   AgentServicesProps,
   BranAndMnemonic,
@@ -35,8 +37,6 @@ import {
   NotificationStorage,
 } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
-import { MultiSigService } from "./services/multiSigService";
-import { IpexCommunicationService } from "./services/ipexCommunicationService";
 import { SqliteSession } from "../storage/sqliteStorage/sqliteSession";
 import { IonicSession } from "../storage/ionicStorage/ionicSession";
 import { IonicStorage } from "../storage/ionicStorage";
@@ -68,10 +68,8 @@ class Agent {
   static readonly DEFAULT_RECONNECT_INTERVAL = 1000;
 
   private static instance: Agent;
-  private agentServicesProps: AgentServicesProps = {
-    eventEmitter: new CoreEventEmitter(),
-    signifyClient: undefined as any,
-  };
+  private agentServicesProps!: AgentServicesProps;
+  private signifyClient!: SignifyClient;
 
   private storageSession!: SqliteSession | IonicSession;
 
@@ -83,9 +81,6 @@ class Agent {
   private peerConnectionStorage!: PeerConnectionStorage;
   private operationPendingStorage!: OperationPendingStorage;
 
-  private signifyClient!: SignifyClient;
-
-  // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
   private multiSigService!: MultiSigService;
   private ipexCommunicationService!: IpexCommunicationService;
@@ -412,22 +407,18 @@ class Agent {
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
-    if (agentUrls.url) {
-      await this.basicStorageService.save({
-        id: MiscRecordId.KERIA_CONNECT_URL,
-        content: {
-          url: agentUrls.url,
-        },
-      });
-    }
-    if (agentUrls.bootUrl) {
-      await this.basicStorageService.save({
-        id: MiscRecordId.KERIA_BOOT_URL,
-        content: {
-          url: agentUrls.bootUrl,
-        },
-      });
-    }
+    await this.basicStorageService.save({
+      id: MiscRecordId.KERIA_CONNECT_URL,
+      content: {
+        url: agentUrls.url,
+      },
+    });
+    await this.basicStorageService.save({
+      id: MiscRecordId.KERIA_BOOT_URL,
+      content: {
+        url: agentUrls.bootUrl,
+      },
+    });
   }
 
   async setupLocalDependencies(): Promise<void> {
@@ -470,13 +461,7 @@ class Agent {
   ) {
     try {
       if (Agent.isOnline) {
-        Agent.isOnline = false;
-        this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
-          type: EventTypes.KeriaStatusChanged,
-          payload: {
-            isOnline: false,
-          },
-        });
+        this.markAgentStatus(false);
       }
       await this.signifyClient.connect();
 
@@ -498,7 +483,7 @@ class Agent {
     if (!bran) {
       throw new Error(Agent.MISSING_BRAN_SECURE_STORAGE);
     }
-    return bran as string;
+    return bran;
   }
 
   private getStorageService<T extends BaseRecord>(

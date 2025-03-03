@@ -1,0 +1,109 @@
+#navBar {
+  a,
+  button,
+  li {
+    color: var(--text-color);
+    text-transform: none;
+    text-decoration: none;
+    border-radius: 1rem;
+    padding: 0.75rem 1rem 0.75rem 1.25rem;
+
+    &:hover:not(.header-logo):not(.switch-account-button) {
+      background-color: var(--color-primary-200);
+    }
+
+    &:active:not(.header-logo):not(.switch-account-button) {
+      background-color: var(--color-primary-200);
+    }
+
+    &.active {
+      color: var(--color-primary-700);
+    }
+
+    .active-bar {
+      height: 0.125rem;
+      width: 80%;
+      position: absolute;
+      bottom: 0;
+      left: 1rem;
+      border-radius: 0.125rem 0.125rem 0rem 0rem;
+      background-color: var(--color-primary-700);
+    }
+
+    img,
+    svg {
+      margin-right: 0.5rem;
+      vertical-align: text-bottom;
+    }
+  }
+
+  .nav-left,
+  .nav-right {
+    button,
+    li {
+      padding: 0;
+    }
+  }
+
+  .nav-tablet {
+    .menu-button {
+      margin-right: 0;
+      padding: 0.75rem 1rem 0.75rem 1.25rem;
+    }
+
+    .header-logo {
+      padding: 0.75rem 0;
+    }
+  }
+}
+
+#drawer {
+  text-align: left;
+  height: 100%;
+
+  h6 {
+    padding-left: 1.5rem;
+    margin: 1.25rem 0;
+  }
+
+  .MuiList-root {
+    padding: 0;
+
+    .MuiButtonBase-root {
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+
+      &:hover {
+        background-color: var(--color-primary-200);
+      }
+
+      &.active {
+        .MuiTypography-root,
+        .MuiListItemIcon-root {
+          color: var(--color-primary-700);
+        }
+      }
+
+      .active-bar {
+        height: 0.125rem;
+        width: calc(100% - 2.25rem);
+        position: absolute;
+        bottom: 0;
+        left: 1rem;
+        border-radius: 0.125rem 0.125rem 0rem 0rem;
+        background-color: var(--color-primary-700);
+      }
+
+      .MuiTypography-root,
+      .MuiListItemIcon-root {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .MuiListItemIcon-root {
+        min-width: 1.5rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}

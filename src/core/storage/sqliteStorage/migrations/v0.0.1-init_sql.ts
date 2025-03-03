@@ -24,4 +24,5 @@ const DATA_V001: SqlMigration = {
     "CREATE INDEX IF NOT EXISTS ix_items_tags_name ON items_tags (name, value);",
   ],
 };
+
 export { DATA_V001 };

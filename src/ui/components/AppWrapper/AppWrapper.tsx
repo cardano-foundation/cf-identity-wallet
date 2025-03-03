@@ -44,20 +44,23 @@ import {
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   getAuthentication,
-  getIsInitialized,
+  getInitializationPhase,
+  setInitializationPhase,
   getIsOnline,
   getRecoveryCompleteNoInterruption,
   setAuthentication,
   setCameraDirection,
   setCurrentOperation,
-  setInitialized,
   setIsOnline,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
   showNoWitnessAlert,
 } from "../../../store/reducers/stateCache";
-import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import {
+  IncomingRequestType,
+  InitializationPhase,
+} from "../../../store/reducers/stateCache/stateCache.types";
 import {
   getConnectedWallet,
   setConnectedWallet,
@@ -102,6 +105,7 @@ const connectionStateChangedHandler = async (
     );
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
+    // @TODO - foconnor: Should be able to just update Redux without fetching from DB.
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
       await Agent.agent.connections.getConnectionShortDetailById(
@@ -187,7 +191,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
-  const initAppSuccess = useAppSelector(getIsInitialized);
+  const initializationPhase = useAppSelector(getInitializationPhase);
   const recoveryCompleteNoInterruption = useAppSelector(
     getRecoveryCompleteNoInterruption
   );
@@ -241,14 +245,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, [isOnline, authentication.loggedIn, dispatch]);
 
   useEffect(() => {
-    if (initAppSuccess) {
+    if (initializationPhase === InitializationPhase.PHASE_TWO) {
       if (authentication.loggedIn) {
         Agent.agent.keriaNotifications.startNotification();
       } else {
         Agent.agent.keriaNotifications.stopNotification();
       }
     }
-  }, [authentication.loggedIn, initAppSuccess]);
+  }, [authentication.loggedIn, initializationPhase]);
 
   useEffect(() => {
     if (!connectedWallet?.id) {
@@ -274,14 +278,39 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   }, [recoveryCompleteNoInterruption]);
 
-  const checkKeyStore = async (key: string) => {
-    try {
-      const itemInKeyStore = await SecureStorage.get(key);
-      return !!itemInKeyStore;
-    } catch (e) {
-      return false;
+  useEffect(() => {
+    const startAgent = async () => {
+      // This small pause allows the LockPage to close fully in the UI before starting the agent.
+      // Starting the agent causes the UI to freeze up in JS, so visually a jumpy spinner is better than
+      // being momentarily frozen on entering the last diget of pincode and also having a (shorter) jumpy spinner.
+      await new Promise((resolve) => setTimeout(resolve, 25));
+
+      try {
+        await Agent.agent.start(authentication.ssiAgentUrl);
+        await recoverAndLoadDb();
+      } catch (e) {
+        if (
+          e instanceof Error &&
+          e.message === Agent.KERIA_CONNECT_FAILED_BAD_NETWORK
+        ) {
+          dispatch(setInitializationPhase(InitializationPhase.PHASE_TWO)); // Show offline mode page
+
+          // No await, background this task and continue initializing
+          Agent.agent
+            .connect(Agent.DEFAULT_RECONNECT_INTERVAL, false)
+            .then(() => {
+              recoverAndLoadDb();
+            });
+        } else {
+          throw e;
+        }
+      }
+    };
+
+    if (authentication.ssiAgentUrl && !authentication.firstAppLaunch) {
+      startAgent();
     }
-  };
+  }, [authentication.ssiAgentUrl, authentication.firstAppLaunch]);
 
   const loadDatabase = async () => {
     try {
@@ -318,10 +347,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
         IdentifiersFilters.All;
       let credentialsSelectedFilter: CredentialsFilters =
         CredentialsFilters.All;
-      const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
-      const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
+      const passcodeIsSet = await SecureStorage.keyExists(
+        KeyStoreKeys.APP_PASSCODE
+      );
+      const seedPhraseIsSet = await SecureStorage.keyExists(
+        KeyStoreKeys.SIGNIFY_BRAN
+      );
 
-      const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+      const passwordIsSet = await SecureStorage.keyExists(
+        KeyStoreKeys.APP_OP_PASSWORD
+      );
       const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
         MiscRecordId.KERIA_CONNECT_URL
       );
@@ -461,6 +496,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
           passwordIsSkipped: !!passwordSkipped?.content.value,
           ssiAgentIsSet:
             !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
+          ssiAgentUrl: (keriaConnectUrlRecord?.content?.url as string) ?? "",
           recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
           loginAttempt,
         })
@@ -471,9 +507,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       };
     } catch (e) {
       showError("Failed to load cache data", e, dispatch);
-      return {
-        keriaConnectUrlRecord: null,
-      };
+      throw e;
     }
   };
 
@@ -551,34 +585,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // Ensure online/offline callback setup before connecting to KERIA
     setupEventServiceCallbacks();
 
-    if (keriaConnectUrlRecord) {
-      try {
-        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
-        await recoverAndLoadDb();
-      } catch (e) {
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          e instanceof Error &&
-          e.message === Agent.KERIA_CONNECT_FAILED_BAD_NETWORK
-        ) {
-          // No await, background this task and continue initializing
-          Agent.agent
-            .connect(Agent.DEFAULT_RECONNECT_INTERVAL, false)
-            .then(recoverAndLoadDb);
-        } else {
-          throw e;
-        }
-      }
-    }
-
     // Begin background polling of KERIA or local DB items
     // If we are still onboarding or in offline mode, won't call KERIA until online
     Agent.agent.keriaNotifications.pollNotifications();
     Agent.agent.keriaNotifications.pollLongOperations();
-    dispatch(setInitialized(true));
+
+    dispatch(
+      setInitializationPhase(
+        keriaConnectUrlRecord?.content?.url
+          ? InitializationPhase.PHASE_ONE
+          : InitializationPhase.PHASE_TWO
+      )
+    );
   };
 
   const recoverAndLoadDb = async () => {
+    // Show spinner in case recovery takes time
+    dispatch(setInitializationPhase(InitializationPhase.PHASE_ONE));
     const recoveryStatus = await Agent.agent.basicStorage.findById(
       MiscRecordId.CLOUD_RECOVERY_STATUS
     );
@@ -592,6 +615,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadDb = async () => {
     await loadDatabase();
     Agent.agent.markAgentStatus(true);
+    dispatch(setInitializationPhase(InitializationPhase.PHASE_TWO));
   };
 
   return (

@@ -63,7 +63,7 @@ describe("Credential request information", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByText, getByTestId, queryByText } = render(
+    const { getByText, getByTestId, queryByText, unmount } = render(
       <Provider store={storeMocked}>
         <CredentialRequestInformation
           pageId="multi-sign"
@@ -105,7 +105,6 @@ describe("Credential request information", () => {
     );
 
     await waitFor(() => {
-      expect(deleteNotificationMock).toBeCalled();
       expect(
         queryByText(
           EN_TRANSLATIONS.tabs.notifications.details.credential.request
@@ -113,6 +112,13 @@ describe("Credential request information", () => {
         )
       ).toBeNull();
     });
+
+    await waitFor(() => {
+      expect(deleteNotificationMock).toBeCalled();
+    });
+
+    unmount();
+    document.getElementsByTagName("body")[0].innerHTML = "";
   });
 });
 
@@ -477,21 +483,22 @@ describe("Credential request information: multisig", () => {
 
     const back = jest.fn();
 
-    const { getByText, getByTestId, getAllByText, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <CredentialRequestInformation
-          pageId="multi-sign"
-          activeStatus
-          onBack={back}
-          onAccept={jest.fn()}
-          userAID="member-2"
-          notificationDetails={notificationsFix[4]}
-          credentialRequest={credRequestFix}
-          linkedGroup={linkedGroup}
-          onReloadData={jest.fn()}
-        />
-      </Provider>
-    );
+    const { getByText, getByTestId, getAllByText, queryByText, unmount } =
+      render(
+        <Provider store={storeMocked}>
+          <CredentialRequestInformation
+            pageId="multi-sign"
+            activeStatus
+            onBack={back}
+            onAccept={jest.fn()}
+            userAID="member-2"
+            notificationDetails={notificationsFix[4]}
+            credentialRequest={credRequestFix}
+            linkedGroup={linkedGroup}
+            onReloadData={jest.fn()}
+          />
+        </Provider>
+      );
 
     await waitFor(() => {
       expect(
@@ -541,7 +548,7 @@ describe("Credential request information: multisig", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(joinMultisigOfferMock).toBeCalled();
@@ -553,21 +560,33 @@ describe("Credential request information: multisig", () => {
 
     await waitFor(() => {
       expect(
-        getAllByTestId("multisig-request-alert-decline")[0]
-      ).toHaveTextContent(
-        EN_TRANSLATIONS.tabs.notifications.details.credential.request
-          .information.alert.textdecline
-      );
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.alert.textdecline
+        )
+      ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getAllByTestId("multisig-request-alert-decline-confirm-button")[0]
+        getByTestId("multisig-request-alert-decline-confirm-button")
       );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.alert.textdecline
+        )
+      ).toBeNull();
     });
 
     await waitFor(() => {
       expect(deleteNotificationMock).toBeCalled();
     });
+
+    unmount();
+    document.getElementsByTagName("body")[0].innerHTML = "";
   });
 });

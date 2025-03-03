@@ -1,9 +1,7 @@
 import { IonCheckbox, IonContent, IonModal } from "@ionic/react";
 import { useState } from "react";
-import {
-  CreationStatus,
-  IdentifierShortDetails,
-} from "../../../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../../core/agent/agent.types";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";

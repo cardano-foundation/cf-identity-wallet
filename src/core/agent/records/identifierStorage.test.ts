@@ -113,4 +113,15 @@ describe("Identifier storage test", () => {
       },
     ]);
   });
+
+  test("Can get an identifier by group ID (first found, as should only be one)", async () => {
+    storageService.findAllByQuery.mockResolvedValue([identifierMetadataRecord]);
+    expect(
+      await identifierStorage.getIdentifierMetadataByGroupId("id")
+    ).toEqual(identifierMetadataRecord);
+    storageService.findAllByQuery.mockResolvedValueOnce([]);
+    expect(
+      await identifierStorage.getIdentifierMetadataByGroupId("id")
+    ).toEqual(null);
+  });
 });

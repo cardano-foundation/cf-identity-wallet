@@ -3,12 +3,9 @@ import { t } from "i18next";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { MiscRecordId } from "../../../core/agent/agent.types";
+import { MiscRecordId , CreationStatus } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records/basicRecord";
-import {
-  CreationStatus,
-  IdentifierShortDetails,
-} from "../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -254,8 +251,8 @@ const Identifiers = () => {
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"
-      ? "favorite-identifier-nav"
-      : ""
+        ? "favorite-identifier-nav"
+        : ""
   }`;
   const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
     if (identifier?.groupMetadata || identifier?.multisigManageAid) {
@@ -292,8 +289,8 @@ const Identifiers = () => {
         deletedPendingItem?.creationStatus === CreationStatus.FAILED
           ? "tabs.identifiers.detelepending.witnesserror"
           : deletedPendingItem?.groupMetadata?.groupId
-          ? "tabs.identifiers.detelepending.mutilsigdescription"
-          : "tabs.identifiers.detelepending.description"
+            ? "tabs.identifiers.detelepending.mutilsigdescription"
+            : "tabs.identifiers.detelepending.description"
       ),
       button: i18n.t("tabs.identifiers.detelepending.button"),
     }),
@@ -388,8 +385,8 @@ const Identifiers = () => {
                   selectedFilter === IdentifiersFilters.All
                     ? allIdentifiers
                     : selectedFilter === IdentifiersFilters.Individual
-                    ? individualIdentifiers
-                    : groupIdentifiers
+                      ? individualIdentifiers
+                      : groupIdentifiers
                 }
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}

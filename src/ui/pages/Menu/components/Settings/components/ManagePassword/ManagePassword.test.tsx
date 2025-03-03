@@ -107,7 +107,7 @@ describe("Manage password", () => {
   });
 
   test("Cancel alert", async () => {
-    const { queryByTestId, getByTestId, unmount } = render(
+    const { queryByTestId, getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -128,6 +128,15 @@ describe("Manage password", () => {
 
     await waitFor(() => {
       expect(
+        queryByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.enablemessage
+        )
+      ).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(
         getByTestId("alert-cancel-enable-password").getAttribute("is-open")
       ).toBe("true");
       expect(
@@ -143,23 +152,26 @@ describe("Manage password", () => {
 
     await waitFor(() => {
       expect(
+        queryByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.enablemessage
+        )
+      ).toBeNull();
+    });
+
+    await waitFor(() => {
+      expect(
         getByTestId("alert-cancel-enable-password").getAttribute("is-open")
       ).toBe("false");
 
       expect(queryByTestId("create-password-modal")).toBe(null);
     });
 
-    unmount();
+    document.getElementsByTagName("html")[0].innerHTML = "";
   });
 
   test("Password not set", async () => {
-    const {
-      queryByTestId,
-      getByTestId,
-      getByText,
-      findByText,
-      getAllByTestId,
-    } = render(
+    const { queryByTestId, getByTestId, getByText, queryByText } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -174,32 +186,41 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("settings-item-toggle-password"));
     });
 
-    const text = await waitFor(async () => {
-      return await findByText(
-        TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
-          .page.alert.enablemessage
-      );
-    });
-
     await waitFor(() => {
-      expect(text).toBeVisible();
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.enablemessage
+        )
+      ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getAllByTestId("alert-cancel-enable-password-confirm-button")[0]
+        getByTestId("alert-cancel-enable-password-confirm-button")
       );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.enablemessage
+        )
+      ).toBeNull();
     });
 
     await waitFor(() => {
       expect(getByText("1")).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(getByTestId("create-password-modal")).toBeVisible();
     });
+
+    document.getElementsByTagName("html")[0].innerHTML = "";
   });
 
   test("Disable password option", async () => {
@@ -233,7 +254,7 @@ describe("Manage password", () => {
       dispatch: dispatchMock,
     };
 
-    const { queryByTestId, getByTestId, findByText } = render(
+    const { queryByTestId, getByTestId, queryByText, getByText } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -248,17 +269,26 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("settings-item-toggle-password"));
     });
 
-    const text = await findByText(
-      TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword.page
-        .alert.disablemessage
-    );
-
     await waitFor(() => {
-      expect(text).toBeVisible();
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.disablemessage
+        )
+      ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(getByTestId("alert-cancel-confirm-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.disablemessage
+        )
+      ).toBeNull();
     });
 
     await waitFor(() => {

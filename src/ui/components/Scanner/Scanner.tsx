@@ -22,7 +22,7 @@ import {
 } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  KeriConnectionType,
+  OobiType,
   OOBI_AGENT_ONLY_RE,
   WOOBI_RE,
 } from "../../../core/agent/agent.types";
@@ -270,7 +270,7 @@ const Scanner = forwardRef(
           content
         );
 
-        if (invitation.type === KeriConnectionType.NORMAL) {
+        if (invitation.type === OobiType.NORMAL) {
           setIsValueCaptured && setIsValueCaptured(true);
 
           const scanMultiSigByTab = routePath === TabsRoutePath.SCAN;
@@ -293,7 +293,7 @@ const Scanner = forwardRef(
           }
         }
 
-        if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
+        if (invitation.type === OobiType.MULTI_SIG_INITIATOR) {
           setGroupId(invitation.groupId);
           dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
           setCreateIdentifierModalIsOpen(true);

@@ -1,5 +1,5 @@
 import { BaseRecord } from "../../storage/storage.types";
-import { CreationStatus } from "../services/identifier.types";
+import { CreationStatus } from "../agent.types";
 
 interface GroupMetadata {
   groupId: string;
@@ -16,6 +16,7 @@ interface IdentifierMetadataRecordProps {
   theme: number;
   multisigManageAid?: string;
   groupMetadata?: GroupMetadata;
+  pendingDeletion?: boolean;
   sxlt?: string;
 }
 
@@ -24,7 +25,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   theme!: number;
   creationStatus!: CreationStatus;
   isDeleted!: boolean;
-  pendingDeletion = false;
+  pendingDeletion!: boolean;
   multisigManageAid?: string;
   groupMetadata?: GroupMetadata;
   sxlt?: string;
@@ -44,6 +45,7 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.isDeleted = props.isDeleted ?? false;
       this.groupMetadata = props.groupMetadata;
       this.multisigManageAid = props.multisigManageAid;
+      this.pendingDeletion = props.pendingDeletion ?? false;
       this.sxlt = props.sxlt;
     }
   }

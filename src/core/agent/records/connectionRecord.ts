@@ -1,4 +1,5 @@
 import { BaseRecord, Tags } from "../../storage/storage.types";
+import { CreationStatus } from "../agent.types";
 import { randomSalt } from "../services/utils";
 
 interface ConnectionRecordStorageProps {
@@ -8,15 +9,16 @@ interface ConnectionRecordStorageProps {
   alias: string;
   oobi: string;
   groupId?: string;
-  pending: boolean;
+  creationStatus?: CreationStatus;
+  pendingDeletion?: boolean;
 }
 
 class ConnectionRecord extends BaseRecord {
   alias!: string;
   oobi!: string;
   groupId?: string;
-  pending!: boolean;
-  pendingDeletion = false;
+  creationStatus!: CreationStatus;
+  pendingDeletion!: boolean;
   static readonly type = "ConnectionRecord";
   readonly type = ConnectionRecord.type;
 
@@ -28,7 +30,8 @@ class ConnectionRecord extends BaseRecord {
       this.alias = props.alias;
       this.oobi = props.oobi;
       this.groupId = props.groupId;
-      this.pending = props.pending;
+      this.creationStatus = props.creationStatus ?? CreationStatus.PENDING;
+      this.pendingDeletion = props.pendingDeletion ?? false;
       this._tags = props.tags ?? {};
     }
   }
@@ -38,7 +41,7 @@ class ConnectionRecord extends BaseRecord {
       ...this._tags,
       groupId: this.groupId,
       pendingDeletion: this.pendingDeletion,
-      pending: this.pending,
+      creationStatus: this.creationStatus,
     };
   }
 }

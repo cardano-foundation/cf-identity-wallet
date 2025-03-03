@@ -18,7 +18,11 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ConnectionDetails } from "./ConnectionDetails";
 import { ConnectionHistoryType } from "../../../core/agent/services/connectionService.types";
@@ -117,7 +121,7 @@ describe("ConnectionDetails Page", () => {
           label: "Cambridge University",
           createdAtUTC: "2017-08-14T19:23:24Z",
           logo: ".png",
-          status: ConnectionStatus.ACCEPTED,
+          status: ConnectionStatus.CONFIRMED,
           notes: [
             {
               id: "ebfeb1ebc6f1c276ef71212ec20",
@@ -216,7 +220,7 @@ describe("ConnectionDetails Page", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(markConnectionPendingDeleteMock).toBeCalled();
@@ -557,7 +561,9 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(
             connectionDetails.createdAtUTC
-          )} - ${formatTimeToSec(connectionDetails.createdAtUTC)}`
+          )} - ${formatTimeToSec(
+            connectionDetails.createdAtUTC
+          )} (${getUTCOffset(connectionDetails.createdAtUTC)})`
         )
       ).toBeVisible();
     });
@@ -579,7 +585,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[0].timestamp)} - ${formatTimeToSec(
             historyEvents[0].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[0].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -598,7 +604,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[1].timestamp)} - ${formatTimeToSec(
             historyEvents[1].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[1].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -616,7 +622,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
             historyEvents[3].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[3].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -637,7 +643,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
             historyEvents[3].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[3].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -703,7 +709,7 @@ describe("Checking the Connection Details Page when connection is missing from t
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(deleteStaleLocalConnectionByIdMock).toBeCalled();

@@ -14,7 +14,7 @@ import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getCurrentOperation,
-  getIsInitialized,
+  getInitializationPhase,
 } from "../store/reducers/stateCache";
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
@@ -38,11 +38,12 @@ import {
   IOS_MIN_VERSION,
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
+import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
 
 setupIonicReact();
 
 const App = () => {
-  const initialized = useAppSelector(getIsInitialized);
+  const initializationPhase = useAppSelector(getInitializationPhase);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
   const [isCompatible, setIsCompatible] = useState(true);
@@ -135,37 +136,51 @@ const App = () => {
     checkCompatibility();
   }, []);
 
+  const contentByInitPhase = (initPhase: InitializationPhase) => {
+    switch (initPhase) {
+    case InitializationPhase.PHASE_ZERO:
+      return <LoadingPage />;
+    case InitializationPhase.PHASE_ONE:
+      return (
+        <>
+          <LoadingPage />
+          <LockPage />
+        </>
+      );
+    case InitializationPhase.PHASE_TWO:
+      return (
+        <>
+          <IonReactRouter>
+            {showScan ? (
+              <FullPageScanner
+                showScan={showScan}
+                setShowScan={setShowScan}
+              />
+            ) : (
+              <div
+                className="app-spinner-container"
+                data-testid="app-spinner-container"
+              >
+                <IonSpinner name="circular" />
+              </div>
+            )}
+            <div className={showScan ? "ion-hide" : ""}>
+              <Routes />
+            </div>
+          </IonReactRouter>
+          <LockPage />
+          <AppOffline />
+        </>
+      );
+    }
+  };
+
   const renderApp = () => {
     return (
       <>
         <AppWrapper>
           <StrictMode>
-            {initialized ? (
-              <>
-                <IonReactRouter>
-                  {showScan ? (
-                    <FullPageScanner
-                      showScan={showScan}
-                      setShowScan={setShowScan}
-                    />
-                  ) : (
-                    <div
-                      className="app-spinner-container"
-                      data-testid="app-spinner-container"
-                    >
-                      <IonSpinner name="circular" />
-                    </div>
-                  )}
-                  <div className={showScan ? "ion-hide" : ""}>
-                    <Routes />
-                  </div>
-                </IonReactRouter>
-                <LockPage />
-                <AppOffline />
-              </>
-            ) : (
-              <LoadingPage />
-            )}
+            {contentByInitPhase(initializationPhase)}
             <InputRequest />
             <SidePage />
             <GenericError />
@@ -176,6 +191,7 @@ const App = () => {
       </>
     );
   };
+
   return (
     <IonApp>
       {isCompatible ? (

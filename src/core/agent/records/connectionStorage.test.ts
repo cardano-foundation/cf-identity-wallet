@@ -1,4 +1,5 @@
 import { Query, StorageService } from "../../storage/storage.types";
+import { CreationStatus } from "../agent.types";
 import {
   ConnectionRecord,
   ConnectionRecordStorageProps,
@@ -28,7 +29,7 @@ const connectionRecordProps: ConnectionRecordStorageProps = {
   alias: "alias",
   oobi: "oobi",
   tags: {},
-  pending: false,
+  creationStatus: CreationStatus.COMPLETE,
 };
 
 const connectionRecordA = new ConnectionRecord(connectionRecordProps);
