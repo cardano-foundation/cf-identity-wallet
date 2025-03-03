@@ -104,12 +104,127 @@ const Scanner = forwardRef(
     const [resumeMultiSig, setResumeMultiSig] =
       useState<IdentifierShortDetails | null>(null);
     const isHandlingQR = useRef(false);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [isAlreadyLoaded, setIsAlreadyLoaded] = useState(false);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
         setMobileweb(true);
       }
     }, [platforms]);
+
+    useImperativeHandle(ref, () => ({
+      stopScan,
+    }));
+
+    const initScan = async () => {
+      if (Capacitor.isNativePlatform()) {
+        const allowed = await checkPermission();
+        setPermisson(!!allowed);
+        onCheckPermissionFinish?.(!!allowed);
+
+        if (allowed) {
+          await BarcodeScanner.removeAllListeners();
+          const listener = await BarcodeScanner.addListener(
+            "barcodesScanned",
+            async (result) => {
+              await listener.remove();
+              if (isHandlingQR.current) return;
+              isHandlingQR.current = true;
+              if (!result.barcodes?.length) return;
+              await processValue(result.barcodes[0].rawValue);
+            }
+          );
+
+          try {
+            await BarcodeScanner.startScan({
+              formats: [BarcodeFormat.QrCode],
+              lensFacing: cameraDirection,
+            });
+          } catch (error) {
+            showError("Error starting barcode scan:", error);
+            setScanUnavailable(true);
+            stopScan();
+          }
+        }
+
+        document?.querySelector("body")?.classList.add("scanner-active");
+        setScanning(true);
+        document?.querySelector("body")?.classList.add("scanner-active");
+        document
+          ?.querySelector("body.scanner-active > div:last-child")
+          ?.classList.remove("hide");
+      }
+    };
+
+    useEffect(() => {
+      const onLoad = async () => {
+        if (
+          routePath === TabsRoutePath.SCAN &&
+          (isShowConnectionsModal || createIdentifierModalIsOpen)
+        ) {
+          await stopScan();
+          return;
+        }
+
+        const isDuplicateConnectionToast = currentToastMsgs.some(
+          (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
+        );
+        const isRequestPending = currentToastMsgs.some((item) =>
+          [
+            ToastMsgType.CONNECTION_REQUEST_PENDING,
+            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
+          ].includes(item.message)
+        );
+
+        const isScanning =
+          routePath === TabsRoutePath.SCAN ||
+          [
+            OperationType.SCAN_CONNECTION,
+            OperationType.SCAN_WALLET_CONNECTION,
+            OperationType.SCAN_SSI_BOOT_URL,
+            OperationType.SCAN_SSI_CONNECT_URL,
+          ].includes(currentOperation);
+
+        const isMultisignScan =
+          [
+            OperationType.MULTI_SIG_INITIATOR_SCAN,
+            OperationType.MULTI_SIG_RECEIVER_SCAN,
+          ].includes(currentOperation) && !isDuplicateConnectionToast;
+
+        if ((isScanning && !isRequestPending) || isMultisignScan) {
+          await initScan();
+        } else {
+          await stopScan();
+        }
+        setIsAlreadyLoaded(true);
+      };
+      onLoad();
+    }, [
+      currentOperation,
+      routePath,
+      isShowConnectionsModal,
+      createIdentifierModalIsOpen,
+      currentToastMsgs,
+    ]);
+
+    useEffect(() => {
+      const handleCameraChange = async () => {
+        setIsTransitioning(true);
+        await stopScan();
+        await initScan();
+        setIsTransitioning(false);
+      };
+
+      if (!isAlreadyLoaded) return;
+      handleCameraChange();
+    }, [cameraDirection]);
+
+    useEffect(() => {
+      return () => {
+        stopScan();
+      };
+    }, []);
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermissions();
@@ -134,10 +249,6 @@ const Scanner = forwardRef(
       document?.querySelector("body")?.classList.remove("scanner-active");
       setGroupId("");
     };
-
-    useImperativeHandle(ref, () => ({
-      stopScan,
-    }));
 
     const handleConnectWallet = (id: string) => {
       if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(id)) {
@@ -417,108 +528,6 @@ const Scanner = forwardRef(
       handleResolveOobi(content);
     };
 
-    const initScan = async () => {
-      if (Capacitor.isNativePlatform()) {
-        const allowed = await checkPermission();
-        setPermisson(!!allowed);
-        onCheckPermissionFinish?.(!!allowed);
-
-        if (allowed) {
-          await BarcodeScanner.removeAllListeners();
-          const listener = await BarcodeScanner.addListener(
-            "barcodesScanned",
-            async (result) => {
-              await listener.remove();
-              if (isHandlingQR.current) return;
-              isHandlingQR.current = true;
-              if (!result.barcodes?.length) return;
-              await processValue(result.barcodes[0].rawValue);
-            }
-          );
-          const listenerError = await BarcodeScanner.addListener(
-            "scanError",
-            async (result) => {
-              await listenerError.remove();
-            }
-          );
-          try {
-            await BarcodeScanner.startScan({
-              formats: [BarcodeFormat.QrCode],
-              lensFacing: cameraDirection,
-            });
-          } catch (error) {
-            showError("Error starting barcode scan:", error);
-            setScanUnavailable(true);
-            stopScan();
-          }
-        }
-
-        document?.querySelector("body")?.classList.add("scanner-active");
-        setScanning(true);
-        document?.querySelector("body")?.classList.add("scanner-active");
-        document
-          ?.querySelector("body.scanner-active > div:last-child")
-          ?.classList.remove("hide");
-      }
-    };
-
-    useEffect(() => {
-      const onLoad = async () => {
-        if (
-          routePath === TabsRoutePath.SCAN &&
-          (isShowConnectionsModal || createIdentifierModalIsOpen)
-        ) {
-          await stopScan();
-          return;
-        }
-
-        const isDuplicateConnectionToast = currentToastMsgs.some(
-          (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
-        );
-        const isRequestPending = currentToastMsgs.some((item) =>
-          [
-            ToastMsgType.CONNECTION_REQUEST_PENDING,
-            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
-          ].includes(item.message)
-        );
-
-        const isScanning =
-          routePath === TabsRoutePath.SCAN ||
-          [
-            OperationType.SCAN_CONNECTION,
-            OperationType.SCAN_WALLET_CONNECTION,
-            OperationType.SCAN_SSI_BOOT_URL,
-            OperationType.SCAN_SSI_CONNECT_URL,
-          ].includes(currentOperation);
-
-        const isMultisignScan =
-          [
-            OperationType.MULTI_SIG_INITIATOR_SCAN,
-            OperationType.MULTI_SIG_RECEIVER_SCAN,
-          ].includes(currentOperation) && !isDuplicateConnectionToast;
-
-        if ((isScanning && !isRequestPending) || isMultisignScan) {
-          await initScan();
-        } else {
-          await stopScan();
-        }
-      };
-      onLoad();
-    }, [
-      currentOperation,
-      routePath,
-      cameraDirection,
-      isShowConnectionsModal,
-      createIdentifierModalIsOpen,
-      currentToastMsgs,
-    ]);
-
-    useEffect(() => {
-      return () => {
-        stopScan();
-      };
-    }, []);
-
     const handlePrimaryButtonAction = () => {
       stopScan();
       dispatch(setCurrentOperation(OperationType.MULTI_SIG_INITIATOR_INIT));
@@ -602,7 +611,12 @@ const Scanner = forwardRef(
           className={containerClass}
           data-testid="qr-code-scanner"
         >
-          {scanning || mobileweb || scanUnavailable ? (
+          {isTransitioning ? (
+            <div
+              className="scanner-spinner-container"
+              data-testid="scanner-spinner-container"
+            />
+          ) : scanning || mobileweb || scanUnavailable ? (
             <>
               <IonRow>
                 <IonCol size="12">
