@@ -14,6 +14,7 @@ import { EnhancedTableHead } from "./EnhancedTableHead";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { useTable } from "./useTable";
 import { rows } from "./data";
+import { formatDate } from "../../../../utils/dateFormatter"; // Import the date formatting function
 
 const ConnectionsTable: React.FC = () => {
   const {
@@ -81,7 +82,7 @@ const ConnectionsTable: React.FC = () => {
                     >
                       {row.name}
                     </TableCell>
-                    <TableCell align="right">{row.date}</TableCell>
+                    <TableCell align="right">{formatDate(row.date)}</TableCell>
                     <TableCell align="right">{row.credentials}</TableCell>
                   </TableRow>
                 );

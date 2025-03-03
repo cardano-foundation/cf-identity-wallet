@@ -25,6 +25,8 @@
   }
 
   .connections-table {
+    background-color: var(--color-neutral-100);
+
     .connection-table-toolbar,
     .table-left,
     .table-right {
@@ -42,16 +44,29 @@
         > * {
           align-self: anchor-center;
           padding: 0.5rem 1rem;
-
-          *:not(:last-child) {
-            margin-right: 0.5rem;
-          }
         }
       }
+
+      .table-left * svg {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .MuiTableHead-root {
+      background-color: var(--color-primary-200);
     }
 
     tr {
       height: 3.5rem;
+
+      &.Mui-selected {
+        background-color: var(--color-neutral-100);
+      }
+
+      th,
+      td {
+        font-weight: 500;
+      }
     }
   }
 }
