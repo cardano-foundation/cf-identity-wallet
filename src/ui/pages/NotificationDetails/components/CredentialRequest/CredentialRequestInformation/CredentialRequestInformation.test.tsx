@@ -63,7 +63,7 @@ describe("Credential request information", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByText, getByTestId, queryByText } = render(
+    const { getByText, getByTestId, queryByText, unmount } = render(
       <Provider store={storeMocked}>
         <CredentialRequestInformation
           pageId="multi-sign"
@@ -105,7 +105,6 @@ describe("Credential request information", () => {
     );
 
     await waitFor(() => {
-      expect(deleteNotificationMock).toBeCalled();
       expect(
         queryByText(
           EN_TRANSLATIONS.tabs.notifications.details.credential.request
@@ -113,6 +112,13 @@ describe("Credential request information", () => {
         )
       ).toBeNull();
     });
+
+    await waitFor(() => {
+      expect(deleteNotificationMock).toBeCalled();
+    });
+
+    unmount();
+    document.getElementsByTagName("body")[0].innerHTML = "";
   });
 });
 
@@ -477,21 +483,22 @@ describe("Credential request information: multisig", () => {
 
     const back = jest.fn();
 
-    const { getByText, getByTestId, getAllByText, queryByText } = render(
-      <Provider store={storeMocked}>
-        <CredentialRequestInformation
-          pageId="multi-sign"
-          activeStatus
-          onBack={back}
-          onAccept={jest.fn()}
-          userAID="member-2"
-          notificationDetails={notificationsFix[4]}
-          credentialRequest={credRequestFix}
-          linkedGroup={linkedGroup}
-          onReloadData={jest.fn()}
-        />
-      </Provider>
-    );
+    const { getByText, getByTestId, getAllByText, queryByText, unmount } =
+      render(
+        <Provider store={storeMocked}>
+          <CredentialRequestInformation
+            pageId="multi-sign"
+            activeStatus
+            onBack={back}
+            onAccept={jest.fn()}
+            userAID="member-2"
+            notificationDetails={notificationsFix[4]}
+            credentialRequest={credRequestFix}
+            linkedGroup={linkedGroup}
+            onReloadData={jest.fn()}
+          />
+        </Provider>
+      );
 
     await waitFor(() => {
       expect(
@@ -578,5 +585,8 @@ describe("Credential request information: multisig", () => {
     await waitFor(() => {
       expect(deleteNotificationMock).toBeCalled();
     });
+
+    unmount();
+    document.getElementsByTagName("body")[0].innerHTML = "";
   });
 });

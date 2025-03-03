@@ -166,16 +166,12 @@ describe("Manage password", () => {
 
       expect(queryByTestId("create-password-modal")).toBe(null);
     });
+
+    document.getElementsByTagName("html")[0].innerHTML = "";
   });
 
   test("Password not set", async () => {
-    const {
-      queryByTestId,
-      getByTestId,
-      getByText,
-      getAllByTestId,
-      queryByText,
-    } = render(
+    const { queryByTestId, getByTestId, getByText, queryByText } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -223,6 +219,8 @@ describe("Manage password", () => {
     await waitFor(() => {
       expect(getByTestId("create-password-modal")).toBeVisible();
     });
+
+    document.getElementsByTagName("html")[0].innerHTML = "";
   });
 
   test("Disable password option", async () => {
@@ -256,7 +254,7 @@ describe("Manage password", () => {
       dispatch: dispatchMock,
     };
 
-    const { queryByTestId, getByTestId, findByText, queryByText } = render(
+    const { queryByTestId, getByTestId, queryByText, getByText } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -271,13 +269,13 @@ describe("Manage password", () => {
       fireEvent.click(getByTestId("settings-item-toggle-password"));
     });
 
-    const text = await findByText(
-      TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword.page
-        .alert.disablemessage
-    );
-
     await waitFor(() => {
-      expect(text).toBeVisible();
+      expect(
+        getByText(
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.disablemessage
+        )
+      ).toBeVisible();
     });
 
     act(() => {
