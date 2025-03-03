@@ -10,6 +10,7 @@ import "./styles/colors.scss";
 import { Notifications } from "./pages/Notifications";
 import { Settings } from "./pages/Settings";
 import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/500.css";
 
 const rootStyle = getComputedStyle(document.documentElement);
 
