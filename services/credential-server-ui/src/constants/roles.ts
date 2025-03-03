@@ -5,7 +5,7 @@ export enum RoleIndex {
 }
 
 export const roleViewText: { [key in RoleIndex]: string } = {
-  [RoleIndex.ISSUER]: "navbar.switchaccount.issuer",
-  [RoleIndex.VERIFIER]: "navbar.switchaccount.verifier",
-  [RoleIndex.HOLDER]: "navbar.switchaccount.holder",
+  [RoleIndex.ISSUER]: "navbar.switchAccount.issuer",
+  [RoleIndex.VERIFIER]: "navbar.switchAccount.verifier",
+  [RoleIndex.HOLDER]: "navbar.switchAccount.holder",
 };

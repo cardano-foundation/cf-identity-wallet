@@ -83,7 +83,7 @@ const SwitchAccount = () => {
         onClose={() => handleClose(state.selectedIndex)}
         className="switch-account-menu"
       >
-        <Typography>{i18n.t("navbar.switchaccount.title")}</Typography>
+        <Typography>{i18n.t("navbar.switchAccount.title")}</Typography>
         <MenuItem
           onClick={() => handleClose(RoleIndex.ISSUER)}
           disableRipple

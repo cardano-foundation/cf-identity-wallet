@@ -4,7 +4,7 @@
     "overview": "Overview",
     "connections": "Connections",
     "credentials": "Credentials",
-    "switchaccount": {
+    "switchAccount": {
       "title": "Switch account",
       "issuer": "Issuer",
       "verifier": "Verifier",
@@ -16,7 +16,13 @@
       "title": "Overview"
     },
     "connections": {
-      "title": "Connections"
+      "title": "Connections ({{count}})",
+      "addConnection": "Add Connection",
+      "filter": "Filter",
+      "selected": "selected",
+      "connectionName": "Connection Name",
+      "connectionDate": "Connection Date",
+      "issuedCredentials": "Issued Credentials"
     },
     "credentials": {
       "title": "Credentials"
