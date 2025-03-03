@@ -17,7 +17,6 @@ import {
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
-  NotificationRecord,
   NotificationRecordStorageProps,
   NotificationStorage,
   OperationPendingStorage,
@@ -331,62 +330,13 @@ class KeriaNotificationService extends AgentService {
     }
 
     try {
-      const noteRecord = await this.createNotificationRecord(notif);
-
-      console.log(`Just saved ${JSON.stringify(noteRecord, null, 2)}`);
-      // Check for existing "forward" messages in IPEX chain - used after recovering.
-      if (
-        [
-          NotificationRoute.ExnIpexApply,
-          NotificationRoute.ExnIpexAgree,
-          NotificationRoute.ExnIpexGrant,
-        ].includes(notif.a.r as NotificationRoute)
-      ) {
-        const forwards = await this.props.signifyClient
-          .exchanges()
-          .list({ filter: { "-p": { $eq: notif.a.d } } });
-        console.log(`Forwards are ${JSON.stringify(forwards, null, 2)}`);
-        if (forwards.length) {
-          noteRecord.linkedRequest = {
-            ...noteRecord.linkedRequest,
-            accepted: true,
-            current: forwards[0].exn.d, // Can only be one
-          };
-          console.log(`Updating to ${JSON.stringify(noteRecord, null, 2)}`);
-          await this.notificationStorage.update(noteRecord);
-
-          let recordType;
-          if (notif.a.r === NotificationRoute.ExnIpexApply) {
-            recordType = OperationPendingRecordType.ExchangeOfferCredential;
-          } else if (notif.a.r === NotificationRoute.ExnIpexAgree) {
-            recordType = OperationPendingRecordType.ExchangePresentCredential;
-          } else {
-            recordType = OperationPendingRecordType.ExchangeReceiveCredential;
-          }
-          console.log(
-            `saving op ${recordType} with exchange.${forwards[0].exn.d}`
-          );
-          await this.operationPendingStorage.save({
-            id: `exchange.${forwards[0].exn.d}`,
-            recordType,
-          });
-        }
-      }
-
+      const note = await this.createNotificationRecord(notif);
       if (notif.a.r !== NotificationRoute.ExnIpexAgree) {
         // Hidden from UI, so don't emit
         this.props.eventEmitter.emit<NotificationAddedEvent>({
           type: EventTypes.NotificationAdded,
           payload: {
-            note: {
-              id: noteRecord.id,
-              createdAt: noteRecord.createdAt.toISOString(),
-              a: noteRecord.a,
-              multisigId: noteRecord.multisigId,
-              connectionId: noteRecord.connectionId,
-              read: noteRecord.read,
-              groupReplied: noteRecord.linkedRequest.current !== undefined,
-            },
+            note,
           },
         });
       }
@@ -938,7 +888,7 @@ class KeriaNotificationService extends AgentService {
 
   private async createNotificationRecord(
     notif: Notification
-  ): Promise<NotificationRecord> {
+  ): Promise<KeriaNotification> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     const metadata: NotificationRecordStorageProps = {
       id: notif.i,
@@ -957,7 +907,17 @@ class KeriaNotificationService extends AgentService {
       metadata.multisigId = exchange.exn.e.icp.i;
     }
 
-    return await this.notificationStorage.save(metadata);
+    const result = await this.notificationStorage.save(metadata);
+
+    return {
+      id: result.id,
+      createdAt: result.createdAt.toISOString(),
+      a: result.a,
+      multisigId: result.multisigId,
+      connectionId: result.connectionId,
+      read: result.read,
+      groupReplied: result.linkedRequest.current !== undefined,
+    };
   }
 
   async readNotification(notificationId: string): Promise<void> {
