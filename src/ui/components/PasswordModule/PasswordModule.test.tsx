@@ -269,7 +269,7 @@ describe("Password Module", () => {
     });
   });
 
-  test("Hint match with password", async () => {
+  test("Hint contain password value", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked(initialState)}>
         <PasswordModule
@@ -289,7 +289,7 @@ describe("Password Module", () => {
     act(() => {
       ionFireEvent.ionInput(input, "Passssssssss1@");
       ionFireEvent.ionInput(confirmInput, "Passssssssss1@");
-      ionFireEvent.ionInput(hintInput, "Passssssssss1@");
+      ionFireEvent.ionInput(hintInput, "Password is Passssssssss1@");
     });
 
     await waitFor(() => {
