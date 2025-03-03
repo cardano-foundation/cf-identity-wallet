@@ -4,7 +4,7 @@ services:
   keria:
     container_name: idw-keria
     restart: unless-stopped
-    image: cardanofoundation/cf-idw-keria:0.1.1-PR999-72f5f61-GHRUN13631990672
+    image: cardanofoundation/cf-idw-keria:0.1.1-PR1000-6f97bbd-GHRUN13637003493
     environment:
       - KERI_AGENT_CORS=true
     volumes:
