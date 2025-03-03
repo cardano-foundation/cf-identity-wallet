@@ -1,6 +1,6 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { wordlists } from "bip39";
-import { closeOutline, refreshOutline } from "ionicons/icons";
+import { closeOutline, addOutline } from "ionicons/icons";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
@@ -305,7 +305,7 @@ const RecoverySeedPhraseModule = forwardRef<
                 : undefined
             }
             tertiaryButtonAction={() => setSwitchModeModal(true)}
-            tertiaryButtonIcon={refreshOutline}
+            tertiaryButtonIcon={addOutline}
           />
         </div>
         <AlertFail
