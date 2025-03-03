@@ -477,7 +477,7 @@ describe("Credential request information: multisig", () => {
 
     const back = jest.fn();
 
-    const { getByText, getByTestId, getAllByText, getAllByTestId } = render(
+    const { getByText, getByTestId, getAllByText, queryByText } = render(
       <Provider store={storeMocked}>
         <CredentialRequestInformation
           pageId="multi-sign"
@@ -553,17 +553,26 @@ describe("Credential request information: multisig", () => {
 
     await waitFor(() => {
       expect(
-        getAllByTestId("multisig-request-alert-decline")[0]
-      ).toHaveTextContent(
-        EN_TRANSLATIONS.tabs.notifications.details.credential.request
-          .information.alert.textdecline
-      );
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.alert.textdecline
+        )
+      ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getAllByTestId("multisig-request-alert-decline-confirm-button")[0]
+        getByTestId("multisig-request-alert-decline-confirm-button")
       );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.alert.textdecline
+        )
+      ).toBeNull();
     });
 
     await waitFor(() => {
