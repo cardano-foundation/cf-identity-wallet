@@ -218,9 +218,9 @@ class CredentialService extends AgentService {
     );
 
     for (const credential of unSyncedData) {
-      const identifier = await this.identifierStorage.getIdentifierMetadata(
-        credential.sad.a.i
-      );
+      const hab = await this.props.signifyClient
+        .identifiers()
+        .get(credential.sad.a.i);
       const metadata = {
         id: credential.sad.d,
         isArchived: false,
@@ -230,7 +230,7 @@ class CredentialService extends AgentService {
         connectionId: credential.sad.i,
         schema: credential.schema.$id,
         identifierId: credential.sad.a.i,
-        identifierType: identifier.multisigManageAid
+        identifierType: hab.group
           ? IdentifierType.Group
           : IdentifierType.Individual,
         createdAt: new Date(credential.sad.a.dt),

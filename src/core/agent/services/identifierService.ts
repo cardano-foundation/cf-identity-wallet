@@ -486,18 +486,21 @@ class IdentifierService extends AgentService {
       iteration += 1;
     }
 
-    const localIdentifiers =
-      await this.identifierStorage.getKeriIdentifiersMetadata();
+    const localIdentifiers = await this.identifierStorage.getAllIdentifiers();
 
-    const unSyncedData = cloudIdentifiers.filter(
-      (identifier: IdentifierResult) =>
-        !localIdentifiers.find((item) => identifier.prefix === item.id)
-    );
+    const unSyncedDataWithGroup = [];
+    const unSyncedDataWithoutGroup = [];
+    for (const identifier of cloudIdentifiers) {
+      if (localIdentifiers.find((item) => item.id === identifier.prefix)) {
+        continue;
+      }
 
-    const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [
-      unSyncedData.filter((item: HabState) => item.group !== undefined),
-      unSyncedData.filter((item: HabState) => item.group === undefined),
-    ];
+      if (identifier.group === undefined) {
+        unSyncedDataWithoutGroup.push(identifier);
+      } else {
+        unSyncedDataWithGroup.push(identifier);
+      }
+    }
 
     for (const identifier of unSyncedDataWithoutGroup) {
       if (
@@ -522,23 +525,27 @@ class IdentifierService extends AgentService {
         });
       }
 
-      const name = identifier.name.split(":");
-      const theme = parseInt(name[0], 10);
-      const isMultiSig = name.length === 3;
+      const nameParts = identifier.name.split(":");
+      const theme =
+        nameParts[0] === IdentifierService.DELETED_IDENTIFIER_THEME
+          ? 0
+          : parseInt(nameParts[0], 10);
+
+      const localGroupMember = nameParts.length === 3;
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
         .get(identifier.prefix)) as HabState;
 
-      if (isMultiSig) {
-        const groupId = identifier.name.split(":")[1];
-        const groupInitiator = groupId.split("-")[0] === "1";
+      if (localGroupMember) {
+        const groupIdParts = nameParts[1].split("-");
+        const groupInitiator = groupIdParts[0] === "1";
 
         await this.identifierStorage.createIdentifierMetadataRecord({
           id: identifier.prefix,
-          displayName: identifier.name.split(":")[1],
+          displayName: nameParts[2],
           theme,
           groupMetadata: {
-            groupId,
+            groupId: groupIdParts[1],
             groupCreated: false,
             groupInitiator,
           },
@@ -551,7 +558,7 @@ class IdentifierService extends AgentService {
 
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier.prefix,
-        displayName: identifier.name.split(":")[1],
+        displayName: nameParts[1],
         theme,
         creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
@@ -570,10 +577,15 @@ class IdentifierService extends AgentService {
         .identifiers()
         .get(identifier.prefix)) as HabState;
 
-      const multisigManageAid = identifier.group.mhab.prefix;
-      const groupId = identifier.group.mhab.name.split(":")[1];
-      const theme = parseInt(identifier.name.split(":")[0], 10);
-      const groupInitiator = groupId.split("-")[0] === "1";
+      const nameParts = identifier.name.split(":");
+      const theme =
+        nameParts[0] === IdentifierService.DELETED_IDENTIFIER_THEME
+          ? 0
+          : parseInt(nameParts[0], 10);
+
+      const groupMemberPre = identifier.group.mhab.prefix;
+      const groupIdParts = identifier.group.mhab.name.split(":")[1].split("-");
+      const groupInitiator = groupIdParts[0] === "1";
 
       const op = await this.props.signifyClient
         .operations()
@@ -591,9 +603,9 @@ class IdentifierService extends AgentService {
         });
       }
 
-      await this.identifierStorage.updateIdentifierMetadata(multisigManageAid, {
+      await this.identifierStorage.updateIdentifierMetadata(groupMemberPre, {
         groupMetadata: {
-          groupId,
+          groupId: groupIdParts[1],
           groupCreated: true,
           groupInitiator,
         },
@@ -601,9 +613,9 @@ class IdentifierService extends AgentService {
 
       await this.identifierStorage.createIdentifierMetadataRecord({
         id: identifier.prefix,
-        displayName: groupId,
+        displayName: nameParts[1],
         theme,
-        multisigManageAid,
+        multisigManageAid: groupMemberPre,
         creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
       });

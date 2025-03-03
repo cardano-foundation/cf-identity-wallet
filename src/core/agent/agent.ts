@@ -314,7 +314,6 @@ class Agent {
     await this.connections.syncKeriaContacts();
     await this.identifiers.syncKeriaIdentifiers();
     await this.credentials.syncKeriaCredentials();
-    await this.keriaNotifications.syncIPEXReplyOperations();
 
     await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
