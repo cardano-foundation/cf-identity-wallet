@@ -14,6 +14,7 @@ import { DataProps } from "./nextRoute.types";
 import { OperationType } from "../../ui/globals/types";
 import { IdentifiersFilters } from "../../ui/pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../ui/pages/Credentials/Credentials.types";
+import { InitializationPhase } from "../../store/reducers/stateCache/stateCache.types";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -25,7 +26,7 @@ describe("NextRoute", () => {
     storeMock = {
       stateCache: {
         isOnline: true,
-        initialized: true,
+        initializationPhase: InitializationPhase.PHASE_TWO,
         recoveryCompleteNoInterruption: false,
         routes: [],
         authentication: {
@@ -37,6 +38,7 @@ describe("NextRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: false,
           ssiAgentIsSet: false,
+          ssiAgentUrl: "",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
@@ -137,7 +139,7 @@ describe("NextRoute", () => {
       store: {
         ...storeMock,
         stateCache: {
-          initialized: true,
+          initializationPhase: InitializationPhase.PHASE_TWO,
           routes: [],
           authentication: {
             loggedIn: false,
@@ -147,7 +149,7 @@ describe("NextRoute", () => {
             seedPhraseIsSet: false,
             passwordIsSet: true,
             passwordIsSkipped: false,
-            ssiAgentIsSet: false,
+            ssiAgentIsUrl: "",
           },
           currentOperation: OperationType.IDLE,
           queueIncomingRequest: {
@@ -166,12 +168,12 @@ describe("NextRoute", () => {
     });
   });
 
-  test("should return correct route for /onboarding when ssiAgentIsSet is true", () => {
+  test("should return correct route for /onboarding when ssi agent URL set", () => {
     data = {
       store: {
         ...storeMock,
         stateCache: {
-          initialized: true,
+          initializationPhase: InitializationPhase.PHASE_TWO,
           routes: [],
           authentication: {
             loggedIn: false,
@@ -182,6 +184,7 @@ describe("NextRoute", () => {
             passwordIsSet: true,
             passwordIsSkipped: false,
             ssiAgentIsSet: true,
+            ssiAgentUrl: "http://keria.com",
           },
           currentOperation: OperationType.IDLE,
           queueIncomingRequest: {
@@ -205,7 +208,7 @@ describe("NextRoute", () => {
       store: {
         ...storeMock,
         stateCache: {
-          initialized: true,
+          initializationPhase: InitializationPhase.PHASE_TWO,
           routes: [],
           authentication: {
             loggedIn: false,
@@ -216,6 +219,7 @@ describe("NextRoute", () => {
             passwordIsSet: true,
             passwordIsSkipped: false,
             ssiAgentIsSet: false,
+            ssiAgentUrl: "",
           },
           currentOperation: OperationType.IDLE,
           queueIncomingRequest: {
@@ -286,7 +290,7 @@ describe("getNextRoute", () => {
   const storeMock: RootState = {
     stateCache: {
       isOnline: true,
-      initialized: true,
+      initializationPhase: InitializationPhase.PHASE_TWO,
       recoveryCompleteNoInterruption: false,
       routes: [],
       authentication: {
@@ -298,6 +302,7 @@ describe("getNextRoute", () => {
         passwordIsSet: false,
         passwordIsSkipped: false,
         ssiAgentIsSet: false,
+        ssiAgentUrl: "",
         recoveryWalletProgress: false,
         loginAttempt: {
           attempts: 0,

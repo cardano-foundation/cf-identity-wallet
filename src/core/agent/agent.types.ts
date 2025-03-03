@@ -4,9 +4,9 @@ import { OperationPendingRecordType } from "./records/operationPendingRecord.typ
 import { ConnectionHistoryType } from "./services/connectionService.types";
 
 enum ConnectionStatus {
-  CONFIRMED = "confirmed",
   PENDING = "pending",
-  ACCEPTED = "accepted",
+  CONFIRMED = "confirmed",
+  FAILED = "failed",
   DELETED = "deleted",
 }
 
@@ -199,6 +199,12 @@ type OperationCallback = ({
   opType: OperationPendingRecordType;
 }) => void;
 
+enum CreationStatus {
+  PENDING = "PENDING",
+  COMPLETE = "COMPLETE",
+  FAILED = "FAILED",
+}
+
 export const OOBI_RE =
   /^\/oobi\/(?<cid>[^/]+)\/(?<role>[^/]+)(?:\/(?<eid>[^/]+))?$/i;
 export const OOBI_AGENT_ONLY_RE =
@@ -212,6 +218,7 @@ export {
   NotificationRoute,
   ExchangeRoute,
   KeriConnectionType,
+  CreationStatus,
 };
 
 export type {

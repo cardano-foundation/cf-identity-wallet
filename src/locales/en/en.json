@@ -36,7 +36,9 @@
   "createpasscodemodule": {
     "errornomatch": "Passcode didn’t match",
     "errormatch": "Passcode already in use",
-    "cantremember": "Can't remember?"
+    "cantremember": "Can't remember?",
+    "repeat": "Avoid matching numbers e.g. 111111",
+    "consecutive": "Avoid consecutive numbers e.g. 123456"
   },
   "setpasscode": {
     "enterpasscode": "Create your Passcode",
@@ -723,6 +725,7 @@
     "change": "New password",
     "cancel": "Cancel",
     "description": "Add an extra layer of security for sensitive actions in your wallet by creating an optional password.",
+    "learnmore": "Learn More",
     "input": {
       "first": {
         "symbolguide": "Symbol guide",

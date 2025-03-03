@@ -495,7 +495,7 @@ describe("Cred Detail Module - current not archived credential", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(archiveCredential).toBeCalled();
@@ -642,7 +642,7 @@ describe("Cred Detail Module - archived", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(markCredentialPendingDeletion).toBeCalled();
@@ -846,7 +846,7 @@ describe("Cred detail - revoked", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(archiveCredential).toBeCalled();

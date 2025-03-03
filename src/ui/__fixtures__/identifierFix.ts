@@ -1,7 +1,5 @@
-import {
-  CreationStatus,
-  IdentifierDetails,
-} from "../../core/agent/services/identifier.types";
+import { IdentifierDetails } from "../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../core/agent/agent.types";
 
 const identifierFix: IdentifierDetails[] = [
   {

@@ -10,7 +10,6 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, NextRoute, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { OperationType } from "../../ui/globals/types";
 
 const getNextRootRoute = (data: DataProps) => {
   const authentication = data.store.stateCache.authentication;
@@ -199,7 +198,7 @@ const nextRoute: Record<string, NextRoute> = {
   },
   [RoutePath.SSI_AGENT]: {
     nextPath: () => getNextCreateSSIAgentRoute(),
-    updateRedux: [updateStoreAfterSetupSSI],
+    updateRedux: [updateStoreAfterSetupSSI, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {
     nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),

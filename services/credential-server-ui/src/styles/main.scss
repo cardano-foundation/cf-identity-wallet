@@ -1,13 +1,17 @@
 @use "./colors.scss";
 
-:root {
+body {
   margin: 0 auto;
+  font-size: 16px;
   text-align: center;
-  font-family: Lato, sans-serif;
-  color: var(--color-neutral-700);
-  background-color: var(--color-neutral-200);
+  font-family: "Manrope", sans-serif;
+  text-transform: none;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  .hidden {
+    display: none;
+  }
 }

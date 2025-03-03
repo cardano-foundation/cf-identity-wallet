@@ -16,7 +16,7 @@ import { walletConnectionsFix } from "../../../../__fixtures__/walletConnections
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { ConnectWallet } from "./ConnectWallet";
-import { CreationStatus } from "../../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../../core/agent/agent.types";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -529,7 +529,7 @@ describe("Wallet connect", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
@@ -604,7 +604,7 @@ describe("Wallet connect", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    passcodeFiller(getByText, getByTestId, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(

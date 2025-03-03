@@ -116,7 +116,7 @@ describe("ConnectionDetails Page", () => {
           label: "Cambridge University",
           createdAtUTC: "2017-08-14T19:23:24Z",
           logo: ".png",
-          status: ConnectionStatus.ACCEPTED,
+          status: ConnectionStatus.CONFIRMED,
           notes: [
             {
               id: "ebfeb1ebc6f1c276ef71212ec20",
@@ -214,7 +214,7 @@ describe("ConnectionDetails Page", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(markConnectionPendingDeleteMock).toBeCalled();
@@ -695,7 +695,7 @@ describe("Checking the Connection Details Page when connection is missing from t
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(deleteStaleLocalConnectionByIdMock).toBeCalled();

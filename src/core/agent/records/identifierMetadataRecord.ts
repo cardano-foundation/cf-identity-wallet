@@ -1,5 +1,5 @@
 import { BaseRecord } from "../../storage/storage.types";
-import { CreationStatus } from "../services/identifier.types";
+import { CreationStatus } from "../agent.types";
 
 interface GroupMetadata {
   groupId: string;
@@ -24,7 +24,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   theme!: number;
   creationStatus!: CreationStatus;
   isDeleted!: boolean;
-  pendingDeletion = false;
+  pendingDeletion!: boolean;
   multisigManageAid?: string;
   groupMetadata?: GroupMetadata;
   sxlt?: string;

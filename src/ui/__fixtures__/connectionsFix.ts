@@ -88,7 +88,7 @@ const connectionsFix: ConnectionDetails[] = [
     label: "Friends' Bank",
     createdAtUTC: "2018-01-14T19:23:24Z",
     logo: CardanoLogo,
-    status: ConnectionStatus.ACCEPTED,
+    status: ConnectionStatus.CONFIRMED,
     serviceEndpoints: [],
     notes: [],
     historyItems: [],

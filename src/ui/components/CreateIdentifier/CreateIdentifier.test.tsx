@@ -5,7 +5,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { ConnectionDetails } from "../../../core/agent/agent.types";
+import { ConnectionDetails , CreationStatus } from "../../../core/agent/agent.types";
 import { IdentifierService } from "../../../core/agent/services";
 import EN_TRANSLATION from "../../../locales/en/en.json";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
@@ -15,7 +15,6 @@ import { filteredIdentifierMapFix } from "../../__fixtures__/filteredIdentifierF
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CreateIdentifier } from "./CreateIdentifier";
-import { CreationStatus } from "../../../core/agent/services/identifier.types";
 
 setupIonicReact();
 mockIonicReact();

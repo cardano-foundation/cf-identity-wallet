@@ -4,7 +4,6 @@ import {
   getSSIAgent,
   setBootUrl,
   setConnectUrl,
-  setSSIAgent,
   ssiAgentSlice,
 } from "./ssiAgent";
 import { SSIAgentState } from "./ssiAgent.types";
@@ -22,22 +21,13 @@ describe("SSI Agent Cache", () => {
     );
   });
 
-  it("should handle setSSIAgent", () => {
-    const ssiAgent: SSIAgentState = {
-      bootUrl: "boot url",
-      connectUrl: "connect url",
-    };
-    const newState = ssiAgentSlice.reducer(initialState, setSSIAgent(ssiAgent));
-    expect(newState).toEqual(ssiAgent);
-  });
-
-  it("should handle setBootUrl", () => {
+  test("should handle setBootUrl", () => {
     const bootUrl = "boot url";
     const newState = ssiAgentSlice.reducer(initialState, setBootUrl(bootUrl));
     expect(newState.bootUrl).toEqual(bootUrl);
   });
 
-  it("should handle setBootUrl", () => {
+  test("should handle setConnectUrl", () => {
     const connectUrl = "connect url";
     const newState = ssiAgentSlice.reducer(
       initialState,
@@ -46,21 +36,12 @@ describe("SSI Agent Cache", () => {
     expect(newState.connectUrl).toEqual(connectUrl);
   });
 
-  it("should handle setConnectUrl", () => {
-    const ssiAgent: SSIAgentState = {
-      bootUrl: "boot url",
-      connectUrl: "connect url",
-    };
-    const newState = ssiAgentSlice.reducer(initialState, setSSIAgent(ssiAgent));
-    expect(newState).toEqual(ssiAgent);
-  });
-
-  it("should handle clearSsiAgent", () => {
+  test("should handle clearSsiAgent", () => {
     const newState = ssiAgentSlice.reducer(initialState, clearSSIAgent());
     expect(newState).toEqual(initialState);
   });
 
-  it("should ssi agent from RootState", () => {
+  test("should ssi agent from RootState", () => {
     const state = {
       ssiAgentCache: {
         bootUrl: "boot url",

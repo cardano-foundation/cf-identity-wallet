@@ -38,6 +38,7 @@ import { OperationType } from "../../globals/types";
 import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
 import { IdentifiersFilters } from "./Identifiers.types";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const deleteIdentifierMock = jest.fn();
 const markIdentifierPendingDelete = jest.fn();
@@ -793,7 +794,7 @@ describe("Identifiers Tab", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(markIdentifierPendingDelete).toBeCalled();
@@ -1008,15 +1009,3 @@ describe("Identifiers Tab", () => {
     });
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    act(() => {
-      fireEvent.click(getByText(buttonLabel));
-    });
-  }
-};

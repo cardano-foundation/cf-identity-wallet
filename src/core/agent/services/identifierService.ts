@@ -1,21 +1,20 @@
 import { HabState, Operation, Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
-  CreationStatus,
   IdentifierDetails,
   IdentifierShortDetails,
 } from "./identifier.types";
+import { CreationStatus ,
+  AgentServicesProps,
+  IdentifierResult,
+  MiscRecordId,
+} from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 import { OnlineOnly, randomSalt } from "./utils";
-import {
-  AgentServicesProps,
-  IdentifierResult,
-  MiscRecordId,
-} from "../agent.types";
 import { BasicRecord, BasicStorage, IdentifierStorage } from "../records";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -516,7 +515,7 @@ class IdentifierService extends AgentService {
           : CreationStatus.COMPLETE
         : CreationStatus.PENDING;
       if (creationStatus === CreationStatus.PENDING) {
-        const pendingOperation = await this.operationPendingStorage.save({
+        await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
         });
@@ -585,7 +584,7 @@ class IdentifierService extends AgentService {
           : CreationStatus.COMPLETE
         : CreationStatus.PENDING;
       if (creationStatus === CreationStatus.PENDING) {
-        const pendingOperation = await this.operationPendingStorage.save({
+        await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Group,
         });

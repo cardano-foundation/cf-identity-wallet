@@ -15,7 +15,7 @@ import { SpinnerConverage } from "../../Spinner/Spinner.type";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateGroupIdentifier.types";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../core/agent/agent.types";
 
 const SetupConnectionBodyResume = ({
   componentId,

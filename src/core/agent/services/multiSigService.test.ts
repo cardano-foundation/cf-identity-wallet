@@ -1,5 +1,5 @@
 import { Serder } from "signify-ts";
-import { ConnectionStatus, MiscRecordId } from "../agent.types";
+import { ConnectionStatus, MiscRecordId , CreationStatus } from "../agent.types";
 import { Agent } from "../agent";
 import { CoreEventEmitter } from "../event";
 import { MultiSigService } from "./multiSigService";
@@ -27,7 +27,6 @@ import {
 } from "../../__fixtures__/agent/multiSigFixtures";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { EventTypes } from "../event.types";
-import { CreationStatus } from "./identifier.types";
 import { MultiSigRoute } from "./multiSig.types";
 import { StorageMessage } from "../../storage/storage.types";
 
