@@ -44,9 +44,6 @@ const mockCredentialService = {
   syncKeriaCredentials: jest.fn(),
   removeCredentialsPendingDeletion: jest.fn(),
 };
-const mockKeriaNotificationService = {
-  syncIPEXReplyOperations: jest.fn(),
-};
 const mockMultiSigService = {
   processGroupsPendingCreation: jest.fn(),
 };
@@ -259,7 +256,6 @@ describe("Recovery of DB from cloud sync", () => {
     (agent as any).basicStorageService = mockBasicStorageService;
     (agent as any).agentServicesProps = mockAgentServicesProps;
     (agent as any).connectionService = mockConnectionService;
-    (agent as any).keriaNotificationService = mockKeriaNotificationService;
 
     mockSeedPhrase = [
       "abandon",
@@ -311,9 +307,6 @@ describe("Recovery of DB from cloud sync", () => {
     expect(mockConnectionService.syncKeriaContacts).toHaveBeenCalled();
     expect(mockIdentifierService.syncKeriaIdentifiers).toHaveBeenCalled();
     expect(mockCredentialService.syncKeriaCredentials).toHaveBeenCalled();
-    expect(
-      mockKeriaNotificationService.syncIPEXReplyOperations
-    ).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
     expect(
       mockBasicStorageService.createOrUpdateBasicRecord

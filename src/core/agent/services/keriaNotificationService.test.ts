@@ -2900,7 +2900,7 @@ describe("Long running operation tracker", () => {
     operationsGetMock.mockResolvedValue(operationMock);
     const connectionMock = {
       id: "id",
-      pending: true,
+      creationStatus: CreationStatus.PENDING,
       createdAt: new Date(),
       alias: "CF Credential Issuance",
     };
@@ -3704,48 +3704,6 @@ describe("Long running operation tracker", () => {
     await expect(
       keriaNotificationService.processOperation(operationRecord)
     ).rejects.toThrow(errorMessage);
-  });
-
-  test("Can recover on-going long running operations related to IPEX", async () => {
-    notificationStorage.findAllByQuery.mockResolvedValue([
-      {
-        route: NotificationRoute.ExnIpexApply,
-        linkedRequest: { current: "offer-said" },
-      },
-      {
-        route: NotificationRoute.MultiSigExn,
-        linkedRequest: { current: "should-not-happen-skip-me" },
-      },
-      {
-        route: NotificationRoute.ExnIpexGrant,
-        linkedRequest: { current: "admit-said" },
-      },
-      {
-        route: NotificationRoute.ExnIpexAgree,
-        linkedRequest: { current: "grant-said" },
-      },
-    ]);
-
-    await keriaNotificationService.syncIPEXReplyOperations();
-
-    expect(notificationStorage.findAllByQuery).toBeCalledWith({
-      $not: {
-        currentLinkedRequest: undefined,
-      },
-    });
-    expect(operationPendingStorage.save).toBeCalledTimes(3);
-    expect(operationPendingStorage.save).toHaveBeenNthCalledWith(1, {
-      id: "exchange.offer-said",
-      recordType: OperationPendingRecordType.ExchangeOfferCredential,
-    });
-    expect(operationPendingStorage.save).toHaveBeenNthCalledWith(2, {
-      id: "exchange.admit-said",
-      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-    });
-    expect(operationPendingStorage.save).toHaveBeenNthCalledWith(3, {
-      id: "exchange.grant-said",
-      recordType: OperationPendingRecordType.ExchangePresentCredential,
-    });
   });
 });
 
