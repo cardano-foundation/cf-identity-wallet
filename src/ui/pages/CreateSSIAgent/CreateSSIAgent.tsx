@@ -5,6 +5,7 @@ import {
   openOutline,
   scanOutline,
   refreshOutline,
+  addOutline,
 } from "ionicons/icons";
 import {
   MouseEvent as ReactMouseEvent,
@@ -80,6 +81,7 @@ const CreateSSIAgent = () => {
   const [openInfo, setOpenInfo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hasMismatchError, setHasMismatchError] = useState(false);
+  const [unknownError, setUnknownError] = useState(false);
   const [isInvalidBootUrl, setIsInvalidBootUrl] = useState(false);
   const [isInvalidConnectUrl, setInvalidConnectUrl] = useState(false);
   const [showSwitchModeModal, setSwitchModeModal] = useState(false);
@@ -139,12 +141,12 @@ const CreateSSIAgent = () => {
       setIsInvalidBootUrl(true);
     }
 
-    if (Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT === errorMessage) {
-      setInvalidConnectUrl(true);
-    }
-
     if (Agent.KERIA_NOT_BOOTED === errorMessage) {
       setHasMismatchError(true);
+    }
+
+    if (Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT === errorMessage) {
+      setInvalidConnectUrl(true);
     }
 
     if (
@@ -153,13 +155,17 @@ const CreateSSIAgent = () => {
         Agent.KERIA_CONNECT_FAILED_BAD_NETWORK,
       ].includes(errorMessage)
     ) {
-      showError(
-        "Unable to boot or connect keria",
-        error,
-        dispatch,
-        ToastMsgType.UNKNOWN_ERROR
-      );
+      setUnknownError(true);
+      showError("Bad network", error);
+      return;
     }
+
+    showError(
+      "Unable to boot or connect keria",
+      error,
+      dispatch,
+      ToastMsgType.UNKNOWN_ERROR
+    );
   };
 
   const handleRecoveryWallet = async () => {
@@ -279,6 +285,7 @@ const CreateSSIAgent = () => {
   const handleChangeConnectUrl = (connectionUrl: string) => {
     setInvalidConnectUrl(false);
     setHasMismatchError(false);
+    setUnknownError(false);
     dispatch(setConnectUrl(connectionUrl));
   };
 
@@ -300,6 +307,37 @@ const CreateSSIAgent = () => {
   const buttonLabel = !isRecoveryMode
     ? i18n.t("generateseedphrase.onboarding.button.switch")
     : i18n.t("verifyrecoveryseedphrase.button.switch");
+
+  const showConnectionUrlError =
+    !!displayConnectUrlError ||
+    hasMismatchError ||
+    isInvalidConnectUrl ||
+    unknownError;
+
+  const connectionUrlError = useMemo(() => {
+    if (unknownError) {
+      return "ssiagent.error.unknownissue";
+    }
+
+    if (hasMismatchError) {
+      if (isRecoveryMode) {
+        return "ssiagent.error.recoverymismatchconnecturl";
+      }
+      return "ssiagent.error.mismatchconnecturl";
+    }
+
+    if (displayBootUrlError && !isInvalidConnectUrl) {
+      return "ssiagent.error.invalidurl";
+    }
+
+    return "ssiagent.error.invalidconnecturl";
+  }, [
+    displayBootUrlError,
+    hasMismatchError,
+    isInvalidConnectUrl,
+    isRecoveryMode,
+    unknownError,
+  ]);
 
   return (
     <>
@@ -348,6 +386,7 @@ const CreateSSIAgent = () => {
             {!isRecoveryMode && (
               <>
                 <CustomInput
+                  className="boot-url-input"
                   dataTestId="boot-url-input"
                   title={`${i18n.t("ssiagent.input.boot.label")}`}
                   placeholder={`${i18n.t("ssiagent.input.boot.placeholder")}`}
@@ -378,6 +417,7 @@ const CreateSSIAgent = () => {
               </>
             )}
             <CustomInput
+              className="connect-url-input"
               dataTestId="connect-url-input"
               title={`${i18n.t("ssiagent.input.connect.label")}`}
               placeholder={`${i18n.t("ssiagent.input.connect.placeholder")}`}
@@ -394,29 +434,11 @@ const CreateSSIAgent = () => {
                 }
               }}
               value={ssiAgent.connectUrl || ""}
-              error={
-                !!displayConnectUrlError ||
-                hasMismatchError ||
-                isInvalidConnectUrl
-              }
+              error={showConnectionUrlError}
             />
             <InputError
-              showError={
-                !!displayConnectUrlError ||
-                hasMismatchError ||
-                isInvalidConnectUrl
-              }
-              errorMessage={
-                hasMismatchError
-                  ? `${i18n.t(
-                    isRecoveryMode
-                      ? "ssiagent.error.recoverymismatchconnecturl"
-                      : "ssiagent.error.mismatchconnecturl"
-                  )}`
-                  : displayBootUrlError && !isInvalidConnectUrl
-                    ? `${i18n.t("ssiagent.error.invalidurl")}`
-                    : `${i18n.t("ssiagent.error.invalidconnecturl")}`
-              }
+              showError={showConnectionUrlError}
+              errorMessage={`${i18n.t(connectionUrlError)}`}
             />
           </div>
           <PageFooter
@@ -426,7 +448,7 @@ const CreateSSIAgent = () => {
             primaryButtonDisabled={!validated || loading}
             tertiaryButtonText={buttonLabel}
             tertiaryButtonAction={() => setSwitchModeModal(true)}
-            tertiaryButtonIcon={refreshOutline}
+            tertiaryButtonIcon={isRecoveryMode ? addOutline : refreshOutline}
           />
         </div>
       </ScrollablePageLayout>
