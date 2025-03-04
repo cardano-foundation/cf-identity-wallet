@@ -54,7 +54,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
     const validated =
       passwordStrengthChecker.validatePassword(createPasswordValue) &&
       createPasswordValueMatching &&
-      hintValue !== createPasswordValue;
+      !hintValue.includes(createPasswordValue);
 
     const handlePasswordInput = (password: string) => {
       setCreatePasswordValue(password);
@@ -272,9 +272,11 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               onChangeInput={setHintValue}
               optional={true}
               value={hintValue}
-              error={!!hintValue.length && hintValue === createPasswordValue}
+              error={
+                !!hintValue.length && hintValue.includes(createPasswordValue)
+              }
             />
-            {!!hintValue.length && hintValue === createPasswordValue && (
+            {!!hintValue.length && hintValue.includes(createPasswordValue) && (
               <ErrorMessage
                 message={`${i18n.t("createpassword.error.hintSameAsPassword")}`}
               />
