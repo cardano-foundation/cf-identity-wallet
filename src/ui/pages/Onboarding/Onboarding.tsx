@@ -98,7 +98,7 @@ const Onboarding = () => {
           "onboarding.alreadywallet.button.label"
         )}`}
         tertiaryButtonAction={() => handleNavigation(true)}
-      ></PageFooter>
+      />
     </ResponsivePageLayout>
   );
 };
