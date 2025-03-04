@@ -1,4 +1,5 @@
 import { CapacitorConfig } from "@capacitor/cli";
+import { KeyboardResize } from "@capacitor/keyboard";
 
 const config: CapacitorConfig = {
   appId: "org.cardanofoundation.idw",
@@ -24,10 +25,14 @@ const config: CapacitorConfig = {
       backgroundColor: "#92FFC0"
     },
     PrivacyScreen: {
-      enable: false,
+      enable: true,
       imageName: "Splashscreen",
       preventScreenshots: true
-    }
+    },
+    Keyboard: {
+      resize: KeyboardResize.Ionic,
+      resizeOnFullScreen: true,
+    },
   }
 };
 

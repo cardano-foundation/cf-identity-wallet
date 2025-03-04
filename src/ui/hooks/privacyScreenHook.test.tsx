@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { usePrivacyScreen } from "./privacyScreenHook";
 
 const isNativePlatform = jest.fn();
@@ -26,21 +26,28 @@ jest.mock("@capacitor-community/privacy-screen", () => {
 });
 
 const TestComponent = () => {
-  usePrivacyScreen();
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
 
-  return <></>;
+  return (
+    <>
+      <button onClick={enablePrivacy}>Enable</button>
+      <button onClick={disablePrivacy}>Disable</button>
+    </>
+  );
 };
 
 describe("Privacy screen hook", () => {
   test("run", async () => {
     isNativePlatform.mockImplementation(() => true);
-    const { unmount } = render(<TestComponent />);
+    const { getByText } = render(<TestComponent />);
+
+    fireEvent.click(getByText("Enable"));
 
     await waitFor(() => {
       expect(enable).toBeCalled();
     });
 
-    unmount();
+    fireEvent.click(getByText("Disable"));
 
     await waitFor(() => {
       expect(disable).toBeCalled();
