@@ -1,48 +1,30 @@
 {
-  "short_name": "CF Identity Wallet",
-  "name": "CF Identity Wallet",
+  "short_name": "Veridian",
+  "name": "Veridian",
   "icons": [
     {
-      "src": "assets/icons/icon-48.webp",
+      "src": "assets/icons/icon-16.png",
       "type": "image/png",
-      "sizes": "48x48",
-      "purpose": "any maskable"
+      "sizes": "16x16",
+      "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-72.webp",
+      "src": "assets/icons/icon-32.png",
       "type": "image/png",
-      "sizes": "72x72",
-      "purpose": "any maskable"
+      "sizes": "32x32",
+      "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-96.webp",
-      "type": "image/png",
-      "sizes": "96x96",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon-128.webp",
-      "type": "image/png",
-      "sizes": "128x128",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon-192.webp",
+      "src": "assets/icons/icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
-      "src": "assets/icons/icon-256.webp",
-      "type": "image/png",
-      "sizes": "256x256",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon-512.webp",
+      "src": "assets/icons/icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
   "start_url": ".",
