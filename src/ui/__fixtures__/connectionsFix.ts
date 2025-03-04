@@ -23,6 +23,7 @@ const connectionsFix: ConnectionDetails[] = [
     ],
     historyItems: [
       {
+        id: "1",
         type: 1,
         timestamp: "2017-01-14T19:23:24Z",
         credentialType: "Cardano Foundation",
@@ -47,6 +48,7 @@ const connectionsFix: ConnectionDetails[] = [
     ],
     historyItems: [
       {
+        id: "1",
         type: 1,
         timestamp: "2017-01-14T19:23:24Z",
         credentialType: "Cardano Foundation",

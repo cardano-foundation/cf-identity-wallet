@@ -16,6 +16,7 @@ interface IdentifierMetadataRecordProps {
   theme: number;
   multisigManageAid?: string;
   groupMetadata?: GroupMetadata;
+  pendingDeletion?: boolean;
   sxlt?: string;
 }
 
@@ -44,6 +45,7 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.isDeleted = props.isDeleted ?? false;
       this.groupMetadata = props.groupMetadata;
       this.multisigManageAid = props.multisigManageAid;
+      this.pendingDeletion = props.pendingDeletion ?? false;
       this.sxlt = props.sxlt;
     }
   }

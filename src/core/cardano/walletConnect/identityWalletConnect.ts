@@ -5,7 +5,6 @@ import {
   IWalletInfo,
 } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
-import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,

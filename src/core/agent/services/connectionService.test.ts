@@ -1,10 +1,5 @@
-/* eslint-disable indent */
 import { Salter } from "signify-ts";
-import {
-  ConnectionStatus,
-  CreationStatus,
-  KeriConnectionType,
-} from "../agent.types";
+import { ConnectionStatus, CreationStatus, OobiType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
@@ -208,7 +203,7 @@ describe("Connection service of agent", () => {
     const result = await connectionService.connectByOobiUrl(oobi);
 
     expect(result).toStrictEqual({
-      type: KeriConnectionType.MULTI_SIG_INITIATOR,
+      type: OobiType.MULTI_SIG_INITIATOR,
       groupId,
       connection: {
         groupId,
@@ -528,6 +523,15 @@ describe("Connection service of agent", () => {
       status: ConnectionStatus.FAILED,
     });
     expect(connectionStorage.findById).toBeCalledWith(keriContacts[0].id);
+  });
+
+  test("cannot get connection short details if it does not exist", async () => {
+    connectionStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      connectionService.getConnectionShortDetailById(keriContacts[0].id)
+    ).rejects.toThrowError(
+      ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND
+    );
   });
 
   test("can get KERI OOBI", async () => {
@@ -927,6 +931,7 @@ describe("Connection service of agent", () => {
       notes: [connectionNote],
       historyItems: [mockHistoryIpexMessage, mockHistoryRevokeMessage].map(
         (item) => ({
+          id: item.id,
           type: item.historyType,
           timestamp: item.dt,
           credentialType: item.credentialType,
@@ -1009,5 +1014,163 @@ describe("Connection service of agent", () => {
 
     expect(connectionService.resolveOobi).toBeCalledWith("oobi1");
     expect(connectionService.resolveOobi).toBeCalledWith("oobi2");
+  });
+
+  test("should return full history when full=true including IPEX_AGREE_COMPLETE", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const connectionNote = {
+      id: "note:id",
+      title: "title",
+      message: "message",
+    };
+
+    const mockHistoryItems = [
+      {
+        id: "ipex1",
+        credentialType: "lei",
+        historyType: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
+        type: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
+        dt: "2025-02-25T10:00:00.000Z",
+        connectionId: "connectionId",
+      },
+      {
+        id: "cred1",
+        credentialType: "lei",
+        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+        type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+        dt: "2025-02-25T09:00:00.000Z",
+        connectionId: "connectionId",
+      },
+    ];
+
+    contactGetMock.mockResolvedValue({
+      alias: "alias",
+      oobi: "http://test.oobi",
+      id: "test-id",
+      [`${KeriaContactKeyPrefix.CONNECTION_NOTE}id`]:
+        JSON.stringify(connectionNote),
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}ipex1`]: JSON.stringify(
+        mockHistoryItems[0]
+      ),
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}cred1`]: JSON.stringify(
+        mockHistoryItems[1]
+      ),
+      createdAt: nowISO,
+    });
+
+    connectionStorage.findById = jest.fn().mockResolvedValue({
+      id: "test-id",
+      createdAt: new Date(nowISO),
+      alias: "alias",
+      oobi: "http://test.oobi",
+      getTag: jest.fn(),
+    });
+
+    const result = await connectionService.getConnectionById("test-id", true);
+
+    expect(result).toEqual({
+      id: "test-id",
+      label: "alias",
+      serviceEndpoints: ["http://test.oobi"],
+      status: ConnectionStatus.CONFIRMED,
+      createdAtUTC: nowISO,
+      notes: [connectionNote],
+      historyItems: [
+        {
+          id: "ipex1",
+          type: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
+          timestamp: "2025-02-25T10:00:00.000Z",
+          credentialType: "lei",
+        },
+        {
+          id: "cred1",
+          type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+          timestamp: "2025-02-25T09:00:00.000Z",
+          credentialType: "lei",
+        },
+      ],
+    });
+    expect(result.historyItems).toHaveLength(2);
+    expect(
+      result.historyItems.some(
+        (item) => item.type === ConnectionHistoryType.IPEX_AGREE_COMPLETE
+      )
+    ).toBe(true);
+  });
+
+  test("should filter out IPEX_AGREE_COMPLETE when full=false", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const connectionNote = {
+      id: "note:id",
+      title: "title",
+      message: "message",
+    };
+
+    const mockHistoryItems = [
+      {
+        id: "ipex1",
+        credentialType: "lei",
+        historyType: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
+        type: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
+        dt: "2025-02-25T10:00:00.000Z",
+        connectionId: "connectionId",
+      },
+      {
+        id: "cred1",
+        credentialType: "lei",
+        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+        type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+        dt: "2025-02-25T09:00:00.000Z",
+        connectionId: "connectionId",
+      },
+    ];
+
+    contactGetMock.mockResolvedValue({
+      alias: "alias",
+      oobi: "http://test.oobi",
+      id: "test-id",
+      [`${KeriaContactKeyPrefix.CONNECTION_NOTE}id`]:
+        JSON.stringify(connectionNote),
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}ipex1`]: JSON.stringify(
+        mockHistoryItems[0]
+      ),
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}cred1`]: JSON.stringify(
+        mockHistoryItems[1]
+      ),
+      createdAt: nowISO,
+    });
+
+    connectionStorage.findById = jest.fn().mockResolvedValue({
+      id: "test-id",
+      createdAt: new Date(nowISO),
+      alias: "alias",
+      oobi: "http://test.oobi",
+      getTag: jest.fn(),
+    });
+
+    const result = await connectionService.getConnectionById("test-id", false);
+
+    expect(result).toEqual({
+      id: "test-id",
+      label: "alias",
+      serviceEndpoints: ["http://test.oobi"],
+      status: ConnectionStatus.CONFIRMED,
+      createdAtUTC: nowISO,
+      notes: [connectionNote],
+      historyItems: [
+        {
+          id: "cred1",
+          type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+          timestamp: "2025-02-25T09:00:00.000Z",
+          credentialType: "lei",
+        },
+      ],
+    });
+    expect(result.historyItems).toHaveLength(1);
+    expect(
+      result.historyItems.some(
+        (item) => item.type === ConnectionHistoryType.IPEX_AGREE_COMPLETE
+      )
+    ).toBe(false);
   });
 });

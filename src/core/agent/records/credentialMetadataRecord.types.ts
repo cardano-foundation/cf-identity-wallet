@@ -12,6 +12,7 @@ interface CredentialMetadataRecordProps {
   schema: string;
   identifierId: string;
   identifierType: IdentifierType;
+  pendingDeletion?: boolean;
 }
 
 export type { CredentialMetadataRecordProps };

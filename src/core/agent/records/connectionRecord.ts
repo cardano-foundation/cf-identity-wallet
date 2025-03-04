@@ -10,6 +10,7 @@ interface ConnectionRecordStorageProps {
   oobi: string;
   groupId?: string;
   creationStatus?: CreationStatus;
+  pendingDeletion?: boolean;
 }
 
 class ConnectionRecord extends BaseRecord {
@@ -17,7 +18,7 @@ class ConnectionRecord extends BaseRecord {
   oobi!: string;
   groupId?: string;
   creationStatus!: CreationStatus;
-  pendingDeletion = false;
+  pendingDeletion!: boolean;
   static readonly type = "ConnectionRecord";
   readonly type = ConnectionRecord.type;
 
@@ -30,6 +31,7 @@ class ConnectionRecord extends BaseRecord {
       this.oobi = props.oobi;
       this.groupId = props.groupId;
       this.creationStatus = props.creationStatus ?? CreationStatus.PENDING;
+      this.pendingDeletion = props.pendingDeletion ?? false;
       this._tags = props.tags ?? {};
     }
   }

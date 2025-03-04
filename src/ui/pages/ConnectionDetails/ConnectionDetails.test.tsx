@@ -18,9 +18,14 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ConnectionDetails } from "./ConnectionDetails";
+import { ConnectionHistoryType } from "../../../core/agent/services/connectionService.types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -126,6 +131,7 @@ describe("ConnectionDetails Page", () => {
           ],
           historyItems: [
             {
+              id: "1",
               type: 3,
               timestamp: "2024-08-07T15:33:18.204Z",
               credentialType: "Qualified vLEI Issuer Credential",
@@ -437,6 +443,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
           ],
           historyItems: [
             {
+              id: "1",
               type: 1,
               timestamp: "2017-01-14T19:23:24Z",
               credentialType: "Qualified vLEI Issuer Credential",
@@ -484,26 +491,31 @@ describe("Checking the Connection Details Page when notes are available", () => 
   test("Get all connection history items", async () => {
     const historyEvents = [
       {
+        id: "3",
         type: 3,
         timestamp: "2024-08-07T15:33:18.204Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
       {
+        id: "2",
         type: 2,
         timestamp: "2024-08-07T15:32:26.006Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
       {
+        id: "1",
         type: 1,
         timestamp: "2024-08-07T15:32:13.597Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
       {
+        id: "0",
         type: 0,
         timestamp: "2024-08-07T15:31:17.382Z",
         credentialType: "Qualified vLEI Issuer Credential",
       },
     ];
+
     const connectionDetails = {
       ...connectionsFix[6],
       serviceEndpoints: [
@@ -549,7 +561,9 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(
             connectionDetails.createdAtUTC
-          )} - ${formatTimeToSec(connectionDetails.createdAtUTC)}`
+          )} - ${formatTimeToSec(
+            connectionDetails.createdAtUTC
+          )} (${getUTCOffset(connectionDetails.createdAtUTC)})`
         )
       ).toBeVisible();
     });
@@ -571,7 +585,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[0].timestamp)} - ${formatTimeToSec(
             historyEvents[0].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[0].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -590,7 +604,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[1].timestamp)} - ${formatTimeToSec(
             historyEvents[1].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[1].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -608,7 +622,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
             historyEvents[3].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[3].timestamp)})`
         )
       ).toBeVisible();
     });
@@ -629,7 +643,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         getByText(
           `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
             historyEvents[3].timestamp
-          )}`
+          )} (${getUTCOffset(historyEvents[3].timestamp)})`
         )
       ).toBeVisible();
     });

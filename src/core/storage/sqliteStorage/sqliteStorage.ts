@@ -35,9 +35,9 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
   static readonly SCAN_TAGS_SQL_IN =
     "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value IN ";
 
-  private session?: SQLiteDBConnection;
+  private session: SQLiteDBConnection;
 
-  constructor(session?: SQLiteDBConnection) {
+  constructor(session: SQLiteDBConnection) {
     this.session = session;
   }
 
@@ -148,7 +148,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
   }
 
   async getItem(id: string): Promise<StorageRecord | undefined> {
-    const qValues = await this.session!.query(SqliteStorage.GET_ITEM_SQL, [id]);
+    const qValues = await this.session.query(SqliteStorage.GET_ITEM_SQL, [id]);
     if (qValues && qValues.values && qValues.values.length === 1) {
       return {
         ...qValues.values[0],
@@ -167,7 +167,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
       scanQuery += " AND " + condition;
       scanValues = scanValues.concat(values);
     }
-    const qValues = await this.session!.query(scanQuery, scanValues);
+    const qValues = await this.session.query(scanQuery, scanValues);
     if (qValues && qValues.values && qValues.values.length > 0) {
       return qValues.values.map((record) => {
         return {
@@ -186,7 +186,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
       values: [id, sObject.category, sObject.name, sObject.value],
     });
     transactionStatements.push(...this.getTagsInsertSql(id, sObject.tags));
-    await this.session!.executeSet(transactionStatements);
+    await this.session.executeSet(transactionStatements);
   }
 
   async updateItem(id: string, sObject: StorageRecord): Promise<void> {
@@ -201,7 +201,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
       values: [id],
     });
     transactionStatements.push(...this.getTagsInsertSql(id, sObject.tags));
-    await this.session!.executeSet(transactionStatements);
+    await this.session.executeSet(transactionStatements);
   }
 
   async deleteItem(id: string): Promise<void> {
@@ -215,7 +215,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
         values: [id],
       },
     ];
-    await this.session!.executeSet(transactionStatements);
+    await this.session.executeSet(transactionStatements);
   }
 
   getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
@@ -299,8 +299,8 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     return { condition: conditions.join(" AND "), values };
   }
 
-  private checkSession(session?: SQLiteDBConnection) {
-    if (!session) {
+  private async checkSession(session?: SQLiteDBConnection) {
+    if (!session || !(await session.isDBOpen())) {
       throw new Error(SqliteStorage.SESSION_IS_NOT_INITIALIZED);
     }
   }

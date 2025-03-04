@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { Ilks, State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
@@ -9,7 +8,8 @@ import {
   KeriaNotificationMarker,
   MiscRecordId,
   NotificationRoute,
- CreationStatus } from "../agent.types";
+  CreationStatus,
+} from "../agent.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
   BasicRecord,
@@ -40,10 +40,15 @@ import {
   randomSalt,
 } from "./utils";
 import { CredentialService } from "./credentialService";
-import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
+import {
+  ConnectionHistoryItem,
+  ConnectionHistoryType,
+  ExnMessage,
+} from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { IdentifierService } from "./identifierService";
+import { ConnectionService } from "./connectionService";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -65,6 +70,7 @@ class KeriaNotificationService extends AgentService {
   protected readonly multiSigs: MultiSigService;
   protected readonly ipexCommunications: IpexCommunicationService;
   protected readonly credentialService: CredentialService;
+  protected readonly connectionService: ConnectionService;
   protected readonly getKeriaOnlineStatus: () => boolean;
   protected readonly markAgentStatus: (online: boolean) => void;
   protected readonly connect: (retryInterval?: number) => Promise<void>;
@@ -83,6 +89,7 @@ class KeriaNotificationService extends AgentService {
     multiSigs: MultiSigService,
     ipexCommunications: IpexCommunicationService,
     credentialService: CredentialService,
+    connectionService: ConnectionService,
     getKeriaOnlineStatus: () => boolean,
     markAgentStatus: (online: boolean) => void,
     connect: (retryInterval?: number) => Promise<void>
@@ -97,6 +104,7 @@ class KeriaNotificationService extends AgentService {
     this.multiSigs = multiSigs;
     this.ipexCommunications = ipexCommunications;
     this.credentialService = credentialService;
+    this.connectionService = connectionService;
     this.getKeriaOnlineStatus = getKeriaOnlineStatus;
     this.markAgentStatus = markAgentStatus;
     this.connect = connect;
@@ -108,7 +116,7 @@ class KeriaNotificationService extends AgentService {
     );
   }
 
-  async pollNotifications() {
+  async pollNotifications(): Promise<void> {
     try {
       await this._pollNotifications();
     } catch (error) {
@@ -121,7 +129,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  private async _pollNotifications() {
+  private async _pollNotifications(): Promise<void> {
     let notificationQuery = {
       nextIndex: 0,
       lastNotificationId: "",
@@ -173,10 +181,12 @@ class KeriaNotificationService extends AgentService {
           throw error;
         }
       }
+
       if (!notifications) {
         // KERIA went down while querying, now back online
         continue;
       }
+
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||
@@ -279,7 +289,7 @@ class KeriaNotificationService extends AgentService {
     );
   }
 
-  async processNotification(notif: Notification) {
+  async processNotification(notif: Notification): Promise<void> {
     if (
       notif.r ||
       !Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
@@ -353,7 +363,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async retryFailedNotifications() {
+  async retryFailedNotifications(): Promise<void> {
     const failedNotificationsRecord = await this.basicStorage.findById(
       MiscRecordId.FAILED_NOTIFICATIONS
     );
@@ -646,7 +656,7 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
 
-    const multisigId = groupRequests[0].exn!.a!.gid;
+    const multisigId = groupRequests[0].exn.a.gid;
 
     // If deleted, skip - XX indicates identifier was deleted
     // This is safer than checking for the local metadata record in case
@@ -697,21 +707,23 @@ class KeriaNotificationService extends AgentService {
 
         // Either relates to an processed and deleted grant notification, or is out of order
         if (grantNotificationRecords.length === 0) {
-          // @TODO - foconnor: We should do this via connection history
           const grantExn = await this.props.signifyClient
             .exchanges()
             .get(exchange.exn.e.exn.p);
-          const credentialId = grantExn.exn.e.acdc.d;
-          if (
-            (await this.credentialStorage.getCredentialMetadata(
-              credentialId
-            )) !== null
-          ) {
+          const connectionInCloud =
+            await this.connectionService.getConnectionById(
+              grantExn.exn.i,
+              true
+            );
+          const historyExists = connectionInCloud.historyItems.some(
+            (item) => item.id === grantExn.exn.d
+          );
+          if (historyExists) {
             await this.markNotification(notif.i);
             return false;
+          } else {
+            throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
           }
-
-          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
         }
 
         // Refresh the date and read status for UI, and link
@@ -760,8 +772,20 @@ class KeriaNotificationService extends AgentService {
 
         // Either relates to an processed and deleted apply notification, or is out of order
         if (applyNotificationRecords.length === 0) {
-          // @TODO - foconnor: For deleted applies, we should track SAID in connection history
-          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          const connectionInCloud =
+            await this.connectionService.getConnectionById(
+              applyExn.exn.i,
+              true
+            );
+          const historyExists = connectionInCloud.historyItems.some(
+            (item) => item.id === applyExn.exn.d
+          );
+          if (historyExists) {
+            await this.markNotification(notif.i);
+            return false;
+          } else {
+            throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          }
         }
 
         // Refresh the date and read status for UI, and link
@@ -826,8 +850,20 @@ class KeriaNotificationService extends AgentService {
 
         // Either relates to an processed and deleted agree notification, or is out of order
         if (agreeNotificationRecords.length === 0) {
-          // @TODO - foconnor: For deleted agrees, we should track SAID in connection history
-          throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          const connectionInCloud =
+            await this.connectionService.getConnectionById(
+              agreeExn.exn.i,
+              true
+            );
+          const historyExists = connectionInCloud.historyItems.some(
+            (item) => item.id === agreeExn.exn.d
+          );
+          if (historyExists) {
+            await this.markNotification(notif.i);
+            return false;
+          } else {
+            throw new Error(KeriaNotificationService.OUT_OF_ORDER_NOTIFICATION);
+          }
         }
 
         // @TODO - foconnor: Could be optimised to only update record once but deviates from the other IPEX messages - OK for now.
@@ -884,7 +920,7 @@ class KeriaNotificationService extends AgentService {
     };
   }
 
-  async readNotification(notificationId: string) {
+  async readNotification(notificationId: string): Promise<void> {
     const notificationRecord = await this.notificationStorage.findById(
       notificationId
     );
@@ -895,7 +931,7 @@ class KeriaNotificationService extends AgentService {
     await this.notificationStorage.update(notificationRecord);
   }
 
-  async unreadNotification(notificationId: string) {
+  async unreadNotification(notificationId: string): Promise<void> {
     const notificationRecord = await this.notificationStorage.findById(
       notificationId
     );
@@ -929,7 +965,7 @@ class KeriaNotificationService extends AgentService {
     });
   }
 
-  private async markNotification(notiSaid: string) {
+  private async markNotification(notiSaid: string): Promise<string> {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
@@ -965,7 +1001,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async pollLongOperations() {
+  async pollLongOperations(): Promise<void> {
     try {
       await this._pollLongOperations();
     } catch (error) {
@@ -977,7 +1013,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async _pollLongOperations() {
+  async _pollLongOperations(): Promise<void> {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -1004,7 +1040,9 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async processOperation(operationRecord: OperationPendingRecord) {
+  async processOperation(
+    operationRecord: OperationPendingRecord
+  ): Promise<void> {
     let operation;
     try {
       operation = await this.props.signifyClient
@@ -1175,6 +1213,7 @@ class KeriaNotificationService extends AgentService {
                 exnSaid: grantExchange.exn.d,
               }
             );
+
             for (const notification of notifications) {
               await deleteNotificationRecordById(
                 this.props.signifyClient,
@@ -1208,7 +1247,7 @@ class KeriaNotificationService extends AgentService {
               });
 
             await this.ipexCommunications.createLinkedIpexMessageRecord(
-              admitExchange,
+              grantExchange,
               ConnectionHistoryType.CREDENTIAL_ISSUANCE
             );
           }
