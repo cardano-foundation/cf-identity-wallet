@@ -314,6 +314,22 @@ describe("Settings page", () => {
     });
 
     await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security
+            .biometricsalert.message
+        )
+      );
+    });
+
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometricsalert
+          .ok
+      )
+    );
+
+    await waitFor(() => {
       expect(openSettingMock).toBeCalledTimes(1);
     });
   });
