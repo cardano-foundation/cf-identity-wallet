@@ -14,7 +14,6 @@ import introImg0 from "../../assets/images/intro-0.png";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
 import introImg3 from "../../assets/images/intro-3.png";
-import introImg4 from "../../assets/images/intro-4.png";
 import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
@@ -56,11 +55,6 @@ const Onboarding = () => {
       title: `${i18n.t("onboarding.slides.3.title")}`,
       description: `${i18n.t("onboarding.slides.3.description")}`,
       image: introImg3,
-    },
-    {
-      title: `${i18n.t("onboarding.slides.4.title")}`,
-      description: `${i18n.t("onboarding.slides.4.description")}`,
-      image: introImg4,
     },
   ];
 
