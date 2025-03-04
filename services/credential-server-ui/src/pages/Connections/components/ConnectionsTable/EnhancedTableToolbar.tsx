@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Toolbar, Typography, IconButton, Tooltip } from "@mui/material";
-import { Delete, FilterList } from "@mui/icons-material";
+import { Toolbar, Typography, IconButton, Button } from "@mui/material";
+import { DeleteOutline, FilterList } from "@mui/icons-material";
 import { i18n } from "../../../../i18n";
 
 interface EnhancedTableToolbarProps {
@@ -12,18 +12,16 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
   return (
     <Toolbar className="connection-table-toolbar">
       <div className="table-left">
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterList />
-            <Typography
-              color="inherit"
-              variant="subtitle1"
-              component="div"
-            >
-              {i18n.t("pages.connections.filter")}
-            </Typography>
-          </IconButton>
-        </Tooltip>
+        <IconButton>
+          <FilterList />
+          <Typography
+            color="inherit"
+            variant="subtitle1"
+            component="div"
+          >
+            {i18n.t("pages.connections.filter")}
+          </Typography>
+        </IconButton>
       </div>
       <div className="table-right">
         {numSelected > 0 && (
@@ -35,11 +33,14 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
             >
               {numSelected} {i18n.t("pages.connections.selected")}
             </Typography>
-            <Tooltip title="Delete">
-              <IconButton>
-                <Delete />
-              </IconButton>
-            </Tooltip>
+            <Button
+              variant="contained"
+              aria-label="delete connections"
+              startIcon={<DeleteOutline />}
+              className="delete-connections-button"
+            >
+              {i18n.t("pages.connections.delete")}
+            </Button>
           </>
         )}
       </div>

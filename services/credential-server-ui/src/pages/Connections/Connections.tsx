@@ -33,7 +33,6 @@ const Connections = () => {
           </Button>
         )}
       </div>
-
       <ConnectionsTable />
     </div>
   );

@@ -82,7 +82,7 @@ const EnhancedTableHead: React.FC<EnhancedTableProps> = (props) => {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
+            align="left"
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -91,7 +91,6 @@ const EnhancedTableHead: React.FC<EnhancedTableProps> = (props) => {
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
               {orderBy === headCell.id ? (
                 <Box
                   component="span"
@@ -100,9 +99,11 @@ const EnhancedTableHead: React.FC<EnhancedTableProps> = (props) => {
                   {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
+              {headCell.label}
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell padding="normal" />
       </TableRow>
     </TableHead>
   );

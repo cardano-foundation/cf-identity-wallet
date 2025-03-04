@@ -25,35 +25,61 @@
   }
 
   .connections-table {
-    background-color: var(--color-neutral-100);
+    background-color: var(--background-color);
 
     .connection-table-toolbar,
     .table-left,
     .table-right {
+      padding: 0;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      padding: 0;
     }
 
     .connection-table-toolbar {
       min-height: 2.5rem;
+      margin-bottom: 0.75rem;
+      background-color: var(--background-color);
 
       .table-left,
       .table-right {
         > * {
-          align-self: anchor-center;
+          height: 2.5rem;
+          font-size: 1rem;
           padding: 0.5rem 1rem;
+          align-self: anchor-center;
         }
       }
 
-      .table-left * svg {
-        margin-right: 0.5rem;
+      .table-left {
+        // TODO: Hiding for the moment.
+        // To be completed at a later stage.
+        visibility: hidden;
+        * svg {
+          margin-right: 0.5rem;
+        }
+      }
+
+      .table-right {
+        .delete-connections-button {
+          border-radius: 0.5rem;
+          text-transform: none;
+          background-color: var(--color-error-800);
+
+          &:hover {
+            // TODO: Hardcoding color value because it's missing in Figma
+            background: #7d1a14;
+          }
+        }
       }
     }
 
     .MuiTableHead-root {
       background-color: var(--color-primary-200);
+
+      .MuiTableCell-head:last-of-type {
+        width: 2rem;
+      }
     }
 
     tr {
@@ -66,6 +92,24 @@
       th,
       td {
         font-weight: 500;
+
+        .MuiButtonBase-root {
+          &:hover {
+            background-color: var(--color-neutral-300);
+          }
+        }
+      }
+    }
+
+    .MuiTableContainer-root {
+      background-color: var(--color-neutral-100);
+      border-radius: 0.75rem;
+      box-shadow: 0.25rem 0.25rem 1.25rem 0rem rgba(var(--text-color-rgb), 0.16);
+    }
+
+    .MuiTablePagination-actions button {
+      &:hover {
+        background-color: var(--color-neutral-100);
       }
     }
   }

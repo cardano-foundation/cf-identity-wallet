@@ -20,6 +20,10 @@
       "addConnection": "Add Connection",
       "filter": "Filter",
       "selected": "selected",
+      "delete": "Delete",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "issueCredential": "Issue credential",
       "connectionName": "Connection Name",
       "connectionDate": "Connection Date",
       "issuedCredentials": "Issued Credentials"

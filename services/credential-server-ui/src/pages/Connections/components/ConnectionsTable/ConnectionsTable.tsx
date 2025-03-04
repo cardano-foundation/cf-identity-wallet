@@ -9,12 +9,22 @@ import {
   TablePagination,
   TableRow,
   Checkbox,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import {
+  AddCircleOutlineOutlined,
+  DeleteOutline,
+  MoreVert,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 import { EnhancedTableHead } from "./EnhancedTableHead";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { useTable } from "./useTable";
 import { rows } from "./data";
 import { formatDate } from "../../../../utils/dateFormatter"; // Import the date formatting function
+import { DropdownMenu } from "../../../../components/DropdownMenu";
+import { i18n } from "../../../../i18n";
 
 const ConnectionsTable: React.FC = () => {
   const {
@@ -31,6 +41,41 @@ const ConnectionsTable: React.FC = () => {
     emptyRows,
     visibleRows,
   } = useTable(rows);
+
+  const ActionButton = (
+    <Tooltip
+      title={i18n.t("pages.connections.actions")}
+      placement="top"
+    >
+      <IconButton aria-label="actions">
+        <MoreVert />
+      </IconButton>
+    </Tooltip>
+  );
+
+  const menuItems = [
+    {
+      label: i18n.t("pages.connections.viewDetails"),
+      action: () => console.log(i18n.t("pages.connections.viewDetails")),
+      icon: <VisibilityOutlined />,
+      className: "icon-left",
+    },
+    {
+      label: i18n.t("pages.connections.issueCredential"),
+      action: () => console.log(i18n.t("pages.connections.issueCredential")),
+      icon: <AddCircleOutlineOutlined />,
+      className: "icon-left",
+    },
+    {
+      className: "divider",
+    },
+    {
+      label: i18n.t("pages.connections.delete"),
+      action: () => console.log(i18n.t("pages.connections.delete")),
+      icon: <DeleteOutline />,
+      className: "icon-left action-delete",
+    },
+  ];
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -82,8 +127,14 @@ const ConnectionsTable: React.FC = () => {
                     >
                       {row.name}
                     </TableCell>
-                    <TableCell align="right">{formatDate(row.date)}</TableCell>
-                    <TableCell align="right">{row.credentials}</TableCell>
+                    <TableCell align="left">{formatDate(row.date)}</TableCell>
+                    <TableCell align="left">{row.credentials}</TableCell>
+                    <TableCell align="left">
+                      <DropdownMenu
+                        button={ActionButton}
+                        menuItems={menuItems}
+                      />
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -94,16 +145,16 @@ const ConnectionsTable: React.FC = () => {
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
       </Paper>
     </Box>
   );

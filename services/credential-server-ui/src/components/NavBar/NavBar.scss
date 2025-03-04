@@ -1,4 +1,10 @@
 #navBar {
+  padding: 0 2.5rem;
+
+  .MuiContainer-root {
+    padding: 0;
+  }
+
   a,
   button,
   li {
@@ -7,6 +13,10 @@
     text-decoration: none;
     border-radius: 1rem;
     padding: 0.75rem 1rem 0.75rem 1.25rem;
+
+    &.logo-button {
+      padding-left: 0;
+    }
 
     &:hover:not(.header-logo):not(.switch-account-button) {
       background-color: var(--color-primary-200);

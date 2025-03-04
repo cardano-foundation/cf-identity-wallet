@@ -1,44 +1,28 @@
-import { useState, MouseEvent } from "react";
-import { Button, Menu, MenuItem, Divider, Typography } from "@mui/material";
+import { useState } from "react";
+import { Button } from "@mui/material";
 import {
+  CheckCircle,
   OpenInNewOutlined,
   KeyboardArrowDown,
-  CheckCircle,
 } from "@mui/icons-material";
-import "./SwitchAccount.scss";
 import { i18n } from "../../i18n";
 import { HolderModal } from "./components/HolderModal";
 import { useAppDispatch } from "../../store/hooks";
 import { setRoleView } from "../../store/reducers";
 import { RoleIndex, roleViewText } from "../../constants/roles";
+import { DropdownMenu } from "../DropdownMenu/DropdownMenu";
+import "./SwitchAccount.scss";
 
 const SwitchAccount = () => {
   const dispatch = useAppDispatch();
   const [state, setState] = useState({
     selectedIndex: RoleIndex.ISSUER,
     selectedView: i18n.t(roleViewText[RoleIndex.ISSUER]),
-    anchorEl: null as HTMLElement | null,
     openModal: false,
   });
 
-  const open = Boolean(state.anchorEl);
-
   const handleOpenModal = () =>
     setState((prevState) => ({ ...prevState, openModal: true }));
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setState((prevState) => ({ ...prevState, anchorEl: event.currentTarget }));
-  };
-
-  const handleClose = (index: RoleIndex) => {
-    setState((prevState) => ({ ...prevState, anchorEl: null }));
-
-    if (index === RoleIndex.HOLDER) {
-      handleOpenModal();
-    } else {
-      updateSelectedView(index, i18n.t(roleViewText[index]));
-    }
-  };
 
   const updateSelectedView = (index: RoleIndex, view: string) => {
     setState((prevState) => ({
@@ -49,74 +33,72 @@ const SwitchAccount = () => {
     dispatch(setRoleView(index));
   };
 
+  const menuItems = [
+    {
+      label: i18n.t(roleViewText[RoleIndex.ISSUER]),
+      action: () =>
+        updateSelectedView(
+          RoleIndex.ISSUER,
+          i18n.t(roleViewText[RoleIndex.ISSUER])
+        ),
+      icon:
+        state.selectedIndex === RoleIndex.ISSUER ? (
+          <CheckCircle color="primary" />
+        ) : (
+          <div />
+        ),
+      className: "icon-right",
+    },
+    {
+      label: i18n.t(roleViewText[RoleIndex.VERIFIER]),
+      action: () =>
+        updateSelectedView(
+          RoleIndex.VERIFIER,
+          i18n.t(roleViewText[RoleIndex.VERIFIER])
+        ),
+      icon:
+        state.selectedIndex === RoleIndex.VERIFIER ? (
+          <CheckCircle color="primary" />
+        ) : (
+          <div />
+        ),
+      className: "icon-right",
+    },
+    // TODO: Hiding these for now until we decide to show the Holder screen again
+    {
+      className: "divider hidden",
+    },
+    {
+      label: i18n.t(roleViewText[RoleIndex.HOLDER]),
+      action: handleOpenModal,
+      icon: <OpenInNewOutlined className="open-new-icon" />,
+      className: "icon-right hidden",
+    },
+    // End TODO
+  ];
+
+  const SwitchButton = (
+    <Button
+      aria-controls={state.openModal ? "dropdown-menu" : undefined}
+      aria-haspopup="true"
+      aria-expanded={state.openModal ? "true" : undefined}
+      variant="contained"
+      disableElevation
+      disableRipple
+      endIcon={<KeyboardArrowDown />}
+      className="switch-account-button"
+    >
+      {state.selectedView}
+    </Button>
+  );
+
   return (
     <div>
-      <Button
-        id="switchAccountButton"
-        className="switch-account-button"
-        aria-controls={open ? "switch-account-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        variant="contained"
-        disableElevation
-        disableRipple
-        onClick={handleClick}
-        endIcon={<KeyboardArrowDown />}
-      >
-        {state.selectedView}
-      </Button>
-      <Menu
-        id="switchAccountMenu"
-        MenuListProps={{
-          "aria-labelledby": "switch-account-button",
-        }}
-        anchorEl={state.anchorEl}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        open={open}
-        onClose={() => handleClose(state.selectedIndex)}
-        className="switch-account-menu"
-      >
-        <Typography>{i18n.t("navbar.switchAccount.title")}</Typography>
-        <MenuItem
-          onClick={() => handleClose(RoleIndex.ISSUER)}
-          disableRipple
-        >
-          {i18n.t(roleViewText[RoleIndex.ISSUER])}
-          {state.selectedIndex === RoleIndex.ISSUER && (
-            <CheckCircle color={"primary"} />
-          )}
-        </MenuItem>
-        <MenuItem
-          onClick={() => handleClose(RoleIndex.VERIFIER)}
-          disableRipple
-        >
-          {i18n.t(roleViewText[RoleIndex.VERIFIER])}
-          {state.selectedIndex === RoleIndex.VERIFIER && (
-            <CheckCircle color={"primary"} />
-          )}
-        </MenuItem>
-        {/* TODO: Hiding these for now until we decide to show the Holder screen again */}
-        <Divider
-          sx={{ my: 0.5 }}
-          className="hidden"
-        />
-        <MenuItem
-          onClick={() => handleClose(RoleIndex.HOLDER)}
-          disableRipple
-          className="hidden"
-        >
-          {i18n.t(roleViewText[RoleIndex.HOLDER])}
-          <OpenInNewOutlined className="open-new-icon" />
-        </MenuItem>
-        {/* End */}
-      </Menu>
+      <DropdownMenu
+        button={SwitchButton}
+        menuItems={menuItems}
+        menuTitle={i18n.t("navbar.switchAccount.title")}
+      />
       <HolderModal
         openModal={state.openModal}
         setOpenModal={(open) =>
