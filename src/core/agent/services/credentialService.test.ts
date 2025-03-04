@@ -1,3 +1,4 @@
+import { Ilks } from "signify-ts";
 import { CredentialService } from "./credentialService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
@@ -5,8 +6,12 @@ import { CoreEventEmitter } from "../event";
 import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
 import { IdentifierType } from "./identifier.types";
-import { memberIdentifierRecord } from "../../__fixtures__/agent/multiSigFixtures";
+import {
+  gHab,
+  memberIdentifierRecord,
+} from "../../__fixtures__/agent/multiSigFixtures";
 import { EventTypes } from "../event.types";
+import { hab } from "../../__fixtures__/agent/keriaNotificationFixtures";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -22,6 +27,7 @@ let credentialListMock = jest.fn();
 let getCredentialMock = jest.fn();
 const revokeCredentialMock = jest.fn();
 let deleteCredentialMock = jest.fn();
+const credentialStateMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -73,6 +79,7 @@ const signifyClient = jest.mocked({
     list: credentialListMock,
     revoke: revokeCredentialMock,
     delete: deleteCredentialMock,
+    state: credentialStateMock,
   }),
   exchanges: () => ({
     get: jest.fn(),
@@ -85,13 +92,13 @@ const signifyClient = jest.mocked({
     query: queryKeyStateMock,
     get: jest.fn(),
   }),
-
   groups: () => ({ getRequest: groupGetRequestMock }),
 });
+
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
   getUserFacingIdentifierRecords: jest.fn(),
-  getKeriIdentifiersMetadata: jest.fn(),
+  getAllIdentifiers: jest.fn(),
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
 });
@@ -360,7 +367,7 @@ describe("Credential service of agent", () => {
             s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
             a: {
               d: "EDqWl2zEU2LtoVmP1s2jpWx9oFs3bs0zHxH6kdnIgx3-",
-              i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+              i: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
               dt: "2023-11-29T02:13:34.858000+00:00",
               LEI: "5493001KJTIIGC8Y1R17",
             },
@@ -379,7 +386,26 @@ describe("Credential service of agent", () => {
             s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
             a: {
               d: "EC67QqakhZ1bZgKci_HsGMIKQybEdc9mJqykBecOG4rJ",
-              i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+              i: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD",
+              dt: "2023-11-29T02:12:35.716000+00:00",
+              LEI: "5493001KJTIIGC8Y1R17",
+            },
+          },
+          schema: {
+            $id: "id-2",
+            title: "title2",
+          },
+        },
+        {
+          sad: {
+            v: "ACDC10JSON000197_",
+            d: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadETT",
+            i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpTTT",
+            ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+            s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+            a: {
+              d: "EC67QqakhZ1bZgKci_HsGMIKQybEdc9mJqykBecOG4rJ",
+              i: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD",
               dt: "2023-11-29T02:12:35.716000+00:00",
               LEI: "5493001KJTIIGC8Y1R17",
             },
@@ -391,11 +417,15 @@ describe("Credential service of agent", () => {
         },
       ])
       .mockResolvedValue([]);
-    credentialStorage.getAllCredentialMetadata = jest.fn().mockReturnValue([]);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...memberIdentifierRecord,
-      id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-    });
+    credentialStateMock
+      .mockResolvedValueOnce({ et: Ilks.iss })
+      .mockResolvedValueOnce({ et: Ilks.rev });
+    credentialStorage.getAllCredentialMetadata = jest
+      .fn()
+      .mockReturnValue([
+        { id: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadETT" },
+      ]);
+    identifiersGetMock.mockResolvedValueOnce(hab).mockResolvedValueOnce(gHab);
     eventEmitter.emit = jest.fn();
 
     await credentialService.syncKeriaCredentials();
@@ -410,7 +440,7 @@ describe("Credential service of agent", () => {
         status: CredentialStatus.CONFIRMED,
         connectionId: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
         schema: "id-1",
-        identifierId: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+        identifierId: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
         identifierType: IdentifierType.Individual,
         createdAt: new Date("2023-11-29T02:13:34.858Z"),
       })
@@ -421,13 +451,21 @@ describe("Credential service of agent", () => {
         isArchived: false,
         issuanceDate: "2023-11-29T02:12:35.716Z",
         credentialType: "title2",
-        status: CredentialStatus.CONFIRMED,
+        status: CredentialStatus.REVOKED,
         connectionId: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
         schema: "id-2",
-        identifierId: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-        identifierType: IdentifierType.Individual,
+        identifierId: "EFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD",
+        identifierType: IdentifierType.Group,
         createdAt: new Date("2023-11-29T02:12:35.716Z"),
       })
+    );
+    expect(credentialStateMock).toBeCalledWith(
+      "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+      "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X"
+    );
+    expect(credentialStateMock).toBeCalledWith(
+      "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+      "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY"
     );
   });
 

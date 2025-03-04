@@ -117,7 +117,7 @@ const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
   getUserFacingIdentifierRecords: jest.fn(),
   getIdentifierRecords: jest.fn(),
-  getKeriIdentifiersMetadata: jest.fn(),
+  getAllIdentifiers: jest.fn(),
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
   getIdentifierMetadataByGroupId: jest.fn(),
@@ -1256,9 +1256,7 @@ describe("Single sig service of agent", () => {
         ],
       })
       .mockReturnValue({ aids: [] });
-    identifierStorage.getKeriIdentifiersMetadata = jest
-      .fn()
-      .mockReturnValue([]);
+    identifierStorage.getAllIdentifiers = jest.fn().mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
     identifierStorage.updateIdentifierMetadata = jest.fn();
     jest
@@ -1372,9 +1370,7 @@ describe("Single sig service of agent", () => {
         ],
       })
       .mockReturnValue({ aids: [] });
-    identifierStorage.getKeriIdentifiersMetadata = jest
-      .fn()
-      .mockReturnValue([]);
+    identifierStorage.getAllIdentifiers = jest.fn().mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
     identifierStorage.updateIdentifierMetadata = jest.fn();
     jest
@@ -1511,9 +1507,7 @@ describe("Single sig service of agent", () => {
         ],
       })
       .mockReturnValue({ aids: [] });
-    identifierStorage.getKeriIdentifiersMetadata = jest
-      .fn()
-      .mockReturnValue([]);
+    identifierStorage.getAllIdentifiers = jest.fn().mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
     identifierStorage.updateIdentifierMetadata = jest.fn();
     jest

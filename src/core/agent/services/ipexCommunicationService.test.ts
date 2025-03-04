@@ -75,7 +75,7 @@ const notificationStorage = jest.mocked({
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
   getUserFacingIdentifierRecords: jest.fn(),
-  getKeriIdentifiersMetadata: jest.fn(),
+  getAllIdentifiers: jest.fn(),
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
 });

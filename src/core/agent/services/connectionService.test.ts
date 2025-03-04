@@ -210,7 +210,7 @@ describe("Connection service of agent", () => {
         id: "id",
         label: alias,
         oobi: oobi,
-        status: ConnectionStatus.PENDING,
+        status: ConnectionStatus.CONFIRMED,
         createdAtUTC: expect.stringMatching(
           /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
         ),
@@ -221,6 +221,7 @@ describe("Connection service of agent", () => {
       oobi,
       id: "id",
       createdAt: new Date(now),
+      creationStatus: CreationStatus.COMPLETE,
       groupId,
     });
   });
@@ -548,31 +549,60 @@ describe("Connection service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
+    const DATE = new Date();
     contactListMock.mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
-        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        alias: "MyFirstContact",
         oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR/agent/EP48HXCPvtzGu0c90gG9fkOYiSoi6U5Am-XaqcoNHTBl",
-        groupId: "group-id",
-        createdAt: new Date(),
+        groupCreationId: "group-id",
+        createdAt: DATE.toISOString(),
         challenges: [],
         wellKnowns: [],
       },
       {
         id: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
-        alias: "e6d37a7b-00e9-4f85-8cf9-2123d15fc094",
+        alias: "MySecondContact",
         oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W/agent/EJMV0RgikXM7jyvXB9oOyKSZzo_AsYrEgP15Ly0dwzEL",
-        groupId: "group-id",
-        createdAt: new Date(),
+        createdAt: DATE.toISOString(),
+        challenges: [],
+        wellKnowns: [],
+      },
+      {
+        id: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCXX",
+        alias: "ExistingContact",
+        oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCXX/agent/EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_zH",
+        createdAt: DATE.toISOString(),
         challenges: [],
         wellKnowns: [],
       },
     ]);
 
     eventEmitter.emit = jest.fn();
-    connectionStorage.getAll = jest.fn().mockReturnValue([]);
+    connectionStorage.getAll = jest
+      .fn()
+      .mockReturnValue([
+        { id: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCXX" },
+      ]);
+
     await connectionService.syncKeriaContacts();
+
     expect(connectionStorage.save).toBeCalledTimes(2);
+    expect(connectionStorage.save).toBeCalledWith({
+      id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
+      alias: "MyFirstContact",
+      createdAt: DATE,
+      oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR/agent/EP48HXCPvtzGu0c90gG9fkOYiSoi6U5Am-XaqcoNHTBl",
+      groupId: "group-id",
+      creationStatus: CreationStatus.COMPLETE,
+    });
+    expect(connectionStorage.save).toBeCalledWith({
+      id: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+      alias: "MySecondContact",
+      createdAt: DATE,
+      oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W/agent/EJMV0RgikXM7jyvXB9oOyKSZzo_AsYrEgP15Ly0dwzEL",
+      creationStatus: CreationStatus.COMPLETE,
+    });
   });
 
   test("Can get multisig linked contacts", async () => {
@@ -940,7 +970,7 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("Can get connection pending keri", async () => {
+  test("Can get pending connection", async () => {
     connectionStorage.findAllByQuery = jest.fn().mockResolvedValueOnce([
       {
         id: keriContacts[0].id,
@@ -949,14 +979,14 @@ describe("Connection service of agent", () => {
         oobi: "oobi",
         groupId: "group-id",
         getTag: jest.fn().mockReturnValue("group-id"),
-        pending: true,
+        creationStatus: CreationStatus.PENDING,
       },
     ]);
 
     const result = await connectionService.getConnectionsPending();
 
     expect(connectionStorage.findAllByQuery).toHaveBeenCalledWith({
-      pending: true,
+      creationStatus: CreationStatus.PENDING,
       groupId: undefined,
     });
 
@@ -967,7 +997,7 @@ describe("Connection service of agent", () => {
         alias: "keri",
         oobi: "oobi",
         groupId: "group-id",
-        pending: true,
+        creationStatus: CreationStatus.PENDING,
       }),
     ]);
   });
