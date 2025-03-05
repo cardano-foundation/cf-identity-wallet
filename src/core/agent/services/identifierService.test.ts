@@ -1341,9 +1341,7 @@ describe("Single sig service of agent", () => {
         ],
       })
       .mockReturnValue({ aids: [] });
-    identifierStorage.getKeriIdentifiersMetadata = jest
-      .fn()
-      .mockReturnValue([]);
+    identifierStorage.getAllIdentifiers = jest.fn().mockReturnValue([]);
     identifierStorage.createIdentifierMetadataRecord = jest.fn();
     identifierStorage.updateIdentifierMetadata = jest.fn();
     jest
