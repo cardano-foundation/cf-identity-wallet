@@ -194,7 +194,7 @@ const Identifiers = () => {
       }
 
       if (!identifier.groupMetadata) {
-        identifier.multisigManageAid
+        identifier.groupMemberPre
           ? tmpGroupIdentifiers.push(identifier)
           : tmpIndividualIdentifiers.push(identifier);
       }
@@ -255,7 +255,7 @@ const Identifiers = () => {
         : ""
   }`;
   const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
-    if (identifier?.groupMetadata || identifier?.multisigManageAid) {
+    if (identifier?.groupMetadata || identifier?.groupMemberPre) {
       handleMultiSigClick(identifier);
       setOpenGroupAfterCreate(true);
     }

@@ -9,6 +9,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import * as utils from "./utils";
 import { BasicRecord } from "../records";
 import { StorageMessage } from "../../storage/storage.types";
+import { findNotificationsResult } from "../../__fixtures__/agent/keriaNotificationFixtures";
 
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
@@ -18,6 +19,8 @@ const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
 const findOperationMock = jest.fn();
+const markNotificationMock = jest.fn();
+
 const mockSigner = {
   _code: "A",
   _size: -1,
@@ -87,7 +90,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn(),
@@ -150,12 +153,18 @@ const basicStorage = jest.mocked({
   deleteById: jest.fn(),
 });
 
+const notificationStorage = jest.mocked({
+  deleteById: jest.fn(),
+  findAllByQuery: jest.fn(),
+});
+
 const identifierService = new IdentifierService(
   agentServicesProps,
   identifierStorage as any,
   operationPendingStorage as any,
-  connections as any,
-  basicStorage as any
+  basicStorage as any,
+  notificationStorage as any,
+  connections as any
 );
 
 jest.mock("../../cardano/walletConnect/peerConnection", () => ({
@@ -277,6 +286,7 @@ describe("Single sig service of agent", () => {
     getAgentConfigMock.mockResolvedValue({
       iurls: WITNESSES.slice(0, 6),
     });
+    markNotificationMock.mockResolvedValue(undefined);
   });
 
   test("can get all user facing identifiers", async () => {
@@ -302,7 +312,7 @@ describe("Single sig service of agent", () => {
         ...keriMetadataRecordProps,
         id: "EIZ-n_hHHY5ERGTzvpXYBkB6_yBAM4RXcjQG3-JykFvT",
         displayName: "group",
-        multisigManageAid: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5InX",
+        groupMemberPre: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5InX",
         groupMetadata: undefined,
       }),
     ]);
@@ -321,7 +331,7 @@ describe("Single sig service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         creationStatus: CreationStatus.COMPLETE,
-        multisigManageAid: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5InX",
+        groupMemberPre: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5InX",
         groupMetadata: undefined,
       },
     ]);
@@ -391,7 +401,7 @@ describe("Single sig service of agent", () => {
       createdAtUTC: nowISO,
       theme: 0,
       groupMetadata: keriMetadataRecord.groupMetadata,
-      multisigManageAid: keriMetadataRecord.multisigManageAid,
+      groupMemberPre: keriMetadataRecord.groupMemberPre,
       ...identifierStateKeria.state,
       creationStatus: CreationStatus.COMPLETE,
       members: undefined,
@@ -414,7 +424,7 @@ describe("Single sig service of agent", () => {
       createdAtUTC: nowISO,
       theme: 0,
       groupMetadata: keriMetadataRecord.groupMetadata,
-      multisigManageAid: keriMetadataRecord.multisigManageAid,
+      groupMemberPre: keriMetadataRecord.groupMemberPre,
       ...identifierStateKeria.state,
       creationStatus: CreationStatus.COMPLETE,
       members: [
@@ -1112,10 +1122,31 @@ describe("Single sig service of agent", () => {
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    notificationStorage.findAllByQuery.mockResolvedValue(
+      findNotificationsResult
+    );
+
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
+
     expect(connections.deleteConnectionById).toBeCalledWith(
       "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
     );
+    expect(markNotificationMock).toBeCalledWith(findNotificationsResult[0].id);
+    expect(notificationStorage.deleteById).toBeCalledWith(
+      findNotificationsResult[0].id
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: findNotificationsResult[0].id },
+    });
+    expect(markNotificationMock).toBeCalledWith(findNotificationsResult[1].id);
+    expect(notificationStorage.deleteById).toBeCalledWith(
+      findNotificationsResult[1].id
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: findNotificationsResult[1].id },
+    });
   });
 
   test("should delete the local member identifier for that multisig if deleting the multi-sig identifier", async () => {
@@ -1126,13 +1157,13 @@ describe("Single sig service of agent", () => {
       theme: 0,
       groupMetadata,
       creationStatus: CreationStatus.PENDING,
-      multisigManageAid: "manageAid",
+      groupMemberPre: "manageAid",
     };
     identifierStorage.getIdentifierMetadata
       .mockReturnValueOnce({
         ...keriMetadataRecord,
         creationStatus: CreationStatus.PENDING,
-        multisigManageAid: "manageAid",
+        groupMemberPre: "manageAid",
         groupMetadata: undefined,
       })
       .mockReturnValueOnce(localMember);
@@ -1153,6 +1184,9 @@ describe("Single sig service of agent", () => {
       .spyOn(utils, "randomSalt")
       .mockReturnValueOnce("QOP7zdP-kJs8nlwVR290XfyAk")
       .mockReturnValueOnce("0ADQpus-mQmmO4mgWcT3ekDz");
+    notificationStorage.findAllByQuery
+      .mockResolvedValueOnce([findNotificationsResult[0]])
+      .mockResolvedValueOnce([findNotificationsResult[1]]);
 
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
 
@@ -1169,6 +1203,22 @@ describe("Single sig service of agent", () => {
     });
     expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
       name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`,
+    });
+    expect(markNotificationMock).toBeCalledWith(findNotificationsResult[0].id);
+    expect(notificationStorage.deleteById).toBeCalledWith(
+      findNotificationsResult[0].id
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: findNotificationsResult[0].id },
+    });
+    expect(markNotificationMock).toBeCalledWith(findNotificationsResult[1].id);
+    expect(notificationStorage.deleteById).toBeCalledWith(
+      findNotificationsResult[1].id
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: findNotificationsResult[1].id },
     });
     expect(updateIdentifierMock).toBeCalledTimes(2);
   });
@@ -1205,6 +1255,9 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
     jest.spyOn(utils, "randomSalt").mockReturnValue("0ADQpus-mQmmO4mgWcT3ekDz");
+    notificationStorage.findAllByQuery.mockResolvedValue(
+      findNotificationsResult
+    );
 
     await identifierService.deleteIdentifier(identifierMetadataRecord.id);
 
@@ -1221,13 +1274,29 @@ describe("Single sig service of agent", () => {
     expect(updateIdentifierMock).toBeCalledWith(identifierMetadataRecord.id, {
       name: `XX-0ADQpus-mQmmO4mgWcT3ekDz:${identifierMetadataRecord.displayName}`,
     });
+    expect(markNotificationMock).toBeCalledWith(findNotificationsResult[0].id);
+    expect(notificationStorage.deleteById).toBeCalledWith(
+      findNotificationsResult[0].id
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: findNotificationsResult[0].id },
+    });
+    expect(markNotificationMock).toBeCalledWith(findNotificationsResult[1].id);
+    expect(notificationStorage.deleteById).toBeCalledWith(
+      findNotificationsResult[1].id
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: findNotificationsResult[1].id },
+    });
     expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
       "dApp-address",
       true
     );
   });
 
-  test("Should correctly sync identifiers, handling both group and non-group cases", async () => {
+  test("Should correctly sync identifiers, handling both group and non-group cases, initiator and not initiator", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     listIdentifiersMock
       .mockReturnValueOnce({
@@ -1250,6 +1319,195 @@ describe("Single sig service of agent", () => {
           },
           {
             name: "33:test2",
+            prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+            sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+          },
+          {
+            name: "0:0-group3:test3",
+            prefix: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiGaVB",
+            sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE3TT",
+          },
+          {
+            name: "0:test3",
+            prefix: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJljTz8",
+            group: {
+              mhab: {
+                name: "0:0-group3:test3",
+                prefix: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiGaVB",
+                sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE3TT",
+              },
+            },
+          },
+        ],
+      })
+      .mockReturnValue({ aids: [] });
+    identifierStorage.getKeriIdentifiersMetadata = jest
+      .fn()
+      .mockReturnValue([]);
+    identifierStorage.createIdentifierMetadataRecord = jest.fn();
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    jest
+      .spyOn(signifyClient.operations(), "get")
+      .mockResolvedValueOnce({
+        done: true,
+        name: "witness.EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "witness.EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "witness.ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiGaVB",
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        name: "group.EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJljTz8",
+      });
+    getIdentifiersMock
+      .mockResolvedValueOnce({
+        salty: {
+          sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+        },
+        icp_dt: "2024-12-10T07:28:18.217384+00:00",
+      })
+      .mockResolvedValueOnce({
+        salty: {
+          sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+        },
+        icp_dt: "2024-12-10T07:28:18.217384+00:00",
+      })
+      .mockResolvedValueOnce({
+        salty: {
+          sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE3TT",
+        },
+        icp_dt: "2024-12-10T07:28:18.217384+00:00",
+      })
+      .mockResolvedValueOnce({
+        icp_dt: "2024-12-10T07:28:18.217384+00:00",
+      })
+      .mockResolvedValueOnce({
+        icp_dt: "2024-12-10T07:28:18.217384+00:00",
+      });
+
+    await identifierService.syncKeriaIdentifiers();
+
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      displayName: "test1",
+      theme: 0,
+      groupMetadata: {
+        groupId: "group1",
+        groupCreated: false,
+        groupInitiator: true,
+      },
+      creationStatus: CreationStatus.COMPLETE,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+      isDeleted: false,
+    });
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
+      displayName: "test2",
+      theme: 33,
+      creationStatus: CreationStatus.COMPLETE,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+      isDeleted: false,
+    });
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiGaVB",
+      displayName: "test3",
+      theme: 0,
+      groupMetadata: {
+        groupId: "group3",
+        groupCreated: false,
+        groupInitiator: false,
+      },
+      creationStatus: CreationStatus.COMPLETE,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE3TT",
+      isDeleted: false,
+    });
+    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
+      "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      {
+        groupMetadata: {
+          groupId: "group1",
+          groupCreated: true,
+          groupInitiator: true,
+        },
+      }
+    );
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+      displayName: "test1",
+      theme: 15,
+      groupMemberPre: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      creationStatus: CreationStatus.COMPLETE,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      isDeleted: false,
+    });
+    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
+      "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiGaVB",
+      {
+        groupMetadata: {
+          groupId: "group3",
+          groupCreated: true,
+          groupInitiator: false,
+        },
+      }
+    );
+    expect(
+      identifierStorage.createIdentifierMetadataRecord
+    ).toHaveBeenCalledWith({
+      id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJljTz8",
+      displayName: "test3",
+      theme: 0,
+      groupMemberPre: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiGaVB",
+      creationStatus: CreationStatus.COMPLETE,
+      createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      isDeleted: false,
+    });
+    expect(operationPendingStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+  });
+
+  test("Deleted identifiers are re-synced as soft deleted", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    listIdentifiersMock
+      .mockReturnValueOnce({
+        aids: [
+          {
+            name: "XX:1-group1:test1",
+            prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+            sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+          },
+          {
+            name: "XX:test1",
+            prefix: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
+            group: {
+              mhab: {
+                name: "XX:1-group1:test1",
+                prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+                sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+              },
+            },
+          },
+          {
+            name: "XX:test2",
             prefix: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
             sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
           },
@@ -1298,32 +1556,34 @@ describe("Single sig service of agent", () => {
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-      displayName: "1-group1",
+      displayName: "test1",
       theme: 0,
       groupMetadata: {
-        groupId: "1-group1",
+        groupId: "group1",
         groupCreated: false,
         groupInitiator: true,
       },
       creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
       sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+      isDeleted: true,
     });
     expect(
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EJ9oenRW3_SNc0JkETnOegspNGaDCypBfTU1kJiL2AMs",
       displayName: "test2",
-      theme: 33,
+      theme: 0,
       creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
       sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+      isDeleted: true,
     });
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       {
         groupMetadata: {
-          groupId: "1-group1",
+          groupId: "group1",
           groupCreated: true,
           groupInitiator: true,
         },
@@ -1333,11 +1593,12 @@ describe("Single sig service of agent", () => {
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-      displayName: "1-group1",
-      theme: 15,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      displayName: "test1",
+      theme: 0,
+      groupMemberPre: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       creationStatus: CreationStatus.COMPLETE,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      isDeleted: true,
     });
     expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
@@ -1427,16 +1688,17 @@ describe("Single sig service of agent", () => {
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-      displayName: "1-group1",
+      displayName: "test1",
       theme: 0,
       groupMetadata: {
-        groupId: "1-group1",
+        groupId: "group1",
         groupCreated: false,
         groupInitiator: true,
       },
       creationStatus: CreationStatus.PENDING,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
       sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+      isDeleted: false,
     });
     expect(
       identifierStorage.createIdentifierMetadataRecord
@@ -1447,12 +1709,13 @@ describe("Single sig service of agent", () => {
       creationStatus: CreationStatus.PENDING,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
       sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+      isDeleted: false,
     });
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       {
         groupMetadata: {
-          groupId: "1-group1",
+          groupId: "group1",
           groupCreated: true,
           groupInitiator: true,
         },
@@ -1462,11 +1725,12 @@ describe("Single sig service of agent", () => {
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-      displayName: "1-group1",
+      displayName: "test1",
       theme: 15,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      groupMemberPre: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       creationStatus: CreationStatus.PENDING,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      isDeleted: false,
     });
     expect(operationPendingStorage.save).toBeCalledWith({
       recordType: OperationPendingRecordType.Witness,
@@ -1569,16 +1833,17 @@ describe("Single sig service of agent", () => {
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-      displayName: "1-group1",
+      displayName: "test1",
       theme: 0,
       groupMetadata: {
-        groupId: "1-group1",
+        groupId: "group1",
         groupCreated: false,
         groupInitiator: true,
       },
       creationStatus: CreationStatus.FAILED,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
       sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
+      isDeleted: false,
     });
     expect(
       identifierStorage.createIdentifierMetadataRecord
@@ -1589,12 +1854,13 @@ describe("Single sig service of agent", () => {
       creationStatus: CreationStatus.FAILED,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
       sxlt: "1AAHOxnWacQOKjjcVD3Fl1PNyd9MDOkWAjpIfStG297qrCx9E2W5D8St0SdJ1E8N8yeaN0Gy4kLhH6PVHQwlupAGNRKvodlX-UKo",
+      isDeleted: false,
     });
     expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
       "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       {
         groupMetadata: {
-          groupId: "1-group1",
+          groupId: "group1",
           groupCreated: true,
           groupInitiator: true,
         },
@@ -1604,11 +1870,12 @@ describe("Single sig service of agent", () => {
       identifierStorage.createIdentifierMetadataRecord
     ).toHaveBeenCalledWith({
       id: "EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
-      displayName: "1-group1",
+      displayName: "test1",
       theme: 15,
-      multisigManageAid: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+      groupMemberPre: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
       creationStatus: CreationStatus.FAILED,
       createdAt: new Date("2024-12-10T07:28:18.217384+00:00"),
+      isDeleted: false,
     });
     expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
@@ -1695,7 +1962,7 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("Should mark identifier is pending when start delete identifier", async () => {
+  test("Should mark identifier as pending when starting to delete identifier", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
@@ -1717,7 +1984,7 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("Should not try to mark an identifier as pending delete if it does note exist", async () => {
+  test("Should not try to mark an identifier as pending delete if it does not exist", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(undefined);
@@ -1728,7 +1995,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
   });
 
-  test("Should retrieve pending deletions and delete each by ID", async () => {
+  test("Should retrieve identifiers pending deletion and delete each by ID", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     identifierService.deleteIdentifier = jest
       .fn()

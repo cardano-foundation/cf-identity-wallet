@@ -30,7 +30,7 @@ const multisigMetadataRecord = {
   displayName: "identifier",
   isDeleted: false,
   creationStatus: CreationStatus.COMPLETE,
-  multisigManageAid: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
+  groupMemberPre: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
   theme: 1,
 } as IdentifierMetadataRecord;
 

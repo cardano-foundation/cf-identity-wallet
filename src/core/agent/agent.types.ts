@@ -130,8 +130,7 @@ interface KeriaNotification {
   connectionId: string;
   read: boolean;
   groupReplied: boolean;
-  multisigId?: string;
-  initiatorAid?: string;
+  groupInitiatorPre?: string;
   groupInitiator?: boolean;
 }
 
@@ -172,7 +171,6 @@ interface AgentUrls {
 enum NotificationRoute {
   // "Real" notifications from KERIA
   MultiSigIcp = "/multisig/icp",
-  MultiSigRot = "/multisig/rot",
   MultiSigExn = "/multisig/exn",
   MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",

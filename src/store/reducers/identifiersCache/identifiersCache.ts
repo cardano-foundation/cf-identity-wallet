@@ -46,7 +46,7 @@ const identifiersCacheSlice = createSlice({
       state,
       action: PayloadAction<IdentifierShortDetails>
     ) => {
-      delete state.identifiers[action.payload.multisigManageAid!];
+      delete state.identifiers[action.payload.groupMemberPre!];
       // In case it was already added, we want to avoid inserting a "PENDING" one that could be complete already
       if (!state.identifiers[action.payload.id]) {
         state.identifiers = {

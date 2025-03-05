@@ -30,7 +30,7 @@ const IdentifierOptions = ({
 
   useEffect(() => {
     const identifier = identifiersData[cardData.id];
-    if (identifier && identifier.multisigManageAid) {
+    if (identifier && identifier.groupMemberPre) {
       setIsMultiSig(true);
     }
   }, [identifiersData, cardData.id]);

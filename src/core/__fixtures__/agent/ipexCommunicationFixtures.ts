@@ -200,7 +200,7 @@ const groupIdentifierMetadataRecord = {
   type: "IdentifierMetadataRecord",
   id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
   displayName: "holder",
-  multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+  groupMemberPre: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
   createdAt: new Date(),
   updatedAt: new Date(),
 };
