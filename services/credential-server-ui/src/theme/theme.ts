@@ -10,6 +10,9 @@ const theme = createTheme({
       fontSize: 16,
       fontWeight: 600,
     },
+    h2: {
+      fontSize: 28,
+    },
     h6: {
       fontSize: 24,
     },

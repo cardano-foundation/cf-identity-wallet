@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Data } from "../../components/ConnectionsTable/ConnectionsTable.types";
+import { useState, useEffect } from "react";
+import { Data } from "../ConnectionsTable/ConnectionsTable.types";
 
 type Order = "asc" | "desc";
 
@@ -16,10 +16,7 @@ const descendingComparator = <T>(a: T, b: T, orderBy: keyof T) => {
 const getComparator = <Key extends keyof Data>(
   order: Order,
   orderBy: Key
-): ((
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number) => {
+): ((a: Data, b: Data) => number) => {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -35,12 +32,19 @@ const stableSort = <T>(array: T[], comparator: (a: T, b: T) => number) => {
   return stabilizedThis.map((el) => el[0]);
 };
 
-export const useTable = (rows: Data[]) => {
+export const useTable = (
+  rows: Data[],
+  setNumSelected: (num: number) => void
+) => {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Data>("name");
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    setNumSelected(selected.length);
+  }, [selected, setNumSelected]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -103,6 +107,7 @@ export const useTable = (rows: Data[]) => {
     order,
     orderBy,
     selected,
+    setSelected,
     page,
     rowsPerPage,
     handleRequestSort,

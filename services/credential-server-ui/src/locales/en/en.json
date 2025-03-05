@@ -26,7 +26,13 @@
       "issueCredential": "Issue credential",
       "connectionName": "Connection Name",
       "connectionDate": "Connection Date",
-      "issuedCredentials": "Issued Credentials"
+      "issuedCredentials": "Issued Credentials",
+      "deleteConnections": {
+        "title": "Delete Connection(s)",
+        "body": "Are you sure you want to delete this connection? This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      }
     },
     "credentials": {
       "title": "Credentials"

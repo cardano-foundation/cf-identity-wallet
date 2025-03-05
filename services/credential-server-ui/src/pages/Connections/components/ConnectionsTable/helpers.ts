@@ -1,4 +1,4 @@
-import { Contact, Credential, Data } from "../../../../types";
+import { Contact, Credential, Data } from "./ConnectionsTable.types";
 import axios from "axios";
 import { config } from "../../../../config";
 import { fetchContacts } from "../../../../store/reducers/connectionsSlice";

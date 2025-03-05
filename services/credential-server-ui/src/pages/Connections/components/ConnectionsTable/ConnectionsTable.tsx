@@ -26,7 +26,7 @@ import {
   fetchContactCredentials,
 } from "../../../../store/reducers/connectionsSlice";
 import { RootState, AppDispatch } from "../../../../store";
-import { Contact, Data } from "../../../../types";
+import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
 import { menuItems } from "./menuItems";
 import { generateRows } from "./helpers";
 
@@ -40,9 +40,9 @@ const ConnectionsTable: React.FC = () => {
   );
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   // TODO: implement search filter
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [connectionsFilterBySearch, setConnectionsFilterBySearch] =
     useState<string>("");
+  const [numSelected, setNumSelected] = useState<number>(0);
 
   useEffect(() => {
     dispatch(fetchContacts());
@@ -73,6 +73,7 @@ const ConnectionsTable: React.FC = () => {
     order,
     orderBy,
     selected,
+    setSelected,
     page,
     rowsPerPage,
     handleRequestSort,
@@ -82,7 +83,7 @@ const ConnectionsTable: React.FC = () => {
     handleChangeRowsPerPage,
     emptyRows,
     visibleRows,
-  } = useTable(rows);
+  } = useTable(rows, setNumSelected);
 
   const ActionButton = (
     <Tooltip
@@ -98,7 +99,12 @@ const ConnectionsTable: React.FC = () => {
   return (
     <Box sx={{ width: "100%" }}>
       <Paper className="connections-table">
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={numSelected}
+          setNumSelected={setNumSelected}
+          selected={selected}
+          setSelected={setSelected}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
