@@ -12,12 +12,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import {
-  AddCircleOutlineOutlined,
-  DeleteOutline,
-  MoreVert,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { MoreVert } from "@mui/icons-material";
 import { EnhancedTableHead } from "./EnhancedTableHead";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { useTable } from "./useTable";
@@ -31,7 +26,9 @@ import {
   fetchContactCredentials,
 } from "../../../../store/reducers/connectionsSlice";
 import { RootState, AppDispatch } from "../../../../store";
-import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
+import { Contact, Data } from "../../../../types";
+import { menuItems } from "./menuItems";
+import { generateRows } from "./helpers";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -65,25 +62,10 @@ const ConnectionsTable: React.FC = () => {
     setFilteredContacts(filteredContacts);
   }, [connectionsFilterBySearch, contacts]);
 
-  const generateRows = () => {
-    const rows = filteredContacts.map((contact) => {
-      const contactCredentials = credentials.filter(
-        (cred) => cred.contactId === contact.id
-      );
-      return {
-        id: contact.id,
-        name: contact.alias,
-        date: "2020-03-15T12:34:56Z", // TODO: Temporary hardcoded date
-        credentials: contactCredentials.length,
-      };
-    });
-    return rows;
-  };
-
   const [rows, setRows] = useState<Data[]>([]);
 
   useEffect(() => {
-    const generatedRows = generateRows();
+    const generatedRows = generateRows(filteredContacts, credentials);
     setRows(generatedRows);
   }, [filteredContacts, credentials]);
 
@@ -112,30 +94,6 @@ const ConnectionsTable: React.FC = () => {
       </IconButton>
     </Tooltip>
   );
-
-  const menuItems = [
-    {
-      label: i18n.t("pages.connections.viewDetails"),
-      action: () => console.log(i18n.t("pages.connections.viewDetails")),
-      icon: <VisibilityOutlined />,
-      className: "icon-left",
-    },
-    {
-      label: i18n.t("pages.connections.issueCredential"),
-      action: () => console.log(i18n.t("pages.connections.issueCredential")),
-      icon: <AddCircleOutlineOutlined />,
-      className: "icon-left",
-    },
-    {
-      className: "divider",
-    },
-    {
-      label: i18n.t("pages.connections.delete"),
-      action: () => console.log(i18n.t("pages.connections.delete")),
-      icon: <DeleteOutline />,
-      className: "icon-left action-delete",
-    },
-  ];
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -174,9 +132,7 @@ const ConnectionsTable: React.FC = () => {
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
-                        inputProps={{
-                          "aria-labelledby": labelId,
-                        }}
+                        inputProps={{ "aria-labelledby": labelId }}
                       />
                     </TableCell>
                     <TableCell
