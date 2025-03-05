@@ -95,13 +95,12 @@ export const useTable = (
     setPage(0);
   };
 
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-
   const visibleRows = stableSort(rows, getComparator(order, orderBy)).slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
+  const emptyRows = rowsPerPage - visibleRows.length;
 
   return {
     order,

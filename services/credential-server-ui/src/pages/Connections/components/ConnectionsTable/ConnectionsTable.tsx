@@ -160,11 +160,15 @@ const ConnectionsTable: React.FC = () => {
                   </TableRow>
                 );
               })}
-              {emptyRows > 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
+              {emptyRows > 0 &&
+                Array.from({ length: emptyRows }).map((_, index) => (
+                  <TableRow
+                    key={`empty-row-${index}`}
+                    style={{ height: 53 }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
           <TablePagination
