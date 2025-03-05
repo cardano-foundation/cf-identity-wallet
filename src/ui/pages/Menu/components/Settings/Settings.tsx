@@ -125,16 +125,16 @@ const Settings = ({ switchView }: SettingsProps) => {
   };
 
   const handleBiometricUpdate = () => {
-    if (biometricsCache.enabled) {
-      handleToggleBiometricAuth();
-      return;
-    }
-
     if (
       !biometricInfo?.strongBiometryIsAvailable &&
       biometricInfo?.code === BiometryErrorType.biometryNotEnrolled
     ) {
       setOpenBiometricAlert(true);
+      return;
+    }
+
+    if (biometricsCache.enabled) {
+      handleToggleBiometricAuth();
       return;
     }
 
