@@ -5,8 +5,13 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import { i18n } from "../../../../i18n";
+import { AppDispatch } from "../../../../store";
+import { handleDeleteContact } from "./helpers";
 
-export const menuItems = [
+export const createMenuItems = (
+  dispatch: AppDispatch,
+  connectionId: string
+) => [
   {
     label: i18n.t("pages.connections.viewDetails"),
     action: () => console.log(i18n.t("pages.connections.viewDetails")),
@@ -24,7 +29,9 @@ export const menuItems = [
   },
   {
     label: i18n.t("pages.connections.delete"),
-    action: () => console.log(i18n.t("pages.connections.delete")),
+    action: async () => {
+      await handleDeleteContact(connectionId, dispatch);
+    },
     icon: React.createElement(DeleteOutline),
     className: "icon-left action-delete",
   },

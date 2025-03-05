@@ -27,7 +27,7 @@ import {
 } from "../../../../store/reducers/connectionsSlice";
 import { RootState, AppDispatch } from "../../../../store";
 import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
-import { menuItems } from "./menuItems";
+import { createMenuItems } from "./menuItems";
 import { generateRows } from "./helpers";
 
 const ConnectionsTable: React.FC = () => {
@@ -85,7 +85,7 @@ const ConnectionsTable: React.FC = () => {
     visibleRows,
   } = useTable(rows, setNumSelected);
 
-  const ActionButton = (
+  const ActionButton = (connectionId: string) => (
     <Tooltip
       title={i18n.t("pages.connections.actions")}
       placement="top"
@@ -153,8 +153,8 @@ const ConnectionsTable: React.FC = () => {
                     <TableCell align="left">{row.credentials}</TableCell>
                     <TableCell align="left">
                       <DropdownMenu
-                        button={ActionButton}
-                        menuItems={menuItems}
+                        button={ActionButton(row.id)}
+                        menuItems={createMenuItems(dispatch, row.id)}
                       />
                     </TableCell>
                   </TableRow>

@@ -21,7 +21,6 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleDelete = async () => {
-    console.log("delete connections");
     for (const id of selected) {
       await handleDeleteContact(id, dispatch);
     }
