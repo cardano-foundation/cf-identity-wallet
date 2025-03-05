@@ -39,7 +39,7 @@ const WalletConnectStageTwo = ({
   const [startingMeerkat, setStartingMeerkat] = useState<boolean>(false);
 
   const displayIdentifiers = identifierCache
-    .filter((item) => !item.multisigManageAid && !item.groupMetadata)
+    .filter((item) => !item.groupMemberPre && !item.groupMetadata)
     .map(
       (identifier): CardItem<IdentifierShortDetails> => ({
         id: identifier.id,

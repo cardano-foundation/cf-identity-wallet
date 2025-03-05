@@ -26,6 +26,8 @@
     --checkbox-background-checked: var(--ion-color-primary-700);
     --checkmark-color: var(--ion-color-primary-100);
     --border-width: 0;
+    flex: none;
+    margin-left: 1rem;
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {

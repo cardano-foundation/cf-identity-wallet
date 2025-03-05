@@ -9,14 +9,20 @@ import {
   AgentServicesProps,
   IdentifierResult,
   MiscRecordId,
+  NotificationRoute,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { OnlineOnly, randomSalt } from "./utils";
-import { BasicRecord, BasicStorage, IdentifierStorage } from "../records";
+import { OnlineOnly, randomSalt, deleteNotificationRecordById } from "./utils";
+import {
+  BasicRecord,
+  BasicStorage,
+  IdentifierStorage,
+  NotificationStorage,
+} from "../records";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
@@ -26,6 +32,7 @@ import {
   EventTypes,
   IdentifierAddedEvent,
   IdentifierRemovedEvent,
+  NotificationRemovedEvent,
 } from "../event.types";
 import { StorageMessage } from "../../storage/storage.types";
 
@@ -55,21 +62,24 @@ class IdentifierService extends AgentService {
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
-  protected readonly connections: ConnectionService;
   protected readonly basicStorage: BasicStorage;
+  protected readonly notificationStorage: NotificationStorage;
+  protected readonly connections: ConnectionService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
-    connections: ConnectionService,
-    basicStorage: BasicStorage
+    basicStorage: BasicStorage,
+    notificationStorage: NotificationStorage,
+    connections: ConnectionService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
-    this.connections = connections;
     this.basicStorage = basicStorage;
+    this.notificationStorage = notificationStorage;
+    this.connections = connections;
   }
 
   onIdentifierRemoved() {
@@ -101,8 +111,8 @@ class IdentifierService extends AgentService {
         creationStatus: metadata.creationStatus ?? false,
         groupMetadata: metadata.groupMetadata,
       };
-      if (metadata.multisigManageAid) {
-        identifier.multisigManageAid = metadata.multisigManageAid;
+      if (metadata.groupMemberPre) {
+        identifier.groupMemberPre = metadata.groupMemberPre;
       }
       identifiers.push(identifier);
     }
@@ -147,7 +157,7 @@ class IdentifierService extends AgentService {
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
-      multisigManageAid: metadata.multisigManageAid,
+      groupMemberPre: metadata.groupMemberPre,
       creationStatus: metadata.creationStatus,
       groupMetadata: metadata.groupMetadata,
       s: hab.state.s,
@@ -348,12 +358,13 @@ class IdentifierService extends AgentService {
       await this.deleteGroupLinkedConnections(metadata.groupMetadata.groupId);
     }
 
-    if (metadata.multisigManageAid) {
+    if (metadata.groupMemberPre) {
       const localMember = await this.identifierStorage.getIdentifierMetadata(
-        metadata.multisigManageAid
+        metadata.groupMemberPre
       );
+
       await this.identifierStorage.updateIdentifierMetadata(
-        metadata.multisigManageAid,
+        metadata.groupMemberPre,
         {
           isDeleted: true,
           pendingDeletion: false,
@@ -364,9 +375,28 @@ class IdentifierService extends AgentService {
           localMember.groupMetadata?.groupId
         }:${localMember.displayName}`,
       });
+
       await this.deleteGroupLinkedConnections(
         localMember.groupMetadata!.groupId
       );
+
+      for (const notification of await this.notificationStorage.findAllByQuery({
+        receivingPre: metadata.groupMemberPre,
+      })) {
+        await deleteNotificationRecordById(
+          this.props.signifyClient,
+          this.notificationStorage,
+          notification.id,
+          notification.a.r as NotificationRoute
+        );
+
+        this.props.eventEmitter.emit<NotificationRemovedEvent>({
+          type: EventTypes.NotificationRemoved,
+          payload: {
+            id: notification.id,
+          },
+        });
+      }
     }
 
     await this.props.signifyClient.identifiers().update(identifier, {
@@ -375,10 +405,23 @@ class IdentifierService extends AgentService {
       }`,
     });
 
-    await this.identifierStorage.updateIdentifierMetadata(identifier, {
-      isDeleted: true,
-      pendingDeletion: false,
-    });
+    for (const notification of await this.notificationStorage.findAllByQuery({
+      receivingPre: identifier,
+    })) {
+      await deleteNotificationRecordById(
+        this.props.signifyClient,
+        this.notificationStorage,
+        notification.id,
+        notification.a.r as NotificationRoute
+      );
+
+      this.props.eventEmitter.emit<NotificationRemovedEvent>({
+        type: EventTypes.NotificationRemoved,
+        payload: {
+          id: notification.id,
+        },
+      });
+    }
 
     const connectedDApp =
       PeerConnection.peerConnection.getConnectedDAppAddress();
@@ -389,6 +432,11 @@ class IdentifierService extends AgentService {
     ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
     }
+
+    await this.identifierStorage.updateIdentifierMetadata(identifier, {
+      isDeleted: true,
+      pendingDeletion: false,
+    });
   }
 
   async removeIdentifiersPendingDeletion(): Promise<void> {
@@ -503,12 +551,6 @@ class IdentifierService extends AgentService {
     }
 
     for (const identifier of unSyncedDataWithoutGroup) {
-      if (
-        identifier.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
-      ) {
-        continue;
-      }
-
       const op: Operation = await this.props.signifyClient
         .operations()
         .get(`witness.${identifier.prefix}`);
@@ -552,6 +594,9 @@ class IdentifierService extends AgentService {
           creationStatus,
           createdAt: new Date(identifierDetail.icp_dt),
           sxlt: identifierDetail.salty?.sxlt,
+          isDeleted: identifier.name.startsWith(
+            IdentifierService.DELETED_IDENTIFIER_THEME
+          ),
         });
         continue;
       }
@@ -563,16 +608,13 @@ class IdentifierService extends AgentService {
         creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
         sxlt: identifierDetail.salty?.sxlt,
+        isDeleted: identifier.name.startsWith(
+          IdentifierService.DELETED_IDENTIFIER_THEME
+        ),
       });
     }
 
     for (const identifier of unSyncedDataWithGroup) {
-      if (
-        identifier.name.startsWith(IdentifierService.DELETED_IDENTIFIER_THEME)
-      ) {
-        continue;
-      }
-
       const identifierDetail = (await this.props.signifyClient
         .identifiers()
         .get(identifier.prefix)) as HabState;
@@ -603,6 +645,7 @@ class IdentifierService extends AgentService {
         });
       }
 
+      // Mark as created
       await this.identifierStorage.updateIdentifierMetadata(groupMemberPre, {
         groupMetadata: {
           groupId: groupIdParts[1],
@@ -615,9 +658,12 @@ class IdentifierService extends AgentService {
         id: identifier.prefix,
         displayName: nameParts[1],
         theme,
-        multisigManageAid: groupMemberPre,
+        groupMemberPre,
         creationStatus,
         createdAt: new Date(identifierDetail.icp_dt),
+        isDeleted: identifier.name.startsWith(
+          IdentifierService.DELETED_IDENTIFIER_THEME
+        ),
       });
     }
   }
