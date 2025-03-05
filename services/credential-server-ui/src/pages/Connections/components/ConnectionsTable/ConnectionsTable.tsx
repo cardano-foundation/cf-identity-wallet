@@ -31,7 +31,7 @@ import {
   fetchContactCredentials,
 } from "../../../../store/reducers/connectionsSlice";
 import { RootState, AppDispatch } from "../../../../store";
-import { Contact, Data } from "../../../../types";
+import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

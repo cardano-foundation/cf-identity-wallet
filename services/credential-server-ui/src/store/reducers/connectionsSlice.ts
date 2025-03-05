@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { config } from "../../config";
-import { Contact, Credential } from "../../types";
+import {
+  Contact,
+  Credential,
+} from "../../pages/Connections/components/ConnectionsTable/ConnectionsTable.types";
 
 interface ConnectionsState {
   contacts: Contact[];

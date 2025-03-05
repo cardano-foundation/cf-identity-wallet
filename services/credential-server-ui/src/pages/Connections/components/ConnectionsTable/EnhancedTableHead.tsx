@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 import { i18n } from "../../../../i18n";
-import { Data } from "./data";
+import { Data } from "../ConnectionsTable/ConnectionsTable.types";
 
 interface HeadCell {
   disablePadding: boolean;

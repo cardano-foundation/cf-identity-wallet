@@ -6,10 +6,14 @@ import { RoleIndex } from "../../constants/roles";
 import { ConnectionsTable } from "./components/ConnectionsTable";
 import { Button } from "@mui/material";
 import "./Connections.scss";
-import { rows } from "./components/ConnectionsTable/data";
+import { RootState } from "../../store";
+import { useSelector } from "react-redux";
 
 const Connections = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
+  const contacts = useSelector(
+    (state: RootState) => state.connections.contacts
+  );
 
   const handleClick = () => {
     // TODO: Implement this
@@ -18,7 +22,7 @@ const Connections = () => {
   return (
     <div className="connections-page">
       <div className="connections-page-header">
-        <h1>{i18n.t("pages.connections.title", { count: rows.length })}</h1>
+        <h1>{i18n.t("pages.connections.title", { count: contacts.length })}</h1>
         {roleViewIndex == 0 && (
           <Button
             className="add-connection-button"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Data } from "../../../../types";
+import { Data } from "../../components/ConnectionsTable/ConnectionsTable.types";
 
 type Order = "asc" | "desc";
 

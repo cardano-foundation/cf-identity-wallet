@@ -7,7 +7,7 @@ interface Contact {
 }
 
 interface Credential {
-  id: string;
+  contactId: string;
   schema: {
     title: string;
   };
