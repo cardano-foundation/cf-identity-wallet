@@ -1,4 +1,4 @@
-# ID Wallet Issuer Server
+# Credential Issuance Server
 Right now, this is only used for testing purposes for the wallet - it is not meant as a full blown issuance server - hence there are no tests in this module.
 
 ### How to run (development)
