@@ -21,12 +21,72 @@ import {
 import { EnhancedTableHead } from "./EnhancedTableHead";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { useTable } from "./useTable";
-import { rows } from "./data";
-import { formatDate } from "../../../../utils/dateFormatter"; // Import the date formatting function
+import { formatDate } from "../../../../utils/dateFormatter";
 import { DropdownMenu } from "../../../../components/DropdownMenu";
 import { i18n } from "../../../../i18n";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchContacts,
+  fetchContactCredentials,
+} from "../../../../store/reducers/connectionsSlice";
+import { RootState, AppDispatch } from "../../../../store";
+import { Contact, Data } from "../../../../types";
 
 const ConnectionsTable: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const contacts = useSelector(
+    (state: RootState) => state.connections.contacts
+  );
+  const credentials = useSelector(
+    (state: RootState) => state.connections.credentials
+  );
+  const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
+  // TODO: implement search filter
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [connectionsFilterBySearch, setConnectionsFilterBySearch] =
+    useState<string>("");
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    contacts.forEach((contact) => {
+      dispatch(fetchContactCredentials(contact.id));
+    });
+  }, [contacts, dispatch]);
+
+  useEffect(() => {
+    const regex = new RegExp(connectionsFilterBySearch, "gi");
+    const filteredContacts = contacts.filter(
+      (contact: Contact) => regex.test(contact.alias) || regex.test(contact.id)
+    );
+    setFilteredContacts(filteredContacts);
+  }, [connectionsFilterBySearch, contacts]);
+
+  const generateRows = () => {
+    const rows = filteredContacts.map((contact) => {
+      const contactCredentials = credentials.filter(
+        (cred) => cred.contactId === contact.id
+      );
+      return {
+        id: contact.id,
+        name: contact.alias,
+        date: "2020-03-15T12:34:56Z", // TODO: Temporary hardcoded date
+        credentials: contactCredentials.length,
+      };
+    });
+    return rows;
+  };
+
+  const [rows, setRows] = useState<Data[]>([]);
+
+  useEffect(() => {
+    const generatedRows = generateRows();
+    setRows(generatedRows);
+  }, [filteredContacts, credentials]);
+
   const {
     order,
     orderBy,
