@@ -18,6 +18,7 @@
     "audit": "better-npm-audit audit"
   },
   "dependencies": {
+    "capacitor-freerasp": "^1.9.0",
     "@aparajita/capacitor-biometric-auth": "^8.0.2",
     "@capacitor-community/privacy-screen": "^6.0.0",
     "@capacitor-community/sqlite": "^7.0.0",

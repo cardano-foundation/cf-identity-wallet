@@ -9,6 +9,7 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
+    implementation project(':capacitor-freerasp')
     implementation project(':aparajita-capacitor-biometric-auth')
     implementation project(':capacitor-community-privacy-screen')
     implementation project(':capacitor-community-sqlite')
