@@ -94,6 +94,7 @@ const initialState = {
       passwordIsSet: false,
       passwordIsSkipped: false,
       ssiAgentIsSet: true,
+      ssiAgentUrl: "http://keria.com",
       recoveryWalletProgress: false,
       loginAttempt: {
         attempts: 0,
@@ -189,6 +190,7 @@ describe("Profile page", () => {
           passwordIsSet: false,
           passwordIsSkipped: false,
           ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,

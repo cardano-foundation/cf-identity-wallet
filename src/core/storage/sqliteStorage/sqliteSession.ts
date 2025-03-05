@@ -8,7 +8,6 @@ import { randomPasscode } from "signify-ts";
 import { versionCompare } from "./utils";
 import { MIGRATIONS } from "./migrations";
 import { MigrationType } from "./migrations/migrations.types";
-import { Agent } from "../../agent/agent";
 import { KeyStoreKeys, SecureStorage } from "../secureStorage";
 
 class SqliteSession {
@@ -40,7 +39,7 @@ class SqliteSession {
       const currentVersionDatabase = await this.getKv(
         SqliteSession.VERSION_DATABASE_KEY
       );
-      return currentVersionDatabase;
+      return currentVersionDatabase ?? SqliteSession.BASE_VERSION;
     } catch (error) {
       return SqliteSession.BASE_VERSION;
     }

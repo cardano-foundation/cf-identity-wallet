@@ -1,4 +1,4 @@
-import { StorageService } from "../../storage/storage.types";
+import { Query, StorageService } from "../../storage/storage.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 
@@ -65,7 +65,10 @@ class CredentialStorage {
     }
   }
 
-  async getCredentialMetadatasById(ids: string[], query?: any) {
+  async getCredentialMetadatasById(
+    ids: string[],
+    query?: Query<CredentialMetadataRecord>
+  ) {
     return this.storageService.findAllByQuery(
       {
         $or: ids.map((id) => ({ id })),

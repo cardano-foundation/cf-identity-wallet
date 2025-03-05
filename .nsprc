@@ -1,22 +1,14 @@
 {
   "1100267": {
     "active": true,
-    "notes": "Ignored since is related just to appium e2e"
-  },
-  "1101088": {
-    "active": true,
-    "notes": "Ignored since is related to nodemon server from dev dep"
+    "notes": "This is a ReDOS vulnerability for email inputs in Appium drivers, so not applicable."
   },
   "1101851": {
     "active": true,
-    "notes": "Ignored since is related just to appium e2e"
+    "notes": "SSRF attacks are not relevant to our usage of Meerkat."
   },
   "1102339": {
     "active": true,
-    "notes": "Ignored since is related to webpack build"
-  },
-  "1102341": {
-    "active": true,
-    "notes": "Ignored since is related to wdio/cli"
+    "notes": "Serialization here is used in webpack build plugins to parse options etc, this vulnerability is more relevant if used to parse inputs from users."
   }
 }

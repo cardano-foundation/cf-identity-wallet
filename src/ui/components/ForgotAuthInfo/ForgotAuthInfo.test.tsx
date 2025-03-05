@@ -8,8 +8,15 @@ import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ForgotAuthInfo } from "./ForgotAuthInfo";
 import { ForgotType } from "./ForgotAuthInfo.types";
+import { isRepeat } from "../../utils/passcodeChecker";
 
 const SEED_PHRASE_LENGTH = 18;
+
+jest.mock("../../utils/passcodeChecker", () => ({
+  isRepeat: () => false,
+  isConsecutive: () => false,
+  isReverseConsecutive: () => false,
+}));
 
 const verifySeedPhraseFnc = jest.fn();
 
@@ -103,7 +110,7 @@ describe("Forgot Passcode Page", () => {
 
     const onCloseMock = jest.fn();
 
-    const { getByTestId, getByText, findByText } = render(
+    const { getByTestId, getByText, findByText, queryByText } = render(
       <Provider store={storeMocked}>
         <ForgotAuthInfo
           isOpen
@@ -122,6 +129,8 @@ describe("Forgot Passcode Page", () => {
     expect(
       getByText(EN_TRANSLATIONS.forgotauth.passcode.description)
     ).toBeVisible();
+
+    expect(queryByText(EN_TRANSLATIONS.createpassword.button.skip)).toBeNull();
 
     for (let i = 0; i < SEED_PHRASE_LENGTH; i++) {
       act(() => {
@@ -178,7 +187,7 @@ describe("Forgot Passcode Page", () => {
       ).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(
@@ -194,7 +203,7 @@ describe("Forgot Passcode Page", () => {
       expect(text).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(onCloseMock).toBeCalled();
@@ -301,27 +310,6 @@ describe("Forgot Password Page", () => {
       expect(
         getByText(EN_TRANSLATIONS.forgotauth.newpassword.description)
       ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("tertiary-button-forgot-auth-info-modal"));
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.createpassword.alert.text)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.createpassword.alert.button.confirm)
-      );
-    });
-
-    await waitFor(() => {
-      expect(createOrUpdateBasicStore).toBeCalled();
-      expect(onCloseMock).toBeCalled();
     });
   });
 });

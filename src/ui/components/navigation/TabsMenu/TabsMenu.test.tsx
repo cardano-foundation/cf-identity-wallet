@@ -23,6 +23,7 @@ describe("Tab menu", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
         ssiAgentIsSet: true,
+        ssiAgentUrl: "http://keria.com",
         recoveryWalletProgress: false,
         loginAttempt: {
           attempts: 0,

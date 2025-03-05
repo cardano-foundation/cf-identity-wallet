@@ -9,7 +9,7 @@ import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
-import { CreationStatus } from "../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../core/agent/agent.types";
 
 const identifierCache = [
   {

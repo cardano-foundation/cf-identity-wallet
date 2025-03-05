@@ -7,7 +7,11 @@ import { ConnectionHistoryType } from "../../../../core/agent/services/connectio
 import { i18n } from "../../../../i18n";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { CardTheme } from "../../../components/CardTheme";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../../utils/formatters";
 
 const ConnectionHistoryEvent = ({
   index,
@@ -27,13 +31,13 @@ const ConnectionHistoryEvent = ({
       <div className="connection-details-logo">
         {historyItem.type ===
         ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT ? (
-          <img
-            src={connectionDetails?.logo || KeriLogo}
-            alt="connection-logo"
-          />
-        ) : (
-          <CardTheme />
-        )}
+            <img
+              src={connectionDetails?.logo || KeriLogo}
+              alt="connection-logo"
+            />
+          ) : (
+            <CardTheme />
+          )}
       </div>
       <p className="connection-details-history-event-info">
         <span className="connection-details-history-text">
@@ -69,7 +73,7 @@ const ConnectionHistoryEvent = ({
         >
           {` ${formatShortDate(historyItem.timestamp)} - ${formatTimeToSec(
             historyItem.timestamp
-          )}`}
+          )} (${getUTCOffset(historyItem.timestamp)})`}
         </span>
       </p>
     </div>
@@ -96,7 +100,9 @@ const ConnectionHistoryEvent = ({
         >
           {` ${formatShortDate(
             `${connectionDetails?.createdAtUTC}`
-          )} - ${formatTimeToSec(`${connectionDetails?.createdAtUTC}`)}`}
+          )} - ${formatTimeToSec(
+            `${connectionDetails?.createdAtUTC}`
+          )} (${getUTCOffset(connectionDetails?.createdAtUTC)})`}
         </span>
       </p>
     </div>

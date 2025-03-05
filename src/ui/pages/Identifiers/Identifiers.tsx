@@ -3,12 +3,9 @@ import { t } from "i18next";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { MiscRecordId } from "../../../core/agent/agent.types";
+import { MiscRecordId , CreationStatus } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records/basicRecord";
-import {
-  CreationStatus,
-  IdentifierShortDetails,
-} from "../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";

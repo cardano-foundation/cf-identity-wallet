@@ -2,7 +2,7 @@ import { IonButton, IonIcon } from "@ionic/react";
 import { copyOutline, scanOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { CreationStatus } from "../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";

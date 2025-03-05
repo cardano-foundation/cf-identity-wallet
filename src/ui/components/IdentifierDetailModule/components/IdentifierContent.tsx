@@ -18,7 +18,11 @@ import {
 } from "../../../components/CardDetails/CardDetailsBlock";
 import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
 import { ListHeader } from "../../../components/ListHeader";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../../utils/formatters";
 import { IdentifierAttributeDetailModal } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal";
 import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierContentProps } from "./IdentifierContent.types";
@@ -144,7 +148,9 @@ const IdentifierContent = ({
         >
           <CardDetailsItem
             keyValue={formatShortDate(cardData.createdAtUTC)}
-            info={formatTimeToSec(cardData.createdAtUTC)}
+            info={`${formatTimeToSec(cardData.createdAtUTC)} (${getUTCOffset(
+              cardData.createdAtUTC
+            )})`}
             icon={calendarNumberOutline}
             testId="creation-timestamp"
             className="creation-timestamp"

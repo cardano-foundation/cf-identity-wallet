@@ -7,6 +7,7 @@ import { ConnectionData } from "../walletConnectionsCache";
 interface PayloadData<T = any> {
   [key: string]: T;
 }
+
 interface CurrentRouteCacheProps {
   path: string;
   payload?: { [key: string]: PayloadData };
@@ -21,10 +22,12 @@ interface AuthenticationCacheProps {
   passwordIsSet: boolean;
   passwordIsSkipped: boolean;
   ssiAgentIsSet: boolean;
+  ssiAgentUrl: string;
   recoveryWalletProgress: boolean;
   loginAttempt: LoginAttempts;
   firstAppLaunch: boolean;
 }
+
 enum IncomingRequestType {
   PEER_CONNECT_SIGN = "peer-connect-sign",
 }
@@ -49,7 +52,7 @@ interface ToastStackItem {
 }
 
 interface StateCacheProps {
-  initialized: boolean;
+  initializationPhase: InitializationPhase;
   recoveryCompleteNoInterruption: boolean;
   isOnline: boolean;
   routes: CurrentRouteCacheProps[];
@@ -63,7 +66,13 @@ interface StateCacheProps {
   toastMsgs: ToastStackItem[];
 }
 
-export { IncomingRequestType };
+enum InitializationPhase {
+  PHASE_ZERO = "PHASE_ZERO",
+  PHASE_ONE = "PHASE_ONE",
+  PHASE_TWO = "PHASE_TWO",
+}
+
+export { IncomingRequestType, InitializationPhase };
 
 export type {
   AuthenticationCacheProps,

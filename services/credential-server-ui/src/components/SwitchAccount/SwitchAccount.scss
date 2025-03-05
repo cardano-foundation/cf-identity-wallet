@@ -1,0 +1,49 @@
+button.switch-account-button {
+  border-radius: 1rem;
+  text-transform: none;
+  color: var(--text-color);
+  background-color: var(--color-neutral-300);
+
+  &:hover {
+    background-color: var(--color-neutral-400);
+  }
+}
+
+.switch-account-menu {
+  .MuiPaper-root {
+    padding: 0.75rem;
+    min-width: 14rem;
+    margin-top: 0.5rem;
+    border-radius: 1rem;
+    color: var(--text-color);
+    background-color: var(--color-neutral-100);
+
+    .MuiMenu-list {
+      padding: 0;
+
+      p {
+        text-align: left;
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+        color: var(--color-neutral-600);
+      }
+
+      .MuiMenuItem-root {
+        position: relative;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+
+        &:hover {
+          background-color: var(--color-primary-200);
+        }
+
+        .MuiSvgIcon-root {
+          position: absolute;
+          right: 0;
+          height: 1.25rem;
+        }
+      }
+    }
+  }
+}

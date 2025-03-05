@@ -51,7 +51,7 @@ class CredentialService extends AgentService {
     this.props.eventEmitter.on(
       EventTypes.CredentialRemovedEvent,
       (data: CredentialRemovedEvent) =>
-        this.deleteCredential(data.payload.credentialId!)
+        this.deleteCredential(data.payload.credentialId)
     );
   }
 
@@ -62,29 +62,14 @@ class CredentialService extends AgentService {
       isGetArchive
     );
     return listMetadatas.map((element: CredentialMetadataRecord) =>
-      this.getCredentialShortDetails(element)
+      getCredentialShortDetails(element)
     );
-  }
-
-  private getCredentialShortDetails(
-    metadata: CredentialMetadataRecord
-  ): CredentialShortDetails {
-    return {
-      id: metadata.id,
-      issuanceDate: metadata.issuanceDate,
-      credentialType: metadata.credentialType,
-      status: metadata.status,
-      schema: metadata.schema,
-      identifierType: metadata.identifierType,
-      identifierId: metadata.identifierId,
-      connectionId: metadata.connectionId,
-    };
   }
 
   async getCredentialShortDetailsById(
     id: string
   ): Promise<CredentialShortDetails> {
-    return this.getCredentialShortDetails(await this.getMetadataById(id));
+    return getCredentialShortDetails(await this.getMetadataById(id));
   }
 
   @OnlineOnly
@@ -105,7 +90,8 @@ class CredentialService extends AgentService {
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
-    const credentialShortDetails = this.getCredentialShortDetails(metadata);
+
+    const credentialShortDetails = getCredentialShortDetails(metadata);
     return {
       id: credentialShortDetails.id,
       schema: credentialShortDetails.schema,
@@ -127,7 +113,7 @@ class CredentialService extends AgentService {
     };
   }
 
-  async createMetadata(data: CredentialMetadataRecordProps) {
+  async createMetadata(data: CredentialMetadataRecordProps): Promise<void> {
     const metadataRecord = new CredentialMetadataRecord(data);
     await this.credentialStorage.saveCredentialMetadataRecord(metadataRecord);
   }
@@ -158,7 +144,7 @@ class CredentialService extends AgentService {
     await this.credentialStorage.deleteCredentialMetadata(id);
   }
 
-  async markCredentialPendingDeletion(id: string) {
+  async markCredentialPendingDeletion(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
 
@@ -174,7 +160,7 @@ class CredentialService extends AgentService {
     });
   }
 
-  async removeCredentialsPendingDeletion() {
+  async removeCredentialsPendingDeletion(): Promise<void> {
     const pendingCredentialDeletions =
       await this.credentialStorage.getCredentialsPendingDeletion();
 
@@ -207,7 +193,7 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  async syncKeriaCredentials() {
+  async syncKeriaCredentials(): Promise<void> {
     const cloudCredentials: any[] = [];
     let returned = -1;
     let iteration = 0;
@@ -257,18 +243,20 @@ class CredentialService extends AgentService {
   async markAcdc(
     credentialId: string,
     status: CredentialStatus.CONFIRMED | CredentialStatus.REVOKED
-  ) {
+  ): Promise<void> {
     const metadata = await this.credentialStorage.getCredentialMetadata(
       credentialId
     );
     if (!metadata) {
       throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
+
     metadata.status = status;
     await this.credentialStorage.updateCredentialMetadata(
       metadata.id,
       metadata
     );
+
     this.props.eventEmitter.emit<AcdcStateChangedEvent>({
       type: EventTypes.AcdcStateChanged,
       payload: {

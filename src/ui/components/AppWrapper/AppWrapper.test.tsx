@@ -1,10 +1,12 @@
+const getConnectionShortDetailByIdMock = jest.fn();
+
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-} from "../../../core/agent/agent.types";
+  CreationStatus } from "../../../core/agent/agent.types";
 import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
@@ -58,7 +60,6 @@ import {
   operationCompleteHandler,
   operationFailureHandler,
 } from "./coreEventListeners";
-import { CreationStatus } from "../../../core/agent/services/identifier.types";
 import {
   pendingIdentifierFix,
   pendingGroupIdentifierFix,
@@ -97,7 +98,7 @@ jest.mock("../../../core/agent/agent", () => ({
         isConnectionRequestReceived: jest.fn(),
         isConnectionResponseSent: jest.fn(),
         isConnectionConnected: jest.fn(),
-        getConnectionShortDetailById: jest.fn(),
+        getConnectionShortDetailById: getConnectionShortDetailByIdMock,
         getUnhandledConnections: jest.fn(),
         syncKeriaContacts: jest.fn(),
       },
@@ -393,6 +394,25 @@ describe("KERIA operation state changed handler", () => {
     );
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
+    );
+  });
+
+  test("handles failed oobi operation", async () => {
+    const id = "id";
+    const connectionMock = {
+      id: "id",
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date(),
+      alias: "CF Credential Issuance",
+      oobi: "http://oobi.com/",
+    };
+    getConnectionShortDetailByIdMock.mockResolvedValue(connectionMock);
+    await operationFailureHandler(
+      { opType: OperationPendingRecordType.Oobi, oid: id },
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      updateOrAddConnectionCache(expect.objectContaining({ ...connectionMock }))
     );
   });
 });

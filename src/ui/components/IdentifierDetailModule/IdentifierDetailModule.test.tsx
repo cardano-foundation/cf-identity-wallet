@@ -24,11 +24,15 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import {
+  formatShortDate,
+  formatTimeToSec,
+  getUTCOffset,
+} from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { AccordionKey } from "./components/IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierDetailModule } from "./IdentifierDetailModule";
-import { CreationStatus } from "../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../core/agent/agent.types";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -222,7 +226,7 @@ describe("Individual Identifier details page", () => {
           formatShortDate(identifierFix[0].dt) +
           " - " +
           formatTimeToSec(identifierFix[0].dt)
-        }`
+        } (${getUTCOffset(identifierFix[0].dt)})`
       )
     ).toBeInTheDocument();
   });
@@ -870,7 +874,7 @@ describe("Group Identifier details page", () => {
           formatShortDate(identifierFix[0].dt) +
           " - " +
           formatTimeToSec(identifierFix[0].dt)
-        }`
+        } (${getUTCOffset(identifierFix[0].dt)})`
       )
     ).toBeInTheDocument();
 
@@ -882,7 +886,7 @@ describe("Group Identifier details page", () => {
           formatShortDate(identifierFix[2].dt) +
           " - " +
           formatTimeToSec(identifierFix[2].dt)
-        }`
+        } (${getUTCOffset(identifierFix[0].dt)})`
       )
     ).toBeInTheDocument();
 
@@ -1160,7 +1164,7 @@ describe("Checking the Identifier Details Page when information is missing from 
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(deleteStaleLocalIdentifierMock).toBeCalled();
@@ -1445,7 +1449,7 @@ describe("Favourite identifier", () => {
       expect(getByTestId("verify-passcode")).toBeInTheDocument();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(markIdentifierPendingDelete).toBeCalled();

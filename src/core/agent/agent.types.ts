@@ -4,16 +4,17 @@ import { OperationPendingRecordType } from "./records/operationPendingRecord.typ
 import { ConnectionHistoryType } from "./services/connectionService.types";
 
 enum ConnectionStatus {
-  CONFIRMED = "confirmed",
   PENDING = "pending",
-  ACCEPTED = "accepted",
+  CONFIRMED = "confirmed",
+  FAILED = "failed",
   DELETED = "deleted",
 }
 
 interface ConnectionHistoryItem {
+  id: string;
   type: ConnectionHistoryType;
-  credentialType?: string;
   timestamp: string;
+  credentialType?: string;
 }
 
 enum MiscRecordId {
@@ -48,8 +49,8 @@ interface ConnectionShortDetails {
   id: string;
   label: string;
   createdAtUTC: string;
-  logo?: string;
   status: ConnectionStatus;
+  logo?: string;
   oobi?: string;
   groupId?: string;
 }
@@ -67,7 +68,12 @@ interface JSONObject {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface JSONArray extends Array<JSONValue> {}
 
-type JSONValue = string | number | boolean | JSONObject | JSONArray;
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | JSONArray;
 
 type ExnMessage = {
   exn: {
@@ -128,15 +134,15 @@ interface KeriaNotification {
   groupInitiator?: boolean;
 }
 
-enum KeriConnectionType {
+enum OobiType {
   NORMAL = "NORMAL",
   MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
 }
 
 type OobiScan =
-  | { type: KeriConnectionType.NORMAL; connection: ConnectionShortDetails }
+  | { type: OobiType.NORMAL; connection: ConnectionShortDetails }
   | {
-      type: KeriConnectionType.MULTI_SIG_INITIATOR;
+      type: OobiType.MULTI_SIG_INITIATOR;
       groupId: string;
       connection: ConnectionShortDetails;
     };
@@ -197,6 +203,12 @@ type OperationCallback = ({
   opType: OperationPendingRecordType;
 }) => void;
 
+enum CreationStatus {
+  PENDING = "PENDING",
+  COMPLETE = "COMPLETE",
+  FAILED = "FAILED",
+}
+
 export const OOBI_RE =
   /^\/oobi\/(?<cid>[^/]+)\/(?<role>[^/]+)(?:\/(?<eid>[^/]+))?$/i;
 export const OOBI_AGENT_ONLY_RE =
@@ -209,7 +221,8 @@ export {
   MiscRecordId,
   NotificationRoute,
   ExchangeRoute,
-  KeriConnectionType,
+  OobiType,
+  CreationStatus,
 };
 
 export type {
@@ -229,4 +242,6 @@ export type {
   NotificationRpy,
   AuthorizationRequestExn,
   OperationCallback,
+  JSONValue,
+  JSONObject,
 };

@@ -1,28 +1,22 @@
 import { HabState, Operation, Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
-  CreationStatus,
   IdentifierDetails,
   IdentifierShortDetails,
 } from "./identifier.types";
+import {
+  CreationStatus,
+  AgentServicesProps,
+  IdentifierResult,
+  MiscRecordId,
+} from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { deleteNotificationRecordById, OnlineOnly, randomSalt } from "./utils";
-import {
-  AgentServicesProps,
-  IdentifierResult,
-  MiscRecordId,
-  NotificationRoute,
-} from "../agent.types";
-import {
-  BasicRecord,
-  BasicStorage,
-  IdentifierStorage,
-  NotificationStorage,
-} from "../records";
+import { OnlineOnly, randomSalt } from "./utils";
+import { BasicRecord, BasicStorage, IdentifierStorage } from "../records";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
@@ -86,7 +80,7 @@ class IdentifierService extends AgentService {
     this.props.eventEmitter.on(
       EventTypes.IdentifierRemoved,
       (data: IdentifierRemovedEvent) => {
-        this.deleteIdentifier(data.payload.id!);
+        this.deleteIdentifier(data.payload.id);
       }
     );
   }
@@ -131,7 +125,7 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.IDENTIFIER_NOT_COMPLETE);
     }
 
-    const aid = await this.props.signifyClient
+    const hab = await this.props.signifyClient
       .identifiers()
       .get(identifier)
       .catch((error) => {
@@ -146,34 +140,34 @@ class IdentifierService extends AgentService {
       });
 
     let members;
-    if (aid.group) {
+    if (hab.group) {
       members = (
         await this.props.signifyClient.identifiers().members(identifier)
       ).signing.map((member: any) => member.aid);
     }
 
     return {
-      id: aid.prefix,
+      id: hab.prefix,
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
       groupMemberPre: metadata.groupMemberPre,
       creationStatus: metadata.creationStatus,
       groupMetadata: metadata.groupMetadata,
-      s: aid.state.s,
-      dt: aid.state.dt,
-      kt: aid.state.kt,
-      k: aid.state.k,
-      nt: aid.state.nt,
-      n: aid.state.n,
-      bt: aid.state.bt,
-      b: aid.state.b,
-      di: aid.state.di,
+      s: hab.state.s,
+      dt: hab.state.dt,
+      kt: hab.state.kt,
+      k: hab.state.k,
+      nt: hab.state.nt,
+      n: hab.state.n,
+      bt: hab.state.bt,
+      b: hab.state.b,
+      di: hab.state.di,
       members,
     };
   }
 
-  async processIdentifiersPendingCreation() {
+  async processIdentifiersPendingCreation(): Promise<void> {
     const pendingIdentifiersRecord = await this.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_PENDING_CREATION
     );
@@ -186,24 +180,23 @@ class IdentifierService extends AgentService {
 
     for (const queued of pendingIdentifiersRecord.content.queued) {
       let metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">;
-      const [themeString, rest] = queued.split(":");
-      const theme = Number(themeString);
-      const groupMatch = rest.match(/^(\d)-(.+)-(.+)$/);
+      const splitName = queued.split(":");
+      const theme = Number(splitName[0]);
+      const groupMatch = splitName[1].match(/^(\d)-(.+)-(.+)$/);
       if (groupMatch) {
-        const [, initiatorFlag, groupId, displayName] = groupMatch;
         metadata = {
           theme,
-          displayName,
+          displayName: splitName[2],
           groupMetadata: {
-            groupId,
-            groupInitiator: initiatorFlag === "1",
+            groupId: splitName[1].substring(2),
+            groupInitiator: splitName[1][0] === "1",
             groupCreated: false,
           },
         };
       } else {
         metadata = {
           theme,
-          displayName: rest,
+          displayName: splitName[1],
         };
       }
 
@@ -261,12 +254,12 @@ class IdentifierService extends AgentService {
         toad,
         wits: witnesses,
       });
-      await result.op(); // @TODO - foconnor: Update Signify to await the POST before returning so error thrown predicably
+      await result.op();
       identifier = result.serder.ked.i;
     } catch (error) {
       if (!(error instanceof Error)) throw error;
 
-      const [_, status, reason] = error.message.split(" - ");
+      const [, status, reason] = error.message.split(" - ");
       if (!(/400/gi.test(status) && /already incepted/gi.test(reason))) {
         throw error;
       }
@@ -449,13 +442,14 @@ class IdentifierService extends AgentService {
     }
   }
 
-  async markIdentifierPendingDelete(id: string) {
+  async markIdentifierPendingDelete(id: string): Promise<void> {
     const identifierProps = await this.identifierStorage.getIdentifierMetadata(
       id
     );
     if (!identifierProps) {
       throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);
     }
+
     identifierProps.pendingDeletion = true;
     await this.identifierStorage.updateIdentifierMetadata(id, {
       pendingDeletion: true,
@@ -469,7 +463,7 @@ class IdentifierService extends AgentService {
     });
   }
 
-  private async deleteGroupLinkedConnections(groupId: string) {
+  private async deleteGroupLinkedConnections(groupId: string): Promise<void> {
     const connections = await this.connections.getMultisigLinkedContacts(
       groupId
     );
@@ -509,17 +503,17 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async getSigner(identifier: string): Promise<Signer> {
-    const aid = await this.props.signifyClient.identifiers().get(identifier);
+    const hab = await this.props.signifyClient.identifiers().get(identifier);
 
     const manager = this.props.signifyClient.manager;
     if (manager) {
-      return manager.get(aid).signers[0];
+      return manager.get(hab).signers[0];
     } else {
       throw new Error(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
     }
   }
 
-  async syncKeriaIdentifiers() {
+  async syncKeriaIdentifiers(): Promise<void> {
     const cloudIdentifiers: any[] = [];
     let returned = -1;
     let iteration = 0;
@@ -666,7 +660,7 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async rotateIdentifier(identifier: string) {
+  async rotateIdentifier(identifier: string): Promise<void> {
     const rotateResult = await this.props.signifyClient
       .identifiers()
       .rotate(identifier);

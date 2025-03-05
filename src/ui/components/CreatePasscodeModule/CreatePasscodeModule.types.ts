@@ -5,6 +5,7 @@ interface CreatePasscodeModuleProps {
   overrideAlertZIndex?: boolean;
   onCreateSuccess: () => void;
   onPasscodeChange?: (passcode: string, originalPassCode: string) => void;
+  changePasscodeMode?: boolean;
 }
 
 interface CreatePasscodeModuleRef {

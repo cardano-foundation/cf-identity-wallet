@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">ID Wallet</string>
-    <string name="title_activity_main">ID Wallet</string>
+    <string name="app_name">Veridian</string>
+    <string name="title_activity_main">Veridian</string>
     <string name="package_name">org.cardanofoundation.idw</string>
     <string name="custom_url_scheme">org.cardanofoundation.idw</string>
 </resources>

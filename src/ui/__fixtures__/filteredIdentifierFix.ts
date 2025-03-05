@@ -1,7 +1,5 @@
-import {
-  CreationStatus,
-  IdentifierShortDetails,
-} from "../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../core/agent/agent.types";
 
 const filteredIdentifierFix: IdentifierShortDetails[] = [
   {

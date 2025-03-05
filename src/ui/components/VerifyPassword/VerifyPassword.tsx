@@ -2,8 +2,10 @@ import { IonButton } from "@ionic/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { KeyStoreKeys } from "../../../core/storage";
 import { i18n } from "../../../i18n";
+import { useAppDispatch } from "../../../store/hooks";
+import { showError as showErrorMessage } from "../../utils/error";
 import { Alert } from "../Alert";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
@@ -12,8 +14,6 @@ import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
 import { OptionModal } from "../OptionsModal";
 import "./VerifyPassword.scss";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
-import { showError as showErrorMessage } from "../../utils/error";
-import { useAppDispatch } from "../../../store/hooks";
 
 const VerifyPassword = ({
   isOpen,
@@ -204,11 +204,9 @@ const VerifyPassword = ({
       />
       <ForgotAuthInfo
         isOpen={openRecoveryAuth}
-        onClose={(shouldCloseParent) => {
+        onClose={() => {
           setOpenRecoveryAuth(false);
-          if (shouldCloseParent) {
-            resetModal();
-          }
+          resetModal();
         }}
         type={ForgotType.Password}
       />

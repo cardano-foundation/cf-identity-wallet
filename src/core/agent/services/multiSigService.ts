@@ -12,6 +12,7 @@ import {
   NotificationRoute,
   AgentServicesProps,
   MiscRecordId,
+  CreationStatus,
 } from "../agent.types";
 import type {
   ConnectionShortDetails,
@@ -26,7 +27,7 @@ import {
 } from "../records";
 import { AgentService } from "./agentService";
 import {
-  CreationStatus,
+  GroupParticipants,
   MultiSigIcpRequestDetails,
   QueuedGroupCreation,
   QueuedGroupProps,
@@ -86,6 +87,10 @@ class MultiSigService extends AgentService {
     this.basicStorage = basicStorage;
     this.connections = connections;
     this.identifiers = identifiers;
+  }
+
+  onGroupAdded(callback: (event: GroupCreatedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.GroupCreated, callback);
   }
 
   @OnlineOnly
@@ -211,7 +216,9 @@ class MultiSigService extends AgentService {
     await this.basicStorage.update(pendingGroupsRecord);
   }
 
-  private async getInceptionData(groupName: string) {
+  private async getInceptionData(
+    groupName: string
+  ): Promise<CreateIdentifierBody> {
     const pendingGroupsRecord = await this.basicStorage.findExpectedById(
       MiscRecordId.MULTISIG_IDENTIFIERS_PENDING_CREATION
     );
@@ -281,7 +288,7 @@ class MultiSigService extends AgentService {
     } catch (error) {
       if (!(error instanceof Error)) throw error;
 
-      const [_, status, reason] = error.message.split(" - ");
+      const [, status, reason] = error.message.split(" - ");
       if (!(/400/gi.test(status) && /already incepted/gi.test(reason))) {
         throw error;
       }
@@ -314,10 +321,6 @@ class MultiSigService extends AgentService {
       embeds,
       recp
     );
-  }
-
-  onGroupAdded(callback: (event: GroupCreatedEvent) => void) {
-    this.props.eventEmitter.on(EventTypes.GroupCreated, callback);
   }
 
   @OnlineOnly
@@ -527,7 +530,9 @@ class MultiSigService extends AgentService {
     await this.basicStorage.update(pendingGroupsRecord);
   }
 
-  async getMultisigParticipants(multisigId: string) {
+  async getMultisigParticipants(
+    multisigId: string
+  ): Promise<GroupParticipants> {
     const members = await this.props.signifyClient
       .identifiers()
       .members(multisigId);
@@ -667,7 +672,7 @@ class MultiSigService extends AgentService {
     );
   }
 
-  async processGroupsPendingCreation() {
+  async processGroupsPendingCreation(): Promise<void> {
     const pendingGroupsRecord = await this.basicStorage.findById(
       MiscRecordId.MULTISIG_IDENTIFIERS_PENDING_CREATION
     );

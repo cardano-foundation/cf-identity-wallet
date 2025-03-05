@@ -23,6 +23,11 @@ import {
 import { showError } from "../../utils/error";
 import { KeyStoreKeys } from "../../../core/storage";
 import { AuthService } from "../../../core/agent/services";
+import {
+  isConsecutive,
+  isRepeat,
+  isReverseConsecutive,
+} from "../../utils/passcodeChecker";
 
 const CreatePasscodeModule = forwardRef<
   CreatePasscodeModuleRef,
@@ -34,6 +39,7 @@ const CreatePasscodeModule = forwardRef<
       title,
       description,
       overrideAlertZIndex,
+      changePasscodeMode,
       onCreateSuccess,
       onPasscodeChange,
     },
@@ -79,7 +85,10 @@ const CreatePasscodeModule = forwardRef<
         setPasscode(passcode + digit);
         if (originalPassCode !== "" && passcode.length === 5) {
           if (originalPassCode === passcode + digit) {
-            if (biometricInfo?.strongBiometryIsAvailable) {
+            if (
+              biometricInfo?.strongBiometryIsAvailable &&
+              !changePasscodeMode
+            ) {
               if (isAndroidDevice) {
                 setShowSetupAndroidBiometricsAlert(true);
               } else {
@@ -162,6 +171,15 @@ const CreatePasscodeModule = forwardRef<
     }));
 
     useEffect(() => {
+      if (
+        passcode.length === 6 &&
+        (isRepeat(passcode) ||
+          isConsecutive(passcode) ||
+          isReverseConsecutive(passcode))
+      ) {
+        return;
+      }
+
       onPasscodeChange?.(passcode, originalPassCode);
 
       if (passcode.length === 6 && originalPassCode === "") {
@@ -194,19 +212,42 @@ const CreatePasscodeModule = forwardRef<
     }, [originalPassCode, passcode]);
 
     const errorMessage = () => {
-      if (passcodeMatch) {
-        return i18n.t("createpasscodemodule.errormatch");
-      } else if (
-        originalPassCode !== "" &&
-        passcode.length === 6 &&
-        originalPassCode !== passcode
-      ) {
+      const resetPasscode = () => {
         setTimeout(() => {
           setPasscode("");
         }, MESSAGE_MILLISECONDS);
-        return i18n.t("createpasscodemodule.errornomatch");
+      };
+
+      const getErrorMessage = () => {
+        if (passcodeMatch) {
+          return i18n.t("createpasscodemodule.errormatch");
+        }
+
+        if (passcode.length === 6) {
+          if (isRepeat(passcode)) {
+            return i18n.t("createpasscodemodule.repeat");
+          }
+
+          if (isConsecutive(passcode) || isReverseConsecutive(passcode)) {
+            return i18n.t("createpasscodemodule.consecutive");
+          }
+        }
+
+        if (originalPassCode !== "" && passcode.length === 6) {
+          if (originalPassCode !== passcode) {
+            return i18n.t("createpasscodemodule.errornomatch");
+          }
+        }
+
+        return undefined;
+      };
+
+      const errorMessage = getErrorMessage();
+      if (errorMessage) {
+        resetPasscode();
       }
-      return undefined;
+
+      return errorMessage;
     };
 
     return (

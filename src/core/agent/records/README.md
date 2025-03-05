@@ -1,0 +1,2 @@
+When creating a new record type, it's important to set default values within the `if (props)` block of the constructor, and not at the attribute level.
+This is due to how the serialisation is done when fetching from the database.

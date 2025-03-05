@@ -1,4 +1,4 @@
-import { Storage, Drivers } from "@ionic/storage";
+import { Storage } from "@ionic/storage";
 import {
   Query,
   BaseRecord,
@@ -10,24 +10,20 @@ import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
 class IonicStorage<T extends BaseRecord> implements StorageService<T> {
-  private static readonly SESSION_IS_NOT_INITIALIZED =
-    "Session is not initialized";
-
-  private session?: Storage;
+  private session: Storage;
 
   constructor(session: Storage) {
     this.session = session;
   }
 
   async save(record: T): Promise<T> {
-    this.checkSession(this.session);
     record.updatedAt = new Date();
-    if (await this.session!.get(record.id)) {
+    if (await this.session.get(record.id)) {
       throw new Error(
         `${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
       );
     }
-    await this.session!.set(record.id, {
+    await this.session.set(record.id, {
       category: record.type,
       name: record.id,
       value: JSON.stringify(record),
@@ -37,30 +33,27 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
   }
 
   async delete(record: T): Promise<void> {
-    this.checkSession(this.session);
-    if (!(await this.session!.get(record.id))) {
+    if (!(await this.session.get(record.id))) {
       throw new Error(
         `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
       );
     }
 
-    await this.session!.remove(record.id);
+    await this.session.remove(record.id);
   }
 
   async deleteById(id: string): Promise<void> {
-    this.checkSession(this.session);
-    if (!(await this.session!.get(id))) {
+    if (!(await this.session.get(id))) {
       throw new Error(
         `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`
       );
     }
 
-    await this.session!.remove(id);
+    await this.session.remove(id);
   }
 
   async update(record: T): Promise<void> {
-    this.checkSession(this.session);
-    if (!(await this.session!.get(record.id))) {
+    if (!(await this.session.get(record.id))) {
       throw new Error(
         `${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
       );
@@ -70,7 +63,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
 
     const tags = record.getTags();
 
-    await this.session!.set(record.id, {
+    await this.session.set(record.id, {
       category: record.type,
       name: record.id,
       value: JSON.stringify(record),
@@ -82,8 +75,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
     id: string,
     recordClass: BaseRecordConstructor<T>
   ): Promise<T | null> {
-    this.checkSession(this.session);
-    const recordStorage = await this.session!.get(id);
+    const recordStorage = await this.session.get(id);
 
     if (!recordStorage || recordStorage.category !== recordClass.type) {
       return null;
@@ -95,10 +87,9 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
     query: Query<T>,
     recordClass: BaseRecordConstructor<T>
   ): Promise<T[]> {
-    this.checkSession(this.session);
     const instances: T[] = [];
 
-    await this.session!.forEach((record) => {
+    await this.session.forEach((record) => {
       if (
         record.category &&
         record.category === recordClass.type &&
@@ -112,21 +103,14 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
   }
 
   async getAll(recordClass: BaseRecordConstructor<T>): Promise<T[]> {
-    this.checkSession(this.session);
     const instances: T[] = [];
-    await this.session!.forEach((value) => {
+    await this.session.forEach((value) => {
       if (value.category && value.category === recordClass.type) {
         instances.push(deserializeRecord(value, recordClass));
       }
     });
 
     return instances;
-  }
-
-  private checkSession(session?: Storage) {
-    if (!session) {
-      throw new Error(IonicStorage.SESSION_IS_NOT_INITIALIZED);
-    }
   }
 
   private checkRecordIsValidWithQuery(

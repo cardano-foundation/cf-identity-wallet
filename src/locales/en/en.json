@@ -2,24 +2,20 @@
   "onboarding": {
     "slides": [
       {
-        "title": "Welcome to your Cardano Foundation Identity Wallet",
-        "description": "An opensource mobile digital wallet that enables you to securely manage your own identity in a privacy-preserving and self-sovereign manner."
+        "title": "Welcome to Veridian",
+        "description": "Take full control of your digital identity with secure and seamless management"
       },
       {
-        "title": "Empowerment with Self-Sovereign Identity (SSI)",
-        "description": "Embrace SSI principles, store private keys locally in your mobile device's Hardware Security Module, and control your identity."
+        "title": "Secure and Self-Sovereign",
+        "description": "Your identity is encrypted and stored safely on your device. Only you have access"
       },
       {
-        "title": "Privacy & Security: Your Top Priorities",
-        "description": "Prioritize privacy and security with Decentralized Identifiers and Verifiable Credentials. Control your data, what you share, with whom, and for how long."
+        "title": "Privacy First",
+        "description": "Control when to present your credentials, keeping your personal data private"
       },
       {
-        "title": "Embrace Interoperability for a Wider Reach",
-        "description": "Supporting new and existing standards, ecosystems, and frameworks is crucial to achieving widespread adoption and seamless interoperability."
-      },
-      {
-        "title": "Decentralize Your Digital Identity",
-        "description": "Traditional identity systems offer minimal control over your digital identifiers. Decentralized technology transfers ownership and control to you."
+        "title": "Sign with Group Identity",
+        "description": "Sign and verify as an individual or part of a group, whenever needed"
       }
     ],
     "getstarted": {
@@ -36,7 +32,9 @@
   "createpasscodemodule": {
     "errornomatch": "Passcode didn’t match",
     "errormatch": "Passcode already in use",
-    "cantremember": "Can't remember?"
+    "cantremember": "Can't remember?",
+    "repeat": "Avoid matching numbers e.g. 111111",
+    "consecutive": "Avoid consecutive numbers e.g. 123456"
   },
   "setpasscode": {
     "enterpasscode": "Create your Passcode",
@@ -723,6 +721,7 @@
     "change": "New password",
     "cancel": "Cancel",
     "description": "Add an extra layer of security for sensitive actions in your wallet by creating an optional password.",
+    "learnmore": "Learn More",
     "input": {
       "first": {
         "symbolguide": "Symbol guide",
@@ -1376,7 +1375,7 @@
             "support": {
               "title": "Support & Legal",
               "contact": "Connect via Discord",
-              "learnmore": "Learn More About Cardano IDW",
+              "learnmore": "Learn More About Veridian",
               "terms": {
                 "title": "Terms and Privacy Policy",
                 "submenu": {
@@ -1871,7 +1870,7 @@
     "iosfallbacktitle": "Use passcode",
     "androidtitle": "Authentication",
     "androidsubtitle": "Authentication using biometrics",
-    "setupandroidbiometryheader": "Do you want to allow “IDW” to use biometrics?",
+    "setupandroidbiometryheader": "Do you want to allow “Veridian” to use biometrics?",
     "setupandroidbiometryconfirm": "Ok",
     "setupandroidbiometrycancel": "Don't allow",
     "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."

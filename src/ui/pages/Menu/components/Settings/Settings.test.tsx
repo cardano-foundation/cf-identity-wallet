@@ -1,4 +1,5 @@
 import {
+  BiometryError,
   BiometryErrorType,
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
@@ -19,6 +20,13 @@ import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { SubMenuKey } from "../../Menu.types";
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
+
+jest.mock("@capacitor-community/privacy-screen", () => ({
+  PrivacyScreen: {
+    enable: jest.fn(),
+    disable: jest.fn(),
+  },
+}));
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -186,7 +194,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode-content-page")).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -437,7 +445,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
 
-    await passcodeFiller(getByText, getByTestId, "1", 6);
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(

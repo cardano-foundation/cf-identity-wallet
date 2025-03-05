@@ -1800,6 +1800,19 @@ describe("Grant ACDC individual actions", () => {
         linkedRequest: { accepted: true, current: "grant-said" },
       })
     );
+    expect(updateContactMock).toBeCalledWith(
+      "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL`]:
+          JSON.stringify({
+            id: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+            dt: agreeForPresentingExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+            historyType: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
+          }),
+      }
+    );
   });
 
   test("Cannot present ACDC if the notification is missing in the DB", async () => {
@@ -1818,6 +1831,7 @@ describe("Grant ACDC individual actions", () => {
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
+    expect(updateContactMock).not.toBeCalled();
   });
 
   test("Cannot present non existing ACDC", async () => {
@@ -1854,6 +1868,7 @@ describe("Grant ACDC individual actions", () => {
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.save).not.toBeCalled();
     expect(eventEmitter.emit).not.toBeCalled();
+    expect(updateContactMock).not.toBeCalled();
   });
 
   test("Should throw if unknown error occurs when fetching ACDC to present", async () => {
@@ -1879,6 +1894,13 @@ describe("Grant ACDC individual actions", () => {
     await expect(
       ipexCommunicationService.grantAcdcFromAgree("id")
     ).rejects.toThrow(errorMessage);
+
+    expect(ipexGrantMock).not.toBeCalled();
+    expect(ipexSubmitGrantMock).not.toBeCalled();
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(updateContactMock).not.toBeCalled();
   });
 });
 
@@ -1932,6 +1954,7 @@ describe("Grant ACDC group actions", () => {
       ipexSubmitGrantSig,
       ipexSubmitGrantEnd,
     ]);
+    schemaGetMock.mockResolvedValue(QVISchema);
 
     await ipexCommunicationService.grantAcdcFromAgree("agree-note-id");
 
@@ -1973,6 +1996,20 @@ describe("Grant ACDC group actions", () => {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
     expect(notificationStorage.deleteById).not.toBeCalled();
+
+    expect(updateContactMock).toBeCalledWith(
+      "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL`]:
+          JSON.stringify({
+            id: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+            dt: agreeForPresentingExnMessage.exn.dt,
+            credentialType: QVISchema.title,
+            connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+            historyType: ConnectionHistoryType.IPEX_AGREE_COMPLETE,
+          }),
+      }
+    );
   });
 
   test("Cannot begin presenting an ACDC twice", async () => {
@@ -1993,7 +2030,7 @@ describe("Grant ACDC group actions", () => {
     });
 
     await expect(
-      ipexCommunicationService.admitAcdcFromGrant("id")
+      ipexCommunicationService.grantAcdcFromAgree("id")
     ).rejects.toThrowError(IpexCommunicationService.IPEX_ALREADY_REPLIED);
 
     expect(ipexGrantMock).not.toBeCalled();
@@ -2219,7 +2256,7 @@ describe("IPEX communication service of agent", () => {
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
-  test("can link credential presentation history items to the correct connection", async () => {
+  test("Can link credential presentation history items to the correct connection", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
 
     await ipexCommunicationService.createLinkedIpexMessageRecord(
@@ -2276,23 +2313,20 @@ describe("IPEX communication service of agent", () => {
     getExchangeMock.mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      admitForIssuanceExnMessage,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
 
-    expect(updateContactMock).toBeCalledWith(
-      admitForIssuanceExnMessage.exn.rp,
-      {
-        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${admitForIssuanceExnMessage.exn.d}`]:
-          JSON.stringify({
-            id: admitForIssuanceExnMessage.exn.d,
-            dt: admitForIssuanceExnMessage.exn.dt,
-            credentialType: QVISchema.title,
-            connectionId: admitForIssuanceExnMessage.exn.rp,
-            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-          }),
-      }
-    );
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
+          credentialType: QVISchema.title,
+          connectionId: grantForIssuanceExnMessage.exn.i,
+          historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+        }),
+    });
     expect(schemaGetMock).toBeCalledWith(
       grantForIssuanceExnMessage.exn.e.acdc.s
     );

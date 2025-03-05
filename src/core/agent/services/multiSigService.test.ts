@@ -1,5 +1,5 @@
 import { Serder } from "signify-ts";
-import { ConnectionStatus, MiscRecordId } from "../agent.types";
+import { ConnectionStatus, MiscRecordId, CreationStatus } from "../agent.types";
 import { Agent } from "../agent";
 import { CoreEventEmitter } from "../event";
 import { MultiSigService } from "./multiSigService";
@@ -27,7 +27,6 @@ import {
 } from "../../__fixtures__/agent/multiSigFixtures";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { EventTypes } from "../event.types";
-import { CreationStatus } from "./identifier.types";
 import { MultiSigRoute } from "./multiSig.types";
 import { StorageMessage } from "../../storage/storage.types";
 
@@ -274,13 +273,17 @@ describe("Usage of multi-sig", () => {
   test("Can get participants with a multi-sig identifier", async () => {
     identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
-      ...memberMetadataRecordProps,
-      groupMetadata: {
-        ...memberMetadataRecordProps.groupMetadata,
-        groupCreated: true,
-      },
-    });
+    identifierStorage.getIdentifierMetadata
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      )
+      .mockResolvedValueOnce({
+        ...memberMetadataRecordProps,
+        groupMetadata: {
+          ...memberMetadataRecordProps.groupMetadata,
+          groupCreated: true,
+        },
+      });
 
     await multiSigService.getMultisigParticipants("id");
 
@@ -1225,6 +1228,20 @@ describe("Creation of multi-sig", () => {
       "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
     );
     expect(result.threshold).toBe(3);
+  });
+
+  test("Cannot get multisig icp details if the exn is missing", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock.mockRejectedValue(
+      new Error("request - 404 - not found")
+    );
+    await expect(
+      multiSigService.getMultisigIcpDetails(
+        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+      )
+    ).rejects.toThrowError(
+      `${MultiSigService.EXN_MESSAGE_NOT_FOUND} ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO`
+    );
   });
 
   test("Throw error if we do not control any member of the group", async () => {

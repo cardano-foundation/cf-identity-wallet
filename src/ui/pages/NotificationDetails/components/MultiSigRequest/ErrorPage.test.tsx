@@ -13,7 +13,7 @@ import { multisignIdentifierFix } from "../../../../__fixtures__/filteredIdentif
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ErrorPage } from "./ErrorPage";
 import { DISCORD_LINK } from "../../../../globals/constants";
-import { CreationStatus } from "../../../../../core/agent/services/identifier.types";
+import { CreationStatus } from "../../../../../core/agent/agent.types";
 
 mockIonicReact();
 
