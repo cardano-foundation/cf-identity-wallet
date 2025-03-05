@@ -17,7 +17,12 @@ import {
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 import { OnlineOnly, randomSalt, deleteNotificationRecordById } from "./utils";
-import { BasicRecord, BasicStorage, IdentifierStorage , NotificationStorage } from "../records";
+import {
+  BasicRecord,
+  BasicStorage,
+  IdentifierStorage,
+  NotificationStorage,
+} from "../records";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
@@ -529,18 +534,21 @@ class IdentifierService extends AgentService {
       iteration += 1;
     }
 
-    const localIdentifiers =
-      await this.identifierStorage.getKeriIdentifiersMetadata();
+    const localIdentifiers = await this.identifierStorage.getAllIdentifiers();
 
-    const unSyncedData = cloudIdentifiers.filter(
-      (identifier: IdentifierResult) =>
-        !localIdentifiers.find((item) => identifier.prefix === item.id)
-    );
+    const unSyncedDataWithGroup = [];
+    const unSyncedDataWithoutGroup = [];
+    for (const identifier of cloudIdentifiers) {
+      if (localIdentifiers.find((item) => item.id === identifier.prefix)) {
+        continue;
+      }
 
-    const [unSyncedDataWithGroup, unSyncedDataWithoutGroup] = [
-      unSyncedData.filter((item: HabState) => item.group !== undefined),
-      unSyncedData.filter((item: HabState) => item.group === undefined),
-    ];
+      if (identifier.group === undefined) {
+        unSyncedDataWithoutGroup.push(identifier);
+      } else {
+        unSyncedDataWithGroup.push(identifier);
+      }
+    }
 
     for (const identifier of unSyncedDataWithoutGroup) {
       const op: Operation = await this.props.signifyClient
@@ -637,7 +645,7 @@ class IdentifierService extends AgentService {
         });
       }
 
-      // Make as created
+      // Mark as created
       await this.identifierStorage.updateIdentifierMetadata(groupMemberPre, {
         groupMetadata: {
           groupId: groupIdParts[1],

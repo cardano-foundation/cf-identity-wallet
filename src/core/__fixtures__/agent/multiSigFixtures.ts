@@ -1,5 +1,5 @@
 import { CreateIdentifierBody, Tier } from "signify-ts";
-import { ConnectionStatus , CreationStatus } from "../../agent/agent.types";
+import { ConnectionStatus, CreationStatus } from "../../agent/agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,

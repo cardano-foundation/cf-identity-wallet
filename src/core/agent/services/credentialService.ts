@@ -1,3 +1,4 @@
+import { Ilks } from "signify-ts";
 import { AgentServicesProps } from "../agent.types";
 import { AgentService } from "./agentService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
@@ -218,19 +219,28 @@ class CredentialService extends AgentService {
     );
 
     for (const credential of unSyncedData) {
-      const identifier = await this.identifierStorage.getIdentifierMetadata(
-        credential.sad.a.i
-      );
+      const hab = await this.props.signifyClient
+        .identifiers()
+        .get(credential.sad.a.i);
+      const telStatus = (
+        await this.props.signifyClient
+          .credentials()
+          .state(credential.sad.ri, credential.sad.d)
+      ).et;
+
       const metadata = {
         id: credential.sad.d,
         isArchived: false,
         issuanceDate: new Date(credential.sad.a.dt).toISOString(),
         credentialType: credential.schema.title,
-        status: CredentialStatus.CONFIRMED,
+        status:
+          telStatus === Ilks.iss
+            ? CredentialStatus.CONFIRMED
+            : CredentialStatus.REVOKED,
         connectionId: credential.sad.i,
         schema: credential.schema.$id,
         identifierId: credential.sad.a.i,
-        identifierType: identifier.groupMemberPre
+        identifierType: hab.group
           ? IdentifierType.Group
           : IdentifierType.Individual,
         createdAt: new Date(credential.sad.a.dt),

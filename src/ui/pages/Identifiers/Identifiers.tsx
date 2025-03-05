@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { MiscRecordId , CreationStatus } from "../../../core/agent/agent.types";
+import { MiscRecordId, CreationStatus } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records/basicRecord";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
