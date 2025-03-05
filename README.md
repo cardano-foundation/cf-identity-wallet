@@ -60,8 +60,8 @@
 # SSI Services
 - [KERIA Cloud Agent](https://github.com/cardano-foundation/keria)
 - [Signify-TS Edge Client](https://github.com/cardano-foundation/signify-ts)
-- [Verifiable Credential Testing Tool](https://dev.credentials-ui.cf-keripy.metadata.dev.cf-deployments.org/)
-- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
+- [Verifiable Credential Testing Tool](https://cred-issuance-ui.dev.idw-sandboxes.cf-deployments.org/)
+- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer/tree/feat/watchpoc)
 
 # Architecture
 <div align="center"> 

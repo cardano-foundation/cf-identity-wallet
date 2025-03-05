@@ -1,4 +1,4 @@
 keri:
   keria:
-    url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org"
-    bootUrl: "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org"
+    url: "https://keria.dev.idw-sandboxes.cf-deployments.org"
+    bootUrl: "https://keria-boot.dev.idw-sandboxes.cf-deployments.org"
