@@ -331,7 +331,7 @@ describe("Single sig service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         creationStatus: CreationStatus.COMPLETE,
-        multisigManageAid: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5InX",
+        groupMemberPre: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5InX",
         groupMetadata: undefined,
       },
     ]);
