@@ -16,7 +16,7 @@ import {
   lockClosedOutline,
   logoDiscord,
 } from "ionicons/icons";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import pJson from "../../../../../../package.json";
 import { Agent } from "../../../../../core/agent/agent";
@@ -42,7 +42,6 @@ import { ChangePin } from "./components/ChangePin";
 import { SettingsItem } from "./components/SettingsItem";
 import "./Settings.scss";
 import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
-import { usePrivacyScreen } from "../../../../hooks/privacyScreenHook";
 
 const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
@@ -53,7 +52,6 @@ const Settings = ({ switchView }: SettingsProps) => {
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
   const { disablePrivacy, enablePrivacy } = usePrivacyScreen();
   const [openBiometricAlert, setOpenBiometricAlert] = useState(false);
-  const { enablePrivacy, disablePrivacy } = usePrivacyScreen(false);
 
   const securityItems: OptionProps[] = [
     {
