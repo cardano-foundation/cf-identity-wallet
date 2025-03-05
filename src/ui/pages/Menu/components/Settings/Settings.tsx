@@ -127,7 +127,8 @@ const Settings = ({ switchView }: SettingsProps) => {
   const handleBiometricUpdate = () => {
     if (
       !biometricInfo?.strongBiometryIsAvailable &&
-      biometricInfo?.code === BiometryErrorType.biometryNotEnrolled
+      (biometricInfo?.code === BiometryErrorType.biometryNotEnrolled ||
+        biometricInfo?.code === BiometryErrorType.biometryNotAvailable)
     ) {
       setOpenBiometricAlert(true);
       return;
