@@ -9,14 +9,15 @@ import {
   AgentServicesProps,
   IdentifierResult,
   MiscRecordId,
+  NotificationRoute,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { OnlineOnly, randomSalt } from "./utils";
-import { BasicRecord, BasicStorage, IdentifierStorage } from "../records";
+import { OnlineOnly, randomSalt, deleteNotificationRecordById } from "./utils";
+import { BasicRecord, BasicStorage, IdentifierStorage , NotificationStorage } from "../records";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
