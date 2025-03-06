@@ -681,7 +681,7 @@ class KeriaNotificationService extends AgentService {
     exchange: ExnMessage
   ): Promise<boolean> {
     // Otherwise group initiator gets notification
-    console.log(`>>> [keriaNotificationService]: processMultiSigIcpNotification calls with ${exchange.exn} [group id: ${exchange.exn.e.icp.i}]`);
+    console.log(`>>> [keriaNotificationService]: processMultiSigIcpNotification calls with ${exchange.exn.d} [group id: ${exchange.exn.e.icp.i}]`);
     try {
       console.log(`>>> [keriaNotificationService]: Got identifier: ${JSON.stringify(await this.props.signifyClient.identifiers().get(exchange.exn.e.icp.i), null, 2)}`);
     } catch (error) {

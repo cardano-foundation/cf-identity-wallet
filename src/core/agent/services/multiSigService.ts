@@ -148,7 +148,7 @@ class MultiSigService extends AgentService {
           threshold,
         }
       );
-    console.log(`>>> [multiSigService]: Creating group!`);
+    console.log(`>>> [multiSigService]: Creating group with inception data ${JSON.stringify(inceptionData, null, 2)}`);
     await this.inceptGroup(mHab, states, inceptionData);
 
     const multisigId = inceptionData.icp.i;
@@ -252,6 +252,16 @@ class MultiSigService extends AgentService {
       queued = currentQueue;
     }
 
+    console.log(`>>> [multiSigService]: Calling createInceptionData on Signify with ${JSON.stringify({
+      algo: Algos.group,
+      mhab: mHab,
+      isith: threshold,
+      nsith: threshold,
+      toad: mHab.state.b.length,
+      wits: mHab.state.b,
+      states: states,
+      rstates: states,
+    }, null, 2)}`);
     const inceptionData = await this.props.signifyClient
       .identifiers()
       .createInceptionData(groupName, {
@@ -403,6 +413,7 @@ class MultiSigService extends AgentService {
           throw error;
         }
       });
+    console.log(`>>> [multiSigService]: Joining multi-sig icp: ${JSON.stringify(icpMsg, null, 2)}`);
     const exn = icpMsg[0].exn;
 
     const identifiers = await this.identifiers.getIdentifiers(false);
@@ -433,6 +444,7 @@ class MultiSigService extends AgentService {
       )
     );
 
+    console.log(`>>> [multiSigService]: Background task? ${backgroundTask}`);
     const inceptionData = backgroundTask
       ? await this.getInceptionData(groupName)
       : await this.generateAndStoreInceptionData(
@@ -446,7 +458,7 @@ class MultiSigService extends AgentService {
           notificationSaid,
         }
       );
-    console.log(`>>> [multiSigService]: Joining group with ${JSON.stringify(icpMsg)}`);
+    console.log(`>>> [multiSigService]: Joining group with ${JSON.stringify(icpMsg, null, 2)}`);
     await this.inceptGroup(mHab, states, inceptionData);
 
     const multisigId = inceptionData.icp.i;
