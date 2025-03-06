@@ -352,7 +352,7 @@ describe("Creation of multi-sig", () => {
       mhab: getMemberIdentifierResponse,
       isith: 2,
       nsith: 2,
-      toad: 0,
+      toad: 3,
       wits: [],
       states: [
         getMemberIdentifierResponse.state,
@@ -778,7 +778,7 @@ describe("Creation of multi-sig", () => {
       mhab: getMemberIdentifierResponse,
       isith: 2,
       nsith: 2,
-      toad: 0,
+      toad: 3,
       wits: [],
       states: [
         resolvedOobiOpResponse.op.response,

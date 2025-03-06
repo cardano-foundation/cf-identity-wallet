@@ -258,7 +258,7 @@ class MultiSigService extends AgentService {
         mhab: mHab,
         isith: threshold,
         nsith: threshold,
-        toad: mHab.state.b.length,
+        toad: Number(mHab.state.bt),
         wits: mHab.state.b,
         states: states,
         rstates: states,
