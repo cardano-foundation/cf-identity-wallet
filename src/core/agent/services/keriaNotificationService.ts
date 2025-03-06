@@ -305,6 +305,8 @@ class KeriaNotificationService extends AgentService {
     }
 
     let shouldCreateRecord = true;
+    console.log(`>>> [keriaNotificationService]: processing notification: ${JSON.stringify(notif, null, 2)}`);
+    console.log(`>>> [keriaNotificationService]: corresponding exn: ${JSON.stringify(exn, null, 2)}`);
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
       shouldCreateRecord = await this.processExnIpexApplyNotification(exn);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
@@ -316,6 +318,7 @@ class KeriaNotificationService extends AgentService {
       shouldCreateRecord = await this.processMultiSigRpyNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigIcp) {
       shouldCreateRecord = await this.processMultiSigIcpNotification(exn);
+      console.log(`>>> [keriaNotificationService]: Creating record for multi/sig icp?: ${shouldCreateRecord}`);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(
         notif,
@@ -678,13 +681,17 @@ class KeriaNotificationService extends AgentService {
     exchange: ExnMessage
   ): Promise<boolean> {
     // Otherwise group initiator gets notification
+    console.log(`>>> [keriaNotificationService]: processMultiSigIcpNotification calls with ${exchange.exn} [group id: ${exchange.exn.e.icp.i}]`);
     try {
-      await this.props.signifyClient.identifiers().get(exchange.exn.e.icp.i);
+      console.log(`>>> [keriaNotificationService]: Got identifier: ${JSON.stringify(await this.props.signifyClient.identifiers().get(exchange.exn.e.icp.i), null, 2)}`);
     } catch (error) {
+      console.log(`>>> [keriaNotificationService]: Got error: ${JSON.stringify(error, null, 2)}`);
+      console.log(`>>> [keriaNotificationService]: Message: ${error instanceof Error && error.message}`);
       if (
         error instanceof Error &&
         /404/gi.test(error.message.split(" - ")[1])
       ) {
+        console.log(`>>> [keriaNotificationService]: Group identifier not found in cloud, creating notification...`);
         return true;
       } else {
         throw error;

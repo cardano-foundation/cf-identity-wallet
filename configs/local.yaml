@@ -1,4 +1,5 @@
 keri:
   keria:
-    url: "http://127.0.0.1:3901"
-    bootUrl: "http://127.0.0.1:3903"
+    url: "https://keria.dev.idw-sandboxes.cf-deployments.org"
+    bootUrl: "https://keria-boot.dev.idw-sandboxes.cf-deployments.org"
+

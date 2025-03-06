@@ -148,6 +148,7 @@ class MultiSigService extends AgentService {
           threshold,
         }
       );
+    console.log(`>>> [multiSigService]: Creating group!`);
     await this.inceptGroup(mHab, states, inceptionData);
 
     const multisigId = inceptionData.icp.i;
@@ -321,6 +322,8 @@ class MultiSigService extends AgentService {
       embeds,
       recp
     );
+
+    console.log(`>>> [multiSigService]: Incept group with pre ID ${serder.pre}, sending to local identifier... ${JSON.stringify(recp)} [sending FROM local identiifer ${mHab.prefix}]`);
   }
 
   @OnlineOnly
@@ -443,6 +446,7 @@ class MultiSigService extends AgentService {
           notificationSaid,
         }
       );
+    console.log(`>>> [multiSigService]: Joining group with ${JSON.stringify(icpMsg)}`);
     await this.inceptGroup(mHab, states, inceptionData);
 
     const multisigId = inceptionData.icp.i;
