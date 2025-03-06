@@ -221,6 +221,8 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.INVALID_THEME);
     }
 
+    console.log(`>>> [identifierService]: Creating single-sig identifier with toad ${toad} and ${JSON.stringify(witnesses, null, 2)}`);
+
     // For simplicity, it's up to the UI to provide a unique name
     let name = `${metadata.theme}:${metadata.displayName}`;
     if (metadata.groupMetadata) {
@@ -285,6 +287,7 @@ class IdentifierService extends AgentService {
     const identifierDetail = (await this.props.signifyClient
       .identifiers()
       .get(identifier)) as HabState;
+    console.log(`>>> [identifierService]: After creation, details: ${JSON.stringify(identifierDetail, null, 2)}`);
 
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
