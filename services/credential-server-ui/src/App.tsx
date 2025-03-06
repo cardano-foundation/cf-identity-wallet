@@ -12,44 +12,67 @@ import { Settings } from "./pages/Settings";
 import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/500.css";
 import { theme } from "./theme/theme"; // Import the theme
+import { SnackbarProvider } from "notistack";
+import { WarningAmber, CheckCircleOutline, Close } from "@mui/icons-material";
+import { closeSnackbar } from "notistack";
+import { IconButton } from "@mui/material";
 
 const App = () => {
+  const MAX_TOAST_MESSAGES = 10;
+  const TOAST_MESSAGE_DURATION = 2000;
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={<Layout />}
+      <SnackbarProvider
+        maxSnack={MAX_TOAST_MESSAGES}
+        autoHideDuration={TOAST_MESSAGE_DURATION}
+        iconVariant={{
+          success: <CheckCircleOutline />,
+          error: <WarningAmber />,
+        }}
+        action={(snackbarId) => (
+          <IconButton
+            aria-label="actions"
+            onClick={() => closeSnackbar(snackbarId)}
           >
+            <Close />
+          </IconButton>
+        )}
+      >
+        <BrowserRouter>
+          <Routes>
             <Route
-              index
-              element={<Overview />}
-            />
-            <Route
-              path="/connections"
-              element={<Connections />}
-            />
-            <Route
-              path="/credentials"
-              element={<Credentials />}
-            />
-            <Route
-              path="/notifications"
-              element={<Notifications />}
-            />
-            <Route
-              path="/settings"
-              element={<Settings />}
-            />
-            <Route
-              path="*"
-              element={<NoPage />}
-            />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+              path="/"
+              element={<Layout />}
+            >
+              <Route
+                index
+                element={<Overview />}
+              />
+              <Route
+                path="/connections"
+                element={<Connections />}
+              />
+              <Route
+                path="/credentials"
+                element={<Credentials />}
+              />
+              <Route
+                path="/notifications"
+                element={<Notifications />}
+              />
+              <Route
+                path="/settings"
+                element={<Settings />}
+              />
+              <Route
+                path="*"
+                element={<NoPage />}
+              />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };

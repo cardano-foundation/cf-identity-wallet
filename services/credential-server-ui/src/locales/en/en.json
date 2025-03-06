@@ -31,7 +31,11 @@
         "title": "Delete Connection(s)",
         "body": "Are you sure you want to delete this connection? This action cannot be undone.",
         "cancel": "Cancel",
-        "delete": "Delete"
+        "delete": "Delete",
+        "toast": {
+          "success": "Connection(s) deleted successfully",
+          "error": "Unable to delete connection(s)"
+        }
       }
     },
     "credentials": {

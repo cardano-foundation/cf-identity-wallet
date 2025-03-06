@@ -7,6 +7,7 @@ import { PopupModal } from "../../../../components/PopupModal";
 import { handleDeleteContact } from "./helpers";
 import { AppDispatch } from "../../../../store";
 import { useDispatch } from "react-redux";
+import { enqueueSnackbar, VariantType } from "notistack";
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
@@ -17,16 +18,23 @@ interface EnhancedTableToolbarProps {
 
 const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
   const { numSelected, setNumSelected, selected, setSelected } = props;
-  const [openModal, setOpenModal] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+  const [openModal, setOpenModal] = useState(false);
 
   const handleDelete = async () => {
     for (const id of selected) {
-      await handleDeleteContact(id, dispatch);
+      await handleDeleteContact(id, dispatch, triggerToast);
     }
     setNumSelected(0);
     setSelected([]);
     setOpenModal(false);
+  };
+
+  const triggerToast = (message: string, variant: VariantType) => {
+    enqueueSnackbar(message, {
+      variant,
+      anchorOrigin: { vertical: "top", horizontal: "center" },
+    });
   };
 
   return (

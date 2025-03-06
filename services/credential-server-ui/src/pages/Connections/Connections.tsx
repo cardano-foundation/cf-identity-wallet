@@ -2,7 +2,7 @@ import { i18n } from "../../i18n";
 import AddIcon from "@mui/icons-material/Add";
 import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers/stateCache";
-import { RoleIndex } from "../../constants/roles";
+import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { ConnectionsTable } from "./components/ConnectionsTable";
 import { Button } from "@mui/material";
 import "./Connections.scss";

@@ -13,7 +13,8 @@ import {
   Tooltip,
   Button,
 } from "@mui/material";
-import { MoreVert, DeleteOutline } from "@mui/icons-material";
+import { MoreVert } from "@mui/icons-material";
+import { useSnackbar, VariantType } from "notistack";
 import { EnhancedTableHead } from "./EnhancedTableHead";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { useTable } from "./useTable";
@@ -33,13 +34,14 @@ import { generateRows, handleDeleteContact } from "./helpers";
 import { PopupModal } from "../../../../components/PopupModal";
 import { useAppSelector } from "../../../../store/hooks";
 import { getRoleView } from "../../../../store/reducers/stateCache";
-import { RoleIndex } from "../../../../constants/roles";
 import { MIN_TABLE_WIDTH, ROWS_PER_PAGE_OPTIONS } from "./constants";
+import { RoleIndex } from "../../../../components/NavBar/constants/roles";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { enqueueSnackbar } = useSnackbar();
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
-  const contacts = useAppSelector(
+  const contacts = useSelector(
     (state: RootState) => state.connections.contacts
   );
   const credentials = useSelector(
@@ -104,17 +106,22 @@ const ConnectionsTable: React.FC = () => {
 
   const handleDelete = async () => {
     if (selectedConnectionId) {
-      await handleDeleteContact(selectedConnectionId, dispatch);
+      await handleDeleteContact(selectedConnectionId, dispatch, triggerToast);
       setSelectedConnectionId(null);
       setOpenModal(false);
     }
-    setSelected([]);
-    setNumSelected(0);
   };
 
   const handleOpenModal = (connectionId: string) => {
     setSelectedConnectionId(connectionId);
     setOpenModal(true);
+  };
+
+  const triggerToast = (message: string, variant: VariantType) => {
+    enqueueSnackbar(message, {
+      variant,
+      anchorOrigin: { vertical: "top", horizontal: "center" },
+    });
   };
 
   return (

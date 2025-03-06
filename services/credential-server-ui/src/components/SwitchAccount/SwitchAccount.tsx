@@ -9,7 +9,7 @@ import { i18n } from "../../i18n";
 import { HolderModal } from "./components/HolderModal";
 import { useAppDispatch } from "../../store/hooks";
 import { setRoleView } from "../../store/reducers";
-import { RoleIndex, roleViewText } from "../../constants/roles";
+import { RoleIndex, roleViewText } from "../NavBar/constants/roles";
 import { DropdownMenu } from "../DropdownMenu/DropdownMenu";
 import "./SwitchAccount.scss";
 

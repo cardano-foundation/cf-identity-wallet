@@ -3,6 +3,8 @@ import axios from "axios";
 import { config } from "../../../../config";
 import { fetchContacts } from "../../../../store/reducers/connectionsSlice";
 import { AppDispatch } from "../../../../store";
+import { VariantType } from "notistack";
+import { i18n } from "../../../../i18n";
 
 const generateRows = (
   filteredContacts: Contact[],
@@ -21,9 +23,34 @@ const generateRows = (
   });
 };
 
-const handleDeleteContact = async (id: string, dispatch: AppDispatch) => {
-  await axios.delete(`${config.endpoint}${config.path.deleteContact}?id=${id}`);
-  await dispatch(fetchContacts());
+const handleDeleteContact = async (
+  id: string,
+  dispatch: AppDispatch,
+  triggerToast: (message: string, variant: VariantType) => void
+) => {
+  try {
+    const response = await axios.delete(
+      `${config.endpoint}${config.path.deleteContact}?id=${id}`
+    );
+    if (response.status === 200) {
+      triggerToast(
+        i18n.t("pages.connections.deleteConnections.toast.success"),
+        "success"
+      );
+    } else {
+      triggerToast(
+        i18n.t("pages.connections.deleteConnections.toast.error"),
+        "error"
+      );
+    }
+    await dispatch(fetchContacts());
+  } catch (error) {
+    triggerToast(
+      i18n.t("pages.connections.deleteConnections.toast.error"),
+      "error"
+    );
+    console.error("Error deleting contact:", error);
+  }
 };
 
 export { generateRows, handleDeleteContact };
