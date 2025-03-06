@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "webpack serve --config webpack.dev.cjs --host 0.0.0.0 --port 3003",
     "build": "cross-env ENVIRONMENT=remote webpack --config webpack.prod.cjs",
-    "build:local": "cross-env ENVIRONMENT=local-direct webpack --config webpack.prod.cjs",
+    "build:local": "cross-env ENVIRONMENT=local webpack --config webpack.prod.cjs",
     "build:cap": "npm run build && npx cap copy",
     "build:e2e": "npm run build:local && npx cap sync",
+    "build:release": "cross-env ENVIRONMENT=prod webpack --config webpack.prod.cjs && npx cap copy",
     "prettier": "npx prettier --write './src/**/*.{ts,tsx,scss}' 'services/{credential-server,credential-server-ui}/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
