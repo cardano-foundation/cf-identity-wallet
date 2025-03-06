@@ -182,7 +182,7 @@ If you encounter any issues or have questions, please drop us a message on our D
 
 <div align="justify">
 
-This project was previously licensed under MPL-2.0 up until commit `8bb394dcd721da724fba230ef51bdf500bde080f`.
+This project was previously licensed under MPL-2.0 up until commit `49f9811c363bb1c05a5349d4aa3434793a1b3a39`.
 It is now licensed under Apache 2.0. Any prior versions remain available under MPL-2.0.
 
 Please also found our open source [attributions](./ATTRIBUTIONS.md).
