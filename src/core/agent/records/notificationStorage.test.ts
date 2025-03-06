@@ -28,6 +28,7 @@ const notificationRecordProps: NotificationRecordStorageProps = {
   route: NotificationRoute.ExnIpexApply,
   read: true,
   connectionId: "connectionId",
+  receivingPre: "EI8fS00-AxbbqXmwoivpw-0ui0qgZtGbh8Ue-ZVbxYSX",
 };
 const notificationRecordA = new NotificationRecord(notificationRecordProps);
 

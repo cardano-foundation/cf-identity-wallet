@@ -68,7 +68,7 @@ describe("Identifier storage test", () => {
 
   test("Should get keri identifiers metadata", async () => {
     storageService.getAll.mockResolvedValue([identifierMetadataRecord]);
-    expect(await identifierStorage.getKeriIdentifiersMetadata()).toEqual([
+    expect(await identifierStorage.getAllIdentifiers()).toEqual([
       identifierMetadataRecord,
     ]);
   });

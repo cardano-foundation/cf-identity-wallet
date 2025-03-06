@@ -51,7 +51,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const defaultIdentifierCache = Object.values(
       useAppSelector(getIdentifiersCache)
     ).filter(
-      (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
+      (identifier) => !identifier.groupMemberPre && !identifier.groupMetadata
     );
     const connections = useAppSelector(getWalletConnectionsCache);
     const connectedWallet = useAppSelector(getConnectedWallet);

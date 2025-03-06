@@ -60,8 +60,8 @@
 # SSI Services
 - [KERIA Cloud Agent](https://github.com/cardano-foundation/keria)
 - [Signify-TS Edge Client](https://github.com/cardano-foundation/signify-ts)
-- [Verifiable Credential Testing Tool](https://dev.credentials-ui.cf-keripy.metadata.dev.cf-deployments.org/)
-- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
+- [Verifiable Credential Testing Tool](https://cred-issuance-ui.dev.idw-sandboxes.cf-deployments.org/)
+- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer/tree/feat/watchpoc)
 
 # Architecture
 <div align="center"> 
@@ -176,3 +176,14 @@ If you encounter any issues or have questions, please drop us a message on our D
 - [Trust over IP](https://trustoverip.org/)
 - [Global Legal Entity Identifier Foundation (GLIEF)](https://www.gleif.org/en)
 - [vLEI ISO Standardization](https://www.gleif.org/media/pages/newsroom/press-releases/iso-standardizes-gleif-s-pioneering-digital-organizational-identity-offering-with-publication-of-vlei-technical-standard/42372c4929-1740658674/2024-10-14_iso-standardizes-gleif-s-pioneering-digital-organizational-identity-offering-with-publication-of-vlei-technical-stand.pdf)
+
+
+# License
+
+<div align="justify">
+
+This project was previously licensed under MPL-2.0 up until commit `49f9811c363bb1c05a5349d4aa3434793a1b3a39`.
+It is now licensed under Apache 2.0. Any prior versions remain available under MPL-2.0.
+
+Please also found our open source [attributions](./ATTRIBUTIONS.md).
+</div>

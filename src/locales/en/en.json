@@ -52,7 +52,7 @@
       },
       "button": {
         "continue": "Continue",
-        "switch": "Switch to recover a wallet",
+        "switch": "Recover existing wallet",
         "recoverydocumentation": "What’s a recovery phrase?"
       },
       "recoveryseedphrasedocs": {
@@ -644,7 +644,7 @@
       "continue": "Confirm",
       "lock": "Try again in 1 minute",
       "clear": "Clear all",
-      "switch": "Switch to create new wallet"
+      "switch": "Create new wallet"
     },
     "paragraph": {
       "top": "Please verify your recovery phrase to recover your wallet. To start typing click on the first option."
@@ -838,7 +838,8 @@
       "invalidbooturl": "Enter a valid boot URL",
       "invalidconnecturl": "Enter a valid connect URL",
       "mismatchconnecturl": "This connect URL doesn’t match the boot URL",
-      "recoverymismatchconnecturl": "Please check this connect URL matches the original boot URL used for onboarding and that your agent is still active"
+      "recoverymismatchconnecturl": "Please check this connect URL matches the original boot URL used for onboarding and that your agent is still active",
+      "unknownissue": "We could not reach this server. Either the server is down, you have entered an incorrect URL or you have internet connectivity issues."
     }
   },
   "operationspasswordregex": {
@@ -1190,7 +1191,7 @@
           "multisigicp": "<strong>{{connection}}</strong> is requesting to create a group identifier with you",
           "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you",
           "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
-          "exnipexapplyproposed": "<strong>{{initiator}}</strong>  has proposed a credential for the <strong>{{connection}}’s</strong> request",
+          "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
           "sign": "<strong>Sign CSO Certificate</strong> for <strong>{{connection}}</strong>"
         }
       },
@@ -1316,6 +1317,11 @@
             "security": {
               "title": "Security",
               "biometry": "Biometric authentication",
+              "biometricsalert": {
+                "message": "In order to use biometrics you need to enable this in your settings. Would you like to do this?",
+                "ok": "Go to settings",
+                "cancel": "Setup later"
+              },
               "changepin": {
                 "title": "Change passcode",
                 "createpasscode": "Create new passcode",
@@ -1375,7 +1381,7 @@
             "support": {
               "title": "Support & Legal",
               "contact": "Connect via Discord",
-              "learnmore": "Learn More About Cardano IDW",
+              "learnmore": "Learn More About Veridian",
               "terms": {
                 "title": "Terms and Privacy Policy",
                 "submenu": {
@@ -1870,7 +1876,7 @@
     "iosfallbacktitle": "Use passcode",
     "androidtitle": "Authentication",
     "androidsubtitle": "Authentication using biometrics",
-    "setupandroidbiometryheader": "Do you want to allow “IDW” to use biometrics?",
+    "setupandroidbiometryheader": "Do you want to allow “Veridian” to use biometrics?",
     "setupandroidbiometryconfirm": "Ok",
     "setupandroidbiometrycancel": "Don't allow",
     "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."

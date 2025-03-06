@@ -24,7 +24,7 @@ export function transformGroupIdentifier(
           groupCreated: false,
         }
         : undefined,
-      multisigManageAid: input.multisigManageAid,
+      groupMemberPre: input.groupMemberPre,
     },
   };
 

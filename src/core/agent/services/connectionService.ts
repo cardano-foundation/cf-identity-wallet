@@ -117,7 +117,7 @@ class ConnectionService extends AgentService {
     const connectionMetadata: Record<string, unknown> = {
       alias,
       oobi: url,
-      pending: true,
+      creationStatus: CreationStatus.PENDING,
       createdAtUTC: connectionDate,
     };
 
@@ -137,7 +137,8 @@ class ConnectionService extends AgentService {
         alias: string;
       };
       connection.id = oobiResult.op.response.i;
-      connectionMetadata.pending = false;
+      connection.status = ConnectionStatus.CONFIRMED;
+      connectionMetadata.creationStatus = CreationStatus.COMPLETE;
       connectionMetadata.createdAtUTC = oobiResult.op.response.dt;
       connectionMetadata.status = ConnectionStatus.CONFIRMED;
       connectionMetadata.groupId = groupId;
@@ -349,7 +350,7 @@ class ConnectionService extends AgentService {
 
   async getConnectionsPending(): Promise<ConnectionRecord[]> {
     const connections = await this.connectionStorage.findAllByQuery({
-      pending: true,
+      creationStatus: CreationStatus.PENDING,
       groupId: undefined,
     });
 
@@ -448,7 +449,6 @@ class ConnectionService extends AgentService {
     return connection;
   }
 
-  // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
   async syncKeriaContacts(): Promise<void> {
     const cloudContacts = await this.props.signifyClient.contacts().list();
     const localContacts = await this.connectionStorage.getAll();
@@ -464,6 +464,7 @@ class ConnectionService extends AgentService {
         oobi: contact.oobi,
         groupId: contact.groupCreationId,
         createdAtUTC: contact.createdAt,
+        creationStatus: CreationStatus.COMPLETE,
       });
     }
   }

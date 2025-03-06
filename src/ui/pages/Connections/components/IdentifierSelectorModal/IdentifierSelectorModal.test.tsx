@@ -19,7 +19,7 @@ const identifierCache = [
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
     creationStatus: CreationStatus.COMPLETE,
-    multisigManageAid: "EHNPqg5RyNVWfpwUYDK135xuUMFGK1GXZoDVqGc0DPsy",
+    groupMemberPre: "EHNPqg5RyNVWfpwUYDK135xuUMFGK1GXZoDVqGc0DPsy",
   },
   {
     displayName: "mutil sign 1",

@@ -97,8 +97,9 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.connections,
-        this.basicStorage
+        this.basicStorage,
+        this.notificationStorage,
+        this.connections
       );
     }
     return this.identifierService;
@@ -314,7 +315,6 @@ class Agent {
     await this.connections.syncKeriaContacts();
     await this.identifiers.syncKeriaIdentifiers();
     await this.credentials.syncKeriaCredentials();
-    await this.keriaNotifications.syncIPEXReplyOperations();
 
     await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({

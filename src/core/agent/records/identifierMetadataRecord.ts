@@ -14,7 +14,7 @@ interface IdentifierMetadataRecordProps {
   createdAt?: Date;
   isDeleted?: boolean;
   theme: number;
-  multisigManageAid?: string;
+  groupMemberPre?: string;
   groupMetadata?: GroupMetadata;
   pendingDeletion?: boolean;
   sxlt?: string;
@@ -26,7 +26,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   creationStatus!: CreationStatus;
   isDeleted!: boolean;
   pendingDeletion!: boolean;
-  multisigManageAid?: string;
+  groupMemberPre?: string;
   groupMetadata?: GroupMetadata;
   sxlt?: string;
 
@@ -44,7 +44,7 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.creationStatus = props.creationStatus ?? CreationStatus.PENDING;
       this.isDeleted = props.isDeleted ?? false;
       this.groupMetadata = props.groupMetadata;
-      this.multisigManageAid = props.multisigManageAid;
+      this.groupMemberPre = props.groupMemberPre;
       this.pendingDeletion = props.pendingDeletion ?? false;
       this.sxlt = props.sxlt;
     }

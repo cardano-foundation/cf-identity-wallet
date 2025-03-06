@@ -50,3 +50,7 @@
 -keep class * {
     @androidx.annotation.Keep *;
 }
+
+# This will exclude minification of all SQLCipher classes and class-members so Capacitor Community SQLite does not error on minified function names
+-keep class net.sqlcipher.** { *; }
+-keepclassmembers class net.sqlcipher.** { *; }
