@@ -83,7 +83,7 @@
     }
 
     tr {
-      height: 3.5rem;
+      height: 3.25rem;
 
       &.Mui-selected {
         background-color: var(--color-neutral-100);
@@ -92,6 +92,7 @@
       th,
       td {
         font-weight: 500;
+        padding: 0.38rem;
 
         .MuiButtonBase-root {
           &:hover {

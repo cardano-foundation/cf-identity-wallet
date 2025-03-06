@@ -6,11 +6,11 @@ import {
 } from "@mui/icons-material";
 import { i18n } from "../../../../i18n";
 import { AppDispatch } from "../../../../store";
-import { handleDeleteContact } from "./helpers";
 
 export const createMenuItems = (
   dispatch: AppDispatch,
-  connectionId: string
+  connectionId: string,
+  handleOpenModal: (connectionId: string) => void
 ) => [
   {
     label: i18n.t("pages.connections.viewDetails"),
@@ -29,9 +29,7 @@ export const createMenuItems = (
   },
   {
     label: i18n.t("pages.connections.delete"),
-    action: async () => {
-      await handleDeleteContact(connectionId, dispatch);
-    },
+    action: () => handleOpenModal(connectionId),
     icon: React.createElement(DeleteOutline),
     className: "icon-left action-delete",
   },

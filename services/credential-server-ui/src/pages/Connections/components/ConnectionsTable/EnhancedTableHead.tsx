@@ -74,8 +74,8 @@ const EnhancedTableHead: React.FC<EnhancedTableProps> = (props) => {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all connections",
+            slotProps={{
+              input: { "aria-labelledby": "select all connections" },
             }}
           />
         </TableCell>

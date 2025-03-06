@@ -11,8 +11,9 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
+  Button,
 } from "@mui/material";
-import { MoreVert } from "@mui/icons-material";
+import { MoreVert, DeleteOutline } from "@mui/icons-material";
 import { EnhancedTableHead } from "./EnhancedTableHead";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { useTable } from "./useTable";
@@ -28,21 +29,30 @@ import {
 import { RootState, AppDispatch } from "../../../../store";
 import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
 import { createMenuItems } from "./menuItems";
-import { generateRows } from "./helpers";
+import { generateRows, handleDeleteContact } from "./helpers";
+import { PopupModal } from "../../../../components/PopupModal";
+import { useAppSelector } from "../../../../store/hooks";
+import { getRoleView } from "../../../../store/reducers/stateCache";
+import { RoleIndex } from "../../../../constants/roles";
+import { MIN_TABLE_WIDTH, ROWS_PER_PAGE_OPTIONS } from "./constants";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const contacts = useSelector(
+  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
+  const contacts = useAppSelector(
     (state: RootState) => state.connections.contacts
   );
   const credentials = useSelector(
     (state: RootState) => state.connections.credentials
   );
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
-  // TODO: implement search filter
   const [connectionsFilterBySearch, setConnectionsFilterBySearch] =
     useState<string>("");
   const [numSelected, setNumSelected] = useState<number>(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedConnectionId, setSelectedConnectionId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     dispatch(fetchContacts());
@@ -69,6 +79,13 @@ const ConnectionsTable: React.FC = () => {
     setRows(generatedRows);
   }, [filteredContacts, credentials]);
 
+  useEffect(() => {
+    setSelected([]);
+    setNumSelected(0);
+    // We only need to track when the role changes, so we only track the roleViewIndex
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roleViewIndex]);
+
   const {
     order,
     orderBy,
@@ -85,16 +102,20 @@ const ConnectionsTable: React.FC = () => {
     visibleRows,
   } = useTable(rows, setNumSelected);
 
-  const ActionButton = (connectionId: string) => (
-    <Tooltip
-      title={i18n.t("pages.connections.actions")}
-      placement="top"
-    >
-      <IconButton aria-label="actions">
-        <MoreVert />
-      </IconButton>
-    </Tooltip>
-  );
+  const handleDelete = async () => {
+    if (selectedConnectionId) {
+      await handleDeleteContact(selectedConnectionId, dispatch);
+      setSelectedConnectionId(null);
+      setOpenModal(false);
+    }
+    setSelected([]);
+    setNumSelected(0);
+  };
+
+  const handleOpenModal = (connectionId: string) => {
+    setSelectedConnectionId(connectionId);
+    setOpenModal(true);
+  };
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -107,7 +128,7 @@ const ConnectionsTable: React.FC = () => {
         />
         <TableContainer>
           <Table
-            sx={{ minWidth: 750 }}
+            sx={{ minWidth: MIN_TABLE_WIDTH }}
             aria-labelledby="tableTitle"
           >
             <EnhancedTableHead
@@ -138,7 +159,7 @@ const ConnectionsTable: React.FC = () => {
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
-                        inputProps={{ "aria-labelledby": labelId }}
+                        slotProps={{ input: { "aria-labelledby": labelId } }}
                       />
                     </TableCell>
                     <TableCell
@@ -153,8 +174,21 @@ const ConnectionsTable: React.FC = () => {
                     <TableCell align="left">{row.credentials}</TableCell>
                     <TableCell align="left">
                       <DropdownMenu
-                        button={ActionButton(row.id)}
-                        menuItems={createMenuItems(dispatch, row.id)}
+                        button={
+                          <Tooltip
+                            title={i18n.t("pages.connections.actions")}
+                            placement="top"
+                          >
+                            <IconButton aria-label="actions">
+                              <MoreVert />
+                            </IconButton>
+                          </Tooltip>
+                        }
+                        menuItems={createMenuItems(
+                          dispatch,
+                          row.id,
+                          handleOpenModal
+                        )}
                       />
                     </TableCell>
                   </TableRow>
@@ -162,17 +196,14 @@ const ConnectionsTable: React.FC = () => {
               })}
               {emptyRows > 0 &&
                 Array.from({ length: emptyRows }).map((_, index) => (
-                  <TableRow
-                    key={`empty-row-${index}`}
-                    style={{ height: 53 }}
-                  >
+                  <TableRow key={`empty-row-${index}`}>
                     <TableCell colSpan={6} />
                   </TableRow>
                 ))}
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
             component="div"
             count={rows.length}
             rowsPerPage={rowsPerPage}
@@ -182,6 +213,30 @@ const ConnectionsTable: React.FC = () => {
           />
         </TableContainer>
       </Paper>
+      <PopupModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        title={i18n.t("pages.connections.deleteConnections.title")}
+        body={i18n.t("pages.connections.deleteConnections.body")}
+        footer={
+          <>
+            <Button
+              variant="contained"
+              aria-label="cancel delete connection"
+              onClick={() => setOpenModal(false)}
+            >
+              {i18n.t("pages.connections.deleteConnections.cancel")}
+            </Button>
+            <Button
+              variant="contained"
+              aria-label="confirm delete connection"
+              onClick={handleDelete}
+            >
+              {i18n.t("pages.connections.deleteConnections.delete")}
+            </Button>
+          </>
+        }
+      />
     </Box>
   );
 };
