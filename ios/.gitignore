@@ -4,40 +4,6 @@ App/App/public
 DerivedData
 xcuserdata
 
-# Pods config files
-!App/Pods/Target Support Files/AparajitaCapacitorBiometricAuth/AparajitaCapacitorBiometricAuth.release.xcconfig
-!App/Pods/Target Support Files/Capacitor/Capacitor.release.xcconfig
-!App/Pods/Target Support Files/CapacitorApp/CapacitorApp.release.xcconfig
-!App/Pods/Target Support Files/CapacitorBrowser/CapacitorBrowser.release.xcconfig
-!App/Pods/Target Support Files/CapacitorClipboard/CapacitorClipboard.release.xcconfig
-!App/Pods/Target Support Files/CapacitorCommunityPrivacyScreen/CapacitorCommunityPrivacyScreen.release.xcconfig
-!App/Pods/Target Support Files/CapacitorCommunitySqlite/CapacitorCommunitySqlite.release.xcconfig
-!App/Pods/Target Support Files/CapacitorCordova/CapacitorCordova.release.xcconfig
-!App/Pods/Target Support Files/CapacitorDevice/CapacitorDevice.release.xcconfig
-!App/Pods/Target Support Files/CapacitorKeyboard/CapacitorKeyboard.release.xcconfig
-!App/Pods/Target Support Files/CapacitorMlkitBarcodeScanning/CapacitorMlkitBarcodeScanning.release.xcconfig
-!App/Pods/Target Support Files/CapacitorNativeSettings/CapacitorNativeSettings.release.xcconfig
-!App/Pods/Target Support Files/CapacitorScreenOrientation/CapacitorScreenOrientation.release.xcconfig
-!App/Pods/Target Support Files/CapacitorShare/CapacitorShare.release.xcconfig
-!App/Pods/Target Support Files/CapacitorSplashScreen/CapacitorSplashScreen.release.xcconfig
-!App/Pods/Target Support Files/CapacitorStatusBar/CapacitorStatusBar.release.xcconfig
-!App/Pods/Target Support Files/EvvaCapacitorSecureStoragePlugin/EvvaCapacitorSecureStoragePlugin.release.xcconfig
-!App/Pods/Target Support Files/GoogleDataTransport/GoogleDataTransport.release.xcconfig
-!App/Pods/Target Support Files/GoogleMLKit/GoogleMLKit.release.xcconfig
-!App/Pods/Target Support Files/GoogleToolboxForMac/GoogleToolboxForMac.release.xcconfig
-!App/Pods/Target Support Files/GoogleUtilities/GoogleUtilities.release.xcconfig
-!App/Pods/Target Support Files/GTMSessionFetcher/GTMSessionFetcher.release.xcconfig
-!App/Pods/Target Support Files/MLImage/MLImage.release.xcconfig
-!App/Pods/Target Support Files/MLKitBarcodeScanning/MLKitBarcodeScanning.release.xcconfig
-!App/Pods/Target Support Files/MLKitCommon/MLKitCommon.release.xcconfig
-!App/Pods/Target Support Files/MLKitVision/MLKitVision.release.xcconfig
-!App/Pods/Target Support Files/nanopb/nanopb.release.xcconfig
-!App/Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig
-!App/Pods/Target Support Files/PromisesObjC/PromisesObjC.release.xcconfig
-!App/Pods/Target Support Files/SimpleKeychain/SimpleKeychain.release.xcconfig
-!App/Pods/Target Support Files/SQLCipher/SQLCipher.release.xcconfig
-!App/Pods/Target Support Files/ZIPFoundation/ZIPFoundation.release.xcconfig
-
 # Cordova plugins for Capacitor
 capacitor-cordova-ios-plugins
 
