@@ -295,7 +295,7 @@ const Scanner = forwardRef(
 
     const handleAfterScanMultisig = () => {
       dispatch(setCurrentOperation(OperationType.OPEN_MULTISIG_IDENTIFIER));
-      handleReset?.();
+      handleReset?.(TabsRoutePath.IDENTIFIERS);
     };
 
     const handleDuplicateConnectionError = async (
@@ -398,6 +398,7 @@ const Scanner = forwardRef(
 
             if (scanMultiSigByTab) {
               handleAfterScanMultisig();
+              return;
             } else {
               handleReset?.();
             }
