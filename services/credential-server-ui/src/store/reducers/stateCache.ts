@@ -18,6 +18,6 @@ const stateCacheSlice = createSlice({
 
 const { setRoleView } = stateCacheSlice.actions;
 
-const getRoleView = (state: RootState) => state.roleView;
+const getRoleView = (state: RootState) => state.stateCache.roleView;
 
 export { stateCacheSlice, getRoleView, setRoleView };

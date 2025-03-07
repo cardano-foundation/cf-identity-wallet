@@ -1,0 +1,60 @@
+#dropdown-menu-button.open {
+  button {
+    background-color: var(--color-neutral-400);
+  }
+}
+
+.dropdown-menu {
+  .MuiPaper-root {
+    padding: 0.75rem;
+    min-width: 14rem;
+    margin-top: 0.5rem;
+    border-radius: 1rem;
+    color: var(--text-color);
+    background-color: var(--color-neutral-100);
+    box-shadow: 0.25rem 0.25rem 1.25rem 0rem rgba(var(--text-color-rgb), 0.16);
+
+    .MuiMenu-list {
+      padding: 0;
+
+      p {
+        text-align: left;
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+        color: var(--color-neutral-600);
+      }
+
+      .MuiMenuItem-root {
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+
+        &.icon-right {
+          flex-direction: row-reverse;
+          justify-content: space-between;
+        }
+
+        &.icon-left {
+          .MuiSvgIcon-root {
+            margin-right: 0.25rem;
+          }
+        }
+
+        &:hover {
+          background-color: var(--color-primary-200);
+        }
+
+        .MuiSvgIcon-root {
+          height: 1.25rem;
+        }
+      }
+
+      .action-delete {
+        .MuiSvgIcon-root,
+        span {
+          color: var(--color-error-800);
+        }
+      }
+    }
+  }
+}

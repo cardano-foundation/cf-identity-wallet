@@ -1,7 +1,10 @@
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers/stateCache";
-import { RoleIndex, roleViewText } from "../../constants/roles";
+import {
+  RoleIndex,
+  roleViewText,
+} from "../../components/NavBar/constants/roles";
 
 const Credentials = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
