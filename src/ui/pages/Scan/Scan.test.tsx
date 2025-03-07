@@ -116,8 +116,35 @@ describe("Scan Tab", () => {
   const dispatchMock = jest.fn();
 
   test("Renders Scan Tab", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: {},
+        scanGroupId: "72e2f089cef6",
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <Scan />
       </Provider>
     );
