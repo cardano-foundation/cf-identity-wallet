@@ -295,7 +295,7 @@ const Scanner = forwardRef(
 
     const handleAfterScanMultisig = () => {
       dispatch(setCurrentOperation(OperationType.OPEN_MULTISIG_IDENTIFIER));
-      handleReset?.();
+      handleReset?.(TabsRoutePath.IDENTIFIERS);
     };
 
     const handleDuplicateConnectionError = async (
@@ -398,6 +398,7 @@ const Scanner = forwardRef(
 
             if (scanMultiSigByTab) {
               handleAfterScanMultisig();
+              return;
             } else {
               handleReset?.();
             }
@@ -508,7 +509,7 @@ const Scanner = forwardRef(
     const processValue = async (content: string) => {
       await stopScan();
 
-      if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(content)) {
+      if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
         handleConnectWallet(content);
         isHandlingQR.current = false;
         return;
