@@ -15,7 +15,7 @@ import { theme } from "./theme/theme"; // Import the theme
 import { SnackbarProvider } from "notistack";
 import { WarningAmber, CheckCircleOutline, Close } from "@mui/icons-material";
 import { closeSnackbar } from "notistack";
-import { IconButton } from "@mui/material";
+import { Container, IconButton } from "@mui/material";
 
 const App = () => {
   const MAX_TOAST_MESSAGES = 10;
@@ -39,39 +39,41 @@ const App = () => {
           </IconButton>
         )}
       >
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={<Layout />}
-            >
+        <Container maxWidth="xl">
+          <BrowserRouter>
+            <Routes>
               <Route
-                index
-                element={<Overview />}
-              />
-              <Route
-                path="/connections"
-                element={<Connections />}
-              />
-              <Route
-                path="/credentials"
-                element={<Credentials />}
-              />
-              <Route
-                path="/notifications"
-                element={<Notifications />}
-              />
-              <Route
-                path="/settings"
-                element={<Settings />}
-              />
-              <Route
-                path="*"
-                element={<NoPage />}
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+                path="/"
+                element={<Layout />}
+              >
+                <Route
+                  index
+                  element={<Overview />}
+                />
+                <Route
+                  path="/connections"
+                  element={<Connections />}
+                />
+                <Route
+                  path="/credentials"
+                  element={<Credentials />}
+                />
+                <Route
+                  path="/notifications"
+                  element={<Notifications />}
+                />
+                <Route
+                  path="/settings"
+                  element={<Settings />}
+                />
+                <Route
+                  path="*"
+                  element={<NoPage />}
+                />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </Container>
       </SnackbarProvider>
     </ThemeProvider>
   );

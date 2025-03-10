@@ -66,7 +66,7 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
                 variant="contained"
                 aria-label="delete connections"
                 startIcon={<DeleteOutline />}
-                className="delete-connections-button"
+                className="delete-connections-button delete-button"
                 onClick={() => setOpenModal(true)}
               >
                 {i18n.t("pages.connections.delete")}
