@@ -4,7 +4,7 @@
     "overview": "Overview",
     "connections": "Connections",
     "credentials": "Credentials",
-    "switchaccount": {
+    "switchAccount": {
       "title": "Switch account",
       "issuer": "Issuer",
       "verifier": "Verifier",
@@ -16,7 +16,27 @@
       "title": "Overview"
     },
     "connections": {
-      "title": "Connections"
+      "title": "Connections ({{count}})",
+      "addConnection": "Add Connection",
+      "filter": "Filter",
+      "selected": "selected",
+      "delete": "Delete",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "issueCredential": "Issue credential",
+      "connectionName": "Connection Name",
+      "connectionDate": "Connection Date",
+      "issuedCredentials": "Issued Credentials",
+      "deleteConnections": {
+        "title": "Delete Connection(s)",
+        "body": "Are you sure you want to delete this connection? This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "toast": {
+          "success": "Connection(s) deleted successfully",
+          "error": "Unable to delete connection(s)"
+        }
+      }
     },
     "credentials": {
       "title": "Credentials"

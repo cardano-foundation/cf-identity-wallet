@@ -1,0 +1,111 @@
+.connections-page {
+  padding: 0 2.5rem 2.5rem;
+
+  .connections-page-header {
+    padding: 1.5rem 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    h1 {
+      margin: 0;
+    }
+
+    button.add-connection-button {
+      border-radius: 1rem;
+      text-transform: none;
+      padding: 0.75rem 1.25rem 0.75rem 1rem;
+      color: var(--color-neutral-100);
+      background-color: var(--color-primary-700);
+
+      &:hover {
+        background-color: var(--color-primary-800);
+      }
+    }
+  }
+
+  .connections-table {
+    background-color: var(--background-color);
+
+    .connection-table-toolbar,
+    .table-left,
+    .table-right {
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .connection-table-toolbar {
+      min-height: 2.5rem;
+      margin-bottom: 0.75rem;
+      background-color: var(--background-color);
+
+      .table-left,
+      .table-right {
+        > * {
+          height: 2.5rem;
+          font-size: 1rem;
+          padding: 0.5rem 1rem;
+          align-self: anchor-center;
+        }
+      }
+
+      .table-left {
+        // TODO: Hiding for the moment.
+        // To be completed at a later stage.
+        visibility: hidden;
+        * svg {
+          margin-right: 0.5rem;
+        }
+      }
+
+      .table-right {
+        .delete-connections-button {
+          border-radius: 0.5rem;
+          text-transform: none;
+          background-color: var(--color-error-800);
+
+          &:hover {
+            // TODO: Hardcoding color value because it's missing in Figma
+            background: #7d1a14;
+          }
+        }
+      }
+    }
+
+    .MuiTableHead-root {
+      background-color: var(--color-primary-200);
+
+      .MuiTableCell-head:last-of-type {
+        width: 2rem;
+      }
+    }
+
+    tr {
+      height: 3.25rem;
+
+      &.Mui-selected {
+        background-color: var(--color-neutral-100);
+      }
+
+      th,
+      td {
+        font-weight: 500;
+        padding: 0.38rem;
+      }
+    }
+
+    .MuiTableContainer-root {
+      background-color: var(--color-neutral-100);
+      border-radius: 0.75rem;
+      box-shadow: 0.25rem 0.25rem 1.25rem 0rem rgba(var(--text-color-rgb), 0.16);
+    }
+
+    .MuiTablePagination-actions button {
+      &:hover {
+        background-color: var(--color-neutral-100);
+      }
+    }
+  }
+}

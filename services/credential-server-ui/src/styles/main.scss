@@ -14,4 +14,46 @@ body {
   .hidden {
     display: none;
   }
+
+  .notistack-Snackbar {
+    .notistack-MuiContent {
+      border-radius: 0.5rem;
+      width: 21.875rem;
+      padding: 0.75rem 1rem;
+      height: 3rem;
+      align-content: center;
+      justify-content: space-between;
+
+      div:last-child {
+        margin-left: 0;
+        padding-left: 0.5rem;
+        border-left: solid var(--color-neutral-400) 1px;
+
+        button {
+          padding: 0;
+          height: 1.5rem;
+          color: var(--color-neutral-100);
+        }
+      }
+
+      &.notistack-MuiContent-success {
+        background-color: var(--color-neutral-800);
+      }
+
+      &.notistack-MuiContent-error {
+        background-color: var(--color-error-800);
+      }
+
+      #notistack-snackbar {
+        padding: 0;
+        color: var(--color-neutral-100);
+
+        .MuiSvgIcon-root {
+          &:first-of-type {
+            padding-right: 0.5rem;
+          }
+        }
+      }
+    }
+  }
 }

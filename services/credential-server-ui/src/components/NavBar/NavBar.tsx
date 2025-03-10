@@ -142,6 +142,7 @@ const NavBar = ({ window }: Props) => {
               component={Link}
               to={"/"}
               disableRipple
+              className="logo-button"
             >
               <img
                 className="header-logo"
