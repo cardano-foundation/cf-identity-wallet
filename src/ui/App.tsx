@@ -36,7 +36,6 @@ import { SecureStorage } from "../core/storage";
 import { compareVersion } from "./utils/version";
 import {
   ANDROID_MIN_VERSION,
-  APP_STATUS_BAR_BG,
   IOS_MIN_VERSION,
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
