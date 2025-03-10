@@ -41,6 +41,7 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
+import { getCssVariableValue } from "./utils/styles";
 
 setupIonicReact();
 
@@ -103,7 +104,7 @@ const App = () => {
 
       if (platforms.includes("android")) {
         EdgeToEdge.setBackgroundColor({
-          color: APP_STATUS_BAR_BG,
+          color: getCssVariableValue("--ion-color-neutral-200"),
         });
       }
 
