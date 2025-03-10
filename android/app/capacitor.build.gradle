@@ -24,6 +24,7 @@ dependencies {
     implementation project(':capacitor-status-bar')
     implementation project(':capawesome-capacitor-android-edge-to-edge-support')
     implementation project(':evva-capacitor-secure-storage-plugin')
+    implementation project(':capacitor-freerasp')
     implementation project(':capacitor-native-settings')
 
 }
