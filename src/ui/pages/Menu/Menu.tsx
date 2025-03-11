@@ -1,4 +1,3 @@
-import { Browser } from "@capacitor/browser";
 import {
   IonButton,
   IonGrid,
@@ -7,12 +6,10 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
-  chatbubbleOutline,
   linkOutline,
   peopleOutline,
   personCircleOutline,
   settingsOutline,
-  walletOutline,
 } from "ionicons/icons";
 import { useEffect, useMemo, useState } from "react";
 import { i18n } from "../../../i18n";
@@ -27,7 +24,6 @@ import {
   showConnectWallet,
 } from "../../../store/reducers/walletConnectionsCache";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
 import MenuItem from "./components/MenuItem";
 import { SubMenu } from "./components/SubMenu";
 import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
@@ -56,20 +52,12 @@ const Menu = () => {
 
   const handleOpenUrl = (key: SubMenuKey) => {
     switch (key) {
-      case SubMenuKey.Crypto: {
-        Browser.open({ url: CRYPTO_LINK });
-        break;
-      }
-      case SubMenuKey.Connections: {
-        dispatch(showConnections(true));
-        break;
-      }
-      case SubMenuKey.Chat: {
-        Browser.open({ url: CHAT_LINK });
-        break;
-      }
-      default:
-        return;
+    case SubMenuKey.Connections: {
+      dispatch(showConnections(true));
+      break;
+    }
+    default:
+      return;
     }
   };
 
@@ -78,12 +66,6 @@ const Menu = () => {
       itemKey: SubMenuKey.Profile,
       icon: personCircleOutline,
       label: `${i18n.t("tabs.menu.tab.items.profile.title")}`,
-    },
-    {
-      itemKey: SubMenuKey.Crypto,
-      icon: walletOutline,
-      label: `${i18n.t("tabs.menu.tab.items.crypto.title")}`,
-      subLabel: `${i18n.t("tabs.menu.tab.items.crypto.sublabel")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
@@ -96,12 +78,6 @@ const Menu = () => {
       label: `${i18n.t("tabs.menu.tab.items.connectwallet.title")}`,
       subLabel: `${i18n.t("tabs.menu.tab.items.connectwallet.sublabel")}`,
     },
-    {
-      itemKey: SubMenuKey.Chat,
-      icon: chatbubbleOutline,
-      label: `${i18n.t("tabs.menu.tab.items.chat.title")}`,
-      subLabel: `${i18n.t("tabs.menu.tab.items.chat.sublabel")}`,
-    },
   ];
 
   useEffect(() => {
@@ -112,9 +88,7 @@ const Menu = () => {
   }, [dispatch, showWalletConnect]);
 
   const showSelectedOption = (key: SubMenuKey) => {
-    if (
-      [SubMenuKey.Crypto, SubMenuKey.Connections, SubMenuKey.Chat].includes(key)
-    ) {
+    if ([SubMenuKey.Connections].includes(key)) {
       handleOpenUrl(key);
     }
     if (!subMenuItems.has(key)) return;
