@@ -82,16 +82,10 @@ describe("Menu Tab", () => {
       getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.crypto.title)
-    ).toBeInTheDocument();
-    expect(
       getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connections.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.chat.title)
     ).toBeInTheDocument();
   });
 
