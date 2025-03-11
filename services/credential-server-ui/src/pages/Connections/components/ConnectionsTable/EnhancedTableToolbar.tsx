@@ -79,7 +79,7 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
         open={openModal}
         onClose={() => setOpenModal(false)}
         title={i18n.t("pages.connections.deleteConnections.title")}
-        body={i18n.t("pages.connections.deleteConnections.body")}
+        description={i18n.t("pages.connections.deleteConnections.body")}
         footer={
           <>
             <Button
