@@ -4,8 +4,8 @@ interface PopupModalProps {
   open: boolean;
   onClose: () => void;
   title: string;
-  description?: string;
-  body?: ReactNode;
+  description: string | ReactNode;
+  children?: ReactNode;
   footer?: ReactNode;
   customClass?: string;
 }

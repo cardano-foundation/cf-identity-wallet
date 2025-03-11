@@ -21,8 +21,9 @@
         "title": "Add Connection",
         "modal": {
           "title": "Add a Connection",
-          "descriptionStepOne": "Step 1 - Establish a connection from an individual ID to the issuer’s ID. Scan the below QR code using the wallet you wish to establish a connection with or copy and send the Connection URL.",
-          "descriptionStepTwo": "Step 2 - Complete by connecting the issuer’s ID with the individual ID. Scan the QR code of the individual ID you want to establish the connection with or paste their Connection URL in the input field.",
+          "descriptionStepOne": "<bold>Step 1 - Establish a connection from an individual ID to the issuer's ID.</bold> Scan the below QR code using the wallet you wish to establish a connection with or copy and send the Connection URL.",
+          "descriptionStepTwo": "<bold>Step 2 - Complete by connecting the issuer’s ID with the individual ID.</bold> Scan the QR code of the individual ID you want to establish the connection with or paste their Connection URL in the input field.",
+          "errorOnRequest": "Unable to fetch a connection ID. Please try again later.",
           "learnMore": "Learn more",
           "showLess": "Show less",
           "descriptionLearnMore": "This information can be found within the identifier’s information by selecting the  ⠇ icon and clicking on “Share Connection”.",
@@ -30,6 +31,7 @@
           "pasteUrl": "Paste Connection URL",
           "button": {
             "copyConnectionId": "Copy Connection ID",
+            "retry": "Retry",
             "copied": "Copied",
             "next": "Next",
             "back": "Back",

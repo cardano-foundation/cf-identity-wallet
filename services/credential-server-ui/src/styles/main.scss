@@ -20,7 +20,8 @@ body {
       color: var(--color-neutral-100);
       background-color: var(--color-primary-700);
 
-      &:hover {
+      &:hover,
+      &:active {
         background:
           linear-gradient(
             0deg,
@@ -29,12 +30,17 @@ body {
           ),
           var(--color-primary-700);
       }
+      &:disabled {
+        color: var(--color-neutral-600);
+        background-color: var(--color-neutral-400);
+      }
     }
     &.secondary-button {
       color: var(--text-color);
       background-color: var(--color-neutral-300);
 
-      &:hover {
+      &:hover,
+      &:active {
         background:
           linear-gradient(
             0deg,
@@ -43,12 +49,32 @@ body {
           ),
           var(--color-neutral-300);
       }
+      &:disabled {
+        color: var(--color-neutral-600);
+        background-color: var(--color-neutral-400);
+      }
+    }
+    &.neutral-button {
+      color: var(--text-color);
+      background-color: var(--color-neutral-100);
+
+      &:hover,
+      &:active {
+        background:
+          linear-gradient(
+            0deg,
+            rgba(var(--color-neutral-800-rgb), 0.2) 0%,
+            rgba(var(--color-neutral-800-rgb), 0.2) 100%
+          ),
+          var(--color-neutral-100);
+      }
     }
     &.delete-button {
       color: var(--color-neutral-100);
       background-color: var(--color-error-800);
 
-      &:hover {
+      &:hover,
+      &:active {
         background:
           linear-gradient(
             0deg,

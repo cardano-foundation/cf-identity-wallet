@@ -8,7 +8,7 @@ const PopupModal = ({
   onClose,
   title,
   description,
-  body,
+  children,
   footer,
   customClass,
 }: PopupModalProps) => {
@@ -16,8 +16,6 @@ const PopupModal = ({
     <Modal
       open={open}
       onClose={onClose}
-      aria-labelledby={title}
-      aria-describedby={description || ""}
       className={"popup-modal" + (customClass ? " " + customClass : "")}
     >
       <Fade in={open}>
@@ -38,9 +36,11 @@ const PopupModal = ({
             </IconButton>
           </div>
           {description && (
-            <Typography className="popup-modal-body">{description}</Typography>
+            <Typography className="popup-modal-description">
+              {description}
+            </Typography>
           )}
-          {body}
+          {children}
           <div className="popup-modal-footer">{footer}</div>
         </Box>
       </Fade>

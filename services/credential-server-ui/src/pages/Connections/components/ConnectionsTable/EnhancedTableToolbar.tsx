@@ -84,14 +84,14 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
           <>
             <Button
               variant="contained"
-              aria-label="cancel delete connections"
+              className="neutral-button"
               onClick={() => setOpenModal(false)}
             >
               {i18n.t("pages.connections.deleteConnections.cancel")}
             </Button>
             <Button
               variant="contained"
-              aria-label="confirm delete connections"
+              className="primary-button"
               onClick={handleDelete}
             >
               {i18n.t("pages.connections.deleteConnections.delete")}
