@@ -1405,10 +1405,6 @@
             "name": "Name",
             "watchvideo": "Watch the video"
           },
-          "crypto": {
-            "title": "Crypto",
-            "sublabel": "Watch the video"
-          },
           "connections": {
             "title": "Connections",
             "tabheader": "Connections"
@@ -1477,11 +1473,6 @@
                 "decline": "Decline"
               }
             }
-          },
-          "chat": {
-            "title": "Chat",
-            "tabheader": "Chat",
-            "sublabel": "Watch the video"
           }
         }
       }

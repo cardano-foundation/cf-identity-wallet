@@ -9,7 +9,6 @@ import { store } from "../../../store";
 import { showConnections } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
 import { Menu } from "./Menu";
 import { SubMenuKey } from "./Menu.types";
 
@@ -83,16 +82,10 @@ describe("Menu Tab", () => {
       getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.crypto.title)
-    ).toBeInTheDocument();
-    expect(
       getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connections.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.chat.title)
     ).toBeInTheDocument();
   });
 
@@ -140,30 +133,6 @@ describe("Menu Tab", () => {
       expect(getByTestId("profile-title")).toHaveTextContent(
         EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
       );
-    });
-  });
-
-  test("Open Crypto link", async () => {
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Menu />
-      </Provider>
-    );
-
-    expect(getByTestId("menu-tab")).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.crypto.title)
-    ).toBeInTheDocument();
-    const cryptoButton = getByTestId(`menu-input-item-${SubMenuKey.Crypto}`);
-
-    act(() => {
-      fireEvent.click(cryptoButton);
-    });
-
-    await waitFor(() => {
-      expect(browserMock).toBeCalledWith({
-        url: CRYPTO_LINK,
-      });
     });
   });
 
@@ -215,30 +184,6 @@ describe("Menu Tab", () => {
       expect(
         getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.tabheader)
       ).toBeVisible();
-    });
-  });
-
-  test("Open Chat link", async () => {
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Menu />
-      </Provider>
-    );
-
-    expect(getByTestId("menu-tab")).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.chat.title)
-    ).toBeInTheDocument();
-    const chatButton = getByTestId(`menu-input-item-${SubMenuKey.Chat}`);
-
-    act(() => {
-      fireEvent.click(chatButton);
-    });
-
-    await waitFor(() => {
-      expect(browserMock).toBeCalledWith({
-        url: CHAT_LINK,
-      });
     });
   });
 });
