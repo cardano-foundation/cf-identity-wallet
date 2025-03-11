@@ -32,18 +32,20 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
     document?.querySelector("body")?.classList.add("full-page-scanner");
   }, []);
 
-  const handleReset = (navTo?: string) => {
+  const handleReset = (navTo?: string, operation = OperationType.IDLE) => {
     setShowScan(false);
     document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
-    dispatch(setCurrentOperation(OperationType.IDLE));
+    dispatch(setCurrentOperation(operation));
 
-    if (navTo === TabsRoutePath.MENU) {
+    if (navTo) {
       dispatch(showConnections(false));
       history.push(navTo);
-      dispatch(dispatch(showConnectWallet(true)));
+      if (navTo === TabsRoutePath.MENU) {
+        dispatch(dispatch(showConnectWallet(true)));
+      }
     }
   };
 
