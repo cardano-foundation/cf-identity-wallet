@@ -6,7 +6,6 @@ const DOUBLE_TAP_DELAY = 300;
 // Links
 const DISCORD_LINK = "https://discord.com/invite/9yNneV8Ktv";
 const DOCUMENTATION_LINK = "https://docs.idw.cardanofoundation.org/";
-const PROFILE_LINK = "https://youtu.be/82oJLhwWFk8";
 const ONBOARDING_DOCUMENTATION_LINK =
   "https://docs.idw.cardanofoundation.org/ballot/onboarding";
 const RECOVERY_DOCUMENTATION_LINK =
@@ -23,7 +22,6 @@ export {
   DOUBLE_TAP_DELAY,
   DISCORD_LINK,
   DOCUMENTATION_LINK,
-  PROFILE_LINK,
   ONBOARDING_DOCUMENTATION_LINK,
   RECOVERY_DOCUMENTATION_LINK,
   ANDROID_MIN_VERSION,
