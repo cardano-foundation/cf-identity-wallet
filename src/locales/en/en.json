@@ -1402,8 +1402,7 @@
             "actionedit": "Edit",
             "actionconfirm": "Confirm",
             "actioncancel": "Cancel",
-            "name": "Name",
-            "watchvideo": "Watch the video"
+            "name": "Name"
           },
           "connections": {
             "title": "Connections",

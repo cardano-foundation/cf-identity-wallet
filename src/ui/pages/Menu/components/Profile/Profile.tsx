@@ -1,7 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { IonCard, IonIcon, IonItem } from "@ionic/react";
-import { chevronForward } from "ionicons/icons";
-import { Browser } from "@capacitor/browser";
+import { IonCard, IonItem } from "@ionic/react";
 import { ProfileOptionRef, ProfileProps } from "./Profile.types";
 import "./Profile.scss";
 import { i18n } from "../../../../../i18n";
@@ -14,7 +12,6 @@ import {
   setAuthentication,
 } from "../../../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
-import { PROFILE_LINK } from "../../../../globals/constants";
 import { showError } from "../../../../utils/error";
 import { nameChecker } from "../../../../utils/nameChecker";
 import { ErrorMessage } from "../../../../components/ErrorMessage";
@@ -88,23 +85,6 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
                 >
                   <span>{i18n.t("tabs.menu.tab.items.profile.name")}</span>
                   <span>{userName}</span>
-                </div>
-              </IonItem>
-            </IonCard>
-            <IonCard>
-              <IonItem onClick={() => Browser.open({ url: PROFILE_LINK })}>
-                <div
-                  className="profile-item"
-                  data-testid="profile-item-profile-link"
-                >
-                  <span>
-                    {i18n.t("tabs.menu.tab.items.profile.watchvideo")}
-                  </span>
-                  <IonIcon
-                    aria-hidden="true"
-                    icon={chevronForward}
-                    slot="end"
-                  />
                 </div>
               </IonItem>
             </IonCard>
