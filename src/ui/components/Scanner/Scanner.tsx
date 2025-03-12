@@ -45,6 +45,7 @@ import {
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
+  getAuthentication,
   getCurrentOperation,
   getShowConnections,
   getToastMsgs,
@@ -91,6 +92,7 @@ const Scanner = forwardRef(
     const currentOperation = useAppSelector(getCurrentOperation);
     const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsgs = useAppSelector(getToastMsgs);
+    const loggedIn = useAppSelector(getAuthentication).loggedIn;
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
@@ -160,8 +162,9 @@ const Scanner = forwardRef(
     useEffect(() => {
       const onLoad = async () => {
         if (
-          routePath === TabsRoutePath.SCAN &&
-          (isShowConnectionsModal || createIdentifierModalIsOpen)
+          (routePath === TabsRoutePath.SCAN &&
+            (isShowConnectionsModal || createIdentifierModalIsOpen)) ||
+          !loggedIn
         ) {
           await stopScan();
           return;
@@ -206,6 +209,7 @@ const Scanner = forwardRef(
       isShowConnectionsModal,
       createIdentifierModalIsOpen,
       currentToastMsgs,
+      loggedIn,
     ]);
 
     useEffect(() => {
