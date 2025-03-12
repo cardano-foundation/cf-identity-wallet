@@ -78,11 +78,6 @@ jest.mock("@capacitor/browser", () => ({
   },
 }));
 
-const mockStore = configureStore({
-  reducer: (state = initialState, action) => state,
-});
-const dispatchMock = jest.fn();
-
 const initialState = {
   stateCache: {
     routes: ["/"],
@@ -108,6 +103,11 @@ const initialState = {
     showConnectWallet: false,
   },
 };
+
+const mockStore = configureStore({
+  reducer: (state = initialState, action) => state,
+});
+const dispatchMock = jest.fn();
 
 const storeMocked = {
   ...mockStore,
