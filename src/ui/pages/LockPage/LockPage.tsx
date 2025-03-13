@@ -148,37 +148,8 @@ const LockPageContainer = () => {
   };
 
   const resetPasscode = async () => {
-    if (authentication.seedPhraseIsSet) {
-      setOpenRecoveryAuth(true);
-      return;
-    }
-
-    try {
-      await Promise.all([
-        SecureStorage.delete(KeyStoreKeys.APP_PASSCODE),
-        SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD),
-      ]);
-
-      await Promise.allSettled([
-        Agent.agent.basicStorage.deleteById(MiscRecordId.OP_PASS_HINT),
-        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_PASSWORD_SKIPPED),
-        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_ALREADY_INIT),
-      ]);
-
-      router.push(RoutePath.ROOT);
-
-      dispatch(
-        setAuthentication({
-          ...authentication,
-          passcodeIsSet: false,
-          passwordIsSet: false,
-          passwordIsSkipped: false,
-          loggedIn: true,
-        })
-      );
-    } catch (e) {
-      showError("Failed to clear app: ", e, dispatch);
-    }
+    setOpenRecoveryAuth(true);
+    return;
   };
 
   const error = useMemo(() => {
@@ -214,6 +185,40 @@ const LockPageContainer = () => {
         .catch((e) => showError("Unable to clear listener", e));
     };
   }, []);
+
+  const handleRecoveryButtonClick = async () => {
+    if (authentication.seedPhraseIsSet) {
+      setAlertIsOpen(true);
+      return;
+    }
+
+    try {
+      await Promise.all([
+        SecureStorage.delete(KeyStoreKeys.APP_PASSCODE),
+        SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD),
+      ]);
+
+      await Promise.allSettled([
+        Agent.agent.basicStorage.deleteById(MiscRecordId.OP_PASS_HINT),
+        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_PASSWORD_SKIPPED),
+        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_ALREADY_INIT),
+      ]);
+
+      router.push(RoutePath.ROOT);
+
+      dispatch(
+        setAuthentication({
+          ...authentication,
+          passcodeIsSet: false,
+          passwordIsSet: false,
+          passwordIsSkipped: false,
+          loggedIn: true,
+        })
+      );
+    } catch (e) {
+      showError("Failed to clear app: ", e, dispatch);
+    }
+  };
 
   return (
     <ResponsivePageLayout
@@ -258,7 +263,7 @@ const LockPageContainer = () => {
       <PageFooter
         pageId={pageId}
         secondaryButtonText={`${i18n.t("lockpage.forgotten.button")}`}
-        secondaryButtonAction={() => setAlertIsOpen(true)}
+        secondaryButtonAction={handleRecoveryButtonClick}
       />
       <Alert
         isOpen={alertIsOpen}

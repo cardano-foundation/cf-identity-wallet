@@ -264,7 +264,7 @@ describe("Lock Page", () => {
       },
     };
 
-    const { getByText, findByText, getByTestId } = render(
+    const { getByText } = render(
       <Provider store={storeMocked(initialState)}>
         <MemoryRouter initialEntries={[RoutePath.ROOT]}>
           <IonReactRouter>
@@ -279,14 +279,6 @@ describe("Lock Page", () => {
     );
 
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.lockpage.alert.button.verify)
-      ).toBeVisible();
-    });
-
-    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.alert.button.verify));
 
     await waitFor(() => {
       expect(deleteById).toBeCalled();
