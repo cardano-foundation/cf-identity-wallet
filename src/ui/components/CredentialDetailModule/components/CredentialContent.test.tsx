@@ -114,7 +114,7 @@ describe("Creds content", () => {
       EN_TRANSLATIONS.tabs.credentials.details.status.timestamp
     } ${formatShortDate(credsFixAcdc[0].lastStatus.dt)} - ${formatTimeToSec(
       credsFixAcdc[0].lastStatus.dt
-    )} (${getUTCOffset(identifierFix[0].dt)})`;
+    )} (${getUTCOffset(credsFixAcdc[0].lastStatus.dt)})`;
     expect(
       getByTestId("credential-details-last-status-timestamp").innerHTML
     ).toBe(lastStatus);
