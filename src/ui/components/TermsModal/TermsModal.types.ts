@@ -10,10 +10,11 @@ interface TermsModalProps {
 interface TermContent {
   subtitle: string;
   text: string;
+  nested?: string[];
 }
 
 interface TermsSection {
-  title: string;
+  title?: string;
   content: TermContent[];
   componentId: string;
 }

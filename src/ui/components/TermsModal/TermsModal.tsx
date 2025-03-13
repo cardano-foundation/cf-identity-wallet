@@ -14,34 +14,53 @@ import { PageHeader } from "../PageHeader";
 const Section = ({ title, content, componentId }: TermsSection) => {
   return (
     <div>
-      <h3
-        data-testid={`${componentId}-section-${title
-          .replace(/[^aA-zZ]/gim, "")
-          .toLowerCase()}`}
-      >
-        {title}
-      </h3>
+      {title && (
+        <h3
+          data-testid={`${componentId}-section-${title
+            .replace(/[^aA-zZ]/gim, "")
+            .toLowerCase()}`}
+        >
+          {title}
+        </h3>
+      )}
       {content.map((item: TermContent, index: number) => (
-        <p key={index}>
+        <div
+          key={index}
+          className="terms-of-use-section"
+        >
           {!!item.subtitle.length && (
-            <b
-              data-testid={`${componentId}-section-${title
-                .replace(/[^aA-zZ]/gim, "")
-                .toLowerCase()}-subtitle-${index + 1}`}
-            >
-              {item.subtitle}
-            </b>
+            <>
+              <span
+                data-testid={`${componentId}-section-${title
+                  ?.replace(/[^aA-zZ]/gim, "")
+                  .toLowerCase()}-subtitle-${index + 1}`}
+              >
+                {item.subtitle}
+              </span>
+              <br />
+            </>
           )}
           {!!item.text.length && (
-            <span
-              data-testid={`${componentId}-section-${title
-                .replace(/[^aA-zZ]/gim, "")
-                .toLowerCase()}-content-${index + 1}`}
-            >
-              {item.text}
-            </span>
+            <>
+              <span
+                className="terms-of-use-section-bottom"
+                data-testid={`${componentId}-section-${title
+                  ?.replace(/[^aA-zZ]/gim, "")
+                  .toLowerCase()}-content-${index + 1}`}
+              >
+                {item.text}
+              </span>
+              <br />
+            </>
           )}
-        </p>
+          {item.nested && item.nested.length > 0 && (
+            <ul>
+              {item.nested.map((nestedItem, nestedIndex) => (
+                <li key={nestedIndex}>{nestedItem}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       ))}
     </div>
   );

@@ -5,6 +5,10 @@ ion-modal.terms-modal {
   --height: auto;
   white-space: pre-line;
 
+  .scrollable-page-content > div {
+    margin-bottom: 0;
+  }
+
   .page-header {
     ion-toolbar {
       --background: transparent;
@@ -13,6 +17,14 @@ ion-modal.terms-modal {
 
   &::part(content) {
     height: 100%;
+  }
+
+  .terms-of-use-section {
+    display: grid;
+
+    .terms-of-use-section-bottom {
+      font-weight: 400;
+    }
   }
 
   p *:nth-child(2) {
