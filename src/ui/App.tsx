@@ -167,8 +167,8 @@ const App = () => {
             <div className={showScan ? "ion-hide" : ""}>
               <Routes />
             </div>
+            <LockPage />
           </IonReactRouter>
-          <LockPage />
           <AppOffline />
         </>
       );
