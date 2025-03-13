@@ -57,6 +57,8 @@ jest.mock("@ionic/react", () => {
         />
       );
     }),
+    IonModal: ({ children, isOpen, ...props }: any) =>
+      isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
   };
 });
 
