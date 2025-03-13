@@ -165,6 +165,8 @@ const LockPageContainer = () => {
         Agent.agent.basicStorage.deleteById(MiscRecordId.APP_ALREADY_INIT),
       ]);
 
+      router.push(RoutePath.ROOT);
+
       dispatch(
         setAuthentication({
           ...authentication,
@@ -174,7 +176,6 @@ const LockPageContainer = () => {
           loggedIn: true,
         })
       );
-      router.push(RoutePath.ROOT);
     } catch (e) {
       showError("Failed to clear app: ", e, dispatch);
     }
