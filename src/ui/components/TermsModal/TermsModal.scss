@@ -22,8 +22,13 @@ ion-modal.terms-modal {
   .terms-of-use-section {
     display: grid;
 
-    .terms-of-use-section-bottom {
+    .terms-of-use-section-bottom,
+    li {
       font-weight: 400;
+    }
+
+    ul {
+      margin-top: 0;
     }
   }
 
