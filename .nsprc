@@ -7,8 +7,8 @@
     "active": true,
     "notes": "SSRF attacks are not relevant to our usage of Meerkat."
   },
-  "1102339": {
+  "1102472": {
     "active": true,
-    "notes": "Serialization here is used in webpack build plugins to parse options etc, this vulnerability is more relevant if used to parse inputs from users."
+    "notes": "SSRF attacks on the Appium server when e2e testing do not impact the wallet."
   }
 }
