@@ -6,7 +6,8 @@ import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-  CreationStatus } from "../../../core/agent/agent.types";
+  CreationStatus,
+} from "../../../core/agent/agent.types";
 import {
   AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
@@ -125,7 +126,7 @@ jest.mock("../../../core/agent/agent", () => ({
         onLongOperationSuccess: jest.fn(),
         onLongOperationFailure: jest.fn(),
         onRemoveNotification: jest.fn(),
-        stopNotification: jest.fn(),
+        stopPolling: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
