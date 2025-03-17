@@ -87,6 +87,8 @@ import {
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 import { IdentifierService } from "../../../core/agent/services";
+import { TapJacking } from "@capacitor-community/tap-jacking";
+import { Device } from "@capacitor/device";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -234,6 +236,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     initApp();
+  }, []);
+
+  useEffect(() => {
+    const tapjack = async () => {
+      if ((await Device.getInfo()).platform === "android") {
+        await TapJacking.preventOverlays();
+      }
+    };
+    tapjack();
   }, []);
 
   useEffect(() => {
