@@ -247,9 +247,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (initializationPhase === InitializationPhase.PHASE_TWO) {
       if (authentication.loggedIn) {
-        Agent.agent.keriaNotifications.startNotification();
+        Agent.agent.keriaNotifications.startPolling();
       } else {
-        Agent.agent.keriaNotifications.stopNotification();
+        Agent.agent.keriaNotifications.stopPolling();
       }
     }
   }, [authentication.loggedIn, initializationPhase]);
@@ -570,9 +570,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_ALREADY_INIT
     );
     if (!initState) {
-      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
+      await SecureStorage.wipe();
     }
 
     // This will skip the onboarding screen with dev mode.
