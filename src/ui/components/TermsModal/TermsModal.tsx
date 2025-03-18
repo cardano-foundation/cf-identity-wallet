@@ -1,4 +1,6 @@
 import { IonModal } from "@ionic/react";
+import { Trans } from "react-i18next";
+import { Browser } from "@capacitor/browser";
 import { t } from "i18next";
 import { i18n } from "../../../i18n";
 import {
@@ -10,44 +12,96 @@ import {
 import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
+import { SUPPORT_LINK } from "../../globals/constants";
 
-const Section = ({ title, content, componentId }: TermsSection) => {
+const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
+  const HandlePrivacy = () => {
+    return (
+      <u
+        data-testid="privacy-policy-modal-switch"
+        onClick={() => altIsOpen && altIsOpen(true)}
+      >
+        {i18n.t("generateseedphrase.termsandconditions.privacy")}
+      </u>
+    );
+  };
+  const HandleSupport = () => {
+    return (
+      <u
+        data-testid="support-link-handler"
+        onClick={() => Browser.open({ url: SUPPORT_LINK })}
+      >
+        {i18n.t("generateseedphrase.termsandconditions.support")}
+      </u>
+    );
+  };
   return (
     <div>
-      <h3
-        data-testid={`${componentId}-section-${title
-          .replace(/[^aA-zZ]/gim, "")
-          .toLowerCase()}`}
-      >
-        {title}
-      </h3>
+      {title && (
+        <h3
+          data-testid={`${componentId}-section-${title
+            .replace(/[^aA-zZ]/gim, "")
+            .toLowerCase()}`}
+        >
+          {title}
+        </h3>
+      )}
       {content.map((item: TermContent, index: number) => (
-        <p key={index}>
+        <div
+          key={index}
+          className="terms-of-use-section"
+        >
           {!!item.subtitle.length && (
-            <b
-              data-testid={`${componentId}-section-${title
-                .replace(/[^aA-zZ]/gim, "")
-                .toLowerCase()}-subtitle-${index + 1}`}
-            >
-              {item.subtitle}
-            </b>
+            <>
+              <span
+                data-testid={`${componentId}-section-${title
+                  ?.replace(/[^aA-zZ]/gim, "")
+                  .toLowerCase()}-subtitle-${index + 1}`}
+              >
+                {item.subtitle}
+              </span>
+              <br />
+            </>
           )}
           {!!item.text.length && (
-            <span
-              data-testid={`${componentId}-section-${title
-                .replace(/[^aA-zZ]/gim, "")
-                .toLowerCase()}-content-${index + 1}`}
-            >
-              {item.text}
-            </span>
+            <>
+              <span
+                className="terms-of-use-section-bottom"
+                data-testid={`${componentId}-section-${title
+                  ?.replace(/[^aA-zZ]/gim, "")
+                  .toLowerCase()}-content-${index + 1}`}
+              >
+                <Trans
+                  i18nKey={item.text}
+                  components={[
+                    <HandlePrivacy key="" />,
+                    <HandleSupport key="" />,
+                  ]}
+                />
+              </span>
+              <br />
+            </>
           )}
-        </p>
+          {item.nested && item.nested.length > 0 && (
+            <ul>
+              {item.nested.map((nestedItem, nestedIndex) => (
+                <li key={nestedIndex}>{nestedItem}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       ))}
     </div>
   );
 };
 
-const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
+const TermsModal = ({
+  name,
+  isOpen,
+  setIsOpen,
+  altIsOpen,
+  children,
+}: TermsModalProps) => {
   const nameNoDash = name.replace(/-/g, "");
   const componentId = name + "-modal";
   const termsObject: TermsObject = t(nameNoDash, {
@@ -87,6 +141,7 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
             title={section.title}
             content={section.content}
             componentId={componentId}
+            altIsOpen={altIsOpen}
           />
         ))}
         {children}

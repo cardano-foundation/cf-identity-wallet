@@ -41,6 +41,7 @@ describe("Terms and conditions screen", () => {
           name="terms-of-use"
           isOpen={true}
           setIsOpen={mockSetIsOpen}
+          altIsOpen={mockSetIsOpen}
         />
       </Provider>
     );

@@ -141,179 +141,179 @@
     "termsandconditions": {
       "text": "I have read and agree to the <0>{{clickableTerms}}</0> and <1>{{clickablePrivacy}}</1>.",
       "terms": "Terms of Use",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "support": "Veridian Wallet Support"
     }
   },
   "termsofuse": {
     "done": "Done",
     "intro": {
       "title": "Terms of Use",
-      "text": "Please read these terms of use (“Terms of Use” or “Terms”) carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as “Foundation,” “We,“, “Us“ or “Our” in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of the Identity Wallet developed by the Cardano Foundation (the “Identity Wallet”) and the website http://identity.cardanofoundation.org/ (collectively, the “Products“). By using the Products in any manner, you agree to be bound by these Terms of Use.\n\nThis Identity Wallet is currently provided as an 'Alpha Release'. By using this Alpha Release, you acknowledge and accept that it is experimental and may contain bugs, incomplete features, or other issues. The primary purpose of this Alpha Release is for testing and gathering feedback. The software is provided 'as is' without warranties of any kind."
+      "text": "These Terms of Use set forth the legally binding terms and conditions for your use of the Veridian wallet (“Veridian”). Veridian is a decentralized identity management application developed by the Cardano Foundation (Cardano Stiftung) (the “Foundation”), which enables you to generate, manage, and control your digital identity through cryptographic keys and verifiable credentials using the Key Event Receipt Infrastructure (KERI) protocol.\n\nPlease read these Terms carefully. By accessing or using Veridian, you agree to be bound by these Terms, including any additional guidelines or rules referenced herein. If you do not agree to these Terms, please do not use Veridian."
     },
     "sections": [
       {
-        "title": "1. USE OF PRODUCTS",
         "content": [
           {
-            "subtitle": "a. Eligibility:",
-            "text": "You represent and warrant that you: (a) are of legal age to form a binding contract in your jurisdiction; (b) have not previously been suspended or removed from using the Products; and (c) have full power and authority to enter into these Terms of Use and in doing so will not violate any other agreement to which you are a party. If you are registering to use the Products on behalf of a legal entity, you further represent and warrant that (i) such legal entity is duly organized and validly existing under the applicable laws of the jurisdiction of its organization, and (ii) you are duly authorized by such legal entity to act on its behalf."
-          },
-          {
-            "subtitle": "b. Product Changes:",
-            "text": "We reserve the right to make changes or updates to the Products at any time without notice, for any reason at Our sole discretion. We retain the authority to modify, update, limit, or revoke your access to Our Products, including any related accounts, at any time and without prior notice, for any reason at Our sole discretion."
-          },
-          {
-            "subtitle": "c. Additional Terms:",
-            "text": "In addition, some Products may be subject to additional terms and conditions promulgated by the Foundation from time to time; your use of such Products is subject to those additional terms and conditions, which are incorporated into these Terms of Use by this reference. If there are any inconsistencies between these Terms of Use and the additional terms, the additional terms will take precedence."
-          },
-          {
-            "subtitle": "d. Privacy Policy:",
-            "text": "By using the Products in any way, you understand and acknowledge that the terms of the Privacy Policy apply to you."
-          },
-          {
-            "subtitle": "e. Feedback:",
-            "text": "We appreciate any feedback or suggestions you might have regarding Our Products. You can share your thoughts at https://cardanofoundation.org/en/contact-us/. When you provide feedback in any form, you give Us permission to use, share, and build upon your input as We see fit, without owing you anything in return."
-          },
-          {
-            "subtitle": "f. Dispute Resolution:",
-            "text": "If you have a dispute with the Foundation or a claim to raise in relation to the Products, you agree to contact Us using the form at https://cardanofoundation.org/en/contact-us/ to attempt to resolve the issue informally first."
+            "subtitle": "1. Eligibility",
+            "text": "By using Veridian, you represent and warrant that you are of legal age to form a binding contract in your jurisdiction, and have not previously been suspended or removed from using Veridian. If you are using Veridian on behalf of a legal entity, you further represent and warrant that (i) the entity is duly organized under applicable laws, and (ii) you are duly authorized to act on its behalf."
           }
         ]
       },
       {
-        "title": "2. YOUR CONTENT",
         "content": [
           {
-            "subtitle": "a. Definition of “Your Content“:",
-            "text": "For the purposes of these Terms of Use, “Your Content“ refers to all materials you submit or transmit to, through, or in connection with Our Products, including but not limited to photographs, profile pictures, messages, comments, testimonials, and any other text, graphics, videos, or audio content."
+            "subtitle": "2. Licence and Use",
+            "text": ""
           },
           {
-            "subtitle": "b. License Grant:",
-            "text": "By submitting, posting, or displaying Your Content on or through Our Products, you grant Us a non-exclusive, worldwide, royalty-free, fully paid-up, sublicensable, and transferable license to use, reproduce, process, distribute, create derivative works of, display, and perform Your Content in connection with Our Products and Our business, including for promoting and redistributing part or all of the Products (and derivative works thereof) in any media formats and through any media channels. This license will exist for the period during which Your Content is posted on Our Products or until We choose to remove it, whichever is shorter."
+            "subtitle": "2.1. Licence Grant",
+            "text": "The Cardano Foundation grants you a limited, non-exclusive, non-transferable licence to access and use Veridian for your digital identity management purposes, subject to these terms."
           },
           {
-            "subtitle": "c. Ownership of Your Content:",
-            "text": "You retain ownership rights in Your Content. However, by submitting Your Content to Our Products, you hereby grant Us the non-exclusive rights and license as set out above. Other than the rights and license you grant in these Terms of Use, We acknowledge and agree that We obtain no right, title, or interest from you under these Terms of Use in any of Your Content."
-          },
-          {
-            "subtitle": "d. Representations and Warranties:",
-            "text": "You represent and warrant that:"
-          },
-          {
-            "subtitle": "-",
-            "text": "You either own Your Content or have the necessary licenses, rights, consents, and permissions to grant the rights and licenses as provided herein;"
-          },
-          {
-            "subtitle": "-",
-            "text": "Your Content does not and will not infringe or violate any third party's intellectual property rights, proprietary rights, privacy rights, confidentiality, rights of publicity or otherwise violate these Terms of Use or applicable law; and"
-          },
-          {
-            "subtitle": "-",
-            "text": "You have obtained all required permissions from any individual whose personal data is part of Your Content, allowing Us to use and disclose the data as set out in these Terms of Use. "
-          },
-          {
-            "subtitle": "e. Your Responsibility:",
-            "text": "You are solely responsible for Your Content and the consequences of posting, publishing, or sharing it. We do not endorse any of Your Content or any opinion, recommendation, or advice expressed therein, and We expressly disclaim any and all liability in connection with Your Content."
+            "subtitle": "2.2. Restrictions on Use",
+            "text": "You agree not to:",
+            "nested": [
+              "Modify, distribute, or create derivative works based on Veridian.",
+              "Compromise the security or integrity of the Wallet or its underlying systems.",
+              "Use Veridian for any unlawful or unauthorised purpose."
+            ]
           }
         ]
       },
       {
-        "title": "3. INTELLECTUAL PROPERTY",
         "content": [
           {
-            "subtitle": "a. Ownership:",
-            "text": "All intellectual property in or related to the Products, including but not limited to the software, “Cardano” and “ADA” marks, logos and the names and logos of the Products (“Our Intellectual Property”), is the property of the Foundation."
+            "subtitle": "3. User Responsibilities",
+            "text": "You are responsible for:"
           },
           {
-            "subtitle": "b. Grant of Licence:",
-            "text": "We provide you a limited, non-exclusive licence to access and utilise Our Intellectual Property as part of your use of the Products, all in accordance with these Terms of Use. We retain the right to revoke this license at any time for any reason. Outside of the permissions explicitly granted in these Terms of Use, all other rights remain with Us."
+            "subtitle": "3.1. Security of Digital Identity",
+            "text": "Maintaining the security and confidentiality of your passwords, cryptographic keys, digital identity (AID), and any credentials generated or stored in Veridian. Loss or compromise of this information may result in irrecoverable loss of access to your digital identity."
           },
           {
-            "subtitle": "c. Restrictions:",
-            "text": "Except as provided in these Terms of Use, you agree not to copy, rent, lease, sell or distribute, or create derivative works of Our Intellectual Property Rights. Some Products might be governed by open-source licenses; in such instances, the terms of those specific licenses will apply. You should refer to the specific license terms accompanying each Product or component thereof to understand your rights and obligations. Any other use of the Foundation's intellectual property requires Our express written permission."
+            "subtitle": "3.2. Associated information, Credentials",
+            "text": "The accuracy and maintenance of any optional information you choose to bind or associate with your digital identity."
           },
           {
-            "subtitle": "d. Trademarks:",
-            "text": "You are granted no rights or license to use Foundation trademarks unless in strict accordance with the Foundation's trademark policy."
+            "subtitle": "3.3. Compliance with Laws",
+            "text": "Compliance with all applicable laws and regulations when using Veridian."
           }
         ]
       },
       {
-        "title": "4. DISCLAIMERS; LIMITATION OF LIABILITY",
         "content": [
           {
-            "subtitle": "",
-            "text": "“FOUNDATION ENTITIES“ REFERS TO CARDANO FOUNDATION ALONG WITH ITS SUBSIDIARIES, AFFILIATED FIRMS, ASSOCIATED COMPANIES, SUPPLIERS, LICENSORS, AND PARTNERS. THIS DEFINITION ALSO INCLUDES THE OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, AND REPRESENTATIVES OF THESE ENTITIES. EACH OF THE FOLLOWING PROVISIONS IS ENFORCEABLE TO THE FULLEST EXTENT ALLOWED BY THE RELEVANT LAW:"
-          },
-          {
-            "subtitle": "a. Disclaimer of Warranties:",
-            "text": "YOU UNDERSTAND AND ACKNOWLEDGE THAT WE ARE PROVIDING THE PRODUCTS, SERVICES, INCLUDING RELATED INFORMATION AND CONTENT, ON AN “AS IS” AND “AS AVAILABLE” BASIS, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. THIS MAY INCLUDE PRODUCTS OFFERED IN ‘ALPHA RELEASE’ or ‘BETA’ VERSIONS, INTENDED TO PROVIDE THE FOUNDATION WITH FEEDBACK ON THE QUALITY AND USABILITY OF THE PRODUCTS AND APPLICATION PROGRAMMING INTERFACES (APIs). THE FOUNDATION ENTITIES MAKE NO REPRESENTATIONS AND EXPRESSLY DISCLAIM ALL WARRANTIES ABOUT THE SUITABILITY, MERCHANTABILITY, FITNESS FOR PURPOSE, RELIABILITY, AVAILABILITY, TIMELINESS, SECURITY, TITLE AND NON-INFRINGEMENT, ACCURACY OR COMPLETENESS, DATA SYNCHED TO OR MADE AVAILABLE FROM THE PRODUCTS, PRODUCT CONTENT, OR ANY CONSULTING SERVICES WE PROVIDE FOR ANY ASSOCIATED PURPOSE."
-          },
-          {
-            "subtitle": "No Indirect Damages:",
-            "text": "TO THE EXTENT PERMITTED BY LAW, IN NO EVENT WILL FOUNDATION ENTITIES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, PUNITIVE, OR CONSEQUENTIAL DAMAGES, OR LOSS OF PROFITS, REVENUE, DATA OR BUSINESS OPPORTUNITIES ARISING OUT OF OR RELATED TO THESE TERMS OF USE, WHETHER AN ACTION IS IN CONTRACT OR TORT AND REGARDLESS OF THE THEORY OF LIABILITY."
-          },
-          {
-            "subtitle": "b. Third Party Products:",
-            "text": "THE FOUNDATION ENTITIES MAKE NO PROMISES WITH RESPECT TO, AND EXPRESSLY DISCLAIM ALL LIABILITY, TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOR: (i) CONTENT POSTED BY ANY THIRD-PARTY ON THE PRODUCTS, (ii) THE PRODUCT DESCRIPTIONS OR PRODUCTS, (iii) THIRD-PARTY SITES AND ANY THIRD-PARTY PRODUCT OR SERVICE LISTED ON OR ACCESSIBLE TO YOU THROUGH THE PRODUCTS, AND (iv) THE QUALITY OR CONDUCT OF ANY THIRD PARTY YOU ENCOUNTER IN CONNECTION WITH YOUR USE OF ANY PRODUCT OR WEBSITE (“Third Party Products)."
-          },
-          {
-            "subtitle": "c. Limitation of Liability:",
-            "text": "ANY LIABILITY OF THE FOUNDATION ENTITIES IS HEREBY LIMITED TO THE MAXIMUM EXTENT ALLOWED BY APPLICABLE LAW.THE AGGREGATE LIABILITY OF FOUNDATION ENTITIES WILL IN ANY EVENT BE LIMITED TO A SUM EQUAL TO THE TOTAL AMOUNTS PAID OR PAYABLE FOR THE PRODUCTS IN THE TWELVE MONTH PERIOD PRECEDING THE EVENT GIVING RISE TO A CLAIM; PROVIDED HOWEVER, THIS LIMITATION WILL NOT APPLY TO YOU IF NO SUCH FEES ARE PAYABLE, AND IN THIS CASE, IF WE ARE DETERMINED TO HAVE ANY LIABILITY TO YOU OR ANY THIRD PARTY ARISING FROM YOUR USE OF THE PRODUCTS, THEN OUR AGGREGATE LIABILITY WILL BE LIMITED TO ONE HUNDRED U.S. DOLLARS."
-          },
-          {
-            "subtitle": "d. Agreement to Liability Limit:",
-            "text": "YOU UNDERSTAND AND AGREE THAT ABSENT YOUR AGREEMENT TO THIS LIMITATION OF LIABILITY, WE WOULD NOT PROVIDE THE PRODUCTS TO YOU."
+            "subtitle": "4. Intellectual property",
+            "text": "All intellectual property rights in and to Veridian, including its design, features, and underlying technology, are owned by the Cardano Foundation or its licensors. Nothing in these Terms grants you any right or license to use any trademark, logo, or service mark displayed in Veridian without the prior written consent of the Cardano Foundation."
           }
         ]
       },
       {
-        "title": "5. INDEMNIFICATION",
         "content": [
           {
-            "subtitle": "",
+            "subtitle": "5. Third Party Services",
+            "text": "Veridian may interface with third-party services (such as cloud agents or blockchain networks) to provide its functionality. The Cardano Foundation is not responsible for the performance or reliability of these third-party services, and your use of such services is governed by their respective terms and policies."
+          }
+        ]
+      },
+      {
+        "content": [
+          {
+            "subtitle": "6. Disclaimers and Limitation of Liability",
+            "text": ""
+          },
+          {
+            "subtitle": "6.1. Disclaimer of Warranties",
+            "text": "Veridian is provided on an “as is” and “as available” basis without warranties of any kind, either express or implied. The Foundation makes no representations and expressly disclaims all warranties about the suitability, merchantability, fitness for purpose, reliability, availability, timeliness, security, title and non-infringement, accuracy or completeness, data synched to or made available from the products, product content, or any consulting services we provide for any associated purpose."
+          },
+          {
+            "subtitle": "6.2. No Indirect Damages",
+            "text": "To the fullest extent permitted by law, the Foundation shall not be liable for any indirect, incidental, consequential, punitive, or special damages (including loss of profits, revenue, or data) arising out of your use of Veridian."
+          },
+          {
+            "subtitle": "6.3. Limitation of Liability",
+            "text": "The aggregate liability of the Foundation, whether in contract, tort, or otherwise, is limited to the maximum extent permitted by applicable law. In any event, if fees have been paid for use of Veridian, our total liability shall not exceed the total amounts paid in the twelve months preceding the claim. If no fees are payable, our liability will be limited to one hundred US Dollars."
+          }
+        ]
+      },
+      {
+        "content": [
+          {
+            "subtitle": "7. Indemnification",
             "text": "You agree to fully indemnify, defend and hold the Foundation Entities, including their directors, officers, employees, consultants, and other representatives, harmless from and against any claims, damages, losses, costs (including reasonable legal fees), and other expenses resulting directly or indirectly from: (a) any breach or noncompliance of these Terms of Use by you or your affiliates, inclusive of policies mentioned herein; (b) allegations that materials you provide or convey to the Products violate the intellectual property rights of a third party; (c) your or your affiliates' use of Third-Party Products; and/or (d) any negligent or intentional misconduct by you. You shall not agree to any settlement that (i) obligates Us in any manner; (ii) demands an admission from Us; or (iii) assigns liability beyond these indemnifications or restricts Us, without obtaining Our prior written approval."
           }
         ]
       },
       {
-        "title": "6. MISCELLANEOUS",
         "content": [
           {
-            "subtitle": "a. Amendment:",
-            "text": "We may modify any part or all of these Terms of Use. The revised version will become effective and binding the next business day after it is posted. We will provide you notice of this revision by email, website banner, in-product notification or publishing revised Terms of Use at this page, if applicable. YOU AGREE THAT YOUR CONTINUED USE OF THE PRODUCTS AFTER SUCH CHANGES BECOME EFFECTIVE CONSTITUTES YOUR ACCEPTANCE OF THE CHANGES. If you do not agree with a modification to the Terms of Use, you must notify Us in writing within thirty (30) days after We send notice of the revision. If We can no longer reasonably provide the Product to you under the terms prior to modification, then the Terms of Use and/or your access to the Products will terminate upon Our notice to you and We will promptly refund any prepaid but unused fees, if any, covering use of the Product."
+            "subtitle": "8. General Provisions",
+            "text": ""
           },
           {
-            "subtitle": "b. Application Provider Terms:",
-            "text": "These Terms of Use are between you and the Foundation only, and not with an application service or application platform provider (such as Apple, Inc., or Google Inc.), which may provide you the application subject to its own terms of use."
+            "subtitle": "8.1. Service Changes",
+            "text": "We reserve the right to modify, update, limit, or revoke your access to Veridian at any time, for any reason, without prior notice, at our sole discretion."
           },
           {
-            "subtitle": "c. Governing Law and Jurisdiction:",
-            "text": "These Terms of Use will be interpreted in accordance with the laws of Switzerland. You agree that any disputes arising out of or in connection with these Terms of Use, not otherwise resolved in accordance with dispute resolution provision set forth in section 1(g) shall be subject to the exclusive jurisdiction of the courts located in Zug, Switzerland."
+            "subtitle": "8.2. Privacy Policy",
+            "text": "By using Veridian, you acknowledge that our <0>{{PrivacyPolicy}}</0> applies to you, and your continued use constitutes acceptance of the <0>{{PrivacyPolicy}}</0>."
           },
           {
-            "subtitle": "d. Languages:",
-            "text": "The English version of these Terms of Use is the definitive and binding version. All notices, alerts, and procedures communications concerning these Terms of Use will be executed in English, even if translations into other languages are made available. Should there be any discrepancies between the English version and other translations, the English version will take precedence, as permitted by law."
+            "subtitle": "8.3. Feedback",
+            "text": "We welcome your feedback and suggestions regarding Veridian, and you can provide your thoughts at <1>{{VeridianSupport}}</1>. By providing feedback, you grant us permission to use, share, and build upon your input without any obligation or compensation to you."
           },
           {
-            "subtitle": "e. Assignment:",
-            "text": "You may not assign, transfer, delegate, or sublicense any rights, obligations, or remedies under these Terms of Use without the prior written consent of the Foundation. Any such attempts without this consent will be considered void. We retain the discretion to assign, transfer, or delegate Our rights, obligations, or remedies under these Terms of Use as We see fit."
+            "subtitle": "8.4. Amendments",
+            "text": "We may modify these Terms at any time. The revised version will become effective on the next business day after posting. Your continued use of Veridian constitutes your acceptance of the modified Terms. If you do not agree with any changes, you must notify us in writing within thirty (30) days of notice."
           },
           {
-            "subtitle": "f. Waiver:",
-            "text": "Our failure to assert a right or provision under these Terms of Use will not constitute a waiver of such right or provision."
+            "subtitle": "8.5. Assignment",
+            "text": "You may not assign, transfer, or sublicense your rights or obligations under these Terms without our prior written consent. We may assign or transfer our rights at our discretion."
           },
           {
-            "subtitle": "g. Entire Agreement and Severability:",
-            "text": "These Terms of Use supersede all prior terms, agreements, discussions and writings regarding the Products and constitutes the entire agreement between you and Us regarding the Products. If any part of these Terms of Use is determined to be invalid or unenforceable by applicable law, then the invalid or unenforceable provision will be deemed superseded by a valid, enforceable provision that most closely matches the intent of the original provision and the remainder of these Terms of Use will continue in effect."
+            "subtitle": "8.6. Waiver and Severability",
+            "text": "Our failure to enforce any provision of these Terms shall not constitute a waiver of that provision. If any provision is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect."
           },
           {
-            "subtitle": "h. Survival:",
-            "text": "The following provisions will survive expiration or termination of these Terms of Use: Section 2 (Your Content), Section 3(a)(Ownership) and (c)(Restrictions), Section 4 (Disclaimers and Limitations of Liability), Section 5 (indemnification), Section 1(f) (Dispute Resolution) and Section 6 (Miscellaneous)."
+            "subtitle": "8.7. Application Provider Terms",
+            "text": "These Terms of Use are between you and the Foundation only, and not with an application service or application platform provider (such as Apple, Inc., or Google Inc.), which may provide you the Veridian wallet application subject to their own terms of use."
           },
           {
-            "subtitle": "i. Contact:",
-            "text": "Feel free to contact Us with any questions about these Terms of Use. You can also write to Us at:\n\nCardano Foundation,\nDammstrasse 16,\n6300, Zug,\nSwitzerland\nAttn: Legal"
+            "subtitle": "8.8. Entire Agreement",
+            "text": "These Terms constitute the entire agreement between you and the Cardano Foundation regarding your use of Veridian and supersede all prior communications, agreements, and understandings."
+          },
+          {
+            "subtitle": "8.9. Disputes",
+            "text": "If you have a dispute with the Foundation or a claim to raise in relation to Veridian, you agree to contact us using the form at <1>{{VeridianSupport}}</1> to attempt to resolve the issue informally first."
+          },
+          {
+            "subtitle": "8.10. Survival",
+            "text": "The provisions relating to disclaimers, limitations of liability, indemnification, governing law, and any other provisions intended to survive termination shall continue to apply after termination of your use of Veridian."
+          }
+        ]
+      },
+      {
+        "content": [
+          {
+            "subtitle": "9. Governing Law and Jurisdiction",
+            "text": ""
+          },
+          {
+            "subtitle": "9.1. Governing Law",
+            "text": "These Terms shall be governed by and construed in accordance with the laws of Switzerland."
+          },
+          {
+            "subtitle": "9.2. Jurisdiction",
+            "text": "Any disputes arising out of or in connection with these Terms that are not resolved through informal dispute resolution set forth in section 8.9 shall be subject to the exclusive jurisdiction of the courts located in Zug, Switzerland."
+          }
+        ]
+      },
+      {
+        "content": [
+          {
+            "subtitle": "10. Contact us",
+            "text": "If you have any questions, concerns, or feedback regarding these Terms, please contact us at:\n\nCardano Foundation,\nDammstrasse 16,\n6300, Zug,\nSwitzerland\nAttn: Legal"
           }
         ]
       }
