@@ -12,7 +12,7 @@ import {
 import { multisignIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ErrorPage } from "./ErrorPage";
-import { DISCORD_LINK } from "../../../../globals/constants";
+import { SUPPORT_LINK } from "../../../../globals/constants";
 import { CreationStatus } from "../../../../../core/agent/agent.types";
 
 mockIonicReact();
@@ -161,7 +161,7 @@ describe("Multisign error feedback", () => {
     });
   });
 
-  test("Open discord link", async () => {
+  test("Open support page link", async () => {
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
@@ -196,7 +196,7 @@ describe("Multisign error feedback", () => {
 
     await waitFor(() => {
       expect(browserMock).toBeCalledWith({
-        url: DISCORD_LINK,
+        url: SUPPORT_LINK,
       });
     });
   });

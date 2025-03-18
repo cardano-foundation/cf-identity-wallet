@@ -1,3 +1,14 @@
+const stopPollingMock = jest.fn();
+const getAllIdentifiersMock = jest.fn();
+const getAllCredentialsMock = jest.fn();
+const getAllConnectionsMock = jest.fn();
+const getAllNotificationsMock = jest.fn();
+const updateIdentifierMock = jest.fn();
+const deleteCredentialMock = jest.fn().mockResolvedValue(undefined);
+const deleteContactMock = jest.fn().mockResolvedValue(undefined);
+const markNotificationMock = jest.fn().mockResolvedValue(undefined);
+const wipeSessionMock = jest.fn();
+
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 import { mnemonicToEntropy } from "bip39";
 import { AgentUrls, MiscRecordId } from "./agent.types";
@@ -5,12 +16,38 @@ import { Agent } from "./agent";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { CoreEventEmitter } from "./event";
 import { EventTypes } from "./event.types";
+import { PeerConnection } from "../cardano/walletConnect/peerConnection";
+import { IdentifierService } from "./services";
 
 jest.mock("signify-ts", () => ({
   SignifyClient: jest.fn(),
   ready: jest.fn(),
   Tier: { low: "low" },
+  Salter: jest.fn().mockReturnValue({ qb64: "my-salt" }),
 }));
+
+jest.mock("../storage/ionicStorage/ionicSession", () => ({
+  IonicSession: jest.fn(() => ({
+    wipe: wipeSessionMock,
+  })),
+}));
+
+jest.mock("../cardano/walletConnect/peerConnection", () => ({
+  PeerConnection: {
+    peerConnection: {
+      getConnectedDAppAddress: jest.fn(),
+      disconnectDApp: jest.fn(),
+    },
+  },
+}));
+
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    update: updateIdentifierMock,
+  }),
+});
 
 const eventEmitter = new CoreEventEmitter();
 eventEmitter.emit = jest.fn().mockImplementation(() => Promise.resolve());
@@ -24,6 +61,7 @@ const mockAgentServicesProps = {
 
 const mockGetBranValue = "AEsI_2YqNsQlf8brzDJaP";
 jest.spyOn(SecureStorage, "get").mockResolvedValue(mockGetBranValue);
+jest.spyOn(SecureStorage, "wipe").mockResolvedValue();
 const mockBasicStorageService = {
   save: jest.fn(),
   update: jest.fn(),
@@ -46,6 +84,21 @@ const mockCredentialService = {
 };
 const mockMultiSigService = {
   processGroupsPendingCreation: jest.fn(),
+};
+const mockKeriaNotificationService = {
+  stopPolling: stopPollingMock,
+};
+const mockIdentifierStorage = {
+  getAllIdentifiers: getAllIdentifiersMock,
+};
+const mockCredentialStorage = {
+  getAllCredentialMetadata: getAllCredentialsMock,
+};
+const mockConnectionStorage = {
+  getAll: getAllConnectionsMock,
+};
+const mockNotificationStorage = {
+  getAll: getAllNotificationsMock,
 };
 
 const mockEntropy = "00000000000000000000000000000000";
@@ -361,5 +414,92 @@ describe("Recovery of DB from cloud sync", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
 
     expect(SecureStorage.set).not.toHaveBeenCalled();
+  });
+});
+
+describe("Agent setup and wiping", () => {
+  let agent: Agent;
+  let mockAgentUrls: AgentUrls;
+  let mockSignifyClient: any;
+
+  beforeEach(() => {
+    // @TODO - foconnor: This method of mocking needs to change.
+    mockSignifyClient = {
+      boot: jest.fn(),
+      connect: jest.fn(),
+      identifiers: jest.fn().mockReturnValue({
+        update: updateIdentifierMock,
+      }),
+      credentials: jest.fn().mockReturnValue({
+        delete: deleteCredentialMock,
+      }),
+      contacts: jest.fn().mockReturnValue({
+        delete: deleteContactMock,
+      }),
+      notifications: jest.fn().mockReturnValue({
+        mark: markNotificationMock,
+      }),
+    };
+    agent = Agent.agent;
+    (agent as any).agentServicesProps = {
+      ...mockAgentServicesProps,
+      signifyClient: mockSignifyClient,
+    };
+    (agent as any).keriaNotificationService = mockKeriaNotificationService;
+    (agent as any).identifierStorage = mockIdentifierStorage;
+    (agent as any).credentialStorage = mockCredentialStorage;
+    (agent as any).connectionStorage = mockConnectionStorage;
+    (agent as any).notificationStorage = mockNotificationStorage;
+
+    mockAgentUrls = {
+      url: "http://127.0.0.1:3901",
+      bootUrl: "http://127.0.0.1:3903",
+    };
+    Agent.isOnline = true;
+  });
+
+  test("can delete the entire wallet", async () => {
+    PeerConnection.peerConnection.getConnectedDAppAddress = jest
+      .fn()
+      .mockReturnValue("");
+    getAllIdentifiersMock.mockResolvedValue([
+      { id: "identifier", displayName: "my-identifier" },
+    ]);
+    getAllCredentialsMock.mockResolvedValue([{ id: "credential-id" }]);
+    getAllConnectionsMock.mockResolvedValue([{ id: "connection-id" }]);
+    getAllNotificationsMock.mockResolvedValue([{ id: "note-id" }]);
+
+    await Agent.agent.deleteAccount();
+
+    expect(PeerConnection.peerConnection.disconnectDApp).not.toBeCalled();
+    expect(stopPollingMock).toBeCalled();
+    expect(updateIdentifierMock).toBeCalledWith("identifier", {
+      name: `${IdentifierService.DELETED_IDENTIFIER_THEME}-my-salt:my-identifier`,
+    });
+    expect(deleteCredentialMock).toBeCalledWith("credential-id");
+    expect(deleteContactMock).toBeCalledWith("connection-id");
+    expect(markNotificationMock).toBeCalledWith("note-id");
+    expect(wipeSessionMock).toBeCalledWith("idw");
+    expect(SecureStorage.wipe).toBeCalled();
+  });
+
+  test("will disconnect dapp when deleting entire wallet", async () => {
+    PeerConnection.peerConnection.getConnectedDAppAddress = jest
+      .fn()
+      .mockReturnValue("meerkat-id");
+    getAllIdentifiersMock.mockResolvedValue([]);
+    getAllCredentialsMock.mockResolvedValue([]);
+    getAllConnectionsMock.mockResolvedValue([]);
+    getAllNotificationsMock.mockResolvedValue([]);
+
+    await agent.deleteAccount();
+
+    expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
+      "meerkat-id",
+      true
+    );
+    expect(stopPollingMock).toBeCalled();
+    expect(wipeSessionMock).toBeCalledWith("idw");
+    expect(SecureStorage.wipe).toBeCalled();
   });
 });

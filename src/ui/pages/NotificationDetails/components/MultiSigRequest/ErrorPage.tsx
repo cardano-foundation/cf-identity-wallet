@@ -13,7 +13,7 @@ import { CreateGroupIdentifier } from "../../../../components/CreateGroupIdentif
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
-import { DISCORD_LINK } from "../../../../globals/constants";
+import { SUPPORT_LINK } from "../../../../globals/constants";
 import "./ErrorPage.scss";
 import { ErrorPageProps } from "./ErrorPage.types";
 
@@ -54,8 +54,8 @@ const ErrorPage = ({
   const HandleDiscordLink = () => {
     return (
       <u
-        data-testid="discord-link-browser-handler"
-        onClick={() => Browser.open({ url: DISCORD_LINK })}
+        data-testid="support-link-browser-handler"
+        onClick={() => Browser.open({ url: SUPPORT_LINK })}
       >
         {i18n.t(
           "tabs.notifications.details.identifier.errorpage.help.supportchannel"

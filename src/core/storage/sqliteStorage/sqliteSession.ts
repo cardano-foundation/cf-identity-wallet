@@ -81,6 +81,11 @@ class SqliteSession {
     await this.migrateDb();
   }
 
+  async wipe(storageName: string): Promise<void> {
+    await this.sessionInstance?.close();
+    await CapacitorSQLite.deleteDatabase({ database: storageName });
+  }
+
   private async migrateDb(): Promise<void> {
     const currentVersion = await this.getCurrentVersionDatabase();
 

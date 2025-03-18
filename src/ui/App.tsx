@@ -10,6 +10,7 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
+import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -39,6 +40,8 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
+import { getCssVariableValue } from "./utils/styles";
+import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
 
 setupIonicReact();
 
@@ -99,6 +102,12 @@ const App = () => {
         });
       }
 
+      if (platforms.includes("android")) {
+        EdgeToEdge.setBackgroundColor({
+          color: getCssVariableValue("--ion-color-neutral-200"),
+        });
+      }
+
       return () => {
         ScreenOrientation.unlock();
       };
@@ -143,7 +152,7 @@ const App = () => {
     case InitializationPhase.PHASE_ONE:
       return (
         <>
-          <LoadingPage />
+          <LoadingPage type={LoadingType.Splash} />
           <LockPage />
         </>
       );
@@ -167,8 +176,8 @@ const App = () => {
             <div className={showScan ? "ion-hide" : ""}>
               <Routes />
             </div>
+            <LockPage />
           </IonReactRouter>
-          <LockPage />
           <AppOffline />
         </>
       );

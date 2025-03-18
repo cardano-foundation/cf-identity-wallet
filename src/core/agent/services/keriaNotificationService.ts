@@ -269,11 +269,11 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  startNotification() {
+  startPolling() {
     this.loggedIn = true;
   }
 
-  stopNotification() {
+  stopPolling() {
     this.loggedIn = false;
   }
 

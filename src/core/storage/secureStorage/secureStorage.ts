@@ -50,13 +50,19 @@ class SecureStorage {
       : false;
   }
 
-  static async isKeyStoreSupported() {
+  static async isKeyStoreSupported(): Promise<boolean> {
     try {
       await this.set("testKey", "testValue");
       await this.delete("testKey");
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  static async wipe(): Promise<void> {
+    for (const key of Object.values(KeyStoreKeys)) {
+      await SecureStorage.delete(key);
     }
   }
 }

@@ -15,6 +15,8 @@ PODS:
     - Capacitor
     - SQLCipher
     - ZIPFoundation
+  - CapacitorCommunityTapJacking (7.0.0):
+    - Capacitor
   - CapacitorCordova (7.0.1)
   - CapacitorDevice (7.0.0):
     - Capacitor
@@ -83,12 +85,12 @@ PODS:
   - nanopb/encode (3.30910.0)
   - PromisesObjC (2.4.0)
   - SimpleKeychain (1.2.0)
-  - SQLCipher (4.5.5):
-    - SQLCipher/standard (= 4.5.5)
-  - SQLCipher/common (4.5.5)
-  - SQLCipher/standard (4.5.5):
+  - SQLCipher (4.6.1):
+    - SQLCipher/standard (= 4.6.1)
+  - SQLCipher/common (4.6.1)
+  - SQLCipher/standard (4.6.1):
     - SQLCipher/common
-  - ZIPFoundation (0.9.16)
+  - ZIPFoundation (0.9.19)
 
 DEPENDENCIES:
   - "AparajitaCapacitorBiometricAuth (from `../../node_modules/@aparajita/capacitor-biometric-auth`)"
@@ -98,6 +100,7 @@ DEPENDENCIES:
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityPrivacyScreen (from `../../node_modules/@capacitor-community/privacy-screen`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
+  - "CapacitorCommunityTapJacking (from `../../node_modules/@capacitor-community/tap-jacking`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
@@ -141,6 +144,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/privacy-screen"
   CapacitorCommunitySqlite:
     :path: "../../node_modules/@capacitor-community/sqlite"
+  CapacitorCommunityTapJacking:
+    :path: "../../node_modules/@capacitor-community/tap-jacking"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
@@ -170,6 +175,7 @@ SPEC CHECKSUMS:
   CapacitorClipboard: 2afc5e21902233d7990978c8f41f023ddcee3e3d
   CapacitorCommunityPrivacyScreen: 088ffe903fe97c6de54f31407d1bc72c2528a5fc
   CapacitorCommunitySqlite: 6501e7349acf998346acf24ef757861bb3f6fc2b
+  CapacitorCommunityTapJacking: b055efdf44944def0eae0968c52fb5274a629212
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
   CapacitorDevice: 62066b65e148a133df7b8c5bf972ba835b329748
   CapacitorKeyboard: 2c26c6fccde35023c579fc37d4cae6326d5e6343
@@ -192,9 +198,9 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
-  SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
-  ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
+  SQLCipher: 77fbe633cd84db04b07876dd50766b4924b57d61
+  ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
 
-PODFILE CHECKSUM: 4b0b310992defd8f1fb8755244de6cd31409f932
+PODFILE CHECKSUM: c5ccf13a9f8ca45524ec00487dc4bb2cc8c10a90
 
 COCOAPODS: 1.15.2

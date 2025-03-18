@@ -87,6 +87,8 @@ import {
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 import { IdentifierService } from "../../../core/agent/services";
+import { TapJacking } from "@capacitor-community/tap-jacking";
+import { Device } from "@capacitor/device";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -237,6 +239,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    const tapjack = async () => {
+      if ((await Device.getInfo()).platform === "android") {
+        await TapJacking.preventOverlays();
+      }
+    };
+    tapjack();
+  }, []);
+
+  useEffect(() => {
     if (authentication.loggedIn) {
       dispatch(setPauseQueueIncomingRequest(!isOnline));
     } else {
@@ -247,9 +258,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (initializationPhase === InitializationPhase.PHASE_TWO) {
       if (authentication.loggedIn) {
-        Agent.agent.keriaNotifications.startNotification();
+        Agent.agent.keriaNotifications.startPolling();
       } else {
-        Agent.agent.keriaNotifications.stopNotification();
+        Agent.agent.keriaNotifications.stopPolling();
       }
     }
   }, [authentication.loggedIn, initializationPhase]);
@@ -570,9 +581,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_ALREADY_INIT
     );
     if (!initState) {
-      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
+      await SecureStorage.wipe();
     }
 
     // This will skip the onboarding screen with dev mode.

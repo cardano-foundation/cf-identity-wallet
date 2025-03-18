@@ -11,6 +11,9 @@ project(':capacitor-community-privacy-screen').projectDir = new File('../node_mo
 include ':capacitor-community-sqlite'
 project(':capacitor-community-sqlite').projectDir = new File('../node_modules/@capacitor-community/sqlite/android')
 
+include ':capacitor-community-tap-jacking'
+project(':capacitor-community-tap-jacking').projectDir = new File('../node_modules/@capacitor-community/tap-jacking/android')
+
 include ':capacitor-mlkit-barcode-scanning'
 project(':capacitor-mlkit-barcode-scanning').projectDir = new File('../node_modules/@capacitor-mlkit/barcode-scanning/android')
 
