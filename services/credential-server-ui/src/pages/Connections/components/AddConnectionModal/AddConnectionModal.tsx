@@ -4,13 +4,23 @@ import axios from "axios";
 import { PopupModal } from "../../../../components/PopupModal";
 import { AddConnectionModalProps } from "./AddConnectionModal.types";
 import { i18n } from "../../../../i18n";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 import {
   ContentCopy,
   QrCodeRounded,
   RefreshOutlined,
+  ArrowBack,
   WarningAmber,
   CheckCircleOutlined,
+  ExpandMore,
+  MoreVert,
 } from "@mui/icons-material";
 import "./AddConnectionModal.scss";
 import { QRCodeSVG } from "qrcode.react";
@@ -144,9 +154,10 @@ const AddConnectionModal = ({
             <>
               <Button
                 variant="contained"
-                className="neutral-button"
+                className="neutral-button back-button"
                 onClick={() => setCurrentStage(1)}
               >
+                <ArrowBack />
                 {i18n.t("pages.connections.addConnection.modal.button.back")}
               </Button>
               <Button
@@ -187,7 +198,34 @@ const AddConnectionModal = ({
           )}
         </div>
       )}
-      {currentStage === 2 && <div>{/* Content for stage 2 */}</div>}
+      {currentStage === 2 && (
+        <>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Typography
+                component="span"
+                className="accordion-collapsed"
+              >
+                {i18n.t("pages.connections.addConnection.modal.learnMore")}
+              </Typography>
+              <Typography
+                component="span"
+                className="accordion-expanded"
+              >
+                {i18n.t("pages.connections.addConnection.modal.showLess")}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                <Trans
+                  i18nKey="pages.connections.addConnection.modal.descriptionLearnMore"
+                  components={{ moreVertIcon: <MoreVert /> }}
+                />
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        </>
+      )}
     </PopupModal>
   );
 };

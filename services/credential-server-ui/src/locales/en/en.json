@@ -26,7 +26,7 @@
           "errorOnRequest": "Unable to fetch a connection ID. Please try again later.",
           "learnMore": "Learn more",
           "showLess": "Show less",
-          "descriptionLearnMore": "This information can be found within the identifier’s information by selecting the  ⠇ icon and clicking on “Share Connection”.",
+          "descriptionLearnMore": "This information can be found within the identifier’s information by selecting the <moreVertIcon /> icon and clicking on “Share Connection”.",
           "openCamera": "Open Camera to Scan",
           "pasteUrl": "Paste Connection URL",
           "button": {

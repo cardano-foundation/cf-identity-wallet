@@ -7,6 +7,12 @@
     }
   }
 
+  .popup-modal-footer {
+    button {
+      font-weight: 600;
+    }
+  }
+
   &.stage-1 {
     .connection-loading {
       position: relative;
@@ -65,6 +71,77 @@
           margin-left: 0.5rem;
         }
       }
+    }
+  }
+
+  &.stage-2 {
+    p.MuiTypography-root.popup-modal-description {
+      margin-bottom: 0;
+    }
+
+    .MuiAccordion-root {
+      margin: 0;
+      display: flex;
+      flex-direction: column-reverse;
+      background-color: var(--color-background);
+
+      &::before {
+        opacity: 0;
+      }
+
+      h3 button {
+        padding: 0;
+        min-height: 0;
+        margin-top: 0.5rem;
+        justify-content: left;
+
+        span {
+          flex-grow: 0;
+          margin: 0;
+
+          .accordion-collapsed {
+            display: block;
+          }
+          .accordion-expanded {
+            display: none;
+          }
+
+          &.Mui-expanded {
+            .accordion-collapsed {
+              display: none;
+            }
+
+            .accordion-expanded {
+              display: block;
+            }
+          }
+        }
+
+        span,
+        svg {
+          color: var(--color-primary-700);
+        }
+      }
+
+      .MuiAccordionDetails-root {
+        padding: 0;
+        margin-top: 0.5rem;
+        text-align: left;
+
+        p {
+          font-weight: 500;
+
+          svg {
+            height: 1rem;
+            width: 1rem;
+            margin-bottom: -0.15rem;
+          }
+        }
+      }
+    }
+
+    .back-button svg {
+      margin-right: 0.5rem;
     }
   }
 }
