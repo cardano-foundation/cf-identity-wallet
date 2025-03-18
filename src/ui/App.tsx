@@ -41,6 +41,7 @@ import {
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
 import { getCssVariableValue } from "./utils/styles";
+import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
 
 setupIonicReact();
 
@@ -151,7 +152,7 @@ const App = () => {
     case InitializationPhase.PHASE_ONE:
       return (
         <>
-          <LoadingPage />
+          <LoadingPage type={LoadingType.Splash} />
           <LockPage />
         </>
       );
