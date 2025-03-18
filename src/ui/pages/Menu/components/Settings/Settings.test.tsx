@@ -13,7 +13,7 @@ import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { store } from "../../../../../store";
 import {
-  DISCORD_LINK,
+  SUPPORT_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
@@ -342,7 +342,7 @@ describe("Settings page", () => {
     });
   });
 
-  test("Open discord and documentation link", async () => {
+  test("Open support page and documentation link", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <Settings />
@@ -365,7 +365,7 @@ describe("Settings page", () => {
 
     await waitFor(() => {
       expect(browserMock).toBeCalledWith({
-        url: DISCORD_LINK,
+        url: SUPPORT_LINK,
       });
     });
 

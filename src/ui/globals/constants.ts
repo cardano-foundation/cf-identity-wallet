@@ -4,7 +4,8 @@ const MAX_FAVOURITES = 5;
 const DOUBLE_TAP_DELAY = 300;
 
 // Links
-const DISCORD_LINK = "https://discord.com/invite/9yNneV8Ktv";
+const SUPPORT_LINK =
+  "https://cardanofoundation.atlassian.net/servicedesk/customer/user/forbidden";
 const DOCUMENTATION_LINK = "https://docs.idw.cardanofoundation.org/";
 const ONBOARDING_DOCUMENTATION_LINK =
   "https://docs.idw.cardanofoundation.org/ballot/onboarding";
@@ -20,7 +21,7 @@ export {
   SEED_PHRASE_SUGGESTIONS,
   MAX_FAVOURITES,
   DOUBLE_TAP_DELAY,
-  DISCORD_LINK,
+  SUPPORT_LINK,
   DOCUMENTATION_LINK,
   ONBOARDING_DOCUMENTATION_LINK,
   RECOVERY_DOCUMENTATION_LINK,

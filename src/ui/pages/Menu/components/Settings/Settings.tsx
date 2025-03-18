@@ -14,7 +14,7 @@ import {
   layersOutline,
   libraryOutline,
   lockClosedOutline,
-  logoDiscord,
+  helpCircleOutline,
 } from "ionicons/icons";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -31,7 +31,7 @@ import {
 import { Alert } from "../../../../components/Alert";
 import { Verification } from "../../../../components/Verification";
 import {
-  DISCORD_LINK,
+  SUPPORT_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
 import { usePrivacyScreen } from "../../../../hooks/privacyScreenHook";
@@ -103,7 +103,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     },
     {
       index: OptionIndex.Contact,
-      icon: logoDiscord,
+      icon: helpCircleOutline,
       label: i18n.t("tabs.menu.tab.settings.sections.support.contact"),
     },
     {
@@ -180,7 +180,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       break;
     }
     case OptionIndex.Contact: {
-      Browser.open({ url: DISCORD_LINK });
+      Browser.open({ url: SUPPORT_LINK });
       break;
     }
     case OptionIndex.Documentation: {
