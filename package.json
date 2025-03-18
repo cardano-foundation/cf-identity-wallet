@@ -23,6 +23,7 @@
     "@aparajita/capacitor-biometric-auth": "^8.0.2",
     "@capacitor-community/privacy-screen": "^6.0.0",
     "@capacitor-community/sqlite": "^7.0.0",
+    "@capacitor-community/tap-jacking": "^7.0.0",
     "@capacitor-mlkit/barcode-scanning": "^7.0.0",
     "@capacitor/android": "^7.0.0",
     "@capacitor/app": "^7.0.0",
