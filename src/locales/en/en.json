@@ -142,7 +142,7 @@
       "text": "I have read and agree to the <0>{{clickableTerms}}</0> and <1>{{clickablePrivacy}}</1>.",
       "terms": "Terms of Use",
       "privacy": "Privacy Policy",
-      "support": "Veridian Wallet Support form"
+      "support": "Veridian Wallet Support"
     }
   },
   "termsofuse": {
@@ -285,7 +285,7 @@
           },
           {
             "subtitle": "8.9. Disputes",
-            "text": "If you have a dispute with the Foundation or a claim to raise in relation to Veridian, you agree to contact us using the form at Veridian Wallet Support to attempt to resolve the issue informally first."
+            "text": "If you have a dispute with the Foundation or a claim to raise in relation to Veridian, you agree to contact us using the form at <1>{{VeridianSupport}}</1> to attempt to resolve the issue informally first."
           },
           {
             "subtitle": "8.10. Survival",

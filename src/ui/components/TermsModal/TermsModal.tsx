@@ -1,5 +1,6 @@
 import { IonModal } from "@ionic/react";
 import { Trans } from "react-i18next";
+import { Browser } from "@capacitor/browser";
 import { t } from "i18next";
 import { i18n } from "../../../i18n";
 import {
@@ -11,12 +12,13 @@ import {
 import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
+import { SUPPORT_LINK } from "../../globals/constants";
 
 const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
   const HandlePrivacy = () => {
     return (
       <u
-        data-testid="privacy-policy-modal-handler"
+        data-testid="privacy-policy-modal-switch"
         onClick={() => altIsOpen && altIsOpen(true)}
       >
         {i18n.t("generateseedphrase.termsandconditions.privacy")}
@@ -26,8 +28,8 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
   const HandleSupport = () => {
     return (
       <u
-        data-testid="terms-of-use-modal-handler"
-        onClick={() => altIsOpen && altIsOpen(true)} // TODO: Replace with link to support page
+        data-testid="support-link-handler"
+        onClick={() => Browser.open({ url: SUPPORT_LINK })}
       >
         {i18n.t("generateseedphrase.termsandconditions.support")}
       </u>

@@ -5,7 +5,7 @@ const DOUBLE_TAP_DELAY = 300;
 
 // Links
 const SUPPORT_LINK =
-  "https://cardanofoundation.atlassian.net/servicedesk/customer/user/forbidden";
+  "https://cardanofoundation.atlassian.net/servicedesk/customer/portal/14";
 const DOCUMENTATION_LINK = "https://docs.idw.cardanofoundation.org/";
 const ONBOARDING_DOCUMENTATION_LINK =
   "https://docs.idw.cardanofoundation.org/ballot/onboarding";
