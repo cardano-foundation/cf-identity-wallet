@@ -54,11 +54,13 @@ const TermsAndPrivacy = () => {
         name="terms-of-use"
         isOpen={openTerms}
         setIsOpen={setOpenTerms}
+        altIsOpen={setOpenPrivacy}
       />
       <TermsModal
         name="privacy-policy"
         isOpen={openPrivacy}
         setIsOpen={setOpenPrivacy}
+        altIsOpen={setOpenTerms}
       />
     </>
   );

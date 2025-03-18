@@ -141,7 +141,8 @@
     "termsandconditions": {
       "text": "I have read and agree to the <0>{{clickableTerms}}</0> and <1>{{clickablePrivacy}}</1>.",
       "terms": "Terms of Use",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "support": "Veridian Wallet Support form"
     }
   },
   "termsofuse": {
@@ -256,11 +257,11 @@
           },
           {
             "subtitle": "8.2. Privacy Policy",
-            "text": "By using Veridian, you acknowledge that our Privacy Policy applies to you, and your continued use constitutes acceptance of the Privacy Policy."
+            "text": "By using Veridian, you acknowledge that our <0>{{PrivacyPolicy}}</0> applies to you, and your continued use constitutes acceptance of the <0>{{PrivacyPolicy}}</0>."
           },
           {
             "subtitle": "8.3. Feedback",
-            "text": "We welcome your feedback and suggestions regarding Veridian, and you can provide your thoughts at Veridian Wallet Support form. By providing feedback, you grant us permission to use, share, and build upon your input without any obligation or compensation to you."
+            "text": "We welcome your feedback and suggestions regarding Veridian, and you can provide your thoughts at <1>{{VeridianSupport}}</1>. By providing feedback, you grant us permission to use, share, and build upon your input without any obligation or compensation to you."
           },
           {
             "subtitle": "8.4. Amendments",

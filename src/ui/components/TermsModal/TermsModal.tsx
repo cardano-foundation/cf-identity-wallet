@@ -1,4 +1,5 @@
 import { IonModal } from "@ionic/react";
+import { Trans } from "react-i18next";
 import { t } from "i18next";
 import { i18n } from "../../../i18n";
 import {
@@ -11,7 +12,27 @@ import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
 
-const Section = ({ title, content, componentId }: TermsSection) => {
+const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
+  const HandlePrivacy = () => {
+    return (
+      <u
+        data-testid="privacy-policy-modal-handler"
+        onClick={() => altIsOpen && altIsOpen(true)}
+      >
+        {i18n.t("generateseedphrase.termsandconditions.privacy")}
+      </u>
+    );
+  };
+  const HandleSupport = () => {
+    return (
+      <u
+        data-testid="terms-of-use-modal-handler"
+        onClick={() => altIsOpen && altIsOpen(true)} // TODO: Replace with link to support page
+      >
+        {i18n.t("generateseedphrase.termsandconditions.support")}
+      </u>
+    );
+  };
   return (
     <div>
       {title && (
@@ -48,7 +69,13 @@ const Section = ({ title, content, componentId }: TermsSection) => {
                   ?.replace(/[^aA-zZ]/gim, "")
                   .toLowerCase()}-content-${index + 1}`}
               >
-                {item.text}
+                <Trans
+                  i18nKey={item.text}
+                  components={[
+                    <HandlePrivacy key="" />,
+                    <HandleSupport key="" />,
+                  ]}
+                />
               </span>
               <br />
             </>
@@ -66,7 +93,13 @@ const Section = ({ title, content, componentId }: TermsSection) => {
   );
 };
 
-const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
+const TermsModal = ({
+  name,
+  isOpen,
+  setIsOpen,
+  altIsOpen,
+  children,
+}: TermsModalProps) => {
   const nameNoDash = name.replace(/-/g, "");
   const componentId = name + "-modal";
   const termsObject: TermsObject = t(nameNoDash, {
@@ -106,6 +139,7 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
             title={section.title}
             content={section.content}
             componentId={componentId}
+            altIsOpen={altIsOpen}
           />
         ))}
         {children}

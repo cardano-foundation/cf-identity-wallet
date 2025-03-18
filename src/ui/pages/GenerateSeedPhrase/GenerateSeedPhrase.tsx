@@ -185,11 +185,13 @@ const GenerateSeedPhrase = () => {
         name="terms-of-use"
         isOpen={termsModalIsOpen}
         setIsOpen={setTermsModalIsOpen}
+        altIsOpen={setPrivacyModalIsOpen}
       />
       <TermsModal
         name="privacy-policy"
         isOpen={privacyModalIsOpen}
         setIsOpen={setPrivacyModalIsOpen}
+        altIsOpen={setTermsModalIsOpen}
       />
       <AlertConfirm
         isOpen={alertConfirmIsOpen}
