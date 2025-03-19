@@ -1,0 +1,18 @@
+#qr-reader {
+  margin: 0.75rem;
+  border: none !important;
+
+  > div:first-of-type {
+    display: none;
+  }
+
+  #html5-qrcode-anchor-scan-type-change {
+    display: none;
+  }
+
+  #qr-reader__dashboard_section {
+    > div:last-of-type {
+      display: none;
+    }
+  }
+}

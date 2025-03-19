@@ -1,6 +1,6 @@
-import { Trans } from "react-i18next";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Trans } from "react-i18next";
 import { PopupModal } from "../../../../components/PopupModal";
 import { AddConnectionModalProps } from "./AddConnectionModal.types";
 import { i18n } from "../../../../i18n";
@@ -32,6 +32,8 @@ import { config } from "../../../../config";
 import { useSnackbar, VariantType } from "notistack";
 import { styled } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
+import { isValidConnectionUrl } from "../../../../utils/urlChecker";
+import { QrCodeScanner } from "../../../../components/QrCodeScanner";
 
 const CustomInput = styled(InputBase)(({ theme }) => ({
   "label + &": {
@@ -51,6 +53,8 @@ const AddConnectionModal = ({
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [errorOnRequest, setErrorOnRequest] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [isInputValid, setIsInputValid] = useState(false);
   const RESET_TIMEOUT = 1000;
   const { enqueueSnackbar } = useSnackbar();
 
@@ -68,6 +72,8 @@ const AddConnectionModal = ({
   useEffect(() => {
     setCopied(false);
     setShowInput(false);
+    setInputValue("");
+    setIsInputValid(false);
   }, [currentStage]);
 
   const handleShowQr = async () => {
@@ -108,7 +114,38 @@ const AddConnectionModal = ({
       setCurrentStage(1);
       setErrorOnRequest(false);
       setCopied(false);
+      setShowInput(false); // Ensure scanner is unmounted
     }, RESET_TIMEOUT);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setInputValue(value);
+    const isValid = isValidConnectionUrl(value);
+    setIsInputValid(isValid);
+    triggerToast(
+      isValid
+        ? i18n.t("pages.connections.addConnection.modal.toast.success")
+        : i18n.t("pages.connections.addConnection.modal.toast.error"),
+      isValid ? "success" : "error"
+    );
+  };
+
+  const handleScanSuccess = (decodedText: string) => {
+    setInputValue(decodedText);
+    const isValid = isValidConnectionUrl(decodedText);
+    setIsInputValid(isValid);
+    setShowInput(false);
+    triggerToast(
+      isValid
+        ? i18n.t("pages.connections.addConnection.modal.toast.success")
+        : i18n.t("pages.connections.addConnection.modal.toast.error"),
+      isValid ? "success" : "error"
+    );
+  };
+
+  const handleScanError = (errorMessage: string) => {
+    console.error(errorMessage);
   };
 
   return (
@@ -179,6 +216,7 @@ const AddConnectionModal = ({
                 variant="contained"
                 className="primary-button"
                 onClick={resetModal}
+                disabled={!isInputValid}
               >
                 {i18n.t(
                   "pages.connections.addConnection.modal.button.complete"
@@ -239,21 +277,29 @@ const AddConnectionModal = ({
               </Typography>
             </AccordionDetails>
           </Accordion>
-          {!showInput && !canReset && (
+          {!canReset && (
             <>
-              <Box className="camera-button-container">
-                <Button
-                  className="camera-button"
-                  onClick={() => setShowInput(true)}
-                >
-                  <PhotoCamera />
-                </Button>
-                <Typography onClick={() => setShowInput(true)}>
-                  {i18n.t(
-                    "pages.connections.addConnection.modal.button.openCamera"
-                  )}
-                </Typography>
-              </Box>
+              {showInput ? (
+                <QrCodeScanner
+                  onScanSuccess={handleScanSuccess}
+                  onScanError={handleScanError}
+                />
+              ) : (
+                <Box className="camera-button-container">
+                  <Button
+                    className="camera-button"
+                    onClick={() => setShowInput(true)}
+                  >
+                    <PhotoCamera />
+                  </Button>
+                  <Typography onClick={() => setShowInput(true)}>
+                    {i18n.t(
+                      "pages.connections.addConnection.modal.button.openCamera"
+                    )}
+                  </Typography>
+                </Box>
+              )}
+
               <FormControl
                 variant="standard"
                 className="connection-url-form"
@@ -264,11 +310,14 @@ const AddConnectionModal = ({
                 >
                   {i18n.t("pages.connections.addConnection.modal.pasteUrl")}
                 </InputLabel>
-                <CustomInput id="connection-url-input" />
+                <CustomInput
+                  id="connection-url-input"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                />
               </FormControl>
             </>
           )}
-          {showInput && !canReset && <>Some content</>}
         </>
       )}
     </PopupModal>
