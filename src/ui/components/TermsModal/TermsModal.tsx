@@ -2,6 +2,7 @@ import { IonModal } from "@ionic/react";
 import { Trans } from "react-i18next";
 import { Browser } from "@capacitor/browser";
 import { t } from "i18next";
+import { Fragment } from "react";
 import { i18n } from "../../../i18n";
 import {
   TermContent,
@@ -12,7 +13,11 @@ import {
 import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
-import { SUPPORT_LINK } from "../../globals/constants";
+import {
+  DATA_PROTECTION_AUTHORITIES_LINK,
+  FEDERAL_DATA_PROTECTION_LINK,
+  SUPPORT_LINK,
+} from "../../globals/constants";
 
 const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
   const HandlePrivacy = () => {
@@ -25,6 +30,7 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
       </u>
     );
   };
+
   const HandleSupport = () => {
     return (
       <u
@@ -35,6 +41,29 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
       </u>
     );
   };
+
+  const FederalDataProtect = () => {
+    return (
+      <u
+        data-testid="support-link-handler"
+        onClick={() => Browser.open({ url: FEDERAL_DATA_PROTECTION_LINK })}
+      >
+        {i18n.t("privacypolicy.link.federaldataprotection")}
+      </u>
+    );
+  };
+
+  const DataProtectionAuthories = () => {
+    return (
+      <u
+        data-testid="support-link-handler"
+        onClick={() => Browser.open({ url: DATA_PROTECTION_AUTHORITIES_LINK })}
+      >
+        {i18n.t("privacypolicy.link.link")}
+      </u>
+    );
+  };
+
   return (
     <div>
       {title && (
@@ -76,6 +105,8 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
                   components={[
                     <HandlePrivacy key="" />,
                     <HandleSupport key="" />,
+                    <FederalDataProtect key="" />,
+                    <DataProtectionAuthories key="" />,
                   ]}
                 />
               </span>
@@ -85,7 +116,21 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
           {item.nested && item.nested.length > 0 && (
             <ul>
               {item.nested.map((nestedItem, nestedIndex) => (
-                <li key={nestedIndex}>{nestedItem}</li>
+                <li key={nestedIndex}>
+                  <Trans i18nKey={nestedItem} />
+                </li>
+              ))}
+            </ul>
+          )}
+          {item.nestednumeric && item.nestednumeric.length > 0 && (
+            <ul>
+              {item.nestednumeric.map((nestedItem, nestedIndex) => (
+                <li
+                  className="nested-numberic"
+                  key={nestedIndex}
+                >
+                  {nestedItem}
+                </li>
               ))}
             </ul>
           )}
