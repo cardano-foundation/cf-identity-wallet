@@ -3,6 +3,7 @@ import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { startFreeRASP } from "capacitor-freerasp";
 import { IdentifierService } from "../core/agent/services";
 import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
@@ -19,6 +20,10 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
+
+jest.mock("capacitor-freerasp", () => ({
+  startFreeRASP: jest.fn(),
+}));
 
 const mockInitDatabase = jest.fn();
 const getAvailableWitnessesMock = jest.fn();
@@ -852,5 +857,49 @@ describe("System copatibility alert", () => {
     expect(getByText("N/A")).toBeVisible();
 
     expect(getByTestId("not-met")).toBeVisible();
+  });
+});
+
+describe("System threat alert", () => {
+  let startFreeRASPMock: jest.Mock;
+
+  beforeEach(() => {
+    isNativeMock.mockImplementation(() => true);
+    getPlatformsMock.mockImplementation(() => ["android"]);
+    mockInitDatabase.mockClear();
+    getAvailableWitnessesMock.mockClear();
+
+    const deviceInfo = {
+      platform: "android",
+      osVersion: "12.0",
+      model: "",
+      operatingSystem: "android",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo));
+
+    startFreeRASPMock = startFreeRASP as jest.Mock;
+    startFreeRASPMock.mockRejectedValue(
+      new Error("freeRASP initialization failed")
+    );
+  });
+
+  afterEach(() => {
+    startFreeRASPMock.mockClear();
+  });
+
+  test("Shows SystemThreatAlert when freeRASP initialization fails", async () => {
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(startFreeRASPMock).toHaveBeenCalled();
+      expect(getByText("Threats Detected")).toBeVisible();
+    });
   });
 });

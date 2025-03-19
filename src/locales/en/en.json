@@ -1896,5 +1896,48 @@
       "storage": "Secure Storage"
     },
     "noinfo": "No device information available."
+  },
+  "systemthreats": {
+    "title": "Threats Detected",
+    "description": "The following security threats have been detected on your device.",
+    "nothreats": "No security threats detected",
+    "initerror": "Security module initialization failed. Critical protections are not active, leaving the application vulnerable.",
+    "detected": "Detected",
+    "privileged_access": "Privileged Access",
+    "debug": "Debug Mode",
+    "simulator": "Simulator/Emulator",
+    "app_integrity": "App Integrity",
+    "unofficial_store": "Unofficial Store",
+    "hooks": "Hooks Detected",
+    "device_binding": "Device Binding",
+    "secure_hardware_not_available": "Secure Hardware Not Available",
+    "system_vpn": "System VPN",
+    "passcode": "Passcode Not Set",
+    "screenshot": "Screenshot Capability",
+    "screen_recording": "Screen Recording",
+    "obfuscation_issues": "Obfuscation Issues",
+    "developer_mode": "Developer Mode",
+    "adb_enabled": "ADB Enabled",
+    "device_id": "Device ID Issues",
+    "alert": "Please, close and reopen the app to continue.",
+    "help": "Help",
+    "rules": {
+      "privileged_access": "Detects if the app is running with elevated permissions, such as root access on Android or jailbroken status on iOS.",
+      "debug": "Indicates whether the app is running in debug mode, which may expose sensitive information and make reverse engineering easier.",
+      "simulator": "Detects if the app is running in a simulated environment (emulator/simulator), which is often used for testing and can pose security risks.",
+      "app_integrity": "Verifies if the app's code or resources have been tampered with or modified, which could indicate unauthorized alterations or potential malware injection.",
+      "unofficial_store": "Detects whether the app was installed from an unverified or third-party app store, which may increase the risk of malware and unauthorized modifications.",
+      "hooks": "Identifies attempts to hook or manipulate the app's runtime behavior, which is a common technique used by attackers to intercept and modify functionality.",
+      "device_binding": "Ensures that the app is tied to a specific device to prevent unauthorized access from different devices, enhancing security against cloning and unauthorized installations.",
+      "secure_hardware_not_available": "Indicates that secure hardware features, such as a secure enclave or trusted execution environment (TEE), are unavailable. While this may be tolerable in some cases, it can reduce security.",
+      "system_vpn": "Detects if a system-wide VPN is in use, which may be legitimate but could also be used to intercept or alter network traffic.",
+      "passcode": "Checks if the device has a passcode set. A missing passcode may indicate weak device security.",
+      "screenshot": "Detects when a screenshot is taken while the app is running. Depending on the use case, this may indicate a potential security risk.",
+      "screen_recording": "Identifies whether the screen is being recorded while the app is in use, which could indicate an attempt to capture sensitive information.",
+      "obfuscation_issues": "Indicates potential issues with code obfuscation, which is a security measure used to protect the app's code from reverse engineering. Lack of proper obfuscation increases security risks, especially on Android.",
+      "developer_mode": "Detects if the device has developer mode enabled, which may indicate an increased risk of debugging or modification attempts, particularly on Android.",
+      "adb_enabled": "Indicates whether Android Debug Bridge (ADB) is enabled on the device, which can allow unauthorized access or debugging of the app.",
+      "device_id": "Ensures that the device ID remains consistent. Unexpected changes in the device ID may indicate a security risk, such as device cloning or manipulation."
+    }
   }
 }

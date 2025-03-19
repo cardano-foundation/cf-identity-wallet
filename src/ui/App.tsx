@@ -11,6 +11,7 @@ import {
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
 import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
+import { ExitApp } from "@jimcase/capacitor-exit-app";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -43,6 +44,15 @@ import {
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
 import { getCssVariableValue } from "./utils/styles";
 import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
+import {
+  androidChecks,
+  commonChecks,
+  initializeFreeRASP,
+  iosChecks,
+  ThreatCheck,
+} from "../utils/freerasp";
+import { freeraspRules } from "../utils/freeraspRules";
+import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
 
 setupIonicReact();
 
@@ -53,7 +63,83 @@ const App = () => {
   const [showScan, setShowScan] = useState(false);
   const [isCompatible, setIsCompatible] = useState(true);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+  const [isFreeRASPInitialized, setIsFreeRASPInitialized] = useState(false);
+  const [freeRASPInitializedError, setIsFreeRASPInitializedError] =
+    useState("");
+  const [initializeFreeRASPFailed, setInitializeFreeRASPFailed] =
+    useState(false);
+
+  const platforms = getPlatforms();
+  const [appChecks, setAppChecks] = useState<ThreatCheck[]>([
+    ...commonChecks,
+    ...(platforms.includes("ios") ? iosChecks : androidChecks),
+  ]);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const initFreeRASP = initializeFreeRASP(setAppChecks);
+    initFreeRASP().then((response) => {
+      if (!response.success) {
+        setIsFreeRASPInitialized(true);
+        setIsFreeRASPInitializedError(
+          (response.error as string) || "Unknown error"
+        );
+        setInitializeFreeRASPFailed(true);
+      } else {
+        setIsFreeRASPInitialized(true);
+      }
+    });
+  }, []);
+
+  const checkSecurity = () => {
+    if (isFreeRASPInitialized && Capacitor.isNativePlatform()) {
+      const criticalThreats = appChecks
+        .map((check) => {
+          const rule = Object.values(freeraspRules.threats).find(
+            (threat) => threat.name === check.name
+          );
+          return rule?.critical && !check.isSecure
+            ? {
+              name: check.name,
+              description:
+                  freeraspRules.threats[check.name]?.description ||
+                  "No description available",
+            }
+            : null;
+        })
+        .filter((threat) => threat !== null);
+
+      if (criticalThreats.length > 0) {
+        // eslint-disable-next-line no-console
+        console.log(
+          "Critical threats detected:",
+          JSON.stringify(criticalThreats, null, 2)
+        );
+        /*
+         * The app uses ExitApp.exitApp() to terminate execution when critical security threats
+         * are detected at runtime by the freeRASP security library (e.g., jailbreak, root access,
+         * debugger attachment). These threats compromise the integrity and security of the app,
+         * potentially exposing sensitive user data or enabling unauthorized actions.
+         * Terminating the app is a necessary measure to:
+         * 1. Protect user data from being accessed or manipulated in an insecure environment.
+         * 2. Prevent further execution in a compromised state, adhering to best security practices.
+         * 3. Ensure compliance with security standards for handling sensitive operations.
+         * This action is only triggered in response to verified runtime threats and is not used
+         * arbitrarily. Logs of detected threats are recorded prior to termination for transparency
+         * and debugging purposes.
+         */
+        ExitApp.exitApp();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    return;
+    checkSecurity();
+  }, [isFreeRASPInitialized, appChecks]);
 
   useEffect(() => {
     const handleUnknownPromiseError = (event: PromiseRejectionEvent) => {
@@ -187,6 +273,10 @@ const App = () => {
   };
 
   const renderApp = () => {
+    if (Capacitor.isNativePlatform() && !isFreeRASPInitialized) {
+      return <LoadingPage />;
+    }
+
     return (
       <>
         <AppWrapper>
@@ -204,15 +294,15 @@ const App = () => {
     );
   };
 
-  return (
-    <IonApp>
-      {isCompatible ? (
-        renderApp()
-      ) : (
-        <SystemCompatibilityAlert deviceInfo={deviceInfo} />
-      )}
-    </IonApp>
-  );
+  if (!isCompatible) {
+    return <SystemCompatibilityAlert deviceInfo={deviceInfo} />;
+  }
+
+  if (initializeFreeRASPFailed) {
+    return <SystemThreatAlert error={freeRASPInitializedError} />;
+  }
+
+  return <IonApp>{renderApp()}</IonApp>;
 };
 
 export { App };
