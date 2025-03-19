@@ -11,7 +11,7 @@ interface TermContent {
   subtitle: string;
   text: string;
   nested?: string[];
-  nestednumberic?: string[];
+  nestednumeric?: string[];
 }
 
 interface TermsSection {

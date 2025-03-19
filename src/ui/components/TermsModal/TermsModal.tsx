@@ -122,9 +122,9 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
               ))}
             </ul>
           )}
-          {item.nestednumberic && item.nestednumberic.length > 0 && (
+          {item.nestednumeric && item.nestednumeric.length > 0 && (
             <ul>
-              {item.nestednumberic.map((nestedItem, nestedIndex) => (
+              {item.nestednumeric.map((nestedItem, nestedIndex) => (
                 <li
                   className="nested-numberic"
                   key={nestedIndex}

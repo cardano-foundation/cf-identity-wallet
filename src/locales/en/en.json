@@ -415,7 +415,7 @@
           {
             "subtitle": "5. How your information is used",
             "text": "We may use personal information about you for the following purposes:",
-            "nestednumberic": [
+            "nestednumeric": [
               "to manage relationships with suppliers and fulfil contractual obligations (Article 6 para 1 letters a and b GDPR if applicable);",
               "to send you personalised communications which you have requested and that may be of interest to you, which may be based on your activity on our Website or the website of our partners. These may include information, suggestions and recommendations about new offers, campaigns, activities and events (Article 6 para 1 letters a and b GDPR if applicable);",
               "to understand and measure the effectiveness of how we serve you and others (Article 6 para 1 letters b and f GDPR if applicable);",
@@ -504,7 +504,7 @@
           },
           {
             "subtitle": "",
-            "text": "You have the right to request a copy of your personal data as well as the right to have your personal data corrected or deleted.\nYou have the right to lodge a complaint with the competent data protection authority. The competent data protection authority in Switzerland is the <2>{{Federal}}</2>.Competent data protection authorities of EU countries can be accessed through this <3>{{Link}}</3>."
+            "text": "You have the right to request a copy of your personal data as well as the right to have your personal data corrected or deleted.\nYou have the right to lodge a complaint with the competent data protection authority. The competent data protection authority in Switzerland is the <2>{{Federal}}</2>. Competent data protection authorities of EU countries can be accessed through this <3>{{Link}}</3>."
           }
         ]
       },
