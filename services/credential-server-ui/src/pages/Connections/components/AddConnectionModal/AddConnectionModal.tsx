@@ -8,8 +8,11 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   CircularProgress,
+  FormControl,
+  InputLabel,
   Typography,
 } from "@mui/material";
 import {
@@ -21,11 +24,20 @@ import {
   CheckCircleOutlined,
   ExpandMore,
   MoreVert,
+  PhotoCamera,
 } from "@mui/icons-material";
 import "./AddConnectionModal.scss";
 import { QRCodeSVG } from "qrcode.react";
 import { config } from "../../../../config";
 import { useSnackbar, VariantType } from "notistack";
+import { styled } from "@mui/material/styles";
+import InputBase from "@mui/material/InputBase";
+
+const CustomInput = styled(InputBase)(({ theme }) => ({
+  "label + &": {
+    marginTop: theme.spacing(3),
+  },
+}));
 
 const AddConnectionModal = ({
   openModal,
@@ -34,6 +46,8 @@ const AddConnectionModal = ({
   const [currentStage, setCurrentStage] = useState(1);
   const [responseLink, setResponseLink] = useState("");
   const [showQR, setShowQR] = useState(false);
+  const [canReset, setCanReset] = useState(false);
+  const [showInput, setShowInput] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [errorOnRequest, setErrorOnRequest] = useState(false);
@@ -53,6 +67,7 @@ const AddConnectionModal = ({
 
   useEffect(() => {
     setCopied(false);
+    setShowInput(false);
   }, [currentStage]);
 
   const handleShowQr = async () => {
@@ -224,6 +239,36 @@ const AddConnectionModal = ({
               </Typography>
             </AccordionDetails>
           </Accordion>
+          {!showInput && !canReset && (
+            <>
+              <Box className="camera-button-container">
+                <Button
+                  className="camera-button"
+                  onClick={() => setShowInput(true)}
+                >
+                  <PhotoCamera />
+                </Button>
+                <Typography onClick={() => setShowInput(true)}>
+                  {i18n.t(
+                    "pages.connections.addConnection.modal.button.openCamera"
+                  )}
+                </Typography>
+              </Box>
+              <FormControl
+                variant="standard"
+                className="connection-url-form"
+              >
+                <InputLabel
+                  shrink
+                  htmlFor="connection-url-input"
+                >
+                  {i18n.t("pages.connections.addConnection.modal.pasteUrl")}
+                </InputLabel>
+                <CustomInput id="connection-url-input" />
+              </FormControl>
+            </>
+          )}
+          {showInput && !canReset && <>Some content</>}
         </>
       )}
     </PopupModal>

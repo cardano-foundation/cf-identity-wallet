@@ -27,7 +27,6 @@
           "learnMore": "Learn more",
           "showLess": "Show less",
           "descriptionLearnMore": "This information can be found within the identifier’s information by selecting the <moreVertIcon /> icon and clicking on “Share Connection”.",
-          "openCamera": "Open Camera to Scan",
           "pasteUrl": "Paste Connection URL",
           "button": {
             "copyConnectionId": "Copy Connection ID",
@@ -36,7 +35,8 @@
             "next": "Next",
             "back": "Back",
             "complete": "Complete",
-            "errorMessage": "Please paste a valid connection URL"
+            "errorMessage": "Please paste a valid connection URL",
+            "openCamera": "Open Camera to Scan"
           },
           "toast": {
             "pending": "Connection pending",

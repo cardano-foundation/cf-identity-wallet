@@ -140,6 +140,48 @@
       }
     }
 
+    .camera-button-container {
+      margin: 1.5rem 0;
+
+      .camera-button {
+        width: 5.5rem;
+        height: 5.5rem;
+        margin-bottom: 0.75rem;
+        padding: 1.3125rem 1.375rem 1.4375rem 1.375rem;
+        justify-content: center;
+        align-items: center;
+        border-radius: 2.75rem;
+        background: var(--color-primary-200);
+
+        svg {
+          width: 2.75rem;
+          height: 2.75rem;
+        }
+      }
+
+      p {
+        font-size: 0.75rem;
+      }
+    }
+
+    .connection-url-form {
+      margin-bottom: 1.5rem;
+
+      label {
+        color: var(--color-text);
+      }
+
+      input {
+        padding: 1rem 1.25rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--color-neutral-400);
+
+        &:focus {
+          border: 2px solid var(--color-primary-700);
+        }
+      }
+    }
+
     .back-button svg {
       margin-right: 0.5rem;
     }
