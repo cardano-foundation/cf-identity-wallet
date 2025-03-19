@@ -81,14 +81,12 @@ const App = () => {
 
     const initFreeRASP = initializeFreeRASP(setAppChecks);
     initFreeRASP().then((response) => {
+      setIsFreeRASPInitialized(true);
       if (!response.success) {
-        setIsFreeRASPInitialized(true);
         setIsFreeRASPInitializedError(
           (response.error as string) || "Unknown error"
         );
         setInitializeFreeRASPFailed(true);
-      } else {
-        setIsFreeRASPInitialized(true);
       }
     });
   }, []);
@@ -137,7 +135,6 @@ const App = () => {
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
-    return;
     checkSecurity();
   }, [isFreeRASPInitialized, appChecks]);
 
@@ -233,7 +230,7 @@ const App = () => {
     checkCompatibility();
   }, []);
 
-  const contentByInitPhase = (initPhase: InitializationPhase) => {
+  const renderContentByInitPhase = (initPhase: InitializationPhase) => {
     switch (initPhase) {
     case InitializationPhase.PHASE_ZERO:
       return <LoadingPage />;
@@ -281,7 +278,7 @@ const App = () => {
       <>
         <AppWrapper>
           <StrictMode>
-            {contentByInitPhase(initializationPhase)}
+            {renderContentByInitPhase(initializationPhase)}
             <InputRequest />
             <SidePage />
             <GenericError />
