@@ -20,6 +20,8 @@ PODS:
   - CapacitorCordova (7.0.1)
   - CapacitorDevice (7.0.0):
     - Capacitor
+  - CapacitorFreerasp (1.10.0):
+    - Capacitor
   - CapacitorKeyboard (7.0.0):
     - Capacitor
   - CapacitorMlkitBarcodeScanning (7.0.0):
@@ -61,6 +63,8 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
+  - JimcaseCapacitorExitApp (1.0.5):
+    - Capacitor
   - MLImage (1.0.0-beta6)
   - MLKitBarcodeScanning (6.0.0):
     - MLKitCommon (~> 12.0)
@@ -103,6 +107,7 @@ DEPENDENCIES:
   - "CapacitorCommunityTapJacking (from `../../node_modules/@capacitor-community/tap-jacking`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - CapacitorFreerasp (from `../../node_modules/capacitor-freerasp`)
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
   - CapacitorNativeSettings (from `../../node_modules/capacitor-native-settings`)
@@ -111,6 +116,7 @@ DEPENDENCIES:
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
   - "EvvaCapacitorSecureStoragePlugin (from `../../node_modules/@evva/capacitor-secure-storage-plugin`)"
+  - "JimcaseCapacitorExitApp (from `../../node_modules/@jimcase/capacitor-exit-app`)"
 
 SPEC REPOS:
   trunk:
@@ -150,6 +156,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
     :path: "../../node_modules/@capacitor/device"
+  CapacitorFreerasp:
+    :path: "../../node_modules/capacitor-freerasp"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorMlkitBarcodeScanning:
@@ -166,31 +174,35 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
   EvvaCapacitorSecureStoragePlugin:
     :path: "../../node_modules/@evva/capacitor-secure-storage-plugin"
+  JimcaseCapacitorExitApp:
+    :path: "../../node_modules/@jimcase/capacitor-exit-app"
 
 SPEC CHECKSUMS:
-  AparajitaCapacitorBiometricAuth: 3057403ee3e9e390e57bfb92b576f439157951b8
-  Capacitor: 23fff43571a4d1e3ee7d67b5a3588c6e757c2913
-  CapacitorApp: 45cb7cbef4aa380b9236fd6980033eb5cde6fcd2
-  CapacitorBrowser: 352a66541b15ceadae1d703802b11979023705e3
-  CapacitorClipboard: 2afc5e21902233d7990978c8f41f023ddcee3e3d
-  CapacitorCommunityPrivacyScreen: 088ffe903fe97c6de54f31407d1bc72c2528a5fc
-  CapacitorCommunitySqlite: 6501e7349acf998346acf24ef757861bb3f6fc2b
-  CapacitorCommunityTapJacking: b055efdf44944def0eae0968c52fb5274a629212
+  AparajitaCapacitorBiometricAuth: c058563fe00160e12b022341e11b3181357ea93a
+  Capacitor: de199cba6c8b20995428ad0b7cb0bc6ca625ffd4
+  CapacitorApp: 9cb31064a6c6bb2b1438583733a7bf45557fc1da
+  CapacitorBrowser: 55c21db47416dcc8fc3b623e18fd7d09acb26081
+  CapacitorClipboard: 007d79cd6c104002b274546d13873526ca20beb7
+  CapacitorCommunityPrivacyScreen: 682470c41cce325d7a85b95907887919d4694066
+  CapacitorCommunitySqlite: b11e556cf5d149f9e0b6fbbb47959a6cd718c3d0
+  CapacitorCommunityTapJacking: 96d1d28a7e2bd4c4d22eb0af0f1cd6eefa419a9f
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
-  CapacitorDevice: 62066b65e148a133df7b8c5bf972ba835b329748
-  CapacitorKeyboard: 2c26c6fccde35023c579fc37d4cae6326d5e6343
-  CapacitorMlkitBarcodeScanning: 06c21220bf207bdb146dddc2e8548f3f2686879f
-  CapacitorNativeSettings: 03d126571fc0e12f89ffeb1516788bf371b528bc
-  CapacitorScreenOrientation: 4b2778087f4b4b138705cdabe431de0829116974
-  CapacitorShare: 2fcf1758cd07e0558f6aed40d7437bf8a3a42297
-  CapacitorSplashScreen: f4e58cc02aafd91c7cbaf32a3d1b44d02a115125
-  CapacitorStatusBar: 438e90beeeefa8276b24e6c5991cb02dd13e51bf
-  EvvaCapacitorSecureStoragePlugin: 0d5ce72e8d8cc62255b7151733ed8c2e0fdc1eed
+  CapacitorDevice: 069faf433b3a99c3d5f0e500fbe634f60a8c6a84
+  CapacitorFreerasp: 4477326ed8cd7049ed556aa16aabf4fd400926d0
+  CapacitorKeyboard: 4db71e694e7afb5d7c0be09b05495c19f7d6c914
+  CapacitorMlkitBarcodeScanning: db64496b3e8f41be79e3ef81bfd1bb430adcb0ca
+  CapacitorNativeSettings: bef37b3c7e2184da7416a3f162c71de19fd27593
+  CapacitorScreenOrientation: 45e36e1121cdba1634eb12077c5e99391055116f
+  CapacitorShare: d94c53d7656f1ce8f6712ae8d19ab0c18a69259f
+  CapacitorSplashScreen: 7e7a0a1113833032f196b3af6fa437baccacf5bc
+  CapacitorStatusBar: a8c4c83ed2e973bdafb979e80e4b00d027832cb7
+  EvvaCapacitorSecureStoragePlugin: 43df44513abd5295a63f8e8813e9b5b7159dbfe0
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: eff9e23ec1d90ea4157a1ee2e32a4f610c5b3318
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  JimcaseCapacitorExitApp: 54f1ea5c2395417c5c875309f1bec789741b49a0
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
@@ -201,6 +213,6 @@ SPEC CHECKSUMS:
   SQLCipher: 77fbe633cd84db04b07876dd50766b4924b57d61
   ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
 
-PODFILE CHECKSUM: c5ccf13a9f8ca45524ec00487dc4bb2cc8c10a90
+PODFILE CHECKSUM: ce9a8454f89a663bc1ae704031f150763e9d05a4
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
