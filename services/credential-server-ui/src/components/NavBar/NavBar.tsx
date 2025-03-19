@@ -48,7 +48,7 @@ const menuItems = [
   {
     key: "connections",
     label: i18n.t("navbar.connections"),
-    path: "/connections",
+    path: "/",
     icons: [<GroupFull />, <GroupOutlined />],
   },
   {

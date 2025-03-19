@@ -48,12 +48,17 @@ const App = () => {
               >
                 <Route
                   index
+                  element={<Connections />}
+                />
+                {/* TODO: Removing until we are ready to bring back Overview */}
+                {/* <Route
+                  index
                   element={<Overview />}
                 />
                 <Route
                   path="/connections"
                   element={<Connections />}
-                />
+                /> */}
                 <Route
                   path="/credentials"
                   element={<Credentials />}
