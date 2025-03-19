@@ -7,11 +7,11 @@ interface TermsModalProps {
   altIsOpen?: (value: boolean) => void;
   children?: ReactNode;
 }
-
 interface TermContent {
   subtitle: string;
   text: string;
   nested?: string[];
+  nestednumberic?: string[];
 }
 
 interface TermsSection {

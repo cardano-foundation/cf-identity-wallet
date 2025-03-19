@@ -25,6 +25,14 @@ ion-modal.terms-modal {
     .terms-of-use-section-bottom,
     li {
       font-weight: 400;
+
+      strong {
+        font-weight: 500;
+      }
+
+      &.nested-numberic {
+        list-style-type: lower-roman;
+      }
     }
 
     ul {
