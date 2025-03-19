@@ -1,5 +1,4 @@
 import {
-  BiometryError,
   BiometryErrorType,
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
@@ -12,14 +11,20 @@ import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { store } from "../../../../../store";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import {
   SUPPORT_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
+import { ToastMsgType } from "../../../../globals/types";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { SubMenuKey } from "../../Menu.types";
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
+
+jest.mock("../../../../../store/utils", () => ({
+  CLEAR_STORE_ACTIONS: [],
+}));
 
 jest.mock("@capacitor-community/privacy-screen", () => ({
   PrivacyScreen: {
@@ -73,7 +78,7 @@ jest.mock("../../../../hooks/useBiometricsHook", () => {
 });
 
 const openSettingMock = jest.fn(() => Promise.resolve(true));
-
+const deleteAccount = jest.fn();
 jest.mock("capacitor-native-settings", () => ({
   ...jest.requireActual("capacitor-native-settings"),
   NativeSettings: {
@@ -93,8 +98,17 @@ jest.mock("../../../../../core/agent/agent", () => ({
       auth: {
         verifySecret: jest.fn().mockResolvedValue(true),
       },
+      deleteAccount: () => deleteAccount(),
     },
   },
+}));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    ...jest.requireActual("react-router-dom").useHistory,
+    push: jest.fn(),
+  }),
 }));
 
 describe("Settings page", () => {
@@ -470,6 +484,74 @@ describe("Settings page", () => {
             .createpasscode
         )
       ).toBeVisible();
+    });
+  });
+  test("Delete account", async () => {
+    const state = {
+      stateCache: {
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      identifiersCache: {
+        identifiers: [],
+      },
+      connectionsCache: {
+        multisigConnections: {},
+      },
+      biometricsCache: {
+        enable: false,
+      },
+    };
+
+    const dispatchMock = jest.fn();
+    const mockStore = configureStore();
+    const storeMocked = {
+      ...mockStore(state),
+      dispatch: dispatchMock,
+    };
+
+    const switchViewMock = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <Settings switchView={switchViewMock} />
+      </Provider>
+    );
+
+    fireEvent.click(
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.deleteaccount.button
+      )
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.deleteaccount.alert
+            .title
+        )
+      );
+    });
+
+    fireEvent.click(getByTestId("delete-account-alert-confirm-button"));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title));
+    });
+
+    await passcodeFiller(getByText, getByTestId, "193212");
+
+    await waitFor(() => {
+      expect(deleteAccount).toBeCalled();
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.DELETE_ACCOUNT_SUCCESS)
+      );
     });
   });
 });

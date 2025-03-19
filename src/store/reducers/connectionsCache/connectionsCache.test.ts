@@ -1,5 +1,6 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
+  clearConnectionsCache,
   connectionsCacheSlice,
   getConnectionsCache,
   getMultisigConnectionsCache,
@@ -82,6 +83,15 @@ describe("connectionsCacheSlice", () => {
     );
 
     expect(newState.connections).toEqual({});
+  });
+
+  it("should handle clearConnectionsCache", () => {
+    const newState = connectionsCacheSlice.reducer(
+      initialState,
+      clearConnectionsCache()
+    );
+
+    expect(newState).toEqual(initialState);
   });
 });
 

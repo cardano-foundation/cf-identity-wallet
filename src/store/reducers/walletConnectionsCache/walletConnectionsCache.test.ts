@@ -1,6 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import {
+  clearWalletConnection,
   getConnectedWallet,
   getIsConnecting,
   getPendingConnection,
@@ -48,6 +49,26 @@ describe("walletConnectionsCacheSlice", () => {
     );
     expect(newState.walletConnections).toEqual(connections);
   });
+
+  it("should handle clearWalletConnection", () => {
+    const connections: ConnectionData[] = [
+      {
+        id: "2",
+        name: "Wallet name #2",
+        selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+        url: "http://localhost:3001/",
+      },
+    ];
+    const newState = walletConnectionsCacheSlice.reducer(
+      {
+        ...initialState,
+        walletConnections: connections,
+      },
+      clearWalletConnection()
+    );
+    expect(newState).toEqual(initialState);
+  });
+
   it("should handle setConnectedWallet", () => {
     const connection: ConnectionData = {
       id: "2",

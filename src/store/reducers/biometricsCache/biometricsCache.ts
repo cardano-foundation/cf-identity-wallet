@@ -13,10 +13,12 @@ const biometricsCacheSlice = createSlice({
     setEnableBiometricsCache: (state, action: PayloadAction<boolean>) => {
       state.enabled = action.payload;
     },
+    clearBiometricsCache: () => initialState,
   },
 });
 
-const { setEnableBiometricsCache } = biometricsCacheSlice.actions;
+const { setEnableBiometricsCache, clearBiometricsCache } =
+  biometricsCacheSlice.actions;
 
 const getBiometricsCacheCache = (state: RootState) => state.biometricsCache;
 
@@ -25,4 +27,5 @@ export {
   setEnableBiometricsCache,
   getBiometricsCacheCache,
   biometricsCacheSlice,
+  clearBiometricsCache,
 };

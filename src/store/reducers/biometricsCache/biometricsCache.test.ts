@@ -1,6 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
   biometricsCacheSlice,
+  clearBiometricsCache,
   setEnableBiometricsCache,
 } from "./biometricsCache";
 
@@ -20,5 +21,13 @@ describe("biometricsCache", () => {
       setEnableBiometricsCache(true)
     );
     expect(newState.enabled).toEqual(true);
+  });
+
+  it("should handle clearBiometricsCache", () => {
+    const newState = biometricsCacheSlice.reducer(
+      initialState,
+      clearBiometricsCache()
+    );
+    expect(newState.enabled).toEqual(false);
   });
 });

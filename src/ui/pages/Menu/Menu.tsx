@@ -96,7 +96,8 @@ const Menu = () => {
     setSelectedOption(key);
   };
 
-  const subMenuItems = SubMenuItems(showSelectedOption);
+  const closeSetting = () => setShowSubMenu(false);
+  const subMenuItems = SubMenuItems(showSelectedOption, closeSetting);
 
   const selectSubmenu = useMemo(() => {
     // NOTE: emptySubMenu is returned for unavailable selected options to not break the animation

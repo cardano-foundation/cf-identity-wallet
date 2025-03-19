@@ -51,6 +51,7 @@ const credsCacheSlice = createSlice({
     ) => {
       state.filters = action.payload;
     },
+    clearCredCache: () => initialState,
   },
 });
 
@@ -63,6 +64,7 @@ export const {
   addFavouritesCredsCache,
   removeFavouritesCredsCache,
   setCredentialsFilters,
+  clearCredCache,
 } = credsCacheSlice.actions;
 
 const getCredsCache = (state: RootState) => state.credsCache.creds;

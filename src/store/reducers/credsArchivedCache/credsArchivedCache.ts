@@ -17,12 +17,14 @@ const credsArchivedCacheSlice = createSlice({
     ) => {
       state.creds = action.payload;
     },
+    clearCredArchivedCache: () => initialState,
   },
 });
 
 export { initialState, credsArchivedCacheSlice };
 
-export const { setCredsArchivedCache } = credsArchivedCacheSlice.actions;
+export const { setCredsArchivedCache, clearCredArchivedCache } =
+  credsArchivedCacheSlice.actions;
 
 const getCredsArchivedCache = (state: RootState) =>
   state.credsArchivedCache.creds;

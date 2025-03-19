@@ -599,6 +599,7 @@ class Agent {
 
     await this.storageSession.wipe(walletId);
     await SecureStorage.wipe();
+    this.markAgentStatus(false);
   }
 }
 

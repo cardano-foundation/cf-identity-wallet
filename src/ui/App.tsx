@@ -15,6 +15,7 @@ import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getCurrentOperation,
+  getGlobalLoading,
   getInitializationPhase,
 } from "../store/reducers/stateCache";
 import { AppOffline } from "./components/AppOffline";
@@ -47,6 +48,7 @@ setupIonicReact();
 
 const App = () => {
   const initializationPhase = useAppSelector(getInitializationPhase);
+  const globalLoading = useAppSelector(getGlobalLoading);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
   const [isCompatible, setIsCompatible] = useState(true);
@@ -195,6 +197,7 @@ const App = () => {
             <GenericError />
             <NoWitnessAlert />
             <ToastStack />
+            {globalLoading && <LoadingPage fullPage />}
           </StrictMode>
         </AppWrapper>
       </>

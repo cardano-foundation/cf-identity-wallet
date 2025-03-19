@@ -2,12 +2,18 @@ import { IonSpinner } from "@ionic/react";
 import "./LoadingPage.scss";
 import { LoadingPageProps, LoadingType } from "./LoadingPage.types";
 import splashImage from "../../assets/images/Splash.png";
+import { combineClassNames } from "../../utils/style";
 
-const LoadingPage = ({ type = LoadingType.Spin }: LoadingPageProps) => {
+const LoadingPage = ({
+  type = LoadingType.Spin,
+  fullPage,
+}: LoadingPageProps) => {
   return (
     <div
       data-testid="loading-page"
-      className="loading-page"
+      className={combineClassNames("loading-page", {
+        "full-page": !!fullPage,
+      })}
       style={
         type === LoadingType.Splash
           ? {
