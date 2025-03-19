@@ -25,7 +25,10 @@ const emptySubMenu = {
   renderAsModal: false,
 };
 
-const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
+const SubMenuItems = (
+  showSelectedOption: (key: SubMenuKey) => void,
+  handleCloseSubMenu: () => void
+) => {
   const profileRef = useRef<ProfileOptionRef>(null);
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -109,6 +112,7 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
           <Settings
             {...props}
             switchView={showSelectedOption}
+            handleClose={handleCloseSubMenu}
           />
         ),
         title: "tabs.menu.tab.settings.sections.header",

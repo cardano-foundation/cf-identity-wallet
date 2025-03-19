@@ -56,6 +56,7 @@ import {
   setQueueIncomingRequest,
   setToastMsg,
   showNoWitnessAlert,
+  getForceInitApp,
 } from "../../../store/reducers/stateCache";
 import {
   IncomingRequestType,
@@ -197,6 +198,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const recoveryCompleteNoInterruption = useAppSelector(
     getRecoveryCompleteNoInterruption
   );
+  const forceInitApp = useAppSelector(getForceInitApp);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
@@ -236,7 +238,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     initApp();
-  }, []);
+  }, [forceInitApp]);
 
   useEffect(() => {
     const tapjack = async () => {

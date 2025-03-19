@@ -111,6 +111,7 @@ const identifiersCacheSlice = createSlice({
     ) => {
       state.filters = action.payload;
     },
+    clearIdentifierCache: () => initialState,
   },
 });
 
@@ -129,6 +130,7 @@ export const {
   setIdentifiersFilters,
   removeIdentifierCache,
   addGroupIdentifierCache,
+  clearIdentifierCache,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>

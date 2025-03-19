@@ -1391,6 +1391,14 @@
                 }
               },
               "version": "App Version"
+            },
+            "deleteaccount": {
+              "button": "Delete account",
+              "alert": {
+                "title": "This will delete all wallet data. You can restore your account anytime with your secret recovery phrase.",
+                "confirm": "Delete account",
+                "cancel": "Cancel"
+              }
             }
           }
         },
@@ -1817,7 +1825,9 @@
     "unknownerror": "Something went wrong, try again",
     "proposalcredaccepted": "Credential proposal accepted",
     "proposalcredreject": "Credential proposal rejected",
-    "proposalcredfailerror": "Unable to record response"
+    "proposalcredfailerror": "Unable to record response",
+    "deleteaccounterror": "Unable to delete account",
+    "deleteaccountsuccess": "Account deleted successfully"
   },
   "request": {
     "sign": {

@@ -79,6 +79,8 @@ enum ToastMsgType {
   FAILED_UPDATE_CONNECTION = "failedupdateconnectionerror",
   DUPLICATE_CONNECTION = "duplicateconnectionerror",
   GROUP_ID_NOT_MATCH_ERROR = "groupidnotmatcherror",
+  DELETE_ACCOUNT_ERROR = "deleteaccounterror",
+  DELETE_ACCOUNT_SUCCESS = "deleteaccountsuccess",
   UNKNOWN_ERROR = "unknownerror",
 }
 

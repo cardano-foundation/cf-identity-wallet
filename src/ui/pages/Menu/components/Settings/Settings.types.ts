@@ -3,6 +3,7 @@ import { SubMenuKey } from "../../Menu.types";
 
 interface SettingsProps {
   switchView?: (key: SubMenuKey) => void;
+  handleClose?: () => void;
 }
 
 interface OptionProps {
@@ -22,6 +23,7 @@ enum OptionIndex {
   Term,
   Contact,
   Version,
+  DeleteAccount,
 }
 
 interface SettingsItemProps {

@@ -21,6 +21,7 @@ import {
   setIsOnline,
   showGenericError,
   showConnections,
+  clearStateCache,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -28,6 +29,7 @@ import { OperationType } from "../../../ui/globals/types";
 import {
   IncomingRequestProps,
   IncomingRequestType,
+  InitializationPhase,
   PeerConnectSigningEventRequest,
 } from "./stateCache.types";
 import { PeerConnectionEventTypes } from "../../../core/cardano/walletConnect/peerConnection.types";

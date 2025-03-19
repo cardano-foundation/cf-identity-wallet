@@ -3,6 +3,7 @@ import {
   credsArchivedCacheSlice,
   setCredsArchivedCache,
   getCredsArchivedCache,
+  clearCredArchivedCache,
 } from "./credsArchivedCache";
 import { RootState } from "../../index";
 import {
@@ -40,6 +41,14 @@ describe("credsArchivedCacheSlice", () => {
       setCredsArchivedCache(creds)
     );
     expect(newState.creds).toEqual(creds);
+  });
+
+  it("should handle clearCredArchivedCache", () => {
+    const newState = credsArchivedCacheSlice.reducer(
+      initialState,
+      clearCredArchivedCache()
+    );
+    expect(newState).toEqual(initialState);
   });
 });
 

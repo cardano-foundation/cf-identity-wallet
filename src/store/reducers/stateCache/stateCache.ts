@@ -43,6 +43,7 @@ const initialState: StateCacheProps = {
   },
   showConnections: false,
   toastMsgs: [],
+  forceInitApp: 0,
 };
 
 const stateCacheSlice = createSlice({
@@ -174,8 +175,17 @@ const stateCacheSlice = createSlice({
     showConnections: (state, action: PayloadAction<boolean>) => {
       state.showConnections = action.payload;
     },
+    showGlobalLoading: (state, action: PayloadAction<boolean>) => {
+      state.showLoading = action.payload;
+    },
     showNoWitnessAlert: (state, action: PayloadAction<boolean | undefined>) => {
       state.showNoWitnessAlert = action.payload;
+    },
+    clearStateCache: (state) => {
+      return {
+        ...initialState,
+        forceInitApp: (state.forceInitApp || 0) + 1,
+      };
     },
   },
 });
@@ -204,6 +214,8 @@ const {
   showConnections,
   removeToastMessage,
   showNoWitnessAlert,
+  clearStateCache,
+  showGlobalLoading,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -234,6 +246,8 @@ const getShowConnections = (state: RootState) =>
 const getShowNoWitnessAlert = (state: RootState) =>
   state.stateCache.showNoWitnessAlert;
 const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
+const getForceInitApp = (state: RootState) => state.stateCache.forceInitApp;
+const getGlobalLoading = (state: RootState) => state.stateCache.showLoading;
 
 export type {
   AuthenticationCacheProps,
@@ -242,6 +256,9 @@ export type {
 };
 
 export {
+  getGlobalLoading,
+  showGlobalLoading,
+  clearStateCache,
   showNoWitnessAlert,
   getShowNoWitnessAlert,
   dequeueIncomingRequest,
@@ -261,6 +278,7 @@ export {
   getStateCache,
   getToastMgs,
   getToastMsgs,
+  getForceInitApp,
   initialState,
   login,
   logout,
