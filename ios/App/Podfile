@@ -1,6 +1,6 @@
 require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
 
-platform :ios, '15.5'
+platform :ios, '18.0'
 use_frameworks!
 
 # workaround to avoid Xcode caching of Pods that requires
