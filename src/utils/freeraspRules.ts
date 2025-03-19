@@ -19,7 +19,7 @@ export const freeraspRules: FreeraspRules = {
     privileged_access: {
       name: ThreatName.PRIVILEGED_ACCESS,
       critical: process.env.DEV_DISABLE_RASP === "true" ? false : true,
-      description: i18n.t("systemthreats.rules.privileged_access"),
+      description: i18n.t("systemthreats.rules.privilegedaccess"),
     },
     debug: {
       name: ThreatName.DEBUG,
@@ -34,12 +34,12 @@ export const freeraspRules: FreeraspRules = {
     app_integrity: {
       name: ThreatName.APP_INTEGRITY,
       critical: process.env.DEV_DISABLE_RASP === "true" ? false : true,
-      description: i18n.t("systemthreats.rules.app_integrity"),
+      description: i18n.t("systemthreats.rules.appintegrity"),
     },
     unofficial_store: {
       name: ThreatName.UNOFFICIAL_STORE,
       critical: process.env.DEV_DISABLE_RASP === "true" ? false : true,
-      description: i18n.t("systemthreats.rules.unofficial_store"),
+      description: i18n.t("systemthreats.rules.unofficialstore"),
     },
     hooks: {
       name: ThreatName.HOOKS,
@@ -49,17 +49,17 @@ export const freeraspRules: FreeraspRules = {
     device_binding: {
       name: ThreatName.DEVICE_BINDING,
       critical: true,
-      description: i18n.t("systemthreats.rules.device_binding"),
+      description: i18n.t("systemthreats.rules.devicebinding"),
     },
     secure_hardware_not_available: {
       name: ThreatName.SECURE_HARDWARE_NOT_AVAILABLE,
       critical: process.env.DEV_DISABLE_RASP === "true" ? false : true,
-      description: i18n.t("systemthreats.rules.secure_hardware_not_available"),
+      description: i18n.t("systemthreats.rules.securehardwarenotavailable"),
     },
     system_vpn: {
       name: ThreatName.SYSTEM_VPN,
       critical: false,
-      description: i18n.t("systemthreats.rules.system_vpn"),
+      description: i18n.t("systemthreats.rules.systemvpn"),
     },
     passcode: {
       name: ThreatName.PASSCODE,
@@ -74,31 +74,31 @@ export const freeraspRules: FreeraspRules = {
     screen_recording: {
       name: ThreatName.SCREEN_RECORDING,
       critical: false,
-      description: i18n.t("systemthreats.rules.screen_recording"),
+      description: i18n.t("systemthreats.rules.screenrecording"),
     },
     // Android only
     obfuscation_issues: {
       name: ThreatName.OBFUSCATION_ISSUES,
       critical: true,
-      description: i18n.t("systemthreats.rules.obfuscation_issues"),
+      description: i18n.t("systemthreats.rules.obfuscationissues"),
     },
     // Android only
     developer_mode: {
       name: ThreatName.DEVELOPER_MODE,
       critical: process.env.DEV_DISABLE_RASP === "true" ? false : true,
-      description: i18n.t("systemthreats.rules.developer_mode"),
+      description: i18n.t("systemthreats.rules.developermode"),
     },
     // Android only
     adb_enabled: {
       name: ThreatName.ADB_ENABLED,
       critical: process.env.DEV_DISABLE_RASP === "true" ? false : true,
-      description: i18n.t("systemthreats.rules.adb_enabled"),
+      description: i18n.t("systemthreats.rules.adbenabled"),
     },
     // iOS only
     device_id: {
       name: ThreatName.DEVICE_ID,
       critical: false,
-      description: i18n.t("systemthreats.rules.device_id"),
+      description: i18n.t("systemthreats.rules.deviceid"),
     },
   },
 };
