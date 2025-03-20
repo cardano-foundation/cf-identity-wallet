@@ -63,7 +63,7 @@ export const freeraspRules: FreeraspRules = {
       critical: false,
       description: i18n.t("systemthreats.rules.passcode"),
     },
-    // NOTE: cover via privacy plugin
+    // NOTE: This is covered by the capacitor privacy plugin, so no need to cover here.
     screenshot: {
       name: ThreatName.SCREENSHOT,
       critical: false,
