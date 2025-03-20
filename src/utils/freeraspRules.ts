@@ -6,12 +6,9 @@ export interface Threat {
   critical: boolean;
   description: string;
 }
-interface Threats {
-  [key: string]: Threat;
-}
 
 interface FreeraspRules {
-  threats: Threats;
+  threats: Record<string, Threat>;
 }
 
 export const freeraspRules: FreeraspRules = {
