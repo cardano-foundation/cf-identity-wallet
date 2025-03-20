@@ -64,10 +64,10 @@ const App = () => {
   const [isCompatible, setIsCompatible] = useState(true);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [isFreeRASPInitialized, setIsFreeRASPInitialized] = useState(false);
-  const [freeRASPInitializedError, setIsFreeRASPInitializedError] =
-    useState("");
-  const [initializeFreeRASPFailed, setInitializeFreeRASPFailed] =
-    useState(false);
+  const [freeRASPInitResult, setFreeRASPInitResult] = useState<{
+    success: boolean;
+    error: string;
+  }>({ success: false, error: "" });
 
   const platforms = getPlatforms();
   const [appChecks, setAppChecks] = useState<ThreatCheck[]>([
@@ -82,12 +82,12 @@ const App = () => {
     const initFreeRASP = initializeFreeRASP(setAppChecks);
     initFreeRASP().then((response) => {
       setIsFreeRASPInitialized(true);
-      if (!response.success) {
-        setIsFreeRASPInitializedError(
-          (response.error as string) || "Unknown error"
-        );
-        setInitializeFreeRASPFailed(true);
-      }
+      setFreeRASPInitResult({
+        success: response.success,
+        error: response.success
+          ? ""
+          : (response.error as string) || "Unknown error",
+      });
     });
   }, []);
 
@@ -115,19 +115,6 @@ const App = () => {
           "Critical threats detected:",
           JSON.stringify(criticalThreats, null, 2)
         );
-        /*
-         * The app uses ExitApp.exitApp() to terminate execution when critical security threats
-         * are detected at runtime by the freeRASP security library (e.g., jailbreak, root access,
-         * debugger attachment). These threats compromise the integrity and security of the app,
-         * potentially exposing sensitive user data or enabling unauthorized actions.
-         * Terminating the app is a necessary measure to:
-         * 1. Protect user data from being accessed or manipulated in an insecure environment.
-         * 2. Prevent further execution in a compromised state, adhering to best security practices.
-         * 3. Ensure compliance with security standards for handling sensitive operations.
-         * This action is only triggered in response to verified runtime threats and is not used
-         * arbitrarily. Logs of detected threats are recorded prior to termination for transparency
-         * and debugging purposes.
-         */
         ExitApp.exitApp();
       }
     }
@@ -140,7 +127,6 @@ const App = () => {
 
   useEffect(() => {
     const handleUnknownPromiseError = (event: PromiseRejectionEvent) => {
-      // prevent log error to console.
       event.preventDefault();
       event.promise.catch((e) => showError("Unhandled error", e, dispatch));
     };
@@ -295,8 +281,10 @@ const App = () => {
     return <SystemCompatibilityAlert deviceInfo={deviceInfo} />;
   }
 
-  if (initializeFreeRASPFailed) {
-    return <SystemThreatAlert error={freeRASPInitializedError} />;
+  if (!freeRASPInitResult.success) {
+    return (
+      <SystemThreatAlert error={freeRASPInitResult.error || "Unknown error"} />
+    );
   }
 
   return <IonApp>{renderApp()}</IonApp>;
