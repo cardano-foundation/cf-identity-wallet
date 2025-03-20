@@ -1,4 +1,3 @@
-// utils/freerasp.ts
 import { startFreeRASP } from "capacitor-freerasp";
 import React, { Dispatch, SetStateAction } from "react";
 

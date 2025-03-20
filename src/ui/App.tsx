@@ -293,7 +293,7 @@ const App = () => {
     return <SystemCompatibilityAlert deviceInfo={deviceInfo} />;
   }
 
-  if (!freeRASPInitResult.success) {
+  if (isFreeRASPInitialized && !freeRASPInitResult.success) {
     return (
       <SystemThreatAlert error={freeRASPInitResult.error || "Unknown error"} />
     );
