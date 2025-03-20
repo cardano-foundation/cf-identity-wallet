@@ -12,6 +12,7 @@ interface OptionProps {
   label: string;
   actionIcon?: ReactNode;
   note?: string;
+  href?: string;
 }
 
 enum OptionIndex {
