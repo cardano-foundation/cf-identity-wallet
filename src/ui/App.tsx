@@ -50,8 +50,8 @@ import {
   initializeFreeRASP,
   iosChecks,
   ThreatCheck,
-} from "../utils/freerasp";
-import { freeraspRules } from "../utils/freeraspRules";
+} from "../security/freerasp";
+import { freeraspRules } from "../security/freeraspRules";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
 
 setupIonicReact();
