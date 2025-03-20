@@ -1,5 +1,6 @@
 import { startFreeRASP } from "capacitor-freerasp";
 import React, { Dispatch, SetStateAction } from "react";
+import { i18n } from "../i18n";
 
 export enum ThreatName {
   PRIVILEGED_ACCESS = "Privileged Access",
@@ -69,13 +70,16 @@ export const iosChecks: ThreatCheck[] = [
 
 const createThreatAction = (
   setAppChecks: React.Dispatch<React.SetStateAction<ThreatCheck[]>>,
-  threatName: ThreatName
+  threatName: ThreatName,
+  description: string
 ) => {
+  if (process.env.DEV_DISABLE_RASP === "true") return;
+
   return () => {
     setAppChecks((currentState) => {
       return currentState.map((threat) => {
         if (threat.name === threatName) {
-          return { ...threat, isSecure: false };
+          return { ...threat, description, isSecure: false };
         }
         return threat;
       });
@@ -90,34 +94,68 @@ export const initializeFreeRASP = async (
   const actions = {
     privilegedAccess: createThreatAction(
       setAppChecks,
-      ThreatName.PRIVILEGED_ACCESS
+      ThreatName.PRIVILEGED_ACCESS,
+      i18n.t("systemthreats.rules.privilegedaccess")
     ),
-    debug: createThreatAction(setAppChecks, ThreatName.DEBUG),
-    simulator: createThreatAction(setAppChecks, ThreatName.SIMULATOR),
-    appIntegrity: createThreatAction(setAppChecks, ThreatName.APP_INTEGRITY),
+    debug: createThreatAction(
+      setAppChecks,
+      ThreatName.DEBUG,
+      i18n.t("systemthreats.rules.debug")
+    ),
+    simulator: createThreatAction(
+      setAppChecks,
+      ThreatName.SIMULATOR,
+      i18n.t("systemthreats.rules.simulator")
+    ),
+    appIntegrity: createThreatAction(
+      setAppChecks,
+      ThreatName.APP_INTEGRITY,
+      i18n.t("systemthreats.rules.appintegrity")
+    ),
     unofficialStore: createThreatAction(
       setAppChecks,
-      ThreatName.UNOFFICIAL_STORE
+      ThreatName.UNOFFICIAL_STORE,
+      i18n.t("systemthreats.rules.unofficialstore")
     ),
-    hooks: createThreatAction(setAppChecks, ThreatName.HOOKS),
-    deviceBinding: createThreatAction(setAppChecks, ThreatName.DEVICE_BINDING),
+    hooks: createThreatAction(
+      setAppChecks,
+      ThreatName.HOOKS,
+      i18n.t("systemthreats.rules.hooks")
+    ),
+    deviceBinding: createThreatAction(
+      setAppChecks,
+      ThreatName.DEVICE_BINDING,
+      i18n.t("systemthreats.rules.devicebinding")
+    ),
     secureHardwareNotAvailable: createThreatAction(
       setAppChecks,
-      ThreatName.SECURE_HARDWARE_NOT_AVAILABLE
+      ThreatName.SECURE_HARDWARE_NOT_AVAILABLE,
+      i18n.t("systemthreats.rules.securehardwarenotavailable")
     ),
-    systemVPN: createThreatAction(setAppChecks, ThreatName.SYSTEM_VPN),
-    passcode: createThreatAction(setAppChecks, ThreatName.PASSCODE),
-    deviceID: createThreatAction(setAppChecks, ThreatName.DEVICE_ID),
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    systemVPN: () => {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    passcode: () => {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    screenshot: () => {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    screenRecording: () => {},
     obfuscationIssues: createThreatAction(
       setAppChecks,
-      ThreatName.OBFUSCATION_ISSUES
+      ThreatName.OBFUSCATION_ISSUES,
+      i18n.t("systemthreats.rules.obfuscationissues")
     ),
-    devMode: createThreatAction(setAppChecks, ThreatName.DEVELOPER_MODE),
-    adbEnabled: createThreatAction(setAppChecks, ThreatName.ADB_ENABLED),
-    screenshot: createThreatAction(setAppChecks, ThreatName.SCREENSHOT),
-    screenRecording: createThreatAction(
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    devMode: () => {},
+    adbEnabled: createThreatAction(
       setAppChecks,
-      ThreatName.SCREEN_RECORDING
+      ThreatName.ADB_ENABLED,
+      i18n.t("systemthreats.rules.adbenabled")
+    ),
+    deviceID: createThreatAction(
+      setAppChecks,
+      ThreatName.DEVICE_ID,
+      i18n.t("systemthreats.rules.deviceid")
     ),
   };
 

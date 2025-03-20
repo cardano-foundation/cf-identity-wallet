@@ -51,7 +51,6 @@ import {
   iosChecks,
   ThreatCheck,
 } from "../security/freerasp";
-import { freeraspRules } from "../security/freeraspRules";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
 
 setupIonicReact();
@@ -92,28 +91,18 @@ const App = () => {
 
   const checkSecurity = () => {
     if (isFreeRASPInitialized && Capacitor.isNativePlatform()) {
-      const criticalThreats = appChecks
-        .map((check) => {
-          const rule = Object.values(freeraspRules.threats).find(
-            (threat) => threat.name === check.name
+      const criticalThreats = appChecks.some(
+        (check) => check.isSecure === false
+      );
+      if (criticalThreats) {
+        if (process.env.DEV_DISABLE_RASP === "false") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Critical threats detected:",
+            JSON.stringify(criticalThreats, null, 2)
           );
-          return rule?.critical && !check.isSecure
-            ? {
-              name: check.name,
-              description:
-                  freeraspRules.threats[check.name]?.description ||
-                  "No description available",
-            }
-            : null;
-        })
-        .filter((threat) => threat !== null);
+        }
 
-      if (criticalThreats.length > 0) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "Critical threats detected:",
-          JSON.stringify(criticalThreats, null, 2)
-        );
         ExitApp.exitApp();
       }
     }
