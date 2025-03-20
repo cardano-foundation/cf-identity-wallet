@@ -1,9 +1,10 @@
 import { Style, StyleOptions } from "@capacitor/status-bar";
-import { render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { startFreeRASP } from "capacitor-freerasp";
+import { ExitApp } from "@jimcase/capacitor-exit-app";
 import { IdentifierService } from "../core/agent/services";
 import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
@@ -20,6 +21,12 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
+
+jest.mock("@jimcase/capacitor-exit-app", () => ({
+  ExitApp: {
+    exitApp: jest.fn(),
+  },
+}));
 
 jest.mock("capacitor-freerasp", () => ({
   startFreeRASP: jest.fn(),
@@ -879,11 +886,6 @@ describe("System threat alert", () => {
       webViewVersion: "131.0.6778.260",
     };
     getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo));
-
-    startFreeRASPMock = startFreeRASP as jest.Mock;
-    startFreeRASPMock.mockRejectedValue(
-      new Error("freeRASP initialization failed")
-    );
   });
 
   afterEach(() => {
@@ -891,6 +893,11 @@ describe("System threat alert", () => {
   });
 
   test("Shows SystemThreatAlert when freeRASP initialization fails", async () => {
+    startFreeRASPMock = startFreeRASP as jest.Mock;
+    startFreeRASPMock.mockRejectedValue(
+      new Error("freeRASP initialization failed")
+    );
+
     const { getByText } = render(
       <Provider store={storeMocked}>
         <App />
@@ -900,6 +907,32 @@ describe("System threat alert", () => {
     await waitFor(() => {
       expect(startFreeRASPMock).toHaveBeenCalled();
       expect(getByText("Threats Detected")).toBeVisible();
+    });
+  });
+
+  test("Catch a threat and close the app", async () => {
+    startFreeRASPMock = startFreeRASP as jest.Mock;
+    startFreeRASPMock.mockResolvedValue(true);
+
+    render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(startFreeRASPMock).toHaveBeenCalled();
+    });
+
+    await act(async () => {
+      const privilegedAccessAction = (startFreeRASPMock.mock.calls[0][1] as any)
+        .privilegedAccess;
+
+      privilegedAccessAction();
+    });
+
+    await waitFor(() => {
+      expect(ExitApp.exitApp).toHaveBeenCalled();
     });
   });
 });
