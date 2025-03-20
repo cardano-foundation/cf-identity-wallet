@@ -37,7 +37,7 @@ export const freeRASPConfig = {
     certificateHashes: [process.env.APP_CERT_HASH || ""],
   },
   iosConfig: {
-    appBundleId: process.env.APP_BUNDLE_ID || "",
+    appBundleId: "org.cardanofoundation.idw",
     appTeamId: process.env.APP_TEAM_ID || "",
   },
   watcherMail: process.env.WATCHER_MAIL || "",
