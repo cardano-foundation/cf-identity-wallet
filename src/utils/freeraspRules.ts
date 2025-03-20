@@ -63,6 +63,7 @@ export const freeraspRules: FreeraspRules = {
       critical: false,
       description: i18n.t("systemthreats.rules.passcode"),
     },
+    // NOTE: cover via privacy plugin
     screenshot: {
       name: ThreatName.SCREENSHOT,
       critical: false,
@@ -94,7 +95,7 @@ export const freeraspRules: FreeraspRules = {
     // iOS only
     device_id: {
       name: ThreatName.DEVICE_ID,
-      critical: false,
+      critical: true,
       description: i18n.t("systemthreats.rules.deviceid"),
     },
   },
