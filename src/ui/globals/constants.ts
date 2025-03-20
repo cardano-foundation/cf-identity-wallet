@@ -6,9 +6,9 @@ const DOUBLE_TAP_DELAY = 300;
 // Links
 const SUPPORT_LINK =
   "https://cardanofoundation.atlassian.net/servicedesk/customer/portal/14";
-const DOCUMENTATION_LINK = "https://docs.idw.cardanofoundation.org/";
+const DOCUMENTATION_LINK = "https://docs.veridian.id/";
 const ONBOARDING_DOCUMENTATION_LINK =
-  "https://docs.idw.cardanofoundation.org/ballot/onboarding";
+  "https://docs.veridian.id/walletGuide/onboarding";
 const RECOVERY_DOCUMENTATION_LINK =
   "https://docs.idw.cardanofoundation.org/more/recovery";
 const FEDERAL_DATA_PROTECTION_LINK = "https://www.edoeb.admin.ch/de";
