@@ -26,10 +26,9 @@ export interface ThreatCheck {
   isSecure: boolean;
 }
 
-interface FreeRASPResult {
-  success: boolean;
-  error?: unknown;
-}
+export type FreeRASPInitResult =
+  | { success: true }
+  | { success: false; error: unknown };
 
 export const freeRASPConfig = {
   androidConfig: {
@@ -88,7 +87,7 @@ const createThreatAction = (
 // Initialize freeRASP with state setters
 export const initializeFreeRASP = async (
   setAppChecks: Dispatch<SetStateAction<ThreatCheck[]>>
-): Promise<FreeRASPResult> => {
+): Promise<FreeRASPInitResult> => {
   const actions = {
     privilegedAccess: createThreatAction(
       setAppChecks,
