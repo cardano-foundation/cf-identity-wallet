@@ -83,7 +83,7 @@ export const freeraspRules: FreeraspRules = {
     // Android only
     developer_mode: {
       name: ThreatName.DEVELOPER_MODE,
-      critical: process.env.DEV_DISABLE_RASP === "true" ? false : true,
+      critical: false,
       description: i18n.t("systemthreats.rules.developermode"),
     },
     // Android only
