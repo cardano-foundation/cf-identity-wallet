@@ -15,9 +15,9 @@ const FEDERAL_DATA_PROTECTION_LINK = "https://www.edoeb.admin.ch/de";
 const DATA_PROTECTION_AUTHORITIES_LINK =
   "https://ec.europa.eu/justice/article-29/structure/data-protection-authorities/index_en.htm";
 
-const ANDROID_MIN_VERSION = 10;
+const ANDROID_MIN_VERSION = 12;
 const WEBVIEW_MIN_VERSION = 79;
-const IOS_MIN_VERSION = 13;
+const IOS_MIN_VERSION = 18;
 
 export {
   DISPLAY_NAME_LENGTH,
