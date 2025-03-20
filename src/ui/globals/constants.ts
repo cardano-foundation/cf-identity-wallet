@@ -4,8 +4,8 @@ const MAX_FAVOURITES = 5;
 const DOUBLE_TAP_DELAY = 300;
 
 // Links
-const SUPPORT_LINK =
-  "https://cardanofoundation.atlassian.net/servicedesk/customer/portal/14";
+const DISCORD_LINK = "https://discord.com/invite/9yNneV8Ktv";
+const SUPPORT_EMAIL = "mailto:support@veridian.id";
 const DOCUMENTATION_LINK = "https://docs.idw.cardanofoundation.org/";
 const ONBOARDING_DOCUMENTATION_LINK =
   "https://docs.idw.cardanofoundation.org/ballot/onboarding";
@@ -24,7 +24,8 @@ export {
   SEED_PHRASE_SUGGESTIONS,
   MAX_FAVOURITES,
   DOUBLE_TAP_DELAY,
-  SUPPORT_LINK,
+  SUPPORT_EMAIL,
+  DISCORD_LINK,
   DOCUMENTATION_LINK,
   ONBOARDING_DOCUMENTATION_LINK,
   RECOVERY_DOCUMENTATION_LINK,
