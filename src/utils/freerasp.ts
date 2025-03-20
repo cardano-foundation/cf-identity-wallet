@@ -86,9 +86,9 @@ const createThreatAction = (
 };
 
 // Initialize freeRASP with state setters
-export const initializeFreeRASP = (
+export const initializeFreeRASP = async (
   setAppChecks: Dispatch<SetStateAction<ThreatCheck[]>>
-): (() => Promise<FreeRASPResult>) => {
+): Promise<FreeRASPResult> => {
   const actions = {
     privilegedAccess: createThreatAction(
       setAppChecks,
@@ -123,17 +123,15 @@ export const initializeFreeRASP = (
     ),
   };
 
-  return async () => {
-    try {
-      await startFreeRASP(freeRASPConfig, actions);
-      return {
-        success: true,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error,
-      };
-    }
-  };
+  try {
+    await startFreeRASP(freeRASPConfig, actions);
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error,
+    };
+  }
 };

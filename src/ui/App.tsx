@@ -79,8 +79,7 @@ const App = () => {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
-    const initFreeRASP = initializeFreeRASP(setAppChecks);
-    initFreeRASP().then((response) => {
+    initializeFreeRASP(setAppChecks).then((response) => {
       setIsFreeRASPInitialized(true);
       setFreeRASPInitResult({
         success: response.success,
