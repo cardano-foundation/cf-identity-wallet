@@ -52,6 +52,7 @@ import {
   ThreatCheck,
 } from "../security/freerasp";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
+import { ConfigurationService } from "../core/configuration";
 
 setupIonicReact();
 
@@ -78,15 +79,21 @@ const App = () => {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
-    initializeFreeRASP(setAppChecks).then((response) => {
-      setIsFreeRASPInitialized(true);
-      setFreeRASPInitResult({
-        success: response.success,
-        error: response.success
-          ? ""
-          : (response.error as string) || "Unknown error",
+    const initConfiguration = async () => {
+      new ConfigurationService().start().then(() => {
+        initializeFreeRASP(setAppChecks).then((response) => {
+          setIsFreeRASPInitialized(true);
+          setFreeRASPInitResult({
+            success: response.success,
+            error: response.success
+              ? ""
+              : (response.error as string) || "Unknown error",
+          });
+        });
       });
-    });
+    };
+
+    initConfiguration();
   }, []);
 
   const checkSecurity = () => {
@@ -95,14 +102,6 @@ const App = () => {
         (check) => check.isSecure === false
       );
       if (criticalThreats) {
-        if (process.env.DEV_DISABLE_RASP === "false") {
-          // eslint-disable-next-line no-console
-          console.warn(
-            "Critical threats detected:",
-            JSON.stringify(criticalThreats, null, 2)
-          );
-        }
-
         ExitApp.exitApp();
       }
     }

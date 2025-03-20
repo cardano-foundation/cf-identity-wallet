@@ -575,7 +575,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const initApp = async () => {
-    await new ConfigurationService().start();
     await Agent.agent.setupLocalDependencies();
 
     // Keystore wiped after re-installs so iOS is consistent with Android.

@@ -1,6 +1,7 @@
 import { startFreeRASP } from "capacitor-freerasp";
 import React, { Dispatch, SetStateAction } from "react";
 import { i18n } from "../i18n";
+import { ConfigurationService } from "../core/configuration";
 
 export enum ThreatName {
   PRIVILEGED_ACCESS = "Privileged Access",
@@ -40,7 +41,7 @@ export const freeRASPConfig = {
     appTeamId: process.env.APP_TEAM_ID || "",
   },
   watcherMail: process.env.WATCHER_MAIL || "",
-  isProd: process.env.DEV_DISABLE_RASP === "false" ? true : false,
+  isProd: ConfigurationService.env?.security?.rasp?.enabled ? true : false,
 };
 
 export const commonChecks: ThreatCheck[] = [
@@ -73,7 +74,7 @@ const createThreatAction = (
   threatName: ThreatName,
   description: string
 ) => {
-  if (process.env.DEV_DISABLE_RASP === "true") return;
+  if (ConfigurationService.env?.security?.rasp?.enabled) return;
 
   return () => {
     setAppChecks((currentState) => {
