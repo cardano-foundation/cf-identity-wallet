@@ -136,6 +136,7 @@ export const initializeFreeRASP = async (
     systemVPN: () => {},
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     passcode: () => {},
+    // Note: Threat covered by the privacy screen app
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     screenshot: () => {},
     // eslint-disable-next-line @typescript-eslint/no-empty-function
