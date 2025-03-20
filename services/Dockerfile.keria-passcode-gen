@@ -10,7 +10,7 @@ RUN npm install
 RUN npm run build
 
 COPY <<EOF passcode-gen.js
-import { randomPasscode, ready, SignifyClient, Tier } from \'signify-ts\';
+import { randomPasscode, ready } from \'signify-ts\';
 await ready();
 const bran = randomPasscode();
 console.log(bran);
