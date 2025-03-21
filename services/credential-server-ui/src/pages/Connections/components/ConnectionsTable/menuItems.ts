@@ -10,11 +10,12 @@ import { AppDispatch } from "../../../../store";
 export const createMenuItems = (
   dispatch: AppDispatch,
   connectionId: string,
-  handleOpenModal: (connectionId: string) => void
+  handleOpenModal: (connectionId: string) => void,
+  handleOpenDetail: (connectionId: string) => void
 ) => [
   {
     label: i18n.t("pages.connections.viewDetails"),
-    action: () => console.log(i18n.t("pages.connections.viewDetails")),
+    action: () => handleOpenDetail(connectionId),
     icon: React.createElement(VisibilityOutlined),
     className: "icon-left",
   },
