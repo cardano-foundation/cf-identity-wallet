@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Trans } from "react-i18next";
 import { PopupModal } from "../../../../components/PopupModal";
@@ -33,8 +33,14 @@ import { useSnackbar, VariantType } from "notistack";
 import { styled } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import { isValidConnectionUrl } from "../../../../utils/urlChecker";
-import { QrCodeScanner } from "../../../../components/QrCodeScanner";
+import { Html5QrcodeScanner } from "html5-qrcode";
+import { resolveOobi } from "../../../../services/resolve-oobi";
 
+enum ContentType {
+  SCANNER = "scanner",
+  RESOLVING = "resolving",
+  RESOLVED = "resolved",
+}
 const CustomInput = styled(InputBase)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(3),
@@ -44,17 +50,22 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
 const AddConnectionModal = ({
   openModal,
   setOpenModal,
+  handleGetContacts,
 }: AddConnectionModalProps) => {
   const [currentStage, setCurrentStage] = useState(1);
-  const [responseLink, setResponseLink] = useState("");
   const [showQR, setShowQR] = useState(false);
-  const [canReset, setCanReset] = useState(false);
-  const [showInput, setShowInput] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [errorOnRequest, setErrorOnRequest] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isInputValid, setIsInputValid] = useState(false);
+  const [oobi, setOobi] = useState("");
+  const [restartCamera, setRestartCamera] = useState(false);
+  const [contentType, setContentType] = useState<ContentType>(
+    ContentType.SCANNER
+  );
+  const [canReset, setCanReset] = useState(false);
+  const [showInput, setShowInput] = useState(false);
   const RESET_TIMEOUT = 1000;
   const { enqueueSnackbar } = useSnackbar();
 
@@ -74,7 +85,100 @@ const AddConnectionModal = ({
     setShowInput(false);
     setInputValue("");
     setIsInputValid(false);
+    handleReset();
   }, [currentStage]);
+
+  const isCameraRendered = useRef<boolean>(false);
+  const elementRef = useRef<HTMLDivElement | null>(null);
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  useEffect(() => {
+    if (elementRef.current && !isCameraRendered.current && showInput) {
+      isCameraRendered.current = true;
+      const scanner = new Html5QrcodeScanner(
+        "qr-reader",
+        {
+          qrbox: {
+            width: 1024,
+            height: 1024,
+          },
+          fps: 5,
+        },
+        false
+      );
+
+      scannerRef.current = scanner;
+
+      const success = (result: string) => {
+        scanner.clear();
+        handleResolveOObi(result);
+      };
+
+      const error = (_: unknown) => {};
+      scanner.render(success, error);
+    }
+  }, [restartCamera, elementRef.current, showInput]);
+
+  const restartScanner = async () => {
+    console.log("restartScanner");
+    isCameraRendered.current = false;
+    setShowInput(false);
+    setRestartCamera(!restartCamera);
+    setContentType(ContentType.SCANNER);
+  };
+
+  const handleResolveOObi = async (oobi: string) => {
+    if (!isInputValid) {
+      triggerToast(
+        i18n.t("pages.connections.addConnection.modal.toast.error"),
+        "error"
+      );
+      return restartScanner();
+    }
+
+    setContentType(ContentType.RESOLVING);
+    await resolveOobi(oobi);
+    setContentType(ContentType.RESOLVED);
+    setCanReset(true);
+    triggerToast(
+      i18n.t("pages.connections.addConnection.modal.toast.success"),
+      "success"
+    );
+    resetModal();
+    handleGetContacts();
+  };
+
+  const renderContent = () => {
+    switch (contentType) {
+      case ContentType.SCANNER:
+        return {
+          component: (
+            <div
+              ref={elementRef}
+              id="qr-reader"
+            />
+          ),
+          title: "Scan your wallet QR Code",
+        };
+      case ContentType.RESOLVING:
+        return {
+          component: <></>,
+          title: "Resolving wallet connection",
+        };
+      case ContentType.RESOLVED:
+        return {
+          component: <></>,
+          title: "Connected successfully",
+        };
+    }
+  };
+  const content = renderContent();
+
+  const handleReset = () => {
+    console.log("handleReset");
+    setCanReset(false);
+    restartScanner();
+  };
 
   const handleShowQr = async () => {
     const url = `${config.endpoint}${config.path.keriOobi}`;
@@ -82,11 +186,11 @@ const AddConnectionModal = ({
       setShowQR(false);
       setLoading(true);
       setErrorOnRequest(false);
-      setResponseLink("");
+      setOobi("");
 
       try {
         const response = await axios(url);
-        setResponseLink(response.data.data);
+        setOobi(response.data.data);
         setLoading(false);
         setShowQR(true);
       } catch (e) {
@@ -102,14 +206,19 @@ const AddConnectionModal = ({
   };
 
   const handleCopyLink = () => {
-    if (responseLink) {
+    if (oobi) {
       setCopied(true);
-      navigator.clipboard.writeText(responseLink);
+      navigator.clipboard.writeText(oobi);
     }
   };
 
   const resetModal = () => {
     setOpenModal(false);
+    if (scannerRef.current) {
+      scannerRef.current.clear().catch((error) => {
+        console.error("Failed to clear html5QrcodeScanner. ", error);
+      });
+    }
     setTimeout(() => {
       setCurrentStage(1);
       setErrorOnRequest(false);
@@ -123,29 +232,6 @@ const AddConnectionModal = ({
     setInputValue(value);
     const isValid = isValidConnectionUrl(value);
     setIsInputValid(isValid);
-    triggerToast(
-      isValid
-        ? i18n.t("pages.connections.addConnection.modal.toast.success")
-        : i18n.t("pages.connections.addConnection.modal.toast.error"),
-      isValid ? "success" : "error"
-    );
-  };
-
-  const handleScanSuccess = (decodedText: string) => {
-    setInputValue(decodedText);
-    const isValid = isValidConnectionUrl(decodedText);
-    setIsInputValid(isValid);
-    setShowInput(false);
-    triggerToast(
-      isValid
-        ? i18n.t("pages.connections.addConnection.modal.toast.success")
-        : i18n.t("pages.connections.addConnection.modal.toast.error"),
-      isValid ? "success" : "error"
-    );
-  };
-
-  const handleScanError = (errorMessage: string) => {
-    console.error(errorMessage);
   };
 
   return (
@@ -181,7 +267,7 @@ const AddConnectionModal = ({
                 <Button
                   variant="contained"
                   className="secondary-button"
-                  disabled={!responseLink || copied}
+                  disabled={!oobi || copied}
                   onClick={handleCopyLink}
                 >
                   {i18n.t(
@@ -195,8 +281,13 @@ const AddConnectionModal = ({
               <Button
                 variant="contained"
                 className="primary-button"
-                disabled={!responseLink || errorOnRequest}
-                onClick={() => setCurrentStage(2)}
+                disabled={!oobi || errorOnRequest}
+                onClick={() => {
+                  setCurrentStage(2);
+                  if (scannerRef.current) {
+                    scannerRef.current.pause();
+                  }
+                }}
               >
                 {i18n.t("pages.connections.addConnection.modal.button.next")}
               </Button>
@@ -207,7 +298,18 @@ const AddConnectionModal = ({
               <Button
                 variant="contained"
                 className="neutral-button back-button"
-                onClick={() => setCurrentStage(1)}
+                onClick={() => {
+                  setCurrentStage(1);
+                  handleReset();
+                  if (scannerRef.current) {
+                    scannerRef.current.clear().catch((error) => {
+                      console.error(
+                        "Failed to clear html5QrcodeScanner. ",
+                        error
+                      );
+                    });
+                  }
+                }}
               >
                 <ArrowBack />
                 {i18n.t("pages.connections.addConnection.modal.button.back")}
@@ -215,7 +317,7 @@ const AddConnectionModal = ({
               <Button
                 variant="contained"
                 className="primary-button"
-                onClick={resetModal}
+                onClick={() => handleResolveOObi(oobi)}
                 disabled={!isInputValid}
               >
                 {i18n.t(
@@ -237,7 +339,7 @@ const AddConnectionModal = ({
           )}
           {showQR && (
             <QRCodeSVG
-              value={responseLink}
+              value={oobi}
               size={280}
             />
           )}
@@ -280,10 +382,7 @@ const AddConnectionModal = ({
           {!canReset && (
             <>
               {showInput ? (
-                <QrCodeScanner
-                  onScanSuccess={handleScanSuccess}
-                  onScanError={handleScanError}
-                />
+                content?.component
               ) : (
                 <Box className="camera-button-container">
                   <Button

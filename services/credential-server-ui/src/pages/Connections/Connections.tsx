@@ -6,12 +6,14 @@ import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { ConnectionsTable } from "./components/ConnectionsTable";
 import { Button } from "@mui/material";
 import "./Connections.scss";
-import { RootState } from "../../store";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { AddConnectionModal } from "./components/AddConnectionModal";
+import { fetchContacts } from "../../store/reducers/connectionsSlice";
 
 const Connections = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const contacts = useSelector(
     (state: RootState) => state.connections.contacts
@@ -20,6 +22,10 @@ const Connections = () => {
 
   const handleClick = () => {
     setOpenModal(true);
+  };
+
+  const handleGetContacts = () => {
+    dispatch(fetchContacts());
   };
 
   return (
@@ -42,6 +48,7 @@ const Connections = () => {
         <AddConnectionModal
           openModal={openModal}
           setOpenModal={setOpenModal}
+          handleGetContacts={handleGetContacts}
         />
       </div>
       <ConnectionsTable />
