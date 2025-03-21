@@ -5,8 +5,6 @@ PODS:
     - CapacitorCordova
   - CapacitorApp (7.0.0):
     - Capacitor
-  - CapacitorBrowser (7.0.0):
-    - Capacitor
   - CapacitorClipboard (7.0.0):
     - Capacitor
   - CapacitorCommunityPrivacyScreen (6.0.0):
@@ -20,6 +18,9 @@ PODS:
   - CapacitorCordova (7.0.1)
   - CapacitorDevice (7.0.0):
     - Capacitor
+  - CapacitorInappbrowser (2.0.0):
+    - Capacitor
+    - OSInAppBrowserLib (~> 1.0)
   - CapacitorKeyboard (7.0.0):
     - Capacitor
   - CapacitorMlkitBarcodeScanning (7.0.0):
@@ -83,6 +84,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
+  - OSInAppBrowserLib (1.0.0)
   - PromisesObjC (2.4.0)
   - SimpleKeychain (1.2.0)
   - SQLCipher (4.6.1):
@@ -96,13 +98,13 @@ DEPENDENCIES:
   - "AparajitaCapacitorBiometricAuth (from `../../node_modules/@aparajita/capacitor-biometric-auth`)"
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
-  - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityPrivacyScreen (from `../../node_modules/@capacitor-community/privacy-screen`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCommunityTapJacking (from `../../node_modules/@capacitor-community/tap-jacking`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - "CapacitorInappbrowser (from `../../node_modules/@capacitor/inappbrowser`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
   - CapacitorNativeSettings (from `../../node_modules/capacitor-native-settings`)
@@ -124,6 +126,7 @@ SPEC REPOS:
     - MLKitCommon
     - MLKitVision
     - nanopb
+    - OSInAppBrowserLib
     - PromisesObjC
     - SimpleKeychain
     - SQLCipher
@@ -136,8 +139,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorApp:
     :path: "../../node_modules/@capacitor/app"
-  CapacitorBrowser:
-    :path: "../../node_modules/@capacitor/browser"
   CapacitorClipboard:
     :path: "../../node_modules/@capacitor/clipboard"
   CapacitorCommunityPrivacyScreen:
@@ -150,6 +151,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
     :path: "../../node_modules/@capacitor/device"
+  CapacitorInappbrowser:
+    :path: "../../node_modules/@capacitor/inappbrowser"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorMlkitBarcodeScanning:
@@ -171,13 +174,13 @@ SPEC CHECKSUMS:
   AparajitaCapacitorBiometricAuth: 3057403ee3e9e390e57bfb92b576f439157951b8
   Capacitor: 23fff43571a4d1e3ee7d67b5a3588c6e757c2913
   CapacitorApp: 45cb7cbef4aa380b9236fd6980033eb5cde6fcd2
-  CapacitorBrowser: 352a66541b15ceadae1d703802b11979023705e3
   CapacitorClipboard: 2afc5e21902233d7990978c8f41f023ddcee3e3d
   CapacitorCommunityPrivacyScreen: 088ffe903fe97c6de54f31407d1bc72c2528a5fc
   CapacitorCommunitySqlite: 6501e7349acf998346acf24ef757861bb3f6fc2b
   CapacitorCommunityTapJacking: b055efdf44944def0eae0968c52fb5274a629212
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
   CapacitorDevice: 62066b65e148a133df7b8c5bf972ba835b329748
+  CapacitorInappbrowser: 7ff2c75c4cfc178cbbb99fbe382b2381bcc187c6
   CapacitorKeyboard: 2c26c6fccde35023c579fc37d4cae6326d5e6343
   CapacitorMlkitBarcodeScanning: 06c21220bf207bdb146dddc2e8548f3f2686879f
   CapacitorNativeSettings: 03d126571fc0e12f89ffeb1516788bf371b528bc
@@ -196,11 +199,12 @@ SPEC CHECKSUMS:
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
   MLKitVision: 45e79d68845a2de77e2dd4d7f07947f0ed157b0e
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  OSInAppBrowserLib: c3d0b21a0c8b6d81e69117ad08bb6b8a4849c4e1
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
   SQLCipher: 77fbe633cd84db04b07876dd50766b4924b57d61
   ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
 
-PODFILE CHECKSUM: b8252a85db3ce215fde5596351281ca10039d12d
+PODFILE CHECKSUM: c41b621d361067fb7464da39945def53a25f457f
 
 COCOAPODS: 1.15.2

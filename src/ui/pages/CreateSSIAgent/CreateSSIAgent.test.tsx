@@ -65,10 +65,10 @@ jest.mock("@ionic/react", () => ({
 const browserMock = jest.fn(({ link }: { link: string }) =>
   Promise.resolve(link)
 );
-jest.mock("@capacitor/browser", () => ({
-  ...jest.requireActual("@capacitor/browser"),
-  Browser: {
-    open: (params: never) => browserMock(params),
+jest.mock("@capacitor/inappbrowser", () => ({
+  ...jest.requireActual("@capacitor/inappbrowser"),
+  InAppBrowser: {
+    openInExternalBrowser: (params: never) => browserMock(params),
   },
 }));
 

@@ -1,5 +1,4 @@
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
-import { Browser } from "@capacitor/browser";
 import { IonCard, IonList, IonToggle } from "@ionic/react";
 import {
   AndroidSettings,
@@ -9,12 +8,12 @@ import {
 import {
   checkboxOutline,
   fingerPrintOutline,
+  helpCircleOutline,
   informationCircleOutline,
   keyOutline,
   layersOutline,
   libraryOutline,
   lockClosedOutline,
-  helpCircleOutline,
 } from "ionicons/icons";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -46,6 +45,7 @@ import { ToastMsgType } from "../../../../globals/types";
 import { usePrivacyScreen } from "../../../../hooks/privacyScreenHook";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { showError } from "../../../../utils/error";
+import { openBrowserLink } from "../../../../utils/openBrowserLink";
 import { SubMenuKey } from "../../Menu.types";
 import { ChangePin } from "./components/ChangePin";
 import { SettingsItem } from "./components/SettingsItem";
@@ -195,7 +195,7 @@ const Settings = ({ switchView, handleClose }: SettingsProps) => {
       break;
     }
     case OptionIndex.Documentation: {
-      Browser.open({ url: DOCUMENTATION_LINK });
+      openBrowserLink(DOCUMENTATION_LINK);
       break;
     }
     case OptionIndex.Term: {

@@ -1,22 +1,22 @@
 import { IonModal } from "@ionic/react";
-import { Trans } from "react-i18next";
-import { Browser } from "@capacitor/browser";
 import { t } from "i18next";
+import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
+import {
+  DATA_PROTECTION_AUTHORITIES_LINK,
+  FEDERAL_DATA_PROTECTION_LINK,
+  SUPPORT_LINK,
+} from "../../globals/constants";
+import { openBrowserLink } from "../../utils/openBrowserLink";
+import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
+import { PageHeader } from "../PageHeader";
+import "./TermsModal.scss";
 import {
   TermContent,
   TermsModalProps,
   TermsObject,
   TermsSection,
 } from "./TermsModal.types";
-import "./TermsModal.scss";
-import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
-import { PageHeader } from "../PageHeader";
-import {
-  DATA_PROTECTION_AUTHORITIES_LINK,
-  FEDERAL_DATA_PROTECTION_LINK,
-  SUPPORT_EMAIL,
-} from "../../globals/constants";
 
 const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
   const HandlePrivacy = () => {
@@ -32,14 +32,14 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
 
   const HandleSupport = () => {
     return (
-      <a
-        href={SUPPORT_EMAIL}
-        className="unstyled-link"
+      <u
+        data-testid="support-link-handler"
+        onClick={() => openBrowserLink(SUPPORT_LINK)}
       >
         <u data-testid="support-link-handler">
           {i18n.t("generateseedphrase.termsandconditions.support")}
         </u>
-      </a>
+      </u>
     );
   };
 
@@ -47,7 +47,7 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
     return (
       <u
         data-testid="support-link-handler"
-        onClick={() => Browser.open({ url: FEDERAL_DATA_PROTECTION_LINK })}
+        onClick={() => openBrowserLink(FEDERAL_DATA_PROTECTION_LINK)}
       >
         {i18n.t("privacypolicy.link.federaldataprotection")}
       </u>
@@ -58,7 +58,7 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
     return (
       <u
         data-testid="support-link-handler"
-        onClick={() => Browser.open({ url: DATA_PROTECTION_AUTHORITIES_LINK })}
+        onClick={() => openBrowserLink(DATA_PROTECTION_AUTHORITIES_LINK)}
       >
         {i18n.t("privacypolicy.link.link")}
       </u>
