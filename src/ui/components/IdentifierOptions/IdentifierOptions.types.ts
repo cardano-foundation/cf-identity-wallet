@@ -8,6 +8,7 @@ interface IdentifierOptionsProps {
   handleDeleteIdentifier: () => void;
   handleRotateKey: () => void;
   oobi: string;
+  restrictedOptions?: boolean;
 }
 
 export type { IdentifierOptionsProps };
