@@ -44,13 +44,7 @@ import {
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
 import { getCssVariableValue } from "./utils/styles";
 import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
-import {
-  androidChecks,
-  commonChecks,
-  initializeFreeRASP,
-  iosChecks,
-  ThreatCheck,
-} from "../security/freerasp";
+import { initializeFreeRASP, ThreatCheck } from "../security/freerasp";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
 import { ConfigurationService } from "../core/configuration";
 
@@ -69,11 +63,7 @@ const App = () => {
     error: string;
   }>({ success: false, error: "" });
 
-  const platforms = getPlatforms();
-  const [appChecks, setAppChecks] = useState<ThreatCheck[]>([
-    ...commonChecks,
-    ...(platforms.includes("ios") ? iosChecks : androidChecks),
-  ]);
+  const [threatsDetected, setThreatsDetected] = useState<ThreatCheck[]>([]);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -81,7 +71,7 @@ const App = () => {
 
     const initConfiguration = async () => {
       new ConfigurationService().start().then(() => {
-        initializeFreeRASP(setAppChecks).then((response) => {
+        initializeFreeRASP(setThreatsDetected).then((response) => {
           setIsFreeRASPInitialized(true);
           setFreeRASPInitResult({
             success: response.success,
@@ -98,10 +88,7 @@ const App = () => {
 
   const checkSecurity = () => {
     if (isFreeRASPInitialized && Capacitor.isNativePlatform()) {
-      const criticalThreats = appChecks.some(
-        (check) => check.isSecure === false
-      );
-      if (criticalThreats) {
+      if (threatsDetected.length > 0) {
         ExitApp.exitApp();
       }
     }
@@ -110,7 +97,7 @@ const App = () => {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
     checkSecurity();
-  }, [isFreeRASPInitialized, appChecks]);
+  }, [isFreeRASPInitialized, threatsDetected]);
 
   useEffect(() => {
     const handleUnknownPromiseError = (event: PromiseRejectionEvent) => {

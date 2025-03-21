@@ -24,7 +24,7 @@ export enum ThreatName {
 
 export interface ThreatCheck {
   name: ThreatName;
-  isSecure: boolean;
+  description: string;
 }
 
 export type FreeRASPInitResult =
@@ -41,95 +41,76 @@ export const freeRASPConfig = {
     appTeamId: process.env.APP_TEAM_ID || "",
   },
   watcherMail: process.env.WATCHER_MAIL || "",
-  isProd: ConfigurationService.env?.security?.rasp?.enabled ? true : false,
+  isProd: ConfigurationService.env?.security.rasp.enabled ? true : false,
 };
 
-export const commonChecks: ThreatCheck[] = [
-  { name: ThreatName.PRIVILEGED_ACCESS, isSecure: true },
-  { name: ThreatName.DEBUG, isSecure: true },
-  { name: ThreatName.SIMULATOR, isSecure: true },
-  { name: ThreatName.APP_INTEGRITY, isSecure: true },
-  { name: ThreatName.UNOFFICIAL_STORE, isSecure: true },
-  { name: ThreatName.HOOKS, isSecure: true },
-  { name: ThreatName.DEVICE_BINDING, isSecure: true },
-  { name: ThreatName.SECURE_HARDWARE_NOT_AVAILABLE, isSecure: true },
-  { name: ThreatName.SYSTEM_VPN, isSecure: true },
-  { name: ThreatName.PASSCODE, isSecure: true },
-  { name: ThreatName.SCREENSHOT, isSecure: true },
-  { name: ThreatName.SCREEN_RECORDING, isSecure: true },
-];
-
-export const androidChecks: ThreatCheck[] = [
-  { name: ThreatName.OBFUSCATION_ISSUES, isSecure: true },
-  { name: ThreatName.DEVELOPER_MODE, isSecure: true },
-  { name: ThreatName.ADB_ENABLED, isSecure: true },
-];
-
-export const iosChecks: ThreatCheck[] = [
-  { name: ThreatName.DEVICE_ID, isSecure: true },
-];
-
 const createThreatAction = (
-  setAppChecks: React.Dispatch<React.SetStateAction<ThreatCheck[]>>,
+  setThreatsDetected: React.Dispatch<React.SetStateAction<ThreatCheck[]>>,
   threatName: ThreatName,
   description: string
 ) => {
-  if (ConfigurationService.env?.security?.rasp?.enabled) return;
+  if (ConfigurationService.env.security.rasp.enabled) return;
 
   return () => {
-    setAppChecks((currentState) => {
-      return currentState.map((threat) => {
-        if (threat.name === threatName) {
-          return { ...threat, description, isSecure: false };
-        }
-        return threat;
-      });
+    setThreatsDetected((currentState) => {
+      const threatExists = currentState.some(
+        (threat) => threat.name === threatName
+      );
+      if (threatExists) {
+        return currentState;
+      }
+      return [
+        ...currentState,
+        {
+          name: threatName,
+          description,
+        },
+      ];
     });
   };
 };
 
-// Initialize freeRASP with state setters
 export const initializeFreeRASP = async (
-  setAppChecks: Dispatch<SetStateAction<ThreatCheck[]>>
+  setThreatsDetected: Dispatch<SetStateAction<ThreatCheck[]>>
 ): Promise<FreeRASPInitResult> => {
   const actions = {
     privilegedAccess: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.PRIVILEGED_ACCESS,
       i18n.t("systemthreats.rules.privilegedaccess")
     ),
     debug: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.DEBUG,
       i18n.t("systemthreats.rules.debug")
     ),
     simulator: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.SIMULATOR,
       i18n.t("systemthreats.rules.simulator")
     ),
     appIntegrity: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.APP_INTEGRITY,
       i18n.t("systemthreats.rules.appintegrity")
     ),
     unofficialStore: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.UNOFFICIAL_STORE,
       i18n.t("systemthreats.rules.unofficialstore")
     ),
     hooks: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.HOOKS,
       i18n.t("systemthreats.rules.hooks")
     ),
     deviceBinding: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.DEVICE_BINDING,
       i18n.t("systemthreats.rules.devicebinding")
     ),
     secureHardwareNotAvailable: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.SECURE_HARDWARE_NOT_AVAILABLE,
       i18n.t("systemthreats.rules.securehardwarenotavailable")
     ),
@@ -143,19 +124,19 @@ export const initializeFreeRASP = async (
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     screenRecording: () => {},
     obfuscationIssues: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.OBFUSCATION_ISSUES,
       i18n.t("systemthreats.rules.obfuscationissues")
     ),
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     devMode: () => {},
     adbEnabled: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.ADB_ENABLED,
       i18n.t("systemthreats.rules.adbenabled")
     ),
     deviceID: createThreatAction(
-      setAppChecks,
+      setThreatsDetected,
       ThreatName.DEVICE_ID,
       i18n.t("systemthreats.rules.deviceid")
     ),
