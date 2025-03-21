@@ -70,16 +70,19 @@ const App = () => {
     if (!Capacitor.isNativePlatform()) return;
 
     const initConfiguration = async () => {
-      await new ConfigurationService().start();
-      initializeFreeRASP(setThreatsDetected).then((response) => {
+      if (ConfigurationService.env.security.rasp.enabled) {
+        const result = await initializeFreeRASP(setThreatsDetected);
         setIsFreeRASPInitialized(true);
         setFreeRASPInitResult({
-          success: response.success,
-          error: response.success
+          success: result.success,
+          error: result.success
             ? ""
-            : (response.error as string) || "Unknown error",
+            : (result.error as string) || "Unknown error",
         });
-      });
+      } else {
+        setIsFreeRASPInitialized(true);
+        setFreeRASPInitResult({ success: true, error: "" });
+      }
     };
 
     initConfiguration();
