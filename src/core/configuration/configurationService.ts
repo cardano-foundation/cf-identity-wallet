@@ -65,6 +65,20 @@ class ConfigurationService {
       return this.invalid("Missing top-level KERI object");
     }
 
+    const security = data.security;
+    if (typeof security !== "object" || security === null) {
+      return this.invalid("Missing top-level security object");
+    }
+
+    const rasp = security.rasp;
+    if (typeof rasp !== "object" || rasp === null) {
+      return this.invalid("Missing rasp object in security configuration");
+    }
+
+    if (typeof rasp.enabled !== "boolean") {
+      return this.invalid("rasp.enabled must be a boolean value");
+    }
+
     return { success: true };
   }
 

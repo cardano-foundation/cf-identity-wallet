@@ -1,0 +1,100 @@
+.system-threat-alert-page {
+  .alert-container {
+    text-align: center;
+    min-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .title {
+    color: var(--ion-color-neutral-800);
+    margin-top: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .description {
+    color: var(--ion-color-neutral-700);
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+
+  .system-threats {
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .warning-icon {
+    font-size: 3.25rem;
+    color: var(--ion-color-danger);
+  }
+
+  .init-error {
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: var(--color-neutral-700);
+    font-weight: 400;
+  }
+
+  .info-card {
+    background-color: rgba(var(--ion-color-warning-800-rgb), 0.1);
+    margin: 1.5rem 0;
+
+    p {
+      text-align: left;
+    }
+
+    ion-icon {
+      color: var(--ion-color-warning-800);
+    }
+  }
+
+  .help-button {
+    margin-top: 1.5rem;
+    width: 100%;
+    height: 3.5rem;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem 1rem 1.25rem;
+    background: linear-gradient(
+        0deg,
+        var(--color-primary-700),
+        var(--color-primary-700)
+      ),
+      radial-gradient(
+        1.86% 150% at 50% 50%,
+        rgba(0, 86, 179, 0.2) 50%,
+        rgba(0, 86, 179, 0.2) 50%
+      );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    letter-spacing: 0%;
+    text-align: center;
+    color: var(--color-neutral-100, #f9fafb);
+
+    .help-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    span {
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 1.5rem;
+    }
+  }
+
+  a {
+    all: unset;
+    width: 100%;
+  }
+}
