@@ -57,6 +57,7 @@ const IdentifierDetailModule = ({
   navAnimation,
   pageId,
   hardwareBackButtonConfig,
+  restrictedOptions,
 }: IdentifierDetailModuleProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -354,13 +355,17 @@ const IdentifierDetailModule = ({
                   onRotateKey={openRotateModal}
                   cardData={cardData as IdentifierDetailsCore}
                 />
-                <PageFooter
-                  pageId={pageId}
-                  deleteButtonText={`${i18n.t(
-                    "tabs.identifiers.details.delete.button"
-                  )}`}
-                  deleteButtonAction={deleteButtonAction}
-                />
+                {restrictedOptions ? (
+                  <></>
+                ) : (
+                  <PageFooter
+                    pageId={pageId}
+                    deleteButtonText={`${i18n.t(
+                      "tabs.identifiers.details.delete.button"
+                    )}`}
+                    deleteButtonAction={deleteButtonAction}
+                  />
+                )}
               </div>
               <ShareConnection
                 isOpen={shareIsOpen}
@@ -375,6 +380,7 @@ const IdentifierDetailModule = ({
                 setCardData={setCardData}
                 oobi={oobi}
                 handleDeleteIdentifier={() => setAlertIsOpen(true)}
+                restrictedOptions={restrictedOptions}
               />
             </>
           )}

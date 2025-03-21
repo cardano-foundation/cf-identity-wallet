@@ -103,7 +103,35 @@ describe("Identifier Options modal", () => {
     );
     await waitForIonicReact();
 
-    await waitFor(() => expect(queryByTestId("rotate-keys-option")).toBe(null));
+    await waitFor(() =>
+      expect(queryByTestId("edit-identifier-option")).toBeInTheDocument()
+    );
+    expect(queryByTestId("rotate-keys-option")).not.toBeInTheDocument();
+  });
+
+  test("can exclude restricted options in certain flows", async () => {
+    const { queryByTestId } = render(
+      <Provider store={mockedStore}>
+        <IdentifierOptions
+          handleRotateKey={jest.fn()}
+          optionsIsOpen={true}
+          setOptionsIsOpen={jest.fn()}
+          cardData={identifierFix[2]}
+          oobi={oobi}
+          setCardData={jest.fn()}
+          handleDeleteIdentifier={async () => {
+            jest.fn();
+          }}
+          restrictedOptions={true}
+        />
+      </Provider>
+    );
+    await waitForIonicReact();
+
+    await waitFor(() =>
+      expect(queryByTestId("edit-identifier-option")).toBeInTheDocument()
+    );
+    expect(queryByTestId("delete-identifier-option")).not.toBeInTheDocument();
   });
 });
 

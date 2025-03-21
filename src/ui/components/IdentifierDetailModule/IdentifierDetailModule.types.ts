@@ -6,6 +6,7 @@ interface IdentifierDetailModuleProps {
   onClose?: (animation?: boolean) => void;
   navAnimation: boolean;
   hardwareBackButtonConfig?: HardwareBackButtonConfig;
+  restrictedOptions?: boolean;
 }
 
 interface IdentifierDetailModalProps
