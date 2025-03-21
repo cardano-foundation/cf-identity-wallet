@@ -1,7 +1,7 @@
 import { IonSpinner } from "@ionic/react";
 import "./LoadingPage.scss";
 import { LoadingPageProps, LoadingType } from "./LoadingPage.types";
-import splashImage from "../../assets/images/Splash.png";
+import splashImage from "../../assets/images/Splash.jpg";
 import { combineClassNames } from "../../utils/style";
 
 const LoadingPage = ({
