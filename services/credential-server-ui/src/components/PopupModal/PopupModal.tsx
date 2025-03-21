@@ -1,30 +1,22 @@
-import React from "react";
 import { Modal, Fade, Box, IconButton, Typography } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import "./PopupModal.scss";
+import { PopupModalProps } from "./PopupModal.types";
 
-interface PopupModalProps {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  body: React.ReactNode;
-  footer: React.ReactNode;
-}
-
-const PopupModal: React.FC<PopupModalProps> = ({
+const PopupModal = ({
   open,
   onClose,
   title,
-  body,
+  description,
+  children,
   footer,
-}) => {
+  customClass,
+}: PopupModalProps) => {
   return (
     <Modal
       open={open}
       onClose={onClose}
-      aria-labelledby="popup-modal-title"
-      aria-describedby="popup-modal-description"
-      className="popup-modal"
+      className={"popup-modal" + (customClass ? " " + customClass : "")}
     >
       <Fade in={open}>
         <Box
@@ -43,7 +35,12 @@ const PopupModal: React.FC<PopupModalProps> = ({
               <Close />
             </IconButton>
           </div>
-          <Typography className="popup-modal-body">{body}</Typography>
+          {description && (
+            <Typography className="popup-modal-description">
+              {description}
+            </Typography>
+          )}
+          {children}
           <div className="popup-modal-footer">{footer}</div>
         </Box>
       </Fade>

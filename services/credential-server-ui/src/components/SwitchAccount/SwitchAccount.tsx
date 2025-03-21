@@ -11,7 +11,6 @@ import { useAppDispatch } from "../../store/hooks";
 import { setRoleView } from "../../store/reducers";
 import { RoleIndex, roleViewText } from "../NavBar/constants/roles";
 import { DropdownMenu } from "../DropdownMenu/DropdownMenu";
-import "./SwitchAccount.scss";
 
 const SwitchAccount = () => {
   const dispatch = useAppDispatch();
@@ -86,7 +85,7 @@ const SwitchAccount = () => {
       disableElevation
       disableRipple
       endIcon={<KeyboardArrowDown />}
-      className="switch-account-button"
+      className="secondary-button"
     >
       {state.selectedView}
     </Button>

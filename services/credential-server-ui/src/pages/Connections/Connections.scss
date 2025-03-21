@@ -1,6 +1,4 @@
 .connections-page {
-  padding: 0 2.5rem 2.5rem;
-
   .connections-page-header {
     padding: 1.5rem 0;
     display: flex;
@@ -15,12 +13,6 @@
       border-radius: 1rem;
       text-transform: none;
       padding: 0.75rem 1.25rem 0.75rem 1rem;
-      color: var(--color-neutral-100);
-      background-color: var(--color-primary-700);
-
-      &:hover {
-        background-color: var(--color-primary-800);
-      }
     }
   }
 
@@ -64,12 +56,6 @@
         .delete-connections-button {
           border-radius: 0.5rem;
           text-transform: none;
-          background-color: var(--color-error-800);
-
-          &:hover {
-            // TODO: Hardcoding color value because it's missing in Figma
-            background: #7d1a14;
-          }
         }
       }
     }

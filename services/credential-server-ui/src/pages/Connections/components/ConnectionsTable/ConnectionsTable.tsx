@@ -191,11 +191,7 @@ const ConnectionsTable: React.FC = () => {
                             </IconButton>
                           </Tooltip>
                         }
-                        menuItems={createMenuItems(
-                          dispatch,
-                          row.id,
-                          handleOpenModal
-                        )}
+                        menuItems={createMenuItems(row.id, handleOpenModal)}
                       />
                     </TableCell>
                   </TableRow>
@@ -224,12 +220,13 @@ const ConnectionsTable: React.FC = () => {
         open={openModal}
         onClose={() => setOpenModal(false)}
         title={i18n.t("pages.connections.deleteConnections.title")}
-        body={i18n.t("pages.connections.deleteConnections.body")}
+        description={i18n.t("pages.connections.deleteConnections.body")}
         footer={
           <>
             <Button
               variant="contained"
               aria-label="cancel delete connection"
+              className="neutral-button"
               onClick={() => setOpenModal(false)}
             >
               {i18n.t("pages.connections.deleteConnections.cancel")}
@@ -237,6 +234,7 @@ const ConnectionsTable: React.FC = () => {
             <Button
               variant="contained"
               aria-label="confirm delete connection"
+              className="primary-button"
               onClick={handleDelete}
             >
               {i18n.t("pages.connections.deleteConnections.delete")}

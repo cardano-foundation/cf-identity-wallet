@@ -5,10 +5,8 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import { i18n } from "../../../../i18n";
-import { AppDispatch } from "../../../../store";
 
 export const createMenuItems = (
-  dispatch: AppDispatch,
   connectionId: string,
   handleOpenModal: (connectionId: string) => void
 ) => [

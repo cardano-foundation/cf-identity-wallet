@@ -66,7 +66,7 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
                 variant="contained"
                 aria-label="delete connections"
                 startIcon={<DeleteOutline />}
-                className="delete-connections-button"
+                className="delete-connections-button delete-button"
                 onClick={() => setOpenModal(true)}
               >
                 {i18n.t("pages.connections.delete")}
@@ -79,19 +79,19 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
         open={openModal}
         onClose={() => setOpenModal(false)}
         title={i18n.t("pages.connections.deleteConnections.title")}
-        body={i18n.t("pages.connections.deleteConnections.body")}
+        description={i18n.t("pages.connections.deleteConnections.body")}
         footer={
           <>
             <Button
               variant="contained"
-              aria-label="cancel delete connections"
+              className="neutral-button"
               onClick={() => setOpenModal(false)}
             >
               {i18n.t("pages.connections.deleteConnections.cancel")}
             </Button>
             <Button
               variant="contained"
-              aria-label="confirm delete connections"
+              className="primary-button"
               onClick={handleDelete}
             >
               {i18n.t("pages.connections.deleteConnections.delete")}
