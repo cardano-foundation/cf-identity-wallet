@@ -1,1 +1,4 @@
 keri:
+security:
+  rasp:
+    enabled: false
