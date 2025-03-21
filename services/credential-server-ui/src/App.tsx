@@ -16,10 +16,32 @@ import { SnackbarProvider } from "notistack";
 import { WarningAmber, CheckCircleOutline, Close } from "@mui/icons-material";
 import { closeSnackbar } from "notistack";
 import { IconButton } from "@mui/material";
+import { ConnectionDetail } from "./pages/ConnectionDetail/ConnectionDetail";
+import { useEffect } from "react";
+import {
+  fetchContactCredentials,
+  fetchContacts,
+} from "./store/reducers/connectionsSlice";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import { RoutePath } from "./const/route";
 
 const App = () => {
   const MAX_TOAST_MESSAGES = 10;
   const TOAST_MESSAGE_DURATION = 2000;
+
+  const dispatch = useAppDispatch();
+  const contacts = useAppSelector((state) => state.connections.contacts);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    contacts.forEach((contact) => {
+      dispatch(fetchContactCredentials(contact.id));
+    });
+  }, [contacts, dispatch]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -50,19 +72,23 @@ const App = () => {
                 element={<Overview />}
               />
               <Route
-                path="/connections"
+                path={RoutePath.Connections}
                 element={<Connections />}
               />
               <Route
-                path="/credentials"
+                path={RoutePath.ConnectionDetail}
+                element={<ConnectionDetail />}
+              />
+              <Route
+                path={RoutePath.Credentials}
                 element={<Credentials />}
               />
               <Route
-                path="/notifications"
+                path={RoutePath.Notifications}
                 element={<Notifications />}
               />
               <Route
-                path="/settings"
+                path={RoutePath.Settings}
                 element={<Settings />}
               />
               <Route
