@@ -179,9 +179,6 @@ cip45-sample-dapp:
 
   # skip this for arm as it takes forever
   IF [ "${TARGET_PLATFORM}" != "linux/arm64" ]
-    # do not push this image to the public docker hub
-    LET DOCKER_REGISTRIES="$(echo ${DOCKER_REGISTRIES} | sed 's|hub.docker.com||g')"
-
     WAIT
       FROM DOCKERFILE ./services/cip45-sample-dapp
     END
