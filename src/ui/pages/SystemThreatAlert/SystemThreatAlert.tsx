@@ -1,4 +1,3 @@
-import { Browser } from "@capacitor/browser";
 import { IonIcon } from "@ionic/react";
 import {
   alertCircleOutline,
@@ -13,18 +12,11 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import { PageFooter } from "../../components/PageFooter";
 import "./SystemThreatAlert.scss";
 import { SystemThreatAlertProps } from "./SystemThreatAlert.types";
-
-export const SUPPORT_LINK =
-  "https://cardanofoundation.atlassian.net/servicedesk/customer/portal/14";
+import { SUPPORT_EMAIL } from "../../globals/constants";
 
 const SystemThreatAlert: React.FC<SystemThreatAlertProps> = ({ error }) => {
-  const handleHelpButtonClick = () => {
-    Browser.open({
-      url: SUPPORT_LINK,
-    });
-  };
-
   const pageId = "system-threat-alert-page";
+
   return (
     <ScrollablePageLayout
       activeStatus
@@ -57,11 +49,17 @@ const SystemThreatAlert: React.FC<SystemThreatAlertProps> = ({ error }) => {
           content={i18n.t("systemthreats.alert")}
           icon={warningOutline}
         />
-        <PageFooter
-          primaryButtonText={`${i18n.t("systemthreats.help")}`}
-          primaryButtonIcon={helpCircleOutline}
-          primaryButtonAction={handleHelpButtonClick}
-        />
+        <a
+          href={SUPPORT_EMAIL}
+          className="unstyled-link"
+        >
+          <PageFooter
+            primaryButtonText={`${i18n.t("systemthreats.help")}`}
+            primaryButtonIcon={helpCircleOutline}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            primaryButtonAction={() => {}}
+          />
+        </a>
       </div>
     </ScrollablePageLayout>
   );

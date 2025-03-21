@@ -1,6 +1,6 @@
-import { fireEvent, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import TRANSLATE from "../../../locales/en/en.json";
-import SystemThreatAlert, { SUPPORT_LINK } from "./SystemThreatAlert";
+import SystemThreatAlert from "./SystemThreatAlert";
 
 const browserMock = jest.fn(({ link }: { link: string }) =>
   Promise.resolve(link)
@@ -23,17 +23,5 @@ describe("System Threat Alert", () => {
     expect(getByText(TRANSLATE.systemthreats.description)).toBeVisible();
     expect(getByText(TRANSLATE.systemthreats.help)).toBeVisible();
     expect(getByText(TRANSLATE.systemthreats.initerror)).toBeVisible();
-  });
-
-  test("Click on Help button", async () => {
-    const { getByText } = render(
-      <SystemThreatAlert error="Debug threat error" />
-    );
-
-    fireEvent.click(getByText(TRANSLATE.systemthreats.help));
-
-    expect(browserMock).toBeCalledWith({
-      url: SUPPORT_LINK,
-    });
   });
 });
