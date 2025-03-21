@@ -1,4 +1,4 @@
 keri:
 security:
   rasp:
-    enabled: false
+    enabled: true
