@@ -234,9 +234,7 @@ describe("Cred Detail Module - current not archived credential", () => {
       queryAllByTestId,
       getByTestId,
       getAllByTestId,
-      queryByText,
       findByText,
-      unmount,
     } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
@@ -502,6 +500,27 @@ describe("Cred Detail Module - current not archived credential", () => {
     });
 
     unmount();
+  });
+
+  test("View connection details", async () => {
+    // TODO complete
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CredentialDetailModule
+          pageId="credential-card-details"
+          id={credsFixAcdc[0].id}
+          onClose={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("card-details-content")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("credential-card-details-fdooter")).toBeInTheDocument();
+    });
   });
 });
 

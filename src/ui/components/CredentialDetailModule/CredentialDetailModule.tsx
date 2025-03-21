@@ -421,6 +421,7 @@ const CredentialDetailModule = ({
     <ConnectionDetails
       connectionShortDetails={connectionShortDetails}
       handleCloseConnectionModal={() => setOpenConnectionlModal(false)}
+      restrictedOptions={true}
     />
   ) : (
     <>
