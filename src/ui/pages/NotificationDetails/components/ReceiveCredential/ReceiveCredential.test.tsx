@@ -303,7 +303,7 @@ describe("Receive credential", () => {
     });
   });
 
-  test("Open indentifier detail", async () => {
+  test("Open identifier details", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.NOTIFICATIONS],
@@ -360,6 +360,25 @@ describe("Receive credential", () => {
     await waitFor(() => {
       expect(getByTestId("identifier-detail-modal")).toBeVisible();
     });
+
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument()
+    );
+    expect(
+      queryByTestId("delete-button-identifier-detail")
+    ).not.toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByTestId("identifier-options-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("share-identifier-option")).toBeInTheDocument();
+    });
+
+    expect(queryByTestId("delete-identifier-option")).not.toBeInTheDocument();
 
     fireEvent.click(getByText(EN_TRANSLATIONS.tabs.identifiers.details.done));
 

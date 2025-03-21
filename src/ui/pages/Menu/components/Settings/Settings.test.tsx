@@ -12,10 +12,7 @@ import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { store } from "../../../../../store";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import {
-  SUPPORT_LINK,
-  DOCUMENTATION_LINK,
-} from "../../../../globals/constants";
+import { DOCUMENTATION_LINK } from "../../../../globals/constants";
 import { ToastMsgType } from "../../../../globals/types";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { SubMenuKey } from "../../Menu.types";
@@ -356,7 +353,7 @@ describe("Settings page", () => {
     });
   });
 
-  test("Open support page and documentation link", async () => {
+  test("Open documentation link", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <Settings />
@@ -372,16 +369,6 @@ describe("Settings page", () => {
         EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.learnmore
       )
     ).toBeInTheDocument();
-
-    act(() => {
-      fireEvent.click(getByTestId(`settings-item-${OptionIndex.Contact}`));
-    });
-
-    await waitFor(() => {
-      expect(browserMock).toBeCalledWith({
-        url: SUPPORT_LINK,
-      });
-    });
 
     act(() => {
       fireEvent.click(

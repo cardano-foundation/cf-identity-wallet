@@ -2,7 +2,6 @@ import { IonModal } from "@ionic/react";
 import { Trans } from "react-i18next";
 import { Browser } from "@capacitor/browser";
 import { t } from "i18next";
-import { Fragment } from "react";
 import { i18n } from "../../../i18n";
 import {
   TermContent,
@@ -16,7 +15,7 @@ import { PageHeader } from "../PageHeader";
 import {
   DATA_PROTECTION_AUTHORITIES_LINK,
   FEDERAL_DATA_PROTECTION_LINK,
-  SUPPORT_LINK,
+  SUPPORT_EMAIL,
 } from "../../globals/constants";
 
 const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
@@ -33,12 +32,14 @@ const Section = ({ title, content, componentId, altIsOpen }: TermsSection) => {
 
   const HandleSupport = () => {
     return (
-      <u
-        data-testid="support-link-handler"
-        onClick={() => Browser.open({ url: SUPPORT_LINK })}
+      <a
+        href={SUPPORT_EMAIL}
+        className="unstyled-link"
       >
-        {i18n.t("generateseedphrase.termsandconditions.support")}
-      </u>
+        <u data-testid="support-link-handler">
+          {i18n.t("generateseedphrase.termsandconditions.support")}
+        </u>
+      </a>
     );
   };
 

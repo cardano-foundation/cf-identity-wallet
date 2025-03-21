@@ -39,8 +39,8 @@ import { Alert } from "../../../../components/Alert";
 import { PageFooter } from "../../../../components/PageFooter";
 import { Verification } from "../../../../components/Verification";
 import {
-  SUPPORT_LINK,
   DOCUMENTATION_LINK,
+  SUPPORT_EMAIL,
 } from "../../../../globals/constants";
 import { ToastMsgType } from "../../../../globals/types";
 import { usePrivacyScreen } from "../../../../hooks/privacyScreenHook";
@@ -101,7 +101,7 @@ const Settings = ({ switchView, handleClose }: SettingsProps) => {
     });
   }
 
-  const supportItems = [
+  const supportItems: OptionProps[] = [
     {
       index: OptionIndex.Documentation,
       icon: libraryOutline,
@@ -116,6 +116,7 @@ const Settings = ({ switchView, handleClose }: SettingsProps) => {
       index: OptionIndex.Contact,
       icon: helpCircleOutline,
       label: i18n.t("tabs.menu.tab.settings.sections.support.contact"),
+      href: SUPPORT_EMAIL,
     },
     {
       index: OptionIndex.Version,
@@ -191,7 +192,6 @@ const Settings = ({ switchView, handleClose }: SettingsProps) => {
       break;
     }
     case OptionIndex.Contact: {
-      Browser.open({ url: SUPPORT_LINK });
       break;
     }
     case OptionIndex.Documentation: {

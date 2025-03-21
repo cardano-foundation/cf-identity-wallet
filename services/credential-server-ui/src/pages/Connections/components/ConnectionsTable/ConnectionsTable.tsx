@@ -1,6 +1,9 @@
-import * as React from "react";
+import { MoreVert } from "@mui/icons-material";
 import {
   Box,
+  Button,
+  Checkbox,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -8,34 +11,28 @@ import {
   TableContainer,
   TablePagination,
   TableRow,
-  Checkbox,
-  IconButton,
   Tooltip,
-  Button,
 } from "@mui/material";
-import { MoreVert } from "@mui/icons-material";
 import { useSnackbar, VariantType } from "notistack";
-import { EnhancedTableHead } from "./EnhancedTableHead";
-import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
-import { useTable } from "./useTable";
-import { formatDate } from "../../../../utils/dateFormatter";
-import { DropdownMenu } from "../../../../components/DropdownMenu";
-import { i18n } from "../../../../i18n";
+import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchContacts,
-  fetchContactCredentials,
-} from "../../../../store/reducers/connectionsSlice";
-import { RootState, AppDispatch } from "../../../../store";
-import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
-import { createMenuItems } from "./menuItems";
-import { generateRows, handleDeleteContact } from "./helpers";
+import { useNavigate } from "react-router";
+import { DropdownMenu } from "../../../../components/DropdownMenu";
+import { RoleIndex } from "../../../../components/NavBar/constants/roles";
 import { PopupModal } from "../../../../components/PopupModal";
+import { i18n } from "../../../../i18n";
+import { AppDispatch, RootState } from "../../../../store";
 import { useAppSelector } from "../../../../store/hooks";
 import { getRoleView } from "../../../../store/reducers/stateCache";
+import { formatDate } from "../../../../utils/dateFormatter";
+import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
 import { MIN_TABLE_WIDTH, ROWS_PER_PAGE_OPTIONS } from "./constants";
-import { RoleIndex } from "../../../../components/NavBar/constants/roles";
+import { EnhancedTableHead } from "./EnhancedTableHead";
+import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
+import { generateRows, handleDeleteContact } from "./helpers";
+import { createMenuItems } from "./menuItems";
+import { useTable } from "./useTable";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -55,16 +52,7 @@ const ConnectionsTable: React.FC = () => {
   const [selectedConnectionId, setSelectedConnectionId] = useState<
     string | null
   >(null);
-
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
-
-  useEffect(() => {
-    contacts.forEach((contact) => {
-      dispatch(fetchContactCredentials(contact.id));
-    });
-  }, [contacts, dispatch]);
+  const nav = useNavigate();
 
   useEffect(() => {
     const regex = new RegExp(connectionsFilterBySearch, "gi");
@@ -122,6 +110,10 @@ const ConnectionsTable: React.FC = () => {
       variant,
       anchorOrigin: { vertical: "top", horizontal: "center" },
     });
+  };
+
+  const handOpenConnectionDetail = (id: string) => {
+    nav(`/connections/${id}`);
   };
 
   return (
@@ -194,7 +186,8 @@ const ConnectionsTable: React.FC = () => {
                         menuItems={createMenuItems(
                           dispatch,
                           row.id,
-                          handleOpenModal
+                          handleOpenModal,
+                          handOpenConnectionDetail
                         )}
                       />
                     </TableCell>

@@ -38,6 +38,48 @@
         }
       }
     },
+    "connectiondetail": {
+      "title": "Connection Details",
+      "issue": "Issue Credential",
+      "userinfo": {
+        "connectiondate": "Connection Date",
+        "issuedcredentials": "Issued Credentials",
+        "button": {
+          "delete": "Delete Connection"
+        },
+        "confirm": {
+          "title": "Delete Connection",
+          "body": "Are you sure you want to delete this connection? This action cannot be undone.",
+          "confirm": "Delete",
+          "cancel": "Cancel"
+        }
+      },
+      "table": {
+        "headers": {
+          "name": "Credential Name",
+          "issueDate": "Issued Date",
+          "status": "Status"
+        },
+        "status": {
+          "issued": "Issued",
+          "revoked": "Revoked"
+        },
+        "menu": {
+          "view": "View Template",
+          "delete": "Revoke Credential"
+        },
+        "toast": {
+          "success": "Credential revoked successfully",
+          "error": "Unable to revoked credential"
+        },
+        "confirm": {
+          "title": "Revoke credential successfully",
+          "body": "Are you sure you want to revoke this credential? This action cannot be undone.",
+          "confirm": "Revoke",
+          "cancel": "Cancel"
+        }
+      }
+    },
     "credentials": {
       "title": "Credentials"
     },

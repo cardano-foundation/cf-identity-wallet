@@ -1,10 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { config } from "../../config";
-import {
-  Contact,
-  Credential,
-} from "../../pages/Connections/components/ConnectionsTable/ConnectionsTable.types";
+import { Contact } from "../../pages/Connections/components/ConnectionsTable/ConnectionsTable.types";
+import { Credential } from "./connectionsSlice.types";
 
 interface ConnectionsState {
   contacts: Contact[];
@@ -62,7 +60,10 @@ const connectionsSlice = createSlice({
       })
       .addCase(fetchContactCredentials.fulfilled, (state, action) => {
         const { contactId, credentials } = action.payload;
-        state.credentials = state.credentials.concat(
+        const currentCredentials = state.credentials.filter(
+          (item) => item.contactId !== contactId
+        );
+        state.credentials = currentCredentials.concat(
           credentials.map((cred: Credential) => ({ ...cred, contactId }))
         );
       });
