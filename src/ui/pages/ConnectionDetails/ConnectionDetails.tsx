@@ -45,6 +45,7 @@ import { ConnectionDetailsProps } from "./ConnectionDetails.types";
 const ConnectionDetails = ({
   connectionShortDetails,
   handleCloseConnectionModal,
+  restrictedOptions,
 }: ConnectionDetailsProps) => {
   const pageId = "connection-details";
   const dispatch = useAppDispatch();
@@ -284,12 +285,16 @@ const ConnectionDetails = ({
                     connectionDetails={connectionDetails}
                   />
                 </CardDetailsBlock>
-                <PageFooter
-                  pageId={pageId}
-                  deleteButtonText={`${i18n.t("connections.details.delete")}`}
-                  deleteButtonAction={() => deleteButtonAction()}
-                />
-              </div>
+                {restrictedOptions ? (
+                  <></>
+                ) : (
+                  <PageFooter
+                    pageId={pageId}
+                    deleteButtonText={`${i18n.t("connections.details.delete")}`}
+                    deleteButtonAction={() => deleteButtonAction()}
+                  />
+                )}
+                </div>
             ) : (
               <div
                 className="connection-notes-tab"
@@ -308,6 +313,7 @@ const ConnectionDetails = ({
             setOptionsIsOpen={setOptionsIsOpen}
             handleEdit={setModalIsOpen}
             handleDelete={handleDelete}
+            restrictedOptions={restrictedOptions}
           />
         </ScrollablePageLayout>
       )}

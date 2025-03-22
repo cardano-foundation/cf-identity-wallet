@@ -11,6 +11,7 @@ const ConnectionOptions = ({
   setOptionsIsOpen,
   handleEdit,
   handleDelete,
+  restrictedOptions,
 }: ConnectionOptionsProps) => {
   const dispatch = useAppDispatch();
 
@@ -24,7 +25,10 @@ const ConnectionOptions = ({
       },
       testId: "connection-options-manage-button",
     },
-    {
+  ];
+
+  if (!restrictedOptions) {
+    options.push({
       icon: trashOutline,
       label: i18n.t("connections.details.options.labels.delete"),
       onClick: () => {
@@ -32,8 +36,8 @@ const ConnectionOptions = ({
         dispatch(setCurrentOperation(OperationType.DELETE_CONNECTION));
       },
       testId: "delete-button-connection-options",
-    },
-  ];
+    });
+  }
 
   return (
     <OptionModal

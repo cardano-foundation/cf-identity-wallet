@@ -1,3 +1,6 @@
+const getConnectionShortDetailByIdMock = jest.fn().mockResolvedValue([]);
+const getConnectionByIdMock = jest.fn();
+
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
@@ -11,13 +14,14 @@ import {
   removeFavouritesCredsCache,
 } from "../../../store/reducers/credsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
-import { connectionsMapFix } from "../../__fixtures__/connectionsFix";
+import { connectionsFix, connectionsMapFix } from "../../__fixtures__/connectionsFix";
 import { credsFixAcdc, revokedCredFixs } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { ToastMsgType } from "../../globals/types";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialDetailModule } from "./CredentialDetailModule";
+import { initiatorConnectionShortDetails } from "../../../core/__fixtures__/agent/multiSigFixtures";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -38,7 +42,8 @@ jest.mock("../../../core/agent/agent", () => ({
         markCredentialPendingDeletion: () => markCredentialPendingDeletion(),
       },
       connections: {
-        getConnectionShortDetailById: jest.fn(() => Promise.resolve([])),
+        getConnectionShortDetailById: getConnectionShortDetailByIdMock,
+        getConnectionById: getConnectionByIdMock,
       },
       basicStorage: {
         findById: jest.fn(),
@@ -234,9 +239,7 @@ describe("Cred Detail Module - current not archived credential", () => {
       queryAllByTestId,
       getByTestId,
       getAllByTestId,
-      queryByText,
       findByText,
-      unmount,
     } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
@@ -502,6 +505,47 @@ describe("Cred Detail Module - current not archived credential", () => {
     });
 
     unmount();
+  });
+
+  test("Can view connection details, and cannot delete the connection from this view", async () => {
+    getConnectionShortDetailByIdMock.mockResolvedValue(initiatorConnectionShortDetails);
+    getConnectionByIdMock.mockResolvedValueOnce(connectionsFix[2]);
+    
+    const { getByTestId, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <CredentialDetailModule
+          pageId="credential-card-details"
+          id={credsFixAcdc[0].id}
+          onClose={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("credential-details-issuer")).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("credential-details-issuer"));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("action-button")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("delete-button-connection-details")).not.toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("action-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("connection-options-manage-button")).toBeInTheDocument();
+    });
+
+    expect(queryByTestId("delete-button-connection-options")).not.toBeInTheDocument();
   });
 });
 

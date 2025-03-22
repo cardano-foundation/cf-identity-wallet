@@ -1,6 +1,6 @@
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -74,5 +74,25 @@ describe("Connection Options modal", () => {
     expect(dispatchMock).toBeCalledWith(
       setCurrentOperation(OperationType.DELETE_CONNECTION)
     );
+  });
+
+  test("can exclude restricted options in certain flows", async () => {
+    const { queryByTestId } = render(
+      <Provider store={mockedStore}>
+        <ConnectionOptions
+          optionsIsOpen={true}
+          setOptionsIsOpen={jest.fn()}
+          handleDelete={jest.fn()}
+          handleEdit={jest.fn()}
+          restrictedOptions={true}
+        />
+      </Provider>
+    );
+    await waitForIonicReact();
+
+    await waitFor(() =>
+      expect(queryByTestId("connection-options-manage-button")).toBeInTheDocument()
+    );
+    expect(queryByTestId("delete-button-connection-options")).not.toBeInTheDocument();
   });
 });
