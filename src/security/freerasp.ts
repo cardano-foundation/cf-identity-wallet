@@ -41,7 +41,7 @@ export const freeRASPConfig = {
     appTeamId: process.env.APP_TEAM_ID || "",
   },
   watcherMail: process.env.WATCHER_MAIL || "",
-  isProd: ConfigurationService.env?.security.rasp.enabled ? true : false,
+  isProd: ConfigurationService.env.security.rasp.enabled,
 };
 
 const createThreatAction = (
@@ -49,8 +49,6 @@ const createThreatAction = (
   threatName: ThreatName,
   description: string
 ) => {
-  if (ConfigurationService.env.security.rasp.enabled) return;
-
   return () => {
     setThreatsDetected((currentState) => {
       const threatExists = currentState.some(
