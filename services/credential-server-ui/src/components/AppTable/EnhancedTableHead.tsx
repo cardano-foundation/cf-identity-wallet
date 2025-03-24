@@ -26,8 +26,6 @@ const EnhancedTableHead = <T extends AppTableBaseData = AppTableBaseData>({
         })}
       >
         {headers.map((headCell) => {
-          console.log(headCell.id, orderBy, order);
-
           return (
             <TableCell
               key={headCell.id as string}

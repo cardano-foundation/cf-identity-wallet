@@ -111,7 +111,15 @@ const AddConnectionModal = ({
 
       const success = (result: string) => {
         scanner.clear();
-        handleResolveOObi(result);
+        if (result && result.includes("oobi")) {
+          handleResolveOobi(result);
+        } else {
+          triggerToast(
+            i18n.t("pages.connections.addConnection.modal.toast.error"),
+            "error"
+          );
+          restartScanner();
+        }
       };
 
       const error = (_: unknown) => {};
@@ -120,15 +128,16 @@ const AddConnectionModal = ({
   }, [restartCamera, elementRef.current, showInput]);
 
   const restartScanner = async () => {
-    console.log("restartScanner");
     isCameraRendered.current = false;
     setShowInput(false);
     setRestartCamera(!restartCamera);
     setContentType(ContentType.SCANNER);
   };
 
-  const handleResolveOObi = async (oobi: string) => {
-    if (!isInputValid) {
+  const handleResolveOobi = async (oobi: string) => {
+    const isValidOobi = oobi && oobi.includes("oobi");
+
+    if (!isValidOobi) {
       triggerToast(
         i18n.t("pages.connections.addConnection.modal.toast.error"),
         "error"
@@ -137,15 +146,29 @@ const AddConnectionModal = ({
     }
 
     setContentType(ContentType.RESOLVING);
-    await resolveOobi(oobi);
-    setContentType(ContentType.RESOLVED);
-    setCanReset(true);
-    triggerToast(
-      i18n.t("pages.connections.addConnection.modal.toast.success"),
-      "success"
-    );
-    resetModal();
-    handleGetContacts();
+    try {
+      const fixedOobi =
+        process.env.NODE_ENV === "development"
+          ? oobi.replace("http://keria:", "http://localhost:")
+          : oobi;
+
+      await resolveOobi(fixedOobi);
+      setContentType(ContentType.RESOLVED);
+      setCanReset(true);
+      triggerToast(
+        i18n.t("pages.connections.addConnection.modal.toast.success"),
+        "success"
+      );
+      await handleGetContacts();
+      resetModal();
+    } catch (error) {
+      console.error("Error resolving OOBI:", error);
+      triggerToast(
+        i18n.t("pages.connections.addConnection.modal.toast.error"),
+        "error"
+      );
+      setContentType(ContentType.SCANNER);
+    }
   };
 
   const renderContent = () => {
@@ -175,7 +198,6 @@ const AddConnectionModal = ({
   const content = renderContent();
 
   const handleReset = () => {
-    console.log("handleReset");
     setCanReset(false);
     restartScanner();
   };
@@ -317,8 +339,8 @@ const AddConnectionModal = ({
               <Button
                 variant="contained"
                 className="primary-button"
-                onClick={() => handleResolveOObi(oobi)}
-                disabled={!isInputValid}
+                onClick={() => handleResolveOobi(inputValue || oobi)}
+                disabled={!(isInputValid || (oobi && oobi.includes("oobi")))}
               >
                 {i18n.t(
                   "pages.connections.addConnection.modal.button.complete"

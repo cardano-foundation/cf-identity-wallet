@@ -19,7 +19,6 @@ export const createMenuItems = (
   },
   {
     label: i18n.t("pages.connections.issueCredential"),
-    action: () => console.log(i18n.t("pages.connections.issueCredential")),
     icon: React.createElement(AddCircleOutlineOutlined),
     className: "icon-left",
   },

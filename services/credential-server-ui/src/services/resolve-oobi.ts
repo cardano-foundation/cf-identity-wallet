@@ -1,17 +1,30 @@
+import axios from "axios";
 import { config } from "../config";
 
-export async function resolveOobi(oobi: string) {
+export const resolveOobi = async (oobi: string) => {
   try {
-    await (
-      await fetch(`${config.endpoint}${config.path.resolveOobi}`, {
-        method: "POST",
-        body: JSON.stringify({ oobi }),
+    const response = await axios.post(
+      `${config.endpoint}${config.path.resolveOobi}`,
+      { oobi },
+      {
         headers: {
           "Content-Type": "application/json",
         },
-      })
-    ).json();
-  } catch (e) {
-    console.error(e);
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error in resolveOobi function:", error);
+
+    if (axios.isAxiosError(error) && error.response) {
+      console.error(
+        "Server responded with:",
+        error.response.status,
+        error.response.data
+      );
+    }
+
+    throw error;
   }
-}
+};
