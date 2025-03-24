@@ -1,4 +1,3 @@
-import { Browser } from "@capacitor/browser";
 import { IonIcon, IonText } from "@ionic/react";
 import { alertCircleOutline } from "ionicons/icons";
 import { useState } from "react";
@@ -13,7 +12,8 @@ import { CreateGroupIdentifier } from "../../../../components/CreateGroupIdentif
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
-import { DISCORD_LINK } from "../../../../globals/constants";
+import { SUPPORT_LINK } from "../../../../globals/constants";
+import { openBrowserLink } from "../../../../utils/openBrowserLink";
 import "./ErrorPage.scss";
 import { ErrorPageProps } from "./ErrorPage.types";
 
@@ -54,12 +54,14 @@ const ErrorPage = ({
   const HandleDiscordLink = () => {
     return (
       <u
-        data-testid="discord-link-browser-handler"
-        onClick={() => Browser.open({ url: DISCORD_LINK })}
+        data-testid="support-link-browser-handler"
+        onClick={() => openBrowserLink(SUPPORT_LINK)}
       >
-        {i18n.t(
-          "tabs.notifications.details.identifier.errorpage.help.supportchannel"
-        )}
+        <u data-testid="support-link-browser-handler">
+          {i18n.t(
+            "tabs.notifications.details.identifier.errorpage.help.supportchannel"
+          )}
+        </u>
       </u>
     );
   };

@@ -18,10 +18,14 @@ import {
   getIdentifiersFilters,
   setIdentifiersFilters,
   addGroupIdentifierCache,
+  clearIdentifierCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { CreationStatus , ConnectionStatus } from "../../../core/agent/agent.types";
+import {
+  CreationStatus,
+  ConnectionStatus,
+} from "../../../core/agent/agent.types";
 import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 import {
@@ -69,6 +73,23 @@ describe("identifiersCacheSlice", () => {
         creationStatus: CreationStatus.COMPLETE,
       },
     });
+  });
+
+  test("should handle clearIdentifierCache", () => {
+    const identifiers: IdentifierShortDetails[] = [
+      {
+        id: "id-1",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        creationStatus: CreationStatus.COMPLETE,
+      },
+    ];
+    const newState = identifiersCacheSlice.reducer(
+      { ...initialState, identifiers: { "id-1": identifiers[0] } },
+      clearIdentifierCache()
+    );
+    expect(newState).toEqual(initialState);
   });
 
   test("should handle setMultiSigGroupCache", () => {

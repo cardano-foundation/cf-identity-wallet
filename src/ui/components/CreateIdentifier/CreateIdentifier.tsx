@@ -5,12 +5,12 @@ import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
+import { CreationStatus } from "../../../core/agent/agent.types";
 import { IdentifierService } from "../../../core/agent/services";
 import {
   CreateIdentifierInputs,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
-import { CreationStatus } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -19,15 +19,10 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
-  setCurrentOperation,
   setToastMsg,
   showNoWitnessAlert,
 } from "../../../store/reducers/stateCache";
-import {
-  BackEventPriorityType,
-  OperationType,
-  ToastMsgType,
-} from "../../globals/types";
+import { BackEventPriorityType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 import { nameChecker } from "../../utils/nameChecker";
@@ -38,6 +33,7 @@ import { ErrorMessage } from "../ErrorMessage";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
+import { Spinner } from "../Spinner";
 import { IADTypeInfoModal } from "./components/AIDTypeInfoModal";
 import {
   IdentifierColor,
@@ -50,7 +46,6 @@ import {
   CreateIdentifierProps,
   IdentifierModel,
 } from "./CreateIdentifier.types";
-import { Spinner } from "../Spinner";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
 const DUPLICATE_NAME = "Identifier name is a duplicate";
@@ -128,8 +123,8 @@ const CreateIdentifier = ({
   useOnlineStatusEffect(updateMultiSigGroup);
 
   const resetModal = (identiferData?: IdentifierShortDetails) => {
-    multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
     setBlur(false);
+    document?.querySelector("ion-router-outlet")?.classList.remove("blur");
     setModalIsOpen(false);
     onClose?.(identiferData);
     setMultiSigGroup && setMultiSigGroup(undefined);

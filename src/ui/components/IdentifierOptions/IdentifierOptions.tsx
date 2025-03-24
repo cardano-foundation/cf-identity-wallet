@@ -22,6 +22,7 @@ const IdentifierOptions = ({
   handleDeleteIdentifier,
   handleRotateKey,
   oobi,
+  restrictedOptions,
 }: IdentifierOptionsProps) => {
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
@@ -74,13 +75,16 @@ const IdentifierOptions = ({
       onClick: () => setShareIsOpen(true),
       testId: "share-identifier-option",
     },
-    {
+  ];
+
+  if (!restrictedOptions) {
+    optionsRotate.push({
       icon: trashOutline,
       label: i18n.t("tabs.identifiers.details.options.delete"),
       onClick: deleteIdentifier,
       testId: "delete-identifier-option",
-    },
-  ];
+    });
+  }
 
   const optionsNoRotate = optionsRotate.filter(
     (option) => option.testId !== "rotate-keys-option"

@@ -70,6 +70,9 @@ const connectionsCacheSlice = createSlice({
     setMissingAliasUrl: (state, action: PayloadAction<string | undefined>) => {
       state.missingAliasUrl = action.payload;
     },
+    clearConnectionsCache() {
+      return initialState;
+    },
   },
 });
 
@@ -83,6 +86,7 @@ export const {
   updateOrAddMultisigConnectionCache,
   setOpenConnectionId,
   setMissingAliasUrl,
+  clearConnectionsCache,
 } = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>

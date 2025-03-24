@@ -1,5 +1,6 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
+  clearViewTypeCache,
   setCredentialFavouriteIndex,
   setCredentialViewTypeCache,
   setIdentifierFavouriteIndex,
@@ -23,6 +24,28 @@ describe("identifierViewTypeCache", () => {
     expect(viewTypeCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
       initialState
     );
+  });
+
+  it("should handle setViewTypeCache", () => {
+    const newState = viewTypeCacheSlice.reducer(
+      initialState,
+      setIdentifierViewTypeCache(CardListViewType.List)
+    );
+    expect(newState.identifier.viewType).toEqual(CardListViewType.List);
+  });
+
+  it("should handle clearViewTypeCache", () => {
+    const newState = viewTypeCacheSlice.reducer(
+      {
+        ...initialState,
+        identifier: {
+          viewType: null,
+          favouriteIndex: 2,
+        },
+      },
+      clearViewTypeCache()
+    );
+    expect(newState).toEqual(initialState);
   });
 
   it("should handle setViewTypeCache", () => {

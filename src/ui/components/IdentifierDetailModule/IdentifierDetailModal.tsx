@@ -38,6 +38,7 @@ const IdentifierDetailModal = ({
         onClose={handleBack}
         hardwareBackButtonConfig={hardwareBackButtonConfig}
         navAnimation={false}
+        restrictedOptions={true}
       />
     </IonModal>
   );

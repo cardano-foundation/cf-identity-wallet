@@ -5,6 +5,10 @@ ion-modal.terms-modal {
   --height: auto;
   white-space: pre-line;
 
+  .scrollable-page-content > div {
+    margin-bottom: 0;
+  }
+
   .page-header {
     ion-toolbar {
       --background: transparent;
@@ -13,6 +17,27 @@ ion-modal.terms-modal {
 
   &::part(content) {
     height: 100%;
+  }
+
+  .terms-of-use-section {
+    display: grid;
+
+    .terms-of-use-section-bottom,
+    li {
+      font-weight: 400;
+
+      strong {
+        font-weight: 500;
+      }
+
+      &.nested-numberic {
+        list-style-type: lower-roman;
+      }
+    }
+
+    ul {
+      margin-top: 0;
+    }
   }
 
   p *:nth-child(2) {
@@ -51,4 +76,8 @@ ion-modal.terms-modal {
       margin: 0.8rem 0.125rem !important;
     }
   }
+}
+
+.unstyled-link {
+  all: unset;
 }

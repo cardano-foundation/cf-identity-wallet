@@ -1,5 +1,4 @@
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
-import { Browser } from "@capacitor/browser";
 import { IonCard, IonList, IonToggle } from "@ionic/react";
 import {
   AndroidSettings,
@@ -9,41 +8,51 @@ import {
 import {
   checkboxOutline,
   fingerPrintOutline,
+  helpCircleOutline,
   informationCircleOutline,
   keyOutline,
   layersOutline,
   libraryOutline,
   lockClosedOutline,
-  logoDiscord,
 } from "ionicons/icons";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import pJson from "../../../../../../package.json";
 import { Agent } from "../../../../../core/agent/agent";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { i18n } from "../../../../../i18n";
+import { RoutePath } from "../../../../../routes";
 import { useAppDispatch } from "../../../../../store/hooks";
 import {
   getBiometricsCacheCache,
   setEnableBiometricsCache,
 } from "../../../../../store/reducers/biometricsCache";
+import {
+  setToastMsg,
+  showGlobalLoading,
+} from "../../../../../store/reducers/stateCache";
+import { CLEAR_STORE_ACTIONS } from "../../../../../store/utils";
 import { Alert } from "../../../../components/Alert";
+import { PageFooter } from "../../../../components/PageFooter";
 import { Verification } from "../../../../components/Verification";
 import {
-  DISCORD_LINK,
   DOCUMENTATION_LINK,
+  SUPPORT_EMAIL,
 } from "../../../../globals/constants";
+import { ToastMsgType } from "../../../../globals/types";
 import { usePrivacyScreen } from "../../../../hooks/privacyScreenHook";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { showError } from "../../../../utils/error";
+import { openBrowserLink } from "../../../../utils/openBrowserLink";
 import { SubMenuKey } from "../../Menu.types";
 import { ChangePin } from "./components/ChangePin";
 import { SettingsItem } from "./components/SettingsItem";
 import "./Settings.scss";
 import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
 
-const Settings = ({ switchView }: SettingsProps) => {
+const Settings = ({ switchView, handleClose }: SettingsProps) => {
   const dispatch = useAppDispatch();
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const [option, setOption] = useState<number | null>(null);
@@ -52,6 +61,8 @@ const Settings = ({ switchView }: SettingsProps) => {
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
   const { disablePrivacy, enablePrivacy } = usePrivacyScreen();
   const [openBiometricAlert, setOpenBiometricAlert] = useState(false);
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
+  const history = useHistory();
 
   const securityItems: OptionProps[] = [
     {
@@ -90,7 +101,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     });
   }
 
-  const supportItems = [
+  const supportItems: OptionProps[] = [
     {
       index: OptionIndex.Documentation,
       icon: libraryOutline,
@@ -103,8 +114,9 @@ const Settings = ({ switchView }: SettingsProps) => {
     },
     {
       index: OptionIndex.Contact,
-      icon: logoDiscord,
+      icon: helpCircleOutline,
       label: i18n.t("tabs.menu.tab.settings.sections.support.contact"),
+      href: SUPPORT_EMAIL,
     },
     {
       index: OptionIndex.Version,
@@ -160,7 +172,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     });
   };
 
-  const handleChangePin = () => {
+  const openVerify = () => {
     setVerifyIsOpen(true);
   };
 
@@ -172,7 +184,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       break;
     }
     case OptionIndex.ChangePin: {
-      handleChangePin();
+      openVerify();
       break;
     }
     case OptionIndex.ManagePassword: {
@@ -180,11 +192,10 @@ const Settings = ({ switchView }: SettingsProps) => {
       break;
     }
     case OptionIndex.Contact: {
-      Browser.open({ url: DISCORD_LINK });
       break;
     }
     case OptionIndex.Documentation: {
-      Browser.open({ url: DOCUMENTATION_LINK });
+      openBrowserLink(DOCUMENTATION_LINK);
       break;
     }
     case OptionIndex.Term: {
@@ -200,6 +211,26 @@ const Settings = ({ switchView }: SettingsProps) => {
     }
   };
 
+  const deleteAccount = async () => {
+    try {
+      dispatch(showGlobalLoading(true));
+      await Agent.agent.deleteAccount();
+      CLEAR_STORE_ACTIONS.forEach((action) => dispatch(action()));
+      dispatch(setToastMsg(ToastMsgType.DELETE_ACCOUNT_SUCCESS));
+      history.push(RoutePath.ONBOARDING);
+      handleClose?.();
+    } catch (e) {
+      showError(
+        "Failed to wipe wallet: ",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_ACCOUNT_ERROR
+      );
+    } finally {
+      dispatch(showGlobalLoading(false));
+    }
+  };
+
   const onVerify = () => {
     switch (option) {
     case 0: {
@@ -210,6 +241,9 @@ const Settings = ({ switchView }: SettingsProps) => {
       setChangePinIsOpen(true);
       break;
     }
+    case OptionIndex.DeleteAccount:
+      deleteAccount();
+      break;
     default:
       return;
     }
@@ -218,6 +252,15 @@ const Settings = ({ switchView }: SettingsProps) => {
 
   const closeAlert = () => {
     setOpenBiometricAlert(false);
+  };
+
+  const openDeleteAccountAlert = () => {
+    setOption(OptionIndex.DeleteAccount);
+    setOpenDeleteAlert(true);
+  };
+
+  const closeDeleteAlert = () => {
+    setOpenDeleteAlert(false);
   };
 
   return (
@@ -260,10 +303,11 @@ const Settings = ({ switchView }: SettingsProps) => {
           })}
         </IonList>
       </IonCard>
-      <Verification
-        verifyIsOpen={verifyIsOpen}
-        setVerifyIsOpen={setVerifyIsOpen}
-        onVerify={onVerify}
+      <PageFooter
+        deleteButtonAction={openDeleteAccountAlert}
+        deleteButtonText={`${i18n.t(
+          "tabs.menu.tab.settings.sections.deleteaccount.button"
+        )}`}
       />
       <ChangePin
         isOpen={changePinIsOpen}
@@ -285,6 +329,28 @@ const Settings = ({ switchView }: SettingsProps) => {
         actionConfirm={openSetting}
         actionCancel={closeAlert}
         actionDismiss={closeAlert}
+      />
+      <Alert
+        isOpen={openDeleteAlert}
+        setIsOpen={setOpenDeleteAlert}
+        dataTestId="delete-account-alert"
+        headerText={i18n.t(
+          "tabs.menu.tab.settings.sections.deleteaccount.alert.title"
+        )}
+        confirmButtonText={`${i18n.t(
+          "tabs.menu.tab.settings.sections.deleteaccount.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "tabs.menu.tab.settings.sections.deleteaccount.alert.cancel"
+        )}`}
+        actionConfirm={openVerify}
+        actionCancel={closeDeleteAlert}
+        actionDismiss={closeDeleteAlert}
+      />
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={onVerify}
       />
     </>
   );

@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { act } from "react";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { store } from "../../../../store";
 import {
@@ -114,7 +115,7 @@ describe("Creds content", () => {
       EN_TRANSLATIONS.tabs.credentials.details.status.timestamp
     } ${formatShortDate(credsFixAcdc[0].lastStatus.dt)} - ${formatTimeToSec(
       credsFixAcdc[0].lastStatus.dt
-    )} (${getUTCOffset(identifierFix[0].dt)})`;
+    )} (${getUTCOffset(credsFixAcdc[0].lastStatus.dt)})`;
     expect(
       getByTestId("credential-details-last-status-timestamp").innerHTML
     ).toBe(lastStatus);
@@ -175,7 +176,7 @@ describe("Creds content", () => {
       dispatch: jest.fn(),
     };
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <CredentialContent
           cardData={credsFixAcdc[0]}
@@ -197,5 +198,24 @@ describe("Creds content", () => {
     await waitFor(() => {
       expect(getByTestId("credential-related-identifier-modal")).toBeVisible();
     });
+
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument()
+    );
+    expect(
+      queryByTestId("delete-button-credential-related-identifier")
+    ).not.toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByTestId("identifier-options-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("share-identifier-option")).toBeInTheDocument();
+    });
+
+    expect(queryByTestId("delete-identifier-option")).not.toBeInTheDocument();
   });
 });

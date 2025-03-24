@@ -7,6 +7,11 @@ interface Configuration {
   keri: {
     keria?: KeriaConfig;
   };
+  security: {
+    rasp: {
+      enabled: boolean;
+    };
+  };
 }
 
 export type { Configuration };

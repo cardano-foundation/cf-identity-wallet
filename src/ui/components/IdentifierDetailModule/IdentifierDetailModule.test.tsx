@@ -579,6 +579,49 @@ describe("Individual Identifier details page", () => {
       );
     });
   });
+
+  test("Can restrict view to not be able to delete identifier", async () => {
+    verifySecretMock.mockResolvedValue(false);
+
+    const { getByTestId, unmount, queryByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IdentifierDetailModule
+          identifierDetailId="ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb"
+          onClose={jest.fn()}
+          pageId={pageId}
+          navAnimation
+          restrictedOptions={true}
+        />
+      </Provider>
+    );
+
+    // Wait until normal page is loaded
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument()
+    );
+
+    expect(
+      queryByTestId("delete-button-identifier-card-details")
+    ).not.toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(getByTestId("identifier-options-button")).toBeInTheDocument()
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("identifier-options-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("share-identifier-option")).toBeInTheDocument();
+    });
+
+    expect(queryByTestId("delete-identifier-option")).not.toBeInTheDocument();
+
+    unmount();
+  });
 });
 
 describe("Group Identifier details page", () => {

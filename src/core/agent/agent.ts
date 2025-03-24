@@ -45,7 +45,8 @@ import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
-import { isNetworkError } from "./services/utils";
+import { isNetworkError, OnlineOnly, randomSalt } from "./services/utils";
+import { PeerConnection } from "../cardano/walletConnect/peerConnection";
 
 const walletId = "idw";
 class Agent {
@@ -532,6 +533,73 @@ class Agent {
       }
       throw error;
     }
+  }
+
+  @OnlineOnly
+  async deleteAccount() {
+    const connectedDApp =
+      PeerConnection.peerConnection.getConnectedDAppAddress();
+    if (connectedDApp !== "") {
+      PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+    }
+
+    this.keriaNotificationService.stopPolling();
+
+    const identifiers = await this.identifierStorage.getAllIdentifiers();
+    for (const identifier of identifiers) {
+      await this.agentServicesProps.signifyClient
+        .identifiers()
+        .update(identifier.id, {
+          name: `${
+            IdentifierService.DELETED_IDENTIFIER_THEME
+          }-${randomSalt()}:${identifier.displayName}`,
+        });
+    }
+
+    const credentials = await this.credentialStorage.getAllCredentialMetadata();
+    for (const credential of credentials) {
+      await this.agentServicesProps.signifyClient
+        .credentials()
+        .delete(credential.id)
+        .catch(async (error) => {
+          const status = error.message.split(" - ")[1];
+          if (!/404/gi.test(status)) {
+            throw error;
+          }
+        });
+    }
+
+    const connections = await this.connectionStorage.getAll();
+    for (const connection of connections) {
+      await this.agentServicesProps.signifyClient
+        .contacts()
+        .delete(connection.id)
+        .catch((error) => {
+          const status = error.message.split(" - ")[1];
+          if (!/404/gi.test(status)) {
+            throw error;
+          }
+        });
+    }
+
+    const notifications = await this.notificationStorage.getAll();
+    for (const notification of notifications) {
+      if (!/^\/local/.test(notification.route)) {
+        await this.agentServicesProps.signifyClient
+          .notifications()
+          .mark(notification.id)
+          .catch((error) => {
+            const status = error.message.split(" - ")[1];
+            if (!/404/gi.test(status)) {
+              throw error;
+            }
+          });
+      }
+    }
+
+    await this.storageSession.wipe(walletId);
+    await SecureStorage.wipe();
+    this.markAgentStatus(false);
   }
 }
 

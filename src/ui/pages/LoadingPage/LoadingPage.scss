@@ -4,4 +4,11 @@
   justify-content: center;
   height: 100vh;
   width: 100vw;
+
+  &.full-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(var(--ion-color-neutral-700-rgb), 0.2);
+  }
 }

@@ -15,8 +15,12 @@ PODS:
     - Capacitor
     - SQLCipher
     - ZIPFoundation
+  - CapacitorCommunityTapJacking (7.0.0):
+    - Capacitor
   - CapacitorCordova (7.0.1)
   - CapacitorDevice (7.0.0):
+    - Capacitor
+  - CapacitorFreerasp (1.10.0):
     - Capacitor
   - CapacitorKeyboard (7.0.0):
     - Capacitor
@@ -59,6 +63,8 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
+  - JimcaseCapacitorExitApp (1.0.5):
+    - Capacitor
   - MLImage (1.0.0-beta6)
   - MLKitBarcodeScanning (6.0.0):
     - MLKitCommon (~> 12.0)
@@ -83,12 +89,12 @@ PODS:
   - nanopb/encode (3.30910.0)
   - PromisesObjC (2.4.0)
   - SimpleKeychain (1.2.0)
-  - SQLCipher (4.5.5):
-    - SQLCipher/standard (= 4.5.5)
-  - SQLCipher/common (4.5.5)
-  - SQLCipher/standard (4.5.5):
+  - SQLCipher (4.6.1):
+    - SQLCipher/standard (= 4.6.1)
+  - SQLCipher/common (4.6.1)
+  - SQLCipher/standard (4.6.1):
     - SQLCipher/common
-  - ZIPFoundation (0.9.16)
+  - ZIPFoundation (0.9.19)
 
 DEPENDENCIES:
   - "AparajitaCapacitorBiometricAuth (from `../../node_modules/@aparajita/capacitor-biometric-auth`)"
@@ -98,8 +104,10 @@ DEPENDENCIES:
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityPrivacyScreen (from `../../node_modules/@capacitor-community/privacy-screen`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
+  - "CapacitorCommunityTapJacking (from `../../node_modules/@capacitor-community/tap-jacking`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - CapacitorFreerasp (from `../../node_modules/capacitor-freerasp`)
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
   - CapacitorNativeSettings (from `../../node_modules/capacitor-native-settings`)
@@ -108,6 +116,7 @@ DEPENDENCIES:
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
   - "EvvaCapacitorSecureStoragePlugin (from `../../node_modules/@evva/capacitor-secure-storage-plugin`)"
+  - "JimcaseCapacitorExitApp (from `../../node_modules/@jimcase/capacitor-exit-app`)"
 
 SPEC REPOS:
   trunk:
@@ -141,10 +150,14 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/privacy-screen"
   CapacitorCommunitySqlite:
     :path: "../../node_modules/@capacitor-community/sqlite"
+  CapacitorCommunityTapJacking:
+    :path: "../../node_modules/@capacitor-community/tap-jacking"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
     :path: "../../node_modules/@capacitor/device"
+  CapacitorFreerasp:
+    :path: "../../node_modules/capacitor-freerasp"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorMlkitBarcodeScanning:
@@ -161,6 +174,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
   EvvaCapacitorSecureStoragePlugin:
     :path: "../../node_modules/@evva/capacitor-secure-storage-plugin"
+  JimcaseCapacitorExitApp:
+    :path: "../../node_modules/@jimcase/capacitor-exit-app"
 
 SPEC CHECKSUMS:
   AparajitaCapacitorBiometricAuth: 3057403ee3e9e390e57bfb92b576f439157951b8
@@ -170,8 +185,10 @@ SPEC CHECKSUMS:
   CapacitorClipboard: 2afc5e21902233d7990978c8f41f023ddcee3e3d
   CapacitorCommunityPrivacyScreen: 088ffe903fe97c6de54f31407d1bc72c2528a5fc
   CapacitorCommunitySqlite: 6501e7349acf998346acf24ef757861bb3f6fc2b
+  CapacitorCommunityTapJacking: b055efdf44944def0eae0968c52fb5274a629212
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
   CapacitorDevice: 62066b65e148a133df7b8c5bf972ba835b329748
+  CapacitorFreerasp: 5a31821fe4fc8036ed83b81a049d217098f0b799
   CapacitorKeyboard: 2c26c6fccde35023c579fc37d4cae6326d5e6343
   CapacitorMlkitBarcodeScanning: 06c21220bf207bdb146dddc2e8548f3f2686879f
   CapacitorNativeSettings: 03d126571fc0e12f89ffeb1516788bf371b528bc
@@ -185,6 +202,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  JimcaseCapacitorExitApp: 2dc3f9da1de471e4e5fa904d89870057152518df
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
@@ -192,9 +210,9 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
-  SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
-  ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
+  SQLCipher: 77fbe633cd84db04b07876dd50766b4924b57d61
+  ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
 
-PODFILE CHECKSUM: 4b0b310992defd8f1fb8755244de6cd31409f932
+PODFILE CHECKSUM: 494975933aff2c288d2d7013782a5a70fa6e901e
 
 COCOAPODS: 1.15.2

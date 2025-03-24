@@ -5,6 +5,7 @@ interface MenuItemProps {
   icon?: ReactNode;
   iconLocation: "left" | "right";
   action: () => void;
+  disabled?: boolean;
   className?: string;
 }
 

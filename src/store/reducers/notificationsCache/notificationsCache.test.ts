@@ -8,6 +8,7 @@ import {
   notificationsCacheSlice,
   setNotificationsCache,
   markNotificationAsRead,
+  clearNotifications,
 } from "./notificationsCache";
 import { IdentifiersFilters } from "../../../ui/pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../../ui/pages/Credentials/Credentials.types";
@@ -63,6 +64,21 @@ describe("Notifications cache", () => {
         groupReplied: false,
       },
     ]);
+  });
+
+  it("should handle clearNotifications", () => {
+    const initialState = {
+      notifications: [],
+    };
+
+    const newState = notificationsCacheSlice.reducer(
+      {
+        notifications: [notification],
+      },
+      clearNotifications()
+    );
+
+    expect(newState).toEqual(initialState);
   });
 
   it("should handle deleteNotification", () => {

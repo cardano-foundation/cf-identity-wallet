@@ -1,9 +1,10 @@
 import { IonIcon, IonItem, IonLabel, IonNote } from "@ionic/react";
 import { chevronForward } from "ionicons/icons";
 import { SettingsItemProps } from "../Settings.types";
+import "./SettingsItem.scss";
 
 const SettingsItem = ({ item, handleOptionClick }: SettingsItemProps) => {
-  return (
+  const content = (
     <IonItem
       onClick={() => handleOptionClick(item)}
       className="settings-item"
@@ -28,6 +29,19 @@ const SettingsItem = ({ item, handleOptionClick }: SettingsItemProps) => {
       )}
     </IonItem>
   );
+
+  if (item.href) {
+    return (
+      <a
+        href={item.href}
+        className="unstyled-link"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return content;
 };
 
 export { SettingsItem };

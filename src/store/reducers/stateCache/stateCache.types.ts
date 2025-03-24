@@ -64,6 +64,8 @@ interface StateCacheProps {
   showNoWitnessAlert?: boolean;
   showConnections: boolean;
   toastMsgs: ToastStackItem[];
+  forceInitApp?: number;
+  showLoading?: boolean;
 }
 
 enum InitializationPhase {

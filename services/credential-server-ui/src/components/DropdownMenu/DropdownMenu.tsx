@@ -56,6 +56,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
               }}
               disableRipple
               className={item.className}
+              disabled={item.disabled}
             >
               {item.icon}
               <span>{item.label}</span>

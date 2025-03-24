@@ -3,12 +3,11 @@ import { ionFireEvent } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
+import { configureStore } from "@reduxjs/toolkit";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { setAuthentication } from "../../../../../store/reducers/stateCache";
 import { CustomInputProps } from "../../../../components/CustomInput/CustomInput.types";
-import { PROFILE_LINK } from "../../../../globals/constants";
 import { Menu } from "../../Menu";
 import { SubMenuKey } from "../../Menu.types";
 
@@ -79,9 +78,6 @@ jest.mock("@capacitor/browser", () => ({
   },
 }));
 
-const mockStore = configureStore();
-const dispatchMock = jest.fn();
-
 const initialState = {
   stateCache: {
     routes: ["/"],
@@ -108,8 +104,13 @@ const initialState = {
   },
 };
 
+const mockStore = configureStore({
+  reducer: (state = initialState, action) => state,
+});
+const dispatchMock = jest.fn();
+
 const storeMocked = {
-  ...mockStore(initialState),
+  ...mockStore,
   dispatch: dispatchMock,
 };
 
@@ -280,36 +281,6 @@ describe("Profile page", () => {
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.nameerror.hasspecialchar)).toBeVisible();
-    });
-  });
-
-  test("Open Profile link", async () => {
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Menu />
-      </Provider>
-    );
-
-    expect(getByTestId("menu-tab")).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
-    ).toBeInTheDocument();
-    const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
-
-    act(() => {
-      fireEvent.click(profileButton);
-    });
-
-    const profileLink = getByTestId("profile-item-profile-link");
-
-    act(() => {
-      fireEvent.click(profileLink);
-    });
-
-    await waitFor(() => {
-      expect(browserMock).toBeCalledWith({
-        url: PROFILE_LINK,
-      });
     });
   });
 });

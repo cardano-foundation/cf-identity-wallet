@@ -16,10 +16,32 @@ import { SnackbarProvider } from "notistack";
 import { WarningAmber, CheckCircleOutline, Close } from "@mui/icons-material";
 import { closeSnackbar } from "notistack";
 import { Container, IconButton } from "@mui/material";
+import { ConnectionDetail } from "./pages/ConnectionDetail/ConnectionDetail";
+import { useEffect } from "react";
+import {
+  fetchContactCredentials,
+  fetchContacts,
+} from "./store/reducers/connectionsSlice";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import { RoutePath } from "./const/route";
 
 const App = () => {
   const MAX_TOAST_MESSAGES = 10;
   const TOAST_MESSAGE_DURATION = 2000;
+
+  const dispatch = useAppDispatch();
+  const contacts = useAppSelector((state) => state.connections.contacts);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    contacts.forEach((contact) => {
+      dispatch(fetchContactCredentials(contact.id));
+    });
+  }, [contacts, dispatch]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -42,40 +64,36 @@ const App = () => {
         <Container maxWidth="xl">
           <BrowserRouter>
             <Routes>
+              {/* TODO: Bring back when we're ready to ship Overview */}
+              {/* <Route
+                index
+                element={<Overview />}
+              /> */}
               <Route
-                path="/"
-                element={<Layout />}
-              >
-                <Route
-                  index
-                  element={<Connections />}
-                />
-                {/* TODO: Removing until we are ready to bring back Overview */}
-                {/* <Route
-                  index
-                  element={<Overview />}
-                />
-                <Route
-                  path="/connections"
-                  element={<Connections />}
-                /> */}
-                <Route
-                  path="/credentials"
-                  element={<Credentials />}
-                />
-                <Route
-                  path="/notifications"
-                  element={<Notifications />}
-                />
-                <Route
-                  path="/settings"
-                  element={<Settings />}
-                />
-                <Route
-                  path="*"
-                  element={<NoPage />}
-                />
-              </Route>
+                //path={RoutePath.Connections}
+                index
+                element={<Connections />}
+              />
+              <Route
+                path={RoutePath.ConnectionDetail}
+                element={<ConnectionDetail />}
+              />
+              <Route
+                path={RoutePath.Credentials}
+                element={<Credentials />}
+              />
+              <Route
+                path={RoutePath.Notifications}
+                element={<Notifications />}
+              />
+              <Route
+                path={RoutePath.Settings}
+                element={<Settings />}
+              />
+              <Route
+                path="*"
+                element={<NoPage />}
+              />
             </Routes>
           </BrowserRouter>
         </Container>

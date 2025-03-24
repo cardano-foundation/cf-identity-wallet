@@ -1,6 +1,6 @@
 require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
 
-platform :ios, '15.5'
+platform :ios, '18.0'
 use_frameworks!
 
 # workaround to avoid Xcode caching of Pods that requires
@@ -14,6 +14,7 @@ def capacitor_pods
   pod 'AparajitaCapacitorBiometricAuth', :path => '../../node_modules/@aparajita/capacitor-biometric-auth'
   pod 'CapacitorCommunityPrivacyScreen', :path => '../../node_modules/@capacitor-community/privacy-screen'
   pod 'CapacitorCommunitySqlite', :path => '../../node_modules/@capacitor-community/sqlite'
+  pod 'CapacitorCommunityTapJacking', :path => '../../node_modules/@capacitor-community/tap-jacking'
   pod 'CapacitorMlkitBarcodeScanning', :path => '../../node_modules/@capacitor-mlkit/barcode-scanning'
   pod 'CapacitorApp', :path => '../../node_modules/@capacitor/app'
   pod 'CapacitorBrowser', :path => '../../node_modules/@capacitor/browser'
@@ -25,6 +26,8 @@ def capacitor_pods
   pod 'CapacitorSplashScreen', :path => '../../node_modules/@capacitor/splash-screen'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
   pod 'EvvaCapacitorSecureStoragePlugin', :path => '../../node_modules/@evva/capacitor-secure-storage-plugin'
+  pod 'JimcaseCapacitorExitApp', :path => '../../node_modules/@jimcase/capacitor-exit-app'
+  pod 'CapacitorFreerasp', :path => '../../node_modules/capacitor-freerasp'
   pod 'CapacitorNativeSettings', :path => '../../node_modules/capacitor-native-settings'
 end
 

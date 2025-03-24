@@ -25,6 +25,7 @@ on:
         - cred-issuance
         - cred-issuance-ui
         - cip45-sample-dapp
+        - keria-passcode-gen
         - all
 
 env:
@@ -95,8 +96,11 @@ jobs:
               cip45-sample-dapp)
                 DOCKER_IMAGES_TARGETS="cip45-sample-dapp"
                 ;;
+              keria-passcode-gen)
+                DOCKER_IMAGES_TARGETS="keria-passcode-gen"
+                ;;
               all)
-                DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui cip45-sample-dapp"
+                DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui cip45-sample-dapp keria-passcode-gen"
                 ;;
               *)
                 echo "Invalid option, exiting..."
@@ -135,6 +139,10 @@ jobs:
             DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
                 ( git log --pretty=format:'%h' -n 1 services/cip45-sample-dapp | grep -q ${PR_GIT_SHORT_COMMIT} ) && \
                 echo cip45-sample-dapp
+            )"
+            DOCKER_IMAGES_TARGETS="$DOCKER_IMAGES_TARGETS $( \
+                ( git log --pretty=format:'%h' -n 1 services/Dockerfile.keria-passcode-gen | grep -q ${PR_GIT_SHORT_COMMIT} ) && \
+                echo keria-passcode-gen
             )"
             set -e
             STRIPPED_DOCKER_IMAGES_TARGETS=$(echo $DOCKER_IMAGES_TARGETS | tr -s ' ' | sed -e 's|^ ||' -e 's| $||')

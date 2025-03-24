@@ -7,16 +7,20 @@ import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
-import { KeyStoreKeys } from "../../../core/storage";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { i18n } from "../../../i18n";
 import { PublicRoutes, RoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
 import {
-  getFirstAppLaunch,
   getAuthentication,
   getCurrentRoute,
+  getFirstAppLaunch,
   login,
+  setAuthentication,
   setFirstAppLaunchComplete,
 } from "../../../store/reducers/stateCache";
 import { Alert } from "../../components/Alert";
@@ -39,7 +43,6 @@ import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { showError } from "../../utils/error";
 import "./LockPage.scss";
-import { i18n } from "../../../i18n";
 
 const LockPageContainer = () => {
   const pageId = "lock-page";
@@ -54,6 +57,8 @@ const LockPageContainer = () => {
   const firstAppLaunch = useSelector(getFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
   const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
+  const authentication = useAppSelector(getAuthentication);
+  const router = useHistory();
 
   const {
     isLock,
@@ -142,8 +147,9 @@ const LockPageContainer = () => {
     }
   };
 
-  const resetPasscode = () => {
+  const resetPasscode = async () => {
     setOpenRecoveryAuth(true);
+    return;
   };
 
   const error = useMemo(() => {
@@ -179,6 +185,40 @@ const LockPageContainer = () => {
         .catch((e) => showError("Unable to clear listener", e));
     };
   }, []);
+
+  const handleRecoveryButtonClick = async () => {
+    if (authentication.seedPhraseIsSet) {
+      setAlertIsOpen(true);
+      return;
+    }
+
+    try {
+      await Promise.all([
+        SecureStorage.delete(KeyStoreKeys.APP_PASSCODE),
+        SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD),
+      ]);
+
+      await Promise.allSettled([
+        Agent.agent.basicStorage.deleteById(MiscRecordId.OP_PASS_HINT),
+        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_PASSWORD_SKIPPED),
+        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_ALREADY_INIT),
+      ]);
+
+      router.push(RoutePath.ROOT);
+
+      dispatch(
+        setAuthentication({
+          ...authentication,
+          passcodeIsSet: false,
+          passwordIsSet: false,
+          passwordIsSkipped: false,
+          loggedIn: true,
+        })
+      );
+    } catch (e) {
+      showError("Failed to clear app: ", e, dispatch);
+    }
+  };
 
   return (
     <ResponsivePageLayout
@@ -223,7 +263,7 @@ const LockPageContainer = () => {
       <PageFooter
         pageId={pageId}
         secondaryButtonText={`${i18n.t("lockpage.forgotten.button")}`}
-        secondaryButtonAction={() => setAlertIsOpen(true)}
+        secondaryButtonAction={handleRecoveryButtonClick}
       />
       <Alert
         isOpen={alertIsOpen}

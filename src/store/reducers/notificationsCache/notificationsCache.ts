@@ -41,6 +41,7 @@ const notificationsCacheSlice = createSlice({
     addNotification: (state, action: PayloadAction<KeriaNotification>) => {
       state.notifications = [action.payload, ...state.notifications];
     },
+    clearNotifications: () => initialState,
   },
 });
 
@@ -51,6 +52,7 @@ export const {
   markNotificationAsRead,
   deleteNotificationById,
   addNotification,
+  clearNotifications,
 } = notificationsCacheSlice.actions;
 
 const getNotificationsCache = (state: RootState) =>

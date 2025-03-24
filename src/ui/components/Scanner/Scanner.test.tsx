@@ -329,7 +329,7 @@ describe("Scanner", () => {
     });
   });
 
-  test("Multisign initiator scan 1 - groupId not match", async () => {
+  test("Multisign initiator scan - groupId not match", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.SCAN],
@@ -395,7 +395,7 @@ describe("Scanner", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).not.toBeCalledWith(
+      expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.GROUP_ID_NOT_MATCH_ERROR)
       );
     });

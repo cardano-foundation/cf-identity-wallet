@@ -1,6 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
   addFavouritesCredsCache,
+  clearCredCache,
   credsCacheSlice,
   getCredentialsFilters,
   getCredsCache,
@@ -51,6 +52,29 @@ describe("credsCacheSlice", () => {
       setCredsCache(creds)
     );
     expect(newState.creds).toEqual(creds);
+  });
+
+  it("should handle clearCredCache", () => {
+    const creds: CredentialShortDetails[] = [
+      {
+        id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        issuanceDate: "2010-01-01T19:23:24Z",
+        credentialType: "University Credential",
+        status: CredentialStatus.CONFIRMED,
+        schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierType: IdentifierType.Individual,
+        identifierId: multisigMetadataRecord.id,
+        connectionId: "ebfeb1ebc6f1c276ef71212ec20",
+      },
+    ];
+    const newState = credsCacheSlice.reducer(
+      {
+        ...initialState,
+        creds,
+      },
+      clearCredCache()
+    );
+    expect(newState).toEqual(initialState);
   });
 
   it("should handle add cred when cred does not exist", () => {

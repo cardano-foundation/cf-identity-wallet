@@ -1,8 +1,10 @@
 import { Style, StyleOptions } from "@capacitor/status-bar";
-import { render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { startFreeRASP } from "capacitor-freerasp";
+import { ExitApp } from "@jimcase/capacitor-exit-app";
 import { IdentifierService } from "../core/agent/services";
 import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
@@ -20,8 +22,24 @@ import {
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
 
+jest.mock("@jimcase/capacitor-exit-app", () => ({
+  ExitApp: {
+    exitApp: jest.fn(),
+  },
+}));
+
+jest.mock("capacitor-freerasp", () => ({
+  startFreeRASP: jest.fn(),
+}));
+
 const mockInitDatabase = jest.fn();
 const getAvailableWitnessesMock = jest.fn();
+const setBackgroundColorMock = jest.fn();
+jest.mock("@capawesome/capacitor-android-edge-to-edge-support", () => ({
+  EdgeToEdge: {
+    setBackgroundColor: () => setBackgroundColorMock(),
+  },
+}));
 
 jest.mock("../core/agent/agent", () => ({
   Agent: {
@@ -77,8 +95,8 @@ jest.mock("../core/agent/agent", () => ({
         pollNotifications: jest.fn(),
         pollLongOperations: jest.fn(),
         getNotifications: jest.fn(),
-        stopNotification: jest.fn(),
-        startNotification: jest.fn(),
+        startPolling: jest.fn(),
+        stopPolling: jest.fn(),
         onNewNotification: jest.fn(),
         onLongOperationSuccess: jest.fn(),
         onLongOperationFailure: jest.fn(),
@@ -99,6 +117,18 @@ jest.mock("../core/agent/agent", () => ({
             lockedUntil: Date.now(),
           })
         ),
+      },
+    },
+  },
+}));
+
+jest.mock("../core/configuration/configurationService", () => ({
+  ConfigurationService: {
+    env: {
+      security: {
+        rasp: {
+          enabled: true,
+        },
       },
     },
   },
@@ -267,6 +297,21 @@ describe("App", () => {
     await waitFor(() => {
       expect(queryByTestId("mobile-preview-header")).not.toBeInTheDocument();
       expect(queryByTestId("offline-page")).toBe(null);
+    });
+  });
+
+  test("Set background color of status bar on android", async () => {
+    getPlatformsMock.mockImplementation(() => ["android"]);
+    isNativeMock.mockImplementation(() => true);
+
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(setBackgroundColorMock).toBeCalled();
     });
   });
 
@@ -831,5 +876,181 @@ describe("System copatibility alert", () => {
     expect(getByText("N/A")).toBeVisible();
 
     expect(getByTestId("not-met")).toBeVisible();
+  });
+});
+
+describe("System threat alert", () => {
+  let startFreeRASPMock: jest.Mock;
+
+  beforeEach(() => {
+    isNativeMock.mockImplementation(() => true);
+    getPlatformsMock.mockImplementation(() => ["android"]);
+    mockInitDatabase.mockClear();
+    getAvailableWitnessesMock.mockClear();
+
+    const deviceInfo = {
+      platform: "android",
+      osVersion: "12.0",
+      model: "",
+      operatingSystem: "android",
+      manufacturer: "",
+      isVirtual: false,
+      webViewVersion: "131.0.6778.260",
+    };
+    getDeviceInfo.mockImplementation(() => Promise.resolve(deviceInfo));
+  });
+
+  afterEach(() => {
+    startFreeRASPMock.mockClear();
+  });
+
+  test("Shows SystemThreatAlert when freeRASP initialization fails", async () => {
+    startFreeRASPMock = startFreeRASP as jest.Mock;
+    startFreeRASPMock.mockRejectedValue(
+      new Error("freeRASP initialization failed")
+    );
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(startFreeRASPMock).toHaveBeenCalled();
+      expect(getByText("Threats Detected")).toBeVisible();
+    });
+  });
+
+  test("Catch a threat and close the app on start", async () => {
+    startFreeRASPMock = startFreeRASP as jest.Mock;
+    startFreeRASPMock.mockResolvedValue(true);
+
+    render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(startFreeRASPMock).toHaveBeenCalled();
+    });
+
+    await act(async () => {
+      const privilegedAccessAction = (startFreeRASPMock.mock.calls[0][1] as any)
+        .privilegedAccess;
+
+      privilegedAccessAction();
+    });
+
+    await waitFor(() => {
+      expect(ExitApp.exitApp).toHaveBeenCalled();
+    });
+  });
+
+  test("Catches a threat and close the app after renders SetUserName modal", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [{ path: TabsRoutePath.ROOT }],
+        authentication: {
+          loggedIn: true,
+          userName: "",
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          ssiAgentUrl: "http://keria.com",
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        toastMsgs: [],
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: {},
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    startFreeRASPMock = startFreeRASP as jest.Mock;
+    startFreeRASPMock.mockResolvedValue(true);
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <App />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(startFreeRASPMock).toHaveBeenCalled();
+      expect(
+        getByText(Eng_Trans.inputrequest.title.username)
+      ).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      const privilegedAccessAction = (startFreeRASPMock.mock.calls[0][1] as any)
+        .privilegedAccess;
+      privilegedAccessAction();
+    });
+
+    await waitFor(() => {
+      expect(ExitApp.exitApp).toHaveBeenCalled();
+    });
   });
 });

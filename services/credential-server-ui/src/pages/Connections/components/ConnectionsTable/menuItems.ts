@@ -8,11 +8,12 @@ import { i18n } from "../../../../i18n";
 
 export const createMenuItems = (
   connectionId: string,
-  handleOpenModal: (connectionId: string) => void
+  handleOpenModal: (connectionId: string) => void,
+  handleOpenDetail: (connectionId: string) => void
 ) => [
   {
     label: i18n.t("pages.connections.viewDetails"),
-    action: () => console.log(i18n.t("pages.connections.viewDetails")),
+    action: () => handleOpenDetail(connectionId),
     icon: React.createElement(VisibilityOutlined),
     className: "icon-left",
   },
