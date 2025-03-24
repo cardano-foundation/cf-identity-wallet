@@ -536,9 +536,8 @@ describe("Credential request information: multisig", () => {
     expect(
       getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
     ).toBeVisible();
-    expect(
-      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)
-    ).toBeVisible();
+
+    expect(getByTestId("delete-button-multi-sign")).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));

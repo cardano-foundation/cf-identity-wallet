@@ -209,7 +209,7 @@ const CredentialRequestInformation = ({
       (!isGroupInitiator && !isGroupInitiatorJoined) ||
       isJoinGroup
       ? undefined
-      : `${i18n.t("tabs.notifications.details.buttons.reject")}`;
+      : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
   }, [isGroupInitiator, isGroupInitiatorJoined, isJoinGroup]);
 
   const decline = () => setAlertDeclineIsOpen(true);
@@ -286,6 +286,7 @@ const CredentialRequestInformation = ({
             secondaryButtonAction={decline}
             deleteButtonAction={decline}
             deleteButtonText={deleteButtonText}
+            deleteButtonIcon={false}
           />
         }
       >
