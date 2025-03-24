@@ -537,7 +537,7 @@ describe("Credential request information: multisig", () => {
       getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.decline)
     ).toBeVisible();
 
     act(() => {
