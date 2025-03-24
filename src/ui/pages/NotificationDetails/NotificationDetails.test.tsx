@@ -63,6 +63,12 @@ const initialState = {
   notificationsCache: {
     notifications: notificationsFix,
   },
+  credsCache: {
+    creds: [],
+  },
+  credsArchivedCache: {
+    creds: [],
+  }
 };
 
 describe("Notification Detail", () => {
