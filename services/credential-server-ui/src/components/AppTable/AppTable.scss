@@ -1,0 +1,39 @@
+.app-table {
+  .MuiTableHead-root {
+    background-color: var(--color-primary-200);
+
+    .MuiTableCell-head:last-of-type {
+      width: 2rem;
+    }
+  }
+
+  tr {
+    height: 3.25rem;
+
+    & > :first-child {
+      padding-left: 1.5rem;
+    }
+
+    &.Mui-selected {
+      background-color: var(--color-neutral-100);
+    }
+
+    th,
+    td {
+      font-weight: 500;
+      padding: 0.38rem;
+    }
+  }
+
+  .MuiTableContainer-root {
+    background-color: var(--color-neutral-100);
+    border-radius: 0.75rem;
+    box-shadow: 0.25rem 0.25rem 1.25rem 0rem rgba(var(--text-color-rgb), 0.16);
+  }
+
+  .MuiTablePagination-actions button {
+    &:hover {
+      background-color: var(--color-neutral-100);
+    }
+  }
+}

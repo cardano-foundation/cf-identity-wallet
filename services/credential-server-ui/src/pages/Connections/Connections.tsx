@@ -4,13 +4,14 @@ import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers/stateCache";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { ConnectionsTable } from "./components/ConnectionsTable";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import "./Connections.scss";
 import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { AddConnectionModal } from "./components/AddConnectionModal";
 import { fetchContacts } from "../../store/reducers/connectionsSlice";
+import { PageHeader } from "../../components/PageHeader";
 
 const Connections = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -29,30 +30,40 @@ const Connections = () => {
   };
 
   return (
-    <div className="connections-page">
-      <div className="connections-page-header">
-        <h1>{i18n.t("pages.connections.title", { count: contacts.length })}</h1>
-        {roleViewIndex == 0 && (
-          <Button
-            className="add-connection-button primary-button"
-            aria-haspopup="true"
-            variant="contained"
-            disableElevation
-            disableRipple
-            onClick={handleClick}
-            startIcon={<AddIcon />}
-          >
-            {i18n.t("pages.connections.addConnection.title")}
-          </Button>
-        )}
-        <AddConnectionModal
-          openModal={openModal}
-          setOpenModal={setOpenModal}
-          handleGetContacts={handleGetContacts}
-        />
-      </div>
+    <Box
+      className="connections-page"
+      sx={{ padding: "0 2.5rem 2.5rem" }}
+    >
+      <PageHeader
+        title={`${i18n.t("pages.connections.title", {
+          number: contacts.length,
+        })}`}
+        sx={{
+          margin: "1.5rem 0",
+        }}
+        action={
+          roleViewIndex == 0 && (
+            <Button
+              className="add-connection-button primary-button"
+              aria-haspopup="true"
+              variant="contained"
+              disableElevation
+              disableRipple
+              onClick={handleClick}
+              startIcon={<AddIcon />}
+            >
+              {i18n.t("pages.connections.addConnection.title")}
+            </Button>
+          )
+        }
+      />
+      <AddConnectionModal
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        handleGetContacts={handleGetContacts}
+      />
       <ConnectionsTable />
-    </div>
+    </Box>
   );
 };
 

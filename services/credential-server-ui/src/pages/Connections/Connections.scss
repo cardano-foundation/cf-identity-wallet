@@ -1,31 +1,16 @@
 .connections-page {
-  .connections-page-header {
-    padding: 1.5rem 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    h1 {
-      margin: 0;
-    }
-
-    button.add-connection-button {
-      border-radius: 1rem;
-      text-transform: none;
-      padding: 0.75rem 1.25rem 0.75rem 1rem;
-    }
-  }
-
   .connections-table {
     background-color: var(--background-color);
 
     .connection-table-toolbar,
     .table-left,
     .table-right {
-      padding: 0;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+      &:not(.hidden) {
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
     }
 
     .connection-table-toolbar {

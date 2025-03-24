@@ -7,6 +7,7 @@ import {
 import { AppTableBaseData, AppTableProps } from "./AppTable.types";
 import { MIN_TABLE_WIDTH, ROWS_PER_PAGE_OPTIONS } from "./constants";
 import { EnhancedTableHead } from "./EnhancedTableHead";
+import "./AppTable.scss";
 
 const AppTable = <T extends AppTableBaseData = AppTableBaseData>({
   rows,
@@ -18,7 +19,7 @@ const AppTable = <T extends AppTableBaseData = AppTableBaseData>({
   pagination,
 }: AppTableProps<T>) => {
   return (
-    <TableContainer>
+    <TableContainer className="app-table">
       <Table
         sx={{ minWidth: MIN_TABLE_WIDTH }}
         aria-labelledby="tableTitle"

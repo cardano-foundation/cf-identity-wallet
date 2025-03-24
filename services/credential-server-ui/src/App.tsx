@@ -15,8 +15,8 @@ import { theme } from "./theme/theme"; // Import the theme
 import { SnackbarProvider } from "notistack";
 import { WarningAmber, CheckCircleOutline, Close } from "@mui/icons-material";
 import { closeSnackbar } from "notistack";
-import { Container, IconButton } from "@mui/material";
-import { ConnectionDetail } from "./pages/ConnectionDetail/ConnectionDetail";
+import { IconButton } from "@mui/material";
+import { ConnectionDetails } from "./pages/ConnectionDetails/ConnectionDetails";
 import { useEffect } from "react";
 import {
   fetchContactCredentials,
@@ -61,22 +61,25 @@ const App = () => {
           </IconButton>
         )}
       >
-        <Container maxWidth="xl">
-          <BrowserRouter>
-            <Routes>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={<Layout />}
+            >
               {/* TODO: Bring back when we're ready to ship Overview */}
               {/* <Route
                 index
                 element={<Overview />}
               /> */}
               <Route
-                //path={RoutePath.Connections}
                 index
+                //path={RoutePath.Connections}
                 element={<Connections />}
               />
               <Route
-                path={RoutePath.ConnectionDetail}
-                element={<ConnectionDetail />}
+                path={RoutePath.ConnectionDetails}
+                element={<ConnectionDetails />}
               />
               <Route
                 path={RoutePath.Credentials}
@@ -94,9 +97,9 @@ const App = () => {
                 path="*"
                 element={<NoPage />}
               />
-            </Routes>
-          </BrowserRouter>
-        </Container>
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </SnackbarProvider>
     </ThemeProvider>
   );

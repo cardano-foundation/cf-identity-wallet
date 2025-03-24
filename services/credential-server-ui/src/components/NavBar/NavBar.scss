@@ -1,8 +1,4 @@
 #navBar {
-  .MuiContainer-root {
-    padding: 0;
-  }
-
   a,
   button,
   li {
@@ -13,7 +9,8 @@
     padding: 0.75rem 1rem 0.75rem 1.25rem;
 
     &.logo-button {
-      padding-left: 0;
+      padding-inline: 0;
+      margin-right: 2rem;
     }
 
     &:hover:not(.header-logo):not(.switch-account-button) {

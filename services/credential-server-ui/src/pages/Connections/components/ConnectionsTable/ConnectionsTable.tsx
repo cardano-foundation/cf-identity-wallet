@@ -112,7 +112,7 @@ const ConnectionsTable: React.FC = () => {
     });
   };
 
-  const handOpenConnectionDetail = (id: string) => {
+  const handOpenConnectionDetails = (id: string) => {
     nav(`/connections/${id}`);
   };
 
@@ -184,10 +184,9 @@ const ConnectionsTable: React.FC = () => {
                           </Tooltip>
                         }
                         menuItems={createMenuItems(
-                          dispatch,
                           row.id,
                           handleOpenModal,
-                          handOpenConnectionDetail
+                          handOpenConnectionDetails
                         )}
                       />
                     </TableCell>

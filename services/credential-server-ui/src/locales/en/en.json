@@ -16,7 +16,7 @@
       "title": "Overview"
     },
     "connections": {
-      "title": "Connections ({{count}})",
+      "title": "Connections ({{number}})",
       "addConnection": {
         "title": "Add Connection",
         "modal": {
@@ -66,12 +66,12 @@
         }
       }
     },
-    "connectiondetail": {
+    "connectionDetails": {
       "title": "Connection Details",
       "issue": "Issue Credential",
       "userinfo": {
-        "connectiondate": "Connection Date",
-        "issuedcredentials": "Issued Credentials",
+        "connectionDate": "Connection Date",
+        "issuedCredentials": "Issued Credentials",
         "button": {
           "delete": "Delete Connection"
         },
@@ -101,7 +101,7 @@
           "error": "Unable to revoked credential"
         },
         "confirm": {
-          "title": "Revoke credential successfully",
+          "title": "Revoke credential",
           "body": "Are you sure you want to revoke this credential? This action cannot be undone.",
           "confirm": "Revoke",
           "cancel": "Cancel"
@@ -113,7 +113,7 @@
       "actions": "Actions",
       "table": {
         "template": "Credential Templates",
-        "creationdate": "Creation Date",
+        "creationDate": "Creation Date",
         "menu": {
           "view": "View Details",
           "issue": "Issue Credential"

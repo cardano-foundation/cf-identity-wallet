@@ -38,7 +38,7 @@ interface Props {
 const drawerWidth = 240;
 
 const menuItems = [
-  // TODO: Removing until we're ready to implement
+  // TODO: Removing until Overview is ready to be implemented
   // {
   //   key: "overview",
   //   label: i18n.t("navbar.overview"),

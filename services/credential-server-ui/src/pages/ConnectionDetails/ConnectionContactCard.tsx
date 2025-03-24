@@ -10,7 +10,7 @@ import { ContactService } from "../../services";
 import { useAppDispatch } from "../../store/hooks";
 import { fetchContacts } from "../../store/reducers/connectionsSlice";
 import { formatDate } from "../../utils/dateFormatter";
-import { ConnectionContactCardProps } from "./ConnectionDetail.types";
+import { ConnectionContactCardProps } from "./ConnectionDetails.types";
 
 const ConnectionContactCard = ({
   contact,
@@ -83,13 +83,13 @@ const ConnectionContactCard = ({
         </Box>
         <Box sx={{ textAlign: "left", marginBottom: "1.5rem" }}>
           <Typography variant="subtitle1">
-            {i18n.t("pages.connectiondetail.userinfo.connectiondate")}
+            {i18n.t("pages.connectionDetails.userinfo.connectionDate")}
           </Typography>
           <Typography variant="body2">{formatDate(new Date())}</Typography>
         </Box>
         <Box sx={{ textAlign: "left", marginBottom: "1.5rem" }}>
           <Typography variant="subtitle1">
-            {i18n.t("pages.connectiondetail.userinfo.issuedcredentials")}
+            {i18n.t("pages.connectionDetails.userinfo.issuedCredentials")}
           </Typography>
           <Typography variant="body2">{credentials.length}</Typography>
         </Box>
@@ -101,14 +101,14 @@ const ConnectionContactCard = ({
           startIcon={<DeleteOutline />}
           onClick={() => setOpenModal(true)}
         >
-          {i18n.t("pages.connectiondetail.userinfo.button.delete")}
+          {i18n.t("pages.connectionDetails.userinfo.button.delete")}
         </Button>
       </Box>
       <PopupModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        title={i18n.t("pages.connectiondetail.userinfo.confirm.title")}
-        body={i18n.t("pages.connectiondetail.userinfo.confirm.body")}
+        title={i18n.t("pages.connectionDetails.userinfo.confirm.title")}
+        body={i18n.t("pages.connectionDetails.userinfo.confirm.body")}
         footer={
           <>
             <Button
@@ -116,7 +116,7 @@ const ConnectionContactCard = ({
               aria-label="cancel delete connection"
               onClick={() => setOpenModal(false)}
             >
-              {i18n.t("pages.connectiondetail.userinfo.confirm.cancel")}
+              {i18n.t("pages.connectionDetails.userinfo.confirm.cancel")}
             </Button>
             <Button
               variant="contained"
@@ -124,7 +124,7 @@ const ConnectionContactCard = ({
               onClick={handleDeleteContact}
               color="error"
             >
-              {i18n.t("pages.connectiondetail.userinfo.confirm.confirm")}
+              {i18n.t("pages.connectionDetails.userinfo.confirm.confirm")}
             </Button>
           </>
         }

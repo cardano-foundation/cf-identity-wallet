@@ -57,11 +57,9 @@ const ErrorPage = ({
         data-testid="support-link-browser-handler"
         onClick={() => openBrowserLink(SUPPORT_LINK)}
       >
-        <u data-testid="support-link-browser-handler">
-          {i18n.t(
-            "tabs.notifications.details.identifier.errorpage.help.supportchannel"
-          )}
-        </u>
+        {i18n.t(
+          "tabs.notifications.details.identifier.errorpage.help.supportchannel"
+        )}
       </u>
     );
   };
