@@ -28,6 +28,7 @@ import {
   isRepeat,
   isReverseConsecutive,
 } from "../../utils/passcodeChecker";
+import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 
 const CreatePasscodeModule = forwardRef<
   CreatePasscodeModuleRef,
@@ -48,6 +49,8 @@ const CreatePasscodeModule = forwardRef<
     const dispatch = useAppDispatch();
     const [passcode, setPasscode] = useState("");
     const [passcodeMatch, setPasscodeMatch] = useState(false);
+    const [showSetupIOSBiometricsAlert, setShowSetupIOSBiometricsAlert] =
+      useState(false);
     const [
       showSetupAndroidBiometricsAlert,
       setShowSetupAndroidBiometricsAlert,
@@ -55,22 +58,24 @@ const CreatePasscodeModule = forwardRef<
     const [showCancelBiometricsAlert, setShowCancelBiometricsAlert] =
       useState(false);
     const [originalPassCode, setOriginalPassCode] = useState("");
+    const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
     const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
     const isAndroidDevice = getPlatforms().includes("android");
 
-    const setupAndroidBiometricsHeaderText = i18n.t(
+    const setupBiometricsHeaderText = i18n.t(
       "biometry.setupandroidbiometryheader"
     );
-    const setupAndroidBiometricsConfirmtext = i18n.t(
+
+    const setupBiometricsConfirmtext = i18n.t(
       "biometry.setupandroidbiometryconfirm"
     );
-    const setupAndroidBiometricsCanceltext = i18n.t(
+    const setupBiometricsCanceltext = i18n.t(
       "biometry.setupandroidbiometrycancel"
     );
 
     const alertClasses = overrideAlertZIndex ? "max-zindex" : undefined;
     const cancelBiometricsHeaderText = i18n.t("biometry.cancelbiometryheader");
-    const cancelBiometricsConfirmText = setupAndroidBiometricsConfirmtext;
+    const cancelBiometricsConfirmText = setupBiometricsConfirmtext;
 
     useEffect(() => {
       if (passcodeMatch) {
@@ -92,7 +97,7 @@ const CreatePasscodeModule = forwardRef<
               if (isAndroidDevice) {
                 setShowSetupAndroidBiometricsAlert(true);
               } else {
-                await processBiometrics();
+                setShowSetupIOSBiometricsAlert(true);
               }
             } else {
               await handlePassAuth();
@@ -102,8 +107,21 @@ const CreatePasscodeModule = forwardRef<
       }
     };
 
+    const handleSetupIOSBiometrics = async () => {
+      setShowSetupIOSBiometricsAlert(false);
+      await processBiometrics();
+    };
+
+    const handleCancelSetupIOSBiometrics = async () => {
+      setShowSetupIOSBiometricsAlert(false);
+      setShowCancelBiometricsAlert(true);
+    };
+
     const processBiometrics = async () => {
+      await disablePrivacy();
       const isBiometricAuthenticated = await handleBiometricAuth();
+      await enablePrivacy();
+
       if (isBiometricAuthenticated === true) {
         await Agent.agent.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
@@ -298,9 +316,9 @@ const CreatePasscodeModule = forwardRef<
           isOpen={showSetupAndroidBiometricsAlert}
           setIsOpen={setShowSetupAndroidBiometricsAlert}
           dataTestId="alert-setup-android-biometry"
-          headerText={setupAndroidBiometricsHeaderText}
-          confirmButtonText={setupAndroidBiometricsConfirmtext}
-          cancelButtonText={setupAndroidBiometricsCanceltext}
+          headerText={setupBiometricsHeaderText}
+          confirmButtonText={setupBiometricsConfirmtext}
+          cancelButtonText={setupBiometricsCanceltext}
           actionConfirm={handleSetupAndroidBiometrics}
           actionCancel={handleCancelSetupAndroidBiometrics}
           backdropDismiss={false}
@@ -313,6 +331,18 @@ const CreatePasscodeModule = forwardRef<
           headerText={cancelBiometricsHeaderText}
           confirmButtonText={cancelBiometricsConfirmText}
           actionConfirm={handleCancelBiometrics}
+          backdropDismiss={false}
+          className={alertClasses}
+        />
+        <Alert
+          isOpen={showSetupIOSBiometricsAlert}
+          setIsOpen={setShowSetupIOSBiometricsAlert}
+          dataTestId="alert-setup-ios-biometry"
+          headerText={setupBiometricsHeaderText}
+          confirmButtonText={setupBiometricsConfirmtext}
+          cancelButtonText={setupBiometricsCanceltext}
+          actionConfirm={handleSetupIOSBiometrics}
+          actionCancel={handleCancelSetupIOSBiometrics}
           backdropDismiss={false}
           className={alertClasses}
         />
