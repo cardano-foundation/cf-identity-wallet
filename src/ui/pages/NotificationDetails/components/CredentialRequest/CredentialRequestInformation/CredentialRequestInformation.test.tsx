@@ -441,6 +441,234 @@ describe("Credential request information: multisig", () => {
     expect(back).toBeCalled();
   });
 
+  test("Initiator opens request after proposing and before threshold is met, but has deleted the proposed credential", async () => {
+    const linkedGroup = {
+      linkedRequest: {
+        accepted: true,
+        current: "cred-id",
+        previous: undefined,
+      },
+      threshold: "2",
+      members: ["member-1", "member-2"],
+      othersJoined: [],
+      memberInfos: [
+        {
+          aid: "member-1",
+          name: "Member 1",
+          joined: true,
+        },
+        {
+          aid: "member-2",
+          name: "Member 2",
+          joined: false,
+        },
+      ],
+    };
+
+    const storeMocked = {
+      ...mockStore({
+        ...initialState,
+        credsCache: {
+          creds: [],
+        }
+      }),
+      dispatch: dispatchMock,
+    };
+
+    const back = jest.fn();
+
+    const { getByText, getByTestId, queryByText } = render(
+      <Provider store={storeMocked}>
+        <CredentialRequestInformation
+          pageId="multi-sign"
+          activeStatus
+          onBack={back}
+          onAccept={jest.fn()}
+          userAID="member-1"
+          notificationDetails={notificationsFix[4]}
+          credentialRequest={credRequestFix}
+          linkedGroup={linkedGroup}
+          onReloadData={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.title
+        )
+      ).toBeVisible();
+    });
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.initiatorselectedcred
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.threshold
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.groupmember
+      )
+    ).toBeVisible();
+    expect(
+      queryByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposalfrom
+      )
+    ).toBeNull();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposedcred
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.initiatordeletedproposedcredential
+      )
+    ).toBeVisible();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
+    ).toBeNull();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)
+    ).toBeNull();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.ok)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-multi-sign"));
+    });
+
+    expect(back).toBeCalled();
+  });
+
+  test("Initiator opens request after proposing and after threshold is met", async () => {
+    const linkedGroup = {
+      linkedRequest: {
+        accepted: true,
+        current: "cred-id",
+        previous: undefined,
+      },
+      threshold: "2",
+      members: ["member-1", "member-2"],
+      othersJoined: ["member-2"],
+      memberInfos: [
+        {
+          aid: "member-1",
+          name: "Member 1",
+          joined: true,
+        },
+        {
+          aid: "member-2",
+          name: "Member 2",
+          joined: true,
+        },
+      ],
+    };
+
+    const storeMocked = {
+      ...mockStore({
+        ...initialState,
+        credsCache: {
+          creds: [],
+        }
+      }),
+      dispatch: dispatchMock,
+    };
+
+    const back = jest.fn();
+
+    const { getByText, getByTestId, queryByText } = render(
+      <Provider store={storeMocked}>
+        <CredentialRequestInformation
+          pageId="multi-sign"
+          activeStatus
+          onBack={back}
+          onAccept={jest.fn()}
+          userAID="member-1"
+          notificationDetails={notificationsFix[4]}
+          credentialRequest={credRequestFix}
+          linkedGroup={linkedGroup}
+          onReloadData={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.title
+        )
+      ).toBeVisible();
+    });
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.reachthreshold
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.threshold
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.groupmember
+      )
+    ).toBeVisible();
+    expect(
+      queryByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposalfrom
+      )
+    ).toBeNull();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.proposedcred
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request
+          .information.initiatordeletedproposedcredential
+      )
+    ).toBeVisible();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
+    ).toBeNull();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.reject)
+    ).toBeNull();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.ok)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-multi-sign"));
+    });
+
+    expect(back).toBeCalled();
+  });
+
   test("Member opens request that does not yet have a proposal", async () => {
     const linkedGroup = {
       linkedRequest: {
