@@ -17,6 +17,9 @@ import { CredentialTypes } from "../../const";
 import { i18n } from "../../i18n";
 import { formatDate } from "../../utils/dateFormatter";
 import { CredentialTemplateRow } from "./Credential.types";
+import { useAppSelector } from "../../store/hooks";
+import { getRoleView } from "../../store/reducers";
+import { RoleIndex } from "../../components/NavBar/constants/roles";
 
 const headers: AppTableHeader<CredentialTemplateRow>[] = [
   {
@@ -30,6 +33,7 @@ const headers: AppTableHeader<CredentialTemplateRow>[] = [
 ];
 
 export const Credentials = () => {
+  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const tableRows: CredentialTemplateRow[] = CredentialTypes.map(
     (row, idx) => ({
       id: `${idx}`,
@@ -119,15 +123,21 @@ export const Credentials = () => {
                         icon: <VisibilityOutlinedIcon />,
                         className: "icon-left",
                       },
-                      {
-                        className: "divider",
-                      },
-                      {
-                        label: i18n.t("pages.credentials.table.menu.issue"),
-                        action: () => issueCred(),
-                        icon: <AddCircleOutlineOutlinedIcon />,
-                        className: "icon-left",
-                      },
+                      ...(roleViewIndex === RoleIndex.ISSUER
+                        ? [
+                            {
+                              className: "divider",
+                            },
+                            {
+                              label: i18n.t(
+                                "pages.credentials.table.menu.issue"
+                              ),
+                              action: () => issueCred(),
+                              icon: <AddCircleOutlineOutlinedIcon />,
+                              className: "icon-left",
+                            },
+                          ]
+                        : []),
                     ]}
                   />
                 </TableCell>
