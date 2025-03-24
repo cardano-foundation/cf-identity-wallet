@@ -31,26 +31,12 @@ export type FreeRASPInitResult =
   | { success: true }
   | { success: false; error: unknown };
 
-export const freeRASPConfig = {
-  androidConfig: {
-    packageName: "org.cardanofoundation.idw",
-    certificateHashes: [process.env.APP_CERT_HASH || ""],
-  },
-  iosConfig: {
-    appBundleId: "org.cardanofoundation.idw",
-    appTeamId: process.env.APP_TEAM_ID || "",
-  },
-  watcherMail: process.env.WATCHER_MAIL || "",
-  isProd: ConfigurationService.env?.security.rasp.enabled ? true : false,
-};
 
 const createThreatAction = (
   setThreatsDetected: React.Dispatch<React.SetStateAction<ThreatCheck[]>>,
   threatName: ThreatName,
   description: string
 ) => {
-  if (ConfigurationService.env.security.rasp.enabled) return;
-
   return () => {
     setThreatsDetected((currentState) => {
       const threatExists = currentState.some(
@@ -140,6 +126,19 @@ export const initializeFreeRASP = async (
       ThreatName.DEVICE_ID,
       i18n.t("systemthreats.rules.deviceid")
     ),
+  };
+  
+  const freeRASPConfig = {
+    androidConfig: {
+      packageName: "org.cardanofoundation.idw",
+      certificateHashes: [process.env.APP_CERT_HASH || ""],
+    },
+    iosConfig: {
+      appBundleId: "org.cardanofoundation.idw",
+      appTeamId: process.env.APP_TEAM_ID || "",
+    },
+    watcherMail: process.env.WATCHER_MAIL || "",
+    isProd: ConfigurationService.env.security.rasp.enabled,
   };
 
   try {

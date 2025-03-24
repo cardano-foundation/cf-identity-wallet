@@ -122,6 +122,18 @@ jest.mock("../core/agent/agent", () => ({
   },
 }));
 
+jest.mock("../core/configuration/configurationService", () => ({
+  ConfigurationService: {
+    env: {
+      security: {
+        rasp: {
+          enabled: true
+        }
+      }
+    }
+  }
+}));
+
 const getDeviceInfo = jest.fn();
 
 jest.mock("@capacitor/device", () => ({
