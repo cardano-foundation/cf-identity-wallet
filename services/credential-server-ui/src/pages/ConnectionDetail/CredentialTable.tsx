@@ -9,16 +9,14 @@ import {
   Tooltip,
 } from "@mui/material";
 import { enqueueSnackbar, VariantType } from "notistack";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../components/DropdownMenu";
-import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PopupModal } from "../../components/PopupModal";
 import { i18n } from "../../i18n";
 import { CredentialService } from "../../services";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getRoleView } from "../../store/reducers";
+import { useAppDispatch } from "../../store/hooks";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 import { formatDate } from "../../utils/dateFormatter";
 import {
@@ -48,7 +46,6 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
     useState<CredentialTableRow | null>(null);
-  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const tableRows: CredentialTableRow[] = credentials.map((row) => ({
     id: row.status.i,
     name: row.schema.title,
@@ -61,7 +58,6 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
     order,
     orderBy,
     selected,
-    setSelected,
     page,
     rowsPerPage,
     handleRequestSort,
@@ -69,10 +65,6 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
     handleChangeRowsPerPage,
     visibleRows,
   } = useTable(tableRows, "name");
-
-  useEffect(() => {
-    setSelected([]);
-  }, [setSelected, roleViewIndex]);
 
   const triggerToast = (message: string, variant: VariantType) => {
     enqueueSnackbar(message, {
