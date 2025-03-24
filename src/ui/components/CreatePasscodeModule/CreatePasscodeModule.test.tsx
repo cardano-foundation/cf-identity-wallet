@@ -267,7 +267,7 @@ describe("SetPasscode Page", () => {
     getPlatformsMock.mockImplementation(() => ["android"]);
     verifySecretMock.mockResolvedValue(false);
 
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
@@ -282,25 +282,19 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-    ).toBeInTheDocument();
-
     await passcodeFiller(getByText, getByTestId, "193212");
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
-      ).toBeInTheDocument()
-    );
+      ).toBeInTheDocument();
+    });
 
     await passcodeFiller(getByText, getByTestId, "193212");
 
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometryheader)
-      ).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      expect(getByTestId("alert-setup-android-biometry")).toBeInTheDocument();
+    });
 
     fireEvent.click(getByTestId("alert-setup-android-biometry-confirm-button"));
 
@@ -326,71 +320,6 @@ describe("SetPasscode Page", () => {
   test("Setup passcode and cancel Android biometrics", async () => {
     verifySecretMock.mockResolvedValue(false);
     getPlatformsMock.mockImplementation(() => ["android"]);
-    require("@ionic/react");
-
-    const { getByText, queryByText, getByTestId } = render(
-      <IonReactRouter>
-        <IonRouterOutlet animated={false}>
-          <Provider store={store}>
-            <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
-              description={EN_TRANSLATIONS.setpasscode.description}
-              testId="set-passcode"
-              onCreateSuccess={jest.fn()}
-            />
-          </Provider>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    );
-
-    await passcodeFiller(getByText, getByTestId, "193212");
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-      ).toBeInTheDocument();
-
-      expect(
-        getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
-      ).toBeInTheDocument();
-    });
-
-    await passcodeFiller(getByText, getByTestId, "193212");
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometryheader)
-      ).toBeInTheDocument()
-    );
-
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-setup-android-biometry-cancel-button")
-      );
-    });
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometrycancel)
-      ).toBeInTheDocument()
-    );
-  });
-
-  test("Setup passcode and iOS biometrics", async () => {
-    verifySecretMock.mockResolvedValue(false);
-    useBiometricInfoMock.mockImplementation(() => ({
-      biometricsIsEnabled: false,
-      biometricInfo: {
-        isAvailable: true,
-        hasCredentials: false,
-        biometryType: BiometryType.faceId,
-        strongBiometryIsAvailable: true,
-      },
-      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
-      setBiometricsIsEnabled: jest.fn(),
-    }));
-    getPlatformsMock.mockImplementation(() => ["ios"]);
-    require("@ionic/react");
 
     const { getByText, getByTestId } = render(
       <IonReactRouter>
@@ -407,37 +336,102 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "193212");
+    await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
       ).toBeInTheDocument();
+    });
 
+    await passcodeFiller(getByText, getByTestId, "193212");
+
+    await waitFor(() => {
+      expect(getByTestId("alert-setup-android-biometry")).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-setup-android-biometry-cancel-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("alert-cancel-biometry")).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId("alert-cancel-biometry-confirm-button"));
+
+    await waitFor(() => {
+      expect(storeSecretMock).toBeCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "193212"
+      );
+    });
+
+    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
+  });
+
+  test("Setup passcode and iOS biometrics", async () => {
+    verifySecretMock.mockResolvedValue(false);
+    useBiometricInfoMock.mockImplementation(() => ({
+      biometricsIsEnabled: false,
+      biometricInfo: {
+        isAvailable: true,
+        hasCredentials: false,
+        biometryType: BiometryType.faceId,
+        strongBiometryIsAvailable: true,
+      },
+      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+      setBiometricsIsEnabled: jest.fn(),
+    }));
+    getPlatformsMock.mockImplementation(() => ["ios"]);
+
+    const { getByText, getByTestId } = render(
+      <IonReactRouter>
+        <IonRouterOutlet animated={false}>
+          <Provider store={store}>
+            <CreatePasscodeModule
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
+              testId="set-passcode"
+              onCreateSuccess={jest.fn()}
+            />
+          </Provider>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    );
+
+    await passcodeFiller(getByText, getByTestId, "193212");
+    await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
+        getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
       ).toBeInTheDocument();
     });
 
-    passcodeFiller(getByText, getByTestId, "193212");
+    await passcodeFiller(getByText, getByTestId, "193212");
+
+    await waitFor(() => {
+      expect(getByTestId("alert-setup-ios-biometry")).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId("alert-setup-ios-biometry-confirm-button"));
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
           id: MiscRecordId.APP_BIOMETRY,
-          content: {
-            enabled: true,
-          },
+          content: { enabled: true },
         })
       );
     });
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(storeSecretMock).toBeCalledWith(
         KeyStoreKeys.APP_PASSCODE,
         "193212"
-      )
-    );
+      );
+    });
   });
 
   test("Setup passcode and cancel iOS biometrics", async () => {
@@ -475,24 +469,34 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    passcodeFiller(getByText, getByTestId, "193212");
-
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
-    ).toBeInTheDocument();
-
-    await waitFor(() =>
+    await passcodeFiller(getByText, getByTestId, "193212");
+    await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
-      ).toBeInTheDocument()
-    );
+      ).toBeInTheDocument();
+    });
 
-    passcodeFiller(getByText, getByTestId, "193212");
+    await passcodeFiller(getByText, getByTestId, "193212");
 
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometrycancel)
-      ).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      expect(getByTestId("alert-setup-ios-biometry")).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId("alert-setup-ios-biometry-cancel-button"));
+
+    await waitFor(() => {
+      expect(getByTestId("alert-cancel-biometry")).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId("alert-cancel-biometry-confirm-button"));
+
+    await waitFor(() => {
+      expect(storeSecretMock).toBeCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "193212"
+      );
+    });
+
+    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).not.toBeCalled();
   });
 });
