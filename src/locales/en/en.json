@@ -1222,7 +1222,8 @@
               "memberreviewcred": "The group initiator has proposed a credential to present for a recent request. Please review the proposal and choose to accept or reject it.",
               "memberwaitingproposal": "The group initiator will propose a credential to present. Once chosen, the you and the rest of the group will be notified and asked to approve or decline the selection.",
               "memberjoined": "Your response has been recorded. Please check back for updates.",
-              "providecredential": "Provided credential"
+              "providecredential": "Provided credential",
+              "missingproposedcredential": "The proposed credential has either not yet been accepted in your wallet or you have since deleted it."
             },
             "choosecredential": {
               "description": "Below is a list of all '{{requestCred}}' credentials, ordered by the name of the issuer",

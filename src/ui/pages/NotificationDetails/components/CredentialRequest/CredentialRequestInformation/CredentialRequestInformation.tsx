@@ -1,5 +1,5 @@
 import { IonIcon, IonSpinner, IonText } from "@ionic/react";
-import { informationCircleOutline } from "ionicons/icons";
+import { chevronForward, warningOutline } from "ionicons/icons";
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../../core/agent/agent";
 import { NotificationRoute } from "../../../../../../core/agent/agent.types";
@@ -32,6 +32,8 @@ import { CredentialRequestProps, MemberInfo } from "../CredentialRequest.types";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
 import "./CredentialRequestInformation.scss";
 import { Verification } from "../../../../../components/Verification";
+import { getCredsCache } from "../../../../../../store/reducers/credsCache";
+import { getCredsArchivedCache } from "../../../../../../store/reducers/credsArchivedCache";
 
 const CredentialRequestInformation = ({
   pageId,
@@ -47,10 +49,12 @@ const CredentialRequestInformation = ({
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
   const connectionsCache = useAppSelector(getConnectionsCache);
+  const credsCache = useAppSelector(getCredsCache);
+  const archivedCredsCache = useAppSelector(getCredsArchivedCache);
   const [notifications, setNotifications] = useState(notificationsCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [viewCredId, setViewCredId] = useState<string>();
-  const [chooseCredId, setChooseCredId] = useState<string>("");
+  const [proposedCredId, setProposedCredId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
 
@@ -63,6 +67,15 @@ const CredentialRequestInformation = ({
   );
   const groupInitiatorJoined = !!linkedGroup?.memberInfos.at(0)?.joined;
 
+  const missingProposedCred = proposedCredId
+    ? !(
+      credsCache.some((credential) => credential.id === proposedCredId) ||
+        archivedCredsCache.some(
+          (credential) => credential.id === proposedCredId
+        )
+    )
+    : false;
+
   const getCred = useCallback(async () => {
     if (!groupInitiatorJoined || !linkedGroup?.linkedRequest.current) return;
 
@@ -70,7 +83,7 @@ const CredentialRequestInformation = ({
       const id = await Agent.agent.ipexCommunications.getOfferedCredentialSaid(
         linkedGroup.linkedRequest.current
       );
-      setChooseCredId(id);
+      setProposedCredId(id);
     } catch (error) {
       showError("Unable to get choosen cred", error, dispatch);
     }
@@ -141,7 +154,9 @@ const CredentialRequestInformation = ({
       Number(linkedGroup.threshold);
 
   const showProvidedCred = () => {
-    setViewCredId(chooseCredId);
+    if (missingProposedCred) return;
+
+    setViewCredId(proposedCredId);
   };
 
   const handleClose = () => setViewCredId(undefined);
@@ -196,26 +211,44 @@ const CredentialRequestInformation = ({
 
   const primaryButtonText = useMemo(() => {
     if (isGroupInitiator) {
-      return groupInitiatorJoined ?
-        i18n.t("tabs.notifications.details.buttons.ok") :
-        i18n.t("tabs.notifications.details.buttons.choosecredential");
+      return groupInitiatorJoined
+        ? i18n.t("tabs.notifications.details.buttons.ok")
+        : i18n.t("tabs.notifications.details.buttons.choosecredential");
     }
 
-    if (groupInitiatorJoined && !isJoinGroup && !reachedThreshold) {
+    if (
+      groupInitiatorJoined &&
+      !isJoinGroup &&
+      !reachedThreshold &&
+      !missingProposedCred
+    ) {
       return i18n.t("tabs.notifications.details.buttons.accept");
     }
 
     return i18n.t("tabs.notifications.details.buttons.ok");
-  }, [isGroupInitiator, groupInitiatorJoined, isJoinGroup, reachedThreshold]);
+  }, [
+    isGroupInitiator,
+    groupInitiatorJoined,
+    isJoinGroup,
+    reachedThreshold,
+    missingProposedCred,
+  ]);
 
   const deleteButtonText = useMemo(() => {
     return isGroupInitiator ||
       (!isGroupInitiator && !groupInitiatorJoined) ||
       isJoinGroup ||
-      reachedThreshold
+      reachedThreshold ||
+      missingProposedCred
       ? undefined
       : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
-  }, [isGroupInitiator, groupInitiatorJoined, isJoinGroup, reachedThreshold]);
+  }, [
+    isGroupInitiator,
+    groupInitiatorJoined,
+    isJoinGroup,
+    reachedThreshold,
+    missingProposedCred,
+  ]);
 
   const decline = () => setAlertDeclineIsOpen(true);
 
@@ -245,7 +278,12 @@ const CredentialRequestInformation = ({
       return;
     }
 
-    if (isJoinGroup || !groupInitiatorJoined || reachedThreshold) {
+    if (
+      isJoinGroup ||
+      !groupInitiatorJoined ||
+      reachedThreshold ||
+      missingProposedCred
+    ) {
       onBack();
       return;
     }
@@ -284,7 +322,10 @@ const CredentialRequestInformation = ({
             primaryButtonText={primaryButtonText}
             primaryButtonAction={handleAcceptClick}
             secondaryButtonText={
-              reachedThreshold || groupInitiatorJoined || !isGroupInitiator
+              reachedThreshold ||
+              groupInitiatorJoined ||
+              !isGroupInitiator ||
+              missingProposedCred
                 ? undefined
                 : `${i18n.t("tabs.notifications.details.buttons.decline")}`
             }
@@ -319,22 +360,41 @@ const CredentialRequestInformation = ({
             </CardDetailsBlock>
           )}
           {linkedGroup?.linkedRequest.current && (
-            <CardDetailsBlock
-              onClick={showProvidedCred}
-              className="proposed-cred"
-              title={`${i18n.t(
-                "tabs.notifications.details.credential.request.information.proposedcred"
-              )}`}
-            >
-              <div className="request-from-content">
-                <img src={KeriLogo} />
-                <p>
-                  {credentialRequest.schema.name ||
-                    i18n.t("connections.unknown")}
-                </p>
-              </div>
-              <IonIcon icon={informationCircleOutline} />
-            </CardDetailsBlock>
+            <>
+              <CardDetailsBlock
+                onClick={showProvidedCred}
+                className={`proposed-cred ${
+                  missingProposedCred ? "missing-proposed-cred" : ""
+                }`}
+                title={`${i18n.t(
+                  "tabs.notifications.details.credential.request.information.proposedcred"
+                )}`}
+              >
+                <div className="request-from-content">
+                  <img src={KeriLogo} />
+                  <p>
+                    {credentialRequest.schema.name ||
+                      i18n.t("connections.unknown")}
+                  </p>
+                </div>
+                {missingProposedCred ? (
+                  <></>
+                ) : (
+                  <IonIcon icon={chevronForward} />
+                )}
+              </CardDetailsBlock>
+              {missingProposedCred ? (
+                <InfoCard
+                  content={i18n.t(
+                    "tabs.notifications.details.credential.request.information.missingproposedcredential"
+                  )}
+                  className="missing-proposed-cred-info"
+                  icon={warningOutline}
+                />
+              ) : (
+                <></>
+              )}
+            </>
           )}
           <CardDetailsBlock
             className="request-from"
