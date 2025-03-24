@@ -11,6 +11,8 @@ interface ConnectionsBodyProps {
   onSearchFocus?: (value: boolean) => void;
   mappedConnections: MappedConnections[];
   handleShowConnectionDetails: (item: ConnectionShortDetails) => void;
+  search: string;
+  setSearch: (value: string) => void;
 }
 
 interface SearchConnectionListProps {
