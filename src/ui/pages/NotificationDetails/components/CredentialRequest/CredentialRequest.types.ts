@@ -24,7 +24,7 @@ interface CredentialRequestProps {
   userAID?: string | null;
   onAccept: () => void;
   onBack: () => void;
-  onReloadData?: () => void;
+  onReloadData?: () => Promise<void>;
 }
 
 interface ChooseCredentialProps {
