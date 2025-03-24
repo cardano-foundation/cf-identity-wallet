@@ -81,7 +81,16 @@
       }
     },
     "credentials": {
-      "title": "Credentials"
+      "title": "Credential Management ({{number}})",
+      "actions": "Actions",
+      "table": {
+        "template": "Credential Templates",
+        "creationdate": "Creation Date",
+        "menu": {
+          "view": "View Details",
+          "issue": "Issue Credential"
+        }
+      }
     },
     "notifications": {
       "title": "Notifications"
