@@ -31,7 +31,6 @@ export type FreeRASPInitResult =
   | { success: true }
   | { success: false; error: unknown };
 
-
 const createThreatAction = (
   setThreatsDetected: React.Dispatch<React.SetStateAction<ThreatCheck[]>>,
   threatName: ThreatName,
@@ -116,18 +115,15 @@ export const initializeFreeRASP = async (
     ),
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     devMode: () => {},
-    adbEnabled: createThreatAction(
-      setThreatsDetected,
-      ThreatName.ADB_ENABLED,
-      i18n.t("systemthreats.rules.adbenabled")
-    ),
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    adbEnabled: () => {},
     deviceID: createThreatAction(
       setThreatsDetected,
       ThreatName.DEVICE_ID,
       i18n.t("systemthreats.rules.deviceid")
     ),
   };
-  
+
   const freeRASPConfig = {
     androidConfig: {
       packageName: "org.cardanofoundation.idw",
