@@ -340,7 +340,7 @@ const AddConnectionModal = ({
                 variant="contained"
                 className="primary-button"
                 onClick={() => handleResolveOobi(inputValue || oobi)}
-                disabled={!(isInputValid || (oobi && oobi.includes("oobi")))}
+                disabled={!(isInputValid && oobi && oobi.includes("oobi"))}
               >
                 {i18n.t(
                   "pages.connections.addConnection.modal.button.complete"
