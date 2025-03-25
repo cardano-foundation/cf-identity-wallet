@@ -94,11 +94,10 @@ const CreatePasscodeModule = forwardRef<
     };
 
     const processBiometrics = async () => {
-      let isBiometricAuthenticated = false;
+      let isBiometricAuthenticated: boolean | BiometryError = false;
       try {
         await disablePrivacy();
-        const biometricResult = await handleBiometricAuth();
-        isBiometricAuthenticated = biometricResult === true;
+        isBiometricAuthenticated = await handleBiometricAuth();
       } finally {
         await enablePrivacy();
       }
@@ -115,15 +114,13 @@ const CreatePasscodeModule = forwardRef<
           setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
         );
         await handlePassAuth();
-      } else {
-        if (isBiometricAuthenticated instanceof BiometryError) {
-          if (
-            isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
-            isBiometricAuthenticated.code ===
-              BiometryErrorType.biometryNotAvailable
-          ) {
-            setShowCancelBiometricsAlert(true);
-          }
+      } else if (isBiometricAuthenticated instanceof BiometryError) {
+        if (
+          isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
+          isBiometricAuthenticated.code ===
+            BiometryErrorType.biometryNotAvailable
+        ) {
+          setShowCancelBiometricsAlert(true);
         }
       }
     };
