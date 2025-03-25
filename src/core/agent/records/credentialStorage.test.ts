@@ -127,4 +127,9 @@ describe("Credential storage test", () => {
       CredentialMetadataRecord
     );
   });
+
+  test("Fetching credentials by empty ID array should skip the DB call", async () => {
+    expect(await credentialStorage.getCredentialMetadatasById([])).toEqual([]);
+    expect(storageService.findAllByQuery).not.toBeCalled();
+  });
 });
