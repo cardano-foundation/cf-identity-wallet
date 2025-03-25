@@ -20,33 +20,36 @@ import { useAppDispatch } from "../../store/hooks";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 import { formatDate } from "../../utils/dateFormatter";
 import {
-  CredentialTableProps,
-  CredentialTableRow,
-} from "./ConnectionDetail.types";
+  CredentialsTableProps,
+  CredentialsTableRow,
+} from "./ConnectionDetails.types";
 import { createMenuItems } from "./menuItems";
-const headers: AppTableHeader<CredentialTableRow>[] = [
+const headers: AppTableHeader<CredentialsTableRow>[] = [
   {
     id: "name",
-    label: i18n.t("pages.connectiondetail.table.headers.name"),
+    label: i18n.t("pages.connectionDetails.table.headers.name"),
   },
   {
     id: "date",
     disablePadding: false,
-    label: i18n.t("pages.connectiondetail.table.headers.issueDate"),
+    label: i18n.t("pages.connectionDetails.table.headers.issueDate"),
   },
   {
     id: "status",
     disablePadding: false,
-    label: i18n.t("pages.connectiondetail.table.headers.status"),
+    label: i18n.t("pages.connectionDetails.table.headers.status"),
   },
 ];
 
-const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
+const CredentialsTable = ({
+  credentials,
+  contactId,
+}: CredentialsTableProps) => {
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
-    useState<CredentialTableRow | null>(null);
-  const tableRows: CredentialTableRow[] = credentials.map((row) => ({
+    useState<CredentialsTableRow | null>(null);
+  const tableRows: CredentialsTableRow[] = credentials.map((row) => ({
     id: row.status.i,
     name: row.schema.title,
     date: new Date(row.status.dt).getTime(),
@@ -87,24 +90,27 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
       );
       if (response.status === 200) {
         triggerToast(
-          i18n.t("pages.connectiondetail.table.toast.success"),
+          i18n.t("pages.connectionDetails.table.toast.success"),
           "success"
         );
       } else {
         triggerToast(
-          i18n.t("pages.connectiondetail.table.toast.error"),
+          i18n.t("pages.connectionDetails.table.toast.error"),
           "error"
         );
       }
 
       dispatch(fetchContactCredentials(contactId));
     } catch (error) {
-      triggerToast(i18n.t("pages.connectiondetail.table.toast.error"), "error");
+      triggerToast(
+        i18n.t("pages.connectionDetails.table.toast.error"),
+        "error"
+      );
       console.error("Error deleting contact:", error);
     }
   };
 
-  const openRevokeConfirm = (cred: CredentialTableRow) => {
+  const openRevokeConfirm = (cred: CredentialsTableRow) => {
     setRevokeCredItem(cred);
     setOpenModal(true);
   };
@@ -124,6 +130,17 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
         <AppTable
           order={order}
           rows={visibleRows}
+          onRequestSort={handleRequestSort}
+          orderBy={orderBy}
+          headers={headers}
+          pagination={{
+            component: "div",
+            count: credentials.length,
+            rowsPerPage: rowsPerPage,
+            page: page,
+            onPageChange: handleChangePage,
+            onRowsPerPageChange: handleChangeRowsPerPage,
+          }}
           onRenderRow={(row, index) => {
             const isItemSelected = selected.includes(row.id);
             const labelId = `enhanced-table-checkbox-${index}`;
@@ -166,8 +183,8 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
                     })}
                   >
                     {!isRevoked
-                      ? i18n.t("pages.connectiondetail.table.status.issued")
-                      : i18n.t("pages.connectiondetail.table.status.revoked")}
+                      ? i18n.t("pages.connectionDetails.table.status.issued")
+                      : i18n.t("pages.connectionDetails.table.status.revoked")}
                   </Box>
                 </TableCell>
                 <TableCell align="left">
@@ -192,40 +209,30 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
               </TableRow>
             );
           }}
-          onRequestSort={handleRequestSort}
-          orderBy={orderBy}
-          headers={headers}
-          pagination={{
-            component: "div",
-            count: credentials.length,
-            rowsPerPage: rowsPerPage,
-            page: page,
-            onPageChange: handleChangePage,
-            onRowsPerPageChange: handleChangeRowsPerPage,
-          }}
         />
       </Paper>
       <PopupModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        title={i18n.t("pages.connectiondetail.table.confirm.title")}
-        body={i18n.t("pages.connectiondetail.table.confirm.body")}
+        title={i18n.t("pages.connectionDetails.table.confirm.title")}
+        description={i18n.t("pages.connectionDetails.table.confirm.body")}
         footer={
           <>
             <Button
               variant="contained"
               aria-label="cancel delete connection"
               onClick={() => setOpenModal(false)}
+              className="neutral-button"
             >
-              {i18n.t("pages.connectiondetail.table.confirm.cancel")}
+              {i18n.t("pages.connectionDetails.table.confirm.cancel")}
             </Button>
             <Button
               variant="contained"
               aria-label="confirm delete connection"
               onClick={revokeCred}
-              color="error"
+              className="primary-button"
             >
-              {i18n.t("pages.connectiondetail.table.confirm.confirm")}
+              {i18n.t("pages.connectionDetails.table.confirm.confirm")}
             </Button>
           </>
         }
@@ -234,4 +241,4 @@ const CredentialTable = ({ credentials, contactId }: CredentialTableProps) => {
   );
 };
 
-export { CredentialTable };
+export { CredentialsTable };

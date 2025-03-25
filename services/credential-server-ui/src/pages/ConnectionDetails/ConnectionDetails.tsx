@@ -4,14 +4,13 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PageHeader } from "../../components/PageHeader";
-import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { ConnectionContactCard } from "./ConnectionContactCard";
-import { CredentialTable } from "./CredentialTable";
+import { CredentialsTable } from "./CredentialsTable";
 
-export const ConnectionDetail = () => {
+export const ConnectionDetails = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const contacts = useAppSelector((state) => state.connections.contacts);
   const credentials = useAppSelector((state) => state.connections.credentials);
@@ -34,8 +33,10 @@ export const ConnectionDetail = () => {
       sx={{ padding: "0 2.5rem 2.5rem" }}
     >
       <PageHeader
-        onBack={() => nav(RoutePath.Connections)}
-        title={`${i18n.t("pages.connectiondetail.title")}`}
+        // TODO: Temporarily pointing to "/" until Overview page is ready
+        //onBack={() => nav(RoutePath.Connections)}
+        onBack={() => nav("/")}
+        title={`${i18n.t("pages.connectionDetails.title")}`}
         action={
           roleViewIndex === 0 && (
             <Button
@@ -44,7 +45,7 @@ export const ConnectionDetail = () => {
               disableRipple
               startIcon={<AddIcon />}
             >
-              {i18n.t("pages.connectiondetail.issue")}
+              {i18n.t("pages.connectionDetails.issue")}
             </Button>
           )
         }
@@ -65,8 +66,8 @@ export const ConnectionDetail = () => {
           contact={contact}
           credentials={contactCredentials}
         />
-        <CredentialTable
-          credentials={credentials}
+        <CredentialsTable
+          credentials={contactCredentials}
           contactId={contact?.id}
         />
       </Box>

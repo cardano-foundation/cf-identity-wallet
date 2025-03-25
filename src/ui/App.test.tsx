@@ -127,11 +127,11 @@ jest.mock("../core/configuration/configurationService", () => ({
     env: {
       security: {
         rasp: {
-          enabled: true
-        }
-      }
-    }
-  }
+          enabled: true,
+        },
+      },
+    },
+  },
 }));
 
 const getDeviceInfo = jest.fn();

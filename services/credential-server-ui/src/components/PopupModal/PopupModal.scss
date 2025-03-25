@@ -42,7 +42,7 @@
       }
     }
 
-    .popup-modal-body {
+    .popup-modal-description {
       font-weight: 500;
       text-align: left;
       margin-bottom: 1.5rem;
@@ -58,11 +58,6 @@
         border-radius: 1rem;
         box-shadow: none;
         width: 12.75rem;
-
-        &:first-of-type {
-          color: var(--text-color);
-          background-color: var(--color-neutral-100);
-        }
       }
     }
   }

@@ -28,7 +28,7 @@ const headers: AppTableHeader<CredentialTemplateRow>[] = [
   },
   {
     id: "date",
-    label: i18n.t("pages.credentials.table.creationdate"),
+    label: i18n.t("pages.credentials.table.creationDate"),
   },
 ];
 
@@ -59,7 +59,7 @@ export const Credentials = () => {
 
   return (
     <Box
-      className="connection-detail-page"
+      className="credentials-page"
       sx={{ padding: "0 2.5rem 2.5rem" }}
     >
       <PageHeader

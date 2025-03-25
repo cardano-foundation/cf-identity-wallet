@@ -1,21 +1,43 @@
 import {
   Box,
+  Checkbox,
   TableCell,
   TableHead,
   TableRow,
   TableSortLabel,
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
-import { AppTableBaseData, EnhancedTableProps } from "./AppTable.types";
+import { AppTableBaseData, EnhancedTableHeaderProps } from "./AppTable.types";
 
 const EnhancedTableHead = <T extends AppTableBaseData = AppTableBaseData>({
   order,
   orderBy,
   headers,
+  selectAllIndeterminate,
+  selectAll,
   onRequestSort,
-}: EnhancedTableProps<T>) => {
+  onSelectAll,
+}: EnhancedTableHeaderProps<T>) => {
   const createSortHandler = (property: keyof T) => {
     onRequestSort(property);
+  };
+
+  const renderCheckbox = () => {
+    if (!onSelectAll) return null;
+
+    return (
+      <TableCell padding="checkbox">
+        <Checkbox
+          color="primary"
+          indeterminate={selectAllIndeterminate}
+          checked={selectAll}
+          onChange={onSelectAll}
+          slotProps={{
+            input: { "aria-labelledby": "select all" },
+          }}
+        />
+      </TableCell>
+    );
   };
 
   return (
@@ -25,9 +47,8 @@ const EnhancedTableHead = <T extends AppTableBaseData = AppTableBaseData>({
           background: theme.palette.primary.light,
         })}
       >
+        {renderCheckbox()}
         {headers.map((headCell) => {
-          console.log(headCell.id, orderBy, order);
-
           return (
             <TableCell
               key={headCell.id as string}

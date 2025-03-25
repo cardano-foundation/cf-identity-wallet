@@ -1,29 +1,27 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import { CheckCircleOutline, Close, WarningAmber } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { closeSnackbar, SnackbarProvider } from "notistack";
+import { useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router";
+import { RoutePath } from "./const/route";
 import { Layout } from "./layouts/Layout";
+import { ConnectionDetails } from "./pages/ConnectionDetails/ConnectionDetails";
 import { Connections } from "./pages/Connections";
 import { Credentials } from "./pages/Credentials";
 import { NoPage } from "./pages/NoPage";
-import { Overview } from "./pages/Overview";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import "./styles/colors.scss";
 import { Notifications } from "./pages/Notifications";
 import { Settings } from "./pages/Settings";
-import "@fontsource/manrope/600.css";
-import "@fontsource/manrope/500.css";
-import { theme } from "./theme/theme"; // Import the theme
-import { SnackbarProvider } from "notistack";
-import { WarningAmber, CheckCircleOutline, Close } from "@mui/icons-material";
-import { closeSnackbar } from "notistack";
-import { IconButton } from "@mui/material";
-import { ConnectionDetail } from "./pages/ConnectionDetail/ConnectionDetail";
-import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
 import {
   fetchContactCredentials,
   fetchContacts,
 } from "./store/reducers/connectionsSlice";
-import { useAppDispatch, useAppSelector } from "./store/hooks";
-import { RoutePath } from "./const/route";
+import "./styles/colors.scss";
+import { theme } from "./theme/theme"; // Import the theme
 
 const App = () => {
   const MAX_TOAST_MESSAGES = 10;
@@ -67,17 +65,19 @@ const App = () => {
               path="/"
               element={<Layout />}
             >
-              <Route
+              {/* TODO: Bring back when we're ready to ship Overview */}
+              {/* <Route
                 index
                 element={<Overview />}
-              />
+              /> */}
               <Route
-                path={RoutePath.Connections}
+                index
+                //path={RoutePath.Connections}
                 element={<Connections />}
               />
               <Route
-                path={RoutePath.ConnectionDetail}
-                element={<ConnectionDetail />}
+                path={RoutePath.ConnectionDetails}
+                element={<ConnectionDetails />}
               />
               <Route
                 path={RoutePath.Credentials}
