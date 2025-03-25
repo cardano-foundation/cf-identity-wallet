@@ -21,7 +21,7 @@ import { DropdownMenu } from "../../components/DropdownMenu";
 import { PopupModal } from "../../components/PopupModal";
 import { i18n } from "../../i18n";
 import { CredentialService } from "../../services";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 import { formatDate } from "../../utils/dateFormatter";
 import {
@@ -30,6 +30,8 @@ import {
 } from "./CredentialDetail.types";
 import { useNavigate } from "react-router";
 import { RoutePath } from "../../const/route";
+import { getRoleView } from "../../store/reducers";
+import { RoleIndex } from "../../components/NavBar/constants/roles";
 
 const headers: AppTableHeader<CredentialTableRow>[] = [
   {
@@ -54,6 +56,7 @@ const headers: AppTableHeader<CredentialTableRow>[] = [
 ];
 
 const CredentialsTable = ({ credentials }: CredentialTableProps) => {
+  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
@@ -216,26 +219,30 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                         icon: <GroupOutlined />,
                         className: "icon-left",
                       },
-                      {
-                        label: i18n.t(
-                          "pages.credentialdetail.table.menu.issue"
-                        ),
-                        action: () => issueCred(row),
-                        icon: <AddCircleOutline />,
-                        className: "icon-left",
-                      },
-                      {
-                        className: "divider",
-                      },
-                      {
-                        label: i18n.t(
-                          "pages.credentialdetail.table.menu.delete"
-                        ),
-                        action: () => openRevokeConfirm(row),
-                        icon: <DoDisturbOnOutlined />,
-                        className: "icon-left action-delete",
-                        disabled: row.status !== 0,
-                      },
+                      ...(roleViewIndex === RoleIndex.ISSUER
+                        ? [
+                            {
+                              label: i18n.t(
+                                "pages.credentialdetail.table.menu.issue"
+                              ),
+                              action: () => issueCred(row),
+                              icon: <AddCircleOutline />,
+                              className: "icon-left",
+                            },
+                            {
+                              className: "divider",
+                            },
+                            {
+                              label: i18n.t(
+                                "pages.credentialdetail.table.menu.delete"
+                              ),
+                              action: () => openRevokeConfirm(row),
+                              icon: <DoDisturbOnOutlined />,
+                              className: "icon-left action-delete",
+                              disabled: row.status !== 0,
+                            },
+                          ]
+                        : []),
                     ]}
                   />
                 </TableCell>
