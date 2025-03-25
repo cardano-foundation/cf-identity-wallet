@@ -122,6 +122,7 @@ const ForgotAuthInfo = ({
             }}
             onCreateSuccess={handleClose}
             overrideAlertZIndex={overrideAlertZIndex}
+            changePasscodeMode
           />
         ) : (
           <PasswordModule

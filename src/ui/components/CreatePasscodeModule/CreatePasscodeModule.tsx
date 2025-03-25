@@ -56,7 +56,6 @@ const CreatePasscodeModule = forwardRef<
     const [originalPassCode, setOriginalPassCode] = useState("");
     const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
     const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
-    const isAndroidDevice = getPlatforms().includes("android");
 
     const setupBiometricsHeaderText = i18n.t("biometry.setupbiometryheader");
 
