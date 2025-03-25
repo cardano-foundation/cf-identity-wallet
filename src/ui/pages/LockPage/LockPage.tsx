@@ -133,13 +133,17 @@ const LockPageContainer = () => {
   };
 
   const handleBiometrics = async () => {
-    await disablePrivacy();
-    const authenResult = await handleBiometricAuth();
-    preventBiometricOnEvent.current =
-      (authenResult instanceof BiometryError &&
-        authenResult.code === BiometryErrorType.userCancel) ||
-      authenResult === true;
-    await enablePrivacy();
+    let authenResult: boolean | BiometryError = false;
+    try {
+      await disablePrivacy();
+      authenResult = await handleBiometricAuth();
+      preventBiometricOnEvent.current =
+        (authenResult instanceof BiometryError &&
+          authenResult.code === BiometryErrorType.userCancel) ||
+        authenResult === true;
+    } finally {
+      await enablePrivacy();
+    }
 
     if (authenResult === true) {
       dispatch(login());
