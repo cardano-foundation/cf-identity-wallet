@@ -38,16 +38,17 @@ interface Props {
 const drawerWidth = 240;
 
 const menuItems = [
-  {
-    key: "overview",
-    label: i18n.t("navbar.overview"),
-    path: "/",
-    icons: [<DashboardFull />, <DashboardOutlined />],
-  },
+  // TODO: Removing until Overview is ready to be implemented
+  // {
+  //   key: "overview",
+  //   label: i18n.t("navbar.overview"),
+  //   path: "/",
+  //   icons: [<DashboardFull />, <DashboardOutlined />],
+  // },
   {
     key: "connections",
     label: i18n.t("navbar.connections"),
-    path: "/connections",
+    path: "/",
     icons: [<GroupFull />, <GroupOutlined />],
   },
   {

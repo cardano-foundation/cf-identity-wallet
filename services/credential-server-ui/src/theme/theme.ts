@@ -51,7 +51,7 @@ const theme = createTheme({
   breakpoints: {
     values: {
       xs: 0,
-      sm: 610,
+      sm: 744, // 744px is for iPad Mini (6th gen) in portrait view
       md: 1000,
       lg: 1200,
       xl: 1536,

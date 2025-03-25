@@ -6,12 +6,12 @@ interface ConnectionContactCardProps {
   credentials: Credential[];
 }
 
-interface CredentialTableProps {
+interface CredentialsTableProps {
   credentials: Credential[];
   contactId?: string;
 }
 
-interface CredentialTableRow {
+interface CredentialsTableRow {
   id: string;
   name: string;
   date: number;
@@ -21,6 +21,6 @@ interface CredentialTableRow {
 
 export type {
   ConnectionContactCardProps,
-  CredentialTableProps,
-  CredentialTableRow,
+  CredentialsTableProps,
+  CredentialsTableRow,
 };

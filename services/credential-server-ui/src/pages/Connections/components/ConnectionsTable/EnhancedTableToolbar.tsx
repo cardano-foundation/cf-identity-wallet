@@ -10,22 +10,20 @@ import { useDispatch } from "react-redux";
 import { enqueueSnackbar, VariantType } from "notistack";
 
 interface EnhancedTableToolbarProps {
-  numSelected: number;
-  setNumSelected: (num: number) => void;
   selected: string[];
   setSelected: (selected: string[]) => void;
 }
 
 const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
-  const { numSelected, setNumSelected, selected, setSelected } = props;
+  const { selected, setSelected } = props;
   const dispatch = useDispatch<AppDispatch>();
   const [openModal, setOpenModal] = useState(false);
+  const numSelected = selected.length;
 
   const handleDelete = async () => {
     for (const id of selected) {
       await handleDeleteContact(id, dispatch, triggerToast);
     }
-    setNumSelected(0);
     setSelected([]);
     setOpenModal(false);
   };
@@ -39,7 +37,9 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
 
   return (
     <>
-      <Toolbar className="connection-table-toolbar">
+      <Toolbar
+        className={`connection-table-toolbar${numSelected == 0 ? " hidden" : ""}`}
+      >
         <div className="table-left">
           <IconButton>
             <FilterList />
@@ -66,7 +66,7 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
                 variant="contained"
                 aria-label="delete connections"
                 startIcon={<DeleteOutline />}
-                className="delete-connections-button"
+                className="delete-connections-button delete-button"
                 onClick={() => setOpenModal(true)}
               >
                 {i18n.t("pages.connections.delete")}
@@ -79,19 +79,19 @@ const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
         open={openModal}
         onClose={() => setOpenModal(false)}
         title={i18n.t("pages.connections.deleteConnections.title")}
-        body={i18n.t("pages.connections.deleteConnections.body")}
+        description={i18n.t("pages.connections.deleteConnections.body")}
         footer={
           <>
             <Button
               variant="contained"
-              aria-label="cancel delete connections"
+              className="neutral-button"
               onClick={() => setOpenModal(false)}
             >
               {i18n.t("pages.connections.deleteConnections.cancel")}
             </Button>
             <Button
               variant="contained"
-              aria-label="confirm delete connections"
+              className="primary-button"
               onClick={handleDelete}
             >
               {i18n.t("pages.connections.deleteConnections.delete")}
