@@ -76,10 +76,8 @@ const stateCacheSlice = createSlice({
         (route) => route.path !== action.payload
       );
     },
-    removeSetPasscodeRoute: (state) => {
-      state.routes = state.routes.filter(
-        (route) => route.path !== RoutePath.SET_PASSCODE
-      );
+    resetAllRoutes: (state) => {
+      state.routes = [];
     },
     setLoginAttempt: (state, action: PayloadAction<LoginAttempts>) => {
       state.authentication.loginAttempt = { ...action.payload };
@@ -195,8 +193,8 @@ const {
   setRecoveryCompleteNoInterruption,
   setCurrentRoute,
   removeCurrentRoute,
-  removeSetPasscodeRoute,
   removeRoute,
+  resetAllRoutes,
   login,
   logout,
   setAuthentication,
@@ -284,7 +282,7 @@ export {
   logout,
   removeCurrentRoute,
   removeRoute,
-  removeSetPasscodeRoute,
+  resetAllRoutes,
   removeToastMessage,
   setAuthentication,
   setCameraDirection,

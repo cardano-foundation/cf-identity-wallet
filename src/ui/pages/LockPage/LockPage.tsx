@@ -23,6 +23,7 @@ import {
   getCurrentRoute,
   getFirstAppLaunch,
   login,
+  resetAllRoutes,
   setAuthentication,
   setFirstAppLaunchComplete,
 } from "../../../store/reducers/stateCache";
@@ -218,9 +219,10 @@ const LockPageContainer = () => {
           passcodeIsSet: false,
           passwordIsSet: false,
           passwordIsSkipped: false,
-          loggedIn: true,
+          loggedIn: false,
         })
       );
+      dispatch(resetAllRoutes());
       dispatch(setEnableBiometricsCache(false));
 
       router.push(RoutePath.ROOT);

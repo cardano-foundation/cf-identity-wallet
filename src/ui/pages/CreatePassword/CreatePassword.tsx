@@ -28,7 +28,7 @@ const CreatePassword = ({
   const stateCache = useAppSelector(getStateCache);
   const ionRouter = useAppIonRouter();
   const passwordModuleRef = useRef<PasswordModuleRef>(null);
-  const isOnboarding = stateCache.routes[0].path === RoutePath.CREATE_PASSWORD;
+  const isOnboarding = stateCache.routes[0]?.path === RoutePath.CREATE_PASSWORD;
 
   const handleContinue = async (skipped: boolean) => {
     if (!isOnboarding) {
