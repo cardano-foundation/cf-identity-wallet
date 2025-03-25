@@ -94,35 +94,37 @@ const CreatePasscodeModule = forwardRef<
     };
 
     const processBiometrics = async () => {
+      let isBiometricAuthenticated = false;
       try {
         await disablePrivacy();
-        const isBiometricAuthenticated = await handleBiometricAuth();
-
-        if (isBiometricAuthenticated === true) {
-          await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-            new BasicRecord({
-              id: MiscRecordId.APP_BIOMETRY,
-              content: { enabled: true },
-            })
-          );
-          dispatch(setEnableBiometricsCache(true));
-          dispatch(
-            setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
-          );
-          await handlePassAuth();
-        } else {
-          if (isBiometricAuthenticated instanceof BiometryError) {
-            if (
-              isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
-              isBiometricAuthenticated.code ===
-                BiometryErrorType.biometryNotAvailable
-            ) {
-              setShowCancelBiometricsAlert(true);
-            }
-          }
-        }
+        const biometricResult = await handleBiometricAuth();
+        isBiometricAuthenticated = biometricResult === true;
       } finally {
         await enablePrivacy();
+      }
+
+      if (isBiometricAuthenticated === true) {
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.APP_BIOMETRY,
+            content: { enabled: true },
+          })
+        );
+        dispatch(setEnableBiometricsCache(true));
+        dispatch(
+          setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
+        );
+        await handlePassAuth();
+      } else {
+        if (isBiometricAuthenticated instanceof BiometryError) {
+          if (
+            isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
+            isBiometricAuthenticated.code ===
+              BiometryErrorType.biometryNotAvailable
+          ) {
+            setShowCancelBiometricsAlert(true);
+          }
+        }
       }
     };
 
