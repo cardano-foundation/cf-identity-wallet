@@ -386,6 +386,8 @@ const CredentialRequestInformation = ({
               {missingProposedCred ? (
                 <InfoCard
                   content={i18n.t(
+                    isGroupInitiator ?
+                    "tabs.notifications.details.credential.request.information.initiatordeletedproposedcredential" :
                     "tabs.notifications.details.credential.request.information.missingproposedcredential"
                   )}
                   className="missing-proposed-cred-info"
