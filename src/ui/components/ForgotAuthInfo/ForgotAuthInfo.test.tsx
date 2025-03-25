@@ -206,7 +206,17 @@ describe("Forgot Passcode Page", () => {
     await passcodeFiller(getByText, getByTestId, "193212");
 
     await waitFor(() => {
-      expect(onCloseMock).toBeCalled();
+      expect(
+        queryByText(EN_TRANSLATIONS.biometry.setupbiometryheader)
+      ).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      fireEvent.click(getByTestId("alert-setup-biometry-confirm-button"));
+    });
+
+    await waitFor(() => {
+      expect(onCloseMock).toHaveBeenCalled();
     });
   });
 });
