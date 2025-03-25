@@ -94,32 +94,35 @@ const CreatePasscodeModule = forwardRef<
     };
 
     const processBiometrics = async () => {
-      await disablePrivacy();
-      const isBiometricAuthenticated = await handleBiometricAuth();
-      await enablePrivacy();
+      try {
+        await disablePrivacy();
+        const isBiometricAuthenticated = await handleBiometricAuth();
 
-      if (isBiometricAuthenticated === true) {
-        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-          new BasicRecord({
-            id: MiscRecordId.APP_BIOMETRY,
-            content: { enabled: true },
-          })
-        );
-        dispatch(setEnableBiometricsCache(true));
-        dispatch(
-          setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
-        );
-        await handlePassAuth();
-      } else {
-        if (isBiometricAuthenticated instanceof BiometryError) {
-          if (
-            isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
-            isBiometricAuthenticated.code ===
-              BiometryErrorType.biometryNotAvailable
-          ) {
-            setShowCancelBiometricsAlert(true);
+        if (isBiometricAuthenticated === true) {
+          await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.APP_BIOMETRY,
+              content: { enabled: true },
+            })
+          );
+          dispatch(setEnableBiometricsCache(true));
+          dispatch(
+            setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
+          );
+          await handlePassAuth();
+        } else {
+          if (isBiometricAuthenticated instanceof BiometryError) {
+            if (
+              isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
+              isBiometricAuthenticated.code ===
+                BiometryErrorType.biometryNotAvailable
+            ) {
+              setShowCancelBiometricsAlert(true);
+            }
           }
         }
+      } finally {
+        await enablePrivacy();
       }
     };
 
