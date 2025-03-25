@@ -61,10 +61,10 @@ const CredentialRequestInformation = ({
   const isJoinGroup = linkedGroup?.memberInfos.some(
     (item) => item.aid === userAID && item.joined
   );
-  const isGroupInitiatorJoined = !!linkedGroup?.memberInfos.at(0)?.joined;
+  const groupInitiatorJoined = !!linkedGroup?.memberInfos.at(0)?.joined;
 
   const getCred = useCallback(async () => {
-    if (!isGroupInitiatorJoined || !linkedGroup?.linkedRequest.current) return;
+    if (!groupInitiatorJoined || !linkedGroup?.linkedRequest.current) return;
 
     try {
       const id = await Agent.agent.ipexCommunications.getOfferedCredentialSaid(
@@ -74,7 +74,7 @@ const CredentialRequestInformation = ({
     } catch (error) {
       showError("Unable to get choosen cred", error, dispatch);
     }
-  }, [dispatch, isGroupInitiatorJoined, linkedGroup?.linkedRequest]);
+  }, [dispatch, groupInitiatorJoined, linkedGroup?.linkedRequest]);
 
   useOnlineStatusEffect(getCred);
 
@@ -91,7 +91,7 @@ const CredentialRequestInformation = ({
       isGroup &&
       !(
         isGroupInitiator ||
-        (!isGroupInitiator && !isGroupInitiatorJoined) ||
+        (!isGroupInitiator && !groupInitiatorJoined) ||
         isJoinGroup
       );
     try {
@@ -125,16 +125,16 @@ const CredentialRequestInformation = ({
         return MemberAcceptStatus.Accepted;
       }
 
-      if (!isGroupInitiatorJoined) {
+      if (!groupInitiatorJoined) {
         return MemberAcceptStatus.None;
       }
 
       return MemberAcceptStatus.Waiting;
     },
-    [isGroupInitiatorJoined]
+    [groupInitiatorJoined]
   );
 
-  const reachThreshold =
+  const reachedThreshold =
     linkedGroup &&
     linkedGroup.othersJoined.length +
       (linkedGroup.linkedRequest.accepted ? 1 : 0) >=
@@ -149,7 +149,7 @@ const CredentialRequestInformation = ({
   const headerAlertMessage = useMemo(() => {
     if (!isGroup) return null;
 
-    if (reachThreshold) {
+    if (reachedThreshold) {
       return i18n.t(
         "tabs.notifications.details.credential.request.information.reachthreshold"
       );
@@ -167,7 +167,7 @@ const CredentialRequestInformation = ({
       );
     }
 
-    if (!isGroupInitiator && !isJoinGroup && !isGroupInitiatorJoined) {
+    if (!isGroupInitiator && !isJoinGroup && !groupInitiatorJoined) {
       return i18n.t(
         "tabs.notifications.details.credential.request.information.memberwaitingproposal"
       );
@@ -188,29 +188,34 @@ const CredentialRequestInformation = ({
     return null;
   }, [
     isGroup,
-    reachThreshold,
+    reachedThreshold,
     isGroupInitiator,
     isJoinGroup,
-    isGroupInitiatorJoined,
+    groupInitiatorJoined,
   ]);
 
   const primaryButtonText = useMemo(() => {
-    if (!isGroupInitiator && isGroupInitiatorJoined && !isJoinGroup)
+    if (isGroupInitiator) {
+      return groupInitiatorJoined ?
+        i18n.t("tabs.notifications.details.buttons.ok") :
+        i18n.t("tabs.notifications.details.buttons.choosecredential");
+    }
+
+    if (groupInitiatorJoined && !isJoinGroup && !reachedThreshold) {
       return i18n.t("tabs.notifications.details.buttons.accept");
+    }
 
-    if (reachThreshold || isJoinGroup || !isGroupInitiator)
-      return i18n.t("tabs.notifications.details.buttons.ok");
-
-    return i18n.t("tabs.notifications.details.buttons.choosecredential");
-  }, [isGroupInitiator, isGroupInitiatorJoined, isJoinGroup, reachThreshold]);
+    return i18n.t("tabs.notifications.details.buttons.ok");
+  }, [isGroupInitiator, groupInitiatorJoined, isJoinGroup, reachedThreshold]);
 
   const deleteButtonText = useMemo(() => {
     return isGroupInitiator ||
-      (!isGroupInitiator && !isGroupInitiatorJoined) ||
-      isJoinGroup
+      (!isGroupInitiator && !groupInitiatorJoined) ||
+      isJoinGroup ||
+      reachedThreshold
       ? undefined
       : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
-  }, [isGroupInitiator, isGroupInitiatorJoined, isJoinGroup]);
+  }, [isGroupInitiator, groupInitiatorJoined, isJoinGroup, reachedThreshold]);
 
   const decline = () => setAlertDeclineIsOpen(true);
 
@@ -240,7 +245,7 @@ const CredentialRequestInformation = ({
       return;
     }
 
-    if (isJoinGroup || !isGroupInitiatorJoined || reachThreshold) {
+    if (isJoinGroup || !groupInitiatorJoined || reachedThreshold) {
       onBack();
       return;
     }
@@ -251,7 +256,7 @@ const CredentialRequestInformation = ({
   const closeAlert = () => setAlertDeclineIsOpen(false);
 
   const title = `${i18n.t(
-    isGroup && !isGroupInitiator && isGroupInitiatorJoined
+    isGroup && !isGroupInitiator && groupInitiatorJoined
       ? "tabs.notifications.details.credential.request.information.proposedcred"
       : "tabs.notifications.details.credential.request.information.title"
   )}`;
@@ -279,7 +284,7 @@ const CredentialRequestInformation = ({
             primaryButtonText={primaryButtonText}
             primaryButtonAction={handleAcceptClick}
             secondaryButtonText={
-              reachThreshold || isGroupInitiatorJoined || !isGroupInitiator
+              reachedThreshold || groupInitiatorJoined || !isGroupInitiator
                 ? undefined
                 : `${i18n.t("tabs.notifications.details.buttons.decline")}`
             }
@@ -297,7 +302,7 @@ const CredentialRequestInformation = ({
               content={headerAlertMessage}
             />
           )}
-          {!isGroupInitiator && isGroupInitiatorJoined && (
+          {!isGroupInitiator && groupInitiatorJoined && (
             <CardDetailsBlock
               className="request-from"
               title={`${i18n.t(
