@@ -64,8 +64,9 @@ const ConnectionsBody = ({
   mappedConnections,
   handleShowConnectionDetails,
   onSearchFocus,
+  search,
+  setSearch,
 }: ConnectionsBodyProps) => {
-  const [search, setSearch] = useState("");
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const container = useRef<HTMLDivElement>(null);
 
