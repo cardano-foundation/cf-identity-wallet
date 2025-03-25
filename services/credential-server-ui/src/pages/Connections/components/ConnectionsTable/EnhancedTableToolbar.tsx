@@ -10,22 +10,20 @@ import { useDispatch } from "react-redux";
 import { enqueueSnackbar, VariantType } from "notistack";
 
 interface EnhancedTableToolbarProps {
-  numSelected: number;
-  setNumSelected: (num: number) => void;
   selected: string[];
   setSelected: (selected: string[]) => void;
 }
 
 const EnhancedTableToolbar: React.FC<EnhancedTableToolbarProps> = (props) => {
-  const { numSelected, setNumSelected, selected, setSelected } = props;
+  const { selected, setSelected } = props;
   const dispatch = useDispatch<AppDispatch>();
   const [openModal, setOpenModal] = useState(false);
+  const numSelected = selected.length;
 
   const handleDelete = async () => {
     for (const id of selected) {
       await handleDeleteContact(id, dispatch, triggerToast);
     }
-    setNumSelected(0);
     setSelected([]);
     setOpenModal(false);
   };

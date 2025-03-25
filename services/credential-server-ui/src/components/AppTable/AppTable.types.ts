@@ -28,7 +28,10 @@ interface EnhancedTableHeaderProps<
 }
 
 interface AppTableProps<T extends AppTableBaseData>
-  extends EnhancedTableHeaderProps<T> {
+  extends Omit<
+    EnhancedTableHeaderProps<T>,
+    "selectAll" | "selectAllIndeterminate"
+  > {
   rows: T[];
   onRenderRow: (row: T, index: number) => ReactNode;
   pagination?: TablePaginationProps;

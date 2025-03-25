@@ -25,8 +25,6 @@ const EnhancedTableHead = <T extends AppTableBaseData = AppTableBaseData>({
   const renderCheckbox = () => {
     if (!onSelectAll) return null;
 
-    console.log("render", selectAll, selectAllIndeterminate);
-
     return (
       <TableCell padding="checkbox">
         <Checkbox

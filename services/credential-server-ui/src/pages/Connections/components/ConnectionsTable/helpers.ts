@@ -17,7 +17,7 @@ const generateRows = (
     return {
       id: contact.id,
       name: contact.alias,
-      date: "2020-03-15T12:34:56Z", // Temporary hardcoded date
+      date: new Date("2020-03-15T12:34:56Z").getTime(),
       credentials: contactCredentials.length,
     };
   });
