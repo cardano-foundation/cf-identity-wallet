@@ -103,6 +103,7 @@ const LockPageContainer = () => {
       await handleBiometrics();
     }
   };
+
   const handlePinChange = async (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
 
@@ -139,7 +140,8 @@ const LockPageContainer = () => {
       authenResult = await handleBiometricAuth();
       preventBiometricOnEvent.current =
         (authenResult instanceof BiometryError &&
-          authenResult.code === BiometryErrorType.userCancel) ||
+          (authenResult.code === BiometryErrorType.userCancel ||
+            authenResult.code === BiometryErrorType.userFallback)) ||
         authenResult === true;
     } finally {
       await enablePrivacy();
