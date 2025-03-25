@@ -185,20 +185,6 @@
 
     .connection-url-form {
       margin-bottom: 1.5rem;
-
-      label {
-        color: var(--color-text);
-      }
-
-      input {
-        padding: 1rem 1.25rem;
-        border-radius: 0.5rem;
-        border: 1px solid var(--color-neutral-400);
-
-        &:focus {
-          border: 2px solid var(--color-primary-700);
-        }
-      }
     }
 
     .back-button svg {

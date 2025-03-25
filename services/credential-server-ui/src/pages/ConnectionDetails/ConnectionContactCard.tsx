@@ -108,13 +108,14 @@ const ConnectionContactCard = ({
         open={openModal}
         onClose={() => setOpenModal(false)}
         title={i18n.t("pages.connectionDetails.userinfo.confirm.title")}
-        body={i18n.t("pages.connectionDetails.userinfo.confirm.body")}
+        description={i18n.t("pages.connectionDetails.userinfo.confirm.body")}
         footer={
           <>
             <Button
               variant="contained"
               aria-label="cancel delete connection"
               onClick={() => setOpenModal(false)}
+              className="neutral-button"
             >
               {i18n.t("pages.connectionDetails.userinfo.confirm.cancel")}
             </Button>
@@ -122,7 +123,6 @@ const ConnectionContactCard = ({
               variant="contained"
               aria-label="confirm delete connection"
               onClick={handleDeleteContact}
-              color="error"
             >
               {i18n.t("pages.connectionDetails.userinfo.confirm.confirm")}
             </Button>

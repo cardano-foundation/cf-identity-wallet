@@ -12,23 +12,32 @@ interface AppTableHeader<T extends AppTableBaseData> {
   onClick?: (row: keyof T) => void;
 }
 
-interface EnhancedTableProps<T extends AppTableBaseData = AppTableBaseData> {
+interface EnhancedTableHeaderProps<
+  T extends AppTableBaseData = AppTableBaseData,
+> {
   onRequestSort: (property: keyof T) => void;
   order: "asc" | "desc";
   orderBy: string;
   headers: AppTableHeader<T>[];
+  selectAllIndeterminate?: boolean;
+  selectAll?: boolean;
+  onSelectAll?: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => void;
 }
 
 interface AppTableProps<T extends AppTableBaseData>
-  extends EnhancedTableProps<T> {
+  extends EnhancedTableHeaderProps<T> {
   rows: T[];
   onRenderRow: (row: T, index: number) => ReactNode;
   pagination?: TablePaginationProps;
+  selectedRows?: string[];
 }
 
 export type {
   AppTableBaseData,
   AppTableHeader,
   AppTableProps,
-  EnhancedTableProps,
+  EnhancedTableHeaderProps,
 };

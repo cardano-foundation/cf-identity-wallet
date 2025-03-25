@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PageHeader } from "../../components/PageHeader";
-import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
@@ -68,7 +67,7 @@ export const ConnectionDetails = () => {
           credentials={contactCredentials}
         />
         <CredentialsTable
-          credentials={credentials}
+          credentials={contactCredentials}
           contactId={contact?.id}
         />
       </Box>

@@ -1,9 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { Trans } from "react-i18next";
-import { PopupModal } from "../../../../components/PopupModal";
-import { AddConnectionModalProps } from "./AddConnectionModal.types";
-import { i18n } from "../../../../i18n";
+import {
+  ArrowBack,
+  CheckCircleOutlined,
+  ContentCopy,
+  ExpandMore,
+  MoreVert,
+  PhotoCamera,
+  QrCodeRounded,
+  RefreshOutlined,
+  WarningAmber,
+} from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -11,41 +16,28 @@ import {
   Box,
   Button,
   CircularProgress,
-  FormControl,
-  InputLabel,
   Typography,
 } from "@mui/material";
-import {
-  ContentCopy,
-  QrCodeRounded,
-  RefreshOutlined,
-  ArrowBack,
-  WarningAmber,
-  CheckCircleOutlined,
-  ExpandMore,
-  MoreVert,
-  PhotoCamera,
-} from "@mui/icons-material";
-import "./AddConnectionModal.scss";
-import { QRCodeSVG } from "qrcode.react";
-import { config } from "../../../../config";
-import { useSnackbar, VariantType } from "notistack";
-import { styled } from "@mui/material/styles";
-import InputBase from "@mui/material/InputBase";
-import { isValidConnectionUrl } from "../../../../utils/urlChecker";
+import axios from "axios";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { useSnackbar, VariantType } from "notistack";
+import { QRCodeSVG } from "qrcode.react";
+import React, { useEffect, useRef, useState } from "react";
+import { Trans } from "react-i18next";
+import { AppInput } from "../../../../components/AppInput";
+import { PopupModal } from "../../../../components/PopupModal";
+import { config } from "../../../../config";
+import { i18n } from "../../../../i18n";
 import { resolveOobi } from "../../../../services/resolve-oobi";
+import { isValidConnectionUrl } from "../../../../utils/urlChecker";
+import "./AddConnectionModal.scss";
+import { AddConnectionModalProps } from "./AddConnectionModal.types";
 
 enum ContentType {
   SCANNER = "scanner",
   RESOLVING = "resolving",
   RESOLVED = "resolved",
 }
-const CustomInput = styled(InputBase)(({ theme }) => ({
-  "label + &": {
-    marginTop: theme.spacing(3),
-  },
-}));
 
 const AddConnectionModal = ({
   openModal,
@@ -59,6 +51,7 @@ const AddConnectionModal = ({
   const [errorOnRequest, setErrorOnRequest] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isInputValid, setIsInputValid] = useState(false);
+  const [touched, setTouched] = useState(false);
   const [oobi, setOobi] = useState("");
   const [restartCamera, setRestartCamera] = useState(false);
   const [contentType, setContentType] = useState<ContentType>(
@@ -85,6 +78,7 @@ const AddConnectionModal = ({
     setShowInput(false);
     setInputValue("");
     setIsInputValid(false);
+    setTouched(false);
     handleReset();
   }, [currentStage]);
 
@@ -252,6 +246,7 @@ const AddConnectionModal = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setInputValue(value);
+    setTouched(true);
     const isValid = isValidConnectionUrl(value);
     setIsInputValid(isValid);
   };
@@ -420,23 +415,17 @@ const AddConnectionModal = ({
                   </Typography>
                 </Box>
               )}
-
-              <FormControl
-                variant="standard"
+              <AppInput
+                label={i18n.t("pages.connections.addConnection.modal.pasteUrl")}
+                id="connection-url-input"
+                value={inputValue}
+                onChange={handleInputChange}
+                error={!isInputValid && touched}
                 className="connection-url-form"
-              >
-                <InputLabel
-                  shrink
-                  htmlFor="connection-url-input"
-                >
-                  {i18n.t("pages.connections.addConnection.modal.pasteUrl")}
-                </InputLabel>
-                <CustomInput
-                  id="connection-url-input"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                />
-              </FormControl>
+                errorMessage={i18n.t(
+                  "pages.connections.addConnection.modal.button.errorMessage"
+                )}
+              />
             </>
           )}
         </>

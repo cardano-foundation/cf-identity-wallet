@@ -130,6 +130,17 @@ const CredentialsTable = ({
         <AppTable
           order={order}
           rows={visibleRows}
+          onRequestSort={handleRequestSort}
+          orderBy={orderBy}
+          headers={headers}
+          pagination={{
+            component: "div",
+            count: credentials.length,
+            rowsPerPage: rowsPerPage,
+            page: page,
+            onPageChange: handleChangePage,
+            onRowsPerPageChange: handleChangeRowsPerPage,
+          }}
           onRenderRow={(row, index) => {
             const isItemSelected = selected.includes(row.id);
             const labelId = `enhanced-table-checkbox-${index}`;
@@ -197,17 +208,6 @@ const CredentialsTable = ({
                 </TableCell>
               </TableRow>
             );
-          }}
-          onRequestSort={handleRequestSort}
-          orderBy={orderBy}
-          headers={headers}
-          pagination={{
-            component: "div",
-            count: credentials.length,
-            rowsPerPage: rowsPerPage,
-            page: page,
-            onPageChange: handleChangePage,
-            onRowsPerPageChange: handleChangeRowsPerPage,
           }}
         />
       </Paper>
