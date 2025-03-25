@@ -5,19 +5,16 @@ import {
   Checkbox,
   IconButton,
   Paper,
-  Table,
-  TableBody,
   TableCell,
-  TableContainer,
-  TablePagination,
   TableRow,
   Tooltip,
 } from "@mui/material";
 import { useSnackbar, VariantType } from "notistack";
-import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { AppTable, useTable } from "../../../../components/AppTable";
+import { AppTableHeader } from "../../../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../../../components/DropdownMenu";
 import { RoleIndex } from "../../../../components/NavBar/constants/roles";
 import { PopupModal } from "../../../../components/PopupModal";
@@ -27,12 +24,26 @@ import { useAppSelector } from "../../../../store/hooks";
 import { getRoleView } from "../../../../store/reducers/stateCache";
 import { formatDate } from "../../../../utils/dateFormatter";
 import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
-import { MIN_TABLE_WIDTH, ROWS_PER_PAGE_OPTIONS } from "./constants";
-import { EnhancedTableHead } from "./EnhancedTableHead";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { generateRows, handleDeleteContact } from "./helpers";
 import { createMenuItems } from "./menuItems";
-import { useTable } from "./useTable";
+import { RoutePath } from "../../../../const/route";
+
+const headers: AppTableHeader<Data>[] = [
+  {
+    id: "name",
+    disablePadding: true,
+    label: i18n.t("pages.connections.connectionName"),
+  },
+  {
+    id: "date",
+    label: i18n.t("pages.connections.connectionDate"),
+  },
+  {
+    id: "credentials",
+    label: i18n.t("pages.connections.issuedCredentials"),
+  },
+];
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -44,37 +55,21 @@ const ConnectionsTable: React.FC = () => {
   const credentials = useSelector(
     (state: RootState) => state.connections.credentials
   );
-  const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
-  const [connectionsFilterBySearch, setConnectionsFilterBySearch] =
-    useState<string>("");
-  const [numSelected, setNumSelected] = useState<number>(0);
+  const [connectionsFilterBySearch] = useState<string>("");
   const [openModal, setOpenModal] = useState(false);
   const [selectedConnectionId, setSelectedConnectionId] = useState<
     string | null
   >(null);
   const nav = useNavigate();
 
-  useEffect(() => {
+  const rows = useMemo(() => {
     const regex = new RegExp(connectionsFilterBySearch, "gi");
     const filteredContacts = contacts.filter(
       (contact: Contact) => regex.test(contact.alias) || regex.test(contact.id)
     );
-    setFilteredContacts(filteredContacts);
-  }, [connectionsFilterBySearch, contacts]);
 
-  const [rows, setRows] = useState<Data[]>([]);
-
-  useEffect(() => {
-    const generatedRows = generateRows(filteredContacts, credentials);
-    setRows(generatedRows);
-  }, [filteredContacts, credentials]);
-
-  useEffect(() => {
-    setSelected([]);
-    setNumSelected(0);
-    // We only need to track when the role changes, so we only track the roleViewIndex
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roleViewIndex]);
+    return generateRows(filteredContacts, credentials);
+  }, [connectionsFilterBySearch, contacts, credentials]);
 
   const {
     order,
@@ -88,9 +83,14 @@ const ConnectionsTable: React.FC = () => {
     handleClick,
     handleChangePage,
     handleChangeRowsPerPage,
-    emptyRows,
     visibleRows,
-  } = useTable(rows, setNumSelected);
+  } = useTable(rows, "name");
+
+  useEffect(() => {
+    setSelected([]);
+    // We only need to track when the role changes, so we only track the roleViewIndex
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roleViewIndex]);
 
   const handleDelete = async () => {
     if (selectedConnectionId) {
@@ -112,117 +112,102 @@ const ConnectionsTable: React.FC = () => {
     });
   };
 
-  const handOpenConnectionDetail = (id: string) => {
-    nav(`/connections/${id}`);
+  const handOpenConnectionDetails = (id: string) => {
+    nav(RoutePath.ConnectionDetails.replace(":id", id));
   };
 
   return (
     <Box sx={{ width: "100%" }}>
       <Paper className="connections-table">
         <EnhancedTableToolbar
-          numSelected={numSelected}
-          setNumSelected={setNumSelected}
           selected={selected}
           setSelected={setSelected}
         />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: MIN_TABLE_WIDTH }}
-            aria-labelledby="tableTitle"
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = selected.includes(row.id);
-                const labelId = `enhanced-table-checkbox-${index}`;
+        <AppTable
+          order={order}
+          rows={visibleRows}
+          onRequestSort={handleRequestSort}
+          onSelectAll={handleSelectAllClick}
+          selectedRows={selected}
+          orderBy={orderBy}
+          headers={headers}
+          pagination={{
+            component: "div",
+            count: rows.length,
+            rowsPerPage: rowsPerPage,
+            page: page,
+            onPageChange: handleChangePage,
+            onRowsPerPageChange: handleChangeRowsPerPage,
+          }}
+          onRenderRow={(row, index) => {
+            const isItemSelected = selected.includes(row.id);
+            const labelId = `enhanced-table-checkbox-${index}`;
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        slotProps={{ input: { "aria-labelledby": labelId } }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {row.name}
-                    </TableCell>
-                    <TableCell align="left">{formatDate(row.date)}</TableCell>
-                    <TableCell align="left">{row.credentials}</TableCell>
-                    <TableCell align="left">
-                      <DropdownMenu
-                        button={
-                          <Tooltip
-                            title={i18n.t("pages.connections.actions")}
-                            placement="top"
-                          >
-                            <IconButton aria-label="actions">
-                              <MoreVert />
-                            </IconButton>
-                          </Tooltip>
-                        }
-                        menuItems={createMenuItems(
-                          dispatch,
-                          row.id,
-                          handleOpenModal,
-                          handOpenConnectionDetail
-                        )}
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {emptyRows > 0 &&
-                Array.from({ length: emptyRows }).map((_, index) => (
-                  <TableRow key={`empty-row-${index}`}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </TableContainer>
+            return (
+              <TableRow
+                hover
+                onClick={(event) => handleClick(event, row.id)}
+                role="checkbox"
+                aria-checked={isItemSelected}
+                tabIndex={-1}
+                key={row.id}
+                selected={isItemSelected}
+                sx={{ cursor: "pointer" }}
+              >
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    color="primary"
+                    checked={isItemSelected}
+                    slotProps={{ input: { "aria-labelledby": labelId } }}
+                  />
+                </TableCell>
+                <TableCell
+                  component="th"
+                  id={labelId}
+                  scope="row"
+                  padding="none"
+                >
+                  {row.name}
+                </TableCell>
+                <TableCell align="left">
+                  {formatDate(new Date(row.date))}
+                </TableCell>
+                <TableCell align="left">{row.credentials}</TableCell>
+                <TableCell align="left">
+                  <DropdownMenu
+                    button={
+                      <Tooltip
+                        title={i18n.t("pages.connections.actions")}
+                        placement="top"
+                      >
+                        <IconButton aria-label="actions">
+                          <MoreVert />
+                        </IconButton>
+                      </Tooltip>
+                    }
+                    menuItems={createMenuItems(
+                      row.id,
+                      handleOpenModal,
+                      handOpenConnectionDetails
+                    )}
+                  />
+                </TableCell>
+              </TableRow>
+            );
+          }}
+        />
       </Paper>
       <PopupModal
         open={openModal}
         onClose={() => setOpenModal(false)}
         title={i18n.t("pages.connections.deleteConnections.title")}
-        body={i18n.t("pages.connections.deleteConnections.body")}
+        description={i18n.t("pages.connections.deleteConnections.body")}
         footer={
           <>
             <Button
               variant="contained"
               aria-label="cancel delete connection"
+              className="neutral-button"
               onClick={() => setOpenModal(false)}
             >
               {i18n.t("pages.connections.deleteConnections.cancel")}
@@ -230,6 +215,7 @@ const ConnectionsTable: React.FC = () => {
             <Button
               variant="contained"
               aria-label="confirm delete connection"
+              className="primary-button"
               onClick={handleDelete}
             >
               {i18n.t("pages.connections.deleteConnections.delete")}

@@ -16,8 +16,36 @@
       "title": "Overview"
     },
     "connections": {
-      "title": "Connections ({{count}})",
-      "addConnection": "Add Connection",
+      "title": "Connections ({{number}})",
+      "addConnection": {
+        "title": "Add Connection",
+        "modal": {
+          "title": "Add a Connection",
+          "descriptionStepOne": "<bold>Step 1 - Establish a connection from an individual ID to the issuer's ID.</bold> Scan the below QR code using the wallet you wish to establish a connection with or copy and send the Connection URL.",
+          "descriptionStepTwo": "<bold>Step 2 - Complete by connecting the issuer’s ID with the individual ID.</bold> Scan the QR code of the individual ID you want to establish the connection with or paste their Connection URL in the input field.",
+          "errorOnRequest": "Unable to fetch a connection ID. Please try again later.",
+          "learnMore": "Learn more",
+          "showLess": "Show less",
+          "descriptionLearnMore": "This information can be found within the identifier’s information by selecting the <moreVertIcon /> icon and clicking on “Share Connection”.",
+          "pasteUrl": "Paste Connection URL",
+          "button": {
+            "copyConnectionId": "Copy Connection ID",
+            "retry": "Retry",
+            "copied": "Copied",
+            "next": "Next",
+            "back": "Back",
+            "complete": "Complete",
+            "errorMessage": "Please paste a valid connection URL",
+            "openCamera": "Open Camera to Scan"
+          },
+          "toast": {
+            "pending": "Connection pending",
+            "success": "New connection added",
+            "error": "Unable to establish connection",
+            "qrCodeError": "QR code not recognized"
+          }
+        }
+      },
       "filter": "Filter",
       "selected": "selected",
       "delete": "Delete",
@@ -38,18 +66,18 @@
         }
       }
     },
-    "connectiondetail": {
+    "connectionDetails": {
       "title": "Connection Details",
       "issue": "Issue Credential",
       "userinfo": {
-        "connectiondate": "Connection Date",
-        "issuedcredentials": "Issued Credentials",
+        "connectionDate": "Connection Date",
+        "issuedCredentials": "Issued Credentials",
         "button": {
           "delete": "Delete Connection"
         },
         "confirm": {
           "title": "Delete Connection",
-          "body": "Are you sure you want to delete this connection? This action cannot be undone.",
+          "body": "Please confirm you want to delete the connection. This action cannot be undone.",
           "confirm": "Delete",
           "cancel": "Cancel"
         }
@@ -70,11 +98,11 @@
         },
         "toast": {
           "success": "Credential revoked successfully",
-          "error": "Unable to revoked credential"
+          "error": "Unable to revoke credential"
         },
         "confirm": {
-          "title": "Revoke credential successfully",
-          "body": "Are you sure you want to revoke this credential? This action cannot be undone.",
+          "title": "Revoke Credential",
+          "body": "Please confirm you want to revoke this credential. This action cannot be undone.",
           "confirm": "Revoke",
           "cancel": "Cancel"
         }
@@ -85,7 +113,7 @@
       "actions": "Actions",
       "table": {
         "template": "Credential Templates",
-        "creationdate": "Creation Date",
+        "creationDate": "Creation Date",
         "menu": {
           "view": "View Details",
           "issue": "Issue Credential"

@@ -5,10 +5,8 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import { i18n } from "../../../../i18n";
-import { AppDispatch } from "../../../../store";
 
 export const createMenuItems = (
-  dispatch: AppDispatch,
   connectionId: string,
   handleOpenModal: (connectionId: string) => void,
   handleOpenDetail: (connectionId: string) => void
@@ -21,7 +19,6 @@ export const createMenuItems = (
   },
   {
     label: i18n.t("pages.connections.issueCredential"),
-    action: () => console.log(i18n.t("pages.connections.issueCredential")),
     icon: React.createElement(AddCircleOutlineOutlined),
     className: "icon-left",
   },

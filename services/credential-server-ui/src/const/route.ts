@@ -1,6 +1,6 @@
 export const RoutePath = {
-  Connections: "/connections",
-  ConnectionDetail: "/connections/:id",
+  Connections: "/",
+  ConnectionDetails: "/connections/:id",
   Credentials: "/credentials",
   Notifications: "/notifications",
   Settings: "/settings",

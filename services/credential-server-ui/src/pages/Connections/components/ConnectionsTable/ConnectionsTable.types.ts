@@ -19,7 +19,7 @@ interface Credential {
 interface Data {
   id: string;
   name: string;
-  date: string;
+  date: number;
   credentials: number;
 }
 

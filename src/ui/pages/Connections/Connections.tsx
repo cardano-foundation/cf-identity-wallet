@@ -12,7 +12,8 @@ import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-  CreationStatus } from "../../../core/agent/agent.types";
+  CreationStatus,
+} from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -88,6 +89,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const [oobi, setOobi] = useState("");
     const [hideHeader, setHideHeader] = useState(false);
     const [openConnectionlModal, setOpenConnectionlModal] = useState(false);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
@@ -318,6 +320,8 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
               onSearchFocus={setHideHeader}
               mappedConnections={mappedConnections}
               handleShowConnectionDetails={handleShowConnectionDetails}
+              search={search}
+              setSearch={setSearch}
             />
           )}
         </ScrollablePageLayout>

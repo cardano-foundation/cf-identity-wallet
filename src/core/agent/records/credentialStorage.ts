@@ -68,7 +68,13 @@ class CredentialStorage {
   async getCredentialMetadatasById(
     ids: string[],
     query?: Query<CredentialMetadataRecord>
-  ) {
+  ): Promise<CredentialMetadataRecord[]> {
+    // @TODO - foconnor: If $or array is empty, SQL skips over condition, whereas IonicStorage returns nothing
+    // These should be consolidated. For now, this is the only occurance.
+    if (ids.length === 0) {
+      return [];
+    }
+
     return this.storageService.findAllByQuery(
       {
         $or: ids.map((id) => ({ id })),
