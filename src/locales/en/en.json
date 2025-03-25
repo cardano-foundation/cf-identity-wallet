@@ -1863,9 +1863,9 @@
     "iosfallbacktitle": "Use passcode",
     "androidtitle": "Authentication",
     "androidsubtitle": "Authentication using biometrics",
-    "setupandroidbiometryheader": "Do you want to allow “Veridian” to use biometrics?",
-    "setupandroidbiometryconfirm": "Ok",
-    "setupandroidbiometrycancel": "Don't allow",
+    "setupbiometryheader": "Do you want to allow “Veridian” to use biometrics?",
+    "setupbiometryconfirm": "Ok",
+    "setupbiometrycancel": "Don't allow",
     "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."
   },
   "genericerror": {

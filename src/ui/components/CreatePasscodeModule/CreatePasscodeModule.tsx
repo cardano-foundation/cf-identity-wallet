@@ -49,12 +49,8 @@ const CreatePasscodeModule = forwardRef<
     const dispatch = useAppDispatch();
     const [passcode, setPasscode] = useState("");
     const [passcodeMatch, setPasscodeMatch] = useState(false);
-    const [showSetupIOSBiometricsAlert, setShowSetupIOSBiometricsAlert] =
+    const [showSetupBiometricsAlert, setShowSetupBiometricsAlert] =
       useState(false);
-    const [
-      showSetupAndroidBiometricsAlert,
-      setShowSetupAndroidBiometricsAlert,
-    ] = useState(false);
     const [showCancelBiometricsAlert, setShowCancelBiometricsAlert] =
       useState(false);
     const [originalPassCode, setOriginalPassCode] = useState("");
@@ -62,16 +58,10 @@ const CreatePasscodeModule = forwardRef<
     const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
     const isAndroidDevice = getPlatforms().includes("android");
 
-    const setupBiometricsHeaderText = i18n.t(
-      "biometry.setupandroidbiometryheader"
-    );
+    const setupBiometricsHeaderText = i18n.t("biometry.setupbiometryheader");
 
-    const setupBiometricsConfirmtext = i18n.t(
-      "biometry.setupandroidbiometryconfirm"
-    );
-    const setupBiometricsCanceltext = i18n.t(
-      "biometry.setupandroidbiometrycancel"
-    );
+    const setupBiometricsConfirmtext = i18n.t("biometry.setupbiometryconfirm");
+    const setupBiometricsCanceltext = i18n.t("biometry.setupbiometrycancel");
 
     const alertClasses = overrideAlertZIndex ? "max-zindex" : undefined;
     const cancelBiometricsHeaderText = i18n.t("biometry.cancelbiometryheader");
@@ -94,27 +84,13 @@ const CreatePasscodeModule = forwardRef<
               biometricInfo?.strongBiometryIsAvailable &&
               !changePasscodeMode
             ) {
-              if (isAndroidDevice) {
-                setShowSetupAndroidBiometricsAlert(true);
-              } else {
-                setShowSetupIOSBiometricsAlert(true);
-              }
+              setShowSetupBiometricsAlert(true);
             } else {
               await handlePassAuth();
             }
           }
         }
       }
-    };
-
-    const handleSetupIOSBiometrics = async () => {
-      setShowSetupIOSBiometricsAlert(false);
-      await processBiometrics();
-    };
-
-    const handleCancelSetupIOSBiometrics = async () => {
-      setShowSetupIOSBiometricsAlert(false);
-      setShowCancelBiometricsAlert(true);
     };
 
     const processBiometrics = async () => {
@@ -181,7 +157,7 @@ const CreatePasscodeModule = forwardRef<
       setPasscode("");
       setOriginalPassCode("");
       setShowCancelBiometricsAlert(false);
-      setShowSetupAndroidBiometricsAlert(false);
+      setShowSetupBiometricsAlert(false);
     };
 
     useImperativeHandle(ref, () => ({
@@ -313,9 +289,9 @@ const CreatePasscodeModule = forwardRef<
           />
         )}
         <Alert
-          isOpen={showSetupAndroidBiometricsAlert}
-          setIsOpen={setShowSetupAndroidBiometricsAlert}
-          dataTestId="alert-setup-android-biometry"
+          isOpen={showSetupBiometricsAlert}
+          setIsOpen={setShowSetupBiometricsAlert}
+          dataTestId="alert-setup-biometry"
           headerText={setupBiometricsHeaderText}
           confirmButtonText={setupBiometricsConfirmtext}
           cancelButtonText={setupBiometricsCanceltext}
@@ -331,18 +307,6 @@ const CreatePasscodeModule = forwardRef<
           headerText={cancelBiometricsHeaderText}
           confirmButtonText={cancelBiometricsConfirmText}
           actionConfirm={handleCancelBiometrics}
-          backdropDismiss={false}
-          className={alertClasses}
-        />
-        <Alert
-          isOpen={showSetupIOSBiometricsAlert}
-          setIsOpen={setShowSetupIOSBiometricsAlert}
-          dataTestId="alert-setup-ios-biometry"
-          headerText={setupBiometricsHeaderText}
-          confirmButtonText={setupBiometricsConfirmtext}
-          cancelButtonText={setupBiometricsCanceltext}
-          actionConfirm={handleSetupIOSBiometrics}
-          actionCancel={handleCancelSetupIOSBiometrics}
           backdropDismiss={false}
           className={alertClasses}
         />
