@@ -103,7 +103,6 @@ const CredentialRequest = ({
     notificationDetails,
     identifiersData,
     getMultisigInfo,
-    handleBack,
     dispatch,
   ]);
 
