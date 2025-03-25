@@ -1,4 +1,8 @@
-import { MoreVert } from "@mui/icons-material";
+import {
+  BadgeOutlined,
+  DoDisturbOnOutlined,
+  MoreVert,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -16,14 +20,15 @@ import { DropdownMenu } from "../../components/DropdownMenu";
 import { PopupModal } from "../../components/PopupModal";
 import { i18n } from "../../i18n";
 import { CredentialService } from "../../services";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 import { formatDate } from "../../utils/dateFormatter";
 import {
   CredentialsTableProps,
   CredentialsTableRow,
 } from "./ConnectionDetails.types";
-import { createMenuItems } from "./menuItems";
+import { getRoleView } from "../../store/reducers";
+import { RoleIndex } from "../../components/NavBar/constants/roles";
 const headers: AppTableHeader<CredentialsTableRow>[] = [
   {
     id: "name",
@@ -45,6 +50,7 @@ const CredentialsTable = ({
   credentials,
   contactId,
 }: CredentialsTableProps) => {
+  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
@@ -199,11 +205,32 @@ const CredentialsTable = ({
                         </IconButton>
                       </Tooltip>
                     }
-                    menuItems={createMenuItems(
-                      row,
-                      viewCred,
-                      openRevokeConfirm
-                    )}
+                    menuItems={[
+                      {
+                        label: i18n.t(
+                          "pages.connectionDetails.table.menu.view"
+                        ),
+                        action: () => viewCred(),
+                        icon: <BadgeOutlined />,
+                        className: "icon-left",
+                      },
+                      ...(roleViewIndex === RoleIndex.ISSUER
+                        ? [
+                            {
+                              className: "divider",
+                            },
+                            {
+                              label: i18n.t(
+                                "pages.connectionDetails.table.menu.delete"
+                              ),
+                              action: () => openRevokeConfirm(row),
+                              icon: <DoDisturbOnOutlined />,
+                              className: "icon-left action-delete",
+                              disabled: row.status !== 0,
+                            },
+                          ]
+                        : []),
+                    ]}
                   />
                 </TableCell>
               </TableRow>

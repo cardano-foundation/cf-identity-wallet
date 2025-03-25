@@ -1,8 +1,8 @@
 import {
-  MoreVert,
-  GroupOutlined,
-  DoDisturbOnOutlined,
   AddCircleOutline,
+  DoDisturbOnOutlined,
+  GroupOutlined,
+  MoreVert,
 } from "@mui/icons-material";
 import {
   Box,
@@ -15,23 +15,23 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar, VariantType } from "notistack";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../components/DropdownMenu";
+import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PopupModal } from "../../components/PopupModal";
+import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
 import { CredentialService } from "../../services";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getRoleView } from "../../store/reducers";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 import { formatDate } from "../../utils/dateFormatter";
 import {
   CredentialTableProps,
   CredentialTableRow,
 } from "./CredentialDetail.types";
-import { useNavigate } from "react-router";
-import { RoutePath } from "../../const/route";
-import { getRoleView } from "../../store/reducers";
-import { RoleIndex } from "../../components/NavBar/constants/roles";
 
 const headers: AppTableHeader<CredentialTableRow>[] = [
   {
@@ -130,9 +130,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     nav(RoutePath.ConnectionDetails.replace(":id", cred.identifier));
   };
 
-  const issueCred = (cred: CredentialTableRow) => {
-    nav(RoutePath.ConnectionDetails.replace(":id", cred.identifier));
-  };
+  const issueCred = () => {};
 
   return (
     <>
@@ -225,7 +223,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                               label: i18n.t(
                                 "pages.credentialdetail.table.menu.issue"
                               ),
-                              action: () => issueCred(row),
+                              action: () => issueCred(),
                               icon: <AddCircleOutline />,
                               className: "icon-left",
                             },
