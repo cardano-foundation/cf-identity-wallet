@@ -1,51 +1,46 @@
-import AddIcon from "@mui/icons-material/Add";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { Box, Button } from "@mui/material";
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PageHeader } from "../../components/PageHeader";
+import { CredentialMap } from "../../const";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
-import { ConnectionContactCard } from "./ConnectionContactCard";
-import { CredentialsTable } from "./CredentialsTable";
+import { CredentialInfoCard } from "./CredentialInfoCard";
+import { CredentialTable } from "./CredentialsTable";
 
-export const ConnectionDetails = () => {
+export const CredentialDetail = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
-  const contacts = useAppSelector((state) => state.connections.contacts);
   const credentials = useAppSelector((state) => state.connections.credentials);
   const nav = useNavigate();
   const { id } = useParams();
 
-  const contact = useMemo(
-    () => contacts.find((item) => item.id === id),
-    [contacts, id]
-  );
+  const schema = CredentialMap[String(id)] || "";
 
-  const contactCredentials = useMemo(
-    () => credentials.filter((item) => item.contactId === contact?.id),
-    [contact?.id, credentials]
+  const displayCredentials = useMemo(
+    () => credentials.filter((item) => item.schema.$id === id),
+    [credentials, id]
   );
 
   return (
     <Box
-      className="connection-detail-page"
+      className="credential-detail-page"
       sx={{ padding: "0 2.5rem 2.5rem" }}
     >
       <PageHeader
-        // TODO: Temporarily pointing to "/" until Overview page is ready
-        //onBack={() => nav(RoutePath.Connections)}
         onBack={() => nav(-1)}
-        title={`${i18n.t("pages.connectionDetails.title")}`}
+        title={`${i18n.t("pages.credentialdetail.title")}`}
         action={
           roleViewIndex === 0 && (
             <Button
               variant="contained"
               disableElevation
               disableRipple
-              startIcon={<AddIcon />}
+              startIcon={<AddCircleOutlineOutlinedIcon />}
             >
-              {i18n.t("pages.connectionDetails.issue")}
+              {i18n.t("pages.credentialdetail.issue")}
             </Button>
           )
         }
@@ -56,20 +51,17 @@ export const ConnectionDetails = () => {
       <Box
         sx={(theme) => ({
           display: "flex",
-          gap: 2,
+          gap: "2.5rem",
           [theme.breakpoints.down("md")]: {
             flexDirection: "column",
           },
         })}
       >
-        <ConnectionContactCard
-          contact={contact}
-          credentials={contactCredentials}
+        <CredentialInfoCard
+          schemaName={schema}
+          creationDate={new Date()}
         />
-        <CredentialsTable
-          credentials={contactCredentials}
-          contactId={contact?.id}
-        />
+        <CredentialTable credentials={displayCredentials} />
       </Box>
     </Box>
   );

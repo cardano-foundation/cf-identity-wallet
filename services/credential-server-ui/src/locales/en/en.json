@@ -120,6 +120,41 @@
         }
       }
     },
+    "credentialdetail": {
+      "title": "Issued Credentials",
+      "issue": "Issue Credential",
+      "schemaInfo": {
+        "creationDate": "Creation Date"
+      },
+      "table": {
+        "headers": {
+          "name": "Connection Name",
+          "identifier": "Identifier",
+          "issueDate": "Issued Date",
+          "status": "Status"
+        },
+        "status": {
+          "issued": "Issued",
+          "revoked": "Revoked"
+        },
+        "menu": {
+          "actions": "Actions",
+          "view": "View Connection",
+          "issue": "Issue Credential",
+          "delete": "Revoke Credential"
+        },
+        "toast": {
+          "success": "Credential revoked successfully",
+          "error": "Unable to revoke credential"
+        },
+        "confirm": {
+          "title": "Revoke Credential",
+          "body": "Please confirm you want to revoke this credential. This action cannot be undone.",
+          "confirm": "Revoke",
+          "cancel": "Cancel"
+        }
+      }
+    },
     "notifications": {
       "title": "Notifications"
     },

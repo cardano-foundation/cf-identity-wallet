@@ -1,35 +1,34 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Container,
-  Button,
-  Badge,
-  Drawer,
-  MenuItem,
-  Typography,
-} from "@mui/material";
-import {
-  Menu as MenuIcon,
-  Dashboard as DashboardFull,
-  DashboardOutlined,
-  Group as GroupFull,
-  GroupOutlined,
   Badge as BadgeFull,
   BadgeOutlined,
+  Group as GroupFull,
+  GroupOutlined,
+  Menu as MenuIcon,
   Notifications as NotificationsFull,
   NotificationsOutlined,
   Settings as SettingsFull,
   SettingsOutlined,
 } from "@mui/icons-material";
+import {
+  AppBar,
+  Badge,
+  Box,
+  Button,
+  Container,
+  Drawer,
+  IconButton,
+  MenuItem,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Logo from "../../assets/Logo.svg";
-import "./NavBar.scss";
-import { SwitchAccount } from "../SwitchAccount";
+import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
+import { SwitchAccount } from "../SwitchAccount";
 import { DrawerContent } from "./components/DrawerContent";
+import "./NavBar.scss";
 
 interface Props {
   window?: () => Window;
@@ -48,13 +47,13 @@ const menuItems = [
   {
     key: "connections",
     label: i18n.t("navbar.connections"),
-    path: "/",
+    path: RoutePath.Connections,
     icons: [<GroupFull />, <GroupOutlined />],
   },
   {
     key: "credentials",
     label: i18n.t("navbar.credentials"),
-    path: "/credentials",
+    path: RoutePath.Credentials,
     icons: [<BadgeFull />, <BadgeOutlined />],
   },
 ];
@@ -72,6 +71,8 @@ const NavBar = ({ window }: Props) => {
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
+
+  const isOverviewPage = (path: string) => path === RoutePath.Connections;
 
   return (
     <AppBar
@@ -151,23 +152,27 @@ const NavBar = ({ window }: Props) => {
                 src={Logo}
               />
             </Button>
-            {menuItems.map((item) => (
-              <MenuItem
-                key={item.key}
-                component={Link}
-                to={item.path}
-                disableRipple
-                className={location.pathname === item.path ? "active" : ""}
-              >
-                <Typography textAlign="center">
-                  {getIcon(item.icons, location.pathname === item.path)}
-                  {item.label}
-                </Typography>
-                {location.pathname === item.path && (
-                  <div className="active-bar" />
-                )}
-              </MenuItem>
-            ))}
+            {menuItems.map((item) => {
+              const isActive = isOverviewPage(item.path)
+                ? location.pathname === RoutePath.Connections
+                : location.pathname.startsWith(item.path);
+
+              return (
+                <MenuItem
+                  key={item.key}
+                  component={Link}
+                  to={item.path}
+                  disableRipple
+                  className={isActive ? "active" : ""}
+                >
+                  <Typography textAlign="center">
+                    {getIcon(item.icons, isActive)}
+                    {item.label}
+                  </Typography>
+                  {isActive && <div className="active-bar" />}
+                </MenuItem>
+              );
+            })}
           </Box>
           <Box
             className="nav-right"

@@ -10,4 +10,10 @@ const CredentialTypes = [
   CredentialType.LE,
 ];
 
-export { CredentialType, CredentialTypes };
+const CredentialMap: Record<string, CredentialType> = {
+  EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb: CredentialType.RARE_EVO,
+  "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao": CredentialType.GLEIF,
+  "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY": CredentialType.LE,
+};
+
+export { CredentialType, CredentialTypes, CredentialMap };

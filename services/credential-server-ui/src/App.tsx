@@ -22,6 +22,7 @@ import {
 } from "./store/reducers/connectionsSlice";
 import "./styles/colors.scss";
 import { theme } from "./theme/theme"; // Import the theme
+import { CredentialDetail } from "./pages/CredentialDetail";
 
 const App = () => {
   const MAX_TOAST_MESSAGES = 10;
@@ -78,6 +79,14 @@ const App = () => {
               <Route
                 path={RoutePath.ConnectionDetails}
                 element={<ConnectionDetails />}
+              />
+              <Route
+                path={RoutePath.Credentials}
+                element={<Credentials />}
+              />
+              <Route
+                path={RoutePath.CredentialDetail}
+                element={<CredentialDetail />}
               />
               <Route
                 path={RoutePath.Credentials}
