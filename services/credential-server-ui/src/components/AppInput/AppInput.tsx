@@ -48,6 +48,12 @@ export const AppInput = ({
     <InputLabel
       shrink
       htmlFor={id}
+      sx={(theme) => ({
+        color: theme.palette.text.primary,
+        "&.Mui-focused": {
+          color: theme.palette.text.primary,
+        },
+      })}
     >
       {label}
     </InputLabel>
