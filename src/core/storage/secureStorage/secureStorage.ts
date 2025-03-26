@@ -28,7 +28,11 @@ class SecureStorage {
   }
 
   static async set(key: string, value: string): Promise<void> {
-    await SecureStoragePlugin.set({ key, value });
+    await SecureStoragePlugin.set({
+      key,
+      value,
+      accessibility: "whenUnlockedThisDeviceOnly",
+    });
   }
 
   static async delete(key: string) {
