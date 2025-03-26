@@ -31,8 +31,6 @@ export const ConnectionDetails = () => {
   return (
     <Box className="connection-detail-page">
       <PageHeader
-        // TODO: Temporarily pointing to "/" until Overview page is ready
-        //onBack={() => nav(RoutePath.Connections)}
         onBack={() => nav(-1)}
         title={`${i18n.t("pages.connectionDetails.title")}`}
         action={
