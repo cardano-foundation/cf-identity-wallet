@@ -116,6 +116,8 @@ const ConnectionsTable: React.FC = () => {
     nav(RoutePath.ConnectionDetails.replace(":id", id));
   };
 
+  const issueCredential = () => {};
+
   return (
     <Box sx={{ width: "100%" }}>
       <Paper className="connections-table">
@@ -188,7 +190,8 @@ const ConnectionsTable: React.FC = () => {
                     menuItems={createMenuItems(
                       row.id,
                       handleOpenModal,
-                      handOpenConnectionDetails
+                      handOpenConnectionDetails,
+                      issueCredential
                     )}
                   />
                 </TableCell>

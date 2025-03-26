@@ -9,7 +9,8 @@ import { i18n } from "../../../../i18n";
 export const createMenuItems = (
   connectionId: string,
   handleOpenModal: (connectionId: string) => void,
-  handleOpenDetail: (connectionId: string) => void
+  handleOpenDetail: (connectionId: string) => void,
+  issueCredential: (connectionId: string) => void
 ) => [
   {
     label: i18n.t("pages.connections.viewDetails"),
@@ -21,6 +22,7 @@ export const createMenuItems = (
     label: i18n.t("pages.connections.issueCredential"),
     icon: React.createElement(AddCircleOutlineOutlined),
     className: "icon-left",
+    action: () => issueCredential(connectionId),
   },
   {
     className: "divider",
