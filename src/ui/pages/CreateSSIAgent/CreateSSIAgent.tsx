@@ -265,11 +265,13 @@ const CreateSSIAgent = () => {
   const scanBootUrl = (event: ReactMouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation();
     dispatch(setCurrentOperation(OperationType.SCAN_SSI_BOOT_URL));
+    setTouchedBootUrlInput();
   };
 
   const scanConnectUrl = (event: ReactMouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation();
     dispatch(setCurrentOperation(OperationType.SCAN_SSI_CONNECT_URL));
+    setTouchedConnectUrlInput();
   };
 
   const removeLastSlash = (url: string) => {
