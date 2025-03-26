@@ -22,6 +22,7 @@ import { passcodeFiller } from "../../utils/passcodeFiller";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
 import { KeyStoreKeys } from "../../../core/storage";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const deleteSecureStorageMock = jest.fn();
 jest.mock("../../../core/storage", () => ({
@@ -281,8 +282,14 @@ describe("Lock Page", () => {
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
 
     await waitFor(() => {
-      expect(deleteById).toBeCalled();
-      expect(deleteSecureStorageMock).toBeCalled();
+      expect(deleteSecureStorageMock).toBeCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(deleteSecureStorageMock).toBeCalledWith(
+        KeyStoreKeys.APP_OP_PASSWORD
+      );
+      expect(deleteById).toBeCalledWith(MiscRecordId.OP_PASS_HINT);
+      expect(deleteById).toBeCalledWith(MiscRecordId.APP_PASSWORD_SKIPPED);
+      expect(deleteById).toBeCalledWith(MiscRecordId.APP_ALREADY_INIT);
+      expect(deleteById).toBeCalledWith(MiscRecordId.APP_BIOMETRY);
     });
   });
 

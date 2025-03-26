@@ -14,12 +14,16 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { PublicRoutes, RoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
+import {
+  getBiometricsCacheCache,
+  setEnableBiometricsCache,
+} from "../../../store/reducers/biometricsCache";
 import {
   getAuthentication,
   getCurrentRoute,
   getFirstAppLaunch,
   login,
+  resetAllRoutes,
   setAuthentication,
   setFirstAppLaunchComplete,
 } from "../../../store/reducers/stateCache";
@@ -206,9 +210,8 @@ const LockPageContainer = () => {
         Agent.agent.basicStorage.deleteById(MiscRecordId.OP_PASS_HINT),
         Agent.agent.basicStorage.deleteById(MiscRecordId.APP_PASSWORD_SKIPPED),
         Agent.agent.basicStorage.deleteById(MiscRecordId.APP_ALREADY_INIT),
+        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_BIOMETRY),
       ]);
-
-      router.push(RoutePath.ROOT);
 
       dispatch(
         setAuthentication({
@@ -216,9 +219,13 @@ const LockPageContainer = () => {
           passcodeIsSet: false,
           passwordIsSet: false,
           passwordIsSkipped: false,
-          loggedIn: true,
+          loggedIn: false,
         })
       );
+      dispatch(resetAllRoutes());
+      dispatch(setEnableBiometricsCache(false));
+
+      router.push(RoutePath.ROOT);
     } catch (e) {
       showError("Failed to clear app: ", e, dispatch);
     }
