@@ -5,6 +5,7 @@ import { PageHeaderProps } from "./PageHeader.types";
 export const PageHeader = ({ title, onBack, action, sx }: PageHeaderProps) => {
   return (
     <Box
+      className="page-header"
       sx={{
         "&": (theme) => ({
           display: "flex",

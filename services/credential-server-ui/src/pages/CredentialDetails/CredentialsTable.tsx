@@ -31,46 +31,51 @@ import { formatDate } from "../../utils/dateFormatter";
 import {
   CredentialTableProps,
   CredentialTableRow,
-} from "./CredentialDetail.types";
+} from "./CredentialDetails.types";
 
 const headers: AppTableHeader<CredentialTableRow>[] = [
   {
     id: "name",
-    label: i18n.t("pages.credentialdetail.table.headers.name"),
+    label: i18n.t("pages.credentialDetail.table.headers.name"),
   },
   {
     id: "identifier",
     disablePadding: false,
-    label: i18n.t("pages.credentialdetail.table.headers.identifier"),
+    label: i18n.t("pages.credentialDetail.table.headers.identifier"),
   },
   {
     id: "date",
     disablePadding: false,
-    label: i18n.t("pages.credentialdetail.table.headers.issueDate"),
+    label: i18n.t("pages.credentialDetail.table.headers.issueDate"),
   },
   {
     id: "status",
     disablePadding: false,
-    label: i18n.t("pages.credentialdetail.table.headers.status"),
+    label: i18n.t("pages.credentialDetail.table.headers.status"),
   },
 ];
 
-const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
+const CredentialsTable = ({ credentials }: CredentialTableProps) => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
+  const contacts = useAppSelector((state) => state.connections.contacts);
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
     useState<CredentialTableRow | null>(null);
   const nav = useNavigate();
 
-  const tableRows: CredentialTableRow[] = credentials.map((row) => ({
-    id: row.status.i,
-    name: row.schema.title,
-    date: new Date(row.status.dt).getTime(),
-    status: Number(row.status.s),
-    identifier: row.contactId,
-    data: row,
-  }));
+  const tableRows: CredentialTableRow[] = credentials.map((row) => {
+    const contact = contacts.find((item) => item.id === row.contactId)?.alias;
+
+    return {
+      id: row.status.i,
+      name: contact || "",
+      date: new Date(row.status.dt).getTime(),
+      status: Number(row.status.s),
+      identifier: row.contactId,
+      data: row,
+    };
+  });
 
   const {
     order,
@@ -103,19 +108,19 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
       );
       if (response.status === 200) {
         triggerToast(
-          i18n.t("pages.credentialdetail.table.toast.success"),
+          i18n.t("pages.credentialDetail.table.toast.success"),
           "success"
         );
       } else {
         triggerToast(
-          i18n.t("pages.credentialdetail.table.toast.error"),
+          i18n.t("pages.credentialDetail.table.toast.error"),
           "error"
         );
       }
 
       dispatch(fetchContactCredentials(revokeCredItem.data.contactId));
     } catch (error) {
-      triggerToast(i18n.t("pages.credentialdetail.table.toast.error"), "error");
+      triggerToast(i18n.t("pages.credentialDetail.table.toast.error"), "error");
       console.error("Error deleting contact:", error);
     }
   };
@@ -129,20 +134,9 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
     nav(RoutePath.ConnectionDetails.replace(":id", cred.identifier));
   };
 
-  const issueCred = () => {};
-
   return (
     <>
-      <Paper
-        sx={{
-          borderRadius: "1rem",
-          overflow: "hidden",
-          boxShadow:
-            "0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16)",
-          flex: 1,
-        }}
-        className="credential-table"
-      >
+      <Paper className="credential-table">
         <AppTable
           order={order}
           rows={visibleRows}
@@ -166,7 +160,7 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
                   id={labelId}
                   scope="row"
                 >
-                  {schema}
+                  {row.name}
                 </TableCell>
                 <TableCell align="left">
                   {row.identifier.substring(0, 4)}...{row.identifier.slice(-4)}
@@ -175,24 +169,10 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
                   {formatDate(new Date(row.date))}
                 </TableCell>
                 <TableCell align="left">
-                  <Box
-                    sx={(theme) => ({
-                      background: isRevoked
-                        ? theme.palette.error.main
-                        : theme.palette.success.light,
-                      color: isRevoked
-                        ? theme.palette.error.contrastText
-                        : theme.palette.success.main,
-                      padding: "0.25rem 0.75rem",
-                      width: "fit-content",
-                      fontSize: "0.75rem",
-                      lineHeight: "1.25rem",
-                      borderRadius: "0.5rem",
-                    })}
-                  >
+                  <Box className={`label ${isRevoked ? "revoked" : "issued"}`}>
                     {!isRevoked
-                      ? i18n.t("pages.credentialdetail.table.status.issued")
-                      : i18n.t("pages.credentialdetail.table.status.revoked")}
+                      ? i18n.t("pages.credentialDetail.table.status.issued")
+                      : i18n.t("pages.credentialDetail.table.status.revoked")}
                   </Box>
                 </TableCell>
                 <TableCell align="left">
@@ -200,7 +180,7 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
                     button={
                       <Tooltip
                         title={i18n.t(
-                          "pages.credentialdetail.table.menu.actions"
+                          "pages.credentialDetail.table.menu.actions"
                         )}
                         placement="top"
                       >
@@ -211,7 +191,7 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
                     }
                     menuItems={[
                       {
-                        label: i18n.t("pages.credentialdetail.table.menu.view"),
+                        label: i18n.t("pages.credentialDetail.table.menu.view"),
                         action: () => viewConnection(row),
                         icon: <GroupOutlined />,
                         className: "icon-left",
@@ -220,9 +200,8 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
                         ? [
                             {
                               label: i18n.t(
-                                "pages.credentialdetail.table.menu.issue"
+                                "pages.credentialDetail.table.menu.issue"
                               ),
-                              action: () => issueCred(),
                               icon: <AddCircleOutline />,
                               className: "icon-left",
                             },
@@ -231,7 +210,7 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
                             },
                             {
                               label: i18n.t(
-                                "pages.credentialdetail.table.menu.delete"
+                                "pages.credentialDetail.table.menu.delete"
                               ),
                               action: () => openRevokeConfirm(row),
                               icon: <DoDisturbOnOutlined />,
@@ -262,8 +241,8 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
       <PopupModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        title={i18n.t("pages.credentialdetail.table.confirm.title")}
-        description={i18n.t("pages.credentialdetail.table.confirm.body")}
+        title={i18n.t("pages.credentialDetail.table.confirm.title")}
+        description={i18n.t("pages.credentialDetail.table.confirm.body")}
         footer={
           <>
             <Button
@@ -272,14 +251,14 @@ const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
               onClick={() => setOpenModal(false)}
               className="neutral-button"
             >
-              {i18n.t("pages.credentialdetail.table.confirm.cancel")}
+              {i18n.t("pages.credentialDetail.table.confirm.cancel")}
             </Button>
             <Button
               variant="contained"
               aria-label="confirm delete connection"
               onClick={revokeCred}
             >
-              {i18n.t("pages.credentialdetail.table.confirm.confirm")}
+              {i18n.t("pages.credentialDetail.table.confirm.confirm")}
             </Button>
           </>
         }

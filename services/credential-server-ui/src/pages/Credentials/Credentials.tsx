@@ -58,8 +58,6 @@ export const Credentials = () => {
     nav(`${RoutePath.Credentials}/${id}`);
   };
 
-  const issueCred = () => {};
-
   return (
     <Box
       className="credentials-page"
@@ -138,7 +136,6 @@ export const Credentials = () => {
                               label: i18n.t(
                                 "pages.credentials.table.menu.issue"
                               ),
-                              action: () => issueCred(),
                               icon: <AddCircleOutlineOutlinedIcon />,
                               className: "icon-left",
                             },

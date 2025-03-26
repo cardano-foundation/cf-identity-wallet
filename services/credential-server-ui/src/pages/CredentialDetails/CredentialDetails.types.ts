@@ -7,7 +7,6 @@ interface CredentialInfoCardProps {
 
 interface CredentialTableProps {
   credentials: Credential[];
-  schema: string;
 }
 
 interface CredentialTableRow {

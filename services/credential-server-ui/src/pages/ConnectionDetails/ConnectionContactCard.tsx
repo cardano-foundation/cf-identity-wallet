@@ -56,47 +56,18 @@ const ConnectionContactCard = ({
 
   return (
     <>
-      <Box
-        sx={(theme) => ({
-          padding: "1.5rem",
-          borderRadius: "1rem",
-          boxShadow:
-            "0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16)",
-          width: 300,
-          height: "fit-content",
-          backgroundColor: "var(--color-neutral-100)",
-          [theme.breakpoints.down("sm")]: {
-            width: "auto",
-            minWidth: 300,
-          },
-        })}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            marginBottom: "1.5rem",
-          }}
-        >
+      <Box className="info-card">
+        <Box className="info-card-header">
           <Avatar alt={contact?.alias || ""} />
-          <Typography
-            sx={{
-              fontSize: "1.25rem",
-              fontWeight: 600,
-              color: "var(--color-neutral-800)",
-            }}
-          >
-            {contact?.alias}
-          </Typography>
+          <Typography className="header-name">{contact?.alias}</Typography>
         </Box>
-        <Box sx={{ textAlign: "left", marginBottom: "1.5rem" }}>
+        <Box className="attribute">
           <Typography variant="subtitle1">
             {i18n.t("pages.connectionDetails.userinfo.connectionDate")}
           </Typography>
           <Typography variant="body2">{formatDate(new Date())}</Typography>
         </Box>
-        <Box sx={{ textAlign: "left", marginBottom: "1.5rem" }}>
+        <Box className="attribute">
           <Typography variant="subtitle1">
             {i18n.t("pages.connectionDetails.userinfo.issuedCredentials")}
           </Typography>

@@ -10,8 +10,9 @@ import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { CredentialInfoCard } from "./CredentialInfoCard";
 import { CredentialTable } from "./CredentialsTable";
+import "./CredentialDetails.scss";
 
-export const CredentialDetail = () => {
+export const CredentialDetails = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const credentials = useAppSelector((state) => state.connections.credentials);
   const nav = useNavigate();
@@ -25,13 +26,10 @@ export const CredentialDetail = () => {
   );
 
   return (
-    <Box
-      className="credential-detail-page"
-      sx={{ padding: "0 2.5rem 2.5rem" }}
-    >
+    <Box className="credential-detail-page">
       <PageHeader
         onBack={() => nav(-1)}
-        title={`${i18n.t("pages.credentialdetail.title")}`}
+        title={`${i18n.t("pages.credentialDetail.title")}`}
         action={
           roleViewIndex === 0 && (
             <Button
@@ -40,31 +38,17 @@ export const CredentialDetail = () => {
               disableRipple
               startIcon={<AddCircleOutlineOutlinedIcon />}
             >
-              {i18n.t("pages.credentialdetail.issue")}
+              {i18n.t("pages.credentialDetail.issue")}
             </Button>
           )
         }
-        sx={{
-          margin: "1.5rem 0",
-        }}
       />
-      <Box
-        sx={(theme) => ({
-          display: "flex",
-          gap: "2.5rem",
-          [theme.breakpoints.down("md")]: {
-            flexDirection: "column",
-          },
-        })}
-      >
+      <Box className="credential-detail-page-container">
         <CredentialInfoCard
           schemaName={schema}
           creationDate={new Date()}
         />
-        <CredentialTable
-          schema={schema}
-          credentials={displayCredentials}
-        />
+        <CredentialTable credentials={displayCredentials} />
       </Box>
     </Box>
   );

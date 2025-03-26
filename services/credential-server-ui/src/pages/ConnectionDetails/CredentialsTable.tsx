@@ -123,16 +123,7 @@ const CredentialsTable = ({
 
   return (
     <>
-      <Paper
-        sx={{
-          borderRadius: "1rem",
-          overflow: "hidden",
-          boxShadow:
-            "0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16)",
-          flex: 1,
-        }}
-        className="credential-table"
-      >
+      <Paper className="credential-table">
         <AppTable
           order={order}
           rows={visibleRows}
@@ -173,21 +164,7 @@ const CredentialsTable = ({
                   {formatDate(new Date(row.date))}
                 </TableCell>
                 <TableCell align="left">
-                  <Box
-                    sx={(theme) => ({
-                      background: isRevoked
-                        ? theme.palette.error.main
-                        : theme.palette.success.light,
-                      color: isRevoked
-                        ? theme.palette.error.contrastText
-                        : theme.palette.success.main,
-                      padding: "0.25rem 0.75rem",
-                      width: "fit-content",
-                      fontSize: "0.75rem",
-                      lineHeight: "1.25rem",
-                      borderRadius: "0.5rem",
-                    })}
-                  >
+                  <Box className={`label ${isRevoked ? "revoked" : "issued"}`}>
                     {!isRevoked
                       ? i18n.t("pages.connectionDetails.table.status.issued")
                       : i18n.t("pages.connectionDetails.table.status.revoked")}
