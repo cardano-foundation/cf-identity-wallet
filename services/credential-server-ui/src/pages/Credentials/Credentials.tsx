@@ -9,17 +9,19 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
+import { useNavigate } from "react-router";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../components/DropdownMenu";
+import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PageHeader } from "../../components/PageHeader";
-import { CredentialTypes } from "../../const";
+import { CredentialMap, CredentialTypes } from "../../const";
+import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
-import { formatDate } from "../../utils/dateFormatter";
-import { CredentialTemplateRow } from "./Credential.types";
 import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
-import { RoleIndex } from "../../components/NavBar/constants/roles";
+import { formatDate } from "../../utils/dateFormatter";
+import { CredentialTemplateRow } from "./Credential.types";
 
 const headers: AppTableHeader<CredentialTemplateRow>[] = [
   {
@@ -34,13 +36,12 @@ const headers: AppTableHeader<CredentialTemplateRow>[] = [
 
 export const Credentials = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
-  const tableRows: CredentialTemplateRow[] = CredentialTypes.map(
-    (row, idx) => ({
-      id: `${idx}`,
-      name: row,
-      date: new Date().getTime(),
-    })
-  );
+  const tableRows: CredentialTemplateRow[] = CredentialTypes.map((row) => ({
+    id: `${Object.entries(CredentialMap).find(([_, value]) => value === row)?.[0]}`,
+    name: row,
+    date: new Date().getTime(),
+  }));
+  const nav = useNavigate();
 
   const {
     order,
@@ -53,9 +54,9 @@ export const Credentials = () => {
     visibleRows,
   } = useTable(tableRows, "name");
 
-  const viewCredTemplate = () => {};
-
-  const issueCred = () => {};
+  const viewCredTemplate = (id: string) => {
+    nav(`${RoutePath.Credentials}/${id}`);
+  };
 
   return (
     <Box
@@ -104,7 +105,10 @@ export const Credentials = () => {
                 >
                   {formatDate(new Date(row.date))}
                 </TableCell>
-                <TableCell align="left">
+                <TableCell
+                  width={50}
+                  align="left"
+                >
                   <DropdownMenu
                     button={
                       <Tooltip
@@ -119,7 +123,7 @@ export const Credentials = () => {
                     menuItems={[
                       {
                         label: i18n.t("pages.credentials.table.menu.view"),
-                        action: () => viewCredTemplate(),
+                        action: () => viewCredTemplate(row.id),
                         icon: <VisibilityOutlinedIcon />,
                         className: "icon-left",
                       },
@@ -132,7 +136,6 @@ export const Credentials = () => {
                               label: i18n.t(
                                 "pages.credentials.table.menu.issue"
                               ),
-                              action: () => issueCred(),
                               icon: <AddCircleOutlineOutlinedIcon />,
                               className: "icon-left",
                             },

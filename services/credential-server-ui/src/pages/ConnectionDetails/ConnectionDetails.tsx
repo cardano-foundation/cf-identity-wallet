@@ -9,6 +9,7 @@ import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { ConnectionContactCard } from "./ConnectionContactCard";
 import { CredentialsTable } from "./CredentialsTable";
+import "./ConnectionDetails.scss";
 
 export const ConnectionDetails = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
@@ -28,14 +29,9 @@ export const ConnectionDetails = () => {
   );
 
   return (
-    <Box
-      className="connection-detail-page"
-      sx={{ padding: "0 2.5rem 2.5rem" }}
-    >
+    <Box className="connection-detail-page">
       <PageHeader
-        // TODO: Temporarily pointing to "/" until Overview page is ready
-        //onBack={() => nav(RoutePath.Connections)}
-        onBack={() => nav("/")}
+        onBack={() => nav(-1)}
         title={`${i18n.t("pages.connectionDetails.title")}`}
         action={
           roleViewIndex === 0 && (
@@ -49,19 +45,8 @@ export const ConnectionDetails = () => {
             </Button>
           )
         }
-        sx={{
-          margin: "1.5rem 0",
-        }}
       />
-      <Box
-        sx={(theme) => ({
-          display: "flex",
-          gap: 2,
-          [theme.breakpoints.down("md")]: {
-            flexDirection: "column",
-          },
-        })}
-      >
+      <Box className="connection-detail-page-container">
         <ConnectionContactCard
           contact={contact}
           credentials={contactCredentials}

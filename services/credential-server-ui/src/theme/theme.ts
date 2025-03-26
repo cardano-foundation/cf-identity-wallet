@@ -47,6 +47,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: "0.38rem 1rem",
+        },
+      },
+    },
   },
   breakpoints: {
     values: {
