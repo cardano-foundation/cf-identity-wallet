@@ -29,7 +29,7 @@ export const CredentialDetails = () => {
     <Box className="credential-detail-page">
       <PageHeader
         onBack={() => nav(-1)}
-        title={`${i18n.t("pages.credentialDetail.title")}`}
+        title={`${i18n.t("pages.credentialDetails.title")}`}
         action={
           roleViewIndex === 0 && (
             <Button
@@ -38,7 +38,7 @@ export const CredentialDetails = () => {
               disableRipple
               startIcon={<AddCircleOutlineOutlinedIcon />}
             >
-              {i18n.t("pages.credentialDetail.issue")}
+              {i18n.t("pages.credentialDetails.issue")}
             </Button>
           )
         }

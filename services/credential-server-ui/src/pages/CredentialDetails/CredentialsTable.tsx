@@ -36,22 +36,22 @@ import {
 const headers: AppTableHeader<CredentialTableRow>[] = [
   {
     id: "name",
-    label: i18n.t("pages.credentialDetail.table.headers.name"),
+    label: i18n.t("pages.credentialDetails.table.headers.name"),
   },
   {
     id: "identifier",
     disablePadding: false,
-    label: i18n.t("pages.credentialDetail.table.headers.identifier"),
+    label: i18n.t("pages.credentialDetails.table.headers.identifier"),
   },
   {
     id: "date",
     disablePadding: false,
-    label: i18n.t("pages.credentialDetail.table.headers.issueDate"),
+    label: i18n.t("pages.credentialDetails.table.headers.issueDate"),
   },
   {
     id: "status",
     disablePadding: false,
-    label: i18n.t("pages.credentialDetail.table.headers.status"),
+    label: i18n.t("pages.credentialDetails.table.headers.status"),
   },
 ];
 
@@ -108,19 +108,22 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
       );
       if (response.status === 200) {
         triggerToast(
-          i18n.t("pages.credentialDetail.table.toast.success"),
+          i18n.t("pages.credentialDetails.table.toast.success"),
           "success"
         );
       } else {
         triggerToast(
-          i18n.t("pages.credentialDetail.table.toast.error"),
+          i18n.t("pages.credentialDetails.table.toast.error"),
           "error"
         );
       }
 
       dispatch(fetchContactCredentials(revokeCredItem.data.contactId));
     } catch (error) {
-      triggerToast(i18n.t("pages.credentialDetail.table.toast.error"), "error");
+      triggerToast(
+        i18n.t("pages.credentialDetails.table.toast.error"),
+        "error"
+      );
       console.error("Error deleting contact:", error);
     }
   };
@@ -171,8 +174,8 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                 <TableCell align="left">
                   <Box className={`label ${isRevoked ? "revoked" : "issued"}`}>
                     {!isRevoked
-                      ? i18n.t("pages.credentialDetail.table.status.issued")
-                      : i18n.t("pages.credentialDetail.table.status.revoked")}
+                      ? i18n.t("pages.credentialDetails.table.status.issued")
+                      : i18n.t("pages.credentialDetails.table.status.revoked")}
                   </Box>
                 </TableCell>
                 <TableCell align="left">
@@ -180,7 +183,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                     button={
                       <Tooltip
                         title={i18n.t(
-                          "pages.credentialDetail.table.menu.actions"
+                          "pages.credentialDetails.table.menu.actions"
                         )}
                         placement="top"
                       >
@@ -191,7 +194,9 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                     }
                     menuItems={[
                       {
-                        label: i18n.t("pages.credentialDetail.table.menu.view"),
+                        label: i18n.t(
+                          "pages.credentialDetails.table.menu.view"
+                        ),
                         action: () => viewConnection(row),
                         icon: <GroupOutlined />,
                         className: "icon-left",
@@ -200,7 +205,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                         ? [
                             {
                               label: i18n.t(
-                                "pages.credentialDetail.table.menu.issue"
+                                "pages.credentialDetails.table.menu.issue"
                               ),
                               icon: <AddCircleOutline />,
                               className: "icon-left",
@@ -210,7 +215,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                             },
                             {
                               label: i18n.t(
-                                "pages.credentialDetail.table.menu.delete"
+                                "pages.credentialDetails.table.menu.delete"
                               ),
                               action: () => openRevokeConfirm(row),
                               icon: <DoDisturbOnOutlined />,
@@ -241,8 +246,8 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
       <PopupModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        title={i18n.t("pages.credentialDetail.table.confirm.title")}
-        description={i18n.t("pages.credentialDetail.table.confirm.body")}
+        title={i18n.t("pages.credentialDetails.table.confirm.title")}
+        description={i18n.t("pages.credentialDetails.table.confirm.body")}
         footer={
           <>
             <Button
@@ -251,14 +256,14 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
               onClick={() => setOpenModal(false)}
               className="neutral-button"
             >
-              {i18n.t("pages.credentialDetail.table.confirm.cancel")}
+              {i18n.t("pages.credentialDetails.table.confirm.cancel")}
             </Button>
             <Button
               variant="contained"
               aria-label="confirm delete connection"
               onClick={revokeCred}
             >
-              {i18n.t("pages.credentialDetail.table.confirm.confirm")}
+              {i18n.t("pages.credentialDetails.table.confirm.confirm")}
             </Button>
           </>
         }

@@ -120,7 +120,7 @@
         }
       }
     },
-    "credentialDetail": {
+    "credentialDetails": {
       "title": "Issued Credentials",
       "issue": "Issue Credential",
       "schemaInfo": {

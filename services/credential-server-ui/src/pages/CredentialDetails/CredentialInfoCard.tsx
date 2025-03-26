@@ -20,7 +20,7 @@ const CredentialInfoCard = ({
       </Box>
       <Box className="attribute">
         <Typography variant="subtitle1">
-          {i18n.t("pages.credentialDetail.schemaInfo.creationDate")}
+          {i18n.t("pages.credentialDetails.schemaInfo.creationDate")}
         </Typography>
         <Typography variant="body2">{formatDate(creationDate)}</Typography>
       </Box>
