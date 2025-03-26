@@ -1862,7 +1862,7 @@
   "biometry": {
     "reason": "Please authenticate",
     "canceltitle": "Cancel",
-    "iosfallbacktitle": "Use passcode",
+    "iosfallbacktitle": "Enter Passcode",
     "androidtitle": "Authentication",
     "androidsubtitle": "Authentication using biometrics",
     "setupbiometryheader": "Do you want to allow “Veridian” to use biometrics?",
