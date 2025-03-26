@@ -55,13 +55,14 @@ const headers: AppTableHeader<CredentialTableRow>[] = [
   },
 ];
 
-const CredentialsTable = ({ credentials }: CredentialTableProps) => {
+const CredentialsTable = ({ credentials, schema }: CredentialTableProps) => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
     useState<CredentialTableRow | null>(null);
   const nav = useNavigate();
+
   const tableRows: CredentialTableRow[] = credentials.map((row) => ({
     id: row.status.i,
     name: row.schema.title,
@@ -89,8 +90,6 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
       anchorOrigin: { vertical: "top", horizontal: "center" },
     });
   };
-
-  console.log(credentials);
 
   const revokeCred = async () => {
     setOpenModal(false);
@@ -167,7 +166,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                   id={labelId}
                   scope="row"
                 >
-                  {row.name}
+                  {schema}
                 </TableCell>
                 <TableCell align="left">
                   {row.identifier.substring(0, 4)}...{row.identifier.slice(-4)}

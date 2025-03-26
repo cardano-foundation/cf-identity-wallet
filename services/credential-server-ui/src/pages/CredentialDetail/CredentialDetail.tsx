@@ -61,7 +61,10 @@ export const CredentialDetail = () => {
           schemaName={schema}
           creationDate={new Date()}
         />
-        <CredentialTable credentials={displayCredentials} />
+        <CredentialTable
+          schema={schema}
+          credentials={displayCredentials}
+        />
       </Box>
     </Box>
   );
