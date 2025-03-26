@@ -276,7 +276,7 @@ describe("Settings page", () => {
     });
   });
 
-  test("Open setting page when biometrics not enroll", async () => {
+  test("Open setting page when biometrics not available", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -316,41 +316,17 @@ describe("Settings page", () => {
       };
     });
 
-    const { getByText, getByTestId } = render(
+    const { queryByText } = render(
       <Provider store={storeMocked}>
         <Settings />
       </Provider>
     );
 
     expect(
-      getByText(
+      queryByText(
         EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
       )
-    ).toBeInTheDocument();
-
-    act(() => {
-      fireEvent.click(getByTestId("settings-item-0"));
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security
-            .biometricsalert.message
-        )
-      );
-    });
-
-    fireEvent.click(
-      getByText(
-        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometricsalert
-          .ok
-      )
-    );
-
-    await waitFor(() => {
-      expect(openSettingMock).toBeCalledTimes(1);
-    });
+    ).not.toBeInTheDocument();
   });
 
   test("Open documentation link", async () => {

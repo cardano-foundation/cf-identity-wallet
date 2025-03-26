@@ -86,7 +86,11 @@ const Settings = ({ switchView, handleClose }: SettingsProps) => {
     },
   ];
 
-  if (biometricsCache.enabled !== undefined) {
+  if (
+    biometricsCache.enabled !== undefined &&
+    biometricInfo?.strongBiometryIsAvailable &&
+    biometricInfo?.isAvailable
+  ) {
     securityItems.unshift({
       index: OptionIndex.BiometricUpdate,
       icon: fingerPrintOutline,
