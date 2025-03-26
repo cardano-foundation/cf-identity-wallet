@@ -15,7 +15,7 @@ import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../components/DropdownMenu";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PageHeader } from "../../components/PageHeader";
-import { CredentialMap, CredentialTypes } from "../../const";
+import { CredentialTypes, SchemaAID } from "../../const";
 import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
@@ -37,7 +37,7 @@ const headers: AppTableHeader<CredentialTemplateRow>[] = [
 export const Credentials = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const tableRows: CredentialTemplateRow[] = CredentialTypes.map((row) => ({
-    id: `${Object.entries(CredentialMap).find(([_, value]) => value === row)?.[0]}`,
+    id: SchemaAID[row],
     name: row,
     date: new Date().getTime(),
   }));

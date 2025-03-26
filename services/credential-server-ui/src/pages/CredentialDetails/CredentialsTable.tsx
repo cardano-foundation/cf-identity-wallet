@@ -55,7 +55,7 @@ const headers: AppTableHeader<CredentialTableRow>[] = [
   },
 ];
 
-const CredentialsTable = ({ credentials }: CredentialTableProps) => {
+const CredentialsTable = ({ credentials, issueCred }: CredentialTableProps) => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const contacts = useAppSelector((state) => state.connections.contacts);
   const dispatch = useAppDispatch();
@@ -208,6 +208,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                                 "pages.credentialDetails.table.menu.issue"
                               ),
                               icon: <AddCircleOutline />,
+                              action: () => issueCred(row.data.contactId),
                               className: "icon-left",
                             },
                             {
