@@ -344,23 +344,23 @@
             "subtitle": "2. Scope of this Privacy Policy",
             "text": "This Privacy Policy specifically applies to the decentralised identity solution developed by the Cardano Foundation known as Veridian.  Veridian is designed using the Key Event Receipt Infrastructure (KERI) protocol to provide identity management services to users worldwide (the “Services”).\n\nVeridian is comprised of multiple integrated components, which operate in two distinct environments: (collectively “Veridian”):",
             "nested": [
-              "<strong>Production Environment</strong>\nThis is the live, operational system where real users generate and manage their digital identities (AIDs) and credentials. Infrastructure and tooling in the production environment are not hosted on our infrastructure.",
-              "<strong>Sandbox Environment</strong>\nThis is a non-production, containerized environment hosted on the Cardano Foundation’s on-premise servers, provided solely for testing, evaluation, and demonstration purposes. The Sandbox includes a version of our credential management tooling (which is open source and available on GitHub) that is limited to testing use and is not intended for production or commercial use. Access to the Sandbox is granted via a request process and is governed by separate terms."
+              "<strong>Production Environment</strong>\n\nThis is the live, operational system where real users generate and manage their digital identities (AIDs) and credentials. Infrastructure and tooling in the production environment are not hosted on our infrastructure.\n\n",
+              "<strong>Sandbox Environment</strong>\n\nThis is a non-production, containerized environment hosted on the Cardano Foundation’s on-premise servers, provided solely for testing, evaluation, and demonstration purposes. The Sandbox includes a version of our credential management tooling (which is open source and available on GitHub) that is limited to testing use and is not intended for production or commercial use. Access to the Sandbox is granted via a request process and is governed by separate terms."
             ]
           },
           {
             "subtitle": "",
             "text": "The integrated components of Veridian include:",
             "nested": [
-              "<strong>Wallet (Edge Agent)</strong>\nThe Veridian wallet is the user-facing application that aggregates, displays, and allows you to manage your digital identity credentials. Through the wallet, you generate your digital identifier (the “AID”), control it with cryptographic keys, approve or decline identity-related requests, and decide when and how your credentials are shared.",
-              "<strong>Infrastructure</strong>\nThis comprises production cloud agents, independent Witnesses, Cardano Services, and other supporting systems that securely relay and verify your encrypted data.",
-              "<strong>Credential Management Tooling</strong>\nA suite of tools that facilitate the creation, issuance, verification, and revocation of digital credentials.",
-              "<strong>Browser Extension</strong>\nA browser extension that leverages the KERI and ToIP ACDC protocols for enhanced identity management and verifiable data."
+              "<strong>Wallet (Edge Agent)</strong>\n\nThe Veridian wallet is the user-facing application that aggregates, displays, and allows you to manage your digital identity credentials. Through the wallet, you generate your digital identifier (the “AID”), control it with cryptographic keys, approve or decline identity-related requests, and decide when and how your credentials are shared.\n\n",
+              "<strong>Infrastructure</strong>\n\nThis comprises production cloud agents, independent Witnesses, Cardano Services, and other supporting systems that securely relay and verify your encrypted data.\n\n",
+              "<strong>Credential Management Tooling</strong>\n\nA suite of tools that facilitate the creation, issuance, verification, and revocation of digital credentials.\n\n",
+              "<strong>Browser Extension</strong>\n\nA browser extension that leverages the KERI and ToIP ACDC protocols for enhanced identity management and verifiable data."
             ]
           },
           {
             "subtitle": "",
-            "text": "This privacy policy (“<strong>Policy</strong>”) explains and sets out the basis for why and when we collect, use, store, and share personal information of people who use the Veridian Services, and/ or interact with us in any other way related thereto. It explains and sets out how we collect and use personal data, the conditions under which we may disclose it to others and the measures we take to keep it secure.\nIf you transmit or disclose data about other persons such as family members, employees, work colleagues, etc., we assume that you are authorized to do so, that this data is correct and that we may process it as described here. <strong>By transmitting such data, you confirm this.</strong> Please also ensure that these third parties have been informed of this Policy.\nWe may amend this Policy from time to time so please check it occasionally to ensure that you are aware of any changes. "
+            "text": "This privacy policy (“<strong>Policy</strong>”) explains and sets out the basis for why and when we collect, use, store, and share personal information of people who use the Veridian Services, and/ or interact with us in any other way related thereto. It explains and sets out how we collect and use personal data, the conditions under which we may disclose it to others and the measures we take to keep it secure.\n\nIf you transmit or disclose data about other persons such as family members, employees, work colleagues, etc., we assume that you are authorized to do so, that this data is correct and that we may process it as described here. <strong>By transmitting such data, you confirm this.</strong> Please also ensure that these third parties have been informed of this Policy.\nWe may amend this Policy from time to time so please check it occasionally to ensure that you are aware of any changes. "
           }
         ]
       },
@@ -381,12 +381,7 @@
         "content": [
           {
             "subtitle": "4. How we collect information about you",
-            "text": "Veridian is designed with ‘privacy by design’ in mind. We aim to process only the minimum data necessary to deliver our Services securely.\nWe <strong>do not collect</strong> any:",
-            "nested": [
-              "<strong>Personal Information at Registration</strong>. You are not required to provide conventional personal details to access the Services, such as your name, email address, phone number, photograph, date of birth, and similar information related to your business, its employees, officers, representatives, or affiliates. Instead, Veridian allows you to generate a unique cryptographic identity (AID) that is entirely under your control.",
-              "<strong>Device Information</strong> in connection with your use of Veridian,  such as hardware model, operating system and version, unique device identifier, mobile network information.",
-              "<strong>Usage or technical Information</strong> in connection with your use of Veridian, such as your IP address and technical Device/ Network Data, web server logs, browser plug-ins, time  zone application logs and language settings, cookie data, usage data."
-            ]
+            "text": "Veridian is designed with ‘privacy by design’ in mind. We aim to process only the minimum data necessary to deliver our Services securely. We do not collect any <strong>personal information at registration</strong>. You are not required to provide conventional personal details to access the Services, such as your name, email address, phone number, photograph, date of birth, and similar information related to your business, its employees, officers, representatives, or affiliates. Instead, Veridian allows you to generate a unique cryptographic identity (AID) that is entirely under your control."
           },
           {
             "subtitle": "",
@@ -394,18 +389,26 @@
           },
           {
             "subtitle": "4.1. Information you provide us",
-            "text": "You may provide us with personal information by contacting user support, or by corresponding with us by e-mail, web form, live chat, phone, letter or other means of communication. We collect the data exchanged between you and us, including your contact details and the marginal data of the communication.  Any personal information you choose to share is retained solely for the purpose of resolving your query. \nAdditionally, you may provide personal information when registering to participate in the Sandbox environment. This data will be used only for granting you access to the Sandbox and delivering the associated services."
+            "text": "You may provide us with personal information by contacting user support, or by corresponding with us by e-mail, web form, live chat, phone, letter or other means of communication. We collect the data exchanged between you and us, including your contact details and the marginal data of the communication.  Any personal information you choose to share is retained solely for the purpose of resolving your query.\n\nAdditionally, you may provide personal information when registering to participate in the Sandbox environment. This data will be used only for granting you access to the Sandbox and delivering the associated services."
           },
           {
             "subtitle": "4.2. Technical Data for Service Functionality",
-            "text": "In the production environment, technical data required for secure operation remains on your device and is not collected by us. In the Sandbox environment, we may record timestamped requests—including associated IP addresses—for testing and security monitoring purposes, with such data retained only as long as necessary."
+            "text": "In the production environment, technical data required for secure operation typically remains on your device and is not collected by us. However, as part of our mobile security tooling, limited anonymous diagnostic data (as described in Section 4.3) may be transmitted off-device via the freeRASP SDK to support runtime protection and threat detection."
           },
           {
-            "subtitle": "4.3. Data Collection in the Sandbox Environment",
+            "subtitle": "4.3. Diagnostic Data",
+            "text": "To enhance fraud prevention and user safety, the Veridian wallet integrates the freeRASP SDK (provided by Talsec). This SDK collects a limited set of anonymous diagnostic data off-device solely for security threat detection.",
+            "nested": [
+              "<strong>Category: Application Info and Performance</strong>\n\nDiagnostics: Information about the integrity of the app and the operating system (e.g., rooting, emulator usage, presence of hooking frameworks)",
+              "<strong>Category: Device and Other Identifiers</strong>\n\nDevice-related data: Anonymous device model and hashed identifiers to ensure that the app instance is running on the originally installed device. This is used to prevent threats such as bot abuse or API misuse."
+            ]
+          },
+          {
+            "subtitle": "4.4. Data Collection in the Sandbox Environment",
             "text": "For users accessing the Sandbox environment—a controlled, non-production testing environment hosted on our on-premise servers—we expect that fictitious data will be used. The Sandbox is intended solely for evaluation and testing purposes, and real personal data should not be processed. All data collected or processed in the Sandbox environment is segregated from production data and will be securely destroyed once the testing engagement concludes."
           },
           {
-            "subtitle": "4.4. Information we receive from other sources",
+            "subtitle": "4.5. Information we receive from other sources",
             "text": "Veridian does not actively aggregate data from third-party sources. Should any additional information be received (for example, through optional integrations), it is processed only to the extent necessary for the intended functionality and under strict confidentiality."
           }
         ]
@@ -512,7 +515,7 @@
         "content": [
           {
             "subtitle": "12. Review of this Policy",
-            "text": "We periodically review and update this Privacy Policy to ensure it remains current with our practices and legal obligations. Any material changes will be communicated through the Veridian Wallet application. We encourage you to review this Policy regularly.\n\nMarch 2025"
+            "text": "We periodically review and update this Privacy Policy to ensure it remains current with our practices and legal obligations. Any material changes will be communicated through the Veridian Wallet application. We encourage you to review this Policy regularly.\n\nLast updatedMarch 2025"
           }
         ]
       }
