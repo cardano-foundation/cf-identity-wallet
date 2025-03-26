@@ -1,15 +1,17 @@
 import { CapacitorConfig } from "@capacitor/cli";
 import { KeyboardResize } from "@capacitor/keyboard";
 
+const isWebViewDebugDisabled = process.env.DISABLE_WEBVIEW_DEBUG === "true";
+
 const config: CapacitorConfig = {
   appId: "org.cardanofoundation.idw",
   appName: "Veridian",
   webDir: "build",
   android: {
-    webContentsDebuggingEnabled: true,
+    webContentsDebuggingEnabled: !isWebViewDebugDisabled,
   },
   ios: {
-    webContentsDebuggingEnabled: true,
+    webContentsDebuggingEnabled: !isWebViewDebugDisabled,
   },
   plugins: {
     CapacitorSQLite: {
