@@ -63,13 +63,21 @@ const ConnectionContactCard = ({
         </Box>
         <Box className="attribute">
           <Typography variant="subtitle1">
-            {i18n.t("pages.connectionDetails.userinfo.connectionDate")}
+            {i18n.t("pages.connectionDetails.userInfo.identifier")}
+          </Typography>
+          <Typography variant="body2">
+            {contact?.id.substring(0, 4)}...{contact?.id.slice(-4)}
+          </Typography>
+        </Box>
+        <Box className="attribute">
+          <Typography variant="subtitle1">
+            {i18n.t("pages.connectionDetails.userInfo.connectionDate")}
           </Typography>
           <Typography variant="body2">{formatDate(new Date())}</Typography>
         </Box>
         <Box className="attribute">
           <Typography variant="subtitle1">
-            {i18n.t("pages.connectionDetails.userinfo.issuedCredentials")}
+            {i18n.t("pages.connectionDetails.userInfo.issuedCredentials")}
           </Typography>
           <Typography variant="body2">{credentials.length}</Typography>
         </Box>
@@ -81,14 +89,14 @@ const ConnectionContactCard = ({
           startIcon={<DeleteOutline />}
           onClick={() => setOpenModal(true)}
         >
-          {i18n.t("pages.connectionDetails.userinfo.button.delete")}
+          {i18n.t("pages.connectionDetails.userInfo.button.delete")}
         </Button>
       </Box>
       <PopupModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        title={i18n.t("pages.connectionDetails.userinfo.confirm.title")}
-        description={i18n.t("pages.connectionDetails.userinfo.confirm.body")}
+        title={i18n.t("pages.connectionDetails.userInfo.confirm.title")}
+        description={i18n.t("pages.connectionDetails.userInfo.confirm.body")}
         footer={
           <>
             <Button
@@ -97,14 +105,14 @@ const ConnectionContactCard = ({
               onClick={() => setOpenModal(false)}
               className="neutral-button"
             >
-              {i18n.t("pages.connectionDetails.userinfo.confirm.cancel")}
+              {i18n.t("pages.connectionDetails.userInfo.confirm.cancel")}
             </Button>
             <Button
               variant="contained"
               aria-label="confirm delete connection"
               onClick={handleDeleteContact}
             >
-              {i18n.t("pages.connectionDetails.userinfo.confirm.confirm")}
+              {i18n.t("pages.connectionDetails.userInfo.confirm.confirm")}
             </Button>
           </>
         }

@@ -55,6 +55,7 @@
       "connectionName": "Connection Name",
       "connectionDate": "Connection Date",
       "issuedCredentials": "Issued Credentials",
+      "identifier": "Identifier",
       "deleteConnections": {
         "title": "Delete Connection(s)",
         "body": "Are you sure you want to delete this connection? This action cannot be undone.",
@@ -69,7 +70,8 @@
     "connectionDetails": {
       "title": "Connection Details",
       "issue": "Issue Credential",
-      "userinfo": {
+      "userInfo": {
+        "identifier": "Identifier",
         "connectionDate": "Connection Date",
         "issuedCredentials": "Issued Credentials",
         "button": {
