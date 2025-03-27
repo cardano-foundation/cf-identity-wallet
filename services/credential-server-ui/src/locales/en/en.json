@@ -153,6 +153,39 @@
           "confirm": "Revoke",
           "cancel": "Cancel"
         }
+      },
+      "issueCredential": {
+        "title": "Issue a Credential",
+        "back": "Back",
+        "selectConnection": {
+          "description": "<strong>Select a connection to issue this credential</strong>. Search from your established connections, and please note that credentials can only be issued to one connection at a time.",
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "inputAttribute": {
+          "description": "<strong>Set the required value(s) to issue this credential</strong>. Below are all the values needed for issuance.",
+          "placeholder": "e.g. 12345678A90123V45R67",
+          "label": {
+            "name": "Name",
+            "lei": "LEI"
+          },
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "review": {
+          "description": "<strong>Review the credential details before issuing</strong>. Ensure all information is accurate, as issued credentials cannot be edited, but can be revoked if needed.",
+          "credential": "Credential Being Issued",
+          "issueTo": "Being Issued To",
+          "button": {
+            "issue": "Issue Credential"
+          }
+        },
+        "messages": {
+          "success": "Credential issued",
+          "failed": "Unable to issue credential"
+        }
       }
     },
     "notifications": {

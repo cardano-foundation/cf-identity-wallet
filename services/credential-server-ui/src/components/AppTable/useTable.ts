@@ -34,9 +34,10 @@ const stableSort = <T>(array: T[], comparator: (a: T, b: T) => number) => {
 
 export const useTable = <T extends AppTableBaseData = AppTableBaseData>(
   rows: T[],
-  initSortKey: keyof T
+  initSortKey: keyof T,
+  initOrder: Order = "desc"
 ) => {
-  const [order, setOrder] = useState<Order>("asc");
+  const [order, setOrder] = useState<Order>(initOrder);
   const [orderBy, setOrderBy] = useState<keyof T>(initSortKey);
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(0);

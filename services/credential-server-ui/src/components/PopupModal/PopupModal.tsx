@@ -17,6 +17,7 @@ const PopupModal = ({
       open={open}
       onClose={onClose}
       className={"popup-modal" + (customClass ? " " + customClass : "")}
+      keepMounted={false}
     >
       <Fade in={open}>
         <Box

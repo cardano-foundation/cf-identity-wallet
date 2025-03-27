@@ -1,5 +1,4 @@
 import {
-  AddCircleOutline,
   DoDisturbOnOutlined,
   GroupOutlined,
   MoreVert,
@@ -87,7 +86,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "name");
+  } = useTable(tableRows, "date");
 
   const triggerToast = (message: string, variant: VariantType) => {
     enqueueSnackbar(message, {
@@ -203,13 +202,6 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                       },
                       ...(roleViewIndex === RoleIndex.ISSUER
                         ? [
-                            {
-                              label: i18n.t(
-                                "pages.credentialDetails.table.menu.issue"
-                              ),
-                              icon: <AddCircleOutline />,
-                              className: "icon-left",
-                            },
                             {
                               className: "divider",
                             },

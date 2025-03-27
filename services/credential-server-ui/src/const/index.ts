@@ -16,4 +16,37 @@ const CredentialMap: Record<string, CredentialType> = {
   "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY": CredentialType.LE,
 };
 
-export { CredentialType, CredentialTypes, CredentialMap };
+const SchemaAID = {
+  [CredentialType.RARE_EVO]: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+  [CredentialType.GLEIF]: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+  [CredentialType.LE]: "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY",
+};
+
+const CredentialTypeAttributes = {
+  [CredentialType.RARE_EVO]: [
+    {
+      key: "attendeeName",
+      label: "Name",
+    },
+  ],
+  [CredentialType.GLEIF]: [
+    {
+      key: "LEI",
+      label: "LEI",
+    },
+  ],
+  [CredentialType.LE]: [
+    {
+      key: "LEI",
+      label: "LEI",
+    },
+  ],
+};
+
+export {
+  CredentialType,
+  CredentialTypes,
+  CredentialMap,
+  SchemaAID,
+  CredentialTypeAttributes,
+};

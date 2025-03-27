@@ -73,7 +73,7 @@ const CredentialsTable = ({
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "name");
+  } = useTable(tableRows, "date");
 
   const triggerToast = (message: string, variant: VariantType) => {
     enqueueSnackbar(message, {
