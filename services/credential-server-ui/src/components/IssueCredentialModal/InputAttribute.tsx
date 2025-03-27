@@ -23,7 +23,7 @@ const InputAttribute = ({
             label={i18n.t(
               `pages.credentialDetails.issueCredential.inputAttribute.label.${attribute.label.toLowerCase()}`
             )}
-            value={value[attribute.key]}
+            value={value[attribute.key] || ""}
             onChange={(e) => setValue(attribute.key, e.target.value)}
             placeholder={i18n.t(
               "pages.credentialDetails.issueCredential.inputAttribute.placeholder"

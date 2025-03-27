@@ -24,6 +24,7 @@ const SelectConnectionStage = ({
             disablePadding
             secondaryAction={`${connection.id.substring(0, 4)}...${connection.id.slice(-4)}`}
             divider={index !== connections.length - 1}
+            className={value === connection.id ? "active" : undefined}
           >
             <ListItemButton
               role={undefined}
