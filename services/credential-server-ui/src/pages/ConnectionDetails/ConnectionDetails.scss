@@ -1,7 +1,7 @@
-.connection-detail-page {
+.connection-details-page {
   padding: 0 2.5rem 2.5rem;
 
-  .connection-detail-page-container {
+  .connection-details-page-container {
     display: flex;
     gap: 2.5rem;
   }
@@ -14,7 +14,7 @@
     padding: 1.5rem;
     border-radius: 1rem;
     box-shadow: 0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16);
-    width: 300;
+    width: 18.75rem;
     height: fit-content;
     background-color: var(--color-neutral-100);
 
@@ -24,10 +24,15 @@
       gap: 1rem;
       margin-bottom: 1.5rem;
 
-      .headerName {
+      .header-name {
         font-size: 1.25rem;
+        font-style: normal;
         font-weight: 600;
-        color: var(--color-neutral-800);
+        line-height: 1.75rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 13rem;
       }
     }
 
@@ -64,14 +69,18 @@
     }
   }
 
-  @media screen and (max-width: 600px) {
-    .connection-detail-page-container {
+  @media screen and (max-width: 1060px) {
+    .connection-details-page-container {
       flex-direction: column;
     }
 
     .info-card {
       width: auto;
       min-width: 300;
+
+      .info-card-header .header-name {
+        max-width: 48rem;
+      }
     }
   }
 }

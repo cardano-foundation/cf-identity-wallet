@@ -29,7 +29,7 @@ export const ConnectionDetails = () => {
   );
 
   return (
-    <Box className="connection-detail-page">
+    <Box className="connection-details-page">
       <PageHeader
         onBack={() => nav(-1)}
         title={`${i18n.t("pages.connectionDetails.title")}`}
@@ -46,7 +46,7 @@ export const ConnectionDetails = () => {
           )
         }
       />
-      <Box className="connection-detail-page-container">
+      <Box className="connection-details-page-container">
         <ConnectionContactCard
           contact={contact}
           credentials={contactCredentials}
