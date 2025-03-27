@@ -74,9 +74,9 @@ const PageFooter = ({
             fill="outline"
             className="secondary-button"
             data-testid={`secondary-button${pageId ? `-${pageId}` : ""}`}
-            onClick={getAction(secondaryButtonText)}
+            onClick={getAction(secondaryButtonAction)}
             disabled={secondaryButtonDisabled}
-            href={getHrefLink(secondaryButtonText)}
+            href={getHrefLink(secondaryButtonAction)}
           >
             {secondaryButtonIcon && (
               <IonIcon
@@ -96,9 +96,9 @@ const PageFooter = ({
             fill="clear"
             className="tertiary-button"
             data-testid={`tertiary-button${pageId ? `-${pageId}` : ""}`}
-            onClick={getAction(tertiaryButtonText)}
+            onClick={getAction(tertiaryButtonAction)}
             disabled={tertiaryButtonDisabled}
-            href={getHrefLink(tertiaryButtonText)}
+            href={getHrefLink(tertiaryButtonAction)}
           >
             {tertiaryButtonIcon && (
               <IonIcon
@@ -118,9 +118,9 @@ const PageFooter = ({
             fill="clear"
             className="archive-button"
             data-testid={`archive-button${pageId ? `-${pageId}` : ""}`}
-            onClick={getAction(archiveButtonText)}
+            onClick={getAction(archiveButtonAction)}
             disabled={archiveButtonDisabled}
-            href={getHrefLink(archiveButtonText)}
+            href={getHrefLink(archiveButtonAction)}
           >
             <IonIcon
               slot="icon-only"
@@ -138,9 +138,9 @@ const PageFooter = ({
             fill="clear"
             className="delete-button"
             data-testid={`delete-button${pageId ? `-${pageId}` : ""}`}
-            onClick={getAction(deleteButtonText)}
+            onClick={getAction(deleteButtonAction)}
             disabled={deleteButtonDisabled}
-            href={getHrefLink(deleteButtonText)}
+            href={getHrefLink(deleteButtonAction)}
           >
             <IonIcon
               slot="icon-only"
