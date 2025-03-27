@@ -36,6 +36,10 @@ const headers: AppTableHeader<Data>[] = [
     label: i18n.t("pages.connections.connectionName"),
   },
   {
+    id: "id",
+    label: i18n.t("pages.connections.identifier"),
+  },
+  {
     id: "date",
     label: i18n.t("pages.connections.connectionDate"),
   },
@@ -163,6 +167,7 @@ const ConnectionsTable: React.FC = () => {
                     slotProps={{ input: { "aria-labelledby": labelId } }}
                   />
                 </TableCell>
+
                 <TableCell
                   component="th"
                   id={labelId}
@@ -170,6 +175,14 @@ const ConnectionsTable: React.FC = () => {
                   padding="none"
                 >
                   {row.name}
+                </TableCell>
+                <TableCell
+                  component="th"
+                  id={labelId}
+                  scope="row"
+                  padding="none"
+                >
+                  {row.id.substring(0, 4)}...{row.id.slice(-4)}
                 </TableCell>
                 <TableCell align="left">
                   {formatDate(new Date(row.date))}
