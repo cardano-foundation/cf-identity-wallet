@@ -1,7 +1,7 @@
 import { IonButton, IonIcon, IonToolbar } from "@ionic/react";
 import { archiveOutline, trashOutline } from "ionicons/icons";
-import { PageFooterProps } from "./PageFooter.types";
 import "./PageFooter.scss";
+import { PageFooterProps } from "./PageFooter.types";
 
 const PageFooter = ({
   pageId,
@@ -30,6 +30,16 @@ const PageFooter = ({
   declineButtonText,
   children,
 }: PageFooterProps) => {
+  const getHrefLink = (action: (() => void) | string) => {
+    if (typeof action === "string") return action;
+    return undefined;
+  };
+
+  const getAction = (action: (() => void) | string) => {
+    if (typeof action === "function") return action;
+    return undefined;
+  };
+
   return (
     <IonToolbar
       className={`page-footer${customClass ? " " + customClass : ""}`}
@@ -43,8 +53,9 @@ const PageFooter = ({
             expand="block"
             className="primary-button"
             data-testid={`primary-button${pageId ? `-${pageId}` : ""}`}
-            onClick={primaryButtonAction}
+            onClick={getAction(primaryButtonAction)}
             disabled={primaryButtonDisabled}
+            href={getHrefLink(primaryButtonAction)}
           >
             {primaryButtonIcon && (
               <IonIcon
@@ -63,8 +74,9 @@ const PageFooter = ({
             fill="outline"
             className="secondary-button"
             data-testid={`secondary-button${pageId ? `-${pageId}` : ""}`}
-            onClick={secondaryButtonAction}
+            onClick={getAction(secondaryButtonText)}
             disabled={secondaryButtonDisabled}
+            href={getHrefLink(secondaryButtonText)}
           >
             {secondaryButtonIcon && (
               <IonIcon
@@ -84,8 +96,9 @@ const PageFooter = ({
             fill="clear"
             className="tertiary-button"
             data-testid={`tertiary-button${pageId ? `-${pageId}` : ""}`}
-            onClick={tertiaryButtonAction}
+            onClick={getAction(tertiaryButtonText)}
             disabled={tertiaryButtonDisabled}
+            href={getHrefLink(tertiaryButtonText)}
           >
             {tertiaryButtonIcon && (
               <IonIcon
@@ -105,8 +118,9 @@ const PageFooter = ({
             fill="clear"
             className="archive-button"
             data-testid={`archive-button${pageId ? `-${pageId}` : ""}`}
-            onClick={archiveButtonAction}
+            onClick={getAction(archiveButtonText)}
             disabled={archiveButtonDisabled}
+            href={getHrefLink(archiveButtonText)}
           >
             <IonIcon
               slot="icon-only"
@@ -124,8 +138,9 @@ const PageFooter = ({
             fill="clear"
             className="delete-button"
             data-testid={`delete-button${pageId ? `-${pageId}` : ""}`}
-            onClick={deleteButtonAction}
+            onClick={getAction(deleteButtonText)}
             disabled={deleteButtonDisabled}
+            href={getHrefLink(deleteButtonText)}
           >
             <IonIcon
               slot="icon-only"
@@ -143,7 +158,8 @@ const PageFooter = ({
             fill="clear"
             className="decline-button"
             data-testid={`decline-button${pageId ? `-${pageId}` : ""}`}
-            onClick={declineButtonAction}
+            onClick={getAction(declineButtonAction)}
+            href={getHrefLink(declineButtonAction)}
             disabled={declineButtonDisabled}
           >
             {declineButtonIcon && (
