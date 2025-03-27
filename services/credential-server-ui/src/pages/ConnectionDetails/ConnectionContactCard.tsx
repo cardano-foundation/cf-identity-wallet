@@ -9,7 +9,7 @@ import { i18n } from "../../i18n";
 import { ContactService } from "../../services";
 import { useAppDispatch } from "../../store/hooks";
 import { fetchContacts } from "../../store/reducers/connectionsSlice";
-import { formatDate } from "../../utils/dateFormatter";
+import { formatDateTime } from "../../utils/dateFormatter";
 import { ConnectionContactCardProps } from "./ConnectionDetails.types";
 
 const ConnectionContactCard = ({
@@ -73,7 +73,7 @@ const ConnectionContactCard = ({
           <Typography variant="subtitle1">
             {i18n.t("pages.connectionDetails.userInfo.connectionDate")}
           </Typography>
-          <Typography variant="body2">{formatDate(new Date())}</Typography>
+          <Typography variant="body2">{formatDateTime(new Date())}</Typography>
         </Box>
         <Box className="attribute">
           <Typography variant="subtitle1">
