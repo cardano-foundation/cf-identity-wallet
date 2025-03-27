@@ -100,23 +100,11 @@ export class SignifyApi {
     if (operation.response && operation.response.i) {
       const connectionId = operation.response.i;
       const createdAt = new Date((operation.response as State).dt);
-
-      try {
-        await this.client.contacts().get(connectionId);
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          /404/gi.test(error.message.split(" - ")[1])
-        ) {
-          await this.client.contacts().update(connectionId, {
-            alias,
-            createdAt,
-            oobi: url,
-          });
-        } else {
-          throw error;
-        }
-      }
+      await this.client.contacts().update(connectionId, {
+        alias,
+        createdAt,
+        oobi: url,
+      });
     }
     return operation;
   }
