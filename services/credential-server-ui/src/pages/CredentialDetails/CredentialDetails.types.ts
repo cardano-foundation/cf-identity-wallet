@@ -7,7 +7,6 @@ interface CredentialInfoCardProps {
 
 interface CredentialTableProps {
   credentials: Credential[];
-  issueCred: (connectionId: string) => void;
 }
 
 interface CredentialTableRow {

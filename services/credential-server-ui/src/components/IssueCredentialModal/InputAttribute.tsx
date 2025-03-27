@@ -25,7 +25,9 @@ const InputAttribute = ({
             )}
             value={value[attribute.key]}
             onChange={(e) => setValue(attribute.key, e.target.value)}
-            placeholder="e.g. 12345678A90123V45R67"
+            placeholder={i18n.t(
+              "pages.credentialDetails.issueCredential.inputAttribute.placeholder"
+            )}
           />
         );
       })}

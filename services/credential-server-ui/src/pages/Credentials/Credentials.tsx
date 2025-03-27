@@ -52,7 +52,7 @@ export const Credentials = () => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "name");
+  } = useTable(tableRows, "date");
 
   const viewCredTemplate = (id: string) => {
     nav(`${RoutePath.Credentials}/${id}`);

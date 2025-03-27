@@ -28,11 +28,6 @@ export const CredentialDetails = () => {
     [credentials, id]
   );
 
-  const issueCred = (connectionId: string) => {
-    setSelectedConnection(connectionId);
-    setOpen(true);
-  };
-
   return (
     <>
       <Box className="credential-detail-page">
@@ -58,10 +53,7 @@ export const CredentialDetails = () => {
             schemaName={schema}
             creationDate={new Date()}
           />
-          <CredentialTable
-            credentials={displayCredentials}
-            issueCred={issueCred}
-          />
+          <CredentialTable credentials={displayCredentials} />
         </Box>
       </Box>
       <IssueCredentialModal

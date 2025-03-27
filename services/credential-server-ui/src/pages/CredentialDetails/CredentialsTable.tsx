@@ -1,5 +1,4 @@
 import {
-  AddCircleOutline,
   DoDisturbOnOutlined,
   GroupOutlined,
   MoreVert,
@@ -55,7 +54,7 @@ const headers: AppTableHeader<CredentialTableRow>[] = [
   },
 ];
 
-const CredentialsTable = ({ credentials, issueCred }: CredentialTableProps) => {
+const CredentialsTable = ({ credentials }: CredentialTableProps) => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const contacts = useAppSelector((state) => state.connections.contacts);
   const dispatch = useAppDispatch();
@@ -87,7 +86,7 @@ const CredentialsTable = ({ credentials, issueCred }: CredentialTableProps) => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "name");
+  } = useTable(tableRows, "date");
 
   const triggerToast = (message: string, variant: VariantType) => {
     enqueueSnackbar(message, {
@@ -203,14 +202,6 @@ const CredentialsTable = ({ credentials, issueCred }: CredentialTableProps) => {
                       },
                       ...(roleViewIndex === RoleIndex.ISSUER
                         ? [
-                            {
-                              label: i18n.t(
-                                "pages.credentialDetails.table.menu.issue"
-                              ),
-                              icon: <AddCircleOutline />,
-                              action: () => issueCred(row.data.contactId),
-                              className: "icon-left",
-                            },
                             {
                               className: "divider",
                             },

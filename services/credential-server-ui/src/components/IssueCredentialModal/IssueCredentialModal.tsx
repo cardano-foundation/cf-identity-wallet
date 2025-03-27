@@ -19,6 +19,8 @@ import { CredentialService } from "../../services";
 import { enqueueSnackbar, VariantType } from "notistack";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 
+const RESET_TIMEOUT = 1000;
+
 const IssueCredentialModal = ({
   open,
   onClose,
@@ -60,7 +62,9 @@ const IssueCredentialModal = ({
     onClose();
     setConnection(undefined);
     setAttributes({});
-    setCurrentStage(initStage);
+    setTimeout(() => {
+      setCurrentStage(initStage);
+    }, RESET_TIMEOUT);
   };
 
   const description = useMemo(() => {

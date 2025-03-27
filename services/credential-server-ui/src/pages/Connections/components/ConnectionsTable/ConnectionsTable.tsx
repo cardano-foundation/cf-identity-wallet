@@ -84,7 +84,7 @@ const ConnectionsTable: React.FC = () => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(rows, "name");
+  } = useTable(rows, "date");
 
   useEffect(() => {
     setSelected([]);
