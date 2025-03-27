@@ -23,7 +23,6 @@
         "node-cache": "^5.1.2",
         "qrcode-terminal": "^0.12.0",
         "signify-ts": "github:WebOfTrust/signify-ts#a7353800fc225f8055f499c60872fa1e447dc39e",
-        "uuid": "^9.0.1",
         "ws": "^8.13.0"
     },
     "devDependencies": {
