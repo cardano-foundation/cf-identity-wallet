@@ -48,12 +48,16 @@
     .MuiTableHead-root {
       background-color: var(--color-primary-200);
 
-      .MuiTableCell-head:last-of-type {
-        width: 2rem;
+      .MuiTableCell-head {
+        line-height: normal;
+
+        &:last-of-type {
+          width: 2rem;
+        }
       }
     }
 
-    tr {
+    .MuiTableBody-root tr {
       height: 3.25rem;
 
       &.Mui-selected {
@@ -64,6 +68,20 @@
       td {
         font-weight: 500;
         padding: 0.38rem;
+        max-width: 10rem;
+      }
+
+      @media only screen and (max-width: 744px) {
+        td,
+        th {
+          max-width: 6rem;
+        }
+      }
+
+      th:first-of-type {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
 

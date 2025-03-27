@@ -2,6 +2,10 @@
   .MuiTableHead-root {
     background-color: var(--color-primary-200);
 
+    tr th {
+      font-weight: 700;
+    }
+
     .MuiTableCell-head:last-of-type {
       width: 2rem;
     }

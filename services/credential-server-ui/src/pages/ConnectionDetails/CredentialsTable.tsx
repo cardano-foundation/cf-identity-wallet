@@ -29,6 +29,9 @@ import {
 } from "./ConnectionDetails.types";
 import { getRoleView } from "../../store/reducers";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
+import { Data } from "../Connections/components/ConnectionsTable/ConnectionsTable.types";
+import { useNavigate } from "react-router";
+import { RoutePath } from "../../const/route";
 const headers: AppTableHeader<CredentialsTableRow>[] = [
   {
     id: "name",
@@ -50,6 +53,7 @@ const CredentialsTable = ({
   credentials,
   contactId,
 }: CredentialsTableProps) => {
+  const nav = useNavigate();
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState(false);
@@ -82,7 +86,9 @@ const CredentialsTable = ({
     });
   };
 
-  const viewCred = () => {};
+  const viewCredTemplate = (id: string) => {
+    nav(`${RoutePath.Credentials}/${id}`);
+  };
 
   const revokeCred = async () => {
     setOpenModal(false);
@@ -187,7 +193,7 @@ const CredentialsTable = ({
                         label: i18n.t(
                           "pages.connectionDetails.table.menu.view"
                         ),
-                        action: () => viewCred(),
+                        action: () => viewCredTemplate(row.data.schema.$id),
                         icon: <BadgeOutlined />,
                         className: "icon-left",
                       },
