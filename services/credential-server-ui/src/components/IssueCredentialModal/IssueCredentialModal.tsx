@@ -1,69 +1,64 @@
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+import { Box, Button } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 import { Trans } from "react-i18next";
+import { CredentialMap } from "../../const";
 import { i18n } from "../../i18n";
+import { CredentialService } from "../../services";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
+import { triggerToast } from "../../utils/toast";
 import { PopupModal } from "../PopupModal";
+import { calcInitStage, getBackStage, getNextStage } from "./helper";
+import { InputAttribute } from "./InputAttribute";
+import "./IssueCredentialModal.scss";
 import {
   IssueCredentialModalProps,
   IssueCredentialStage,
+  IssueCredListData,
 } from "./IssueCredentialModal.types";
-import { useEffect, useMemo, useState } from "react";
-import { Box, Button } from "@mui/material";
-import { getBackStage, getNextStage } from "./helper";
-import "./IssueCredentialModal.scss";
-import { SelectConnectionStage } from "./SelectConnectionStage";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
-import { InputAttribute } from "./InputAttribute";
+import { IssueCredListTemplate } from "./IssueCredListTemplate";
 import { Review } from "./Review";
-import { SchemaAID } from "../../const";
-import { CredentialService } from "../../services";
-import { enqueueSnackbar, VariantType } from "notistack";
-import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 
 const RESET_TIMEOUT = 1000;
 
 const IssueCredentialModal = ({
   open,
   onClose,
-  credentialType,
+  credentialTypeId,
   connectionId,
 }: IssueCredentialModalProps) => {
-  const initStage =
-    credentialType && connectionId
-      ? IssueCredentialStage.InputAttribute
-      : credentialType
-        ? IssueCredentialStage.SelectConnection
-        : IssueCredentialStage.SelectCredentialType;
   const connections = useAppSelector((state) => state.connections.contacts);
   const dispatch = useAppDispatch();
-
-  const [currentStage, setCurrentStage] = useState(initStage);
-  const [connection, setConnection] = useState(connectionId);
+  const [currentStage, setCurrentStage] = useState(
+    calcInitStage(credentialTypeId, connectionId)
+  );
+  const [selectedConnection, setSelectedConnection] = useState(connectionId);
+  const [selectedCredTemplate, setSelectedCredTemplate] =
+    useState(credentialTypeId);
   const [attributes, setAttributes] = useState<Record<string, string>>({});
-  const triggerToast = (message: string, variant: VariantType) => {
-    enqueueSnackbar(message, {
-      variant,
-      anchorOrigin: { vertical: "top", horizontal: "center" },
-    });
-  };
+
   const [loading, setLoading] = useState(false);
 
+  const credTemplateType = selectedCredTemplate
+    ? CredentialMap[selectedCredTemplate]
+    : undefined;
+
   useEffect(() => {
-    const stage =
-      credentialType && connectionId
-        ? IssueCredentialStage.InputAttribute
-        : credentialType
-          ? IssueCredentialStage.SelectConnection
-          : IssueCredentialStage.SelectCredentialType;
+    if (!open) return;
+    const stage = calcInitStage(credentialTypeId, connectionId);
     setCurrentStage(stage);
-    if (connectionId) return setConnection(connectionId);
-  }, [connectionId, credentialType]);
+    if (connectionId) setSelectedConnection(connectionId);
+    if (credentialTypeId) setSelectedCredTemplate(credentialTypeId);
+  }, [connectionId, credentialTypeId, open]);
 
   const resetModal = () => {
     onClose();
-    setConnection(undefined);
+    setSelectedConnection(undefined);
+    setSelectedCredTemplate(undefined);
     setAttributes({});
     setTimeout(() => {
-      setCurrentStage(initStage);
+      setCurrentStage(calcInitStage(credentialTypeId, connectionId));
     }, RESET_TIMEOUT);
   };
 
@@ -73,6 +68,8 @@ const IssueCredentialModal = ({
         return "pages.credentialDetails.issueCredential.inputAttribute.description";
       case IssueCredentialStage.Review:
         return "pages.credentialDetails.issueCredential.review.description";
+      case IssueCredentialStage.SelectCredentialType:
+        return "pages.credentialDetails.issueCredential.selectCredential.description";
       case IssueCredentialStage.SelectConnection:
       default:
         return "pages.credentialDetails.issueCredential.selectConnection.description";
@@ -93,19 +90,28 @@ const IssueCredentialModal = ({
 
   const disablePrimaryButton = useMemo(() => {
     return (
-      (currentStage === IssueCredentialStage.SelectConnection && !connection) ||
+      (currentStage === IssueCredentialStage.SelectCredentialType &&
+        !selectedCredTemplate) ||
+      (currentStage === IssueCredentialStage.SelectConnection &&
+        !selectedConnection) ||
       (currentStage === IssueCredentialStage.InputAttribute &&
         Object.values(attributes).every((item) => !item)) ||
       loading
     );
-  }, [attributes, connection, currentStage, loading]);
+  }, [
+    currentStage,
+    selectedCredTemplate,
+    selectedConnection,
+    attributes,
+    loading,
+  ]);
 
   const issueCred = async () => {
-    if (!credentialType || !connection) {
+    if (!selectedCredTemplate || !selectedConnection) {
       return;
     }
 
-    const schemaSaid = SchemaAID[credentialType];
+    const schemaSaid = selectedCredTemplate;
     let objAttributes = {};
     const attribute: Record<string, string> = {};
 
@@ -121,7 +127,7 @@ const IssueCredentialModal = ({
 
     const data = {
       schemaSaid: schemaSaid,
-      aid: connection,
+      aid: selectedConnection,
       ...objAttributes,
     };
 
@@ -132,7 +138,7 @@ const IssueCredentialModal = ({
         i18n.t("pages.credentialDetails.issueCredential.messages.success"),
         "success"
       );
-      dispatch(fetchContactCredentials(connection));
+      dispatch(fetchContactCredentials(selectedConnection));
       resetModal();
     } catch (e) {
       triggerToast(
@@ -157,7 +163,7 @@ const IssueCredentialModal = ({
             startIcon={<ArrowBackOutlinedIcon />}
             onClick={() => {
               setCurrentStage(
-                getBackStage(currentStage, !credentialType) ||
+                getBackStage(currentStage, !credentialTypeId) ||
                   IssueCredentialStage.SelectConnection
               );
             }}
@@ -194,28 +200,51 @@ const IssueCredentialModal = ({
 
   const renderStage = (currentStage: IssueCredentialStage) => {
     switch (currentStage) {
-      case IssueCredentialStage.SelectConnection:
+      case IssueCredentialStage.SelectConnection: {
+        const data: IssueCredListData[] = connections.map((connection) => ({
+          id: connection.id,
+          text: connection.alias,
+          subText: `${connection.id.substring(0, 4)}...${connection.id.slice(-4)}`,
+        }));
+
         return (
-          <SelectConnectionStage
-            onChange={setConnection}
-            connections={connections}
-            value={connection}
+          <IssueCredListTemplate
+            onChange={setSelectedConnection}
+            data={data}
+            value={selectedConnection}
           />
         );
+      }
+      case IssueCredentialStage.SelectCredentialType: {
+        const data: IssueCredListData[] = Object.entries(CredentialMap).map(
+          ([key, value]) => ({
+            id: key,
+            text: value,
+          })
+        );
+
+        return (
+          <IssueCredListTemplate
+            onChange={setSelectedCredTemplate}
+            data={data}
+            value={selectedCredTemplate}
+          />
+        );
+      }
       case IssueCredentialStage.InputAttribute:
         return (
           <InputAttribute
             value={attributes}
             setValue={updateAttributes}
-            credentialType={credentialType}
+            credentialType={credTemplateType}
           />
         );
       case IssueCredentialStage.Review:
         return (
           <Review
-            credentialType={credentialType}
+            credentialType={credTemplateType}
             attribute={attributes}
-            connectionId={connection}
+            connectionId={selectedConnection}
             connections={connections}
           />
         );

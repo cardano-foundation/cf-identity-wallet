@@ -28,6 +28,7 @@ import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { generateRows, handleDeleteContact } from "./helpers";
 import { createMenuItems } from "./menuItems";
 import { RoutePath } from "../../../../const/route";
+import { IssueCredentialModal } from "../../../../components/IssueCredentialModal";
 
 const headers: AppTableHeader<Data>[] = [
   {
@@ -61,9 +62,9 @@ const ConnectionsTable: React.FC = () => {
   );
   const [connectionsFilterBySearch] = useState<string>("");
   const [openModal, setOpenModal] = useState(false);
-  const [selectedConnectionId, setSelectedConnectionId] = useState<
-    string | null
-  >(null);
+  const [selectedConnectionId, setSelectedConnectionId] = useState<string>();
+  const [openIssueModal, setOpenIssueModal] = useState(false);
+
   const nav = useNavigate();
 
   const rows = useMemo(() => {
@@ -99,7 +100,7 @@ const ConnectionsTable: React.FC = () => {
   const handleDelete = async () => {
     if (selectedConnectionId) {
       await handleDeleteContact(selectedConnectionId, dispatch, triggerToast);
-      setSelectedConnectionId(null);
+      setSelectedConnectionId(undefined);
       setOpenModal(false);
     }
   };
@@ -120,126 +121,139 @@ const ConnectionsTable: React.FC = () => {
     nav(RoutePath.ConnectionDetails.replace(":id", id));
   };
 
-  const issueCredential = () => {};
+  const issueCredential = (connectionId: string) => {
+    setOpenIssueModal(true);
+    setSelectedConnectionId(connectionId);
+  };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper className="connections-table">
-        <EnhancedTableToolbar
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <AppTable
-          order={order}
-          rows={visibleRows}
-          onRequestSort={handleRequestSort}
-          onSelectAll={handleSelectAllClick}
-          selectedRows={selected}
-          orderBy={orderBy}
-          headers={headers}
-          pagination={{
-            component: "div",
-            count: rows.length,
-            rowsPerPage: rowsPerPage,
-            page: page,
-            onPageChange: handleChangePage,
-            onRowsPerPageChange: handleChangeRowsPerPage,
-          }}
-          onRenderRow={(row, index) => {
-            const isItemSelected = selected.includes(row.id);
-            const labelId = `enhanced-table-checkbox-${index}`;
+    <>
+      <Box sx={{ width: "100%" }}>
+        <Paper className="connections-table">
+          <EnhancedTableToolbar
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <AppTable
+            order={order}
+            rows={visibleRows}
+            onRequestSort={handleRequestSort}
+            onSelectAll={handleSelectAllClick}
+            selectedRows={selected}
+            orderBy={orderBy}
+            headers={headers}
+            pagination={{
+              component: "div",
+              count: rows.length,
+              rowsPerPage: rowsPerPage,
+              page: page,
+              onPageChange: handleChangePage,
+              onRowsPerPageChange: handleChangeRowsPerPage,
+            }}
+            onRenderRow={(row, index) => {
+              const isItemSelected = selected.includes(row.id);
+              const labelId = `enhanced-table-checkbox-${index}`;
 
-            return (
-              <TableRow
-                hover
-                onClick={(event) => handleClick(event, row.id)}
-                role="checkbox"
-                aria-checked={isItemSelected}
-                tabIndex={-1}
-                key={row.id}
-                selected={isItemSelected}
-                sx={{ cursor: "pointer" }}
+              return (
+                <TableRow
+                  hover
+                  onClick={(event) => handleClick(event, row.id)}
+                  role="checkbox"
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
+                  key={row.id}
+                  selected={isItemSelected}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      color="primary"
+                      checked={isItemSelected}
+                      slotProps={{ input: { "aria-labelledby": labelId } }}
+                    />
+                  </TableCell>
+
+                  <TableCell
+                    component="th"
+                    id={labelId}
+                    scope="row"
+                    padding="none"
+                  >
+                    {row.name}
+                  </TableCell>
+                  <TableCell
+                    component="th"
+                    id={labelId}
+                    scope="row"
+                    padding="none"
+                  >
+                    {row.id.substring(0, 4)}...{row.id.slice(-4)}
+                  </TableCell>
+                  <TableCell align="left">
+                    {formatDate(new Date(row.date))}
+                  </TableCell>
+                  <TableCell align="left">{row.credentials}</TableCell>
+                  <TableCell align="left">
+                    <DropdownMenu
+                      button={
+                        <Tooltip
+                          title={i18n.t("pages.connections.actions")}
+                          placement="top"
+                        >
+                          <IconButton aria-label="actions">
+                            <MoreVert />
+                          </IconButton>
+                        </Tooltip>
+                      }
+                      menuItems={createMenuItems(
+                        row.id,
+                        handleOpenModal,
+                        handOpenConnectionDetails,
+                        issueCredential
+                      )}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            }}
+          />
+        </Paper>
+        <PopupModal
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          title={i18n.t("pages.connections.deleteConnections.title")}
+          description={i18n.t("pages.connections.deleteConnections.body")}
+          footer={
+            <>
+              <Button
+                variant="contained"
+                aria-label="cancel delete connection"
+                className="neutral-button"
+                onClick={() => setOpenModal(false)}
               >
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    checked={isItemSelected}
-                    slotProps={{ input: { "aria-labelledby": labelId } }}
-                  />
-                </TableCell>
-
-                <TableCell
-                  component="th"
-                  id={labelId}
-                  scope="row"
-                  padding="none"
-                >
-                  {row.name}
-                </TableCell>
-                <TableCell
-                  component="th"
-                  id={labelId}
-                  scope="row"
-                  padding="none"
-                >
-                  {row.id.substring(0, 4)}...{row.id.slice(-4)}
-                </TableCell>
-                <TableCell align="left">
-                  {formatDate(new Date(row.date))}
-                </TableCell>
-                <TableCell align="left">{row.credentials}</TableCell>
-                <TableCell align="left">
-                  <DropdownMenu
-                    button={
-                      <Tooltip
-                        title={i18n.t("pages.connections.actions")}
-                        placement="top"
-                      >
-                        <IconButton aria-label="actions">
-                          <MoreVert />
-                        </IconButton>
-                      </Tooltip>
-                    }
-                    menuItems={createMenuItems(
-                      row.id,
-                      handleOpenModal,
-                      handOpenConnectionDetails,
-                      issueCredential
-                    )}
-                  />
-                </TableCell>
-              </TableRow>
-            );
-          }}
+                {i18n.t("pages.connections.deleteConnections.cancel")}
+              </Button>
+              <Button
+                variant="contained"
+                aria-label="confirm delete connection"
+                className="primary-button"
+                onClick={handleDelete}
+              >
+                {i18n.t("pages.connections.deleteConnections.delete")}
+              </Button>
+            </>
+          }
         />
-      </Paper>
-      <PopupModal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        title={i18n.t("pages.connections.deleteConnections.title")}
-        description={i18n.t("pages.connections.deleteConnections.body")}
-        footer={
-          <>
-            <Button
-              variant="contained"
-              aria-label="cancel delete connection"
-              className="neutral-button"
-              onClick={() => setOpenModal(false)}
-            >
-              {i18n.t("pages.connections.deleteConnections.cancel")}
-            </Button>
-            <Button
-              variant="contained"
-              aria-label="confirm delete connection"
-              className="primary-button"
-              onClick={handleDelete}
-            >
-              {i18n.t("pages.connections.deleteConnections.delete")}
-            </Button>
-          </>
-        }
+      </Box>
+      <IssueCredentialModal
+        open={openIssueModal}
+        onClose={() => {
+          setOpenIssueModal(false);
+          setSelectedConnectionId(undefined);
+        }}
+        connectionId={selectedConnectionId}
       />
-    </Box>
+    </>
   );
 };
 

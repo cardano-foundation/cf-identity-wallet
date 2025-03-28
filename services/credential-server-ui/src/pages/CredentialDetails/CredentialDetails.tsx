@@ -15,7 +15,6 @@ import { IssueCredentialModal } from "../../components/IssueCredentialModal";
 
 export const CredentialDetails = () => {
   const [open, setOpen] = useState(false);
-  const [selectedConnection, setSelectedConnection] = useState<string>();
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const credentials = useAppSelector((state) => state.connections.credentials);
   const nav = useNavigate();
@@ -58,12 +57,8 @@ export const CredentialDetails = () => {
       </Box>
       <IssueCredentialModal
         open={open}
-        onClose={() => {
-          setOpen(false);
-          setSelectedConnection(undefined);
-        }}
-        credentialType={schema}
-        connectionId={selectedConnection}
+        onClose={() => setOpen(false)}
+        credentialTypeId={id}
       />
     </>
   );
