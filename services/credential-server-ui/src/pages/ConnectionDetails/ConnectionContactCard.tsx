@@ -1,6 +1,5 @@
 import { DeleteOutline } from "@mui/icons-material";
 import { Avatar, Box, Button, Typography } from "@mui/material";
-import { enqueueSnackbar, VariantType } from "notistack";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { PopupModal } from "../../components/PopupModal";
@@ -10,6 +9,7 @@ import { ContactService } from "../../services";
 import { useAppDispatch } from "../../store/hooks";
 import { fetchContacts } from "../../store/reducers/connectionsSlice";
 import { formatDateTime } from "../../utils/dateFormatter";
+import { triggerToast } from "../../utils/toast";
 import { ConnectionContactCardProps } from "./ConnectionDetails.types";
 
 const ConnectionContactCard = ({
@@ -19,13 +19,6 @@ const ConnectionContactCard = ({
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState(false);
   const nav = useNavigate();
-
-  const triggerToast = (message: string, variant: VariantType) => {
-    enqueueSnackbar(message, {
-      variant,
-      anchorOrigin: { vertical: "top", horizontal: "center" },
-    });
-  };
 
   const handleDeleteContact = async () => {
     if (!contact) return;

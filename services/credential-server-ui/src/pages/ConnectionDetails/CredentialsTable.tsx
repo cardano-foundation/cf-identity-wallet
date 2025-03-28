@@ -12,26 +12,25 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { enqueueSnackbar, VariantType } from "notistack";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../components/DropdownMenu";
+import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PopupModal } from "../../components/PopupModal";
+import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
 import { CredentialService } from "../../services";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getRoleView } from "../../store/reducers";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
 import { formatDate } from "../../utils/dateFormatter";
+import { triggerToast } from "../../utils/toast";
 import {
   CredentialsTableProps,
   CredentialsTableRow,
 } from "./ConnectionDetails.types";
-import { getRoleView } from "../../store/reducers";
-import { RoleIndex } from "../../components/NavBar/constants/roles";
-import { Data } from "../Connections/components/ConnectionsTable/ConnectionsTable.types";
-import { useNavigate } from "react-router";
-import { RoutePath } from "../../const/route";
 const headers: AppTableHeader<CredentialsTableRow>[] = [
   {
     id: "name",
@@ -78,13 +77,6 @@ const CredentialsTable = ({
     handleChangeRowsPerPage,
     visibleRows,
   } = useTable(tableRows, "date");
-
-  const triggerToast = (message: string, variant: VariantType) => {
-    enqueueSnackbar(message, {
-      variant,
-      anchorOrigin: { vertical: "top", horizontal: "center" },
-    });
-  };
 
   const viewCredTemplate = (id: string) => {
     nav(`${RoutePath.Credentials}/${id}`);

@@ -1,4 +1,4 @@
-import { IssueCredentialStage } from "./IssueCredentialModal.types";
+import { IssueCredentialStage } from "./RequestPresentationModal.types";
 
 const getNextStage = (currentStage: IssueCredentialStage) => {
   if (
@@ -25,12 +25,4 @@ const getBackStage = (
       : IssueCredentialStage.SelectConnection;
 };
 
-function calcInitStage(credentialTypeId?: string, connectionId?: string) {
-  return credentialTypeId && connectionId
-    ? IssueCredentialStage.InputAttribute
-    : credentialTypeId
-      ? IssueCredentialStage.SelectConnection
-      : IssueCredentialStage.SelectCredentialType;
-}
-
-export { getBackStage, getNextStage, calcInitStage };
+export { getBackStage, getNextStage };

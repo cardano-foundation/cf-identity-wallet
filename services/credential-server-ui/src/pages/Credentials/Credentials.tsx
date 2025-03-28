@@ -22,6 +22,8 @@ import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { formatDate } from "../../utils/dateFormatter";
 import { CredentialTemplateRow } from "./Credential.types";
+import { useState } from "react";
+import { IssueCredentialModal } from "../../components/IssueCredentialModal";
 
 const headers: AppTableHeader<CredentialTemplateRow>[] = [
   {
@@ -43,6 +45,9 @@ export const Credentials = () => {
   }));
   const nav = useNavigate();
 
+  const [open, setOpen] = useState(false);
+  const [selectedCredType, setSelectedCredType] = useState<string>();
+
   const {
     order,
     orderBy,
@@ -59,107 +64,121 @@ export const Credentials = () => {
   };
 
   return (
-    <Box
-      className="credentials-page"
-      sx={{ padding: "0 2.5rem 2.5rem" }}
-    >
-      <PageHeader
-        title={`${i18n.t("pages.credentials.title", {
-          number: CredentialTypes.length,
-        })}`}
-        sx={{
-          margin: "1.5rem 0",
-        }}
-      />
-      <Paper
-        sx={{
-          borderRadius: "1rem",
-          overflow: "hidden",
-          boxShadow:
-            "0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16)",
-          flex: 1,
-        }}
-        className="credential-table"
+    <>
+      <Box
+        className="credentials-page"
+        sx={{ padding: "0 2.5rem 2.5rem" }}
       >
-        <AppTable
-          order={order}
-          rows={visibleRows}
-          onRenderRow={(row) => {
-            return (
-              <TableRow
-                hover
-                role="checkbox"
-                tabIndex={-1}
-                key={row.id}
-                className="table-row"
-              >
-                <TableCell
-                  component="th"
-                  scope="row"
-                >
-                  {row.name}
-                </TableCell>
-                <TableCell
-                  component="th"
-                  scope="row"
-                >
-                  {formatDate(new Date(row.date))}
-                </TableCell>
-                <TableCell
-                  width={50}
-                  align="left"
-                >
-                  <DropdownMenu
-                    button={
-                      <Tooltip
-                        title={i18n.t("pages.credentials.actions")}
-                        placement="top"
-                      >
-                        <IconButton aria-label="actions">
-                          <MoreVert />
-                        </IconButton>
-                      </Tooltip>
-                    }
-                    menuItems={[
-                      {
-                        label: i18n.t("pages.credentials.table.menu.view"),
-                        action: () => viewCredTemplate(row.id),
-                        icon: <VisibilityOutlinedIcon />,
-                        className: "icon-left",
-                      },
-                      ...(roleViewIndex === RoleIndex.ISSUER
-                        ? [
-                            {
-                              className: "divider",
-                            },
-                            {
-                              label: i18n.t(
-                                "pages.credentials.table.menu.issue"
-                              ),
-                              icon: <AddCircleOutlineOutlinedIcon />,
-                              className: "icon-left",
-                            },
-                          ]
-                        : []),
-                    ]}
-                  />
-                </TableCell>
-              </TableRow>
-            );
-          }}
-          onRequestSort={handleRequestSort}
-          orderBy={orderBy}
-          headers={headers}
-          pagination={{
-            component: "div",
-            count: CredentialTypes.length,
-            rowsPerPage: rowsPerPage,
-            page: page,
-            onPageChange: handleChangePage,
-            onRowsPerPageChange: handleChangeRowsPerPage,
+        <PageHeader
+          title={`${i18n.t("pages.credentials.title", {
+            number: CredentialTypes.length,
+          })}`}
+          sx={{
+            margin: "1.5rem 0",
           }}
         />
-      </Paper>
-    </Box>
+        <Paper
+          sx={{
+            borderRadius: "1rem",
+            overflow: "hidden",
+            boxShadow:
+              "0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16)",
+            flex: 1,
+          }}
+          className="credential-table"
+        >
+          <AppTable
+            order={order}
+            rows={visibleRows}
+            onRenderRow={(row) => {
+              return (
+                <TableRow
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                  key={row.id}
+                  className="table-row"
+                >
+                  <TableCell
+                    component="th"
+                    scope="row"
+                  >
+                    {row.name}
+                  </TableCell>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                  >
+                    {formatDate(new Date(row.date))}
+                  </TableCell>
+                  <TableCell
+                    width={50}
+                    align="left"
+                  >
+                    <DropdownMenu
+                      button={
+                        <Tooltip
+                          title={i18n.t("pages.credentials.actions")}
+                          placement="top"
+                        >
+                          <IconButton aria-label="actions">
+                            <MoreVert />
+                          </IconButton>
+                        </Tooltip>
+                      }
+                      menuItems={[
+                        {
+                          label: i18n.t("pages.credentials.table.menu.view"),
+                          action: () => viewCredTemplate(row.id),
+                          icon: <VisibilityOutlinedIcon />,
+                          className: "icon-left",
+                        },
+                        ...(roleViewIndex === RoleIndex.ISSUER
+                          ? [
+                              {
+                                className: "divider",
+                              },
+                              {
+                                label: i18n.t(
+                                  "pages.credentials.table.menu.issue"
+                                ),
+                                icon: <AddCircleOutlineOutlinedIcon />,
+                                className: "icon-left",
+                                action: () => {
+                                  setOpen(true);
+                                  setSelectedCredType(row.id);
+                                },
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            }}
+            onRequestSort={handleRequestSort}
+            orderBy={orderBy}
+            headers={headers}
+            pagination={{
+              component: "div",
+              count: CredentialTypes.length,
+              rowsPerPage: rowsPerPage,
+              page: page,
+              onPageChange: handleChangePage,
+              onRowsPerPageChange: handleChangeRowsPerPage,
+            }}
+          />
+        </Paper>
+      </Box>
+      <IssueCredentialModal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setSelectedCredType(undefined);
+        }}
+        credentialTypeId={selectedCredType}
+      />
+    </>
   );
 };

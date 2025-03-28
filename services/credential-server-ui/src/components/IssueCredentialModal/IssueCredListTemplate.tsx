@@ -6,42 +6,42 @@ import {
   ListItemText,
   Radio,
 } from "@mui/material";
-import { SelectConnectionStageProps } from "./IssueCredentialModal.types";
+import { IssueCredListTemplateProps } from "./IssueCredentialModal.types";
 
-const SelectConnectionStage = ({
+const IssueCredListTemplate = ({
   value,
   onChange,
-  connections,
-}: SelectConnectionStageProps) => {
+  data,
+}: IssueCredListTemplateProps) => {
   return (
     <List className="connection-list">
-      {connections.map((connection, index) => {
-        const labelId = `checkbox-list-label-${connection.id}`;
+      {data.map((item, index) => {
+        const labelId = `checkbox-list-label-${item.id}`;
 
         return (
           <ListItem
-            key={connection.id}
+            key={item.id}
             disablePadding
-            secondaryAction={`${connection.id.substring(0, 4)}...${connection.id.slice(-4)}`}
-            divider={index !== connections.length - 1}
-            className={value === connection.id ? "active" : undefined}
+            secondaryAction={item.subText}
+            divider={index !== data.length - 1}
+            className={value === item.id ? "active" : undefined}
           >
             <ListItemButton
               role={undefined}
-              onClick={() => onChange(connection.id)}
+              onClick={() => onChange(item.id)}
               dense
             >
               <ListItemIcon>
                 <Radio
                   edge="start"
-                  checked={value === connection.id}
+                  checked={value === item.id}
                   tabIndex={-1}
                   disableRipple
                 />
               </ListItemIcon>
               <ListItemText
                 id={labelId}
-                primary={connection.alias}
+                primary={item.text}
               />
             </ListItemButton>
           </ListItem>
@@ -51,4 +51,4 @@ const SelectConnectionStage = ({
   );
 };
 
-export { SelectConnectionStage };
+export { IssueCredListTemplate };

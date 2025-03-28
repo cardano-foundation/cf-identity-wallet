@@ -14,16 +14,22 @@ interface InputAttributeProps {
   setValue: (key: string, value: string) => void;
 }
 
-interface SelectConnectionStageProps {
+interface IssueCredListData {
+  id: string;
+  text: string;
+  subText?: string;
+}
+
+interface IssueCredListTemplateProps {
   value?: string;
   onChange: (value: string) => void;
-  connections: Contact[];
+  data: IssueCredListData[];
 }
 
 interface IssueCredentialModalProps {
   open: boolean;
   onClose: () => void;
-  credentialType?: CredentialType;
+  credentialTypeId?: string;
   connectionId?: string;
 }
 
@@ -36,8 +42,9 @@ enum IssueCredentialStage {
 
 export type {
   IssueCredentialModalProps,
-  SelectConnectionStageProps,
+  IssueCredListTemplateProps,
   InputAttributeProps,
   ReviewProps,
+  IssueCredListData,
 };
 export { IssueCredentialStage };

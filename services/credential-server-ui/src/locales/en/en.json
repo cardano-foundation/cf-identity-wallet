@@ -165,6 +165,9 @@
             "continue": "Continue"
           }
         },
+        "selectCredential": {
+          "description": "<strong>Select a credential to request a credential presentation</strong>. Search from your established connections, and please note that only one credential can be requested per connection."
+        },
         "inputAttribute": {
           "description": "<strong>Set the required value(s) to issue this credential</strong>. Below are all the values needed for issuance.",
           "placeholder": "e.g. 12345678A90123V45R67",

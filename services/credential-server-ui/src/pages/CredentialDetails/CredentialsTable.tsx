@@ -12,7 +12,6 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { enqueueSnackbar, VariantType } from "notistack";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { AppTable, useTable } from "../../components/AppTable";
@@ -31,6 +30,7 @@ import {
   CredentialTableProps,
   CredentialTableRow,
 } from "./CredentialDetails.types";
+import { triggerToast } from "../../utils/toast";
 
 const headers: AppTableHeader<CredentialTableRow>[] = [
   {
@@ -87,13 +87,6 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     handleChangeRowsPerPage,
     visibleRows,
   } = useTable(tableRows, "date");
-
-  const triggerToast = (message: string, variant: VariantType) => {
-    enqueueSnackbar(message, {
-      variant,
-      anchorOrigin: { vertical: "top", horizontal: "center" },
-    });
-  };
 
   const revokeCred = async () => {
     setOpenModal(false);
