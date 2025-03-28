@@ -1,0 +1,79 @@
+.request-presentation-modal {
+  .popup-modal-container .popup-modal-footer .footer {
+    width: 100%;
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  &.stage-0,
+  &.stage-1 {
+    .popup-modal-container .popup-modal-footer .footer {
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  &.stage-3 {
+    .popup-modal-container .popup-modal-footer .footer {
+      button {
+        padding: 0.75rem 1.115rem;
+      }
+    }
+  }
+
+  .connection-list {
+    max-height: 27.25rem;
+    overflow: auto;
+
+    .MuiListItem-root {
+      &.active {
+        background: var(--color-primary-100);
+      }
+
+      & > .MuiButtonBase-root {
+        padding: 0.25rem 8rem 0.25rem 0.5rem;
+
+        .MuiListItemIcon-root {
+          min-width: auto;
+        }
+
+        .MuiListItemText-root {
+          padding: 0.5rem;
+        }
+
+        .MuiListItemText-primary {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .MuiRadio-root {
+      padding: 0.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+
+      .MuiSvgIcon-root {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+  }
+
+  .review-stage {
+    .content {
+      color: var(--color-neutral-800);
+    }
+  }
+
+  .input-attribute {
+    width: 100%;
+
+    & > div {
+      width: 100%;
+    }
+  }
+}

@@ -1,12 +1,13 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { config } from "../../config";
 import { Contact } from "../../pages/Connections/components/ConnectionsTable/ConnectionsTable.types";
-import { Credential } from "./connectionsSlice.types";
+import { Credential, PresentationRequestData } from "./connectionsSlice.types";
 
 interface ConnectionsState {
   contacts: Contact[];
   credentials: Credential[];
+  presentationRequests: PresentationRequestData[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -14,6 +15,7 @@ interface ConnectionsState {
 const initialState: ConnectionsState = {
   contacts: [],
   credentials: [],
+  presentationRequests: [],
   status: "idle",
   error: null,
 };
@@ -44,7 +46,14 @@ export const fetchContactCredentials = createAsyncThunk(
 const connectionsSlice = createSlice({
   name: "connections",
   initialState,
-  reducers: {},
+  reducers: {
+    savePresentationRequest: (
+      state,
+      action: PayloadAction<PresentationRequestData>
+    ) => {
+      state.presentationRequests.push(action.payload);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.pending, (state) => {
@@ -69,5 +78,7 @@ const connectionsSlice = createSlice({
       });
   },
 });
+
+export const { savePresentationRequest } = connectionsSlice.actions;
 
 export default connectionsSlice.reducer;

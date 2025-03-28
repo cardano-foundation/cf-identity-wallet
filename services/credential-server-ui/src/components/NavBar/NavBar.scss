@@ -6,11 +6,13 @@
   a,
   button,
   li {
+    --left-padding: 1.25rem;
+    --right-padding: 1rem;
     color: var(--text-color);
     text-transform: none;
     text-decoration: none;
     border-radius: 1rem;
-    padding: 0.75rem 1rem 0.75rem 1.25rem;
+    padding: 0.75rem var(--right-padding) 0.75rem var(--left-padding);
 
     &.logo-button {
       padding-inline: 0;
@@ -31,10 +33,10 @@
 
     .active-bar {
       height: 0.125rem;
-      width: 80%;
+      width: calc(100% - (var(--left-padding) + var(--right-padding)));
       position: absolute;
       bottom: 0;
-      left: 1rem;
+      left: var(--left-padding);
       border-radius: 0.125rem 0.125rem 0rem 0rem;
       background-color: var(--color-primary-700);
     }

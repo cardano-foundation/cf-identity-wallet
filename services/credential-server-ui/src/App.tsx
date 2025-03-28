@@ -23,6 +23,7 @@ import {
 import "./styles/colors.scss";
 import { theme } from "./theme/theme"; // Import the theme
 import { CredentialDetails } from "./pages/CredentialDetails";
+import { RequestPresentation } from "./pages/RequestPresentation";
 
 const App = () => {
   const MAX_TOAST_MESSAGES = 10;
@@ -99,6 +100,10 @@ const App = () => {
               <Route
                 path={RoutePath.Settings}
                 element={<Settings />}
+              />
+              <Route
+                path={RoutePath.RequestPresentation}
+                element={<RequestPresentation />}
               />
               <Route
                 path="*"

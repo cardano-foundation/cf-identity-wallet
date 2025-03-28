@@ -8,6 +8,8 @@ import {
   NotificationsOutlined,
   Settings as SettingsFull,
   SettingsOutlined,
+  SwapHorizontalCircle,
+  SwapHorizontalCircleOutlined,
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -29,6 +31,7 @@ import { i18n } from "../../i18n";
 import { SwitchAccount } from "../SwitchAccount";
 import { DrawerContent } from "./components/DrawerContent";
 import "./NavBar.scss";
+import { isActivePath } from "./helper";
 
 interface Props {
   window?: () => Window;
@@ -56,6 +59,12 @@ const menuItems = [
     path: RoutePath.Credentials,
     icons: [<BadgeFull />, <BadgeOutlined />],
   },
+  {
+    key: "requestPresentation",
+    label: i18n.t("navbar.requestPresentation"),
+    path: RoutePath.RequestPresentation,
+    icons: [<SwapHorizontalCircle />, <SwapHorizontalCircleOutlined />],
+  },
 ];
 
 const getIcon = (icons: React.ReactElement[], isActive: boolean) =>
@@ -71,8 +80,6 @@ const NavBar = ({ window }: Props) => {
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
-
-  const isOverviewPage = (path: string) => path === RoutePath.Connections;
 
   return (
     <AppBar
@@ -153,9 +160,7 @@ const NavBar = ({ window }: Props) => {
               />
             </Button>
             {menuItems.map((item) => {
-              const isActive = isOverviewPage(item.path)
-                ? location.pathname === RoutePath.Connections
-                : location.pathname.startsWith(item.path);
+              const isActive = isActivePath(item.path, location.pathname);
 
               return (
                 <MenuItem

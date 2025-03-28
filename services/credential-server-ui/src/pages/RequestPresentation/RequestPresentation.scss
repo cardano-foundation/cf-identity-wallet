@@ -1,0 +1,21 @@
+.request-presentation-page {
+  .request-presentation-table {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16);
+    flex: 1;
+
+    .label {
+      padding: 0.25rem 0.75rem;
+      width: fit-content;
+      font-size: 0.75rem;
+      line-height: 1.25rem;
+      border-radius: 0.5rem;
+
+      &.requested {
+        color: var(--color-warning-800);
+        background: var(--color-warning-100);
+      }
+    }
+  }
+}

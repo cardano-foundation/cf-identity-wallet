@@ -1,3 +1,5 @@
+import { CredentialType } from "../../const";
+
 interface A {
   d: string;
   i: string;
@@ -47,4 +49,17 @@ interface Credential {
   sad: Sad;
 }
 
-export type { Credential };
+enum PresentationRequestStatus {
+  Requested = "requested",
+}
+
+interface PresentationRequestData {
+  id: string;
+  connectionName: string;
+  credentialType: CredentialType;
+  requestDate: number;
+  status: PresentationRequestStatus;
+}
+
+export type { Credential, PresentationRequestData };
+export { PresentationRequestStatus };
