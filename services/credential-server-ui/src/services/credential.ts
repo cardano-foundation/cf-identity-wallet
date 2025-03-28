@@ -15,6 +15,12 @@ const CredentialService = {
       data
     );
   },
+  requestPresentation: (data: CredentialIssueRequest) => {
+    return httpInstance.post(
+      `${config.endpoint}${config.path.requestDisclosure}`,
+      data
+    );
+  },
 };
 
 export { CredentialService };

@@ -4,6 +4,7 @@
     "overview": "Overview",
     "connections": "Connections",
     "credentials": "Credentials",
+    "requestPresentation": "Request Presentation",
     "switchAccount": {
       "title": "Switch account",
       "issuer": "Issuer",
@@ -187,6 +188,55 @@
         "messages": {
           "success": "Credential issued",
           "failed": "Unable to issue credential"
+        }
+      }
+    },
+    "requestPresentation": {
+      "title": "Requested Presentations ({{number}})",
+      "action": "Request Presentation",
+      "table": {
+        "name": "Connection Name",
+        "credential": "Credential Requested",
+        "requestDate": "Date Requested",
+        "status": {
+          "header": "Status",
+          "requested": "Requested"
+        }
+      },
+      "modal": {
+        "title": "Request Presentation",
+        "back": "Back",
+        "selectConnection": {
+          "description": "<strong>Select a connection to request a credential presentation</strong>. Search your established connections, and please note that you can only request a presentation from one connection at a time.",
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "selectCredential": {
+          "description": "<strong>Select a credential to request a credential presentation</strong>. Search from your established connections, and please note that only one credential can be requested per connection."
+        },
+        "inputAttribute": {
+          "description": "<strong>Enter the required attribute values</strong>. Below are all the values needed for the presentation request.",
+          "placeholder": "e.g. 12345678A90123V45R67",
+          "label": {
+            "name": "Name",
+            "lei": "LEI"
+          },
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "review": {
+          "description": "<strong>Review the details before requesting</strong>. Ensure all information is accurate.",
+          "credential": "Credential Presentation Requested",
+          "issueTo": "Being Requested From",
+          "button": {
+            "issue": "Request Presentation"
+          }
+        },
+        "messages": {
+          "success": "Request sent successfully",
+          "failed": "Unable to send request"
         }
       }
     },

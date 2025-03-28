@@ -8,6 +8,8 @@ import {
   NotificationsOutlined,
   Settings as SettingsFull,
   SettingsOutlined,
+  SwapHorizontalCircle,
+  SwapHorizontalCircleOutlined,
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -55,6 +57,12 @@ const menuItems = [
     label: i18n.t("navbar.credentials"),
     path: RoutePath.Credentials,
     icons: [<BadgeFull />, <BadgeOutlined />],
+  },
+  {
+    key: "requestPresentation",
+    label: i18n.t("navbar.requestPresentation"),
+    path: RoutePath.RequestPresentation,
+    icons: [<SwapHorizontalCircle />, <SwapHorizontalCircleOutlined />],
   },
 ];
 

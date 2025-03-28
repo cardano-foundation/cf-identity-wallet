@@ -5,4 +5,5 @@ export const RoutePath = {
   CredentialDetails: "/credentials/:id",
   Notifications: "/notifications",
   Settings: "/settings",
+  RequestPresentation: "/request-presentation",
 };
