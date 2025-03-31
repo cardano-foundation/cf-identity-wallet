@@ -9,7 +9,6 @@ import { join } from "path";
 
 async function startServer() {
   const app = express();
-  app.use("/static", express.static("static"));
   app.use(cors());
   app.use(bodyParser.json());
   app.use(router);
