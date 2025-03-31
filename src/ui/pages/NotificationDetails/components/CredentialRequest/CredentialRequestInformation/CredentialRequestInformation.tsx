@@ -234,14 +234,14 @@ const CredentialRequestInformation = ({
     missingProposedCred,
   ]);
 
-  const deleteButtonText = useMemo(() => {
+  const memberDeclineButtonText = useMemo(() => {
     return isGroupInitiator ||
       (!isGroupInitiator && !groupInitiatorJoined) ||
       isJoinGroup ||
       reachedThreshold ||
       missingProposedCred
       ? undefined
-      : `${i18n.t("tabs.notifications.details.buttons.reject")}`;
+      : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
   }, [
     isGroupInitiator,
     groupInitiatorJoined,
@@ -250,7 +250,7 @@ const CredentialRequestInformation = ({
     missingProposedCred,
   ]);
 
-  const declineButton =
+  const groupInitiatorDeclineButtonText =
     reachedThreshold ||
     groupInitiatorJoined ||
     !isGroupInitiator ||
@@ -329,10 +329,10 @@ const CredentialRequestInformation = ({
             customClass="credential-request-footer"
             primaryButtonText={primaryButtonText}
             primaryButtonAction={handleAcceptClick}
-            declineButtonText={declineButton}
+            declineButtonText={
+              groupInitiatorDeclineButtonText || memberDeclineButtonText
+            }
             declineButtonAction={decline}
-            deleteButtonText={deleteButtonText}
-            deleteButtonAction={decline}
           />
         }
       >
