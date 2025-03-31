@@ -39,7 +39,7 @@
 - :closed_lock_with_key: Secure Enclave (SE) / Trusted Execution Environment (TEE) usage for seeds & secrets
 - :id: KERI autonomic identifiers
   - Securely backed by a combination of KERI native witnesses and Cardano
-  - Single-sig, multi-sig
+  - Single-sig, group multi-sig
 - :ticket: ACDC credentials exchanged using the IPEX protocol
 - :zap: Efficient over-the-wire communications using CESR encoding
 - :desktop_computer: dApp integration using [CIP-45](https://cips.cardano.org/cip/CIP-0045)
@@ -94,7 +94,7 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - npm: Compatible with the Node.js version.
 - Xcode: For iOS emulation (latest version recommended).
 - Android Studio: For Android emulation (latest version recommended).
-- Capacitor: Version 6.0.0 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
+- Capacitor: Version 7.0.0 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 - Mobile Device: iOS or Android for running the app on physical devices.
 - Docker, Docker Compose.
 

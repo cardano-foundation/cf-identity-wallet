@@ -7,7 +7,7 @@
     "active": true,
     "notes": "SSRF attacks are not relevant to our usage of Meerkat."
   },
-  "1102472": {
+  "1103618": {
     "active": true,
     "notes": "SSRF attacks on the Appium server when e2e testing do not impact the wallet."
   }
