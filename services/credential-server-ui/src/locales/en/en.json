@@ -53,6 +53,7 @@
       "actions": "Actions",
       "viewDetails": "View Details",
       "issueCredential": "Issue credential",
+      "requestPresentation": "Request Presentation",
       "connectionName": "Connection Name",
       "connectionDate": "Connection Date",
       "issuedCredentials": "Issued Credentials",

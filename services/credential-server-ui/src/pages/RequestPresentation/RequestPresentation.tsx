@@ -1,18 +1,16 @@
 import { SwapHorizontalCircleOutlined } from "@mui/icons-material";
 import { Box, Button, Paper, TableCell, TableRow } from "@mui/material";
+import { useState } from "react";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { PageHeader } from "../../components/PageHeader";
+import { RequestPresentationModal } from "../../components/RequestPresentationModal";
 import { CredentialTypes } from "../../const";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { PresentationRequestData } from "../../store/reducers/connectionsSlice.types";
 import { formatDate } from "../../utils/dateFormatter";
 import "./RequestPresentation.scss";
-import { RoleIndex } from "../../components/NavBar/constants/roles";
-import { getRoleView } from "../../store/reducers";
-import { useState } from "react";
-import { RequestPresentationModal } from "./RequestPresentationModal";
 
 const headers: AppTableHeader<PresentationRequestData>[] = [
   {
@@ -34,7 +32,6 @@ const headers: AppTableHeader<PresentationRequestData>[] = [
 ];
 
 export const RequestPresentation = () => {
-  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const presentationRequests = useAppSelector(
     (state) => state.connections.presentationRequests
   );
@@ -69,19 +66,17 @@ export const RequestPresentation = () => {
             margin: "1.5rem 0",
           }}
           action={
-            roleViewIndex == 0 && (
-              <Button
-                className="add-connection-button primary-button"
-                aria-haspopup="true"
-                variant="contained"
-                disableElevation
-                disableRipple
-                onClick={handleClick}
-                startIcon={<SwapHorizontalCircleOutlined />}
-              >
-                {i18n.t("pages.requestPresentation.action")}
-              </Button>
-            )
+            <Button
+              className="add-connection-button primary-button"
+              aria-haspopup="true"
+              variant="contained"
+              disableElevation
+              disableRipple
+              onClick={handleClick}
+              startIcon={<SwapHorizontalCircleOutlined />}
+            >
+              {i18n.t("pages.requestPresentation.action")}
+            </Button>
           }
         />
         <Paper className="request-presentation-table">

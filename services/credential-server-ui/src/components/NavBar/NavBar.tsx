@@ -32,6 +32,9 @@ import { SwitchAccount } from "../SwitchAccount";
 import { DrawerContent } from "./components/DrawerContent";
 import "./NavBar.scss";
 import { isActivePath } from "./helper";
+import { useAppSelector } from "../../store/hooks";
+import { getRoleView } from "../../store/reducers";
+import { RoleIndex } from "./constants/roles";
 
 interface Props {
   window?: () => Window;
@@ -73,6 +76,13 @@ const getIcon = (icons: React.ReactElement[], isActive: boolean) =>
 const NavBar = ({ window }: Props) => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
+
+  const displayMenuItems = menuItems.filter((item) =>
+    roleViewIndex !== RoleIndex.ISSUER
+      ? item.key !== "credentials"
+      : item.key !== "requestPresentation"
+  );
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -159,7 +169,7 @@ const NavBar = ({ window }: Props) => {
                 src={Logo}
               />
             </Button>
-            {menuItems.map((item) => {
+            {displayMenuItems.map((item) => {
               const isActive = isActivePath(item.path, location.pathname);
 
               return (

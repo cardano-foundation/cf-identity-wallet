@@ -1,5 +1,5 @@
-import { CredentialType } from "../../../const";
-import { Contact } from "../../Connections/components/ConnectionsTable/ConnectionsTable.types";
+import { CredentialType } from "../../const";
+import { Contact } from "../../pages/Connections/components/ConnectionsTable/ConnectionsTable.types";
 
 interface ReviewProps {
   credentialType?: CredentialType;
@@ -29,6 +29,7 @@ interface SelectListProps {
 interface RequestPresentationModalProps {
   open: boolean;
   onClose: () => void;
+  connectionId?: string;
 }
 
 enum RequestPresentationStage {

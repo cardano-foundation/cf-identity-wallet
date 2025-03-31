@@ -1,8 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import { ReviewProps } from "./RequestPresentationModal.types";
-import CredentialBG from "../../../assets/credential-bg.svg";
-import { CredentialTypeAttributes } from "../../../const";
-import { i18n } from "../../../i18n";
+import CredentialBG from "../../assets/credential-bg.svg";
+import { CredentialTypeAttributes } from "../../const";
+import { i18n } from "../../i18n";
 
 const Review = ({
   credentialType,

@@ -1,21 +1,17 @@
-import { i18n } from "../../i18n";
 import AddIcon from "@mui/icons-material/Add";
-import { useAppSelector } from "../../store/hooks";
-import { getRoleView } from "../../store/reducers/stateCache";
-import { RoleIndex } from "../../components/NavBar/constants/roles";
-import { ConnectionsTable } from "./components/ConnectionsTable";
 import { Box, Button } from "@mui/material";
-import "./Connections.scss";
-import { AppDispatch, RootState } from "../../store";
-import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { AddConnectionModal } from "./components/AddConnectionModal";
-import { fetchContacts } from "../../store/reducers/connectionsSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { PageHeader } from "../../components/PageHeader";
+import { i18n } from "../../i18n";
+import { AppDispatch, RootState } from "../../store";
+import { fetchContacts } from "../../store/reducers/connectionsSlice";
+import { AddConnectionModal } from "./components/AddConnectionModal";
+import { ConnectionsTable } from "./components/ConnectionsTable";
+import "./Connections.scss";
 
 const Connections = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
   const contacts = useSelector(
     (state: RootState) => state.connections.contacts
   );
@@ -42,19 +38,17 @@ const Connections = () => {
           margin: "1.5rem 0",
         }}
         action={
-          roleViewIndex == 0 && (
-            <Button
-              className="add-connection-button primary-button"
-              aria-haspopup="true"
-              variant="contained"
-              disableElevation
-              disableRipple
-              onClick={handleClick}
-              startIcon={<AddIcon />}
-            >
-              {i18n.t("pages.connections.addConnection.title")}
-            </Button>
-          )
+          <Button
+            className="add-connection-button primary-button"
+            aria-haspopup="true"
+            variant="contained"
+            disableElevation
+            disableRipple
+            onClick={handleClick}
+            startIcon={<AddIcon />}
+          >
+            {i18n.t("pages.connections.addConnection.title")}
+          </Button>
         }
       />
       <AddConnectionModal

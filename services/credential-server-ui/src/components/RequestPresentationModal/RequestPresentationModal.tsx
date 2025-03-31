@@ -1,11 +1,8 @@
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import { Box, Button } from "@mui/material";
 import { enqueueSnackbar, VariantType } from "notistack";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Trans } from "react-i18next";
-import { PopupModal } from "../../../components/PopupModal";
-import { CredentialMap } from "../../../const";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { InputAttribute } from "./InputAttribute";
 import "./RequestPresentationModal.scss";
 import {
@@ -15,17 +12,21 @@ import {
 } from "./RequestPresentationModal.types";
 import { Review } from "./Review";
 import { SelectList } from "./SelectList";
-import { i18n } from "../../../i18n";
-import { CredentialService } from "../../../services";
-import { CredentialIssueRequest } from "../../../services/credential.types";
-import { savePresentationRequest } from "../../../store/reducers/connectionsSlice";
-import { PresentationRequestStatus } from "../../../store/reducers/connectionsSlice.types";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { CredentialMap } from "../../const";
+import { CredentialIssueRequest } from "../../services/credential.types";
+import { CredentialService } from "../../services";
+import { i18n } from "../../i18n";
+import { savePresentationRequest } from "../../store/reducers/connectionsSlice";
+import { PresentationRequestStatus } from "../../store/reducers/connectionsSlice.types";
+import { PopupModal } from "../PopupModal";
 
 const RESET_TIMEOUT = 1000;
 
 const RequestPresentationModal = ({
   open,
   onClose,
+  connectionId,
 }: RequestPresentationModalProps) => {
   const connections = useAppSelector((state) => state.connections.contacts);
   const dispatch = useAppDispatch();
@@ -33,7 +34,9 @@ const RequestPresentationModal = ({
   const [currentStage, setCurrentStage] = useState(
     RequestPresentationStage.SelectConnection
   );
-  const [selectedConnection, setSelectedConnection] = useState<string>();
+  const [selectedConnection, setSelectedConnection] = useState<
+    string | undefined
+  >(connectionId);
   const [selectedCredTemplate, setSelectedCredTemplate] = useState<string>();
   const [attributes, setAttributes] = useState<Record<string, string>>({});
   const credTemplateType = selectedCredTemplate
@@ -46,6 +49,13 @@ const RequestPresentationModal = ({
     });
   };
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!connectionId) return;
+
+    setCurrentStage(RequestPresentationStage.SelectCredentialType);
+    setSelectedConnection(connectionId);
+  }, [connectionId]);
 
   const resetModal = () => {
     onClose();
@@ -85,13 +95,21 @@ const RequestPresentationModal = ({
 
   const disablePrimaryButton = useMemo(() => {
     return (
+      (currentStage === RequestPresentationStage.SelectCredentialType &&
+        !selectedCredTemplate) ||
       (currentStage === RequestPresentationStage.SelectConnection &&
         !selectedConnection) ||
       (currentStage === RequestPresentationStage.InputAttribute &&
         Object.values(attributes).every((item) => !item)) ||
       loading
     );
-  }, [attributes, selectedConnection, currentStage, loading]);
+  }, [
+    currentStage,
+    selectedCredTemplate,
+    selectedConnection,
+    attributes,
+    loading,
+  ]);
 
   const requestPresentationCred = async () => {
     if (!selectedCredTemplate || !selectedConnection || !credTemplateType)
@@ -150,6 +168,7 @@ const RequestPresentationModal = ({
     return (
       <Box className="footer">
         {[
+          !connectionId ? RequestPresentationStage.SelectCredentialType : null,
           RequestPresentationStage.InputAttribute,
           RequestPresentationStage.Review,
         ].includes(currentStage) && (

@@ -22,7 +22,7 @@ import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { formatDate } from "../../utils/dateFormatter";
 import { CredentialTemplateRow } from "./Credential.types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IssueCredentialModal } from "../../components/IssueCredentialModal";
 
 const headers: AppTableHeader<CredentialTemplateRow>[] = [
@@ -47,6 +47,10 @@ export const Credentials = () => {
 
   const [open, setOpen] = useState(false);
   const [selectedCredType, setSelectedCredType] = useState<string>();
+
+  useEffect(() => {
+    if (roleViewIndex !== RoleIndex.ISSUER) nav(RoutePath.Connections);
+  }, [nav, roleViewIndex]);
 
   const {
     order,
