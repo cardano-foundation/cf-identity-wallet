@@ -29,26 +29,7 @@ import { generateRows, handleDeleteContact } from "./helpers";
 import { createMenuItems } from "./menuItems";
 import { RoutePath } from "../../../../const/route";
 import { IssueCredentialModal } from "../../../../components/IssueCredentialModal";
-
-const headers: AppTableHeader<Data>[] = [
-  {
-    id: "name",
-    disablePadding: true,
-    label: i18n.t("pages.connections.connectionName"),
-  },
-  {
-    id: "id",
-    label: i18n.t("pages.connections.identifier"),
-  },
-  {
-    id: "date",
-    label: i18n.t("pages.connections.connectionDate"),
-  },
-  {
-    id: "credentials",
-    label: i18n.t("pages.connections.issuedCredentials"),
-  },
-];
+import { RequestPresentationModal } from "../../../../components/RequestPresentationModal";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -64,6 +45,7 @@ const ConnectionsTable: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedConnectionId, setSelectedConnectionId] = useState<string>();
   const [openIssueModal, setOpenIssueModal] = useState(false);
+  const [openRequestCredModal, setOpenRequestCredModal] = useState(false);
 
   const nav = useNavigate();
 
@@ -124,6 +106,40 @@ const ConnectionsTable: React.FC = () => {
   const issueCredential = (connectionId: string) => {
     setOpenIssueModal(true);
     setSelectedConnectionId(connectionId);
+  };
+
+  const isIssuer = roleViewIndex === RoleIndex.ISSUER;
+
+  const headers: AppTableHeader<Data>[] = useMemo(() => {
+    const headers: AppTableHeader<Data>[] = [
+      {
+        id: "name",
+        disablePadding: true,
+        label: i18n.t("pages.connections.connectionName"),
+      },
+      {
+        id: "id",
+        label: i18n.t("pages.connections.identifier"),
+      },
+      {
+        id: "date",
+        label: i18n.t("pages.connections.connectionDate"),
+      },
+    ];
+
+    if (isIssuer) {
+      headers.push({
+        id: "credentials",
+        label: i18n.t("pages.connections.issuedCredentials"),
+      });
+    }
+
+    return headers;
+  }, [isIssuer]);
+
+  const requestCred = (connectionId: string) => {
+    setSelectedConnectionId(connectionId);
+    setOpenRequestCredModal(true);
   };
 
   return (
@@ -192,7 +208,9 @@ const ConnectionsTable: React.FC = () => {
                   <TableCell align="left">
                     {formatDate(new Date(row.date))}
                   </TableCell>
-                  <TableCell align="left">{row.credentials}</TableCell>
+                  {isIssuer && (
+                    <TableCell align="left">{row.credentials}</TableCell>
+                  )}
                   <TableCell align="left">
                     <DropdownMenu
                       button={
@@ -207,9 +225,11 @@ const ConnectionsTable: React.FC = () => {
                       }
                       menuItems={createMenuItems(
                         row.id,
+                        roleViewIndex,
                         handleOpenModal,
                         handOpenConnectionDetails,
-                        issueCredential
+                        issueCredential,
+                        requestCred
                       )}
                     />
                   </TableCell>
@@ -245,6 +265,14 @@ const ConnectionsTable: React.FC = () => {
           }
         />
       </Box>
+      <RequestPresentationModal
+        open={openRequestCredModal}
+        onClose={() => {
+          setOpenRequestCredModal(false);
+          setSelectedConnectionId(undefined);
+        }}
+        connectionId={selectedConnectionId}
+      />
       <IssueCredentialModal
         open={openIssueModal}
         onClose={() => {

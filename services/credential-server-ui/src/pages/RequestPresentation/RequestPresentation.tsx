@@ -12,7 +12,7 @@ import "./RequestPresentation.scss";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { getRoleView } from "../../store/reducers";
 import { useState } from "react";
-import { RequestPresentationModal } from "./RequestPresentationModal";
+import { RequestPresentationModal } from "../../components/RequestPresentationModal";
 
 const headers: AppTableHeader<PresentationRequestData>[] = [
   {

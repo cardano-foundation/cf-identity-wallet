@@ -1,9 +1,8 @@
 import { Box } from "@mui/material";
 import { InputAttributeProps } from "./RequestPresentationModal.types";
-import { CredentialTypeAttributes } from "../../../const";
-import { AppInput } from "../../../components/AppInput";
-import { i18n } from "../../../i18n";
-
+import { CredentialTypeAttributes } from "../../const";
+import { AppInput } from "../AppInput";
+import { i18n } from "../../i18n";
 const InputAttribute = ({
   credentialType,
   value,
