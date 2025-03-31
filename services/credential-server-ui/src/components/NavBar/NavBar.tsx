@@ -78,10 +78,11 @@ const NavBar = ({ window }: Props) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
 
-  const displayMenuItems =
+  const displayMenuItems = menuItems.filter((item) =>
     roleViewIndex !== RoleIndex.ISSUER
-      ? menuItems.filter((item) => item.key !== "credentials")
-      : menuItems;
+      ? item.key !== "credentials"
+      : item.key !== "requestPresentation"
+  );
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
