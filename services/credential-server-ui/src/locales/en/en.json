@@ -168,7 +168,7 @@
           }
         },
         "selectCredential": {
-          "description": "<strong>Select a credential to issue this connections</strong>. Search from your created credentials templates, and please note that credentials can only be issued to one connection at a time."
+          "description": "<strong>Select a template to issue to this connection</strong>. Search from your created credential templates, and please note that a credential can only be issued to one connection at a time."
         },
         "inputAttribute": {
           "description": "<strong>Set the required value(s) to issue this credential</strong>. Below are all the values needed for issuance.",
