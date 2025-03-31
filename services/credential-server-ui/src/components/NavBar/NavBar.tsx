@@ -1,35 +1,40 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Container,
-  Button,
-  Badge,
-  Drawer,
-  MenuItem,
-  Typography,
-} from "@mui/material";
-import {
-  Menu as MenuIcon,
-  Dashboard as DashboardFull,
-  DashboardOutlined,
-  Group as GroupFull,
-  GroupOutlined,
   Badge as BadgeFull,
   BadgeOutlined,
+  Group as GroupFull,
+  GroupOutlined,
+  Menu as MenuIcon,
   Notifications as NotificationsFull,
   NotificationsOutlined,
   Settings as SettingsFull,
   SettingsOutlined,
+  SwapHorizontalCircle,
+  SwapHorizontalCircleOutlined,
 } from "@mui/icons-material";
+import {
+  AppBar,
+  Badge,
+  Box,
+  Button,
+  Container,
+  Drawer,
+  IconButton,
+  MenuItem,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Logo from "../../assets/Logo.svg";
-import "./NavBar.scss";
-import { SwitchAccount } from "../SwitchAccount";
+import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
+import { SwitchAccount } from "../SwitchAccount";
 import { DrawerContent } from "./components/DrawerContent";
+import "./NavBar.scss";
+import { isActivePath } from "./helper";
+import { useAppSelector } from "../../store/hooks";
+import { getRoleView } from "../../store/reducers";
+import { RoleIndex } from "./constants/roles";
 
 interface Props {
   window?: () => Window;
@@ -38,23 +43,30 @@ interface Props {
 const drawerWidth = 240;
 
 const menuItems = [
-  {
-    key: "overview",
-    label: i18n.t("navbar.overview"),
-    path: "/",
-    icons: [<DashboardFull />, <DashboardOutlined />],
-  },
+  // TODO: Removing until Overview is ready to be implemented
+  // {
+  //   key: "overview",
+  //   label: i18n.t("navbar.overview"),
+  //   path: "/",
+  //   icons: [<DashboardFull />, <DashboardOutlined />],
+  // },
   {
     key: "connections",
     label: i18n.t("navbar.connections"),
-    path: "/connections",
+    path: RoutePath.Connections,
     icons: [<GroupFull />, <GroupOutlined />],
   },
   {
     key: "credentials",
     label: i18n.t("navbar.credentials"),
-    path: "/credentials",
+    path: RoutePath.Credentials,
     icons: [<BadgeFull />, <BadgeOutlined />],
+  },
+  {
+    key: "requestPresentation",
+    label: i18n.t("navbar.requestPresentation"),
+    path: RoutePath.RequestPresentation,
+    icons: [<SwapHorizontalCircle />, <SwapHorizontalCircleOutlined />],
   },
 ];
 
@@ -64,6 +76,13 @@ const getIcon = (icons: React.ReactElement[], isActive: boolean) =>
 const NavBar = ({ window }: Props) => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
+
+  const displayMenuItems = menuItems.filter((item) =>
+    roleViewIndex !== RoleIndex.ISSUER
+      ? item.key !== "credentials"
+      : item.key !== "requestPresentation"
+  );
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -142,6 +161,7 @@ const NavBar = ({ window }: Props) => {
               component={Link}
               to={"/"}
               disableRipple
+              className="logo-button"
             >
               <img
                 className="header-logo"
@@ -149,23 +169,25 @@ const NavBar = ({ window }: Props) => {
                 src={Logo}
               />
             </Button>
-            {menuItems.map((item) => (
-              <MenuItem
-                key={item.key}
-                component={Link}
-                to={item.path}
-                disableRipple
-                className={location.pathname === item.path ? "active" : ""}
-              >
-                <Typography textAlign="center">
-                  {getIcon(item.icons, location.pathname === item.path)}
-                  {item.label}
-                </Typography>
-                {location.pathname === item.path && (
-                  <div className="active-bar" />
-                )}
-              </MenuItem>
-            ))}
+            {displayMenuItems.map((item) => {
+              const isActive = isActivePath(item.path, location.pathname);
+
+              return (
+                <MenuItem
+                  key={item.key}
+                  component={Link}
+                  to={item.path}
+                  disableRipple
+                  className={isActive ? "active" : ""}
+                >
+                  <Typography textAlign="center">
+                    {getIcon(item.icons, isActive)}
+                    {item.label}
+                  </Typography>
+                  {isActive && <div className="active-bar" />}
+                </MenuItem>
+              );
+            })}
           </Box>
           <Box
             className="nav-right"

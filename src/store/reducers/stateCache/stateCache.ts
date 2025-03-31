@@ -43,6 +43,7 @@ const initialState: StateCacheProps = {
   },
   showConnections: false,
   toastMsgs: [],
+  forceInitApp: 0,
 };
 
 const stateCacheSlice = createSlice({
@@ -75,10 +76,8 @@ const stateCacheSlice = createSlice({
         (route) => route.path !== action.payload
       );
     },
-    removeSetPasscodeRoute: (state) => {
-      state.routes = state.routes.filter(
-        (route) => route.path !== RoutePath.SET_PASSCODE
-      );
+    resetAllRoutes: (state) => {
+      state.routes = [];
     },
     setLoginAttempt: (state, action: PayloadAction<LoginAttempts>) => {
       state.authentication.loginAttempt = { ...action.payload };
@@ -174,8 +173,17 @@ const stateCacheSlice = createSlice({
     showConnections: (state, action: PayloadAction<boolean>) => {
       state.showConnections = action.payload;
     },
+    showGlobalLoading: (state, action: PayloadAction<boolean>) => {
+      state.showLoading = action.payload;
+    },
     showNoWitnessAlert: (state, action: PayloadAction<boolean | undefined>) => {
       state.showNoWitnessAlert = action.payload;
+    },
+    clearStateCache: (state) => {
+      return {
+        ...initialState,
+        forceInitApp: (state.forceInitApp || 0) + 1,
+      };
     },
   },
 });
@@ -185,8 +193,8 @@ const {
   setRecoveryCompleteNoInterruption,
   setCurrentRoute,
   removeCurrentRoute,
-  removeSetPasscodeRoute,
   removeRoute,
+  resetAllRoutes,
   login,
   logout,
   setAuthentication,
@@ -204,6 +212,8 @@ const {
   showConnections,
   removeToastMessage,
   showNoWitnessAlert,
+  clearStateCache,
+  showGlobalLoading,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -234,6 +244,8 @@ const getShowConnections = (state: RootState) =>
 const getShowNoWitnessAlert = (state: RootState) =>
   state.stateCache.showNoWitnessAlert;
 const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
+const getForceInitApp = (state: RootState) => state.stateCache.forceInitApp;
+const getGlobalLoading = (state: RootState) => state.stateCache.showLoading;
 
 export type {
   AuthenticationCacheProps,
@@ -242,6 +254,9 @@ export type {
 };
 
 export {
+  getGlobalLoading,
+  showGlobalLoading,
+  clearStateCache,
   showNoWitnessAlert,
   getShowNoWitnessAlert,
   dequeueIncomingRequest,
@@ -261,12 +276,13 @@ export {
   getStateCache,
   getToastMgs,
   getToastMsgs,
+  getForceInitApp,
   initialState,
   login,
   logout,
   removeCurrentRoute,
   removeRoute,
-  removeSetPasscodeRoute,
+  resetAllRoutes,
   removeToastMessage,
   setAuthentication,
   setCameraDirection,

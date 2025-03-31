@@ -22,8 +22,8 @@ import {
 } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  OobiType,
   OOBI_AGENT_ONLY_RE,
+  OobiType,
   WOOBI_RE,
 } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
@@ -37,6 +37,7 @@ import {
   updateOrAddMultisigConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import {
+  getIdentifiersCache,
   getMultiSigGroupCache,
   getScanGroupId,
   setMultiSigGroupCache,
@@ -45,6 +46,7 @@ import {
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
+  getAuthentication,
   getCurrentOperation,
   getShowConnections,
   getToastMsgs,
@@ -91,6 +93,8 @@ const Scanner = forwardRef(
     const currentOperation = useAppSelector(getCurrentOperation);
     const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsgs = useAppSelector(getToastMsgs);
+    const loggedIn = useAppSelector(getAuthentication).loggedIn;
+    const groupIdentifierCache = useAppSelector(getIdentifiersCache);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
@@ -106,6 +110,8 @@ const Scanner = forwardRef(
     const isHandlingQR = useRef(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [isAlreadyLoaded, setIsAlreadyLoaded] = useState(false);
+
+    const scanByTab = routePath === TabsRoutePath.SCAN;
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -160,8 +166,9 @@ const Scanner = forwardRef(
     useEffect(() => {
       const onLoad = async () => {
         if (
-          routePath === TabsRoutePath.SCAN &&
-          (isShowConnectionsModal || createIdentifierModalIsOpen)
+          (routePath === TabsRoutePath.SCAN &&
+            (isShowConnectionsModal || createIdentifierModalIsOpen)) ||
+          !loggedIn
         ) {
           await stopScan();
           return;
@@ -206,6 +213,7 @@ const Scanner = forwardRef(
       isShowConnectionsModal,
       createIdentifierModalIsOpen,
       currentToastMsgs,
+      loggedIn,
     ]);
 
     useEffect(() => {
@@ -293,9 +301,42 @@ const Scanner = forwardRef(
       handleReset && handleReset();
     };
 
-    const handleAfterScanMultisig = () => {
-      dispatch(setCurrentOperation(OperationType.OPEN_MULTISIG_IDENTIFIER));
-      handleReset?.();
+    const openGroupIdentifierSetupWhenScanByFullPage = async (
+      groupId: string
+    ) => {
+      await updateConnections(groupId);
+      handleReset?.(
+        TabsRoutePath.IDENTIFIERS,
+        OperationType.OPEN_MULTISIG_IDENTIFIER
+      );
+    };
+
+    const openGroupIdentifierSetup = (identifier?: IdentifierShortDetails) => {
+      if (!scanByTab && identifier?.groupMetadata?.groupId) {
+        openGroupIdentifierSetupWhenScanByFullPage(
+          identifier?.groupMetadata?.groupId
+        );
+        return;
+      }
+
+      if (identifier?.groupMetadata || identifier?.groupMemberPre) {
+        setResumeMultiSig(identifier);
+        setGroupIdentifierOpen(true);
+        dispatch(setCurrentOperation(OperationType.IDLE));
+      }
+    };
+
+    const handleAfterScanMultisig = (groupId: string | null) => {
+      if (!groupId) return;
+      const identifier = Object.values(groupIdentifierCache).find(
+        (identifier) => identifier.groupMetadata?.groupId === groupId
+      );
+
+      if (!identifier) {
+        throw new Error(ErrorMessage.GROUP_ID_NOT_MATCH);
+      }
+
+      openGroupIdentifierSetup(identifier);
     };
 
     const handleDuplicateConnectionError = async (
@@ -383,23 +424,26 @@ const Scanner = forwardRef(
 
         if (invitation.type === OobiType.NORMAL) {
           setIsValueCaptured && setIsValueCaptured(true);
-
-          const scanMultiSigByTab = routePath === TabsRoutePath.SCAN;
+          const groupId = new URL(content).searchParams.get("groupId");
 
           if (
             currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
             currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN ||
-            // Initiator scan member qr by normal scanner (scan tab)
-            scanMultiSigByTab
+            // Initiator scan group
+            !!groupId
           ) {
-            const groupId = new URL(content).searchParams.get("groupId");
             groupId && updateConnections(groupId);
             dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
 
-            if (scanMultiSigByTab) {
-              handleAfterScanMultisig();
+            if (!scanByTab) {
+              // If scan on setup group identifier page (scanGroupId exist) => close scan page
+              // If scan on full page scan (ex: Connections) => close scan page, redirect to identifier and open setup group identifier page
+              scanGroupId
+                ? handleReset?.()
+                : groupId &&
+                  openGroupIdentifierSetupWhenScanByFullPage(groupId);
             } else {
-              handleReset?.();
+              handleAfterScanMultisig(groupId);
             }
           }
         }
@@ -409,6 +453,10 @@ const Scanner = forwardRef(
           dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
           setCreateIdentifierModalIsOpen(true);
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
+        }
+
+        if (!scanByTab) {
+          return;
         }
 
         dispatch(setCurrentOperation(OperationType.IDLE));
@@ -508,7 +556,7 @@ const Scanner = forwardRef(
     const processValue = async (content: string) => {
       await stopScan();
 
-      if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(content)) {
+      if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
         handleConnectWallet(content);
         isHandlingQR.current = false;
         return;
@@ -538,15 +586,6 @@ const Scanner = forwardRef(
       setPasteModalIsOpen(false);
       processValue(pastedValue);
       setPastedValue("");
-    };
-
-    const handleCloseCreateIdentifier = (
-      identifier?: IdentifierShortDetails
-    ) => {
-      if (identifier?.groupMetadata || identifier?.groupMemberPre) {
-        setResumeMultiSig(identifier);
-        setGroupIdentifierOpen(true);
-      }
     };
 
     const openPasteModal = () => setPasteModalIsOpen(true);
@@ -651,7 +690,7 @@ const Scanner = forwardRef(
         <CreateIdentifier
           modalIsOpen={createIdentifierModalIsOpen}
           setModalIsOpen={setCreateIdentifierModalIsOpen}
-          onClose={handleCloseCreateIdentifier}
+          onClose={openGroupIdentifierSetup}
           groupId={groupId}
         />
         <CreateGroupIdentifier

@@ -14,4 +14,117 @@ body {
   .hidden {
     display: none;
   }
+
+  button {
+    &.primary-button {
+      color: var(--color-neutral-100);
+      background-color: var(--color-primary-700);
+
+      &:hover,
+      &:active {
+        background:
+          linear-gradient(
+            0deg,
+            rgba(var(--color-neutral-800-rgb), 0.2) 0%,
+            rgba(var(--color-neutral-800-rgb), 0.2) 100%
+          ),
+          var(--color-primary-700);
+      }
+      &:disabled {
+        color: var(--color-neutral-600);
+        background-color: var(--color-neutral-400);
+      }
+    }
+    &.secondary-button {
+      color: var(--text-color);
+      background-color: var(--color-neutral-300);
+
+      &:hover,
+      &:active {
+        background:
+          linear-gradient(
+            0deg,
+            rgba(var(--color-neutral-800-rgb), 0.2) 0%,
+            rgba(var(--color-neutral-800-rgb), 0.2) 100%
+          ),
+          var(--color-neutral-300);
+      }
+      &:disabled {
+        color: var(--color-neutral-600);
+        background-color: var(--color-neutral-400);
+      }
+    }
+    &.neutral-button {
+      color: var(--text-color);
+      background-color: var(--color-neutral-100);
+
+      &:hover,
+      &:active {
+        background:
+          linear-gradient(
+            0deg,
+            rgba(var(--color-neutral-800-rgb), 0.2) 0%,
+            rgba(var(--color-neutral-800-rgb), 0.2) 100%
+          ),
+          var(--color-neutral-100);
+      }
+    }
+    &.delete-button {
+      color: var(--color-neutral-100);
+      background-color: var(--color-error-800);
+
+      &:hover,
+      &:active {
+        background:
+          linear-gradient(
+            0deg,
+            rgba(var(--color-neutral-800-rgb), 0.2) 0%,
+            rgba(var(--color-neutral-800-rgb), 0.2) 100%
+          ),
+          var(--color-error-800);
+      }
+    }
+  }
+
+  .notistack-Snackbar {
+    .notistack-MuiContent {
+      border-radius: 0.5rem;
+      width: 21.875rem;
+      padding: 0.75rem 1rem;
+      height: 3rem;
+      align-content: center;
+      justify-content: space-between;
+
+      div:last-child {
+        margin-left: 0;
+        padding-left: 0.5rem;
+        border-left: solid var(--color-neutral-400) 1px;
+
+        button {
+          padding: 0;
+          height: 1.5rem;
+          color: var(--color-neutral-100);
+        }
+      }
+
+      &.notistack-MuiContent-success {
+        background-color: var(--color-neutral-800);
+      }
+
+      &.notistack-MuiContent-error {
+        background-color: var(--color-error-800);
+      }
+
+      #notistack-snackbar {
+        padding: 0;
+        color: var(--color-neutral-100);
+
+        .MuiSvgIcon-root {
+          &:first-of-type {
+            padding-right: 0.5rem;
+          }
+        }
+      }
+    }
+  }
 }

@@ -357,6 +357,41 @@ describe("ConnectionDetails Page", () => {
       expect(getByTestId("connection-details-tab")).toBeVisible()
     );
   });
+
+  test("Can restrict view to not be able to delete connection", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const handleCloseConnectionModal = jest.fn();
+    const { getByTestId, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          handleCloseConnectionModal={handleCloseConnectionModal}
+          restrictedOptions={true}
+        />
+      </Provider>
+    );
+
+    // Wait until normal page is loaded
+    await waitFor(() =>
+      expect(getByTestId("action-button")).toBeInTheDocument()
+    );
+
+    expect(queryByTestId("delete-button-connection-details")).not.toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByTestId("action-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("connection-options-manage-button")).toBeInTheDocument();
+    });
+
+    expect(queryByTestId("delete-button-connection-options")).not.toBeInTheDocument();
+  });
 });
 
 interface MockConnectionDetails {

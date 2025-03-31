@@ -22,6 +22,7 @@ const PageFooter = ({
   archiveButtonAction,
   archiveButtonDisabled,
   deleteButtonText,
+  deleteButtonIcon = true,
   deleteButtonAction,
   deleteButtonDisabled,
   children,
@@ -123,12 +124,15 @@ const PageFooter = ({
             onClick={deleteButtonAction}
             disabled={deleteButtonDisabled}
           >
-            <IonIcon
-              slot="icon-only"
-              size="small"
-              icon={trashOutline}
-              color="primary"
-            />
+            {deleteButtonIcon && (
+              <IonIcon
+                slot="icon-only"
+                size="small"
+                icon={trashOutline}
+                color="primary"
+              />
+            )}
+
             {deleteButtonText}
           </IonButton>
         )}

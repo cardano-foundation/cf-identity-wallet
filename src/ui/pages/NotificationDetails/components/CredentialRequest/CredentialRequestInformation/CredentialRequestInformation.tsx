@@ -1,5 +1,5 @@
 import { IonIcon, IonSpinner, IonText } from "@ionic/react";
-import { informationCircleOutline } from "ionicons/icons";
+import { chevronForward, warningOutline } from "ionicons/icons";
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../../core/agent/agent";
 import { NotificationRoute } from "../../../../../../core/agent/agent.types";
@@ -32,6 +32,8 @@ import { CredentialRequestProps, MemberInfo } from "../CredentialRequest.types";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
 import "./CredentialRequestInformation.scss";
 import { Verification } from "../../../../../components/Verification";
+import { getCredsCache } from "../../../../../../store/reducers/credsCache";
+import { getCredsArchivedCache } from "../../../../../../store/reducers/credsArchivedCache";
 
 const CredentialRequestInformation = ({
   pageId,
@@ -47,10 +49,12 @@ const CredentialRequestInformation = ({
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
   const connectionsCache = useAppSelector(getConnectionsCache);
+  const credsCache = useAppSelector(getCredsCache);
+  const archivedCredsCache = useAppSelector(getCredsArchivedCache);
   const [notifications, setNotifications] = useState(notificationsCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [viewCredId, setViewCredId] = useState<string>();
-  const [chooseCredId, setChooseCredId] = useState<string>("");
+  const [proposedCredId, setProposedCredId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
 
@@ -61,20 +65,29 @@ const CredentialRequestInformation = ({
   const isJoinGroup = linkedGroup?.memberInfos.some(
     (item) => item.aid === userAID && item.joined
   );
-  const isGroupInitiatorJoined = !!linkedGroup?.memberInfos.at(0)?.joined;
+  const groupInitiatorJoined = !!linkedGroup?.memberInfos.at(0)?.joined;
+
+  const missingProposedCred = proposedCredId
+    ? !(
+      credsCache.some((credential) => credential.id === proposedCredId) ||
+        archivedCredsCache.some(
+          (credential) => credential.id === proposedCredId
+        )
+    )
+    : false;
 
   const getCred = useCallback(async () => {
-    if (!isGroupInitiatorJoined || !linkedGroup?.linkedRequest.current) return;
+    if (!groupInitiatorJoined || !linkedGroup?.linkedRequest.current) return;
 
     try {
       const id = await Agent.agent.ipexCommunications.getOfferedCredentialSaid(
         linkedGroup.linkedRequest.current
       );
-      setChooseCredId(id);
+      setProposedCredId(id);
     } catch (error) {
       showError("Unable to get choosen cred", error, dispatch);
     }
-  }, [dispatch, isGroupInitiatorJoined, linkedGroup?.linkedRequest]);
+  }, [dispatch, groupInitiatorJoined, linkedGroup?.linkedRequest]);
 
   useOnlineStatusEffect(getCred);
 
@@ -91,7 +104,7 @@ const CredentialRequestInformation = ({
       isGroup &&
       !(
         isGroupInitiator ||
-        (!isGroupInitiator && !isGroupInitiatorJoined) ||
+        (!isGroupInitiator && !groupInitiatorJoined) ||
         isJoinGroup
       );
     try {
@@ -125,23 +138,25 @@ const CredentialRequestInformation = ({
         return MemberAcceptStatus.Accepted;
       }
 
-      if (!isGroupInitiatorJoined) {
+      if (!groupInitiatorJoined) {
         return MemberAcceptStatus.None;
       }
 
       return MemberAcceptStatus.Waiting;
     },
-    [isGroupInitiatorJoined]
+    [groupInitiatorJoined]
   );
 
-  const reachThreshold =
+  const reachedThreshold =
     linkedGroup &&
     linkedGroup.othersJoined.length +
       (linkedGroup.linkedRequest.accepted ? 1 : 0) >=
       Number(linkedGroup.threshold);
 
   const showProvidedCred = () => {
-    setViewCredId(chooseCredId);
+    if (missingProposedCred) return;
+
+    setViewCredId(proposedCredId);
   };
 
   const handleClose = () => setViewCredId(undefined);
@@ -149,7 +164,7 @@ const CredentialRequestInformation = ({
   const headerAlertMessage = useMemo(() => {
     if (!isGroup) return null;
 
-    if (reachThreshold) {
+    if (reachedThreshold) {
       return i18n.t(
         "tabs.notifications.details.credential.request.information.reachthreshold"
       );
@@ -167,7 +182,7 @@ const CredentialRequestInformation = ({
       );
     }
 
-    if (!isGroupInitiator && !isJoinGroup && !isGroupInitiatorJoined) {
+    if (!isGroupInitiator && !isJoinGroup && !groupInitiatorJoined) {
       return i18n.t(
         "tabs.notifications.details.credential.request.information.memberwaitingproposal"
       );
@@ -188,29 +203,52 @@ const CredentialRequestInformation = ({
     return null;
   }, [
     isGroup,
-    reachThreshold,
+    reachedThreshold,
     isGroupInitiator,
     isJoinGroup,
-    isGroupInitiatorJoined,
+    groupInitiatorJoined,
   ]);
 
   const primaryButtonText = useMemo(() => {
-    if (!isGroupInitiator && isGroupInitiatorJoined && !isJoinGroup)
+    if (isGroupInitiator) {
+      return groupInitiatorJoined
+        ? i18n.t("tabs.notifications.details.buttons.ok")
+        : i18n.t("tabs.notifications.details.buttons.choosecredential");
+    }
+
+    if (
+      groupInitiatorJoined &&
+      !isJoinGroup &&
+      !reachedThreshold &&
+      !missingProposedCred
+    ) {
       return i18n.t("tabs.notifications.details.buttons.accept");
+    }
 
-    if (reachThreshold || isJoinGroup || !isGroupInitiator)
-      return i18n.t("tabs.notifications.details.buttons.ok");
-
-    return i18n.t("tabs.notifications.details.buttons.choosecredential");
-  }, [isGroupInitiator, isGroupInitiatorJoined, isJoinGroup, reachThreshold]);
+    return i18n.t("tabs.notifications.details.buttons.ok");
+  }, [
+    isGroupInitiator,
+    groupInitiatorJoined,
+    isJoinGroup,
+    reachedThreshold,
+    missingProposedCred,
+  ]);
 
   const deleteButtonText = useMemo(() => {
     return isGroupInitiator ||
-      (!isGroupInitiator && !isGroupInitiatorJoined) ||
-      isJoinGroup
+      (!isGroupInitiator && !groupInitiatorJoined) ||
+      isJoinGroup ||
+      reachedThreshold ||
+      missingProposedCred
       ? undefined
-      : `${i18n.t("tabs.notifications.details.buttons.reject")}`;
-  }, [isGroupInitiator, isGroupInitiatorJoined, isJoinGroup]);
+      : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
+  }, [
+    isGroupInitiator,
+    groupInitiatorJoined,
+    isJoinGroup,
+    reachedThreshold,
+    missingProposedCred,
+  ]);
 
   const decline = () => setAlertDeclineIsOpen(true);
 
@@ -240,7 +278,12 @@ const CredentialRequestInformation = ({
       return;
     }
 
-    if (isJoinGroup || !isGroupInitiatorJoined || reachThreshold) {
+    if (
+      isJoinGroup ||
+      !groupInitiatorJoined ||
+      reachedThreshold ||
+      missingProposedCred
+    ) {
       onBack();
       return;
     }
@@ -251,7 +294,7 @@ const CredentialRequestInformation = ({
   const closeAlert = () => setAlertDeclineIsOpen(false);
 
   const title = `${i18n.t(
-    isGroup && !isGroupInitiator && isGroupInitiatorJoined
+    isGroup && !isGroupInitiator && groupInitiatorJoined
       ? "tabs.notifications.details.credential.request.information.proposedcred"
       : "tabs.notifications.details.credential.request.information.title"
   )}`;
@@ -279,13 +322,17 @@ const CredentialRequestInformation = ({
             primaryButtonText={primaryButtonText}
             primaryButtonAction={handleAcceptClick}
             secondaryButtonText={
-              reachThreshold || isGroupInitiatorJoined || !isGroupInitiator
+              reachedThreshold ||
+              groupInitiatorJoined ||
+              !isGroupInitiator ||
+              missingProposedCred
                 ? undefined
                 : `${i18n.t("tabs.notifications.details.buttons.decline")}`
             }
             secondaryButtonAction={decline}
             deleteButtonAction={decline}
             deleteButtonText={deleteButtonText}
+            deleteButtonIcon={false}
           />
         }
       >
@@ -296,7 +343,7 @@ const CredentialRequestInformation = ({
               content={headerAlertMessage}
             />
           )}
-          {!isGroupInitiator && isGroupInitiatorJoined && (
+          {!isGroupInitiator && groupInitiatorJoined && (
             <CardDetailsBlock
               className="request-from"
               title={`${i18n.t(
@@ -313,22 +360,43 @@ const CredentialRequestInformation = ({
             </CardDetailsBlock>
           )}
           {linkedGroup?.linkedRequest.current && (
-            <CardDetailsBlock
-              onClick={showProvidedCred}
-              className="proposed-cred"
-              title={`${i18n.t(
-                "tabs.notifications.details.credential.request.information.proposedcred"
-              )}`}
-            >
-              <div className="request-from-content">
-                <img src={KeriLogo} />
-                <p>
-                  {credentialRequest.schema.name ||
-                    i18n.t("connections.unknown")}
-                </p>
-              </div>
-              <IonIcon icon={informationCircleOutline} />
-            </CardDetailsBlock>
+            <>
+              <CardDetailsBlock
+                onClick={showProvidedCred}
+                className={`proposed-cred ${
+                  missingProposedCred ? "missing-proposed-cred" : ""
+                }`}
+                title={`${i18n.t(
+                  "tabs.notifications.details.credential.request.information.proposedcred"
+                )}`}
+              >
+                <div className="request-from-content">
+                  <img src={KeriLogo} />
+                  <p>
+                    {credentialRequest.schema.name ||
+                      i18n.t("connections.unknown")}
+                  </p>
+                </div>
+                {missingProposedCred ? (
+                  <></>
+                ) : (
+                  <IonIcon icon={chevronForward} />
+                )}
+              </CardDetailsBlock>
+              {missingProposedCred ? (
+                <InfoCard
+                  content={i18n.t(
+                    isGroupInitiator ?
+                    "tabs.notifications.details.credential.request.information.initiatordeletedproposedcredential" :
+                    "tabs.notifications.details.credential.request.information.missingproposedcredential"
+                  )}
+                  className="missing-proposed-cred-info"
+                  icon={warningOutline}
+                />
+              ) : (
+                <></>
+              )}
+            </>
           )}
           <CardDetailsBlock
             className="request-from"

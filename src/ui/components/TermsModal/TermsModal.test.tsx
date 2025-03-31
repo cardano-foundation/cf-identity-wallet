@@ -1,4 +1,3 @@
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -41,6 +40,7 @@ describe("Terms and conditions screen", () => {
           name="terms-of-use"
           isOpen={true}
           setIsOpen={mockSetIsOpen}
+          altIsOpen={mockSetIsOpen}
         />
       </Provider>
     );

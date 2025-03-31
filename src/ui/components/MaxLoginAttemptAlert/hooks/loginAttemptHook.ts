@@ -9,13 +9,13 @@ import {
 } from "../../../../store/reducers/stateCache";
 import { showError } from "../../../utils/error";
 
-const MAX_LOGIN_ATTEMP = 5;
+const MAX_LOGIN_ATTEMPT = 5;
 
 const useLoginAttempt = () => {
   const dispatch = useAppDispatch();
   const loginAttempt = useAppSelector(getLoginAttempt);
 
-  const remainAttempt = MAX_LOGIN_ATTEMP - loginAttempt.attempts;
+  const remainAttempt = MAX_LOGIN_ATTEMPT - loginAttempt.attempts;
 
   const errorMessage = useMemo(() => {
     switch (remainAttempt) {

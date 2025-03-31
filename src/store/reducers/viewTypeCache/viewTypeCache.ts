@@ -36,6 +36,7 @@ const viewTypeCacheSlice = createSlice({
     setCredentialFavouriteIndex: (state, action: PayloadAction<number>) => {
       state.credential.favouriteIndex = action.payload;
     },
+    clearViewTypeCache: () => initialState,
   },
 });
 
@@ -44,6 +45,7 @@ export const {
   setIdentifierViewTypeCache,
   setCredentialFavouriteIndex,
   setCredentialViewTypeCache,
+  clearViewTypeCache,
 } = viewTypeCacheSlice.actions;
 
 const getIdentifierViewTypeCache = (state: RootState) =>

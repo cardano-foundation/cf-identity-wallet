@@ -45,10 +45,10 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
   useBiometricAuth: jest.fn(() => ({
     biometricsIsEnabled: false,
     biometricInfo: {
-      isAvailable: true,
+      isAvailable: false,
       hasCredentials: false,
       biometryType: BiometryType.fingerprintAuthentication,
-      strongBiometryIsAvailable: true,
+      strongBiometryIsAvailable: false,
     },
     handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
     setBiometricsIsEnabled: jest.fn(),

@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
+import { isActivePath } from "../../helper";
 import { DrawerContentProps } from "./DrawerContent.types";
 
 const DrawerContent = ({
@@ -33,26 +34,24 @@ const DrawerContent = ({
         {i18n.t("navbar.menu")}
       </Typography>
       <List>
-        {menuItems.map((item) => (
-          <ListItem
-            key={item.key}
-            component={Link}
-            to={item.path}
-            disablePadding
-          >
-            <ListItemButton
-              className={location.pathname === item.path ? "active" : ""}
+        {menuItems.map((item) => {
+          const isActive = isActivePath(item.path, location.pathname);
+
+          return (
+            <ListItem
+              key={item.key}
+              component={Link}
+              to={item.path}
+              disablePadding
             >
-              <ListItemIcon>
-                {getIcon(item.icons, location.pathname === item.path)}
-              </ListItemIcon>
-              <ListItemText primary={item.label} />
-              {location.pathname === item.path && (
-                <div className="active-bar" />
-              )}
-            </ListItemButton>
-          </ListItem>
-        ))}
+              <ListItemButton className={isActive ? "active" : ""}>
+                <ListItemIcon>{getIcon(item.icons, isActive)}</ListItemIcon>
+                <ListItemText primary={item.label} />
+                {isActive && <div className="active-bar" />}
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </Box>
   );

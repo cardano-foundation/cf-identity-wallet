@@ -3,6 +3,7 @@ import { SubMenuKey } from "../../Menu.types";
 
 interface SettingsProps {
   switchView?: (key: SubMenuKey) => void;
+  handleClose?: () => void;
 }
 
 interface OptionProps {
@@ -11,6 +12,7 @@ interface OptionProps {
   label: string;
   actionIcon?: ReactNode;
   note?: string;
+  href?: string;
 }
 
 enum OptionIndex {
@@ -22,6 +24,7 @@ enum OptionIndex {
   Term,
   Contact,
   Version,
+  DeleteAccount,
 }
 
 interface SettingsItemProps {

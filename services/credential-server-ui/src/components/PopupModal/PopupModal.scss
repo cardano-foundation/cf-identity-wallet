@@ -1,0 +1,64 @@
+.popup-modal.MuiModal-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .popup-modal-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 29.25rem;
+    min-height: 13.25rem;
+    padding: 1.5rem;
+    background-color: var(--color-neutral-100);
+    border-radius: 1.5rem;
+    box-shadow: 0.25rem 0.25rem 1.25rem 0rem rgba(var(--text-color-rgb), 0.16);
+
+    .popup-modal-header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+
+      h2 {
+        margin: 0;
+      }
+
+      button {
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0.25rem;
+        color: var(--text-color);
+
+        &:hover,
+        &:active {
+          background-color: var(--color-neutral-300);
+        }
+
+        svg {
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+      }
+    }
+
+    .popup-modal-description {
+      font-weight: 500;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .popup-modal-footer {
+      display: flex;
+      justify-content: space-between;
+
+      button {
+        text-transform: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 1rem;
+        box-shadow: none;
+        width: 12.75rem;
+      }
+    }
+  }
+}

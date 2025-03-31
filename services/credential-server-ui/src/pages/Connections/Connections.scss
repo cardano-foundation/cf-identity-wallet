@@ -1,0 +1,100 @@
+.connections-page {
+  .connections-table {
+    background-color: var(--background-color);
+
+    .connection-table-toolbar,
+    .table-left,
+    .table-right {
+      &:not(.hidden) {
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .connection-table-toolbar {
+      min-height: 2.5rem;
+      margin-bottom: 0.75rem;
+      background-color: var(--background-color);
+
+      .table-left,
+      .table-right {
+        > * {
+          height: 2.5rem;
+          font-size: 1rem;
+          padding: 0.5rem 1rem;
+          align-self: anchor-center;
+        }
+      }
+
+      .table-left {
+        // TODO: Hiding for the moment.
+        // To be completed at a later stage.
+        visibility: hidden;
+        * svg {
+          margin-right: 0.5rem;
+        }
+      }
+
+      .table-right {
+        .delete-connections-button {
+          border-radius: 0.5rem;
+          text-transform: none;
+        }
+      }
+    }
+
+    .MuiTableHead-root {
+      background-color: var(--color-primary-200);
+
+      .MuiTableCell-head {
+        line-height: normal;
+
+        &:last-of-type {
+          width: 2rem;
+        }
+      }
+    }
+
+    .MuiTableBody-root tr {
+      height: 3.25rem;
+
+      &.Mui-selected {
+        background-color: var(--color-neutral-100);
+      }
+
+      th,
+      td {
+        font-weight: 500;
+        padding: 0.38rem;
+        max-width: 10rem;
+      }
+
+      @media only screen and (max-width: 744px) {
+        td,
+        th {
+          max-width: 6rem;
+        }
+      }
+
+      th:first-of-type {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .MuiTableContainer-root {
+      background-color: var(--color-neutral-100);
+      border-radius: 0.75rem;
+      box-shadow: 0.25rem 0.25rem 1.25rem 0rem rgba(var(--text-color-rgb), 0.16);
+    }
+
+    .MuiTablePagination-actions button {
+      &:hover {
+        background-color: var(--color-neutral-100);
+      }
+    }
+  }
+}

@@ -9,8 +9,8 @@ import {
 } from "signify-ts";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
-import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../agent";
+import { randomSalt } from "../../utils/utils";
 
 export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
@@ -83,10 +83,14 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
-    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const urlObj = new URL(url);
+    const alias = urlObj.searchParams.get("name") ?? randomSalt();
+    urlObj.searchParams.delete("name");
+    const strippedUrl = urlObj.toString();
+
     const operation = (await waitAndGetDoneOp(
       this.client,
-      await this.client.oobis().resolve(url, alias),
+      await this.client.oobis().resolve(strippedUrl),
       this.opTimeout,
       this.opRetryInterval
     )) as Operation & { response: State };
@@ -95,7 +99,12 @@ export class SignifyApi {
     }
     if (operation.response && operation.response.i) {
       const connectionId = operation.response.i;
-      await this.client.contacts().update(connectionId, { alias });
+      const createdAt = new Date((operation.response as State).dt);
+      await this.client.contacts().update(connectionId, {
+        alias,
+        createdAt,
+        oobi: url,
+      });
     }
     return operation;
   }

@@ -10,10 +10,13 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
+import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
+import { ExitApp } from "@jimcase/capacitor-exit-app";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getCurrentOperation,
+  getGlobalLoading,
   getInitializationPhase,
 } from "../store/reducers/stateCache";
 import { AppOffline } from "./components/AppOffline";
@@ -39,20 +42,67 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
+import { getCssVariableValue } from "./utils/styles";
+import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
+import { initializeFreeRASP, ThreatCheck } from "../security/freerasp";
+import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
+import { ConfigurationService } from "../core/configuration";
 
 setupIonicReact();
 
 const App = () => {
   const initializationPhase = useAppSelector(getInitializationPhase);
+  const globalLoading = useAppSelector(getGlobalLoading);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showScan, setShowScan] = useState(false);
   const [isCompatible, setIsCompatible] = useState(true);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+  const [isFreeRASPInitialized, setIsFreeRASPInitialized] = useState(false);
+  const [freeRASPInitResult, setFreeRASPInitResult] = useState<{
+    success: boolean;
+    error: string;
+  }>({ success: false, error: "" });
+
+  const [threatsDetected, setThreatsDetected] = useState<ThreatCheck[]>([]);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const initConfiguration = async () => {
+      if (ConfigurationService.env.security.rasp.enabled) {
+        const result = await initializeFreeRASP(setThreatsDetected);
+        setIsFreeRASPInitialized(true);
+        setFreeRASPInitResult({
+          success: result.success,
+          error: result.success
+            ? ""
+            : (result.error as string) || "Unknown error",
+        });
+      } else {
+        setIsFreeRASPInitialized(true);
+        setFreeRASPInitResult({ success: true, error: "" });
+      }
+    };
+
+    initConfiguration();
+  }, []);
+
+  const checkSecurity = () => {
+    if (isFreeRASPInitialized && Capacitor.isNativePlatform()) {
+      if (threatsDetected.length > 0) {
+        ExitApp.exitApp();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    checkSecurity();
+  }, [isFreeRASPInitialized, threatsDetected]);
+
+  useEffect(() => {
     const handleUnknownPromiseError = (event: PromiseRejectionEvent) => {
-      // prevent log error to console.
       event.preventDefault();
       event.promise.catch((e) => showError("Unhandled error", e, dispatch));
     };
@@ -99,6 +149,12 @@ const App = () => {
         });
       }
 
+      if (platforms.includes("android")) {
+        EdgeToEdge.setBackgroundColor({
+          color: getCssVariableValue("--ion-color-neutral-200"),
+        });
+      }
+
       return () => {
         ScreenOrientation.unlock();
       };
@@ -136,14 +192,14 @@ const App = () => {
     checkCompatibility();
   }, []);
 
-  const contentByInitPhase = (initPhase: InitializationPhase) => {
+  const renderContentByInitPhase = (initPhase: InitializationPhase) => {
     switch (initPhase) {
     case InitializationPhase.PHASE_ZERO:
       return <LoadingPage />;
     case InitializationPhase.PHASE_ONE:
       return (
         <>
-          <LoadingPage />
+          <LoadingPage type={LoadingType.Splash} />
           <LockPage />
         </>
       );
@@ -167,8 +223,8 @@ const App = () => {
             <div className={showScan ? "ion-hide" : ""}>
               <Routes />
             </div>
+            <LockPage />
           </IonReactRouter>
-          <LockPage />
           <AppOffline />
         </>
       );
@@ -176,31 +232,38 @@ const App = () => {
   };
 
   const renderApp = () => {
+    if (Capacitor.isNativePlatform() && !isFreeRASPInitialized) {
+      return <LoadingPage />;
+    }
+
     return (
       <>
         <AppWrapper>
           <StrictMode>
-            {contentByInitPhase(initializationPhase)}
+            {renderContentByInitPhase(initializationPhase)}
             <InputRequest />
             <SidePage />
             <GenericError />
             <NoWitnessAlert />
             <ToastStack />
+            {globalLoading && <LoadingPage fullPage />}
           </StrictMode>
         </AppWrapper>
       </>
     );
   };
 
-  return (
-    <IonApp>
-      {isCompatible ? (
-        renderApp()
-      ) : (
-        <SystemCompatibilityAlert deviceInfo={deviceInfo} />
-      )}
-    </IonApp>
-  );
+  if (!isCompatible) {
+    return <SystemCompatibilityAlert deviceInfo={deviceInfo} />;
+  }
+
+  if (isFreeRASPInitialized && !freeRASPInitResult.success) {
+    return (
+      <SystemThreatAlert error={freeRASPInitResult.error || "Unknown error"} />
+    );
+  }
+
+  return <IonApp>{renderApp()}</IonApp>;
 };
 
 export { App };

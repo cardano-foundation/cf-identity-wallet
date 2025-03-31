@@ -13,7 +13,6 @@ import {
   PeerConnectionBrokenEvent,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
-import { ConfigurationService } from "../../../core/configuration";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -56,6 +55,7 @@ import {
   setQueueIncomingRequest,
   setToastMsg,
   showNoWitnessAlert,
+  getForceInitApp,
 } from "../../../store/reducers/stateCache";
 import {
   IncomingRequestType,
@@ -87,6 +87,8 @@ import {
 import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
 import { IdentifierService } from "../../../core/agent/services";
+import { TapJacking } from "@capacitor-community/tap-jacking";
+import { Device } from "@capacitor/device";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -195,6 +197,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const recoveryCompleteNoInterruption = useAppSelector(
     getRecoveryCompleteNoInterruption
   );
+  const forceInitApp = useAppSelector(getForceInitApp);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
@@ -234,6 +237,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     initApp();
+  }, [forceInitApp]);
+
+  useEffect(() => {
+    const tapjack = async () => {
+      if ((await Device.getInfo()).platform === "android") {
+        await TapJacking.preventOverlays();
+      }
+    };
+    tapjack();
   }, []);
 
   useEffect(() => {
@@ -247,9 +259,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (initializationPhase === InitializationPhase.PHASE_TWO) {
       if (authentication.loggedIn) {
-        Agent.agent.keriaNotifications.startNotification();
+        Agent.agent.keriaNotifications.startPolling();
       } else {
-        Agent.agent.keriaNotifications.stopNotification();
+        Agent.agent.keriaNotifications.stopPolling();
       }
     }
   }, [authentication.loggedIn, initializationPhase]);
@@ -562,7 +574,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const initApp = async () => {
-    await new ConfigurationService().start();
     await Agent.agent.setupLocalDependencies();
 
     // Keystore wiped after re-installs so iOS is consistent with Android.
@@ -570,9 +581,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_ALREADY_INIT
     );
     if (!initState) {
-      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
+      await SecureStorage.wipe();
     }
 
     // This will skip the onboarding screen with dev mode.

@@ -4,7 +4,8 @@
     "overview": "Overview",
     "connections": "Connections",
     "credentials": "Credentials",
-    "switchaccount": {
+    "requestPresentation": "Request Presentation",
+    "switchAccount": {
       "title": "Switch account",
       "issuer": "Issuer",
       "verifier": "Verifier",
@@ -16,10 +17,232 @@
       "title": "Overview"
     },
     "connections": {
-      "title": "Connections"
+      "title": "Connections ({{number}})",
+      "addConnection": {
+        "title": "Add Connection",
+        "modal": {
+          "title": "Add a Connection",
+          "descriptionStepOne": "<bold>Step 1 - Establish a connection from an individual ID to the issuer's ID.</bold> Scan the below QR code using the wallet you wish to establish a connection with or copy and send the Connection URL.",
+          "descriptionStepTwo": "<bold>Step 2 - Complete by connecting the issuer’s ID with the individual ID.</bold> Scan the QR code of the individual ID you want to establish the connection with or paste their Connection URL in the input field.",
+          "errorOnRequest": "Unable to fetch a connection ID. Please try again later.",
+          "learnMore": "Learn more",
+          "showLess": "Show less",
+          "descriptionLearnMore": "This information can be found within the identifier’s information by selecting the <moreVertIcon /> icon and clicking on “Share Connection”.",
+          "pasteUrl": "Paste Connection URL",
+          "button": {
+            "copyConnectionId": "Copy Connection ID",
+            "retry": "Retry",
+            "copied": "Copied",
+            "next": "Next",
+            "back": "Back",
+            "complete": "Complete",
+            "errorMessage": "Please paste a valid connection URL",
+            "openCamera": "Open Camera to Scan"
+          },
+          "toast": {
+            "pending": "Connection pending",
+            "success": "New connection added",
+            "error": "Unable to establish connection",
+            "qrCodeError": "QR code not recognized"
+          }
+        }
+      },
+      "filter": "Filter",
+      "selected": "selected",
+      "delete": "Delete",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "issueCredential": "Issue credential",
+      "requestPresentation": "Request Presentation",
+      "connectionName": "Connection Name",
+      "connectionDate": "Connection Date",
+      "issuedCredentials": "Issued Credentials",
+      "identifier": "Identifier",
+      "deleteConnections": {
+        "title": "Delete Connection(s)",
+        "body": "Are you sure you want to delete this connection? This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "toast": {
+          "success": "Connection(s) deleted successfully",
+          "error": "Unable to delete connection(s)"
+        }
+      }
+    },
+    "connectionDetails": {
+      "title": "Connection Details",
+      "issue": "Issue Credential",
+      "userInfo": {
+        "identifier": "Identifier",
+        "connectionDate": "Connection Date",
+        "issuedCredentials": "Issued Credentials",
+        "button": {
+          "delete": "Delete Connection"
+        },
+        "confirm": {
+          "title": "Delete Connection",
+          "body": "Please confirm you want to delete the connection. This action cannot be undone.",
+          "confirm": "Delete",
+          "cancel": "Cancel"
+        }
+      },
+      "table": {
+        "headers": {
+          "name": "Credential Name",
+          "issueDate": "Issued Date",
+          "status": "Status"
+        },
+        "status": {
+          "issued": "Issued",
+          "revoked": "Revoked"
+        },
+        "menu": {
+          "view": "View Template",
+          "delete": "Revoke Credential"
+        },
+        "toast": {
+          "success": "Credential revoked successfully",
+          "error": "Unable to revoke credential"
+        },
+        "confirm": {
+          "title": "Revoke Credential",
+          "body": "Please confirm you want to revoke this credential. This action cannot be undone.",
+          "confirm": "Revoke",
+          "cancel": "Cancel"
+        }
+      }
     },
     "credentials": {
-      "title": "Credentials"
+      "title": "Credential Management ({{number}})",
+      "actions": "Actions",
+      "table": {
+        "template": "Credential Templates",
+        "creationDate": "Creation Date",
+        "menu": {
+          "view": "View Details",
+          "issue": "Issue Credential"
+        }
+      }
+    },
+    "credentialDetails": {
+      "title": "Issued Credentials",
+      "issue": "Issue Credential",
+      "schemaInfo": {
+        "creationDate": "Creation Date"
+      },
+      "table": {
+        "headers": {
+          "name": "Connection Name",
+          "identifier": "Identifier",
+          "issueDate": "Issued Date",
+          "status": "Status"
+        },
+        "status": {
+          "issued": "Issued",
+          "revoked": "Revoked"
+        },
+        "menu": {
+          "actions": "Actions",
+          "view": "View Connection",
+          "issue": "Issue Credential",
+          "delete": "Revoke Credential"
+        },
+        "toast": {
+          "success": "Credential revoked successfully",
+          "error": "Unable to revoke credential"
+        },
+        "confirm": {
+          "title": "Revoke Credential",
+          "body": "Please confirm you want to revoke this credential. This action cannot be undone.",
+          "confirm": "Revoke",
+          "cancel": "Cancel"
+        }
+      },
+      "issueCredential": {
+        "title": "Issue a Credential",
+        "back": "Back",
+        "selectConnection": {
+          "description": "<strong>Select a connection to issue this credential</strong>. Search from your established connections, and please note that credentials can only be issued to one connection at a time.",
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "selectCredential": {
+          "description": "<strong>Select a template to issue to this connection</strong>. Search from your created credential templates, and please note that a credential can only be issued to one connection at a time."
+        },
+        "inputAttribute": {
+          "description": "<strong>Set the required value(s) to issue this credential</strong>. Below are all the values needed for issuance.",
+          "placeholder": "e.g. 12345678A90123V45R67",
+          "label": {
+            "name": "Name",
+            "lei": "LEI"
+          },
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "review": {
+          "description": "<strong>Review the credential details before issuing</strong>. Ensure all information is accurate, as issued credentials cannot be edited, but can be revoked if needed.",
+          "credential": "Credential Being Issued",
+          "issueTo": "Being Issued To",
+          "button": {
+            "issue": "Issue Credential"
+          }
+        },
+        "messages": {
+          "success": "Credential issued",
+          "failed": "Unable to issue credential"
+        }
+      }
+    },
+    "requestPresentation": {
+      "title": "Requested Presentations ({{number}})",
+      "action": "Request Presentation",
+      "table": {
+        "name": "Connection Name",
+        "credential": "Credential Requested",
+        "requestDate": "Date Requested",
+        "status": {
+          "header": "Status",
+          "requested": "Requested"
+        }
+      },
+      "modal": {
+        "title": "Request Presentation",
+        "back": "Back",
+        "selectConnection": {
+          "description": "<strong>Select a connection to request a credential presentation</strong>. Search your established connections, and please note that you can only request a presentation from one connection at a time.",
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "selectCredential": {
+          "description": "<strong>Select a credential to request a credential presentation</strong>. Search from your established connections, and please note that only one credential can be requested per connection."
+        },
+        "inputAttribute": {
+          "description": "<strong>Enter the required attribute values</strong>. Below are all the values needed for the presentation request.",
+          "placeholder": "e.g. 12345678A90123V45R67",
+          "label": {
+            "name": "Name",
+            "lei": "LEI"
+          },
+          "button": {
+            "continue": "Continue"
+          }
+        },
+        "review": {
+          "description": "<strong>Review the details before requesting</strong>. Ensure all information is accurate.",
+          "credential": "Credential Presentation Requested",
+          "issueTo": "Being Requested From",
+          "button": {
+            "issue": "Request Presentation"
+          }
+        },
+        "messages": {
+          "success": "Request sent successfully",
+          "failed": "Unable to send request"
+        }
+      }
     },
     "notifications": {
       "title": "Notifications"

@@ -44,6 +44,7 @@ const walletConnectionsCacheSlice = createSlice({
     showConnectWallet: (state, action: PayloadAction<boolean>) => {
       state.showConnectWallet = action.payload;
     },
+    clearWalletConnection: () => initialState,
   },
 });
 
@@ -55,6 +56,7 @@ export const {
   setPendingConnection,
   setIsConnecting,
   showConnectWallet,
+  clearWalletConnection,
 } = walletConnectionsCacheSlice.actions;
 
 const getWalletConnectionsCache = (state: RootState) =>

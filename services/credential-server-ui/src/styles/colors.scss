@@ -30,8 +30,12 @@
   --color-error-400: #ff6b6b;
   --color-error-800: #a30000;
 
+  --color-neutral-700-rgb: 52, 59, 69;
+  --color-neutral-800-rgb: 31, 36, 43;
+
   --primary-color: var(--color-primary-700);
   --secondary-color: var(--color-neutral-500);
   --background-color: var(--color-neutral-200);
   --text-color: var(--color-neutral-700);
+  --text-color-rgb: var(--color-neutral-700-rgb);
 }

@@ -9,7 +9,7 @@ class IonicSession {
     return this.sessionInstance;
   }
 
-  async open(storageName: string) {
+  async open(storageName: string): Promise<void> {
     if (!this.session) {
       this.sessionInstance = new Storage({
         name: storageName,
@@ -17,6 +17,10 @@ class IonicSession {
       });
       await this.sessionInstance.create();
     }
+  }
+
+  async wipe(_storageName: string): Promise<void> {
+    await this.sessionInstance?.clear();
   }
 }
 

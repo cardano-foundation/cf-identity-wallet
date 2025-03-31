@@ -22,7 +22,17 @@ import { passcodeFiller } from "../../utils/passcodeFiller";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
 import { KeyStoreKeys } from "../../../core/storage";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
+const deleteSecureStorageMock = jest.fn();
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    delete: (params: unknown) => deleteSecureStorageMock(params),
+  },
+}));
+
+const deleteById = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
   ...jest.requireActual("../../../core/agent/agent"),
   Agent: {
@@ -32,6 +42,9 @@ jest.mock("../../../core/agent/agent", () => ({
         resetLoginAttempts: resetLoginAttemptsMock,
         storeSecret: storeSecretMock,
         verifySecret: verifySecretMock,
+      },
+      basicStorage: {
+        deleteById: (args: unknown) => deleteById(args),
       },
     },
   },
@@ -117,7 +130,7 @@ const initialState = {
       loggedIn: false,
       time: Date.now(),
       passcodeIsSet: true,
-      seedPhraseIsSet: false,
+      seedPhraseIsSet: true,
       loginAttempt: {
         attempts: 0,
         lockedUntil: Date.now(),
@@ -215,6 +228,69 @@ describe("Lock Page", () => {
     expect(
       await findByText(EN_TRANSLATIONS.forgotauth.passcode.title)
     ).toBeVisible();
+  });
+
+  test("Forgot passcode before verify seedphrase", async () => {
+    const storeMocked = (initialState: StoreMockedProps) => {
+      return {
+        ...mockStore(initialState),
+        dispatch: dispatchMock,
+      };
+    };
+
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        authentication: {
+          loggedIn: false,
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
+        },
+        currentOperation: OperationType.IDLE,
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+      },
+      biometricsCache: {
+        enabled: true,
+      },
+    };
+
+    const { getByText } = render(
+      <Provider store={storeMocked(initialState)}>
+        <MemoryRouter initialEntries={[RoutePath.ROOT]}>
+          <IonReactRouter>
+            <LockPage />
+            <Route
+              path={RoutePath.SET_PASSCODE}
+              component={SetPasscode}
+            />
+          </IonReactRouter>
+        </MemoryRouter>
+      </Provider>
+    );
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
+
+    await waitFor(() => {
+      expect(deleteSecureStorageMock).toBeCalledWith(KeyStoreKeys.APP_PASSCODE);
+      expect(deleteSecureStorageMock).toBeCalledWith(
+        KeyStoreKeys.APP_OP_PASSWORD
+      );
+      expect(deleteById).toBeCalledWith(MiscRecordId.OP_PASS_HINT);
+      expect(deleteById).toBeCalledWith(MiscRecordId.APP_PASSWORD_SKIPPED);
+      expect(deleteById).toBeCalledWith(MiscRecordId.APP_ALREADY_INIT);
+      expect(deleteById).toBeCalledWith(MiscRecordId.APP_BIOMETRY);
+    });
   });
 
   test("Verifies passcode and hides page upon correct input", async () => {

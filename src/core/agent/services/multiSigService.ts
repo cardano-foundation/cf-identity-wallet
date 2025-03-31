@@ -345,7 +345,7 @@ class MultiSigService extends AgentService {
       );
     }
 
-    const senderAid = icpMsg[0].exn.i;
+    const senderPrefix = icpMsg[0].exn.i;
     // @TODO - foconnor: This cross service call should be handled better.
     const senderContact = await this.connections.getConnectionShortDetailById(
       icpMsg[0].exn.i
@@ -362,15 +362,19 @@ class MultiSigService extends AgentService {
       throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
 
-    const otherConnections = (
-      await this.connections.getMultisigLinkedContacts(
-        ourIdentifier.groupMetadata.groupId
-      )
-    ).filter((connection) => connection.id !== senderAid);
+    const linkedConnections = await this.connections.getMultisigLinkedContacts(
+      ourIdentifier.groupMetadata.groupId
+    );
+    const otherConnections = [];
+    for (const prefix of smids) {
+      if (prefix === senderPrefix || prefix === ourIdentifier.id) continue;
 
-    if (otherConnections.length !== smids.length - 2) {
-      // Should be 2 less for us and the sender
-      throw new Error(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+      const linkedConnection = linkedConnections.find(connection => connection.id === prefix);
+      if (!linkedConnection) {
+        throw new Error(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+      }
+
+      otherConnections.push(linkedConnection);
     }
 
     return {

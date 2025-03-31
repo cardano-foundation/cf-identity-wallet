@@ -2,3 +2,6 @@ keri:
   keria:
     url: "https://keria.dev.idw-sandboxes.cf-deployments.org"
     bootUrl: "https://keria-boot.dev.idw-sandboxes.cf-deployments.org"
+security:
+  rasp:
+    enabled: false

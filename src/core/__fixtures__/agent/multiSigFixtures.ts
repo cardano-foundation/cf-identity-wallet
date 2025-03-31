@@ -487,9 +487,9 @@ const resolvedOobiOpResponse = {
 };
 
 const initiatorConnectionShortDetails = {
-  id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+  id: "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
   label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-  oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+  oobi: "http://127.0.0.1:3902/oobi/EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
   status: ConnectionStatus.CONFIRMED,
   createdAtUTC: new Date().toISOString(),
 };
@@ -511,7 +511,7 @@ const getRequestMultisigIcp = {
     v: "KERI10JSON000735_",
     t: "exn",
     d: "EI8fS00-AxbbqXmwoivpw-0ui0qgZtGbh8Ue-ZVbxYS-",
-    i: "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+    i: "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
     p: "",
     dt: "2024-08-19T10:20:54.591000+00:00",
     r: "/multisig/icp",

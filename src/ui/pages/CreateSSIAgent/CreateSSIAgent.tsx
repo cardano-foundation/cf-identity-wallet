@@ -1,11 +1,10 @@
-import { Browser } from "@capacitor/browser";
 import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
 import {
+  addOutline,
   informationCircleOutline,
   openOutline,
-  scanOutline,
   refreshOutline,
-  addOutline,
+  scanOutline,
 } from "ionicons/icons";
 import {
   MouseEvent as ReactMouseEvent,
@@ -38,6 +37,7 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { SwitchOnboardingModeModal } from "../../components/SwitchOnboardingModeModal";
+import { OnboardingMode } from "../../components/SwitchOnboardingModeModal/SwitchOnboardingModeModal.types";
 import { TermsModal } from "../../components/TermsModal";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import {
@@ -47,9 +47,9 @@ import {
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
 import { showError } from "../../utils/error";
+import { openBrowserLink } from "../../utils/openBrowserLink";
 import { isValidHttpUrl } from "../../utils/urlChecker";
 import "./CreateSSIAgent.scss";
-import { OnboardingMode } from "../../components/SwitchOnboardingModeModal/SwitchOnboardingModeModal.types";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 const SEED_PHRASE_EMPTY = "Invalid seed phrase";
@@ -265,11 +265,13 @@ const CreateSSIAgent = () => {
   const scanBootUrl = (event: ReactMouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation();
     dispatch(setCurrentOperation(OperationType.SCAN_SSI_BOOT_URL));
+    setTouchedBootUrlInput();
   };
 
   const scanConnectUrl = (event: ReactMouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation();
     dispatch(setCurrentOperation(OperationType.SCAN_SSI_CONNECT_URL));
+    setTouchedConnectUrlInput();
   };
 
   const removeLastSlash = (url: string) => {
@@ -295,11 +297,11 @@ const CreateSSIAgent = () => {
   };
 
   const handleOpenUrl = () => {
-    Browser.open({
-      url: isRecoveryMode
+    openBrowserLink(
+      isRecoveryMode
         ? RECOVERY_DOCUMENTATION_LINK
-        : ONBOARDING_DOCUMENTATION_LINK,
-    });
+        : ONBOARDING_DOCUMENTATION_LINK
+    );
   };
 
   const mode = isRecoveryMode ? OnboardingMode.Create : OnboardingMode.Recovery;

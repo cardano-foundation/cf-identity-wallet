@@ -28,7 +28,11 @@ class SecureStorage {
   }
 
   static async set(key: string, value: string): Promise<void> {
-    await SecureStoragePlugin.set({ key, value });
+    await SecureStoragePlugin.set({
+      key,
+      value,
+      accessibility: "whenUnlockedThisDeviceOnly",
+    });
   }
 
   static async delete(key: string) {
@@ -50,13 +54,19 @@ class SecureStorage {
       : false;
   }
 
-  static async isKeyStoreSupported() {
+  static async isKeyStoreSupported(): Promise<boolean> {
     try {
       await this.set("testKey", "testValue");
       await this.delete("testKey");
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  static async wipe(): Promise<void> {
+    for (const key of Object.values(KeyStoreKeys)) {
+      await SecureStorage.delete(key);
     }
   }
 }
