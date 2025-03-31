@@ -241,7 +241,7 @@ const CredentialRequestInformation = ({
       reachedThreshold ||
       missingProposedCred
       ? undefined
-      : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
+      : `${i18n.t("tabs.notifications.details.buttons.reject")}`;
   }, [
     isGroupInitiator,
     groupInitiatorJoined,
@@ -329,8 +329,10 @@ const CredentialRequestInformation = ({
             customClass="credential-request-footer"
             primaryButtonText={primaryButtonText}
             primaryButtonAction={handleAcceptClick}
-            declineButtonText={declineButton || deleteButtonText}
+            declineButtonText={declineButton}
             declineButtonAction={decline}
+            deleteButtonText={deleteButtonText}
+            deleteButtonAction={decline}
           />
         }
       >
