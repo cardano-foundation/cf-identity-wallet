@@ -114,7 +114,7 @@ describe("Multisign request", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("secondary-button-multi-sign"));
+      fireEvent.click(getByTestId("decline-button-multi-sign"));
     });
 
     await waitFor(() => {

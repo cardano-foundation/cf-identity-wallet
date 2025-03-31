@@ -141,7 +141,7 @@ describe("Receive credential", () => {
     ).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("secondary-button-creadential-request"));
+      fireEvent.click(getByTestId("decline-button-creadential-request"));
     });
 
     await waitFor(() => {
@@ -648,7 +648,7 @@ describe("Credential request: Multisig", () => {
       );
 
     expect(queryByTestId("primary-button-creadential-request")).toBe(null);
-    expect(queryByTestId("secondary-button-creadential-request")).toBe(null);
+    expect(queryByTestId("decline-button-creadential-request")).toBe(null);
 
     const memberName = queryByText("Member 1");
     expect(memberName).toBeNull();

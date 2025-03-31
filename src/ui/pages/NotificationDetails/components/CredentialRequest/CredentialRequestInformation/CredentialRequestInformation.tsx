@@ -6,6 +6,8 @@ import { NotificationRoute } from "../../../../../../core/agent/agent.types";
 import { i18n } from "../../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../../store/reducers/connectionsCache";
+import { getCredsArchivedCache } from "../../../../../../store/reducers/credsArchivedCache";
+import { getCredsCache } from "../../../../../../store/reducers/credsCache";
 import {
   getNotificationsCache,
   setNotificationsCache,
@@ -25,15 +27,13 @@ import { InfoCard } from "../../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../../components/PageFooter";
 import { PageHeader } from "../../../../../components/PageHeader";
+import { Verification } from "../../../../../components/Verification";
 import { ToastMsgType } from "../../../../../globals/types";
 import { useOnlineStatusEffect } from "../../../../../hooks";
 import { showError } from "../../../../../utils/error";
 import { CredentialRequestProps, MemberInfo } from "../CredentialRequest.types";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
 import "./CredentialRequestInformation.scss";
-import { Verification } from "../../../../../components/Verification";
-import { getCredsCache } from "../../../../../../store/reducers/credsCache";
-import { getCredsArchivedCache } from "../../../../../../store/reducers/credsArchivedCache";
 
 const CredentialRequestInformation = ({
   pageId,
@@ -250,6 +250,14 @@ const CredentialRequestInformation = ({
     missingProposedCred,
   ]);
 
+  const declineButton =
+    reachedThreshold ||
+    groupInitiatorJoined ||
+    !isGroupInitiator ||
+    missingProposedCred
+      ? undefined
+      : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
+
   const decline = () => setAlertDeclineIsOpen(true);
 
   const acceptRequest = async () => {
@@ -321,18 +329,8 @@ const CredentialRequestInformation = ({
             customClass="credential-request-footer"
             primaryButtonText={primaryButtonText}
             primaryButtonAction={handleAcceptClick}
-            secondaryButtonText={
-              reachedThreshold ||
-              groupInitiatorJoined ||
-              !isGroupInitiator ||
-              missingProposedCred
-                ? undefined
-                : `${i18n.t("tabs.notifications.details.buttons.decline")}`
-            }
-            secondaryButtonAction={decline}
-            deleteButtonAction={decline}
-            deleteButtonText={deleteButtonText}
-            deleteButtonIcon={false}
+            declineButtonText={declineButton || deleteButtonText}
+            declineButtonAction={decline}
           />
         }
       >
@@ -386,9 +384,9 @@ const CredentialRequestInformation = ({
               {missingProposedCred ? (
                 <InfoCard
                   content={i18n.t(
-                    isGroupInitiator ?
-                    "tabs.notifications.details.credential.request.information.initiatordeletedproposedcredential" :
-                    "tabs.notifications.details.credential.request.information.missingproposedcredential"
+                    isGroupInitiator
+                      ? "tabs.notifications.details.credential.request.information.initiatordeletedproposedcredential"
+                      : "tabs.notifications.details.credential.request.information.missingproposedcredential"
                   )}
                   className="missing-proposed-cred-info"
                   icon={warningOutline}

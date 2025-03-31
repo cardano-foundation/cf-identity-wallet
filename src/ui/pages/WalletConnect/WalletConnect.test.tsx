@@ -456,17 +456,17 @@ describe("Wallet Connect Request", () => {
     ).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("secondary-button-connect-wallet-stage-one"));
+      fireEvent.click(getByTestId("decline-button-connect-wallet-stage-one"));
     });
 
     await waitFor(() => {
       expect(
-        getByTestId("secondary-button-connect-wallet-stage-one")
+        getByTestId("decline-button-connect-wallet-stage-one")
       ).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("secondary-button-connect-wallet-stage-one"));
+      fireEvent.click(getByTestId("decline-button-connect-wallet-stage-one"));
     });
 
     await waitFor(() => {

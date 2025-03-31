@@ -80,7 +80,7 @@ describe("Side Page: wallet connect", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("secondary-button-connect-wallet-stage-one"));
+      fireEvent.click(getByTestId("decline-button-connect-wallet-stage-one"));
     });
 
     await waitFor(() => {
