@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { existsSync } from "fs";
-import { join } from "path";
 import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
@@ -13,16 +11,6 @@ async function issueAcdcCredential(
   next: NextFunction
 ): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
-
-  const schemaPath = join(__dirname, "..", "schemas", schemaSaid);
-  if (!existsSync(schemaPath)) {
-    const response: ResponseData<string> = {
-      statusCode: 409,
-      success: false,
-      data: "",
-    };
-    return httpResponse(res, response);
-  }
 
   await Agent.agent.issueAcdcCredentialByAid(schemaSaid, aid, attribute);
   const response: ResponseData<string> = {
