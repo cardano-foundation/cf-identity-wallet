@@ -1,0 +1,593 @@
+{
+  "$id": "EA3NRCtGF0czMPeiG5-CWbgCnmcpBDpPo2mYlxoGkk0j",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "v10n Claim Export",
+  "description": "v10n Claim Export",
+  "type": "object",
+  "credentialType": "ClaimExport",
+  "version": "0.0.2",
+  "properties": {
+    "v": {
+      "description": "Version",
+      "type": "string"
+    },
+    "d": {
+      "description": "Credential SAID",
+      "type": "string"
+    },
+    "u": {
+      "description": "One time use nonce",
+      "type": "string"
+    },
+    "i": {
+      "description": "Issuer AID",
+      "type": "string"
+    },
+    "ri": {
+      "description": "Credential status registry",
+      "type": "string"
+    },
+    "s": {
+      "description": "Schema SAID",
+      "type": "string"
+    },
+    "a": {
+      "oneOf": [
+        {
+          "description": "Attributes block SAID",
+          "type": "string"
+        },
+        {
+          "description": "Claim Export",
+          "type": "object",
+          "properties": {
+            "i": {
+              "description": "Issuee AID",
+              "type": "string"
+            },
+            "claim": {
+              "description": "Claim",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Id of the Claim",
+                  "type": "string"
+                },
+                "status": {
+                  "description": "Status of the Claim",
+                  "type": "string"
+                },
+                "projectOwner": {
+                  "description": "Project Owner",
+                  "type": "string"
+                },
+                "verifier": {
+                  "description": "Verifier",
+                  "type": "string"
+                },
+                "regulator": {
+                  "description": "Regulator",
+                  "type": "string"
+                },
+                "registry": {
+                  "description": "Registry",
+                  "type": "string"
+                },
+                "projectId": {
+                  "description": "Project ID",
+                  "type": "string"
+                },
+                "contractId": {
+                  "description": "Contract ID",
+                  "type": "string"
+                },
+                "sources": {
+                  "description": "Sources",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "description": "Id of the Source",
+                        "type": "string"
+                      },
+                      "type": {
+                        "description": "Type of the Source",
+                        "type": "string"
+                      },
+                      "externalSourceId": {
+                        "description": "External Source ID",
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "coBenefits": {
+                  "description": "Co Benefits",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "cobenefit": {
+                        "description": "Co Benefit",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "verificationReport": {
+                    "description": "Verification Report",
+                    "type": "object",
+                    "properties": {
+                      "report": {
+                        "description": "The verification Report Description",
+                        "type": "string"
+                      },
+                      "attachment": {
+                        "type": "object",
+                        "description": "Attachment for the verification report",
+                        "properties": {
+                          "name": {
+                            "description": "File name",
+                            "type": "string"
+                          },
+                          "hash": {
+                            "description": "Hash",
+                            "type": "string"
+                          },
+                          "fileName": {
+                            "description": "File Name",
+                            "type": "string"
+                          },
+                          "mimeType": {
+                            "description": "Mime Type",
+                            "type": "string"
+                          },
+                          "size": {
+                            "description": "The Length",
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "amount": {
+                    "description": "The amount of CO2",
+                    "type": "integer"
+                  },
+                  "claimHash": {
+                    "description": "The Corda Claim Hash",
+                    "type": "string"
+                  },
+                  "startDate": {
+                    "description": "The start date",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "description": "The end date",
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            },
+            "checkpoints": {
+              "description": "Claim Checkpoints",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "description": "ID",
+                    "type": "string"
+                  },
+                  "projectOwner": {
+                    "description": "Project Owner",
+                    "type": "string"
+                  },
+                  "verifier": {
+                    "description": "Verifier",
+                    "type": "string"
+                  },
+                  "registry": {
+                    "description": "Registry",
+                    "type": "string"
+                  },
+                  "claimId": {
+                    "description": "Claim ID",
+                    "type": "string"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "array",
+                      "description": "Attachment for the verification report",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "description": "File name",
+                            "type": "string"
+                          },
+                          "hash": {
+                            "description": "Hash",
+                            "type": "string"
+                          },
+                          "fileName": {
+                            "description": "File Name",
+                            "type": "string"
+                          },
+                          "mimeType": {
+                            "description": "Mime Type",
+                            "type": "string"
+                          },
+                          "size": {
+                            "description": "The Length",
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "discarded": {
+                  "description": "Is Discarded",
+                  "type": "boolean"
+                }
+              }
+            },
+            "contract": {
+              "description": "Contract Information",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Contract id",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Name",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of the Contract",
+                  "type": "string"
+                },
+                "status": {
+                  "description": "Status of the Contract",
+                  "type": "string"
+                },
+                "programOwner": {
+                  "description": "Owner of the Program",
+                  "type": "string"
+                },
+                "verifier": {
+                  "description": "Verifier of the Contract",
+                  "type": "string"
+                },
+                "registry": {
+                  "description": "Registry",
+                  "type": "string"
+                },
+                "verificationStandard": {
+                  "description": "Verification Standard",
+                  "type": "object",
+                  "properties": {
+                    "standard": {
+                      "description": "Standard Name",
+                      "type": "string"
+                    },
+                    "version": {
+                      "description": "Version",
+                      "type": "string"
+                    },
+                    "link": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "description": "File name",
+                          "type": "string"
+                        },
+                        "hash": {
+                          "description": "Hash",
+                          "type": "string"
+                        },
+                        "fileName": {
+                          "description": "File Name",
+                          "type": "string"
+                        },
+                        "mimeType": {
+                          "description": "Mime Type",
+                          "type": "string"
+                        },
+                        "size": {
+                          "description": "The Length",
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                },
+                "mrvRequirements": {
+                  "description": "MRV Requirements",
+                  "type": "object",
+                  "properties": {
+                    "requirements": {
+                      "description": "Requirements",
+                      "type": "string"
+                    }
+                  }
+                },
+                "agreementDate": {
+                  "description": "Agreement Date",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "effectiveDate": {
+                  "description": "Effective Date",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endDate": {
+                  "description": "End Date",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "estimatedAnnualCredits": {
+                  "description": "Estimated Annual Credits",
+                  "type": "string"
+                },
+                "termsAndConditions": {
+                  "description": "Terms and Conditions",
+                  "type": "object",
+                  "properties": {
+                    "terms": {
+                      "description": "Terms and Conditions",
+                      "type": "string"
+                    }
+                  }
+                },
+                "rejectionReason": {
+                  "description": "Reason for Rejection",
+                  "type": "string"
+                },
+                "rejectedBy": {
+                  "description": "Rejected By",
+                  "type": "string"
+                },
+                "projectId": {
+                  "description": "Project ID",
+                  "type": "string"
+                },
+                "attachments": {
+                  "description": "Program Attachments",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "File name",
+                        "type": "string"
+                      },
+                      "hash": {
+                        "description": "Hash",
+                        "type": "string"
+                      },
+                      "fileName": {
+                        "description": "File Name",
+                        "type": "string"
+                      },
+                      "mimeType": {
+                        "description": "Mime Type",
+                        "type": "string"
+                      },
+                      "size": {
+                        "description": "The Length",
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "project": {
+              "description": "MBP Project",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Identifier",
+                  "type": "string"
+                },
+                "status": {
+                  "description": "Status",
+                  "type": "string"
+                },
+                "owner": {
+                  "description": "Owner",
+                  "type": "string"
+                },
+                "registry": {
+                  "description": "Registry",
+                  "type": "string"
+                },
+                "regulator": {
+                  "description": "Regulator",
+                  "type": "string"
+                },
+                "observers": {
+                  "description": "Program Attachments",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "programId": {
+                  "description": "Program ID",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Project Name",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Project Descrip[tion",
+                  "type": "string"
+                },
+                "location": {
+                  "description": "Location",
+                  "type": "object",
+                  "properties": {
+                    "location": {
+                      "description": "Location",
+                      "type": "string"
+                    }
+                  }
+                },
+                "target": {
+                  "description": "Target Benefit",
+                  "type": "object",
+                  "properties": {
+                    "benefit": {
+                      "description": "Benefit",
+                      "type": "string"
+                    }
+                  }
+                },
+                "developers": {
+                  "description": "Project Developers",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "Name",
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "sponsors": {
+                  "description": "Sponsors",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "Name",
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "rejectionReason": {
+                  "description": "Rejection Reason",
+                  "type": "string"
+                },
+                "attachments": {
+                  "description": "Program Attachments",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "File name",
+                        "type": "string"
+                      },
+                      "hash": {
+                        "description": "Hash",
+                        "type": "string"
+                      },
+                      "fileName": {
+                        "description": "File Name",
+                        "type": "string"
+                      },
+                      "mimeType": {
+                        "description": "Mime Type",
+                        "type": "string"
+                      },
+                      "size": {
+                        "description": "The Length",
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "program": {
+              "description": "Ecological Program",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Identifier",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Food Water Wellness Foundation",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Program Description",
+                  "type": "string"
+                },
+                "owner": {
+                  "description": "The Owner of the program",
+                  "type": "string"
+                },
+                "hostCountry": {
+                  "description": "The country",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "description": "The name of the country",
+                      "type": "string"
+                    }
+                  }
+                },
+                "scale": {
+                  "description": "The scale",
+                  "type": "string"
+                },
+                "attachments": {
+                  "description": "Program Attachments",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "File name",
+                        "type": "string"
+                      },
+                      "hash": {
+                        "description": "Hash",
+                        "type": "string"
+                      },
+                      "fileName": {
+                        "description": "File Name",
+                        "type": "string"
+                      },
+                      "mimeType": {
+                        "description": "Mime Type",
+                        "type": "string"
+                      },
+                      "size": {
+                        "description": "The Length",
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "i",
+    "ri",
+    "s",
+    "d"
+  ]
+}
