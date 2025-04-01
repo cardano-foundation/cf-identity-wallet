@@ -89,7 +89,7 @@
 
   &.has-content {
     .card-header {
-      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
     }
   }
 
@@ -117,7 +117,7 @@
   @media screen and (min-width: 250px) and (max-width: 370px) {
     &.has-content {
       .card-header {
-        margin-bottom: 0.8rem;
+        padding-bottom: 0.6rem;
       }
     }
 
