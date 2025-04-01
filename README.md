@@ -32,8 +32,6 @@
 
 Check out [our documentation](https://docs.veridian.id/) to learn how to use the app, connect to infrastructure and start developing with KERI!
 
-<br>
-
 # Features
 
 - :iphone: Android & iOS Support with native biometrics
@@ -48,7 +46,7 @@ Check out [our documentation](https://docs.veridian.id/) to learn how to use the
   
  # Future Developments
  
-- Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar) compatible encryption-at-rest to replace SQLCipher
+- [Aries Askar](https://github.com/openwallet-foundation/askar) compatible encryption-at-rest to replace SQLCipher
 - Social and multi-device identifier recovery
 - P2P Chat
 - Delegated multi-sig for organisational identity
@@ -160,6 +158,7 @@ If you encounter any issues or have questions, please drop us a message on our D
 # License
 
 <div align="justify">
+
 This project was previously licensed under MPL-2.0 up until commit `49f9811c363bb1c05a5349d4aa3434793a1b3a39`.
 It is now licensed under Apache 2.0. Any prior versions remain available under MPL-2.0.
 
