@@ -20,7 +20,7 @@ services:
   keria:
     profiles: [keria,production]
     restart: unless-stopped
-    image: ${KERIA_IMAGE:-cardanofoundation/cf-idw-keria:0.1.1-PR999-72f5f61-GHRUN13631990672}
+    image: ${KERIA_IMAGE:-cardanofoundation/cf-idw-keria:main}
     environment:
       - KERI_AGENT_CORS=true
       - KERIA_PASSCODE=${KERIA_PASSCODE:-DLDRW3f108LaQB2qscJOd}
