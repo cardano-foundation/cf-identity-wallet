@@ -116,10 +116,10 @@ const WalletConnectStageOne = ({
             "tabs.menu.tab.items.connectwallet.request.button.accept"
           )}`}
           primaryButtonAction={handleAccept}
-          secondaryButtonText={`${i18n.t(
+          declineButtonText={`${i18n.t(
             "tabs.menu.tab.items.connectwallet.request.button.decline"
           )}`}
-          secondaryButtonAction={openDecline}
+          declineButtonAction={openDecline}
         />
       </ResponsivePageLayout>
       <Alert

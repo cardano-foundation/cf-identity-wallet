@@ -170,10 +170,10 @@ const MultiSigRequest = ({
               "tabs.notifications.details.buttons.accept"
             )}`}
             primaryButtonAction={() => setVerifyIsOpen(true)}
-            secondaryButtonText={`${i18n.t(
+            declineButtonText={`${i18n.t(
               "tabs.notifications.details.buttons.decline"
             )}`}
-            secondaryButtonAction={handleDeclineClick}
+            declineButtonAction={handleDeclineClick}
           />
         }
       >

@@ -22,9 +22,12 @@ const PageFooter = ({
   archiveButtonAction,
   archiveButtonDisabled,
   deleteButtonText,
-  deleteButtonIcon = true,
   deleteButtonAction,
   deleteButtonDisabled,
+  declineButtonAction,
+  declineButtonDisabled,
+  declineButtonIcon,
+  declineButtonText,
   children,
 }: PageFooterProps) => {
   return (
@@ -124,16 +127,34 @@ const PageFooter = ({
             onClick={deleteButtonAction}
             disabled={deleteButtonDisabled}
           >
-            {deleteButtonIcon && (
+            <IonIcon
+              slot="icon-only"
+              size="small"
+              icon={trashOutline}
+              color="primary"
+            />
+            {deleteButtonText}
+          </IonButton>
+        )}
+        {declineButtonText && declineButtonAction && (
+          <IonButton
+            shape="round"
+            expand="block"
+            fill="clear"
+            className="decline-button"
+            data-testid={`decline-button${pageId ? `-${pageId}` : ""}`}
+            onClick={declineButtonAction}
+            disabled={declineButtonDisabled}
+          >
+            {declineButtonIcon && (
               <IonIcon
                 slot="icon-only"
                 size="small"
-                icon={trashOutline}
+                icon={declineButtonIcon}
                 color="primary"
               />
             )}
-
-            {deleteButtonText}
+            {declineButtonText}
           </IonButton>
         )}
       </div>

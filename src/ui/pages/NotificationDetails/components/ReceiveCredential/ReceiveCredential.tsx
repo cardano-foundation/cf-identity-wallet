@@ -320,7 +320,7 @@ const ReceiveCredential = ({
           : "tabs.notifications.details.buttons.accept"
     )}`;
 
-  const secondaryButtonText =
+  const declineButtonText =
     maxThreshold || isRevoked || displayInitiatorNotAcceptedAlert
       ? undefined
       : `${i18n.t("tabs.notifications.details.buttons.decline")}`;
@@ -355,8 +355,8 @@ const ReceiveCredential = ({
               pageId={pageId}
               primaryButtonText={primaryButtonText}
               primaryButtonAction={handleConfirm}
-              secondaryButtonText={secondaryButtonText}
-              secondaryButtonAction={
+              declineButtonText={declineButtonText}
+              declineButtonAction={
                 maxThreshold || displayInitiatorNotAcceptedAlert
                   ? undefined
                   : () => setAlertDeclineIsOpen(true)

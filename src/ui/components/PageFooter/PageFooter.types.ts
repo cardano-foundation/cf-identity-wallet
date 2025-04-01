@@ -19,9 +19,12 @@ interface PageFooterProps {
   archiveButtonAction?: () => void;
   archiveButtonDisabled?: boolean;
   deleteButtonText?: string;
-  deleteButtonIcon?: boolean;
   deleteButtonAction?: () => void;
   deleteButtonDisabled?: boolean;
+  declineButtonIcon?: string;
+  declineButtonText?: string;
+  declineButtonAction?: () => void;
+  declineButtonDisabled?: boolean;
   children?: ReactNode;
 }
 

@@ -208,6 +208,12 @@ p {
   --background: var(--ion-color-error-800);
 }
 
+.decline-button {
+  --color: var(--ion-color-error-800);
+  border: none;
+  font-weight: 500;
+}
+
 .archive-button {
   --background: var(--ion-color-archive-400);
 }
@@ -216,6 +222,7 @@ p {
 .secondary-button,
 .tertiary-button,
 .delete-button,
+.decline-button,
 .archive-button {
   font-size: 1rem;
   height: 3.25rem;

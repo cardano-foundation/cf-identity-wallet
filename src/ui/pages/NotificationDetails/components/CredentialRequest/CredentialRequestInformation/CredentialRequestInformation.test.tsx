@@ -95,7 +95,7 @@ describe("Credential request information", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("secondary-button-multi-sign"));
+      fireEvent.click(getByTestId("decline-button-multi-sign"));
     });
 
     await waitFor(() => {
@@ -470,7 +470,7 @@ describe("Credential request information: multisig", () => {
         ...initialState,
         credsCache: {
           creds: [],
-        }
+        },
       }),
       dispatch: dispatchMock,
     };
@@ -584,7 +584,7 @@ describe("Credential request information: multisig", () => {
         ...initialState,
         credsCache: {
           creds: [],
-        }
+        },
       }),
       dispatch: dispatchMock,
     };
@@ -839,7 +839,7 @@ describe("Credential request information: multisig", () => {
       getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
     ).toBeVisible();
 
-    expect(getByTestId("delete-button-multi-sign")).toBeVisible();
+    expect(getByTestId("decline-button-multi-sign")).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
@@ -856,7 +856,7 @@ describe("Credential request information: multisig", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("delete-button-multi-sign"));
+      fireEvent.click(getByTestId("decline-button-multi-sign"));
     });
 
     await waitFor(() => {
@@ -984,7 +984,7 @@ describe("Credential request information: multisig", () => {
       getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.accept)
     ).toBeVisible();
 
-    expect(getByTestId("delete-button-multi-sign")).toBeVisible();
+    expect(getByTestId("decline-button-multi-sign")).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
@@ -1001,7 +1001,7 @@ describe("Credential request information: multisig", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("delete-button-multi-sign"));
+      fireEvent.click(getByTestId("decline-button-multi-sign"));
     });
 
     await waitFor(() => {
