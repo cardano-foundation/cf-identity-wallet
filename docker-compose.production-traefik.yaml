@@ -1,0 +1,328 @@
+name: veridian-prod
+
+services:
+  keria-init:
+    profiles: [keria-init]
+    image: "rcmorano/alpine-bash-jq-curl"
+    environment:
+      - KERIA_PASSCODE=${KERIA_PASSCODE:-DLDRW3f108LaQB2qscJOd}
+      - KERIA_CURLS=${KERIA_CURLS:-http://keria:3901}
+      - KERIA_IURLS=${KERIA_IURLS:-http://witness:5642/oobi/dummy1 http://witness:5643/oobi/dummy2}
+    volumes:
+      - keria-config:/config
+    configs:
+      - source: keria-init_sh
+        target: /keria-init.sh
+      - source: backer-oobis_json_tpl
+        target: /configmap/backer-oobis.json.tpl
+    entrypoint: ["bash", "/keria-init.sh"]
+
+  keria:
+    profiles: [keria,production]
+    restart: unless-stopped
+    image: ${KERIA_IMAGE:-cardanofoundation/cf-idw-keria:0.1.1-PR999-72f5f61-GHRUN13631990672}
+    environment:
+      - KERI_AGENT_CORS=true
+      - KERIA_PASSCODE=${KERIA_PASSCODE:-DLDRW3f108LaQB2qscJOd}
+    volumes:
+      - keria-data:/usr/local/var/keri
+      - keria-config:/keria/scripts/keri/cf
+    entrypoint: keria start --config-file backer-oobis --config-dir ./scripts --loglevel INFO
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keria.rule=Host(`${KERIA_HOST:-keria}`)"
+      - "traefik.http.routers.keria.entrypoints=websecure"
+      - "traefik.http.routers.keria.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria.service=keria"
+      - "traefik.http.services.keria.loadbalancer.server.port=3901"
+
+      - "traefik.http.routers.keria-ext.rule=Host(`${KERIA_EXT_HOST:-keria-ext}`)"
+      - "traefik.http.routers.keria-ext.entrypoints=websecure"
+      - "traefik.http.routers.keria-ext.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria-ext.service=keria-ext"
+      - "traefik.http.services.keria-ext.loadbalancer.server.port=3902"
+      
+      - "traefik.http.routers.keria-boot.rule=Host(`${KERIA_BOOT_HOST:-keria-boot}`)"
+      - "traefik.http.routers.keria-boot.entrypoints=websecure"
+      - "traefik.http.routers.keria-boot.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria-boot.service=keria-boot"
+      - "traefik.http.services.keria-boot.loadbalancer.server.port=3903"
+
+  witness-init:
+    profiles: [witness-init]
+    restart: no
+    image: cardanofoundation/cf-idw-witness:main
+    environment:
+      - KERI_VAR_DIR=/usr/local/var/keri
+      - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
+      - KERIA_CURLS_PROTO=${KERIA_CURLS_PROTO:-https}
+      - KERIA_CURLS_EXTERNAL_HOST_TLD=${PUBLIC_DOMAIN:-example.com}
+      - WITNESS_COUNT=${WITNESS_COUNT:-6}
+    volumes:
+      - witnesses-config:/usr/local/var/keri
+    configs:
+      - source: witness-init_sh
+        target: /configmap/witness-init.sh
+      - source: witness_json_tpl
+        target: /configmap/witness.json.tpl
+      - source: wil-witness-sample.json
+        target: /configmap/wil-witness-sample.json
+    entrypoint: ["bash", "-c", "bash /configmap/witness-init.sh"]
+
+  witness-0:
+    profiles: [witness,production]
+    hostname: witness-0
+    restart: unless-stopped
+    image: ${WITNESS_IMAGE:-weboftrust/keri:1.1.26}
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+        - INITIAL_HTTP_PORT=5642
+        - INITIAL_TCP_PORT=5632
+        - KERI_VAR_DIR=/usr/local/var/keri
+        - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
+        - LOG_LEVEL=INFO
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    volumes:
+        - witnesses-config:/usr/local/var/keri
+    labels:
+      - "traefik.http.routers.witness0.rule=Host(`witness0.${PUBLIC_DOMAIN}`)"
+      - "traefik.http.routers.witness0.entrypoints=websecure"
+      - "traefik.http.routers.witness0.tls.certresolver=myresolver"
+      - "traefik.http.routers.witness0.service=0"
+      - "traefik.http.services.witness0.loadbalancer.server.port=5642"
+
+  witness-1:
+    profiles: [witness,production]
+    hostname: witness-1
+    restart: unless-stopped
+    image: ${WITNESS_IMAGE:-weboftrust/keri:1.1.26}
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+        - INITIAL_HTTP_PORT=5642
+        - INITIAL_TCP_PORT=5632
+        - KERI_VAR_DIR=/usr/local/var/keri
+        - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
+        - LOG_LEVEL=INFO
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    volumes:
+        - witnesses-config:/usr/local/var/keri
+    labels:
+      - "traefik.http.routers.witness1.rule=Host(`witness1.${PUBLIC_DOMAIN}`)"
+      - "traefik.http.routers.witness1.entrypoints=websecure"
+      - "traefik.http.routers.witness1.tls.certresolver=myresolver"
+      - "traefik.http.routers.witness1.service=1"
+      - "traefik.http.services.witness1.loadbalancer.server.port=5643"
+
+  witness-2:
+    profiles: [witness,production]
+    hostname: witness-2
+    restart: unless-stopped
+    image: ${WITNESS_IMAGE:-weboftrust/keri:1.1.26}
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+        - INITIAL_HTTP_PORT=5642
+        - INITIAL_TCP_PORT=5632
+        - KERI_VAR_DIR=/usr/local/var/keri
+        - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
+        - LOG_LEVEL=INFO
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    volumes:
+        - witnesses-config:/usr/local/var/keri
+    labels:
+      - "traefik.http.routers.witness2.rule=Host(`witness2.${PUBLIC_DOMAIN}`)"
+      - "traefik.http.routers.witness2.entrypoints=websecure"
+      - "traefik.http.routers.witness2.tls.certresolver=myresolver"
+      - "traefik.http.routers.witness2.service=2"
+      - "traefik.http.services.witness2.loadbalancer.server.port=5644"
+
+  witness-3:
+    profiles: [witness,production]
+    hostname: witness-3
+    restart: unless-stopped
+    image: ${WITNESS_IMAGE:-weboftrust/keri:1.1.26}
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+        - INITIAL_HTTP_PORT=5642
+        - INITIAL_TCP_PORT=5632
+        - KERI_VAR_DIR=/usr/local/var/keri
+        - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
+        - LOG_LEVEL=INFO
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    volumes:
+        - witnesses-config:/usr/local/var/keri
+    labels:
+      - "traefik.http.routers.witness3.rule=Host(`witness3.${PUBLIC_DOMAIN}`)"
+      - "traefik.http.routers.witness3.entrypoints=websecure"
+      - "traefik.http.routers.witness3.tls.certresolver=myresolver"
+      - "traefik.http.routers.witness3.service=3"
+      - "traefik.http.services.witness3.loadbalancer.server.port=5645"
+
+  witness-4:
+    profiles: [witness,production]
+    hostname: witness-4
+    restart: unless-stopped
+    image: ${WITNESS_IMAGE:-weboftrust/keri:1.1.26}
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+        - INITIAL_HTTP_PORT=5642
+        - INITIAL_TCP_PORT=5632
+        - KERI_VAR_DIR=/usr/local/var/keri
+        - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
+        - LOG_LEVEL=INFO
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    volumes:
+        - witnesses-config:/usr/local/var/keri
+    labels:
+      - "traefik.http.routers.witness4.rule=Host(`witness4.${PUBLIC_DOMAIN}`)"
+      - "traefik.http.routers.witness4.entrypoints=websecure"
+      - "traefik.http.routers.witness4.tls.certresolver=myresolver"
+      - "traefik.http.routers.witness4.service=4"
+      - "traefik.http.services.witness4.loadbalancer.server.port=5646"
+
+  witness-5:
+    profiles: [witness,production]
+    hostname: witness-5
+    restart: unless-stopped
+    image: ${WITNESS_IMAGE:-weboftrust/keri:1.1.26}
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+        - INITIAL_HTTP_PORT=5642
+        - INITIAL_TCP_PORT=5632
+        - KERI_VAR_DIR=/usr/local/var/keri
+        - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
+        - LOG_LEVEL=INFO
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    volumes:
+        - witnesses-config:/usr/local/var/keri
+    labels:
+      - "traefik.http.routers.witness5.rule=Host(`witness5.${PUBLIC_DOMAIN}`)"
+      - "traefik.http.routers.witness5.entrypoints=websecure"
+      - "traefik.http.routers.witness5.tls.certresolver=myresolver"
+      - "traefik.http.routers.witness5.service=5"
+      - "traefik.http.services.witness5.loadbalancer.server.port=5647"
+
+  cred-issuance:
+    profiles: [cred-issuance,production]
+    image: ${CRED_IMAGE:-cardanofoundation/cf-cred-issuance:main}
+    restart: unless-stopped
+    environment:
+      - OOBI_ENDPOINT=${CRED_OOBI_ENDPOINT:-http://cred-issuance:3001}
+      - KERIA_ENDPOINT=${CRED_KERIA_ENDPOINT:-http://keria:3901}
+      - KERIA_BOOT_ENDPOINT=${CRED_BOOT_ENDPOINT:-http://keria:3903}
+    volumes:
+      - issuer-server-data:/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.credentials.rule=Host(`${CRED_HOST:-cred-issuance}`)"
+      - "traefik.http.routers.credentials.entrypoints=websecure"
+      - "traefik.http.routers.credentials.tls.certresolver=myresolver"
+      - "traefik.http.services.credentials.loadbalancer.server.port=3001"
+
+  cred-issuance-ui:
+    profiles: [cred-issuance,production]
+    image: ${CRED_UI_IMAGE:-cardanofoundation/cf-cred-issuance-ui:main}
+    restart: unless-stopped
+    environment:
+      - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL=${CRED_UI_URL:-http://localhost}
+      - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT=3001
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.credentials-ui.rule=Host(`${CRED_UI_HOST:-cred-issuance-ui}`)"
+      - "traefik.http.routers.credentials-ui.entrypoints=websecure"
+      - "traefik.http.routers.credentials-ui.tls.certresolver=myresolver"
+      - "traefik.http.services.credentials-ui.loadbalancer.server.port=80"
+
+  traefik:
+    profiles: [traefik,production]
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--accesslog.filepath=/dev/stdout"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "443:443"
+      - "80:80"
+      #- "8080:8080"
+    volumes:
+      - "/var/lib/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+volumes:
+  keria-data:
+  keria-config:
+  issuer-server-data:
+  witnesses-config:
+
+configs:
+  backer-oobis_json_tpl:
+    content: |
+      {
+        "dt": "2022-01-20T12:57:59.823350+00:00",
+        "keria": {
+          "dt": "2022-01-20T12:57:59.823350+00:00",
+          "curls": $${KERIA_RENDERED_CURLS}
+        },
+        "iurls": $${KERIA_RENDERED_IURLS}
+      }
+
+  keria-init_sh:
+    content: |
+      #!/bin/sh
+      set -e
+      export KERIA_RENDERED_CURLS=$$(for keria_curl in $${KERIA_CURLS}; do echo $$keria_curl; done | jq -cRn '[inputs]')
+      export KERIA_RENDERED_IURLS=$(for keria_iurl in $${KERIA_IURLS}; do echo $$keria_iurl; done | jq -cRn '[inputs]')
+      envsubst < /configmap/backer-oobis.json.tpl > /config/backer-oobis.json
+
+  witness_json_tpl:
+    content: |
+      {
+        "witness": {
+          "dt": "2022-01-20T12:57:59.823350+00:00",
+          "curls": $${KERIA_RENDERED_CURLS}
+        },
+        "dt": "2022-01-20T12:57:59.823350+00:00",
+        "iurls": [
+        ]
+      }
+
+  wil-witness-sample.json:
+    content: |
+      {
+        "transferable": false,
+        "wits": [],
+        "icount": 1,
+        "ncount": 1,
+        "isith": "1",
+        "nsith": "1"
+      }
+
+  witness-init_sh:
+    content: |
+      #!/bin/bash
+      for wit in $$(seq 0 $$(( WITNESS_COUNT - 1 )));
+      do
+        WITNESS_COUNTER=$$wit
+        if [ ! -e $${KERI_VAR_DIR}/db/wit$${WITNESS_COUNTER}/data.mdb ]; then
+          mkdir -p $${KERI_VAR_DIR}/data
+          mkdir -p $${KERI_SCRIPT_DIR}/keri/cf
+          set -e
+          export KERIA_CURLS="$${KERIA_CURLS_PROTO}://witness-$${WITNESS_COUNTER}.$${KERIA_CURLS_EXTERNAL_HOST_TLD}"
+          export KERIA_RENDERED_CURLS=$$(for keria_curl in $${KERIA_CURLS}; do echo $$keria_curl; done | jq -cRn '[inputs]')
+          export WITNESS_NAME="wit$${WITNESS_COUNTER}"
+          envsubst < /configmap/witness.json.tpl > $${KERI_SCRIPT_DIR}/keri/cf/$${WITNESS_NAME}.json
+          cat $${KERI_SCRIPT_DIR}/keri/cf/$${WITNESS_NAME}.json
+          kli init --name $${WITNESS_NAME} --nopasscode --config-dir $${KERI_SCRIPT_DIR} --config-file $${WITNESS_NAME}.json
+          kli incept --name $${WITNESS_NAME} --alias $${WITNESS_NAME} --config $${KERI_SCRIPT_DIR} --file /configmap/wil-witness-sample.json
+        fi
+      done
