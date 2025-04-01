@@ -375,13 +375,14 @@ describe("Wallet connect: empty history", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText, queryByText, getByTestId, unmount } = render(
-      <MemoryRouter>
-        <Provider store={storeMocked}>
-          <ConnectWallet />
-        </Provider>
-      </MemoryRouter>
-    );
+    const { getByText, getAllByText, queryByText, getAllByTestId, unmount } =
+      render(
+        <MemoryRouter>
+          <Provider store={storeMocked}>
+            <ConnectWallet />
+          </Provider>
+        </MemoryRouter>
+      );
 
     await waitFor(() => {
       expect(
@@ -397,15 +398,15 @@ describe("Wallet connect: empty history", () => {
 
     await waitFor(() => {
       expect(
-        getByText(
+        getAllByText(
           EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
-        )
+        )[0]
       ).toBeVisible();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("alert-create-keri-cancel-button"));
+      fireEvent.click(getAllByTestId("alert-create-keri-cancel-button")[0]);
     });
 
     await waitFor(() => {
@@ -720,7 +721,7 @@ describe("Wallet connect", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getAllByTestId, getAllByText } = render(
       <MemoryRouter>
         <Provider store={storeMocked}>
           <ConnectWallet />
@@ -738,14 +739,14 @@ describe("Wallet connect", () => {
 
     await waitFor(() => {
       expect(
-        getByText(
+        getAllByText(
           EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
-        )
+        )[0]
       ).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("alert-create-keri-confirm-button"));
+    fireEvent.click(getAllByTestId("alert-create-keri-confirm-button")[0]);
 
     await waitFor(() => {
       expect(getByTestId("create-identifier-modal")).toBeVisible();
