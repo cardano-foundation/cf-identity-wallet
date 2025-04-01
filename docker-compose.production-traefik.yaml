@@ -240,7 +240,7 @@ services:
 
   traefik:
     profiles: [traefik,production]
-    image: "traefik:v2.9"
+    image: "traefik:v3.3.5"
     container_name: "traefik"
     command:
       - "--log.level=DEBUG"
@@ -250,6 +250,9 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_ADMIN_EMAIL:-acme@example.com}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
       - "80:80"
