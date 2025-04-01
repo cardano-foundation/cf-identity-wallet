@@ -550,6 +550,8 @@ const Scanner = forwardRef(
         showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
         await new Promise((resolve) => setTimeout(resolve, 500));
         await initScan();
+      } finally {
+        isHandlingQR.current = false;
       }
     };
 
