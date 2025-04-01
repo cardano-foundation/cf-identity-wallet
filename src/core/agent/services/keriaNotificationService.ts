@@ -401,7 +401,7 @@ class KeriaNotificationService extends AgentService {
           );
         } catch (error) {
           /* eslint-disable no-console */
-          console.error(
+          console.warn(
             `Error when retrying notification ${notification.i} [attempts: ${
               attempts + 1
             }]`,

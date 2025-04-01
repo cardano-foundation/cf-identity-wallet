@@ -1,25 +1,23 @@
 <div align="center">
   <img src="src/assets/icon-only.png" alt="Cardano Foundation | Identity Wallet" height="150" />
   <hr />
-    <h1 align="center" style="border-bottom: none">Cardano Foundation | Identity Wallet</h1>
+  <h1 align="center" style="border-bottom: none">Veridian Wallet | Cardano Foundation</h1>
 
-![GitHub](https://img.shields.io/github/license/cardano-foundation/cf-identity-wallet)
+![GitHub](https://img.shields.io/github/license/cardano-foundation/veridian-wallet)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
 
   <hr/>
-</div> 
-
-# Disclaimer
-
-<div align="justify"> 
-<b> Currently, the Identity Wallet is in its final stage of development for an initial release. We are conducting third-party security audits, threat modeling, and penetration testing in preparation for deployment to the iOS and Android App Stores. Some of the information and visuals below are being updated as we move towards the release. </b>
 </div>
-<br>
 
 # Overview
 
 <div align="justify"> 
-<b> The Identity Wallet is an open source application developed by the Cardano Foundation. This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Self-Certifying Identifiers (SCIs), Verifiable Data Registries (VDRs), and the standards, frameworks, and implementations available within the Cardano ecosystem and externally. The first release of Identity Wallet provides an open source reference implementation demonstrating the Key Event Receipt Infrastructure (KERI) on Cardano. </b>
+  <b>
+    Veridian Wallet is an open source application developed by the Cardano Foundation.
+    This project is the result of on-going research and development pertaining to the principles of Self-Sovereign Identity (SSI), Self-Certifying Identifiers (SCIs), Verifiable Data Registries (VDRs), and the standards, frameworks, and implementations available within the Cardano ecosystem and externally.
+    The first release of the wallet provides an open source implementation demonstrating the Key Event Receipt Infrastructure (KERI) on Cardano.
+    This wallet has undergone security auditing and penetration testing, and mitigations have been applied.
+  </b>
 </div>
 
 <br>
@@ -29,6 +27,10 @@
       <img src="docs/images/readme/User-Flow-Preview.png" alt="User Flow Preview" width="720"/>
   </kbd>
 </p>
+
+<br>
+
+Check out [our documentation](https://docs.veridian.id/) to learn how to use the app, connect to infrastructure and start developing with KERI!
 
 <br>
 
@@ -46,7 +48,7 @@
   
  # Future Developments
  
-- Encryption at rest with local backup & restore (Compatible with Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar))
+- Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar) compatible encryption-at-rest to replace SQLCipher
 - Social and multi-device identifier recovery
 - P2P Chat
 - Delegated multi-sig for organisational identity
@@ -61,31 +63,7 @@
 - [KERIA Cloud Agent](https://github.com/cardano-foundation/keria)
 - [Signify-TS Edge Client](https://github.com/cardano-foundation/signify-ts)
 - [Verifiable Credential Testing Tool](https://cred-issuance-ui.dev.idw-sandboxes.cf-deployments.org/)
-- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer/tree/feat/watchpoc)
-
-# Architecture
-<div align="center"> 
-  <p>
-    <a href="https://raw.githubusercontent.com/cardano-foundation/cf-identity-wallet/main/docs/images/readme/Architecture-Diagram.svg">
-    <img src="docs/images/readme/Architecture-Diagram.svg" alt="Identity Wallet Architecture">
-    </a>  
-  </p>     
-</div>
-
-# User Flows
-In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
-- [Introduction](https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link)
-- [Onboarding](https://drive.google.com/file/d/1lMNwS30oq9X_rKVGvB3hHXDpcztPC7sy/view?usp=drive_link)
-- [Recovery](https://drive.google.com/file/d/1JzgIY0SztyM-3mHstOZAu2Y6DtevrAyc/view?usp=drive_link)
-- [Login](https://drive.google.com/file/d/1dky8DUNRPDkzmplftRwA9VfK-puVU5SC/view?usp=drive_link)
-- [Identifiers](https://drive.google.com/file/d/15Shxt8B0bmZjs5465Z9w976Luc1ySkEX/view?usp=drive_link)
-- [Connections](https://drive.google.com/file/d/1k2LSycp24vbMosVBSducWGScNyMt0Ge9/view?usp=drive_link)
-- [Credentials](https://drive.google.com/file/d/17Ws8l5zyOZFYDrqw277nklERYw0I8Sn6/view?usp=drive_link)
-- [Scan](https://drive.google.com/file/d/1ugZWy5pqakr6uJACWxTc6QqxZIU-JOeM/view?usp=drive_link)
-- [Notifications](https://drive.google.com/file/d/1tdu46c1ioB5D3b_tFjNxPwcBd1ZuHviU/view?usp=drive_link)
-- [Menu & Settings](https://drive.google.com/file/d/1UF98ttKIxaPqxrjDDDZwp9QNtwfVwtnZ/view?usp=drive_link)
-- [Cardano Connect](https://drive.google.com/file/d/1KNt8Fb8VGqnq_p6EY0nEog7WDR07BX3T/view?usp=drive_link)
-- [Verify Options](https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=drive_link)
+- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
 
 # Getting Started
 
@@ -103,8 +81,8 @@ Ensure that your system meets these requirements to successfully use and develop
 ### Cloning the Repository
 
 ```bash
-git clone https://github.com/cardano-foundation/cf-identity-wallet.git
-cd cf-identity-wallet
+git clone https://github.com/cardano-foundation/veridian-wallet.git
+cd veridian-wallet
 make init # This will configure the git hooks
 ```
 
@@ -139,10 +117,11 @@ You can gain additional insights into end-to-end testing by visiting the provide
 
 # Contributing
 
-All contributions are welcome! Please feel free to open a new thread on the issue tracker or submit a new pull request.
+All contributions are welcome!
+Please feel free to open a new thread on the issue tracker or submit a new pull request.
 
-
-Please read [Contributing](CONTRIBUTING.md) in advance.  Thank you for contributing!
+Please read [Contributing](CONTRIBUTING.md) in advance.
+Thank you for contributing!
 
 ## Additional Documents
 - [Code of Conduct](CODE_OF_CONDUCT.md)
@@ -181,7 +160,6 @@ If you encounter any issues or have questions, please drop us a message on our D
 # License
 
 <div align="justify">
-
 This project was previously licensed under MPL-2.0 up until commit `49f9811c363bb1c05a5349d4aa3434793a1b3a39`.
 It is now licensed under Apache 2.0. Any prior versions remain available under MPL-2.0.
 
