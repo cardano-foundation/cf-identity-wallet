@@ -2,6 +2,8 @@ import { createTheme } from "@mui/material/styles";
 
 const rootStyle = getComputedStyle(document.documentElement);
 
+const MAX_WIDTH = "1536px";
+
 const theme = createTheme({
   typography: {
     fontFamily: `"Manrope", sans-serif`,
@@ -30,6 +32,16 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          main: {
+            maxWidth: MAX_WIDTH,
+            margin: "0 auto",
+          },
+        },
+      },
+    },
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -61,7 +73,7 @@ const theme = createTheme({
       sm: 744, // 744px is for iPad Mini (6th gen) in portrait view
       md: 1000,
       lg: 1200,
-      xl: 1536,
+      xl: parseInt(MAX_WIDTH),
     },
   },
   palette: {

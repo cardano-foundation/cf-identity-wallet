@@ -1,29 +1,21 @@
+// Extend the Window interface to include runtime configuration
 interface CustomWindow extends Window {
-  _env_?: {
-    REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT?: string;
-    REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL?: string;
+  __RUNTIME_CONFIG__?: {
+    SERVER_URL?: string;
   };
 }
 
 declare let window: CustomWindow;
 
-const port =
-  (typeof window !== "undefined" &&
-    window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT) ||
-  process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT ||
-  "3001";
+// Get the server URL from runtime configuration (envfile.js) or Vite's .env
+const serverUrl =
+  (typeof window !== "undefined" && window.__RUNTIME_CONFIG__?.SERVER_URL) ||
+  import.meta.env.VITE_SERVER_URL || // Vite's .env system
+  "http://localhost:3001"; // Default fallback
 
-const url =
-  (typeof window !== "undefined" &&
-    window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL) ||
-  process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL ||
-  "http://localhost";
-
-const endpoint = `${url}:${port}`;
-
+// Define the config object
 const config = {
-  endpoint: endpoint,
-  port,
+  endpoint: serverUrl,
   path: {
     ping: "/ping",
     getConnectionByDid: "/getConnectionByDid",
