@@ -14,9 +14,8 @@ const isValidHttpUrl = (urlString: string) => {
 };
 
 const isValidConnectionUrl = (url: string) => {
-  // Pattern: http://domain/oobi/:connectionId/agent/:agentId?param
   const pattern =
-    /https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+([\w])?(\.|(:\d*))?([^\s]{0,})\/oobi\/[\w-]*\/agent\/([^\s]{1,})/;
+    /https?:\/\/[a-zA-Z0-9-]+(:\d+)?\/oobi\/[\w-]+(\/agent\/[\w-]+)?(\?name=[^&]*)?$/;
 
   return pattern.test(url);
 };

@@ -56,7 +56,10 @@ const Review = ({
         </Typography>
       </Box>
       {credAttributes.map((credAttribute) => (
-        <Box sx={{ textAlign: "left" }}>
+        <Box
+          key={credAttribute.key}
+          sx={{ textAlign: "left" }}
+        >
           <Typography variant="subtitle1">
             {i18n.t(
               `pages.credentialDetails.issueCredential.inputAttribute.label.${credAttribute.label.toLowerCase()}`
