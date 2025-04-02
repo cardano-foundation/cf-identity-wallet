@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   webDir: "build",
   android: {
     webContentsDebuggingEnabled: true,
+    adjustMarginsForEdgeToEdge: "auto"
   },
   ios: {
     webContentsDebuggingEnabled: true,

@@ -10,7 +10,6 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
-import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { ExitApp } from "@jimcase/capacitor-exit-app";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
@@ -42,11 +41,11 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
-import { getCssVariableValue } from "./utils/styles";
 import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
 import { initializeFreeRASP, ThreatCheck } from "../security/freerasp";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
 import { ConfigurationService } from "../core/configuration";
+import { getCssVariableValue } from "./utils/styles";
 
 setupIonicReact();
 
@@ -150,7 +149,7 @@ const App = () => {
       }
 
       if (platforms.includes("android")) {
-        EdgeToEdge.setBackgroundColor({
+        StatusBar.setBackgroundColor({
           color: getCssVariableValue("--ion-color-neutral-200"),
         });
       }
