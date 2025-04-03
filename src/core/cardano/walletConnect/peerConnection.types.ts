@@ -13,6 +13,12 @@ interface ExperimentalAPIFunctions {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  verifySignature: (
+    identifier: string,
+    oobi: string,
+    payload: string,
+    signature: string
+  ) => Promise<string | { error: PeerConnectionError }>;
   disable: () => void;
 }
 

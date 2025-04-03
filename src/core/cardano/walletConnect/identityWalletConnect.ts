@@ -29,6 +29,12 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  verifySignature: (
+    identifier: string,
+    oobi: string,
+    payload: string,
+    signature: string
+  ) => Promise<string | { error: PeerConnectionError }>;
   disable: () => void;
 
   constructor(
@@ -97,6 +103,17 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       }
     };
 
+    this.verifySignature = async (
+      identifier: string,
+      oobi: string,
+      payload: string,
+      signature: string
+    ): Promise<string | { error: PeerConnectionError }> => {
+      // TODO: verify
+      // check if oobi is me or contacts
+      // Get last kel
+      return "";
+    };
     this.signKeriInception = async (
       identifier: string,
       payload: string
