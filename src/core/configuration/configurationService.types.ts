@@ -14,4 +14,10 @@ interface Configuration {
   };
 }
 
-export type { Configuration };
+interface AccessConfiguration {
+  [key: string]: {
+    active: boolean;
+  };
+}
+
+export type { Configuration, AccessConfiguration };

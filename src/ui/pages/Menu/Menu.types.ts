@@ -35,6 +35,7 @@ interface MenuItemProps {
   label: string;
   subLabel?: string;
   onClick: (key: SubMenuKey) => void;
+  hidden?: boolean;
 }
 
 enum SubMenuKey {
