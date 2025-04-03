@@ -9,10 +9,16 @@ interface ExperimentalAPIFunctions {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  signKeriInception: (
+    identifier: string,
+    payload: string
+  ) => Promise<string | { error: PeerConnectionError }>;
+  disable: () => void;
 }
 
 enum PeerConnectionEventTypes {
   PeerConnectSign = "PeerConnectSign",
+  PeerConnectSignWithInception = "PeerConnectSignWithInception",
   PeerConnected = "PeerConnected",
   PeerDisconnected = "PeerDisconnected",
   PeerConnectionBroken = "PeerConnectionBroken",
@@ -23,6 +29,7 @@ interface PeerConnectSigningEvent extends BaseEventEmitter {
   payload: {
     identifier: string;
     payload: string;
+    inception?: boolean;
     approvalCallback: (approvalStatus: boolean) => void;
   };
 }

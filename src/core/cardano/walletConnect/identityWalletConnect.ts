@@ -13,6 +13,7 @@ import {
   TxSignError,
 } from "./peerConnection.types";
 import { CoreEventEmitter } from "../../agent/event";
+import { PeerConnection } from "./peerConnection";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
   private selectedAid: string;
@@ -24,6 +25,11 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  signKeriInception: (
+    identifier: string,
+    payload: string
+  ) => Promise<string | { error: PeerConnectionError }>;
+  disable: () => void;
 
   constructor(
     walletInfo: IWalletInfo,
@@ -89,6 +95,48 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       } else {
         return { error: TxSignError.UserDeclined };
       }
+    };
+
+    this.signKeriInception = async (
+      identifier: string,
+      payload: string
+    ): Promise<string | { error: PeerConnectionError }> => {
+      let approved: boolean | undefined = undefined;
+      // Closure that updates approved variable
+      const approvalCallback = (approvalStatus: boolean) => {
+        approved = approvalStatus;
+      };
+      this.eventEmitter.emit<PeerConnectSigningEvent>({
+        type: PeerConnectionEventTypes.PeerConnectSign,
+        payload: {
+          identifier,
+          payload,
+          inception: true,
+          approvalCallback,
+        },
+      });
+      const startTime = Date.now();
+      // Wait until approved is true or false
+      while (approved === undefined) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, IdentityWalletConnect.TIMEOUT_INTERVAL)
+        );
+        if (Date.now() > startTime + IdentityWalletConnect.MAX_SIGN_TIME) {
+          return { error: TxSignError.TimeOut };
+        }
+      }
+      if (approved) {
+        return await Agent.agent.identifiers.createInceptionEvent(
+          identifier,
+          payload
+        );
+      } else {
+        return { error: TxSignError.UserDeclined };
+      }
+    };
+
+    this.disable = (): void => {
+      PeerConnection.peerConnection.disconnectDApp(null, false);
     };
   }
 

@@ -120,6 +120,19 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
+  async createInceptionEvent(identifier: string, digest: string): Promise<any> {
+    const data = [
+      {
+        d: digest,
+      },
+    ];
+
+    return await this.props.signifyClient
+      .identifiers()
+      .interact(identifier, data);
+  }
+
+  @OnlineOnly
   async getIdentifier(identifier: string): Promise<IdentifierDetails> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier

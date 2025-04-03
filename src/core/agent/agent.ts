@@ -536,6 +536,11 @@ class Agent {
   }
 
   @OnlineOnly
+  async signInceptionEvent() {
+    this.identifierService.createInceptionEvent;
+  }
+
+  @OnlineOnly
   async deleteAccount() {
     const connectedDApp =
       PeerConnection.peerConnection.getConnectedDAppAddress();
