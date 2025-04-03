@@ -9,6 +9,7 @@ interface ReviewProps {
 }
 
 interface InputAttributeProps {
+  attributeOptional?: boolean;
   credentialType?: CredentialType;
   value: Record<string, string>;
   setValue: (key: string, value: string) => void;

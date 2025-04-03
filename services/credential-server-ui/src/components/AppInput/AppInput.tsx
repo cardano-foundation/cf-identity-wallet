@@ -6,9 +6,12 @@ import {
   InputLabel,
   styled,
 } from "@mui/material";
+import { i18n } from "../../i18n";
+import "./AppInput.scss";
 
 interface AppInputProps extends InputBaseProps {
   label: string;
+  optional?: boolean;
   errorMessage?: string;
 }
 
@@ -35,6 +38,7 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
 
 export const AppInput = ({
   label,
+  optional,
   error,
   errorMessage,
   id,
@@ -43,7 +47,7 @@ export const AppInput = ({
 }: AppInputProps) => (
   <FormControl
     variant="standard"
-    className={className}
+    className={`app-input ${className}`}
   >
     <InputLabel
       shrink
@@ -55,7 +59,10 @@ export const AppInput = ({
         },
       })}
     >
-      {label}
+      <span className="app-input-label">{label}</span>
+      {optional && (
+        <span className="app-input-optional">{i18n.t("general.optional")}</span>
+      )}
     </InputLabel>
     <CustomInput
       {...inputProps}
