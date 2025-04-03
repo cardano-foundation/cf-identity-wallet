@@ -99,8 +99,6 @@ const RequestPresentationModal = ({
         !selectedCredTemplate) ||
       (currentStage === RequestPresentationStage.SelectConnection &&
         !selectedConnection) ||
-      (currentStage === RequestPresentationStage.InputAttribute &&
-        Object.values(attributes).every((item) => !item)) ||
       loading
     );
   }, [
@@ -246,6 +244,7 @@ const RequestPresentationModal = ({
       case RequestPresentationStage.InputAttribute:
         return (
           <InputAttribute
+            attributeOptional={true}
             value={attributes}
             setValue={updateAttributes}
             credentialType={credTemplateType}
