@@ -62,7 +62,7 @@ Check out [our documentation](https://docs.veridian.id/) to learn how to use the
 - [Verifiable Credential Testing Tool](https://cred-issuance-ui.dev.idw-sandboxes.cf-deployments.org/)
 - [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
 
-# Network architecture
+# Network Architecture
 <div align="center"> 
   <p>
     <a href="https://raw.githubusercontent.com/cardano-foundation/veridian-wallet/main/docs/images/readme/Architecture-Diagram.svg">
