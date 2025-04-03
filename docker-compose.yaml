@@ -59,7 +59,7 @@ services:
       dockerfile: ./Dockerfile
     restart: unless-stopped
     environment:
-      - VITE_SERVER_URL=${VITE_SERVER_URL:-localhost:3001}
+      - VITE_SERVER_URL=${VITE_SERVER_URL:-http://localhost:3001}
     ports:
       - 3000:80
 
