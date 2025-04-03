@@ -5,13 +5,21 @@ import { config } from "./config";
 import { Agent } from "./agent";
 import router from "./routes";
 import { log } from "./log";
+import { join } from "path";
 
 async function startServer() {
   const app = express();
-  app.use("/static", express.static("static"));
   app.use(cors());
   app.use(bodyParser.json());
   app.use(router);
+  app.use(
+    "/oobi",
+    express.static(join(__dirname, "schemas"), {
+      setHeaders: (res, _) => {
+        res.setHeader("Content-Type", "application/schema+json");
+      },
+    })
+  );
   app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({

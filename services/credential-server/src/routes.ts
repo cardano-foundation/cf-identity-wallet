@@ -9,7 +9,6 @@ import {
   contactCredentials,
 } from "./apis/credential.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
-import { schemaApi } from "./apis/schema.api";
 import { contactList, deleteContact } from "./apis/contact.api";
 import { resolveOobi } from "./apis/oobi.api";
 
@@ -19,7 +18,6 @@ router.get(config.path.shorten, getFullUrl);
 router.post(config.path.createShorten, createShortenUrl);
 router.get(config.path.keriOobi, keriOobiApi);
 router.post(config.path.issueAcdcCredential, issueAcdcCredential);
-router.get(config.path.schemaOobi, schemaApi);
 router.post(config.path.resolveOobi, resolveOobi);
 router.get(config.path.contacts, contactList);
 router.get(config.path.contactCredentials, contactCredentials);
