@@ -72,6 +72,7 @@ const NotificationItem = ({
       });
     case NotificationRoute.LocalSign:
       return t("tabs.notifications.tab.labels.sign", {
+        certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
         connection: connectionName || t("connections.unknown"),
       });
     default:
