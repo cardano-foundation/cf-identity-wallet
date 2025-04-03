@@ -21,7 +21,7 @@ WORKDIR /usr/share/nginx/html
 COPY ./env.sh /env.sh
 
 # Make our shell script executable
-RUN chmod +x env.sh
+RUN chmod +x /env.sh
 
 EXPOSE 80
 
