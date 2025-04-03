@@ -44,8 +44,7 @@ Check out [our documentation](https://docs.veridian.id/) to learn how to use the
 - :zap: Efficient over-the-wire communications using CESR encoding
 - :desktop_computer: dApp integration using [CIP-45](https://cips.cardano.org/cip/CIP-0045)
   
- # Future Developments
- 
+# Future Developments
 - [Aries Askar](https://github.com/openwallet-foundation/askar) compatible encryption-at-rest to replace SQLCipher
 - Social and multi-device identifier recovery
 - P2P Chat
@@ -62,6 +61,15 @@ Check out [our documentation](https://docs.veridian.id/) to learn how to use the
 - [Signify-TS Edge Client](https://github.com/cardano-foundation/signify-ts)
 - [Verifiable Credential Testing Tool](https://cred-issuance-ui.dev.idw-sandboxes.cf-deployments.org/)
 - [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
+
+# Network Architecture
+<div align="center"> 
+  <p>
+    <a href="https://raw.githubusercontent.com/cardano-foundation/veridian-wallet/main/docs/images/readme/Architecture-Diagram.svg">
+    <img src="docs/images/readme/Architecture-Diagram.svg" alt="Veridian Network Architecture">
+    </a>  
+  </p>     
+</div>
 
 # Getting Started
 
