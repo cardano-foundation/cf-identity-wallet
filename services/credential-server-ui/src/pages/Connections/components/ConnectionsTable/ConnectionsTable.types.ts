@@ -3,6 +3,7 @@ interface Contact {
   challenges: string[];
   id: string;
   oobi: string;
+  createdAt: string;
   wellKnowns: string[];
 }
 
