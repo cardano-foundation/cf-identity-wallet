@@ -24,6 +24,8 @@ import {
   showConnectWallet,
 } from "../../../store/reducers/walletConnectionsCache";
 import { TabLayout } from "../../components/layout/TabLayout";
+import { Features } from "../../globals/accessPermission";
+import { canAccessFeature } from "../../utils/accessPermission";
 import MenuItem from "./components/MenuItem";
 import { SubMenu } from "./components/SubMenu";
 import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
@@ -77,6 +79,7 @@ const Menu = () => {
       icon: linkOutline,
       label: `${i18n.t("tabs.menu.tab.items.connectwallet.title")}`,
       subLabel: `${i18n.t("tabs.menu.tab.items.connectwallet.sublabel")}`,
+      hidden: !canAccessFeature(Features.ConnectWallet),
     },
   ];
 
@@ -135,16 +138,18 @@ const Menu = () => {
       >
         <IonGrid>
           <IonRow>
-            {menuItems.map((menuItem) => (
-              <MenuItem
-                key={menuItem.itemKey}
-                itemKey={menuItem.itemKey}
-                icon={menuItem.icon}
-                label={`${i18n.t(menuItem.label)}`}
-                subLabel={menuItem.subLabel}
-                onClick={() => showSelectedOption(menuItem.itemKey)}
-              />
-            ))}
+            {menuItems
+              .filter((item) => !item.hidden)
+              .map((menuItem) => (
+                <MenuItem
+                  key={menuItem.itemKey}
+                  itemKey={menuItem.itemKey}
+                  icon={menuItem.icon}
+                  label={`${i18n.t(menuItem.label)}`}
+                  subLabel={menuItem.subLabel}
+                  onClick={() => showSelectedOption(menuItem.itemKey)}
+                />
+              ))}
           </IonRow>
         </IonGrid>
       </TabLayout>
