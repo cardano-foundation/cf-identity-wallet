@@ -18,7 +18,7 @@ interface Configuration {
       enabled: boolean;
     };
   };
-  accessPermison: AccessConfiguration;
+  accessPermission: AccessConfiguration;
 }
 
 export type { Configuration, AccessConfiguration };

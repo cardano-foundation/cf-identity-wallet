@@ -1,10 +1,11 @@
 import { ConfigurationService } from "../../core/configuration";
 
 const canAccessFeature = (
-  key: keyof typeof ConfigurationService.env.accessPermison
+  key: keyof typeof ConfigurationService.env.accessPermission
 ) => {
-  if (!ConfigurationService.env.accessPermison) return true;
-  return !!ConfigurationService.env.accessPermison[key]?.active;
+  if (!ConfigurationService.env.accessPermission) return true;
+
+  return !!ConfigurationService.env.accessPermission[key]?.active;
 };
 
 export { canAccessFeature };
