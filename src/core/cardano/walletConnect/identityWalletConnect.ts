@@ -35,6 +35,12 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     payload: string,
     signature: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  verifyKeriInception: (
+    identifier: string,
+    oobi: string,
+    payload: string,
+    sequencer: string
+  ) => Promise<string | { error: PeerConnectionError }>;
   disable: () => void;
 
   constructor(
@@ -112,8 +118,25 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       // TODO: verify
       // check if oobi is me or contacts
       // Get last kel
+      // const reqVerfer = await getRemoteVerfer(reqAid);
+      // const keyManager = await getKeyManager(serverAid);
       return "";
     };
+
+    this.verifyKeriInception = async (
+      identifier: string,
+      oobi: string,
+      payload: string,
+      sequencer: string
+    ): Promise<string | { error: PeerConnectionError }> => {
+      // TODO: verify
+      // check if oobi is me or contacts
+      // Get last kel
+      // const reqVerfer = await getRemoteVerfer(reqAid);
+      // const keyManager = await getKeyManager(serverAid);
+      return "";
+    };
+
     this.signKeriInception = async (
       identifier: string,
       payload: string

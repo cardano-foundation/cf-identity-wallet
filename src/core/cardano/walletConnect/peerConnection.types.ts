@@ -19,6 +19,12 @@ interface ExperimentalAPIFunctions {
     payload: string,
     signature: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  verifyKeriInception: (
+    identifier: string,
+    oobi: string,
+    payload: string,
+    sequencer: string
+  ) => Promise<string | { error: PeerConnectionError }>;
   disable: () => void;
 }
 
