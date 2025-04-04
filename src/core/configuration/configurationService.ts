@@ -6,11 +6,9 @@ import {
 
 const environment = process.env.ENVIRONMENT || "local";
 const keriaIP = process.env.KERIA_IP;
-const accessConfig = process.env.ACCESS_CONFIG || "";
 
 class ConfigurationService {
   private static configurationEnv: Configuration;
-  private static accessConfigEnv: AccessConfiguration;
 
   static readonly INVALID_ENVIRONMENT_FILE = "Configuration file is invalid: ";
   static readonly NOT_FOUND_ENVIRONMENT_FILE = "Can not read environment file";
@@ -19,67 +17,56 @@ class ConfigurationService {
   static readonly NOT_FOUND_CONFIG_FILE = "Can not read config file";
 
   async start() {
-    await new Promise((rs, rj) => {
-      import(`../../../configs/${environment}.yaml`)
-        .then((module) => {
-          const data = module.default;
-
-          const validyCheck = this.configurationValid(data);
-          if (validyCheck.success) {
-            ConfigurationService.configurationEnv = data as Configuration;
-            this.setKeriaIp();
-          } else {
-            rj(
-              new Error(
-                ConfigurationService.INVALID_ENVIRONMENT_FILE +
-                  validyCheck.reason
-              )
-            );
-          }
-
-          rs(true);
-        })
-        .catch(() => {
-          rj(new Error(ConfigurationService.NOT_FOUND_ENVIRONMENT_FILE));
-        });
-    });
-
-    this.loadAccessConfigs();
+    await this.loadEviromentConfig();
+    await this.loadPermissionConfig();
   }
 
-  private async loadAccessConfigs() {
-    if (!accessConfig) return;
+  private async loadPermissionConfig() {
+    return import("../../../configs/caseOne.yaml")
+      .then((module) => {
+        const data = module.default;
 
-    await new Promise((rs, rj) => {
-      import(`../../../configs/${accessConfig}.json`)
-        .then((module) => {
-          const data = module.default;
+        const validyCheck = this.accessConfigurationValid(data);
+        if (validyCheck.success) {
+          ConfigurationService.configurationEnv.accessPermison =
+            data as AccessConfiguration;
+        } else {
+          throw new Error(
+            ConfigurationService.INVALID_CONFIG_FILE + validyCheck.reason
+          );
+        }
 
-          const validyCheck = this.accessConfigurationValid(data);
-          if (validyCheck.success) {
-            ConfigurationService.accessConfigEnv = data as AccessConfiguration;
-          } else {
-            rj(
-              new Error(
-                ConfigurationService.INVALID_CONFIG_FILE + validyCheck.reason
-              )
-            );
-          }
+        return true;
+      })
+      .catch(() => {
+        return new Error(ConfigurationService.NOT_FOUND_CONFIG_FILE);
+      });
+  }
 
-          rs(true);
-        })
-        .catch(() => {
-          rj(new Error(ConfigurationService.NOT_FOUND_CONFIG_FILE));
-        });
-    });
+  private async loadEviromentConfig() {
+    return import(`../../../configs/${environment}.yaml`)
+      .then((module) => {
+        const data = module.default;
+
+        const validyCheck = this.configurationValid(data);
+        if (validyCheck.success) {
+          ConfigurationService.configurationEnv = data as Configuration;
+          this.setKeriaIp();
+        } else {
+          throw new Error(
+            ConfigurationService.INVALID_ENVIRONMENT_FILE + validyCheck.reason
+          );
+        }
+
+        return true;
+      })
+      .catch(() => {
+        throw new Error(ConfigurationService.NOT_FOUND_ENVIRONMENT_FILE);
+      });
   }
 
   static get env() {
     return this.configurationEnv;
-  }
-
-  static get accessConfigs() {
-    return this.accessConfigEnv;
   }
 
   private setKeriaIp() {
