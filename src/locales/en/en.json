@@ -1153,6 +1153,10 @@
           "text": "Someone is trying to issue you a credential. Ensure your connections are set up to accept it.",
           "button": "OK"
         },
+        "unknownrequest": {
+          "text": "Someone is requesting a credential from you. Ensure your connections are set up to accept it.",
+          "button": "OK"
+        },
         "sections": {
           "new": "New",
           "earlier": {
