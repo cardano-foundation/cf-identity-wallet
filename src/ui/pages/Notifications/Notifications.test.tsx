@@ -123,7 +123,11 @@ const emptyConnection = {
     connections: {},
   },
   notificationsCache: {
-    notifications: [notificationsFix[0], notificationsFix[3]],
+    notifications: [
+      notificationsFix[0],
+      notificationsFix[3],
+      notificationsFix[4],
+    ],
   },
 };
 
@@ -278,6 +282,42 @@ describe("Notifications Tab", () => {
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.tabs.notifications.tab.unknownissuer.text)
+      ).toBeVisible();
+    });
+  });
+
+  test("Cannot open notification from unknown presentation connection", async () => {
+    const storeMocked = {
+      ...mockStore(emptyConnection),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.NOTIFICATIONS);
+
+    const { getByTestId, getByText } = render(
+      <IonReactMemoryRouter history={history}>
+        <Provider store={storeMocked}>
+          <Notifications />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByTestId(`notifications-tab-item-${notificationsFix[4].id}`)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`notifications-tab-item-${notificationsFix[4].id}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.notifications.tab.unknownrequest.text)
       ).toBeVisible();
     });
   });
