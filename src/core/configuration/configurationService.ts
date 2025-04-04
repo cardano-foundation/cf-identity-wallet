@@ -28,7 +28,7 @@ class ConfigurationService {
 
         const validyCheck = this.accessConfigurationValid(data);
         if (validyCheck.success) {
-          ConfigurationService.configurationEnv.accessPermison =
+          ConfigurationService.configurationEnv.accessPermission =
             data as AccessConfiguration;
         } else {
           throw new Error(
