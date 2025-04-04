@@ -49,17 +49,11 @@ const SystemThreatAlert: React.FC<SystemThreatAlertProps> = ({ error }) => {
           content={i18n.t("systemthreats.alert")}
           icon={warningOutline}
         />
-        <a
-          href={SUPPORT_EMAIL}
-          className="unstyled-link"
-        >
-          <PageFooter
-            primaryButtonText={`${i18n.t("systemthreats.help")}`}
-            primaryButtonIcon={helpCircleOutline}
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            primaryButtonAction={() => {}}
-          />
-        </a>
+        <PageFooter
+          primaryButtonText={`${i18n.t("systemthreats.help")}`}
+          primaryButtonIcon={helpCircleOutline}
+          primaryButtonAction={SUPPORT_EMAIL}
+        />
       </div>
     </ScrollablePageLayout>
   );

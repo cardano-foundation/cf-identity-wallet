@@ -1920,7 +1920,7 @@
     "developermode": "Developer Mode",
     "adbenabled": "ADB Enabled",
     "deviceId": "Device ID Issues",
-    "alert": "Please, close and reopen the app to continue.",
+    "alert": "Security threats detected. Please resolve the issues listed, then close and reopen the app to continue.",
     "help": "Help",
     "rules": {
       "privilegedaccess": "Detects if the app is running with elevated permissions, such as root access on Android or jailbroken status on iOS.",

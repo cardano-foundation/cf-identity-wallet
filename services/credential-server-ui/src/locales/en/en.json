@@ -1,4 +1,7 @@
 {
+  "general": {
+    "optional": "(optional)"
+  },
   "navbar": {
     "menu": "Menu",
     "overview": "Overview",
@@ -220,7 +223,7 @@
           "description": "<strong>Select a credential to request a credential presentation</strong>. Search from your established connections, and please note that only one credential can be requested per connection."
         },
         "inputAttribute": {
-          "description": "<strong>Enter the required attribute values</strong>. Below are all the values needed for the presentation request.",
+          "description": "<strong>Enter the attribute values</strong>. Below are the values related to this presentation request.",
           "placeholder": "e.g. 12345678A90123V45R67",
           "label": {
             "name": "Name",

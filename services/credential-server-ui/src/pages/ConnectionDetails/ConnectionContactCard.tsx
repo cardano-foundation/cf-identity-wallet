@@ -66,7 +66,11 @@ const ConnectionContactCard = ({
           <Typography variant="subtitle1">
             {i18n.t("pages.connectionDetails.userInfo.connectionDate")}
           </Typography>
-          <Typography variant="body2">{formatDateTime(new Date())}</Typography>
+          {contact?.createdAt && (
+            <Typography variant="body2">
+              {formatDateTime(new Date(contact?.createdAt))}
+            </Typography>
+          )}
         </Box>
         <Box className="attribute">
           <Typography variant="subtitle1">

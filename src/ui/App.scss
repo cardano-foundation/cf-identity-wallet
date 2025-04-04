@@ -171,6 +171,7 @@ p {
 
   ion-icon {
     color: var(--ion-color-neutral-100) !important;
+    margin-right: 0.5rem;
   }
 }
 
@@ -178,6 +179,10 @@ p {
   --color: var(--ion-color-neutral-700);
   --background: var(--ion-color-neutral-200);
   --border-color: var(--ion-color-neutral-400);
+
+  ion-icon {
+    margin-right: 0.5rem;
+  }
 
   &::part(native) {
     border: 1px solid var(--ion-color-neutral-400);
@@ -212,6 +217,10 @@ p {
   --color: var(--ion-color-error-800);
   border: none;
   font-weight: 500;
+
+  ion-icon {
+    margin-right: 0.5rem;
+  }
 }
 
 .archive-button {
