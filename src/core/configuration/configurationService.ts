@@ -1,4 +1,7 @@
-import { Configuration } from "./configurationService.types";
+import {
+  AccessConfiguration,
+  Configuration,
+} from "./configurationService.types";
 // eslint-disable-next-line no-undef
 
 const environment = process.env.ENVIRONMENT || "local";
@@ -9,32 +12,57 @@ class ConfigurationService {
 
   static readonly INVALID_ENVIRONMENT_FILE = "Configuration file is invalid: ";
   static readonly NOT_FOUND_ENVIRONMENT_FILE = "Can not read environment file";
+  static readonly INVALID_CONFIG_FILE =
+    "Access configuration file is invalid: ";
+  static readonly NOT_FOUND_CONFIG_FILE = "Can not read config file";
 
   async start() {
-    await new Promise((rs, rj) => {
-      import(`../../../configs/${environment}.yaml`)
-        .then((module) => {
-          const data = module.default;
+    await this.loadEviromentConfig();
+    await this.loadPermissionConfig();
+  }
 
-          const validyCheck = this.configurationValid(data);
-          if (validyCheck.success) {
-            ConfigurationService.configurationEnv = data as Configuration;
-            this.setKeriaIp();
-          } else {
-            rj(
-              new Error(
-                ConfigurationService.INVALID_ENVIRONMENT_FILE +
-                  validyCheck.reason
-              )
-            );
-          }
+  private async loadPermissionConfig() {
+    return import("../../../configs/caseOne.yaml")
+      .then((module) => {
+        const data = module.default;
 
-          rs(true);
-        })
-        .catch(() => {
-          rj(new Error(ConfigurationService.NOT_FOUND_ENVIRONMENT_FILE));
-        });
-    });
+        const validyCheck = this.accessConfigurationValid(data);
+        if (validyCheck.success) {
+          ConfigurationService.configurationEnv.accessPermission =
+            data as AccessConfiguration;
+        } else {
+          throw new Error(
+            ConfigurationService.INVALID_CONFIG_FILE + validyCheck.reason
+          );
+        }
+
+        return true;
+      })
+      .catch(() => {
+        return new Error(ConfigurationService.NOT_FOUND_CONFIG_FILE);
+      });
+  }
+
+  private async loadEviromentConfig() {
+    return import(`../../../configs/${environment}.yaml`)
+      .then((module) => {
+        const data = module.default;
+
+        const validyCheck = this.configurationValid(data);
+        if (validyCheck.success) {
+          ConfigurationService.configurationEnv = data as Configuration;
+          this.setKeriaIp();
+        } else {
+          throw new Error(
+            ConfigurationService.INVALID_ENVIRONMENT_FILE + validyCheck.reason
+          );
+        }
+
+        return true;
+      })
+      .catch(() => {
+        throw new Error(ConfigurationService.NOT_FOUND_ENVIRONMENT_FILE);
+      });
   }
 
   static get env() {
@@ -77,6 +105,27 @@ class ConfigurationService {
 
     if (typeof rasp.enabled !== "boolean") {
       return this.invalid("rasp.enabled must be a boolean value");
+    }
+
+    return { success: true };
+  }
+
+  private accessConfigurationValid(
+    data: AccessConfiguration
+  ): { success: true } | { success: false; reason: string } {
+    if (typeof data !== "object") {
+      return this.invalid("Missing top-level access config object");
+    }
+
+    const keys = Object.keys(data);
+
+    for (const key of keys) {
+      if (
+        typeof data[key] !== "object" ||
+        typeof data[key].active !== "boolean"
+      ) {
+        return this.invalid(`Invalid config key: ${key}`);
+      }
     }
 
     return { success: true };

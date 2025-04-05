@@ -3,6 +3,12 @@ interface KeriaConfig {
   bootUrl?: string;
 }
 
+interface AccessConfiguration {
+  [key: string]: {
+    active: boolean;
+  };
+}
+
 interface Configuration {
   keri: {
     keria?: KeriaConfig;
@@ -12,6 +18,7 @@ interface Configuration {
       enabled: boolean;
     };
   };
+  accessPermission: AccessConfiguration;
 }
 
-export type { Configuration };
+export type { Configuration, AccessConfiguration };
