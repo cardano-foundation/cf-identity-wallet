@@ -126,6 +126,22 @@ describe("SetUserName component", () => {
     ).toBeVisible();
   });
 
+  test("Disable CTA if username is space", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <InputRequest />
+      </Provider>
+    );
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("input-request-input"), " ");
+    });
+
+    expect(
+      getByTestId("primary-button-input-request").getAttribute("disabled")
+    ).toBe("true");
+  });
+
   test("It should call handleConfirm when the primary button is clicked", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
