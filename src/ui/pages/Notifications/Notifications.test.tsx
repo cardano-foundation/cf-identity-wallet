@@ -13,6 +13,8 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { NotificationFilters } from "./Notification.types";
 import { Notifications } from "./Notifications";
+import { NotificationRoute } from "../../../core/agent/agent.types";
+import { NotificationItem } from "./NotificationItem";
 
 mockIonicReact();
 
@@ -340,5 +342,56 @@ describe("Notifications Tab", () => {
     await waitFor(() => {
       expect(getByTestId("revoke-credential-modal")).toBeVisible();
     });
+  });
+
+  test("Renders LocalSign notification with certificate name - direct component test", async () => {
+    const item = {
+      id: "local-sign-test-id",
+      connectionId: "connection-test-id",
+      read: false,
+      createdAt: new Date().toISOString(),
+      a: {
+        r: NotificationRoute.LocalSign,
+        payload: {},
+      },
+
+      groupReplied: false,
+      groupInitiator: false,
+      groupInitiatorPre: "",
+    };
+
+    const mockOnClick = jest.fn();
+    const mockOptionClick = jest.fn();
+
+    const { getAllByText, getByTestId } = render(
+      <Provider
+        store={mockStore({
+          connectionsCache: {
+            connections: {
+              "connection-test-id": { label: "Test Connection" },
+            },
+          },
+        })}
+      >
+        <NotificationItem
+          item={item}
+          onClick={mockOnClick}
+          onOptionButtonClick={mockOptionClick}
+          data-testid="notification-item-test"
+        />
+      </Provider>
+    );
+
+    const matchingElements = getAllByText((_, element) => {
+      if (!element) return false;
+      const text = element.textContent || "";
+      return (
+        text.includes("Sign CSO Certificate") &&
+        text.includes("Test Connection")
+      );
+    });
+
+    expect(matchingElements.length).toBeGreaterThan(0);
+    expect(matchingElements[0]).toBeVisible();
   });
 });

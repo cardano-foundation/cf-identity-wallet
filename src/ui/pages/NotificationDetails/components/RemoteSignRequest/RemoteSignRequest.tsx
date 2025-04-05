@@ -5,6 +5,7 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { t } from "i18next";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
@@ -141,7 +142,9 @@ const RemoteSignRequest = ({
         header={
           <PageHeader
             onBack={handleBack}
-            title={`${i18n.t("tabs.notifications.details.sign.title")}`}
+            title={`${t("tabs.notifications.details.sign.title", {
+              certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
+            })}`}
           />
         }
         footer={

@@ -51,6 +51,9 @@ describe("Receive credential", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
+    // TODO: Matching the hardcoded value in the component
+    // Remember to remove this hardcoded value once the component is refactored
+    const customCertificateName = "CSO Certificate";
     const { getAllByText, getByText } = render(
       <Provider store={storeMocked}>
         <RemoteSignRequest
@@ -63,7 +66,12 @@ describe("Receive credential", () => {
     );
 
     expect(
-      getAllByText(EN_TRANSLATIONS.tabs.notifications.details.sign.title)[0]
+      getAllByText(
+        `${EN_TRANSLATIONS.tabs.notifications.details.sign.title.replace(
+          "{{certificate}}",
+          customCertificateName
+        )}`
+      )[0]
     ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.tabs.notifications.details.sign.identifier)
