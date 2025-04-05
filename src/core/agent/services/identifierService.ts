@@ -120,7 +120,10 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async createInceptionEvent(identifier: string, digest: string): Promise<any> {
+  async createInteractionEvent(
+    identifier: string,
+    digest: string
+  ): Promise<any> {
     const data = [
       {
         d: digest,

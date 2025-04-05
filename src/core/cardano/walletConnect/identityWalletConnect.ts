@@ -35,7 +35,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     payload: string,
     signature: string
   ) => Promise<string | { error: PeerConnectionError }>;
-  verifyKeriInception: (
+  verifyKeriInteraction: (
     identifier: string,
     oobi: string,
     payload: string,
@@ -123,7 +123,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       return "";
     };
 
-    this.verifyKeriInception = async (
+    this.verifyKeriInteraction = async (
       identifier: string,
       oobi: string,
       payload: string,
@@ -134,6 +134,8 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       // Get last kel
       // const reqVerfer = await getRemoteVerfer(reqAid);
       // const keyManager = await getKeyManager(serverAid);
+      //await Agent.agent.identifiers.
+      //await this.props.signifyClient.keyStates().get(connection.id)
       return "";
     };
 
@@ -166,7 +168,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         }
       }
       if (approved) {
-        return await Agent.agent.identifiers.createInceptionEvent(
+        return await Agent.agent.identifiers.createInteractionEvent(
           identifier,
           payload
         );

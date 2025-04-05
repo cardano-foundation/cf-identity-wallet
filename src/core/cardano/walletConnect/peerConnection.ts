@@ -145,7 +145,7 @@ class PeerConnection {
         signKeri: this.identityWalletConnect.signKeri,
         signKeriInception: this.identityWalletConnect.signKeriInception,
         verifySignature: this.identityWalletConnect.verifySignature,
-        verifyKeriInception: this.identityWalletConnect.verifyKeriInception,
+        verifyKeriInteraction: this.identityWalletConnect.verifyKeriInteraction,
         disable: this.identityWalletConnect.disable,
       })
     );

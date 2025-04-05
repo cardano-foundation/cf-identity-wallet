@@ -537,7 +537,7 @@ class Agent {
 
   @OnlineOnly
   async signInceptionEvent() {
-    this.identifierService.createInceptionEvent;
+    this.identifierService.createInteractionEvent;
   }
 
   @OnlineOnly

@@ -19,7 +19,7 @@ interface ExperimentalAPIFunctions {
     payload: string,
     signature: string
   ) => Promise<string | { error: PeerConnectionError }>;
-  verifyKeriInception: (
+  verifyKeriInteraction: (
     identifier: string,
     oobi: string,
     payload: string,
