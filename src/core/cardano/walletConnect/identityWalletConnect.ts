@@ -11,6 +11,7 @@ import {
   PeerConnectionEventTypes,
   PeerConnectionError,
   TxSignError,
+  PeerConnectVerifyingEvent,
 } from "./peerConnection.types";
 import { CoreEventEmitter } from "../../agent/event";
 import { PeerConnection } from "./peerConnection";
@@ -115,11 +116,34 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       payload: string,
       signature: string
     ): Promise<string | { error: PeerConnectionError }> => {
-      // TODO: verify
-      // check if oobi is me or contacts
-      // Get last kel
-      // const reqVerfer = await getRemoteVerfer(reqAid);
-      // const keyManager = await getKeyManager(serverAid);
+      let approved: boolean | undefined = undefined;
+      // Closure that updates approved variable
+      const approvalCallback = (approvalStatus: boolean) => {
+        approved = approvalStatus;
+      };
+      this.eventEmitter.emit<PeerConnectVerifyingEvent>({
+        type: PeerConnectionEventTypes.PeerConnectVerify,
+        payload: {
+          identifier,
+          payload,
+          inception: true,
+          approvalCallback,
+        },
+      });
+      const startTime = Date.now();
+      // Wait until approved is true or false
+      while (approved === undefined) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, IdentityWalletConnect.TIMEOUT_INTERVAL)
+        );
+        if (Date.now() > startTime + IdentityWalletConnect.MAX_SIGN_TIME) {
+          return { error: TxSignError.TimeOut };
+        }
+      }
+
+      if (approved) {
+        // TODO
+      }
       return "";
     };
 

@@ -1809,6 +1809,7 @@
     "deleteidentifiererror": "Unable to delete identifier",
     "archivedcrederror": "Unable to archive credential",
     "signsuccessful": "Sign successful",
+    "verifysuccessful": "Sign successful",
     "savepasswordhinterror": "Unable to delete password hint",
     "editidentifiererror": "Unable to update identifier",
     "failedupdateconnectionerror": "Failed to update connection",
@@ -1829,6 +1830,13 @@
         "data": "Data"
       }
     },
+    "verify": {
+      "title": "Verify",
+      "identifier": "Identifier",
+      "transaction": {
+        "data": "Data"
+      }
+    },
     "button": {
       "acceptoffer": "Accept credential",
       "cancel": "Cancel",
@@ -1836,6 +1844,7 @@
       "accept": "Accept",
       "decline": "Decline",
       "sign": "Sign",
+      "verify": "Verify",
       "dontallow": "Don't allow"
     },
     "alert": {

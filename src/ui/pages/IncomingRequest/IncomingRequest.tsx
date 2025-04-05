@@ -7,9 +7,11 @@ import {
   getQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { SignRequest } from "./components/SignRequest"; // Import SignRequest component
+import { SignRequest } from "./components/SignRequest";
+import { VerifyRequest } from "./components/VerifyRequest";
 import {
   IncomingRequestType,
+  PeerConnectVerifyingEventRequest,
   PeerConnectSigningEventRequest,
 } from "../../../store/reducers/stateCache/stateCache.types";
 import { getConnectedWallet } from "../../../store/reducers/walletConnectionsCache";
@@ -20,49 +22,67 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
   const connectedWallet = useAppSelector(getConnectedWallet);
+
+  type RequestDataType =
+    | PeerConnectSigningEventRequest
+    | PeerConnectVerifyingEventRequest;
+
   const incomingRequest = useMemo(() => {
     if (
       !queueIncomingRequest.isProcessing ||
       !queueIncomingRequest.queues.length
     ) {
-      return;
-    } else {
-      return queueIncomingRequest.queues[0] as PeerConnectSigningEventRequest;
+      return undefined;
     }
+    return queueIncomingRequest.queues[0] as RequestDataType;
   }, [queueIncomingRequest]);
+
   const [initiateAnimation, setInitiateAnimation] = useState(false);
-  const [requestData, setRequestData] =
-    useState<PeerConnectSigningEventRequest>();
+  const [requestData, setRequestData] = useState<RequestDataType | undefined>();
   const ANIMATION_DELAY = 4000;
   const [blur, setBlur] = useState(false);
 
-  // After the current refactoring we are defaulting all incoming requests to be
-  // of type IncomingRequestType.PEER_CONNECT_SIGN because of the lack of other use cases.
-  // Before the refactoring we had 3 use cases, so the JSX was rendering a component
-  // that has now been removed and this used to contain a switch statement in order to render
-  // the correct component. Please consider this if in the future we need to add more use cases.
-  // The old code can be found in PR #550.
-
   useEffect(() => {
     if (!incomingRequest) {
+      setRequestData(undefined);
+      setOpenPage(false);
       return;
     }
-    if (
-      incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN &&
-      (!connectedWallet ||
-        connectedWallet.id !== incomingRequest.peerConnection?.id)
-    ) {
+
+    switch (incomingRequest.type) {
+    case IncomingRequestType.PEER_CONNECT_SIGN:
+      if (
+        !connectedWallet ||
+          connectedWallet.id !== incomingRequest.peerConnection?.id
+      ) {
+        handleReset();
+        return;
+      }
+      break;
+    case IncomingRequestType.PEER_CONNECT_VERIFY:
+      if (
+        !connectedWallet ||
+          connectedWallet.id !== incomingRequest.peerConnection?.id
+      ) {
+        handleReset();
+        return;
+      }
+      break;
+    default:
       handleReset();
+      return;
     }
+
     setRequestData(incomingRequest);
     setOpenPage(true);
   }, [connectedWallet, incomingRequest, setOpenPage]);
 
   useEffect(() => {
+    const routerOutlet = document?.querySelector("ion-router-outlet");
     if (blur) {
-      document?.querySelector("ion-router-outlet")?.classList.add("blur");
+      routerOutlet?.classList.add("blur");
     } else {
-      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+      routerOutlet?.classList.remove("blur");
     }
   }, [blur]);
 
@@ -80,7 +100,15 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     if (!incomingRequest) {
       return handleReset();
     }
-    incomingRequest.signTransaction?.payload.approvalCallback(false);
+
+    switch (incomingRequest.type) {
+    case IncomingRequestType.PEER_CONNECT_SIGN:
+      incomingRequest.signTransaction?.payload.approvalCallback(false);
+      break;
+    case IncomingRequestType.PEER_CONNECT_VERIFY:
+      incomingRequest.verifyTransaction?.payload.approvalCallback(false);
+      break;
+    }
     handleReset();
   };
 
@@ -88,30 +116,61 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     if (!incomingRequest) {
       return handleReset();
     }
+
     setInitiateAnimation(true);
-    incomingRequest.signTransaction?.payload.approvalCallback(true);
-    setTimeout(() => {
-      handleReset();
-      dispatch(setToastMsg(ToastMsgType.SIGN_SUCCESSFUL));
-    }, ANIMATION_DELAY);
+
+    switch (incomingRequest.type) {
+    case IncomingRequestType.PEER_CONNECT_SIGN:
+      incomingRequest.signTransaction?.payload.approvalCallback(true);
+      setTimeout(() => {
+        handleReset();
+        dispatch(setToastMsg(ToastMsgType.SIGN_SUCCESSFUL));
+      }, ANIMATION_DELAY);
+      break;
+    case IncomingRequestType.PEER_CONNECT_VERIFY:
+      incomingRequest.verifyTransaction?.payload.approvalCallback(true);
+      setTimeout(() => {
+        handleReset();
+        dispatch(setToastMsg(ToastMsgType.VERIFY_SUCCESSFUL));
+      }, ANIMATION_DELAY);
+      break;
+    }
   };
 
   if (!requestData) {
     return null;
   }
 
-  return (
-    <SignRequest
-      pageId={pageId}
-      activeStatus={open}
-      blur={blur}
-      setBlur={setBlur}
-      requestData={requestData}
-      initiateAnimation={initiateAnimation}
-      handleAccept={handleAccept}
-      handleCancel={handleCancel}
-    />
-  );
+  switch (requestData.type) {
+  case IncomingRequestType.PEER_CONNECT_SIGN:
+    return (
+      <SignRequest
+        pageId={pageId}
+        activeStatus={open}
+        blur={blur}
+        setBlur={setBlur}
+        requestData={requestData}
+        initiateAnimation={initiateAnimation}
+        handleAccept={handleAccept}
+        handleCancel={handleCancel}
+      />
+    );
+  case IncomingRequestType.PEER_CONNECT_VERIFY:
+    return (
+      <VerifyRequest
+        pageId={pageId}
+        activeStatus={open}
+        blur={blur}
+        setBlur={setBlur}
+        requestData={requestData}
+        initiateAnimation={initiateAnimation}
+        handleAccept={handleAccept}
+        handleCancel={handleCancel}
+      />
+    );
+  default:
+    return null;
+  }
 };
 
 export { IncomingRequest };

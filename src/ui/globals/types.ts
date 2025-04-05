@@ -74,6 +74,7 @@ enum ToastMsgType {
   DELETE_IDENTIFIER_FAIL = "deleteidentifiererror",
   ARCHIVED_CRED_FAIL = "archivedcrederror",
   SIGN_SUCCESSFUL = "signsuccessful",
+  VERIFY_SUCCESSFUL = "verifysuccessful",
   UNABLE_DELETE_PASSWORD_HINT = "deletepasswordhinterror",
   UNABLE_EDIT_IDENTIFIER = "editidentifiererror",
   FAILED_UPDATE_CONNECTION = "failedupdateconnectionerror",

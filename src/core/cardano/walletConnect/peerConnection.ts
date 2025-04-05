@@ -8,6 +8,7 @@ import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
+  PeerConnectVerifyingEvent,
   PeerConnectedEvent,
   PeerConnectionBrokenEvent,
   PeerConnectionEventTypes,
@@ -42,6 +43,12 @@ class PeerConnection {
     callback: (event: PeerConnectSigningEvent) => void
   ) {
     this.eventEmitter.on(PeerConnectionEventTypes.PeerConnectSign, callback);
+  }
+
+  onPeerConnectRequestVerifyStateChanged(
+    callback: (event: PeerConnectVerifyingEvent) => void
+  ) {
+    this.eventEmitter.on(PeerConnectionEventTypes.PeerConnectVerify, callback);
   }
 
   onPeerConnectedStateChanged(callback: (event: PeerConnectedEvent) => void) {

@@ -9,6 +9,7 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
 import {
   PeerConnectSigningEvent,
+  PeerConnectVerifyingEvent,
   PeerConnectedEvent,
   PeerConnectionBrokenEvent,
   PeerDisconnectedEvent,
@@ -148,6 +149,25 @@ const peerConnectRequestSignChangeHandler = async (
       signTransaction: event,
       peerConnection,
       type: IncomingRequestType.PEER_CONNECT_SIGN,
+    })
+  );
+};
+
+const peerConnectRequestVerifyChangeHandler = async (
+  event: PeerConnectVerifyingEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const connectedDAppAddress =
+    PeerConnection.peerConnection.getConnectedDAppAddress();
+  const peerConnection =
+    await Agent.agent.peerConnectionMetadataStorage.getPeerConnection(
+      connectedDAppAddress
+    );
+  dispatch(
+    setQueueIncomingRequest({
+      verifyTransaction: event,
+      peerConnection,
+      type: IncomingRequestType.PEER_CONNECT_VERIFY,
     })
   );
 };
@@ -539,6 +559,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
       async (event) => {
         return peerConnectRequestSignChangeHandler(event, dispatch);
+      }
+    );
+    PeerConnection.peerConnection.onPeerConnectRequestVerifyStateChanged(
+      async (event) => {
+        return peerConnectRequestVerifyChangeHandler(event, dispatch);
       }
     );
     PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {

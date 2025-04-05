@@ -30,7 +30,7 @@ interface ExperimentalAPIFunctions {
 
 enum PeerConnectionEventTypes {
   PeerConnectSign = "PeerConnectSign",
-  PeerConnectSignWithInception = "PeerConnectSignWithInception",
+  PeerConnectVerify = "PeerConnectVerify",
   PeerConnected = "PeerConnected",
   PeerDisconnected = "PeerDisconnected",
   PeerConnectionBroken = "PeerConnectionBroken",
@@ -38,6 +38,15 @@ enum PeerConnectionEventTypes {
 
 interface PeerConnectSigningEvent extends BaseEventEmitter {
   type: typeof PeerConnectionEventTypes.PeerConnectSign;
+  payload: {
+    identifier: string;
+    payload: string;
+    inception?: boolean;
+    approvalCallback: (approvalStatus: boolean) => void;
+  };
+}
+interface PeerConnectVerifyingEvent extends BaseEventEmitter {
+  type: typeof PeerConnectionEventTypes.PeerConnectVerify;
   payload: {
     identifier: string;
     payload: string;
@@ -92,6 +101,7 @@ export { PeerConnectionEventTypes };
 export type {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
+  PeerConnectVerifyingEvent,
   PeerConnectedEvent,
   PeerDisconnectedEvent,
   PeerConnectionBrokenEvent,
