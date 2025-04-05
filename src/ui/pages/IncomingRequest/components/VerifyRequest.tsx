@@ -23,22 +23,22 @@ const VerifyRequest = ({
   handleAccept,
   handleCancel,
 }: RequestProps<IncomingRequestType.PEER_CONNECT_VERIFY>) => {
-  const [isSigningObject, setIsSigningObject] = useState(false);
+  const [isVerifyingObject, setIsVerifyingObject] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
-  const signDetails = useMemo(() => {
-    //console.log("signDetails", requestData);
+  const verifyDetails = useMemo(() => {
+    // console.log("verifyDetails", requestData);
     if (!requestData.verifyTransaction) {
       return {};
     }
 
-    let signContent;
+    let verifyContent;
     try {
-      signContent = JSON.parse(requestData.verifyTransaction.payload.payload);
-      setIsSigningObject(true);
+      verifyContent = JSON.parse(requestData.verifyTransaction.payload.payload);
+      setIsVerifyingObject(true);
     } catch (error) {
-      signContent = requestData.verifyTransaction.payload.payload;
+      verifyContent = requestData.verifyTransaction.payload.payload;
     }
-    return signContent;
+    return verifyContent;
   }, [requestData.type]);
 
   const signRequest = requestData.verifyTransaction;
@@ -93,9 +93,9 @@ const VerifyRequest = ({
             className="sign-data"
             title={i18n.t("request.verify.transaction.data")}
           >
-            {isSigningObject ? (
+            {isVerifyingObject ? (
               <CardDetailsAttributes
-                data={signDetails}
+                data={verifyDetails}
                 itemProps={{
                   mask: false,
                   fullText: true,
@@ -105,7 +105,7 @@ const VerifyRequest = ({
               />
             ) : (
               <IonText className="sign-string">
-                {signDetails.toString()}
+                {verifyDetails.toString()}
               </IonText>
             )}
           </CardDetailsBlock>

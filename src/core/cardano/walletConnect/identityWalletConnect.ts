@@ -125,8 +125,10 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         type: PeerConnectionEventTypes.PeerConnectVerify,
         payload: {
           identifier,
+          oobi,
           payload,
-          inception: true,
+          signature,
+          interaction: true,
           approvalCallback,
         },
       });
@@ -151,8 +153,24 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       identifier: string,
       oobi: string,
       payload: string,
-      sequencer: string
+      sequence: string
     ): Promise<string | { error: PeerConnectionError }> => {
+      let approved: boolean | undefined = undefined;
+      // Closure that updates approved variable
+      const approvalCallback = (approvalStatus: boolean) => {
+        approved = approvalStatus;
+      };
+      this.eventEmitter.emit<PeerConnectVerifyingEvent>({
+        type: PeerConnectionEventTypes.PeerConnectVerify,
+        payload: {
+          identifier,
+          oobi,
+          payload,
+          sequence,
+          interaction: true,
+          approvalCallback,
+        },
+      });
       // TODO: verify
       // check if oobi is me or contacts
       // Get last kel

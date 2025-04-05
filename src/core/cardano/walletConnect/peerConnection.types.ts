@@ -49,8 +49,11 @@ interface PeerConnectVerifyingEvent extends BaseEventEmitter {
   type: typeof PeerConnectionEventTypes.PeerConnectVerify;
   payload: {
     identifier: string;
+    oobi: string;
     payload: string;
-    inception?: boolean;
+    signature?: string;
+    sequence?: string;
+    interaction?: boolean;
     approvalCallback: (approvalStatus: boolean) => void;
   };
 }
