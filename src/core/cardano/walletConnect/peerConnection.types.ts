@@ -18,7 +18,7 @@ interface ExperimentalAPIFunctions {
     oobi: string,
     payload: string,
     signature: string
-  ) => Promise<boolean | { error: PeerConnectionError }>;
+  ) => Promise<{ verified: boolean } | { error: PeerConnectionError }>;
   verifyKeriInteraction: (
     identifier: string,
     oobi: string,

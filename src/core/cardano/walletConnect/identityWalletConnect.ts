@@ -35,7 +35,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     oobi: string,
     payload: string,
     signature: string
-  ) => Promise<boolean | { error: PeerConnectionError }>;
+  ) => Promise<{ verified: boolean } | { error: PeerConnectionError }>;
   verifyKeriInteraction: (
     identifier: string,
     oobi: string,
@@ -115,7 +115,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       oobi: string,
       payload: string,
       signature: string
-    ): Promise<boolean | { error: PeerConnectionError }> => {
+    ): Promise<{ verified: boolean } | { error: PeerConnectionError }> => {
       let approved: boolean | undefined = undefined;
       // Closure that updates approved variable
       const approvalCallback = (approvalStatus: boolean) => {
@@ -151,8 +151,6 @@ class IdentityWalletConnect extends CardanoPeerConnect {
           signature
         );
         return {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           verified,
         };
       } else {
