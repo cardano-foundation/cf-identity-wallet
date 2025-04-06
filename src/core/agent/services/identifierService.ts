@@ -1,4 +1,11 @@
-import { HabState, Operation, Signer } from "signify-ts";
+import {
+  HabState,
+  Operation,
+  Signer,
+  Verfer,
+  Authenticator,
+  Cigar,
+} from "signify-ts";
 import {
   CreateIdentifierResult,
   IdentifierDetails,
@@ -532,6 +539,26 @@ class IdentifierService extends AgentService {
       return manager.get(hab).signers[0];
     } else {
       throw new Error(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
+    }
+  }
+
+  @OnlineOnly
+  async verifySignature(
+    identifier: string,
+    ooib: string,
+    payload: string,
+    signature: string
+  ): Promise<boolean> {
+    try {
+      const sig = new Cigar({ qb64: signature });
+      const pubKey = (
+        await this.props.signifyClient.keyStates().get(identifier)
+      )[0].k[0];
+      const verfer = new Verfer({ qb64: pubKey });
+      const verified: boolean = verfer.verify(sig.raw, payload);
+      return verified;
+    } catch (error) {
+      return false;
     }
   }
 

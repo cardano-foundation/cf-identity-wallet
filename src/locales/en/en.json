@@ -1809,7 +1809,7 @@
     "deleteidentifiererror": "Unable to delete identifier",
     "archivedcrederror": "Unable to archive credential",
     "signsuccessful": "Sign successful",
-    "verifysuccessful": "Sign successful",
+    "verifysuccessful": "Verify successful",
     "savepasswordhinterror": "Unable to delete password hint",
     "editidentifiererror": "Unable to update identifier",
     "failedupdateconnectionerror": "Failed to update connection",

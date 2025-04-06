@@ -18,13 +18,13 @@ interface ExperimentalAPIFunctions {
     oobi: string,
     payload: string,
     signature: string
-  ) => Promise<string | { error: PeerConnectionError }>;
+  ) => Promise<boolean | { error: PeerConnectionError }>;
   verifyKeriInteraction: (
     identifier: string,
     oobi: string,
     payload: string,
     sequencer: string
-  ) => Promise<string | { error: PeerConnectionError }>;
+  ) => Promise<boolean | { error: PeerConnectionError }>;
   disable: () => void;
 }
 

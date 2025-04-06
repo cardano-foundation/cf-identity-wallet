@@ -35,13 +35,13 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     oobi: string,
     payload: string,
     signature: string
-  ) => Promise<string | { error: PeerConnectionError }>;
+  ) => Promise<boolean | { error: PeerConnectionError }>;
   verifyKeriInteraction: (
     identifier: string,
     oobi: string,
     payload: string,
     sequencer: string
-  ) => Promise<string | { error: PeerConnectionError }>;
+  ) => Promise<boolean | { error: PeerConnectionError }>;
   disable: () => void;
 
   constructor(
@@ -115,7 +115,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       oobi: string,
       payload: string,
       signature: string
-    ): Promise<string | { error: PeerConnectionError }> => {
+    ): Promise<boolean | { error: PeerConnectionError }> => {
       let approved: boolean | undefined = undefined;
       // Closure that updates approved variable
       const approvalCallback = (approvalStatus: boolean) => {
@@ -128,6 +128,56 @@ class IdentityWalletConnect extends CardanoPeerConnect {
           oobi,
           payload,
           signature,
+          interaction: false,
+          approvalCallback,
+        },
+      });
+      const startTime = Date.now();
+      // Wait until approved is true or false
+      while (approved === undefined) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, IdentityWalletConnect.TIMEOUT_INTERVAL)
+        );
+        if (Date.now() > startTime + IdentityWalletConnect.MAX_SIGN_TIME) {
+          return { error: TxSignError.TimeOut };
+        }
+      }
+
+      if (approved) {
+        const verified: boolean = await Agent.agent.identifiers.verifySignature(
+          identifier,
+          oobi,
+          payload,
+          signature
+        );
+        return {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          verified,
+        };
+      } else {
+        return { error: TxSignError.UserDeclined };
+      }
+    };
+
+    this.verifyKeriInteraction = async (
+      identifier: string,
+      oobi: string,
+      payload: string,
+      sequence: string
+    ): Promise<boolean | { error: PeerConnectionError }> => {
+      let approved: boolean | undefined = undefined;
+      // Closure that updates approved variable
+      const approvalCallback = (approvalStatus: boolean) => {
+        approved = approvalStatus;
+      };
+      this.eventEmitter.emit<PeerConnectVerifyingEvent>({
+        type: PeerConnectionEventTypes.PeerConnectVerify,
+        payload: {
+          identifier,
+          oobi,
+          payload,
+          sequence,
           interaction: true,
           approvalCallback,
         },
@@ -145,32 +195,8 @@ class IdentityWalletConnect extends CardanoPeerConnect {
 
       if (approved) {
         // TODO
+        return true;
       }
-      return "";
-    };
-
-    this.verifyKeriInteraction = async (
-      identifier: string,
-      oobi: string,
-      payload: string,
-      sequence: string
-    ): Promise<string | { error: PeerConnectionError }> => {
-      let approved: boolean | undefined = undefined;
-      // Closure that updates approved variable
-      const approvalCallback = (approvalStatus: boolean) => {
-        approved = approvalStatus;
-      };
-      this.eventEmitter.emit<PeerConnectVerifyingEvent>({
-        type: PeerConnectionEventTypes.PeerConnectVerify,
-        payload: {
-          identifier,
-          oobi,
-          payload,
-          sequence,
-          interaction: true,
-          approvalCallback,
-        },
-      });
       // TODO: verify
       // check if oobi is me or contacts
       // Get last kel
@@ -178,7 +204,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       // const keyManager = await getKeyManager(serverAid);
       //await Agent.agent.identifiers.
       //await this.props.signifyClient.keyStates().get(connection.id)
-      return "";
+      return false;
     };
 
     this.signKeriInception = async (
