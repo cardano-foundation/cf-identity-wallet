@@ -9,7 +9,7 @@ interface ExperimentalAPIFunctions {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
-  signKeriInception: (
+  signInteraction: (
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
@@ -41,7 +41,7 @@ interface PeerConnectSigningEvent extends BaseEventEmitter {
   payload: {
     identifier: string;
     payload: string;
-    inception?: boolean;
+    interaction?: boolean;
     approvalCallback: (approvalStatus: boolean) => void;
   };
 }

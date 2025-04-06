@@ -26,7 +26,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
-  signKeriInception: (
+  signInteraction: (
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
@@ -207,7 +207,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       }
     };
 
-    this.signKeriInception = async (
+    this.signInteraction = async (
       identifier: string,
       payload: string
     ): Promise<string | { error: PeerConnectionError }> => {
@@ -221,7 +221,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         payload: {
           identifier,
           payload,
-          inception: true,
+          interaction: true,
           approvalCallback,
         },
       });
@@ -236,10 +236,12 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         }
       }
       if (approved) {
-        return await Agent.agent.identifiers.createInteractionEvent(
+        const r = await Agent.agent.identifiers.createInteractionEvent(
           identifier,
           payload
         );
+
+        return r;
       } else {
         return { error: TxSignError.UserDeclined };
       }

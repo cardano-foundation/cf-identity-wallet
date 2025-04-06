@@ -150,7 +150,7 @@ class PeerConnection {
       new ExperimentalContainer<ExperimentalAPIFunctions>({
         getKeriIdentifier: this.identityWalletConnect.getKeriIdentifier,
         signKeri: this.identityWalletConnect.signKeri,
-        signKeriInception: this.identityWalletConnect.signKeriInception,
+        signInteraction: this.identityWalletConnect.signInteraction,
         verifySignature: this.identityWalletConnect.verifySignature,
         verifyKeriInteraction: this.identityWalletConnect.verifyKeriInteraction,
         disable: this.identityWalletConnect.disable,
