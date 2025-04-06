@@ -24,7 +24,7 @@ interface ExperimentalAPIFunctions {
     oobi: string,
     payload: string,
     sequencer: string
-  ) => Promise<boolean | { error: PeerConnectionError }>;
+  ) => Promise<{ verified: boolean } | { error: PeerConnectionError }>;
   disable: () => void;
 }
 

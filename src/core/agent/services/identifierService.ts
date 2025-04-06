@@ -5,6 +5,7 @@ import {
   Verfer,
   Authenticator,
   Cigar,
+  State,
 } from "signify-ts";
 import {
   CreateIdentifierResult,
@@ -23,7 +24,12 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { OnlineOnly, randomSalt, deleteNotificationRecordById } from "./utils";
+import {
+  OnlineOnly,
+  randomSalt,
+  deleteNotificationRecordById,
+  waitAndGetDoneOp,
+} from "./utils";
 import {
   BasicRecord,
   BasicStorage,
@@ -542,7 +548,6 @@ class IdentifierService extends AgentService {
     }
   }
 
-  @OnlineOnly
   async verifySignature(
     identifier: string,
     ooib: string,
@@ -557,6 +562,39 @@ class IdentifierService extends AgentService {
       const verfer = new Verfer({ qb64: pubKey });
       const verified: boolean = verfer.verify(sig.raw, payload);
       return verified;
+    } catch (error) {
+      return false;
+    }
+  }
+  @OnlineOnly
+  async verifyInteraction(
+    identifier: string,
+    ooib: string,
+    payload: string,
+    sequence: string
+  ): Promise<boolean> {
+    try {
+      /* TODO: wait for operation to be done
+      const operation = (await waitAndGetDoneOp(
+        this.props.signifyClient,
+        this.props.signifyClient.keyStates().query(identifier, sequence),
+        15000,
+        250
+      )) as Operation & { response: State };
+      */
+
+      const operation = await this.props.signifyClient
+        .keyStates()
+        .query(identifier, sequence);
+      if (!operation.done) {
+        throw new Error("Failed to query key states");
+      }
+
+      const kels = await this.props.signifyClient.keyEvents().get(identifier);
+      const foundItem = kels.find((item: any) => item.ked.s === sequence);
+
+      const digestInKel = foundItem.ked.a[0].d;
+      return digestInKel === payload;
     } catch (error) {
       return false;
     }
