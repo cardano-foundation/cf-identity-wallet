@@ -1833,8 +1833,11 @@
     "verify": {
       "title": "Verify",
       "identifier": "Identifier",
+      "sequence": "Secuence",
+      "signature": "Signature",
       "transaction": {
-        "data": "Data"
+        "data": "Data",
+        "payload": "Payload"
       }
     },
     "button": {

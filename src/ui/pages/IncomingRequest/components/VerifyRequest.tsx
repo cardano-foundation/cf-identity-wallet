@@ -26,19 +26,10 @@ const VerifyRequest = ({
   const [isVerifyingObject, setIsVerifyingObject] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const verifyDetails = useMemo(() => {
-    // console.log("verifyDetails", requestData);
     if (!requestData.verifyTransaction) {
       return {};
     }
-
-    let verifyContent;
-    try {
-      verifyContent = JSON.parse(requestData.verifyTransaction.payload.payload);
-      setIsVerifyingObject(true);
-    } catch (error) {
-      verifyContent = requestData.verifyTransaction.payload.payload;
-    }
-    return verifyContent;
+    return requestData.verifyTransaction.payload.payload;
   }, [requestData.type]);
 
   const signRequest = requestData.verifyTransaction;
@@ -57,7 +48,11 @@ const VerifyRequest = ({
         header={
           <PageHeader
             onBack={handleCancel}
-            title={`${i18n.t("request.verify.title")}`}
+            title={`${i18n.t("request.verify.title")} ${
+              signRequest.payload.interaction
+                ? "KEL"
+                : i18n.t("request.verify.signature")
+            }`}
           />
         }
         footer={
@@ -89,9 +84,29 @@ const VerifyRequest = ({
               {signRequest?.payload.identifier}
             </IonText>
           </CardDetailsBlock>
+          {!signRequest.payload.interaction ? (
+            <CardDetailsBlock
+              className="sign-identifier"
+              title={`${i18n.t("request.verify.signature")}`}
+            >
+              <IonText className="identifier">
+                {signRequest?.payload?.signature}
+              </IonText>
+            </CardDetailsBlock>
+          ) : null}
+          {signRequest.payload.interaction ? (
+            <CardDetailsBlock
+              className="sign-identifier"
+              title={`${i18n.t("request.verify.sequence")}`}
+            >
+              <IonText className="identifier">
+                {signRequest?.payload?.sequence}
+              </IonText>
+            </CardDetailsBlock>
+          ) : null}
           <CardDetailsBlock
             className="sign-data"
-            title={i18n.t("request.verify.transaction.data")}
+            title={i18n.t("request.verify.transaction.payload")}
           >
             {isVerifyingObject ? (
               <CardDetailsAttributes
