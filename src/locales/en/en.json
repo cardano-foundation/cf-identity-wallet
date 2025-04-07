@@ -1182,7 +1182,7 @@
           "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you",
           "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
           "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
-          "sign": "<strong>Sign CSO Certificate</strong> for <strong>{{connection}}</strong>"
+          "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>"
         }
       },
       "details": {
@@ -1287,7 +1287,7 @@
           }
         },
         "sign": {
-          "title": "Sign CSO Certificate",
+          "title": "Sign {{certificate}}",
           "identifier": "Identifier",
           "info": "Signature information",
           "transaction": {
