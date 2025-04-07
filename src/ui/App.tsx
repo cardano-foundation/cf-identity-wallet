@@ -104,7 +104,8 @@ const App = () => {
   useEffect(() => {
     const handleUnknownPromiseError = (event: PromiseRejectionEvent) => {
       event.preventDefault();
-      event.promise.catch((e) => showError("Unhandled error", e, dispatch));
+      // TODO: comment for demo
+      //event.promise.catch((e) => showError("Unhandled error", e, dispatch));
     };
 
     window.addEventListener("unhandledrejection", handleUnknownPromiseError);

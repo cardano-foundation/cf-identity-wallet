@@ -131,8 +131,8 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       incomingRequest.verifyTransaction?.payload.approvalCallback(true);
       setTimeout(() => {
         handleReset();
-        dispatch(setToastMsg(ToastMsgType.VERIFY_SUCCESSFUL));
-      }, ANIMATION_DELAY);
+        // dispatch(setToastMsg(ToastMsgType.VERIFY_SUCCESSFUL));
+      }, 2000);
       break;
     }
   };
