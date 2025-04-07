@@ -149,7 +149,7 @@ const NavBar = ({ window }: Props) => {
             >
               <DrawerContent
                 handleDrawerToggle={handleDrawerToggle}
-                menuItems={menuItems}
+                menuItems={displayMenuItems}
               />
             </Drawer>
           </Box>
