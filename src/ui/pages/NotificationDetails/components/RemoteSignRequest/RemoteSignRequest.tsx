@@ -156,6 +156,7 @@ const RemoteSignRequest = ({
         <div className="sign-header">
           <div className="sign-owner-logo">
             <IonIcon
+              data-testid="sign-logo"
               icon={personCircleOutline}
               color="light"
             />
