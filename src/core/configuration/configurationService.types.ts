@@ -3,12 +3,6 @@ interface KeriaConfig {
   bootUrl?: string;
 }
 
-interface AccessConfiguration {
-  [key: string]: {
-    active: boolean;
-  };
-}
-
 enum OptionalFeature {
   ConnectWallet = "CONNECT_WALLET",
 }
@@ -27,5 +21,5 @@ interface Configuration {
   };
 }
 
-export type { Configuration, AccessConfiguration };
+export type { Configuration };
 export { OptionalFeature };

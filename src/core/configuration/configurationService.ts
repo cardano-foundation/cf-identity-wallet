@@ -14,25 +14,30 @@ class ConfigurationService {
   static readonly NOT_FOUND_CONFIG_FILE = "Can not read config file";
 
   async start() {
-    import(`../../../configs/${environment}.yaml`)
-      .then((module) => {
-        const data = module.default;
+    await new Promise((rs, rj) => {
+      import(`../../../configs/${environment}.yaml`)
+        .then((module) => {
+          const data = module.default;
 
-        const validyCheck = this.configurationValid(data);
-        if (validyCheck.success) {
-          ConfigurationService.configurationEnv = data as Configuration;
-          this.setKeriaIp();
-        } else {
-          throw new Error(
-            ConfigurationService.INVALID_ENVIRONMENT_FILE + validyCheck.reason
-          );
-        }
+          const validyCheck = this.configurationValid(data);
+          if (validyCheck.success) {
+            ConfigurationService.configurationEnv = data as Configuration;
+            this.setKeriaIp();
+          } else {
+            rj(
+              new Error(
+                ConfigurationService.INVALID_ENVIRONMENT_FILE +
+                  validyCheck.reason
+              )
+            );
+          }
 
-        return true;
-      })
-      .catch(() => {
-        throw new Error(ConfigurationService.NOT_FOUND_ENVIRONMENT_FILE);
-      });
+          rs(true);
+        })
+        .catch(() => {
+          rj(new Error(ConfigurationService.NOT_FOUND_ENVIRONMENT_FILE));
+        });
+    });
   }
 
   static get env() {
@@ -75,10 +80,6 @@ class ConfigurationService {
 
     if (typeof rasp.enabled !== "boolean") {
       return this.invalid("rasp.enabled must be a boolean value");
-    }
-
-    if (typeof data !== "object") {
-      return this.invalid("Missing top-level access config object");
     }
 
     const { features } = data;
