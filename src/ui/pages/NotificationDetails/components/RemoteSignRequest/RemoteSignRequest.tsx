@@ -3,13 +3,13 @@ import {
   chevronDownOutline,
   chevronUpOutline,
   keyOutline,
+  personCircleOutline,
 } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { t } from "i18next";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
-import UserIcon from "../../../../assets/images/sign-logo.png";
 import {
   CardBlock,
   CardDetailsAttributes,
@@ -39,14 +39,10 @@ const RemoteSignRequest = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [isExpand, setExpand] = useState(false);
   const [displayExpandButton, setDisplayExpandButton] = useState(false);
-
   const attributeContainerRef = useRef<HTMLDivElement>(null);
   const attributeRef = useRef<HTMLDivElement>(null);
-
   const requestData = notificationDetails.a.payload as Record<string, string>;
-
   const connectionName = connections[notificationDetails.connectionId];
-  const logo = UserIcon;
 
   const signDetails = useMemo(() => {
     if (!requestData?.payload) {
@@ -158,12 +154,13 @@ const RemoteSignRequest = ({
         }
       >
         <div className="sign-header">
-          <img
-            className="sign-owner-logo"
-            data-testid="sign-logo"
-            src={logo}
-            alt="logo"
-          />
+          <div className="sign-owner-logo">
+            <IonIcon
+              data-testid="sign-logo"
+              icon={personCircleOutline}
+              color="light"
+            />
+          </div>
           <h2 className="sign-name">{connectionName?.label}</h2>
         </div>
         <h3 className="sign-info">

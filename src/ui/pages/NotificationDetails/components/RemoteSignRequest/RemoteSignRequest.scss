@@ -6,6 +6,7 @@
   & .page-header {
     ion-toolbar {
       --background: transparent;
+      margin-top: 0.625rem;
 
       & > ion-title.md {
         margin: 0;
@@ -35,8 +36,15 @@
     .sign-owner-logo {
       width: 5rem;
       height: 5rem;
-      border-radius: 2.5rem;
-      margin-bottom: 0.75rem;
+      border-radius: 4rem;
+      background-color: var(--ion-color-neutral-800);
+
+      ion-icon {
+        width: 5rem;
+        height: 5rem;
+        margin: 0 auto;
+        fill: var(--ion-color-neutral-200);
+      }
     }
 
     .sign-name {
