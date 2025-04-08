@@ -12,10 +12,15 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { Menu } from "./Menu";
 import { SubMenuKey } from "./Menu.types";
 
-const canAccessFeatureMock = jest.fn();
-jest.mock("../../utils/accessPermission", () => ({
-  ...jest.requireActual("../../utils/accessPermission"),
-  canAccessFeature: () => canAccessFeatureMock(),
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
 }));
 
 const combineMock = jest.fn(() => TabsRoutePath.MENU);
@@ -75,9 +80,6 @@ const storeMocked = {
 };
 
 describe("Menu Tab", () => {
-  beforeEach(() => {
-    canAccessFeatureMock.mockReturnValue(true);
-  });
   test("Renders Menu Tab", () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
@@ -194,19 +196,5 @@ describe("Menu Tab", () => {
         getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.tabheader)
       ).toBeVisible();
     });
-  });
-
-  test("Hide wallet connect button", async () => {
-    canAccessFeatureMock.mockReturnValue(false);
-
-    const { queryByText } = render(
-      <Provider store={store}>
-        <Menu />
-      </Provider>
-    );
-
-    expect(
-      queryByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.title)
-    ).toBeNull();
   });
 });

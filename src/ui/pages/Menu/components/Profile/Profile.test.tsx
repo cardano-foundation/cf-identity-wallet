@@ -11,9 +11,15 @@ import { CustomInputProps } from "../../../../components/CustomInput/CustomInput
 import { Menu } from "../../Menu";
 import { SubMenuKey } from "../../Menu.types";
 
-jest.mock("../../../../utils/accessPermission", () => ({
-  ...jest.requireActual("../../../../utils/accessPermission"),
-  canAccessFeature: () => true,
+jest.mock("../../../../../core/configuration", () => ({
+  ...jest.requireActual("../../../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
 }));
 
 jest.mock("../../../../../core/agent/agent", () => ({

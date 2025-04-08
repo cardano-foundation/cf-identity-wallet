@@ -12,6 +12,7 @@ import {
   settingsOutline,
 } from "ionicons/icons";
 import { useEffect, useMemo, useState } from "react";
+import { OptionalFeature } from "../../../core/configuration/configurationService.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -24,13 +25,12 @@ import {
   showConnectWallet,
 } from "../../../store/reducers/walletConnectionsCache";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { Features } from "../../globals/accessPermission";
-import { canAccessFeature } from "../../utils/accessPermission";
 import MenuItem from "./components/MenuItem";
 import { SubMenu } from "./components/SubMenu";
 import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
 import "./Menu.scss";
 import { MenuItemProps, SubMenuKey } from "./Menu.types";
+import { ConfigurationService } from "../../../core/configuration";
 
 const Menu = () => {
   const pageId = "menu-tab";
@@ -79,7 +79,9 @@ const Menu = () => {
       icon: linkOutline,
       label: `${i18n.t("tabs.menu.tab.items.connectwallet.title")}`,
       subLabel: `${i18n.t("tabs.menu.tab.items.connectwallet.sublabel")}`,
-      hidden: !canAccessFeature(Features.ConnectWallet),
+      hidden: ConfigurationService.env.features.cut.includes(
+        OptionalFeature.ConnectWallet
+      ),
     },
   ];
 

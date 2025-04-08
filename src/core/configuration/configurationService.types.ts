@@ -9,6 +9,10 @@ interface AccessConfiguration {
   };
 }
 
+enum OptionalFeature {
+  ConnectWallet = "CONNECT_WALLET",
+}
+
 interface Configuration {
   keri: {
     keria?: KeriaConfig;
@@ -18,7 +22,10 @@ interface Configuration {
       enabled: boolean;
     };
   };
-  accessPermission: AccessConfiguration;
+  features: {
+    cut: OptionalFeature[];
+  };
 }
 
 export type { Configuration, AccessConfiguration };
+export { OptionalFeature };

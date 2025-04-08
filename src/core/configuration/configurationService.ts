@@ -1,7 +1,4 @@
-import {
-  AccessConfiguration,
-  Configuration,
-} from "./configurationService.types";
+import { Configuration, OptionalFeature } from "./configurationService.types";
 // eslint-disable-next-line no-undef
 
 const environment = process.env.ENVIRONMENT || "local";
@@ -17,34 +14,7 @@ class ConfigurationService {
   static readonly NOT_FOUND_CONFIG_FILE = "Can not read config file";
 
   async start() {
-    await this.loadEviromentConfig();
-    await this.loadPermissionConfig();
-  }
-
-  private async loadPermissionConfig() {
-    return import("../../../configs/caseOne.yaml")
-      .then((module) => {
-        const data = module.default;
-
-        const validyCheck = this.accessConfigurationValid(data);
-        if (validyCheck.success) {
-          ConfigurationService.configurationEnv.accessPermission =
-            data as AccessConfiguration;
-        } else {
-          throw new Error(
-            ConfigurationService.INVALID_CONFIG_FILE + validyCheck.reason
-          );
-        }
-
-        return true;
-      })
-      .catch(() => {
-        return new Error(ConfigurationService.NOT_FOUND_CONFIG_FILE);
-      });
-  }
-
-  private async loadEviromentConfig() {
-    return import(`../../../configs/${environment}.yaml`)
+    import(`../../../configs/${environment}.yaml`)
       .then((module) => {
         const data = module.default;
 
@@ -107,24 +77,25 @@ class ConfigurationService {
       return this.invalid("rasp.enabled must be a boolean value");
     }
 
-    return { success: true };
-  }
-
-  private accessConfigurationValid(
-    data: AccessConfiguration
-  ): { success: true } | { success: false; reason: string } {
     if (typeof data !== "object") {
       return this.invalid("Missing top-level access config object");
     }
 
-    const keys = Object.keys(data);
+    const { features } = data;
+    if (typeof features !== "object") {
+      return this.invalid("Missing top-level features object");
+    }
 
-    for (const key of keys) {
-      if (
-        typeof data[key] !== "object" ||
-        typeof data[key].active !== "boolean"
-      ) {
-        return this.invalid(`Invalid config key: ${key}`);
+    const { cut } = features;
+    if (!Array.isArray(cut)) {
+      return this.invalid("features.cut must be a object");
+    }
+
+    if (cut.length > 0) {
+      for (const feature of cut) {
+        if (!Object.values(OptionalFeature).includes(feature)) {
+          return this.invalid("Invalid features.cut value");
+        }
       }
     }
 
