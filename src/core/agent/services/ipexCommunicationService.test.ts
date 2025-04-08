@@ -358,6 +358,14 @@ describe("Receive individual ACDC actions", () => {
       "sigs",
       "aend",
     ]);
+    credentialStorage.saveCredentialMetadataRecord = jest
+      .fn()
+      .mockResolvedValue({
+        ...credentialRecordProps,
+        identifierId: "identifierId",
+        identifierType: "individual",
+        createdAt: new Date(credentialRecordProps.issuanceDate),
+      });
     markNotificationMock.mockResolvedValueOnce({ status: "done" });
 
     await ipexCommunicationService.admitAcdcFromGrant(id);
@@ -375,7 +383,7 @@ describe("Receive individual ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "identifierId",
           identifierType: "individual",
-          createdAt: new Date(credentialRecordProps.issuanceDate),
+          isArchived: undefined,
         },
         status: CredentialStatus.PENDING,
       },
@@ -636,6 +644,15 @@ describe("Receive group ACDC actions", () => {
     });
     ipexAdmitMock.mockResolvedValue(["admit", ["sigs"], "aend"]);
 
+    credentialStorage.saveCredentialMetadataRecord = jest
+      .fn()
+      .mockResolvedValue({
+        ...credentialRecordProps,
+        identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+        identifierType: "group",
+        createdAt: new Date(credentialRecordProps.issuanceDate),
+      });
+
     await ipexCommunicationService.admitAcdcFromGrant(id);
 
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
@@ -651,7 +668,7 @@ describe("Receive group ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
           identifierType: "group",
-          createdAt: new Date(credentialRecordProps.issuanceDate),
+          isArchived: undefined,
         },
         status: CredentialStatus.PENDING,
       },
@@ -805,6 +822,14 @@ describe("Receive group ACDC actions", () => {
         ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
       })
     );
+    credentialStorage.saveCredentialMetadataRecord = jest
+      .fn()
+      .mockResolvedValue({
+        ...credentialRecordProps,
+        identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+        identifierType: "group",
+        createdAt: new Date(credentialRecordProps.issuanceDate),
+      });
 
     await ipexCommunicationService.joinMultisigAdmit("id");
 
@@ -832,7 +857,7 @@ describe("Receive group ACDC actions", () => {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
           identifierType: "group",
-          createdAt: new Date(credentialRecordProps.issuanceDate),
+          isArchived: undefined,
         },
         status: CredentialStatus.PENDING,
       },

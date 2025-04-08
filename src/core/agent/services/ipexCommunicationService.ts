@@ -21,10 +21,11 @@ import {
   OperationPendingStorage,
   IdentifierMetadataRecord,
   NotificationRecord,
+  CredentialMetadataRecord,
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
-import { OnlineOnly } from "./utils";
+import { getCredentialShortDetails, OnlineOnly } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
 import {
   CredentialsMatchingApply,
@@ -142,7 +143,7 @@ class IpexCommunicationService extends AgentService {
       this.props.eventEmitter.emit<AcdcStateChangedEvent>({
         type: EventTypes.AcdcStateChanged,
         payload: {
-          credential,
+          credential: getCredentialShortDetails(credential),
           status: CredentialStatus.PENDING,
         },
       });
@@ -434,7 +435,7 @@ class IpexCommunicationService extends AgentService {
     schemaTitle: string,
     connectionId: string,
     schema: string
-  ): Promise<CredentialMetadataRecordProps> {
+  ): Promise<CredentialMetadataRecord> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: credentialId,
       isArchived: false,
@@ -449,10 +450,9 @@ class IpexCommunicationService extends AgentService {
         : IdentifierType.Individual,
       createdAt: new Date(dateTime),
     };
-    await this.credentialStorage.saveCredentialMetadataRecord(
+    return await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
     );
-    return credentialDetails;
   }
 
   private async admitIpex(
@@ -627,7 +627,7 @@ class IpexCommunicationService extends AgentService {
       this.props.eventEmitter.emit<AcdcStateChangedEvent>({
         type: EventTypes.AcdcStateChanged,
         payload: {
-          credential,
+          credential: getCredentialShortDetails(credential),
           status: CredentialStatus.PENDING,
         },
       });
