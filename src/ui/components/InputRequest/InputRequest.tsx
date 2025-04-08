@@ -181,7 +181,7 @@ const InputRequest = () => {
         <ErrorMessage message={errorMessage} />
         <PageFooter
           pageId={componentId}
-          primaryButtonDisabled={inputValue.length === 0}
+          primaryButtonDisabled={inputValue.trim().length === 0}
           primaryButtonText={`${i18n.t("inputrequest.button.confirm")}`}
           primaryButtonAction={() => handleConfirm()}
         />
