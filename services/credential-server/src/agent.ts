@@ -3,7 +3,7 @@ import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
 import { readFile, writeFile } from "fs/promises";
-import { existsSync, mkdir, mkdirSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import path from "path";
 
 class Agent {
@@ -16,31 +16,17 @@ class Agent {
   static readonly LE_SCHEMA_SAID =
     "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
 
-  private static instance: Agent;
+  private static keriRegistryRegk;
+  private static keriIssuerRegistryRegk;
 
-  private keriRegistryRegk;
-  private keriIssuerRegistryRegk;
+  private static signifyApi = new SignifyApi();
+  private static signifyApiIssuer = new SignifyApi();
 
-  signifyApi!: SignifyApi;
-  signifyApiIssuer!: SignifyApi;
+  private static issuerAid;
+  private static holderAid;
+  private static qviCredentialId;
 
-  private issuerAid;
-  private holderAid;
-  private qviCredentialId;
-
-  private constructor() {
-    this.signifyApi = new SignifyApi();
-    this.signifyApiIssuer = new SignifyApi();
-  }
-
-  static get agent() {
-    if (!this.instance) {
-      this.instance = new Agent();
-    }
-    return this.instance;
-  }
-
-  async start(): Promise<void> {
+  static async start(): Promise<void> {
     await signifyReady();
     let bran;
     let issuerBran;
@@ -74,43 +60,43 @@ class Agent {
       issuerBran = bransData.issuerBran;
     }
     if (bran && issuerBran) {
-      await this.signifyApi.start(bran);
-      await this.signifyApiIssuer.start(issuerBran);
+      await Agent.signifyApi.start(bran);
+      await Agent.signifyApiIssuer.start(issuerBran);
     }
   }
 
-  async createKeriOobi() {
-    return `${await this.signifyApi.getOobi(
+  static async createKeriOobi() {
+    return `${await Agent.signifyApi.getOobi(
       Agent.HOLDER_AID_NAME
     )}?name=CF%20Credential%20Issuance`;
   }
 
-  async resolveOobi(url: string) {
-    return this.signifyApi.resolveOobi(url);
+  static async resolveOobi(url: string) {
+    return Agent.signifyApi.resolveOobi(url);
   }
 
-  async issueAcdcCredentialByAid(schemaSaid, aid, attribute) {
+  static async issueAcdcCredentialByAid(schemaSaid, aid, attribute) {
     if (schemaSaid === Agent.LE_SCHEMA_SAID) {
-      return this.signifyApi.leChainedCredential(
-        this.qviCredentialId,
-        this.keriRegistryRegk,
-        this.holderAid.name,
+      return Agent.signifyApi.leChainedCredential(
+        Agent.qviCredentialId,
+        Agent.keriRegistryRegk,
+        Agent.holderAid.name,
         aid,
         attribute
       );
     }
 
-    return this.signifyApi.issueCredential(
+    return Agent.signifyApi.issueCredential(
       Agent.HOLDER_AID_NAME,
-      this.keriRegistryRegk,
+      Agent.keriRegistryRegk,
       schemaSaid,
       aid,
       attribute
     );
   }
 
-  async requestDisclosure(schemaSaid, aid, attributes) {
-    return this.signifyApi.requestDisclosure(
+  static async requestDisclosure(schemaSaid, aid, attributes) {
+    return Agent.signifyApi.requestDisclosure(
       Agent.HOLDER_AID_NAME,
       schemaSaid,
       aid,
@@ -118,35 +104,35 @@ class Agent {
     );
   }
 
-  async contacts() {
-    return this.signifyApi.contacts();
+  static async contacts() {
+    return Agent.signifyApi.contacts();
   }
 
-  async deleteContact(id: string) {
-    return this.signifyApi.deleteContact(id);
+  static async deleteContact(id: string) {
+    return Agent.signifyApi.deleteContact(id);
   }
 
-  async contactCredentials(contactId: string) {
-    const issuer = await this.signifyApi.getIdentifierByName(
+  static async contactCredentials(contactId: string) {
+    const issuer = await Agent.signifyApi.getIdentifierByName(
       Agent.HOLDER_AID_NAME
     );
-    return this.signifyApi.contactCredentials(issuer.prefix, contactId);
+    return Agent.signifyApi.contactCredentials(issuer.prefix, contactId);
   }
 
-  async revokeCredential(credentialId: string, holder: string) {
-    return this.signifyApi.revokeCredential(
+  static async revokeCredential(credentialId: string, holder: string) {
+    return Agent.signifyApi.revokeCredential(
       Agent.HOLDER_AID_NAME,
       holder,
       credentialId
     );
   }
 
-  async pollNotifications() {
+  static async pollNotifications() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const notifications = await this.signifyApi.getNotifications();
+      const notifications = await Agent.signifyApi.getNotifications();
       for (const notif of notifications.notes) {
-        await this.processNotification(notif);
+        await Agent.processNotification(notif);
       }
       await new Promise((rs) => {
         setTimeout(() => {
@@ -156,11 +142,11 @@ class Agent {
     }
   }
 
-  private async processNotification(notif: any) {
+  private static async processNotification(notif: any) {
     switch (notif.a.r) {
       case NotificationRoute.ExnIpexOffer: {
-        const msg = await this.signifyApi.getExchangeMsg(notif.a.d!);
-        await this.signifyApi.agreeToAcdcFromOffer(
+        const msg = await Agent.signifyApi.getExchangeMsg(notif.a.d!);
+        await Agent.signifyApi.agreeToAcdcFromOffer(
           Agent.HOLDER_AID_NAME,
           msg.exn.d,
           msg.exn.i
@@ -170,18 +156,18 @@ class Agent {
       default:
         break;
     }
-    await this.signifyApi.deleteNotification(notif.i);
+    await Agent.signifyApi.deleteNotification(notif.i);
   }
 
-  async initKeri(): Promise<void> {
+  static async initKeri(): Promise<void> {
     /* eslint-disable no-console */
-    const existingKeriIssuerRegistryRegk = await this.signifyApiIssuer
+    const existingKeriIssuerRegistryRegk = await Agent.signifyApiIssuer
       .getRegistry(Agent.ISSUER_AID_NAME)
       .catch((e) => {
         console.error(e);
         return undefined;
       });
-    const existingKeriRegistryRegk = await this.signifyApi
+    const existingKeriRegistryRegk = await Agent.signifyApi
       .getRegistry(Agent.HOLDER_AID_NAME)
       .catch((e) => {
         console.error(e);
@@ -189,62 +175,62 @@ class Agent {
       });
     // Issuer
     if (existingKeriIssuerRegistryRegk) {
-      this.keriIssuerRegistryRegk = existingKeriIssuerRegistryRegk;
+      Agent.keriIssuerRegistryRegk = existingKeriIssuerRegistryRegk;
     } else {
-      await this.signifyApiIssuer
+      await Agent.signifyApiIssuer
         .createIdentifier(Agent.ISSUER_AID_NAME)
         .catch((e) => console.error(e));
-      this.keriIssuerRegistryRegk = await this.signifyApiIssuer
+      Agent.keriIssuerRegistryRegk = await Agent.signifyApiIssuer
         .createRegistry(Agent.ISSUER_AID_NAME)
         .catch((e) => console.error(e));
     }
 
     // Holder
     if (existingKeriRegistryRegk) {
-      this.keriRegistryRegk = existingKeriRegistryRegk;
+      Agent.keriRegistryRegk = existingKeriRegistryRegk;
     } else {
-      await this.signifyApi
+      await Agent.signifyApi
         .createIdentifier(Agent.HOLDER_AID_NAME)
         .catch((e) => console.error(e));
-      await this.signifyApi.addIndexerRole(Agent.HOLDER_AID_NAME);
-      this.keriRegistryRegk = await this.signifyApi
+      await Agent.signifyApi.addIndexerRole(Agent.HOLDER_AID_NAME);
+      Agent.keriRegistryRegk = await Agent.signifyApi
         .createRegistry(Agent.HOLDER_AID_NAME)
         .catch((e) => console.error(e));
     }
 
-    await this.createQVICredential().catch((e) => console.error(e));
+    await Agent.createQVICredential().catch((e) => console.error(e));
 
-    this.pollNotifications();
+    Agent.pollNotifications();
   }
 
-  async createQVICredential() {
-    this.issuerAid = await this.signifyApiIssuer.getIdentifierByName(
+  static async createQVICredential() {
+    Agent.issuerAid = await Agent.signifyApiIssuer.getIdentifierByName(
       Agent.ISSUER_AID_NAME
     );
-    this.holderAid = await this.signifyApi.getIdentifierByName(
+    Agent.holderAid = await Agent.signifyApi.getIdentifierByName(
       Agent.HOLDER_AID_NAME
     );
-    const issuerAidOobi = await this.signifyApiIssuer.getOobi(
-      this.issuerAid.name
+    const issuerAidOobi = await Agent.signifyApiIssuer.getOobi(
+      Agent.issuerAid.name
     );
-    const holderAidOobi = await this.signifyApi.getOobi(this.holderAid.name);
-    await this.signifyApi.resolveOobi(issuerAidOobi);
-    await this.signifyApiIssuer.resolveOobi(holderAidOobi);
+    const holderAidOobi = await Agent.signifyApi.getOobi(Agent.holderAid.name);
+    await Agent.signifyApi.resolveOobi(issuerAidOobi);
+    await Agent.signifyApiIssuer.resolveOobi(holderAidOobi);
 
-    const qviCredentialId = await this.signifyApiIssuer.issueQVICredential(
-      this.issuerAid.name,
-      this.keriIssuerRegistryRegk,
-      this.holderAid.prefix
+    const qviCredentialId = await Agent.signifyApiIssuer.issueQVICredential(
+      Agent.issuerAid.name,
+      Agent.keriIssuerRegistryRegk,
+      Agent.holderAid.prefix
     );
 
-    this.qviCredentialId = qviCredentialId;
+    Agent.qviCredentialId = qviCredentialId;
 
     // wait for notification
     const getHolderNotifications = async () => {
-      let holderNotifications = await this.signifyApi.getNotifications();
+      let holderNotifications = await Agent.signifyApi.getNotifications();
 
       while (!holderNotifications.total) {
-        holderNotifications = await this.signifyApi.getNotifications();
+        holderNotifications = await Agent.signifyApi.getNotifications();
         await new Promise((resolve) => setTimeout(resolve, 250));
       }
 
@@ -254,17 +240,17 @@ class Agent {
     const grantNotification = (await getHolderNotifications()).notes[0];
 
     // resolve schema
-    await this.signifyApi.resolveOobi(
+    await Agent.signifyApi.resolveOobi(
       `${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`
     );
 
     // holder IPEX admit
-    await this.signifyApi.admitCredential(
-      this.holderAid.name,
+    await Agent.signifyApi.admitCredential(
+      Agent.holderAid.name,
       grantNotification.a.d!,
-      this.issuerAid.prefix
+      Agent.issuerAid.prefix
     );
-    await this.signifyApi.deleteNotification(grantNotification.i);
+    await Agent.signifyApi.deleteNotification(grantNotification.i);
   }
 }
 

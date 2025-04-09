@@ -20,7 +20,7 @@ async function issueAcdcCredential(
     };
     return httpResponse(res, response);
   }
-  await Agent.agent.issueAcdcCredentialByAid(schemaSaid, aid, attribute);
+  await Agent.issueAcdcCredentialByAid(schemaSaid, aid, attribute);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -35,7 +35,7 @@ async function requestDisclosure(
   next: NextFunction
 ): Promise<void> {
   const { schemaSaid, aid, attributes } = req.body;
-  await Agent.agent.requestDisclosure(schemaSaid, aid, attributes);
+  await Agent.requestDisclosure(schemaSaid, aid, attributes);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -46,7 +46,7 @@ async function requestDisclosure(
 
 async function contactCredentials(req: Request, res: Response): Promise<void> {
   const { contactId } = req.query;
-  const data = await Agent.agent.contactCredentials(contactId as string);
+  const data = await Agent.contactCredentials(contactId as string);
 
   let response: ResponseData<any> = {
     statusCode: 200,
@@ -64,7 +64,7 @@ async function revokeCredential(req: Request, res: Response): Promise<void> {
     data: "Revoke credential successfully",
   };
   try {
-    await Agent.agent.revokeCredential(credentialId, holder);
+    await Agent.revokeCredential(credentialId, holder);
   } catch (error) {
     log({ error: (error as Error).message });
     response = {

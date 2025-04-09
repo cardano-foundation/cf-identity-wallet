@@ -18,9 +18,9 @@ async function startServer() {
       error: err.message,
     });
   });
-  await Agent.agent.start();
+  await Agent.start();
   app.listen(config.port, async () => {
-    await Agent.agent.initKeri();
+    await Agent.initKeri();
     log(`Listening on port ${config.port}`);
   });
 }

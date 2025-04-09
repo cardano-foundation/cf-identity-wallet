@@ -5,7 +5,7 @@ import { httpResponse } from "../utils/response.util";
 
 async function resolveOobi(req: Request, res: Response, next: NextFunction) {
   const { oobi } = req.body;
-  await Agent.agent.resolveOobi(oobi);
+  await Agent.resolveOobi(oobi);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
