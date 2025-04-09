@@ -9,9 +9,6 @@ class ConfigurationService {
 
   static readonly INVALID_ENVIRONMENT_FILE = "Configuration file is invalid: ";
   static readonly NOT_FOUND_ENVIRONMENT_FILE = "Can not read environment file";
-  static readonly INVALID_CONFIG_FILE =
-    "Access configuration file is invalid: ";
-  static readonly NOT_FOUND_CONFIG_FILE = "Can not read config file";
 
   async start() {
     await new Promise((rs, rj) => {
@@ -89,14 +86,12 @@ class ConfigurationService {
 
     const { cut } = features;
     if (!Array.isArray(cut)) {
-      return this.invalid("features.cut must be a object");
+      return this.invalid("features.cut must be a array");
     }
 
-    if (cut.length > 0) {
-      for (const feature of cut) {
-        if (!Object.values(OptionalFeature).includes(feature)) {
-          return this.invalid("Invalid features.cut value");
-        }
+    for (const feature of cut) {
+      if (!Object.values(OptionalFeature).includes(feature)) {
+        return this.invalid("Invalid features.cut value");
       }
     }
 
