@@ -2,6 +2,9 @@
   .MuiTableHead-root {
     background-color: var(--color-primary-200);
 
+    th {
+      line-height: normal;
+    }
     tr th {
       font-weight: 700;
     }

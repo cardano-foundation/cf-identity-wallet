@@ -92,6 +92,8 @@
       "table": {
         "headers": {
           "name": "Credential Name",
+          "credentialId": "Credential ID",
+          "attribute": "Attribute",
           "issueDate": "Issued Date",
           "status": "Status"
         },
