@@ -857,7 +857,7 @@
         "pendingidentifiers": "Pending identifiers",
         "multisigidentifiers": "For groups"
       },
-      "detelepending": {
+      "deletepending": {
         "title": "Identifier options",
         "description": "Your identifier is pending and may still complete. If you no longer require this identifier, tap “Delete identifier” to remove it.",
         "mutilsigdescription": "This multi-sig is pending. It will complete once it meets the required member threshold. To remove it from your pending list, tap “Delete identifier”.",
@@ -1007,7 +1007,7 @@
           "placeholder": "You currently have no {{ type }} credentials."
         },
         "pendingcred": "Pending credentials",
-        "detelepending": {
+        "deletepending": {
           "title": "Credential options",
           "description": "Your credential is pending and may still complete. If you no longer require this credential, tap “Delete credential” to remove it.",
           "button": "Delete credential",
@@ -1506,7 +1506,7 @@
         "confirm": "Create identifier",
         "cancel": "Cancel"
       },
-      "detelepending": {
+      "deletepending": {
         "title": "Connection options",
         "description": "This connection is pending. You’ll be notified once they accept. If you no longer require this connection, tap “Delete connection” to remove.",
         "button": "Delete connection",
