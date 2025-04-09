@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { Agent } from "../agent";
-import { ResponseData } from "../types/response.type";
-import { httpResponse } from "../utils/response.util";
 import { ACDC_SCHEMAS } from "../utils/schemas";
 import { log } from "../log";
 import { SignifyApi } from "../modules/signify";
@@ -13,20 +11,16 @@ async function issueAcdcCredential(
 ): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
   if (!ACDC_SCHEMAS[schemaSaid]) {
-    const response: ResponseData<string> = {
-      statusCode: 409,
+    res.status(409).send({
       success: false,
       data: "",
-    };
-    return httpResponse(res, response);
+    });
   }
   await Agent.agent.issueAcdcCredentialByAid(schemaSaid, aid, attribute);
-  const response: ResponseData<string> = {
-    statusCode: 200,
+  res.status(200).send({
     success: true,
     data: "Credential offered",
-  };
-  httpResponse(res, response);
+  });
 }
 
 async function requestDisclosure(
@@ -36,53 +30,54 @@ async function requestDisclosure(
 ): Promise<void> {
   const { schemaSaid, aid, attributes } = req.body;
   await Agent.agent.requestDisclosure(schemaSaid, aid, attributes);
-  const response: ResponseData<string> = {
-    statusCode: 200,
+  res.status(200).send({
     success: true,
     data: "Apply schema successfully",
-  };
-  httpResponse(res, response);
+  });
 }
 
 async function contactCredentials(req: Request, res: Response): Promise<void> {
   const { contactId } = req.query;
   const data = await Agent.agent.contactCredentials(contactId as string);
 
-  let response: ResponseData<any> = {
-    statusCode: 200,
+  res.status(200).send({
     success: true,
-    data: data,
-  };
-  httpResponse(res, response);
+    data,
+  });
 }
 
 async function revokeCredential(req: Request, res: Response): Promise<void> {
   const { credentialId, holder } = req.body;
-  let response: ResponseData<string> = {
-    statusCode: 200,
-    success: true,
-    data: "Revoke credential successfully",
-  };
+
   try {
     await Agent.agent.revokeCredential(credentialId, holder);
+    res.status(200).send({
+      success: true,
+      data: "Revoke credential successfully",
+    });
   } catch (error) {
-    log({ error: (error as Error).message });
-    response = {
-      statusCode: 500,
-      success: false,
-      data: (error as Error).message,
-    };
-    if ((error as Error).message === SignifyApi.CREDENTIAL_REVOKED_ALREADY) {
-      response.statusCode = 409;
+    const errorMessage = (error as Error).message;
+    log({ error: errorMessage });
+
+    if (errorMessage === SignifyApi.CREDENTIAL_REVOKED_ALREADY) {
+      res.status(409).send({
+        success: false,
+        data: errorMessage,
+      });
     } else if (
-      new RegExp(`${SignifyApi.CREDENTIAL_NOT_FOUND}`, "gi").test(
-        (error as Error).message
-      )
+      new RegExp(`${SignifyApi.CREDENTIAL_NOT_FOUND}`, "gi").test(errorMessage)
     ) {
-      response.statusCode = 404;
+      res.status(404).send({
+        success: false,
+        data: errorMessage,
+      });
+    } else {
+      res.status(500).send({
+        success: false,
+        data: errorMessage,
+      });
     }
   }
-  httpResponse(res, response);
 }
 
 export {
