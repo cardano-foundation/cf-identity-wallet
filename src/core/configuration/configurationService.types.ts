@@ -3,6 +3,10 @@ interface KeriaConfig {
   bootUrl?: string;
 }
 
+enum OptionalFeature {
+  ConnectWallet = "CONNECT_WALLET",
+}
+
 interface Configuration {
   keri: {
     keria?: KeriaConfig;
@@ -12,6 +16,10 @@ interface Configuration {
       enabled: boolean;
     };
   };
+  features: {
+    cut: OptionalFeature[];
+  };
 }
 
 export type { Configuration };
+export { OptionalFeature };

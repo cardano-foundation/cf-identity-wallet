@@ -1,4 +1,4 @@
-import { Configuration } from "./configurationService.types";
+import { Configuration, OptionalFeature } from "./configurationService.types";
 // eslint-disable-next-line no-undef
 
 const environment = process.env.ENVIRONMENT || "local";
@@ -77,6 +77,22 @@ class ConfigurationService {
 
     if (typeof rasp.enabled !== "boolean") {
       return this.invalid("rasp.enabled must be a boolean value");
+    }
+
+    const { features } = data;
+    if (typeof features !== "object") {
+      return this.invalid("Missing top-level features object");
+    }
+
+    const { cut } = features;
+    if (!Array.isArray(cut)) {
+      return this.invalid("features.cut must be a array");
+    }
+
+    for (const feature of cut) {
+      if (!Object.values(OptionalFeature).includes(feature)) {
+        return this.invalid("Invalid features.cut value");
+      }
     }
 
     return { success: true };

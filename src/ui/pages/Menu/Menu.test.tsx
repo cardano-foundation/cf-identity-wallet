@@ -12,6 +12,17 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { Menu } from "./Menu";
 import { SubMenuKey } from "./Menu.types";
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 const combineMock = jest.fn(() => TabsRoutePath.MENU);
 const historyPushMock = jest.fn();
 jest.mock("react-router-dom", () => ({
