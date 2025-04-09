@@ -4,7 +4,7 @@ import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
 async function contactList(_: Request, res: Response, next: NextFunction) {
-  const data = await Agent.agent.contacts();
+  const data = await Agent.contacts();
   const response: ResponseData<any> = {
     statusCode: 200,
     success: true,
@@ -15,7 +15,7 @@ async function contactList(_: Request, res: Response, next: NextFunction) {
 
 async function deleteContact(req: Request, res: Response, next: NextFunction) {
   const { id } = req.query;
-  const data = await Agent.agent.deleteContact(id as string);
+  const data = await Agent.deleteContact(id as string);
   const response: ResponseData<any> = {
     statusCode: 200,
     success: true,
