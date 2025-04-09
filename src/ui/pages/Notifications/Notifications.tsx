@@ -50,6 +50,10 @@ const Notifications = () => {
   const [viewCred, setViewCred] = useState("");
   const [openUnknownConnectionAlert, setOpenUnknownConnectionAlert] =
     useState(false);
+  const [
+    openUnknownPresentConnectionAlert,
+    setOpenUnknownPresentConnectionAlert,
+  ] = useState(false);
 
   const filteredNotification = useMemo(() => {
     if (selectedFilter === NotificationFilters.All) {
@@ -112,6 +116,14 @@ const Notifications = () => {
     await maskAsReaded(item);
 
     if (
+      item.a.r === NotificationRoute.ExnIpexApply &&
+      !connectionsCache[item.connectionId]?.label
+    ) {
+      setOpenUnknownPresentConnectionAlert(true);
+      return;
+    }
+
+    if (
       item.a.r === NotificationRoute.ExnIpexGrant &&
       !connectionsCache?.[item.connectionId]?.label
     ) {
@@ -166,6 +178,10 @@ const Notifications = () => {
 
   const closeUnknownConnection = () => {
     setOpenUnknownConnectionAlert(false);
+  };
+
+  const closeUnknownPresentConnection = () => {
+    setOpenUnknownPresentConnectionAlert(false);
   };
 
   return (
@@ -249,6 +265,17 @@ const Notifications = () => {
         )}`}
         actionConfirm={closeUnknownConnection}
         actionDismiss={closeUnknownConnection}
+      />
+      <Alert
+        isOpen={openUnknownPresentConnectionAlert}
+        setIsOpen={setOpenUnknownPresentConnectionAlert}
+        dataTestId="alert-unknown-request"
+        headerText={i18n.t("tabs.notifications.tab.unknownrequest.text")}
+        confirmButtonText={`${i18n.t(
+          "tabs.notifications.tab.unknownrequest.button"
+        )}`}
+        actionConfirm={closeUnknownPresentConnection}
+        actionDismiss={closeUnknownPresentConnection}
       />
     </>
   );
