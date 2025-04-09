@@ -17,14 +17,23 @@
     &.logo-button {
       padding-inline: 0;
       margin-right: 2rem;
+
+      .header-logo {
+        margin: 0;
+      }
     }
 
-    &:hover:not(.header-logo):not(.switch-account-button) {
+    &:hover:not(.logo-button):not(.switch-account-button) {
       background-color: var(--color-primary-200);
     }
 
-    &:active:not(.header-logo):not(.switch-account-button) {
+    &:active:not(.logo-button):not(.switch-account-button) {
       background-color: var(--color-primary-200);
+    }
+
+    &:hover.logo-button,
+    &:active.logo-button {
+      background-color: transparent;
     }
 
     &.active {
@@ -53,6 +62,22 @@
     button,
     li {
       padding: 0;
+    }
+  }
+
+  .nav-right {
+    margin-right: 1rem;
+
+    a {
+      width: 3rem;
+      padding: 0.75rem;
+      &:not(:last-child) {
+        margin-right: 0.5rem;
+      }
+
+      svg {
+        margin: 0;
+      }
     }
   }
 

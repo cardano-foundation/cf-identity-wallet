@@ -118,9 +118,11 @@ const NavBar = ({ window }: Props) => {
             <Button
               component={Link}
               to={"/"}
-              className="header-logo"
+              className="logo-button"
+              disableRipple
             >
               <img
+                className="header-logo"
                 alt="veridian-logo"
                 src={Logo}
               />
