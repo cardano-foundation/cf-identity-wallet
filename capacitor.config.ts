@@ -7,11 +7,15 @@ const config: CapacitorConfig = {
   webDir: "build",
   android: {
     webContentsDebuggingEnabled: true,
+    adjustMarginsForEdgeToEdge: "auto",
   },
   ios: {
     webContentsDebuggingEnabled: true,
   },
   plugins: {
+    StatusBar: {
+      overlaysWebView: false,
+    },
     CapacitorSQLite: {
       iosDatabaseLocation: "Library/IDWalletDatabase",
       iosIsEncryption: true,
@@ -22,18 +26,18 @@ const config: CapacitorConfig = {
       launchShowDuration: 3000,
       launchAutoHide: true,
       launchFadeOutDuration: 1000,
-      backgroundColor: "#92FFC0"
+      backgroundColor: "#92FFC0",
     },
     PrivacyScreen: {
       enable: true,
       imageName: "Splashscreen",
-      preventScreenshots: true
+      preventScreenshots: true,
     },
     Keyboard: {
       resize: KeyboardResize.Ionic,
       resizeOnFullScreen: true,
     },
-  }
+  },
 };
 
 export default config;
