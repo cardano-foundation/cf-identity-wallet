@@ -105,7 +105,7 @@ The development server depends on a local KERIA and credential issuance server s
 The [Docker Compose](./docker-compose.yaml) file can be used to quickly bring these services up.
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 npm run dev
 ```
 This command starts the development server and allows you to preview the application on your browser by opening this localhost address:
