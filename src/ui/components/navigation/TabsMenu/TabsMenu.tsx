@@ -32,6 +32,7 @@ import { Menu } from "../../../pages/Menu";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { getNotificationsCache } from "../../../../store/reducers/notificationsCache";
 import {
+  getShowWelcomePage,
   getStateCache,
   setCurrentRoute,
 } from "../../../../store/reducers/stateCache";
@@ -77,6 +78,7 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
   const notificationsCounter = notifications.filter(
     (notification) => !notification.read
   ).length;
+  const showWelcomePage = useAppSelector(getShowWelcomePage);
 
   const handleTabClick = (tabPath: string) => {
     dispatch(setCurrentRoute({ path: tabPath }));
@@ -106,6 +108,7 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
       <IonTabBar
         slot="bottom"
         data-testid="tabs-menu"
+        className={showWelcomePage ? "ion-hide" : undefined}
       >
         {tabsRoutes.map((tab, index: number) => {
           return (

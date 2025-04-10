@@ -185,6 +185,9 @@ const stateCacheSlice = createSlice({
         forceInitApp: (state.forceInitApp || 0) + 1,
       };
     },
+    setShowWelcomePage: (state, action: PayloadAction<boolean | undefined>) => {
+      state.showWelcomePage = action.payload;
+    },
   },
 });
 
@@ -214,6 +217,7 @@ const {
   showNoWitnessAlert,
   clearStateCache,
   showGlobalLoading,
+  setShowWelcomePage,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -246,6 +250,8 @@ const getShowNoWitnessAlert = (state: RootState) =>
 const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
 const getForceInitApp = (state: RootState) => state.stateCache.forceInitApp;
 const getGlobalLoading = (state: RootState) => state.stateCache.showLoading;
+const getShowWelcomePage = (state: RootState) =>
+  state.stateCache.showWelcomePage;
 
 export type {
   AuthenticationCacheProps,
@@ -300,4 +306,6 @@ export {
   showConnections,
   stateCacheSlice,
   getRecoveryCompleteNoInterruption,
+  setShowWelcomePage,
+  getShowWelcomePage,
 };
