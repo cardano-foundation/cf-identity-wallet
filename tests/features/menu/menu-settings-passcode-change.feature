@@ -1,4 +1,4 @@
-Feature: Menu
+Feature: Menu setting passcode change
 
   Background:
     Given user is onboarded with skipped password creation
