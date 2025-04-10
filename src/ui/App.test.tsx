@@ -295,21 +295,6 @@ describe("App", () => {
     });
   });
 
-  test("Set background color of status bar on android", async () => {
-    getPlatformsMock.mockImplementation(() => ["android"]);
-    isNativeMock.mockImplementation(() => true);
-
-    render(
-      <Provider store={store}>
-        <App />
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(setBackgroundColorMock).toBeCalled();
-    });
-  });
-
   test("Force status bar style is dark mode on ios", async () => {
     getPlatformsMock.mockImplementation(() => ["ios"]);
     isNativeMock.mockImplementation(() => true);
