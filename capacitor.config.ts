@@ -12,6 +12,9 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: true,
   },
   plugins: {
+    StatusBar: {
+      overlaysWebView: false,
+    },
     CapacitorSQLite: {
       iosDatabaseLocation: "Library/IDWalletDatabase",
       iosIsEncryption: true,

@@ -35,12 +35,6 @@ jest.mock("capacitor-freerasp", () => ({
 const mockInitDatabase = jest.fn();
 const getAvailableWitnessesMock = jest.fn();
 const setBackgroundColorMock = jest.fn();
-jest.mock("@capawesome/capacitor-android-edge-to-edge-support", () => ({
-  EdgeToEdge: {
-    setBackgroundColor: () => setBackgroundColorMock(),
-  },
-}));
-
 jest.mock("../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -148,6 +142,7 @@ jest.mock("@capacitor/status-bar", () => ({
   ...jest.requireActual("@capacitor/status-bar"),
   StatusBar: {
     setStyle: (params: StyleOptions) => setStyleMock(params),
+    setBackgroundColor: () => setBackgroundColorMock(),
   },
 }));
 
