@@ -33,6 +33,12 @@ export class MenuScreen {
     await this.settingsButton.click();
   }
 
+  async tapOnProfileButton() {
+    await expect(this.profileItem).toBeDisplayed();
+    await expect(this.profileItem).toBeEnabled();
+    await this.profileItem.click();
+  }
+
   async loads() {
     await expect(this.settingsButton).toBeDisplayed();
     await expect(this.profileItem).toBeDisplayed();
