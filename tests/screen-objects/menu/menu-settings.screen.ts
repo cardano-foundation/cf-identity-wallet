@@ -44,6 +44,12 @@ export class MenuSettingsScreen {
     await expect(this.connectViaDiscordItem).toBeDisplayed();
     await expect(this.appVersionItem).toBeDisplayed();
   }
+
+  async tapOnChangePasscodeButton() {
+    await expect(this.changePasscodeItem).toBeDisplayed();
+    await expect(this.changePasscodeItem).toBeEnabled();
+    await this.changePasscodeItem.click();
+  }
 }
 
 export default new MenuSettingsScreen();
