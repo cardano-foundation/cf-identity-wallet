@@ -89,7 +89,7 @@ export const Credentials = () => {
               "0.25rem 0.25rem 1.25rem 0 rgba(var(--text-color-rgb), 0.16)",
             flex: 1,
           }}
-          className="credential-table"
+          className="credentials-table"
         >
           <AppTable
             order={order}

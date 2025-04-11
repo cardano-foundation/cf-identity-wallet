@@ -147,6 +147,7 @@ const RequestPresentationModal = ({
             connections.find((item) => item.id === selectedConnection)?.alias ||
             "",
           credentialType: credTemplateType,
+          attribute: Object.values(attributes)[0],
           requestDate: Date.now(),
           status: PresentationRequestStatus.Requested,
         })

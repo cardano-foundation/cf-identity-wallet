@@ -57,6 +57,7 @@ interface PresentationRequestData {
   id: string;
   connectionName: string;
   credentialType: CredentialType;
+  attribute: string;
   requestDate: number;
   status: PresentationRequestStatus;
 }

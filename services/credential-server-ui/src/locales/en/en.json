@@ -92,6 +92,8 @@
       "table": {
         "headers": {
           "name": "Credential Name",
+          "credentialId": "Credential ID",
+          "attribute": "Attribute",
           "issueDate": "Issued Date",
           "status": "Status"
         },
@@ -136,7 +138,9 @@
       "table": {
         "headers": {
           "name": "Connection Name",
+          "attribute": "Attribute",
           "identifier": "Identifier",
+          "credentialId": "Credential ID",
           "issueDate": "Issued Date",
           "status": "Status"
         },
@@ -204,6 +208,7 @@
       "table": {
         "name": "Connection Name",
         "credential": "Credential Requested",
+        "attribute": "Attribute",
         "requestDate": "Date Requested",
         "status": {
           "header": "Status",
