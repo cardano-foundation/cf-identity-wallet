@@ -10,7 +10,7 @@ const Symbols = [
   },
   {
     key: "!",
-    labelKey: "doublequote",
+    labelKey: "exclamationmark",
   },
   {
     key: "#",

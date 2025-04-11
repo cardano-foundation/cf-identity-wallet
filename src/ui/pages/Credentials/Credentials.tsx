@@ -224,9 +224,9 @@ const Credentials = () => {
 
   const deletePendingCheck = useMemo(
     () => ({
-      title: i18n.t("tabs.credentials.tab.detelepending.title"),
-      description: i18n.t("tabs.credentials.tab.detelepending.description"),
-      button: i18n.t("tabs.credentials.tab.detelepending.button"),
+      title: i18n.t("tabs.credentials.tab.deletepending.title"),
+      description: i18n.t("tabs.credentials.tab.deletepending.description"),
+      button: i18n.t("tabs.credentials.tab.deletepending.button"),
     }),
     []
   );
@@ -389,7 +389,7 @@ const Credentials = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "tabs.credentials.tab.detelepending.secondchecktitle"
+          "tabs.credentials.tab.deletepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingCred}
       />

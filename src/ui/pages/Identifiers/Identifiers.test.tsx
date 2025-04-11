@@ -209,7 +209,7 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.witnesserror)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.deletepending.witnesserror)
       ).toBeVisible();
     });
   });
@@ -584,7 +584,7 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.witnesserror)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.deletepending.witnesserror)
       ).toBeVisible();
     });
   });
@@ -760,26 +760,26 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.title)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.deletepending.title)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.description)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.deletepending.description)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.deletepending.button)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.deletepending.button)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.tabs.identifiers.detelepending.secondchecktitle
+          EN_TRANSLATIONS.tabs.identifiers.deletepending.secondchecktitle
         )
       ).toBeVisible();
     });
