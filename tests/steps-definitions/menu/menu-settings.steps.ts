@@ -8,3 +8,7 @@ Then(/^user can see Menu Settings screen$/, async function () {
 When(/^user tap on Change Passcode button on Menu screen$/, async function () {
   await MenuSettingsScreen.tapOnChangePasscodeButton();
 });
+
+When(/^user tap on Manage Operation Password button on Menu screen$/, async function () {
+  await MenuSettingsScreen.tapOnOperationPasswordButton();
+});

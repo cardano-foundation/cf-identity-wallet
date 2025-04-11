@@ -10,6 +10,7 @@ import PrivacyPolicyModal from "../screen-objects/components/privacy-policy.moda
 import TermsOfUseModal from "../screen-objects/components/terms-of-use.modal.js";
 import WelcomeModal  from "../screen-objects/components/welcome.modal.js";
 import YourRecoveryPhraseScreen from "../screen-objects/onboarding/your-recovery-phrase.screen.js";
+import MenuOperationPasswordScreen from "../screen-objects/menu/menu-operation-password.screen.js";
 
 
 When(
@@ -24,6 +25,13 @@ When(
   async function () {
     await AlertModal.clickCancelButtonOf(YourRecoveryPhraseScreen.alertModal);
   }
+);
+
+When(
+    /^user tap Cancel button on alert modal for Manage Password screen$/,
+    async function () {
+        await AlertModal.clickCancelButtonOf(MenuOperationPasswordScreen.alertModal);
+    }
 );
 
 When(

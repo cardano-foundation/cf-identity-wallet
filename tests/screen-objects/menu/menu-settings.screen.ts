@@ -50,6 +50,12 @@ export class MenuSettingsScreen {
     await expect(this.changePasscodeItem).toBeEnabled();
     await this.changePasscodeItem.click();
   }
+
+  async tapOnOperationPasswordButton() {
+    await expect(this.manageOperationsPasswordItem).toBeDisplayed();
+    await expect(this.manageOperationsPasswordItem).toBeEnabled();
+    await this.manageOperationsPasswordItem.click();
+  }
 }
 
 export default new MenuSettingsScreen();
