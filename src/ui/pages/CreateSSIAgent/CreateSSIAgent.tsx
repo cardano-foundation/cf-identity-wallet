@@ -14,6 +14,7 @@ import {
 } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 import { ConfigurationService } from "../../../core/configuration";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
@@ -29,6 +30,7 @@ import {
 import {
   getStateCache,
   setCurrentOperation,
+  setShowWelcomePage,
   setRecoveryCompleteNoInterruption,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
@@ -168,6 +170,28 @@ const CreateSSIAgent = () => {
     );
   };
 
+  const updateFirstInstallValue = async (value: boolean) => {
+    try {
+      dispatch(setShowWelcomePage(value));
+      if (value) {
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.APP_FIRST_INSTALL,
+            content: {
+              value: value,
+            },
+          })
+        );
+      } else {
+        await Agent.agent.basicStorage.deleteById(
+          MiscRecordId.APP_FIRST_INSTALL
+        );
+      }
+    } catch (e) {
+      showError("Unable to set first app launch", e);
+    }
+  };
+
   const handleRecoveryWallet = async () => {
     setLoading(true);
     try {
@@ -185,6 +209,8 @@ const CreateSSIAgent = () => {
       );
 
       dispatch(setRecoveryCompleteNoInterruption());
+
+      await updateFirstInstallValue(false);
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
         store: { stateCache },
@@ -231,6 +257,8 @@ const CreateSSIAgent = () => {
         bootUrl: ssiAgent.bootUrl,
         url: ssiAgent.connectUrl,
       });
+
+      await updateFirstInstallValue(true);
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
         store: { stateCache },
