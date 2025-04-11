@@ -55,7 +55,7 @@ export const RequestPresentation = () => {
   const handleClick = () => {
     setOpenModal(true);
   };
-  console.log(presentationRequests);
+
   return (
     <>
       <Box
