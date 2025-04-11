@@ -2,8 +2,12 @@ import { expect } from "expect-webdriverio";
 
 export class MenuOperationPasswordScreen {
 
-    get alertModal() {
+    get alertModalCancelButton() {
         return "[data-testid=\"alert-cancel-enable-password-cancel-button\"]";
+    }
+
+    get alertModalConfirmButton() {
+        return "[data-testid=\"alert-cancel-enable-password-confirm-button\"]";
     }
 
     get backButton() {

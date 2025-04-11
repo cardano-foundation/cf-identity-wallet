@@ -30,7 +30,14 @@ When(
 When(
     /^user tap Cancel button on alert modal for Manage Password screen$/,
     async function () {
-        await AlertModal.clickCancelButtonOf(MenuOperationPasswordScreen.alertModal);
+        await AlertModal.clickCancelButtonSameLevelInDOM(MenuOperationPasswordScreen.alertModalCancelButton);
+    }
+);
+
+When(
+    /^user tap Continue button on alert modal for Manage Password screen$/,
+    async function () {
+        await AlertModal.clickConfirmButtonSameLevelInDOM(MenuOperationPasswordScreen.alertModalConfirmButton);
     }
 );
 

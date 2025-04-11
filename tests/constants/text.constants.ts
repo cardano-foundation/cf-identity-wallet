@@ -11,9 +11,11 @@ export enum IdentifierDetails {
 export enum Passcode {
   Description = "Create a passcode to secure your wallet and to continue the onboarding process",
   DescriptionNewPasscode = "Create a new passcode to secure your wallet",
+  DescriptionEnterPasscode = "Please enter your passcode to verify",
   Title = "Create your Passcode",
   TitleReEnter = "Re-enter your Passcode",
   TitleNewPasscode = "Create new passcode",
+  TitleEnterPasscode = "Enter passcode",
 }
 
 export enum PrivacyPolicy {

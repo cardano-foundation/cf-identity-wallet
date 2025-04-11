@@ -9,8 +9,12 @@ export class AlertModal {
     await findAndClickLocator(`${parent} #confirm-alert-button`);
   }
 
-  async clickCancelButtonOf(parent: string) {
-    await findAndClickLocator(`${parent} #cancel-alert-button`);
+  async clickCancelButtonSameLevelInDOM(parent: string) {
+    await findAndClickLocator(`${parent}#cancel-alert-button`);
+  }
+
+  async clickConfirmButtonSameLevelInDOM(parent: string) {
+    await findAndClickLocator(`${parent}#confirm-alert-button`);
   }
 }
 
