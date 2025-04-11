@@ -22,6 +22,10 @@ const headers: AppTableHeader<PresentationRequestData>[] = [
     label: i18n.t("pages.requestPresentation.table.credential"),
   },
   {
+    id: "attribute",
+    label: i18n.t("pages.requestPresentation.table.attribute"),
+  },
+  {
     id: "requestDate",
     label: i18n.t("pages.requestPresentation.table.requestDate"),
   },
@@ -51,7 +55,7 @@ export const RequestPresentation = () => {
   const handleClick = () => {
     setOpenModal(true);
   };
-
+  console.log(presentationRequests);
   return (
     <>
       <Box
@@ -104,6 +108,7 @@ export const RequestPresentation = () => {
                   >
                     {row.credentialType}
                   </TableCell>
+                  <TableCell align="left">{row.attribute}</TableCell>
                   <TableCell
                     component="th"
                     scope="row"

@@ -38,9 +38,18 @@ const headers: AppTableHeader<CredentialTableRow>[] = [
     label: i18n.t("pages.credentialDetails.table.headers.name"),
   },
   {
+    id: "attribute",
+    label: i18n.t("pages.connectionDetails.table.headers.attribute"),
+  },
+  {
     id: "identifier",
     disablePadding: false,
     label: i18n.t("pages.credentialDetails.table.headers.identifier"),
+  },
+  {
+    id: "credentialId",
+    disablePadding: false,
+    label: i18n.t("pages.credentialDetails.table.headers.credentialId"),
   },
   {
     id: "date",
@@ -69,9 +78,12 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     return {
       id: row.status.i,
       name: contact || "",
+      attribute: Object.values(row.sad.a)[2],
+      identifier: row.contactId,
+      credentialId: row.schema.$id,
       date: new Date(row.status.dt).getTime(),
       status: Number(row.status.s),
-      identifier: row.contactId,
+
       data: row,
     };
   });
@@ -157,8 +169,13 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                 >
                   {row.name}
                 </TableCell>
+                <TableCell align="left">{row.attribute}</TableCell>
                 <TableCell align="left">
                   {row.identifier.substring(0, 4)}...{row.identifier.slice(-4)}
+                </TableCell>
+                <TableCell align="left">
+                  {row.credentialId.substring(0, 4)}...
+                  {row.credentialId.slice(-4)}
                 </TableCell>
                 <TableCell align="left">
                   {formatDate(new Date(row.date))}

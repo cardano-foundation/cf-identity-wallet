@@ -5,12 +5,31 @@
     th {
       line-height: normal;
     }
+
     tr th {
       font-weight: 700;
+
+      span {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: calc(100vw / 6);
+      }
     }
 
     .MuiTableCell-head:last-of-type {
       width: 2rem;
+    }
+  }
+
+  .MuiTableBody-root {
+    th,
+    td {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: calc(100vw / 6);
     }
   }
 
