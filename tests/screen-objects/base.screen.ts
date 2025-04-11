@@ -1,3 +1,5 @@
+import Gestures from "../helpers/gestures";
+
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const findFilterAndClickElement = async (locator: string) => {
@@ -14,3 +16,8 @@ export const findAndClickLocator = async (locator: string) => {
   await element.waitForClickable();
   await element.click();
 };
+
+export const mobileTap = async (locator: string) => {
+  await Gestures.tap(locator);
+};
+

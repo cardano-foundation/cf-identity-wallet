@@ -13,6 +13,7 @@ import PasscodeScreen from "../screen-objects/onboarding/passcode.screen.js";
 import SsiAgentDetailsScreen  from "../screen-objects/onboarding/ssi-agent-details.screen.js";
 import VerifySeedPhraseScreen from "../screen-objects/onboarding/verify-your-recovery-phrase.screen.js";
 import WelcomeModal  from "../screen-objects/components/welcome.modal.js";
+import {returnPassword} from "../helpers/generate";
 
 
 Given(/^user is onboarded with skipped password creation$/, async function () {
@@ -22,6 +23,30 @@ Given(/^user is onboarded with skipped password creation$/, async function () {
   );
   await CreatePasswordScreen.skipButton.click();
   await AlertModal.clickConfirmButtonOf(CreatePasswordScreen.alertModal);
+  await generateRecoveryPhraseOf();
+  await recoveryPhrase().select(recoveryPhraseWords);
+  await VerifySeedPhraseScreen.verifyButton.click();
+  await SsiAgentDetailsScreen.tapOnValidatedButton();
+  this.userName = faker.person.firstName();
+  await WelcomeModal.nameInput.setValue(this.userName);
+  await WelcomeModal.confirmButton.waitForClickable();
+  await WelcomeModal.confirmButton.click();
+  await Assert.toast(`Welcome, ${this.userName}!`)
+});
+
+Given(/^user is onboarded with a (\d+) characters password$/
+    ,async function (passwordLength: number) {
+  await OnboardingScreen.tapOnGetStartedButton();
+  await PasscodeScreen.enterPasscode(
+      (this.passcode = await PasscodeScreen.createAndEnterRandomPasscode())
+  );
+  (global as any).generatedPassword = await returnPassword(passwordLength);
+  await CreatePasswordScreen.createPasswordInput.addValue((global as any).generatedPassword);
+  await CreatePasswordScreen.confirmPasswordInput.scrollIntoView();
+  await CreatePasswordScreen.confirmPasswordInput.addValue((global as any).generatedPassword);
+  await CreatePasswordScreen.createPasswordButton.scrollIntoView();
+  await CreatePasswordScreen.createPasswordButton.waitForClickable();
+  await CreatePasswordScreen.createPasswordButton.click();
   await generateRecoveryPhraseOf();
   await recoveryPhrase().select(recoveryPhraseWords);
   await VerifySeedPhraseScreen.verifyButton.click();

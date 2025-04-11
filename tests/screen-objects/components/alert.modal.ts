@@ -1,4 +1,4 @@
-import { findAndClickLocator } from "../base.screen.js";
+import {findAndClickLocator, mobileTap} from "../base.screen.js";
 
 export class AlertModal {
   async clickCancelButtonOf(parent: string) {

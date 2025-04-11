@@ -1,4 +1,4 @@
-import { Then, When } from "@wdio/cucumber-framework";
+import {Given, Then, When} from "@wdio/cucumber-framework";
 import { faker } from "@faker-js/faker";
 import AlertModal from "../screen-objects/components/alert.modal.js";
 import Assert  from "../helpers/assert.js";
@@ -11,6 +11,7 @@ import TermsOfUseModal from "../screen-objects/components/terms-of-use.modal.js"
 import WelcomeModal  from "../screen-objects/components/welcome.modal.js";
 import YourRecoveryPhraseScreen from "../screen-objects/onboarding/your-recovery-phrase.screen.js";
 import MenuOperationPasswordScreen from "../screen-objects/menu/menu-operation-password.screen.js";
+import EnterPasswordModal from "../screen-objects/components/enter-password.modal.js";
 
 
 When(
@@ -61,6 +62,20 @@ When(
     await AlertModal.clickConfirmButtonOf(YourRecoveryPhraseScreen.alertModal);
   }
 );
+
+When(
+    /^user tap Confirm button on Enter Password modal for Manage Password screen$/,
+    async function () {
+        await EnterPasswordModal.tapOnConfirmButton();
+    }
+);
+
+Given(
+    /^user type in password on Enter Password modal for Manage Password screen$/
+    , async function () {
+    await EnterPasswordModal.passwordInput.addValue((global as any).generatedPassword);
+});
+
 
 When(/^user tap Done button on modal$/, async function () {
   await BaseModal.clickDoneLabel();

@@ -12,3 +12,11 @@ When(/^user tap on Operation Password button on Manage Password screen$/, async 
 Then(/^user can see Manage Password screen$/, async function () {
     await MenuOperationPasswordScreen.loads();
 });
+
+Then(
+    /^user see the status of Operations Password is (true|false)$/,
+    async function (expectedStatus: string) {
+        const actualStatus = await MenuOperationPasswordScreen.getOperationPasswordButtonStatus();
+        expect(actualStatus.toString()).toMatch(expectedStatus);
+    }
+);

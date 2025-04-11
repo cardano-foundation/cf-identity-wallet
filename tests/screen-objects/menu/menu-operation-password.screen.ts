@@ -38,6 +38,10 @@ export class MenuOperationPasswordScreen {
         await this.operationPasswordButton.click();
     }
 
+    async getOperationPasswordButtonStatus(): Promise<boolean> {
+        return (await this.operationPasswordButton.getProperty("checked")) as boolean;
+    }
+
     async loads() {
         await expect(this.operationPasswordButton).toBeDisplayed();
         await expect(this.backButton).toBeDisplayed();
