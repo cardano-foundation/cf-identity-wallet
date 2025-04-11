@@ -21,6 +21,11 @@ export class PasscodeScreen {
     return $("[data-testid=\"set-passcode-description\"]");
   }
 
+  get errorMessageText() {
+    return $("[data-testid=\"error-message-text\"]");
+  }
+
+
   async digitButton(digit: number, parentElement = "") {
     return $(`${parentElement} [data-testid="passcode-button-${digit}"]`.trimStart());
   }
