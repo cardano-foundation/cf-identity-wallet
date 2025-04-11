@@ -131,7 +131,7 @@ const CredentialsTable = ({
 
   return (
     <>
-      <Paper className="credential-table">
+      <Paper className="credentials-table">
         <AppTable
           order={order}
           rows={visibleRows}
