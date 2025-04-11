@@ -63,7 +63,7 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
-  - JimcaseCapacitorExitApp (1.0.5):
+  - JimcaseCapacitorExitApp (1.0.7):
     - Capacitor
   - MLImage (1.0.0-beta6)
   - MLKitBarcodeScanning (6.0.0):
@@ -202,7 +202,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  JimcaseCapacitorExitApp: 2dc3f9da1de471e4e5fa904d89870057152518df
+  JimcaseCapacitorExitApp: 499b429827d7d0cacf1b7a0faf18bf88e4b6cc78
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
