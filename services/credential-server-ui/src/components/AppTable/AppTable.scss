@@ -9,8 +9,7 @@
     tr th {
       font-weight: 700;
 
-      span {
-        display: inline-block;
+      .table-header-label {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

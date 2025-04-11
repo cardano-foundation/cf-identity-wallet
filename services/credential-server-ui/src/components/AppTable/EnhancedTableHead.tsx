@@ -82,7 +82,7 @@ const EnhancedTableHead = <T extends AppTableBaseData = AppTableBaseData>({
                       : "sorted ascending"}
                   </Box>
                 ) : null}
-                {headCell.label}
+                <span className="table-header-label">{headCell.label}</span>
               </TableSortLabel>
             </TableCell>
           );
