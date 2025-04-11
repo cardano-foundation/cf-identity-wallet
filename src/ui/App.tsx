@@ -11,6 +11,7 @@ import {
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
 import { ExitApp } from "@jimcase/capacitor-exit-app";
+import { SafeArea } from "capacitor-plugin-safe-area";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -45,7 +46,6 @@ import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
 import { initializeFreeRASP, ThreatCheck } from "../security/freerasp";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
 import { ConfigurationService } from "../core/configuration";
-import { getCssVariableValue } from "./utils/styles";
 
 setupIonicReact();
 
@@ -145,6 +145,17 @@ const App = () => {
       if (platforms.includes("ios")) {
         StatusBar.setStyle({
           style: Style.Light,
+        });
+      }
+
+      if (platforms.includes("android")) {
+        SafeArea.getSafeAreaInsets().then((insets) => {
+          Object.entries(insets.insets).forEach(([key, value]) => {
+            document.body.style.setProperty(
+              `--ion-safe-area-${key}`,
+              `${value}px`
+            );
+          });
         });
       }
 

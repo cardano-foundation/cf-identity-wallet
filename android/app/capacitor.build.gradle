@@ -27,6 +27,7 @@ dependencies {
     implementation project(':jimcase-capacitor-exit-app')
     implementation project(':capacitor-freerasp')
     implementation project(':capacitor-native-settings')
+    implementation project(':capacitor-plugin-safe-area')
 
 }
 

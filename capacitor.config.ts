@@ -7,15 +7,12 @@ const config: CapacitorConfig = {
   webDir: "build",
   android: {
     webContentsDebuggingEnabled: true,
-    adjustMarginsForEdgeToEdge: "auto",
+    adjustMarginsForEdgeToEdge: "disable",
   },
   ios: {
     webContentsDebuggingEnabled: true,
   },
   plugins: {
-    StatusBar: {
-      overlaysWebView: false,
-    },
     CapacitorSQLite: {
       iosDatabaseLocation: "Library/IDWalletDatabase",
       iosIsEncryption: true,
