@@ -44,9 +44,6 @@ project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capa
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
 
-include ':capawesome-capacitor-android-edge-to-edge-support'
-project(':capawesome-capacitor-android-edge-to-edge-support').projectDir = new File('../node_modules/@capawesome/capacitor-android-edge-to-edge-support/android')
-
 include ':evva-capacitor-secure-storage-plugin'
 project(':evva-capacitor-secure-storage-plugin').projectDir = new File('../node_modules/@evva/capacitor-secure-storage-plugin/android')
 
@@ -58,3 +55,6 @@ project(':capacitor-freerasp').projectDir = new File('../node_modules/capacitor-
 
 include ':capacitor-native-settings'
 project(':capacitor-native-settings').projectDir = new File('../node_modules/capacitor-native-settings/android')
+
+include ':capacitor-plugin-safe-area'
+project(':capacitor-plugin-safe-area').projectDir = new File('../node_modules/capacitor-plugin-safe-area/android')

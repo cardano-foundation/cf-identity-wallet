@@ -1,7 +1,7 @@
 PODS:
   - AparajitaCapacitorBiometricAuth (8.0.2):
     - Capacitor
-  - Capacitor (7.0.1):
+  - Capacitor (7.2.0):
     - CapacitorCordova
   - CapacitorApp (7.0.0):
     - Capacitor
@@ -17,7 +17,7 @@ PODS:
     - ZIPFoundation
   - CapacitorCommunityTapJacking (7.0.0):
     - Capacitor
-  - CapacitorCordova (7.0.1)
+  - CapacitorCordova (7.2.0)
   - CapacitorDevice (7.0.0):
     - Capacitor
   - CapacitorFreerasp (1.10.0):
@@ -28,6 +28,8 @@ PODS:
     - Capacitor
     - GoogleMLKit/BarcodeScanning (= 7.0.0)
   - CapacitorNativeSettings (7.0.1):
+    - Capacitor
+  - CapacitorPluginSafeArea (4.0.0):
     - Capacitor
   - CapacitorScreenOrientation (7.0.0):
     - Capacitor
@@ -63,7 +65,7 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
-  - JimcaseCapacitorExitApp (1.0.5):
+  - JimcaseCapacitorExitApp (1.0.7):
     - Capacitor
   - MLImage (1.0.0-beta6)
   - MLKitBarcodeScanning (6.0.0):
@@ -111,6 +113,7 @@ DEPENDENCIES:
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
   - CapacitorNativeSettings (from `../../node_modules/capacitor-native-settings`)
+  - CapacitorPluginSafeArea (from `../../node_modules/capacitor-plugin-safe-area`)
   - "CapacitorScreenOrientation (from `../../node_modules/@capacitor/screen-orientation`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
@@ -164,6 +167,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-mlkit/barcode-scanning"
   CapacitorNativeSettings:
     :path: "../../node_modules/capacitor-native-settings"
+  CapacitorPluginSafeArea:
+    :path: "../../node_modules/capacitor-plugin-safe-area"
   CapacitorScreenOrientation:
     :path: "../../node_modules/@capacitor/screen-orientation"
   CapacitorShare:
@@ -179,19 +184,20 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AparajitaCapacitorBiometricAuth: 3057403ee3e9e390e57bfb92b576f439157951b8
-  Capacitor: 23fff43571a4d1e3ee7d67b5a3588c6e757c2913
+  Capacitor: 106e7a4205f4618d582b886a975657c61179138d
   CapacitorApp: 45cb7cbef4aa380b9236fd6980033eb5cde6fcd2
   CapacitorBrowser: 352a66541b15ceadae1d703802b11979023705e3
   CapacitorClipboard: 2afc5e21902233d7990978c8f41f023ddcee3e3d
   CapacitorCommunityPrivacyScreen: 088ffe903fe97c6de54f31407d1bc72c2528a5fc
   CapacitorCommunitySqlite: 6501e7349acf998346acf24ef757861bb3f6fc2b
   CapacitorCommunityTapJacking: b055efdf44944def0eae0968c52fb5274a629212
-  CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
+  CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
   CapacitorDevice: 62066b65e148a133df7b8c5bf972ba835b329748
   CapacitorFreerasp: 5a31821fe4fc8036ed83b81a049d217098f0b799
   CapacitorKeyboard: 2c26c6fccde35023c579fc37d4cae6326d5e6343
   CapacitorMlkitBarcodeScanning: 06c21220bf207bdb146dddc2e8548f3f2686879f
   CapacitorNativeSettings: 03d126571fc0e12f89ffeb1516788bf371b528bc
+  CapacitorPluginSafeArea: af80830df43015a915e504a56318a3027d3fc806
   CapacitorScreenOrientation: 4b2778087f4b4b138705cdabe431de0829116974
   CapacitorShare: 2fcf1758cd07e0558f6aed40d7437bf8a3a42297
   CapacitorSplashScreen: f4e58cc02aafd91c7cbaf32a3d1b44d02a115125
@@ -202,7 +208,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  JimcaseCapacitorExitApp: 2dc3f9da1de471e4e5fa904d89870057152518df
+  JimcaseCapacitorExitApp: 499b429827d7d0cacf1b7a0faf18bf88e4b6cc78
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
@@ -213,6 +219,6 @@ SPEC CHECKSUMS:
   SQLCipher: 77fbe633cd84db04b07876dd50766b4924b57d61
   ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
 
-PODFILE CHECKSUM: 494975933aff2c288d2d7013782a5a70fa6e901e
+PODFILE CHECKSUM: ef0d222c85763e963d3ab216ae37e81f4007042b
 
 COCOAPODS: 1.15.2
