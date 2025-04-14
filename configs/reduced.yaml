@@ -3,4 +3,6 @@ security:
   rasp:
     enabled: false
 features:
-  cut: ["CONNECT_WALLET"]
+  cut: ["CONNECT_WALLET", "SELECT_IDENTIFIER_TYPE"]
+  identifier: 
+    prefillName: "CSO identifier"

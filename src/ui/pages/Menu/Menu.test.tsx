@@ -12,15 +12,8 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { Menu } from "./Menu";
 import { SubMenuKey } from "./Menu.types";
 
-jest.mock("../../../core/configuration", () => ({
-  ...jest.requireActual("../../../core/configuration"),
-  ConfigurationService: {
-    env: {
-      features: {
-        cut: [],
-      },
-    },
-  },
+jest.mock("../../utils/featureAvailableChecker", () => ({
+  checkFeatureAvailable: jest.fn(() => true),
 }));
 
 const combineMock = jest.fn(() => TabsRoutePath.MENU);

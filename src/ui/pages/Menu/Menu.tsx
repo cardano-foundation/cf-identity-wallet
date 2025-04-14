@@ -31,6 +31,7 @@ import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
 import "./Menu.scss";
 import { MenuItemProps, SubMenuKey } from "./Menu.types";
 import { ConfigurationService } from "../../../core/configuration";
+import { checkFeatureAvailable } from "../../utils/featureAvailableChecker";
 
 const Menu = () => {
   const pageId = "menu-tab";
@@ -79,9 +80,7 @@ const Menu = () => {
       icon: linkOutline,
       label: `${i18n.t("tabs.menu.tab.items.connectwallet.title")}`,
       subLabel: `${i18n.t("tabs.menu.tab.items.connectwallet.sublabel")}`,
-      hidden: ConfigurationService.env.features.cut.includes(
-        OptionalFeature.ConnectWallet
-      ),
+      hidden: !checkFeatureAvailable(OptionalFeature.ConnectWallet),
     },
   ];
 
