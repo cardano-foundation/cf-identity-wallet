@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   webDir: "build",
   android: {
     webContentsDebuggingEnabled: true,
+    adjustMarginsForEdgeToEdge: "disable",
   },
   ios: {
     webContentsDebuggingEnabled: true,
@@ -22,18 +23,18 @@ const config: CapacitorConfig = {
       launchShowDuration: 3000,
       launchAutoHide: true,
       launchFadeOutDuration: 1000,
-      backgroundColor: "#92FFC0"
+      backgroundColor: "#92FFC0",
     },
     PrivacyScreen: {
       enable: true,
       imageName: "Splashscreen",
-      preventScreenshots: true
+      preventScreenshots: true,
     },
     Keyboard: {
       resize: KeyboardResize.Ionic,
       resizeOnFullScreen: true,
     },
-  }
+  },
 };
 
 export default config;
