@@ -8,7 +8,7 @@ import {
   SeedPhraseModuleProps,
   SeedPhraseModuleRef,
 } from "./SeedPhraseModule.types";
-import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
+import { useHideKeyboard } from "../../hooks/useHideKeyboard";
 
 const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
   (
@@ -32,6 +32,7 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
     ref
   ) => {
     const seedInputs = useRef<(HTMLElement | null)[]>([]);
+    const { hideKeyboard } = useHideKeyboard();
 
     useImperativeHandle(ref, () => ({
       focusInputByIndex: (index) => {
@@ -117,6 +118,7 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
                     name={`word-input-${index}`}
                     id={`word-input-${index}`}
                     data-testid={`word-input-${index}`}
+                    onKeyDown={hideKeyboard}
                   />
                 ) : (
                   <span data-testid={`word-index-${index + 1}`}>{word}</span>

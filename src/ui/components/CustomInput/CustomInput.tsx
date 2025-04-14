@@ -5,6 +5,7 @@ import { CustomInputProps } from "./CustomInput.types";
 import "./CustomInput.scss";
 import { i18n } from "../../../i18n";
 import { combineClassNames } from "../../utils/style";
+import { useHideKeyboard } from "../../hooks/useHideKeyboard";
 
 const CustomInput = ({
   dataTestId,
@@ -23,6 +24,7 @@ const CustomInput = ({
   labelAction,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
+  const { hideKeyboard } = useHideKeyboard();
 
   const handleFocus = (focus: boolean) => {
     if (onChangeFocus) {
@@ -82,6 +84,7 @@ const CustomInput = ({
           onIonInput={(e) => onChangeInput(e.target.value as string)}
           onIonFocus={() => handleFocus(true)}
           onIonBlur={() => handleFocus(false)}
+          onKeyDown={hideKeyboard}
           value={value}
         />
         {hiddenInput && (
