@@ -4,5 +4,3 @@ security:
     enabled: false
 features:
   cut: ["CONNECT_WALLET", "SELECT_IDENTIFIER_TYPE"]
-  identifier: 
-    prefillName: "CSO identifier"
