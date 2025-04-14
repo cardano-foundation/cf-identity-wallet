@@ -180,6 +180,7 @@ enum NotificationRoute {
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
   LocalSign = "/local/signrequest",
+  LocalConfirmation = "/local/signconfirmation",
 }
 
 enum ExchangeRoute {

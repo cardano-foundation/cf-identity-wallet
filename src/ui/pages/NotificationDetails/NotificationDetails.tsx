@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { ElementType, useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
   KeriaNotification,
@@ -12,6 +12,7 @@ import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
 import { RemoteSignRequest } from "./components/RemoteSignRequest";
+import { RemoteSignConfirmation } from "./components/RemoteSignConfirmation";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -38,56 +39,54 @@ const NotificationDetails = () => {
     if (!displayNotification) handleBack();
   }, [handleBack, displayNotification]);
 
-  switch (displayNotification?.a?.r) {
-  case NotificationRoute.MultiSigIcp:
-    return (
-      <MultiSigRequest
-        pageId={pageId}
-        activeStatus={!!displayNotification}
-        notificationDetails={displayNotification}
-        handleBack={handleBack}
-      />
-    );
-  case NotificationRoute.ExnIpexGrant:
-    return (
-      <ReceiveCredential
-        pageId={pageId}
-        activeStatus={!!displayNotification}
-        notificationDetails={displayNotification}
-        handleBack={handleBack}
-      />
-    );
-  case NotificationRoute.ExnIpexApply:
-    return (
-      <CredentialRequest
-        pageId={pageId}
-        activeStatus={!!displayNotification}
-        notificationDetails={displayNotification}
-        handleBack={handleBack}
-      />
-    );
-  case NotificationRoute.MultiSigExn:
-    return (
-      <ReceiveCredential
-        pageId={pageId}
-        activeStatus={!!displayNotification}
-        notificationDetails={displayNotification}
-        handleBack={handleBack}
-        multisigExn
-      />
-    );
-  case NotificationRoute.LocalSign:
-    return (
-      <RemoteSignRequest
-        pageId={pageId}
-        activeStatus={!!displayNotification}
-        notificationDetails={displayNotification}
-        handleBack={handleBack}
-      />
-    );
-  default:
+  // Mapping object for NotificationRoute to components
+  const notificationComponents: Record<NotificationRoute, ElementType | null> =
+    {
+      [NotificationRoute.MultiSigIcp]: MultiSigRequest,
+      [NotificationRoute.ExnIpexGrant]: ReceiveCredential,
+      [NotificationRoute.ExnIpexApply]: CredentialRequest,
+      [NotificationRoute.MultiSigExn]: ReceiveCredential,
+      [NotificationRoute.LocalSign]: RemoteSignRequest,
+      [NotificationRoute.LocalConfirmation]: RemoteSignConfirmation,
+      [NotificationRoute.MultiSigRpy]: null,
+      [NotificationRoute.ExnIpexOffer]: null,
+      [NotificationRoute.ExnIpexAgree]: null,
+      [NotificationRoute.LocalAcdcRevoked]: null,
+    };
+
+  // Exit early for unsupported routes
+  const unsupportedRoutes = [
+    NotificationRoute.MultiSigRpy,
+    NotificationRoute.ExnIpexOffer,
+    NotificationRoute.ExnIpexAgree,
+    NotificationRoute.LocalAcdcRevoked,
+  ];
+
+  if (
+    !displayNotification ||
+    unsupportedRoutes.includes(displayNotification.a?.r as NotificationRoute)
+  ) {
     return null;
   }
+
+  const Component =
+    notificationComponents[displayNotification.a?.r as NotificationRoute];
+
+  if (!Component) {
+    return null; // Return null if no matching component is found
+  }
+
+  return (
+    <Component
+      pageId={pageId}
+      activeStatus={!!displayNotification}
+      notificationDetails={displayNotification}
+      handleBack={handleBack}
+      {...(displayNotification.a?.r === NotificationRoute.MultiSigExn
+        ? { multisigExn: true }
+        : {})} // Pass additional props conditionally
+    />
+  );
 };
 
 export { NotificationDetails };
