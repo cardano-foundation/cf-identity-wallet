@@ -41,7 +41,7 @@ services:
       - "traefik.http.routers.keria-ext.tls.certresolver=myresolver"
       - "traefik.http.routers.keria-ext.service=keria-ext"
       - "traefik.http.services.keria-ext.loadbalancer.server.port=3902"
-      
+
       - "traefik.http.routers.keria-boot.rule=Host(`${KERIA_BOOT_HOST:-keria-boot}`)"
       - "traefik.http.routers.keria-boot.entrypoints=websecure"
       - "traefik.http.routers.keria-boot.tls.certresolver=myresolver"
@@ -82,14 +82,14 @@ services:
         - KERI_VAR_DIR=/usr/local/var/keri
         - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
         - LOG_LEVEL=INFO
-    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
     volumes:
         - witnesses-config:/usr/local/var/keri
     labels:
-      - "traefik.http.routers.witness0.rule=Host(`witness0.${PUBLIC_DOMAIN}`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.witness0.rule=Host(`witness-0.${PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.witness0.entrypoints=websecure"
       - "traefik.http.routers.witness0.tls.certresolver=myresolver"
-      - "traefik.http.routers.witness0.service=0"
       - "traefik.http.services.witness0.loadbalancer.server.port=5642"
 
   witness-1:
@@ -105,14 +105,14 @@ services:
         - KERI_VAR_DIR=/usr/local/var/keri
         - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
         - LOG_LEVEL=INFO
-    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
     volumes:
         - witnesses-config:/usr/local/var/keri
     labels:
-      - "traefik.http.routers.witness1.rule=Host(`witness1.${PUBLIC_DOMAIN}`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.witness1.rule=Host(`witness-1.${PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.witness1.entrypoints=websecure"
       - "traefik.http.routers.witness1.tls.certresolver=myresolver"
-      - "traefik.http.routers.witness1.service=1"
       - "traefik.http.services.witness1.loadbalancer.server.port=5643"
 
   witness-2:
@@ -128,14 +128,14 @@ services:
         - KERI_VAR_DIR=/usr/local/var/keri
         - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
         - LOG_LEVEL=INFO
-    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
     volumes:
         - witnesses-config:/usr/local/var/keri
     labels:
-      - "traefik.http.routers.witness2.rule=Host(`witness2.${PUBLIC_DOMAIN}`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.witness2.rule=Host(`witness-2.${PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.witness2.entrypoints=websecure"
       - "traefik.http.routers.witness2.tls.certresolver=myresolver"
-      - "traefik.http.routers.witness2.service=2"
       - "traefik.http.services.witness2.loadbalancer.server.port=5644"
 
   witness-3:
@@ -151,14 +151,14 @@ services:
         - KERI_VAR_DIR=/usr/local/var/keri
         - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
         - LOG_LEVEL=INFO
-    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
     volumes:
         - witnesses-config:/usr/local/var/keri
     labels:
-      - "traefik.http.routers.witness3.rule=Host(`witness3.${PUBLIC_DOMAIN}`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.witness3.rule=Host(`witness-3.${PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.witness3.entrypoints=websecure"
       - "traefik.http.routers.witness3.tls.certresolver=myresolver"
-      - "traefik.http.routers.witness3.service=3"
       - "traefik.http.services.witness3.loadbalancer.server.port=5645"
 
   witness-4:
@@ -174,14 +174,14 @@ services:
         - KERI_VAR_DIR=/usr/local/var/keri
         - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
         - LOG_LEVEL=INFO
-    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
     volumes:
         - witnesses-config:/usr/local/var/keri
     labels:
-      - "traefik.http.routers.witness4.rule=Host(`witness4.${PUBLIC_DOMAIN}`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.witness4.rule=Host(`witness-4.${PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.witness4.entrypoints=websecure"
       - "traefik.http.routers.witness4.tls.certresolver=myresolver"
-      - "traefik.http.routers.witness4.service=4"
       - "traefik.http.services.witness4.loadbalancer.server.port=5646"
 
   witness-5:
@@ -197,14 +197,14 @@ services:
         - KERI_VAR_DIR=/usr/local/var/keri
         - KERI_SCRIPT_DIR=/usr/local/var/keri/scripts
         - LOG_LEVEL=INFO
-    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO - 1 )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
+    entrypoint: ["bash", "-c", "export WITNESS_NO=$$(hostname | awk -F- '{print $$NF}'); exec kli witness start --loglevel $${LOG_LEVEL} --name wit$${WITNESS_NO} --alias wit$${WITNESS_NO} -H $$(( INITIAL_HTTP_PORT + $$(( WITNESS_NO )) )) -T $$(( INITIAL_TCP_PORT + $$(( WITNESS_NO )) )) --config-file $${KERI_SCRIPT_DIR}/keri/cf/wit$${WITNESS_NO}.json"]
     volumes:
         - witnesses-config:/usr/local/var/keri
     labels:
-      - "traefik.http.routers.witness5.rule=Host(`witness5.${PUBLIC_DOMAIN}`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.witness5.rule=Host(`witness-5.${PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.witness5.entrypoints=websecure"
       - "traefik.http.routers.witness5.tls.certresolver=myresolver"
-      - "traefik.http.routers.witness5.service=5"
       - "traefik.http.services.witness5.loadbalancer.server.port=5647"
 
   cred-issuance:
@@ -229,7 +229,7 @@ services:
     image: ${CRED_UI_IMAGE:-cardanofoundation/cf-cred-issuance-ui:main}
     restart: unless-stopped
     environment:
-      - VITE_SERVER_URL=${CRED_UI_URL:-http://localhost:3001}
+      - VITE_SERVER_URL=${CRED_UI_SERVER_URL:-http://localhost:3001}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.credentials-ui.rule=Host(`${CRED_UI_HOST:-cred-issuance-ui}`)"

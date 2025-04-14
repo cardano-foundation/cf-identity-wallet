@@ -37,6 +37,14 @@ const headers: AppTableHeader<CredentialsTableRow>[] = [
     label: i18n.t("pages.connectionDetails.table.headers.name"),
   },
   {
+    id: "credentialId",
+    label: i18n.t("pages.connectionDetails.table.headers.credentialId"),
+  },
+  {
+    id: "attribute",
+    label: i18n.t("pages.connectionDetails.table.headers.attribute"),
+  },
+  {
     id: "date",
     disablePadding: false,
     label: i18n.t("pages.connectionDetails.table.headers.issueDate"),
@@ -61,6 +69,8 @@ const CredentialsTable = ({
   const tableRows: CredentialsTableRow[] = credentials.map((row) => ({
     id: row.status.i,
     name: row.schema.title,
+    credentialId: row.schema.$id,
+    attribute: Object.values(row.sad.a)[2],
     date: new Date(row.status.dt).getTime(),
     status: Number(row.status.s),
     data: row,
@@ -121,7 +131,7 @@ const CredentialsTable = ({
 
   return (
     <>
-      <Paper className="credential-table">
+      <Paper className="credentials-table">
         <AppTable
           order={order}
           rows={visibleRows}
@@ -158,6 +168,11 @@ const CredentialsTable = ({
                 >
                   {row.name}
                 </TableCell>
+                <TableCell align="left">
+                  {row.credentialId.substring(0, 4)}...
+                  {row.credentialId.slice(-4)}
+                </TableCell>
+                <TableCell align="left">{row.attribute}</TableCell>
                 <TableCell align="left">
                   {formatDate(new Date(row.date))}
                 </TableCell>

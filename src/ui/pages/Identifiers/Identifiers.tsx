@@ -284,15 +284,15 @@ const Identifiers = () => {
 
   const deletePendingCheck = useMemo(
     () => ({
-      title: i18n.t("tabs.identifiers.detelepending.title"),
+      title: i18n.t("tabs.identifiers.deletepending.title"),
       description: i18n.t(
         deletedPendingItem?.creationStatus === CreationStatus.FAILED
-          ? "tabs.identifiers.detelepending.witnesserror"
+          ? "tabs.identifiers.deletepending.witnesserror"
           : deletedPendingItem?.groupMetadata?.groupId
-            ? "tabs.identifiers.detelepending.mutilsigdescription"
-            : "tabs.identifiers.detelepending.description"
+            ? "tabs.identifiers.deletepending.mutilsigdescription"
+            : "tabs.identifiers.deletepending.description"
       ),
-      button: i18n.t("tabs.identifiers.detelepending.button"),
+      button: i18n.t("tabs.identifiers.deletepending.button"),
     }),
     [deletedPendingItem]
   );
@@ -457,7 +457,7 @@ const Identifiers = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "tabs.identifiers.detelepending.secondchecktitle"
+          "tabs.identifiers.deletepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingIdentifier}
       />

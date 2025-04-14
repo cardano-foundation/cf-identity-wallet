@@ -1,27 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import { Agent } from "../agent";
-import { ResponseData } from "../types/response.type";
-import { httpResponse } from "../utils/response.util";
 
 async function contactList(_: Request, res: Response, next: NextFunction) {
   const data = await Agent.contacts();
-  const response: ResponseData<any> = {
-    statusCode: 200,
+  res.status(200).send({
     success: true,
     data,
-  };
-  httpResponse(res, response);
+  });
 }
 
 async function deleteContact(req: Request, res: Response, next: NextFunction) {
   const { id } = req.query;
   const data = await Agent.deleteContact(id as string);
-  const response: ResponseData<any> = {
-    statusCode: 200,
+  res.status(200).send({
     success: true,
     data,
-  };
-  httpResponse(res, response);
+  });
 }
 
 export { contactList, deleteContact };

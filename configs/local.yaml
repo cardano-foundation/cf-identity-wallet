@@ -5,3 +5,5 @@ keri:
 security:
   rasp:
     enabled: false
+features:
+  cut: []

@@ -12,6 +12,7 @@ import {
   settingsOutline,
 } from "ionicons/icons";
 import { useEffect, useMemo, useState } from "react";
+import { OptionalFeature } from "../../../core/configuration/configurationService.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -29,6 +30,7 @@ import { SubMenu } from "./components/SubMenu";
 import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
 import "./Menu.scss";
 import { MenuItemProps, SubMenuKey } from "./Menu.types";
+import { ConfigurationService } from "../../../core/configuration";
 
 const Menu = () => {
   const pageId = "menu-tab";
@@ -77,6 +79,9 @@ const Menu = () => {
       icon: linkOutline,
       label: `${i18n.t("tabs.menu.tab.items.connectwallet.title")}`,
       subLabel: `${i18n.t("tabs.menu.tab.items.connectwallet.sublabel")}`,
+      hidden: ConfigurationService.env.features.cut.includes(
+        OptionalFeature.ConnectWallet
+      ),
     },
   ];
 
@@ -135,16 +140,18 @@ const Menu = () => {
       >
         <IonGrid>
           <IonRow>
-            {menuItems.map((menuItem) => (
-              <MenuItem
-                key={menuItem.itemKey}
-                itemKey={menuItem.itemKey}
-                icon={menuItem.icon}
-                label={`${i18n.t(menuItem.label)}`}
-                subLabel={menuItem.subLabel}
-                onClick={() => showSelectedOption(menuItem.itemKey)}
-              />
-            ))}
+            {menuItems
+              .filter((item) => !item.hidden)
+              .map((menuItem) => (
+                <MenuItem
+                  key={menuItem.itemKey}
+                  itemKey={menuItem.itemKey}
+                  icon={menuItem.icon}
+                  label={`${i18n.t(menuItem.label)}`}
+                  subLabel={menuItem.subLabel}
+                  onClick={() => showSelectedOption(menuItem.itemKey)}
+                />
+              ))}
           </IonRow>
         </IonGrid>
       </TabLayout>
