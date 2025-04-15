@@ -4,6 +4,14 @@ import { eyeOutline } from "ionicons/icons";
 import { act } from "react";
 import { CustomInput } from "./CustomInput";
 
+const hideKeyboard = jest.fn();
+jest.mock("@capacitor/keyboard", () => ({
+  ...jest.requireActual("@capacitor/keyboard"),
+  Keyboard: {
+    hide: () => hideKeyboard(),
+  },
+}));
+
 describe("Custom input", () => {
   const onChangeMock = jest.fn();
 
@@ -116,5 +124,25 @@ describe("Custom input", () => {
         "test-input"
       ).parentElement?.parentElement?.className.includes("error")
     ).toBe(true);
+  });
+
+  test("Hidden keyboard when press enter or return", async () => {
+    const focus = jest.fn();
+
+    const { getByTestId } = render(
+      <CustomInput
+        dataTestId="test-input"
+        value=""
+        error
+        onChangeInput={onChangeMock}
+        onChangeFocus={focus}
+      />
+    );
+
+    fireEvent.keyDown(getByTestId("test-input"), {
+      key: "Enter",
+    });
+
+    expect(hideKeyboard).toBeCalled();
   });
 });
