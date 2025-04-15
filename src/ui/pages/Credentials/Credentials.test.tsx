@@ -498,28 +498,28 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.title)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.deletepending.title)
       ).toBeVisible();
       expect(
         getByText(
-          EN_TRANSLATIONS.tabs.credentials.tab.detelepending.description
+          EN_TRANSLATIONS.tabs.credentials.tab.deletepending.description
         )
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.deletepending.button)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.deletepending.button)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.tabs.credentials.tab.detelepending.secondchecktitle
+          EN_TRANSLATIONS.tabs.credentials.tab.deletepending.secondchecktitle
         )
       ).toBeVisible();
     });

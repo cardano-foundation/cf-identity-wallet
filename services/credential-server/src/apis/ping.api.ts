@@ -1,14 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import { ResponseData } from "../types/response.type";
-import { httpResponse } from "../utils/response.util";
+import { Request, Response } from "express";
 
 function ping(_: Request, res: Response) {
-  const response: ResponseData<string> = {
-    statusCode: 200,
-    success: true,
-    data: "pong",
-  };
-  httpResponse(res, response);
+  res.status(200).send("pong");
 }
 
 export { ping };

@@ -225,9 +225,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
 
     const deletePendingCheckProps = useMemo(
       () => ({
-        title: i18n.t("connections.page.detelepending.title"),
-        description: i18n.t("connections.page.detelepending.description"),
-        button: i18n.t("connections.page.detelepending.button"),
+        title: i18n.t("connections.page.deletepending.title"),
+        description: i18n.t("connections.page.deletepending.description"),
+        button: i18n.t("connections.page.deletepending.button"),
       }),
       []
     );
@@ -363,7 +363,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           firstCheckProps={deletePendingCheckProps}
           onClose={() => setOpenDeletePendingAlert(false)}
           secondCheckTitle={`${i18n.t(
-            "connections.page.detelepending.secondchecktitle"
+            "connections.page.deletepending.secondchecktitle"
           )}`}
           onDeletePendingItem={deleteConnection}
         />

@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { MiscRecordId, CreationStatus } from "../../../core/agent/agent.types";
+import { CreationStatus, MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records/basicRecord";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
@@ -21,6 +21,7 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
+  getShowWelcomePage,
   setCurrentOperation,
   setCurrentRoute,
   setToastMsg,
@@ -42,8 +43,10 @@ import {
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
 import "./Identifiers.scss";
 import { IdentifiersFilters, StartAnimationSource } from "./Identifiers.types";
+import { Welcome } from "./components/Welcome";
 
 const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
@@ -93,6 +96,7 @@ const Identifiers = () => {
   const currentOperation = useAppSelector(getCurrentOperation);
   const openMultiSigId = useAppSelector(getOpenMultiSig);
   const identifiersFiltersCache = useAppSelector(getIdentifiersFilters);
+  const showWelcomePage = useAppSelector(getShowWelcomePage);
 
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
@@ -247,13 +251,12 @@ const Identifiers = () => {
       }
     }, CLEAR_STATE_DELAY);
   };
-  const tabClasses = `${
-    navAnimation === "cards"
-      ? "cards-identifier-nav"
-      : navAnimation === "favourite"
-        ? "favorite-identifier-nav"
-        : ""
-  }`;
+
+  const tabClasses = combineClassNames({
+    "cards-identifier-nav": navAnimation === "cards",
+    "favorite-identifier-nav": navAnimation === "favourite",
+  });
+
   const handleCloseCreateIdentifier = (identifier?: IdentifierShortDetails) => {
     if (identifier?.groupMetadata || identifier?.groupMemberPre) {
       handleMultiSigClick(identifier);
@@ -284,15 +287,15 @@ const Identifiers = () => {
 
   const deletePendingCheck = useMemo(
     () => ({
-      title: i18n.t("tabs.identifiers.detelepending.title"),
+      title: i18n.t("tabs.identifiers.deletepending.title"),
       description: i18n.t(
         deletedPendingItem?.creationStatus === CreationStatus.FAILED
-          ? "tabs.identifiers.detelepending.witnesserror"
+          ? "tabs.identifiers.deletepending.witnesserror"
           : deletedPendingItem?.groupMetadata?.groupId
-            ? "tabs.identifiers.detelepending.mutilsigdescription"
-            : "tabs.identifiers.detelepending.description"
+            ? "tabs.identifiers.deletepending.mutilsigdescription"
+            : "tabs.identifiers.deletepending.description"
       ),
-      button: i18n.t("tabs.identifiers.detelepending.button"),
+      button: i18n.t("tabs.identifiers.deletepending.button"),
     }),
     [deletedPendingItem]
   );
@@ -339,7 +342,7 @@ const Identifiers = () => {
     <>
       <TabLayout
         pageId={pageId}
-        header={true}
+        header={!showWelcomePage}
         customClass={tabClasses}
         title={`${i18n.t("tabs.identifiers.tab.title")}`}
         additionalButtons={
@@ -349,18 +352,22 @@ const Identifiers = () => {
           />
         }
         placeholder={
-          showPlaceholder && (
-            <CardsPlaceholder
-              buttonLabel={`${i18n.t("tabs.identifiers.tab.create")}`}
-              buttonAction={handleCreateIdentifier}
-              testId={pageId}
-            >
-              <span className="placeholder-spacer" />
-            </CardsPlaceholder>
+          showWelcomePage ? (
+            <Welcome />
+          ) : (
+            showPlaceholder && (
+              <CardsPlaceholder
+                buttonLabel={`${i18n.t("tabs.identifiers.tab.create")}`}
+                buttonAction={handleCreateIdentifier}
+                testId={pageId}
+              >
+                <span className="placeholder-spacer" />
+              </CardsPlaceholder>
+            )
           )
         }
       >
-        {!showPlaceholder && (
+        {!showPlaceholder && !showWelcomePage && (
           <>
             {!!favIdentifiers.length && (
               <div
@@ -457,7 +464,7 @@ const Identifiers = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "tabs.identifiers.detelepending.secondchecktitle"
+          "tabs.identifiers.deletepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingIdentifier}
       />

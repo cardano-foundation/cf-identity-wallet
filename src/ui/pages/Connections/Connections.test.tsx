@@ -625,26 +625,26 @@ describe("Connections page from Credentials tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connections.page.detelepending.title)
+        getByText(EN_TRANSLATIONS.connections.page.deletepending.title)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.connections.page.detelepending.description)
+        getByText(EN_TRANSLATIONS.connections.page.deletepending.description)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.connections.page.detelepending.button)
+        getByText(EN_TRANSLATIONS.connections.page.deletepending.button)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.connections.page.detelepending.button)
+        getByText(EN_TRANSLATIONS.connections.page.deletepending.button)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.connections.page.detelepending.secondchecktitle
+          EN_TRANSLATIONS.connections.page.deletepending.secondchecktitle
         )
       ).toBeVisible();
     });

@@ -14,6 +14,8 @@ interface CredentialsTableProps {
 interface CredentialsTableRow {
   id: string;
   name: string;
+  credentialId: string;
+  attribute: string;
   date: number;
   status: number;
   data: Credential;

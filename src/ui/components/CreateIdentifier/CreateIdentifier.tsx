@@ -293,7 +293,7 @@ const CreateIdentifier = ({
           header={
             <PageHeader
               closeButton={true}
-              closeButtonAction={resetModal}
+              closeButtonAction={() => resetModal()}
               hardwareBackButtonConfig={hardwareBackButtonConfig}
               closeButtonLabel={`${i18n.t(
                 multiSigGroup
