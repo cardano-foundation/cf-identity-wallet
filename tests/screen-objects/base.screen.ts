@@ -16,8 +16,3 @@ export const findAndClickLocator = async (locator: string) => {
   await element.waitForClickable();
   await element.click();
 };
-
-export const mobileTap = async (locator: string) => {
-  await Gestures.tap(locator);
-};
-

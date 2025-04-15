@@ -1,37 +1,36 @@
 import { expect } from "expect-webdriverio";
 
 export class MenuSettingsScreen {
-
   get appVersionItem() {
-    return $("[data-testid=\"settings-item-7\"]");
+    return $('[data-testid="settings-item-7"]');
   }
 
   get biometricAuthenticationItem() {
-    return $("[data-testid=\"settings-item-0\"]");
+    return $('[data-testid="settings-item-0"]');
   }
 
   get changePasscodeItem() {
-    return $("[data-testid=\"settings-item-1\"]");
+    return $('[data-testid="settings-item-1"]');
   }
 
   get connectViaDiscordItem() {
-    return $("[data-testid=\"settings-item-6\"]");
+    return $('[data-testid="settings-item-6"]');
   }
 
   get learnMoreItem() {
-    return $("[data-testid=\"settings-item-4\"]");
+    return $('[data-testid="settings-item-4"]');
   }
 
   get manageOperationsPasswordItem() {
-    return $("[data-testid=\"settings-item-2\"]");
+    return $('[data-testid="settings-item-2"]');
   }
 
   get recoveryPhraseItem() {
-    return $("[data-testid=\"settings-item-3\"]");
+    return $('[data-testid="settings-item-3"]');
   }
 
   get termsAndPrivacyPolicyItem() {
-    return $("[data-testid=\"settings-item-5\"]");
+    return $('[data-testid="settings-item-5"]');
   }
 
   async loads() {

@@ -5,7 +5,6 @@ import CreatePasswordScreen from "../../screen-objects/onboarding/create-passwor
 import { returnPassword } from "../../helpers/generate.js";
 import { CreatePassword } from "../../constants/text.constants.js";
 
-
 Given(/^skip Create Password screen$/, async function () {
   await CreatePasswordScreen.skipButton.click();
   await AlertModal.clickConfirmButtonOf(CreatePasswordScreen.alertModal);
@@ -18,19 +17,23 @@ Given(/^user tap Skip button on Create Password screen$/, async function () {
 Given(
   /^user generated a password of (\d+) characters$/,
   async function (passwordLength: number) {
-      (global as any).generatedPassword = await returnPassword(passwordLength);
+    (global as any).generatedPassword = await returnPassword(passwordLength);
   }
 );
 
 Given(/^user type in password on Create Password screen$/, async function () {
-  await CreatePasswordScreen.createPasswordInput.addValue((global as any).generatedPassword);
+  await CreatePasswordScreen.createPasswordInput.addValue(
+    (global as any).generatedPassword
+  );
 });
 
 Given(
   /^user confirm type in password on Create Password screen$/,
   async function () {
     await CreatePasswordScreen.confirmPasswordInput.scrollIntoView();
-    await CreatePasswordScreen.confirmPasswordInput.addValue((global as any).generatedPassword);
+    await CreatePasswordScreen.confirmPasswordInput.addValue(
+      (global as any).generatedPassword
+    );
   }
 );
 

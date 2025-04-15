@@ -159,14 +159,13 @@ class Gestures {
     const x = width / 2;
     const y = (height * safePercentage) / 100;
     await driver
-      .action('pointer')
-      .move(Math.round(x),Math.round(y))
+      .action("pointer")
+      .move(Math.round(x), Math.round(y))
       .down()
       .pause(10)
       .up()
       .perform();
   }
-
 
   static async tapCenterOfScreen() {
     // Fetch current screen dimensions
@@ -191,8 +190,6 @@ class Gestures {
 
     await driver.releaseActions();
   }
-
-
 
   /**
    * Get the screen coordinates based on a device his screen size
