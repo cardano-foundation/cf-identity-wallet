@@ -20,5 +20,6 @@ Then(
       await expect(await MenuPasscodeScreen.errorMessageText.getText()).toMatch(
           errorMessage
       );
+
   }
 );
