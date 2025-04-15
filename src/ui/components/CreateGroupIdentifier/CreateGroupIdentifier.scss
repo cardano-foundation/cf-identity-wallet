@@ -72,7 +72,8 @@ ion-modal.create-group-identifier-modal {
       }
 
       ion-icon {
-        margin-left: 8vw;
+        margin-right: 0;
+        margin-left: 0.5rem;
       }
     }
 
@@ -491,14 +492,6 @@ ion-modal.create-group-identifier-modal {
     .scrollable-page-content {
       p.multisig-share-note {
         padding: 0 2rem;
-      }
-
-      .multisig-share-qr-code {
-        ion-button.copy-button {
-          ion-icon {
-            margin-left: 5vw;
-          }
-        }
       }
 
       #react-qrcode-logo,
