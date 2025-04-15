@@ -2,6 +2,10 @@ ion-modal.create-group-identifier-modal {
   .scrollable-page-layout {
     &.initiator-view {
       padding-bottom: 4rem;
+
+      &.md {
+        padding-bottom: calc(var(--ion-safe-area-bottom) + 4rem);
+      }
     }
 
     &.keyboard-is-open ion-content.scrollable-page-content {
@@ -140,8 +144,16 @@ ion-modal.create-group-identifier-modal {
       bottom: calc(-100vh + 5rem);
       padding-inline: 0.9rem;
 
+      &.md {
+        bottom: calc(-100vh + 5rem + var(--ion-safe-area-bottom));
+      }
+
       &.identifier-stage-3 {
         bottom: calc(-100vh + 9.5rem);
+
+        &.md {
+          bottom: calc(-100vh + 9.5rem + var(--ion-safe-area-bottom));
+        }
       }
     }
   }
@@ -520,8 +532,16 @@ ion-modal.create-group-identifier-modal {
     ion-toolbar.page-footer {
       bottom: calc(-100vh + 3.5rem);
 
+      &.md {
+        bottom: calc(-100vh + 3.5rem + var(--ion-safe-area-bottom));
+      }
+
       &.identifier-stage-3 {
         bottom: calc(-100vh + 6.25rem);
+
+        &.md {
+          bottom: calc(-100vh + 6.25rem + var(--ion-safe-area-bottom));
+        }
       }
     }
   }
