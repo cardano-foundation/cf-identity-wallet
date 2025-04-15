@@ -5,15 +5,18 @@ interface KeriaConfig {
 
 enum OptionalFeature {
   ConnectWallet = "CONNECT_WALLET",
-  SelectIdentifierType = "SELECT_IDENTIFIER_TYPE",
 }
 
-interface IdentifierFeature {
-  prefillName: string;
+interface IdentifierConfig {
+  creation?: {
+    individualOnly?: boolean;
+    defaultName?: string;
+  };
 }
+
 interface Feature {
   cut: OptionalFeature[];
-  identifier?: IdentifierFeature;
+  identifiers?: IdentifierConfig;
 }
 
 interface Configuration {

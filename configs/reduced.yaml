@@ -3,4 +3,8 @@ security:
   rasp:
     enabled: false
 features:
-  cut: ["CONNECT_WALLET", "SELECT_IDENTIFIER_TYPE"]
+  cut: ["CONNECT_WALLET"]
+  identifiers:
+    creation: 
+      individualOnly: true
+      defaultName: "CSO Identifier"

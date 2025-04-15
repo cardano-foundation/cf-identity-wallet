@@ -84,7 +84,7 @@ class ConfigurationService {
       return this.invalid("Missing top-level features object");
     }
 
-    const { cut, identifier } = features;
+    const { cut } = features;
     if (!Array.isArray(cut)) {
       return this.invalid("features.cut must be a array");
     }
@@ -92,12 +92,6 @@ class ConfigurationService {
     for (const feature of cut) {
       if (!Object.values(OptionalFeature).includes(feature)) {
         return this.invalid("Invalid features.cut value");
-      }
-    }
-
-    if (identifier) {
-      if (typeof rasp !== "object") {
-        return this.invalid("Identifier config must be object");
       }
     }
 

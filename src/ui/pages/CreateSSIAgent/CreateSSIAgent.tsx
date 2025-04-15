@@ -93,10 +93,10 @@ const CreateSSIAgent = () => {
   useEffect(() => {
     if (!ssiAgent.bootUrl && !ssiAgent.connectUrl) {
       dispatch(
-        setConnectUrl(ConfigurationService.env?.keri?.keria?.url || undefined)
+        setConnectUrl(ConfigurationService.env.keri?.keria?.url || undefined)
       );
       dispatch(
-        setBootUrl(ConfigurationService.env?.keri?.keria?.bootUrl || undefined)
+        setBootUrl(ConfigurationService.env.keri?.keria?.bootUrl || undefined)
       );
     }
   }, [dispatch, ssiAgent.bootUrl, ssiAgent.connectUrl]);
