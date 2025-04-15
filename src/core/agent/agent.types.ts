@@ -43,6 +43,7 @@ enum MiscRecordId {
   CLOUD_RECOVERY_STATUS = "cloud-recovery-status",
   IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
   MULTISIG_IDENTIFIERS_PENDING_CREATION = "multisig-identifiers-pending-creation",
+  APP_FIRST_INSTALL = "app-first-install",
 }
 
 interface ConnectionShortDetails {

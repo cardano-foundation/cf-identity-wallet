@@ -66,6 +66,7 @@ interface StateCacheProps {
   toastMsgs: ToastStackItem[];
   forceInitApp?: number;
   showLoading?: boolean;
+  showWelcomePage?: boolean;
 }
 
 enum InitializationPhase {

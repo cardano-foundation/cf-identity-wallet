@@ -855,7 +855,13 @@
           "placeholder": "You haven’t created any {{ type }} identifiers yet."
         },
         "pendingidentifiers": "Pending identifiers",
-        "multisigidentifiers": "For groups"
+        "multisigidentifiers": "For groups",
+        "welcome": {
+          "skip": "Skip",
+          "welcometext": "Welcome, {{name}}",
+          "text": "You're in the perfect spot to create your secure and private digital identity. Let's begin by adding your first identifier!",
+          "add": "Add an Identifier"
+        }
       },
       "deletepending": {
         "title": "Identifier options",
