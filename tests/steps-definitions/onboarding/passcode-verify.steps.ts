@@ -13,3 +13,12 @@ When(/^user enter passcode on Verify Passcode screen$/, async function () {
 When(/^user enter generated passcode on Verify Passcode screen$/, async function () {
    await PasscodeScreen.createAndEnterRandomPasscode();
 });
+
+Then(
+  /^user can see (.*) on Verify Passcode screen$/,
+  async function (errorMessage: string) {
+      await expect(await MenuPasscodeScreen.errorMessageText.getText()).toMatch(
+          errorMessage
+      );
+  }
+);
