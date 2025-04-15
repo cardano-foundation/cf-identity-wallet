@@ -15,6 +15,10 @@ function RemoteSignConfirmation({
   notificationDetails,
   handleBack,
 }: NotificationDetailsProps) {
+  const certificate = "Certificate"; // TODO: change hardcoded value to dynamic
+  const connection = "Connection Name"; // TODO: change hardcoded value to dynamic
+  const URL = "https://www.veridian.id/"; // TODO: change hardcoded value to dynamic
+
   const formatNewLines = (text: string) => {
     return text.split("\n").map((line, index) => (
       <React.Fragment key={index}>
@@ -47,27 +51,25 @@ function RemoteSignConfirmation({
           primaryButtonText={`${t(
             "tabs.notifications.details.signconfirmation.button.label",
             {
-              certificate: "certificate", // TODO: change hardcoded value to dynamic
+              certificate: certificate.toLocaleLowerCase(),
             }
           )}`}
-          primaryButtonAction={
-            () => openBrowserLink("https://www.veridian.id/") // TODO: change hardcoded value to dynamic
-          }
+          primaryButtonAction={() => openBrowserLink(URL)}
         />
       }
     >
       <div className="sign-confirmation-body">
         <h3>
           {t("tabs.notifications.details.signconfirmation.subtitle", {
-            certificate: "Certificate", // TODO: change hardcoded value to dynamic
-            connection: "Connection Name", // TODO: change hardcoded value to dynamic
+            certificate: certificate,
+            connection: connection,
           })}
         </h3>
         <p>
           {formatNewLines(
             t("tabs.notifications.details.signconfirmation.description", {
-              certificate: "Certificate", // TODO: change hardcoded value to dynamic
-              connection: "Connection Name", // TODO: change hardcoded value to dynamic
+              certificate: certificate,
+              connection: connection,
             })
           )}
         </p>
