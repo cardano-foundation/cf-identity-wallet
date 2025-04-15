@@ -1,7 +1,6 @@
 import { Given, Then, When } from "@wdio/cucumber-framework";
 import PasscodeScreen from "../../screen-objects/onboarding/passcode.screen.js";
 import { expect } from "expect-webdriverio";
-import MenuPasscodeScreen from "../../screen-objects/menu/menu-passcode.screen.js";
 
 Given(
   /^user enter a generated passcode on Passcode screen$/,
