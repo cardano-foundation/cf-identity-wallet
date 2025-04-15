@@ -16,7 +16,7 @@ async function issueAcdcCredential(
       data: "",
     });
   }
-  await Agent.issueAcdcCredentialByAid(schemaSaid, aid, attribute);
+  await Agent.agent.issueAcdcCredentialByAid(schemaSaid, aid, attribute);
   res.status(200).send({
     success: true,
     data: "Credential offered",
@@ -29,7 +29,7 @@ async function requestDisclosure(
   next: NextFunction
 ): Promise<void> {
   const { schemaSaid, aid, attributes } = req.body;
-  await Agent.requestDisclosure(schemaSaid, aid, attributes);
+  await Agent.agent.requestDisclosure(schemaSaid, aid, attributes);
   res.status(200).send({
     success: true,
     data: "Apply schema successfully",
@@ -38,7 +38,7 @@ async function requestDisclosure(
 
 async function contactCredentials(req: Request, res: Response): Promise<void> {
   const { contactId } = req.query;
-  const data = await Agent.contactCredentials(contactId as string);
+  const data = await Agent.agent.contactCredentials(contactId as string);
 
   res.status(200).send({
     success: true,
@@ -50,7 +50,7 @@ async function revokeCredential(req: Request, res: Response): Promise<void> {
   const { credentialId, holder } = req.body;
 
   try {
-    await Agent.revokeCredential(credentialId, holder);
+    await Agent.agent.revokeCredential(credentialId, holder);
     res.status(200).send({
       success: true,
       data: "Revoke credential successfully",
