@@ -14,7 +14,7 @@ interface IdentifierConfig {
   };
 }
 
-interface Feature {
+interface AppFeaturesConfig {
   cut: OptionalFeature[];
   identifiers?: IdentifierConfig;
 }
@@ -28,7 +28,7 @@ interface Configuration {
       enabled: boolean;
     };
   };
-  features: Feature;
+  features: AppFeaturesConfig;
 }
 
 export type { Configuration };
