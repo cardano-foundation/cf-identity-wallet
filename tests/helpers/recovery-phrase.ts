@@ -35,7 +35,7 @@ export function recoveryPhrase() {
     await delay(100);
     for (let i = 0; i < seedPhrase.length; i++) {
       let wordValue: string;
-      const locator = $("[data-testid=\"original-seed-phrase-container\"]").$(
+      const locator = $('[data-testid="original-seed-phrase-container"]').$(
         `span=${seedPhrase[i]}`
       );
 
@@ -50,7 +50,10 @@ export function recoveryPhrase() {
     }
   };
 
+  const getSavedPhrase = () => phrase;
+
   return {
+    getSavedPhrase,
     save,
     select,
   };
