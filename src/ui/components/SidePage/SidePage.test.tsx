@@ -10,6 +10,17 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { signTransactionFix } from "../../__fixtures__/signTransactionFix";
 import { SidePage } from "./SidePage";
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, ...props }: any) => (

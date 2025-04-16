@@ -7,6 +7,18 @@ enum OptionalFeature {
   ConnectWallet = "CONNECT_WALLET",
 }
 
+interface IdentifierConfig {
+  creation?: {
+    individualOnly?: boolean;
+    defaultName?: string;
+  };
+}
+
+interface AppFeaturesConfig {
+  cut: OptionalFeature[];
+  identifiers?: IdentifierConfig;
+}
+
 interface Configuration {
   keri: {
     keria?: KeriaConfig;
@@ -16,9 +28,7 @@ interface Configuration {
       enabled: boolean;
     };
   };
-  features: {
-    cut: OptionalFeature[];
-  };
+  features: AppFeaturesConfig;
 }
 
 export type { Configuration };

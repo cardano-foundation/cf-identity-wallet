@@ -11,6 +11,17 @@ import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
 import { CreationStatus } from "../../../core/agent/agent.types";
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 const identifierCache = [
   {
     displayName: "mutil sign",

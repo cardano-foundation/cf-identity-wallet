@@ -18,6 +18,17 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { OperationType } from "../../globals/types";
 import { FullPageScanner } from "./FullPageScanner";
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 const addListener = jest.fn(
   (eventName: string, listenerFunc: (result: BarcodesScannedEvent) => void) => {
     setTimeout(() => {

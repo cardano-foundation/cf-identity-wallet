@@ -20,6 +20,17 @@ import { Connections } from "./Connections";
 const deleteConnectionByIdMock = jest.fn();
 const getConnectionByIdMock = jest.fn();
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
