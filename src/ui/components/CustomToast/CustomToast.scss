@@ -1,6 +1,6 @@
 .custom-toast {
   transition: transform 200ms;
-  --ion-color-secondary: var(--ion-color-neutral-700) !important;
+  --ion-color-secondary: var(--toast-secondary-bg-color) !important;
 
   &::part(button cancel) {
     min-height: auto;
