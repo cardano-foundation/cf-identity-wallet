@@ -1782,8 +1782,8 @@
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
     "identifierrequested": "Identifier request pending",
-    "identifiercreated": "New identifier created successfully",
-    "identifierupdated": "Identifier successfully updated",
+    "identifiercreated": "Identifier pending",
+    "identifierupdated": "Identifier created",
     "identifierdeleted": "Identifier successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "credentialsdeleted": "Credentials deleted successfully",
