@@ -1,7 +1,7 @@
-import { Given } from "@wdio/cucumber-framework";
-import PasscodeScreen from "../onboarding/passcode.screen";
+import { When } from "@wdio/cucumber-framework";
+import PasscodeScreen from "../../screen-objects/onboarding/passcode.screen";
 
-Given(
+When(
   /^user generate passcode on Passcode screen from Verify Your Recovery Phrase screen$/,
   async function () {
     this.passcode =

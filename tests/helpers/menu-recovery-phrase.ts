@@ -1,12 +1,10 @@
 import { log } from "./logger.js";
 import { delay } from "../screen-objects/base.screen.js";
 import { recoveryPhrase } from "./recovery-phrase";
+import { browser } from "@wdio/globals";
 
 export function recoveryPhraseInMenu() {
-  const baseRecovery = recoveryPhrase();
-
-  const enter = async () => {
-    const phrase = await baseRecovery.getSavedPhrase();
+  const enter = async (phrase: string[]) => {
     await delay(100);
     for (let i = 0; i < 18; i++) {
       const locator = $(
@@ -16,13 +14,12 @@ export function recoveryPhraseInMenu() {
       await locator.waitForDisplayed();
       await locator.waitForClickable();
       await locator.click();
-      await locator.setValue(phrase[i]);
+      await browser.keys([String(phrase[i])]);
       log.info(`Entered word ${i + 1}: ${phrase[i]}`);
     }
   };
 
   return {
-    ...baseRecovery,
     enter,
   };
 }
