@@ -55,6 +55,12 @@ export class MenuSettingsScreen {
     await expect(this.manageOperationsPasswordItem).toBeEnabled();
     await this.manageOperationsPasswordItem.click();
   }
+
+  async tapOnRecoveryPhraseButton() {
+    await expect(this.recoveryPhraseItem).toBeDisplayed();
+    await expect(this.recoveryPhraseItem).toBeEnabled();
+    await this.recoveryPhraseItem.click();
+  }
 }
 
 export default new MenuSettingsScreen();
