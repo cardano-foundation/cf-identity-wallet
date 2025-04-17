@@ -1,6 +1,0 @@
-keri:
-security:
-  rasp:
-    enabled: false
-features:
-  cut: ["CONNECT_WALLET"]

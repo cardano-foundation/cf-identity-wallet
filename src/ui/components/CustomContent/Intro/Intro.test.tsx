@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
-import { Slides } from "./index";
+import { Intro } from "./index";
 
 const items = [
   {
@@ -21,21 +21,21 @@ const items = [
   },
 ];
 
-describe("Slides Component", () => {
+describe("Intro Component", () => {
   test("Render slide 1", () => {
-    render(<Slides items={items} />);
+    render(<Intro items={items} />);
     const linkElement = screen.getByText(/Slide 1/i);
     expect(linkElement).toBeInTheDocument();
   });
 
   test("Renders the slides images", () => {
-    render(<Slides items={items} />);
+    render(<Intro items={items} />);
     const images = screen.getAllByRole("img");
     expect(images.length).toBe(3);
   });
 
   test("Renders the slides titles", () => {
-    render(<Slides items={items} />);
+    render(<Intro items={items} />);
     const titles = screen.getAllByRole("heading", { level: 2 });
     expect(titles.length).toBe(3);
   });
@@ -43,7 +43,7 @@ describe("Slides Component", () => {
 
 describe("handleAutoplay function for slides", () => {
   test("handleAutoplay() should stop autoplay when pause icon is clicked", () => {
-    const { getByTestId } = render(<Slides items={items} />);
+    const { getByTestId } = render(<Intro items={items} />);
     const playIcon = getByTestId("play-indicator");
 
     // Pause
@@ -53,7 +53,7 @@ describe("handleAutoplay function for slides", () => {
   });
 
   test("handleAutoplay() should start autoplay when play icon is clicked", () => {
-    const { getByTestId } = render(<Slides items={items} />);
+    const { getByTestId } = render(<Intro items={items} />);
     const playIcon = getByTestId("play-indicator");
 
     // Pause
@@ -65,7 +65,7 @@ describe("handleAutoplay function for slides", () => {
   });
 
   test("Hide slide controls when item length less than 1", () => {
-    const { queryByTestId } = render(<Slides items={[items[0]]} />);
+    const { queryByTestId } = render(<Intro items={[items[0]]} />);
     expect(queryByTestId("slide-controls")).toBeNull();
   });
 });

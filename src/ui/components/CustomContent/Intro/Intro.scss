@@ -9,6 +9,14 @@
   height: 100%;
   padding-top: 28%;
 
+  .swiper-container {
+    &.swiper-vertial-container {
+      .swiper-wrapper {
+        height: 80px;
+      }
+    }
+  }
+
   .slides {
     .swiper-slide {
       padding-top: 1.5rem;
