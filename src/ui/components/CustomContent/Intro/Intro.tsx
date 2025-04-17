@@ -5,14 +5,46 @@ import { useState } from "react";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperClass } from "swiper/types";
-import "./Slides.scss";
-import { SlideProps } from "./Slides.types";
+import { combineClassNames } from "../../../utils/style";
+import "./Intro.scss";
+import { SlideItem, IntroProps } from "./Intro.types";
 
-const Slides = ({ items }: SlideProps) => {
+import { i18n } from "../../../../i18n";
+import introImg0 from "../../../assets/images/intro-0.png";
+import introImg1 from "../../../assets/images/intro-1.png";
+import introImg2 from "../../../assets/images/intro-2.png";
+import introImg3 from "../../../assets/images/intro-3.png";
+
+export type IntroImg0Type = typeof introImg0;
+
+const Intro = ({ items: customItems }: IntroProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const [autoplayIsClicked, setAutoplayIsClicked] = useState(false);
+
+  const items: SlideItem[] = customItems || [
+    {
+      title: `${i18n.t("onboarding.slides.0.title")}`,
+      description: `${i18n.t("onboarding.slides.0.description")}`,
+      image: introImg0,
+    },
+    {
+      title: `${i18n.t("onboarding.slides.1.title")}`,
+      description: `${i18n.t("onboarding.slides.1.description")}`,
+      image: introImg1,
+    },
+    {
+      title: `${i18n.t("onboarding.slides.2.title")}`,
+      description: `${i18n.t("onboarding.slides.2.description")}`,
+      image: introImg2,
+    },
+    {
+      title: `${i18n.t("onboarding.slides.3.title")}`,
+      description: `${i18n.t("onboarding.slides.3.description")}`,
+      image: introImg3,
+    },
+  ];
 
   const handleAutoplay = () => {
     if (autoplay) {
@@ -27,11 +59,13 @@ const Slides = ({ items }: SlideProps) => {
     setTimeout(() => setAutoplayIsClicked(false), 300);
   };
 
+  const containerClass = combineClassNames("swiper-container");
+
   return (
     <div className="slides-container">
       <div className="slides">
         <Swiper
-          className="swiper-container"
+          className={containerClass}
           onSwiper={(swiper: SwiperClass) => setSwiper(swiper)}
           onSlideChange={() =>
             swiper ? setActiveIndex(swiper.realIndex) : null
@@ -104,4 +138,4 @@ const Slides = ({ items }: SlideProps) => {
   );
 };
 
-export { Slides };
+export { Intro };

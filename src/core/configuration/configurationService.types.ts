@@ -1,3 +1,5 @@
+import { SwiperOptions } from "swiper/types";
+
 interface KeriaConfig {
   url?: string;
   bootUrl?: string;
@@ -5,6 +7,10 @@ interface KeriaConfig {
 
 enum OptionalFeature {
   ConnectWallet = "CONNECT_WALLET",
+}
+
+interface CustomContent {
+  introScreen: string;
 }
 
 interface Configuration {
@@ -18,6 +24,7 @@ interface Configuration {
   };
   features: {
     cut: OptionalFeature[];
+    customContent?: CustomContent;
   };
 }
 
