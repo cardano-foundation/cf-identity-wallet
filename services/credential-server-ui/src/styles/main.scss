@@ -131,4 +131,12 @@ body {
       }
     }
   }
+
+  .MuiTooltip-popper {
+    margin: 0;
+    > * {
+      color: var(--color-neutral-100);
+      background-color: var(--color-neutral-700);
+    }
+  }
 }

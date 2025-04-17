@@ -25,7 +25,7 @@ import { CredentialService } from "../../services";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
-import { formatDate } from "../../utils/dateFormatter";
+import { formatDate, formatDateTime } from "../../utils/dateFormatter";
 import {
   CredentialTableProps,
   CredentialTableRow,
@@ -167,18 +167,50 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                   id={labelId}
                   scope="row"
                 >
-                  {row.name}
-                </TableCell>
-                <TableCell align="left">{row.attribute}</TableCell>
-                <TableCell align="left">
-                  {row.identifier.substring(0, 4)}...{row.identifier.slice(-4)}
-                </TableCell>
-                <TableCell align="left">
-                  {row.credentialId.substring(0, 4)}...
-                  {row.credentialId.slice(-4)}
+                  <Tooltip
+                    title={row.name}
+                    placement="top"
+                  >
+                    <span>{row.name}</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="left">
-                  {formatDate(new Date(row.date))}
+                  <Tooltip
+                    title={row.attribute}
+                    placement="top"
+                  >
+                    <span>{row.attribute}</span>
+                  </Tooltip>
+                </TableCell>
+                <TableCell align="left">
+                  <Tooltip
+                    title={row.identifier}
+                    placement="top"
+                  >
+                    <span>
+                      {row.identifier.substring(0, 4)}...
+                      {row.identifier.slice(-4)}
+                    </span>
+                  </Tooltip>
+                </TableCell>
+                <TableCell align="left">
+                  <Tooltip
+                    title={row.credentialId}
+                    placement="top"
+                  >
+                    <span>
+                      {row.credentialId.substring(0, 4)}...
+                      {row.credentialId.slice(-4)}
+                    </span>
+                  </Tooltip>
+                </TableCell>
+                <TableCell align="left">
+                  <Tooltip
+                    title={formatDateTime(new Date(row.date))}
+                    placement="top"
+                  >
+                    <span>{formatDate(new Date(row.date))}</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="left">
                   <Box className={`label ${isRevoked ? "revoked" : "issued"}`}>
