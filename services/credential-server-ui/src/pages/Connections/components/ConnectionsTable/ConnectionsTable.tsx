@@ -22,7 +22,7 @@ import { i18n } from "../../../../i18n";
 import { AppDispatch, RootState } from "../../../../store";
 import { useAppSelector } from "../../../../store/hooks";
 import { getRoleView } from "../../../../store/reducers/stateCache";
-import { formatDate } from "../../../../utils/dateFormatter";
+import { formatDate, formatDateTime } from "../../../../utils/dateFormatter";
 import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { generateRows, handleDeleteContact } from "./helpers";
@@ -188,14 +188,18 @@ const ConnectionsTable: React.FC = () => {
                       slotProps={{ input: { "aria-labelledby": labelId } }}
                     />
                   </TableCell>
-
                   <TableCell
                     component="th"
                     id={labelId}
                     scope="row"
                     padding="none"
                   >
-                    {row.name}
+                    <Tooltip
+                      title={row.name}
+                      placement="top"
+                    >
+                      <span>{row.name}</span>
+                    </Tooltip>
                   </TableCell>
                   <TableCell
                     component="th"
@@ -203,10 +207,22 @@ const ConnectionsTable: React.FC = () => {
                     scope="row"
                     padding="none"
                   >
-                    {row.id.substring(0, 4)}...{row.id.slice(-4)}
+                    <Tooltip
+                      title={row.id}
+                      placement="top"
+                    >
+                      <span>
+                        {row.id.substring(0, 4)}...{row.id.slice(-4)}
+                      </span>
+                    </Tooltip>
                   </TableCell>
                   <TableCell align="left">
-                    {formatDate(new Date(row.date))}
+                    <Tooltip
+                      title={formatDateTime(new Date(row.date))}
+                      placement="top"
+                    >
+                      <span>{formatDate(new Date(row.date))}</span>
+                    </Tooltip>
                   </TableCell>
                   {isIssuer && (
                     <TableCell align="left">{row.credentials}</TableCell>
@@ -215,6 +231,7 @@ const ConnectionsTable: React.FC = () => {
                     <DropdownMenu
                       button={
                         <Tooltip
+                          className="tooltip"
                           title={i18n.t("pages.connections.actions")}
                           placement="top"
                         >
