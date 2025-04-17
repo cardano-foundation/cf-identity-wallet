@@ -26,6 +26,7 @@ import { ErrorMessage } from "../ErrorMessage";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { PageFooter } from "../PageFooter";
 import "./InputRequest.scss";
+import { OobiQueryParams } from "../../../core/agent/services/connectionService.types";
 
 const InputRequest = () => {
   const dispatch = useAppDispatch();
@@ -137,7 +138,7 @@ const InputRequest = () => {
     if (missingAliasUrl) {
       if (!missingAliasUrl) return;
       const url = new URL(missingAliasUrl);
-      url.searchParams.set("name", inputValue);
+      url.searchParams.set(OobiQueryParams.NAME, inputValue);
       resolveConnectionOobi(url.toString());
       dispatch(setMissingAliasUrl(undefined));
       setInputValue("");
