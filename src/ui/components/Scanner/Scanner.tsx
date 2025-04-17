@@ -70,6 +70,7 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
+import { OobiQueryParams } from "../../../core/agent/services/connectionService.types";
 
 const OPEN_CONNECTION_TIME = 250;
 
@@ -346,7 +347,7 @@ const Scanner = forwardRef(
     ) => {
       let urlId: string | null = null;
       if (isMultisig) {
-        urlId = new URL(url).searchParams.get("groupId");
+        urlId = new URL(url).searchParams.get(OobiQueryParams.GROUP_ID);
       } else {
         urlId = e.message
           .replace(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
@@ -387,8 +388,10 @@ const Scanner = forwardRef(
     };
 
     const checkUrl = (url: string) => {
-      const isMultiSigUrl = url.includes("groupId");
-      const urlGroupId = new URL(url).searchParams.get("groupId");
+      const isMultiSigUrl = url.includes(OobiQueryParams.GROUP_ID);
+      const urlGroupId = new URL(url).searchParams.get(
+        OobiQueryParams.GROUP_ID
+      );
       const openScanFromMultiSig = [
         OperationType.MULTI_SIG_INITIATOR_SCAN,
         OperationType.MULTI_SIG_RECEIVER_SCAN,
@@ -424,7 +427,9 @@ const Scanner = forwardRef(
 
         if (invitation.type === OobiType.NORMAL) {
           setIsValueCaptured && setIsValueCaptured(true);
-          const groupId = new URL(content).searchParams.get("groupId");
+          const groupId = new URL(content).searchParams.get(
+            OobiQueryParams.GROUP_ID
+          );
 
           if (
             currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
@@ -490,7 +495,9 @@ const Scanner = forwardRef(
     const resolveConnectionOobi = async (content: string) => {
       // Adding a pending connection item to the UI.
       // This will be removed when the create connection process ends.
-      const connectionName = new URL(content).searchParams.get("name");
+      const connectionName = new URL(content).searchParams.get(
+        OobiQueryParams.NAME
+      );
       if (!connectionName) {
         setTimeout(() => {
           dispatch(setMissingAliasUrl(content));
@@ -528,7 +535,7 @@ const Scanner = forwardRef(
     };
 
     const handleResolveOobi = async (content: string) => {
-      const isMultisigUrl = content.includes("groupId");
+      const isMultisigUrl = content.includes(OobiQueryParams.GROUP_ID);
 
       try {
         if (!isMultisigUrl) {
@@ -594,50 +601,50 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-      case OperationType.SCAN_WALLET_CONNECTION:
-        return (
-          <PageFooter
-            customClass="actions-button"
-            secondaryButtonAction={openPasteModal}
-            secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
-          />
-        );
-      case OperationType.MULTI_SIG_INITIATOR_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
-            primaryButtonAction={handlePrimaryButtonAction}
-            primaryButtonDisabled={!multiSigGroupCache?.connections.length}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
-      case OperationType.MULTI_SIG_RECEIVER_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
-      case OperationType.SCAN_SSI_BOOT_URL:
-      case OperationType.SCAN_SSI_CONNECT_URL:
-        return <div></div>;
-      default:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pastecontents"
-            )}`}
-            secondaryButtonAction={openPasteModal}
-          />
-        );
+        case OperationType.SCAN_WALLET_CONNECTION:
+          return (
+            <PageFooter
+              customClass="actions-button"
+              secondaryButtonAction={openPasteModal}
+              secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
+            />
+          );
+        case OperationType.MULTI_SIG_INITIATOR_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+              primaryButtonAction={handlePrimaryButtonAction}
+              primaryButtonDisabled={!multiSigGroupCache?.connections.length}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
+        case OperationType.MULTI_SIG_RECEIVER_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
+        case OperationType.SCAN_SSI_BOOT_URL:
+        case OperationType.SCAN_SSI_CONNECT_URL:
+          return <div></div>;
+        default:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pastecontents"
+              )}`}
+              secondaryButtonAction={openPasteModal}
+            />
+          );
       }
     };
 
