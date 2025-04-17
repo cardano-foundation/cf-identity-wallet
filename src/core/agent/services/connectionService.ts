@@ -1,4 +1,15 @@
-import { Contact, Operation, State } from "signify-ts";
+import {
+  b,
+  Cigar,
+  Contact,
+  d,
+  messagize,
+  Operation,
+  reply,
+  Serials,
+  Signer,
+  State,
+} from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -14,8 +25,10 @@ import {
   OOBI_RE,
   OobiScan,
   WOOBI_RE,
+  MiscRecordId,
 } from "../agent.types";
 import {
+  BasicStorage,
   ConnectionRecord,
   ConnectionStorage,
   CredentialStorage,
@@ -35,6 +48,8 @@ import {
   ConnectionHistoryItem,
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
+  OobiQueryParams,
+  RpyRoute,
 } from "./connectionService.types";
 
 class ConnectionService extends AgentService {
@@ -42,19 +57,22 @@ class ConnectionService extends AgentService {
   protected readonly credentialStorage: CredentialStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly identifierStorage: IdentifierStorage;
+  protected readonly basicStorage: BasicStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
     credentialStorage: CredentialStorage,
     operationPendingStorage: OperationPendingStorage,
-    identifierStorage: IdentifierStorage
+    identifierStorage: IdentifierStorage,
+    basicStorage: BasicStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.credentialStorage = credentialStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.identifierStorage = identifierStorage;
+    this.basicStorage = basicStorage;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -96,7 +114,14 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async connectByOobiUrl(url: string): Promise<OobiScan> {
+  async connectByOobiUrl(
+    url: string,
+    sharedIdentifier?: string
+  ): Promise<OobiScan> {
+    if (sharedIdentifier) {
+      await this.identifierStorage.getIdentifierMetadata(sharedIdentifier); // Error if missing
+    }
+
     if (
       !new URL(url).pathname.match(OOBI_AGENT_ONLY_RE) &&
       !new URL(url).pathname.match(WOOBI_RE)
@@ -104,21 +129,24 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.OOBI_INVALID);
     }
 
-    const multiSigInvite = url.includes("groupId");
+    const multiSigInvite = url.includes(OobiQueryParams.GROUP_ID);
     const connectionId = new URL(url).pathname
       .split("/oobi/")
       .pop()!
       .split("/")[0];
 
-    const alias = new URL(url).searchParams.get("name") ?? randomSalt();
+    const alias =
+      new URL(url).searchParams.get(OobiQueryParams.NAME) ?? randomSalt();
     const connectionDate = new Date().toISOString();
-    const groupId = new URL(url).searchParams.get("groupId") ?? "";
+    const groupId =
+      new URL(url).searchParams.get(OobiQueryParams.GROUP_ID) ?? "";
 
     const connectionMetadata: Record<string, unknown> = {
       alias,
       oobi: url,
       creationStatus: CreationStatus.PENDING,
       createdAtUTC: connectionDate,
+      sharedIdentifier,
     };
 
     const connection = {
@@ -242,7 +270,7 @@ class ConnectionService extends AgentService {
       status,
       oobi: record.oobi,
     };
-    const groupId = record.getTag("groupId");
+    const groupId = record.getTag(OobiQueryParams.GROUP_ID);
     if (groupId) {
       connection.groupId = groupId as string;
     }
@@ -402,7 +430,12 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async getOobi(id: string, alias?: string, groupId?: string): Promise<string> {
+  async getOobi(
+    id: string,
+    alias?: string,
+    groupId?: string,
+    externalId?: string
+  ): Promise<string> {
     const result = await this.props.signifyClient.oobis().get(id);
     if (!result.oobis[0]) {
       throw new Error(ConnectionService.CANNOT_GET_OOBI);
@@ -419,8 +452,11 @@ class ConnectionService extends AgentService {
         oobi.pathname = pathName.substring(0, agentIndex);
       }
     }
-    if (alias !== undefined) oobi.searchParams.set("name", alias);
-    if (groupId !== undefined) oobi.searchParams.set("groupId", groupId);
+    if (alias !== undefined) oobi.searchParams.set(OobiQueryParams.NAME, alias);
+    if (groupId !== undefined)
+      oobi.searchParams.set(OobiQueryParams.GROUP_ID, groupId);
+    if (externalId !== undefined)
+      oobi.searchParams.set(OobiQueryParams.EXTERNAL_ID, externalId);
 
     return oobi.toString();
   }
@@ -436,6 +472,7 @@ class ConnectionService extends AgentService {
       groupId: metadata.groupId as string,
       creationStatus: metadata.creationStatus as CreationStatus,
       createdAt: new Date(metadata.createdAtUTC as string),
+      sharedIdentifier: metadata.sharedIdentifier as string,
     });
   }
 
@@ -464,6 +501,7 @@ class ConnectionService extends AgentService {
         oobi: contact.oobi,
         groupId: contact.groupCreationId,
         createdAtUTC: contact.createdAt,
+        sharedIdentifier: contact.sharedIdentifier ?? "",
         creationStatus: CreationStatus.COMPLETE,
       });
     }
@@ -486,8 +524,8 @@ class ConnectionService extends AgentService {
     }
 
     const urlObj = new URL(url);
-    const alias = urlObj.searchParams.get("name") ?? randomSalt();
-    urlObj.searchParams.delete("name");
+    const alias = urlObj.searchParams.get(OobiQueryParams.NAME) ?? randomSalt();
+    urlObj.searchParams.delete(OobiQueryParams.NAME);
     const strippedUrl = urlObj.toString();
 
     let operation: Operation & { response: State };
@@ -507,7 +545,8 @@ class ConnectionService extends AgentService {
       if (operation.response.i) {
         // Excludes schemas
         const connectionId = operation.response.i;
-        const groupCreationId = new URL(url).searchParams.get("groupId") ?? "";
+        const groupCreationId =
+          new URL(url).searchParams.get(OobiQueryParams.GROUP_ID) ?? "";
         const createdAt = new Date((operation.response as State).dt);
 
         try {
@@ -552,6 +591,46 @@ class ConnectionService extends AgentService {
     for (const pendingConnection of pendingConnections) {
       await this.resolveOobi(pendingConnection.oobi);
     }
+  }
+
+  async shareIdentifier(
+    connectionId: string,
+    identifier: string
+  ): Promise<void> {
+    const userName = (
+      await this.basicStorage.findExpectedById(MiscRecordId.USER_NAME)
+    ).content.userName as string;
+
+    const connectionRecord = await this.getConnectionMetadataById(connectionId);
+    const externalId = new URL(connectionRecord.oobi).searchParams.get(
+      OobiQueryParams.EXTERNAL_ID
+    );
+    const oobi = await this.getOobi(
+      identifier,
+      userName,
+      undefined,
+      externalId ?? undefined
+    );
+
+    const signer = new Signer({ transferable: false });
+    const rpyData = {
+      cid: signer.verfer.qb64,
+      oobi,
+    };
+
+    const rpy = reply(
+      RpyRoute.INTRODUCE,
+      rpyData,
+      undefined,
+      undefined,
+      Serials.JSON
+    );
+    const sig = signer.sign(new Uint8Array(b(rpy.raw)));
+    const ims = d(
+      messagize(rpy, undefined, undefined, undefined, [sig as Cigar])
+    );
+
+    await this.props.signifyClient.replies().submitRpy(connectionId, ims);
   }
 }
 
