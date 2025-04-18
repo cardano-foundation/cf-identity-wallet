@@ -1,4 +1,5 @@
 import { RectReturn } from "@wdio/protocols/build/types";
+import { log } from "../helpers/logger.js";
 
 /**
  * To make a Gesture methods more robust for multiple devices and also
@@ -158,12 +159,36 @@ class Gestures {
     const x = width / 2;
     const y = (height * safePercentage) / 100;
     await driver
-      .action('pointer')
-      .move(Math.round(x),Math.round(y))
+      .action("pointer")
+      .move(Math.round(x), Math.round(y))
       .down()
       .pause(10)
       .up()
       .perform();
+  }
+
+  static async tapCenterOfScreen() {
+    // Fetch current screen dimensions
+    const screenRect = await driver.getWindowRect();
+    const tapX = Math.round(screenRect.width / 2);
+    const tapY = Math.round(screenRect.height / 2);
+
+    // Perform the tap action at the computed center of the screen
+    await driver.performActions([
+      {
+        type: "pointer",
+        id: "finger1",
+        parameters: { pointerType: "touch" },
+        actions: [
+          { type: "pointerMove", duration: 0, x: tapX, y: tapY },
+          { type: "pointerDown", button: 0 },
+          { type: "pause", duration: 100 },
+          { type: "pointerUp", button: 0 },
+        ],
+      },
+    ]);
+
+    await driver.releaseActions();
   }
 
   /**
