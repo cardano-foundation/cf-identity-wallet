@@ -40,6 +40,7 @@ import {
 } from "../../__fixtures__/agent/keriaNotificationFixtures";
 import { ConnectionHistoryType } from "./connectionService.types";
 import { StorageMessage } from "../../storage/storage.types";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import {
   getMemberIdentifierResponse,
   getMultisigIdentifierResponse,
@@ -236,7 +237,7 @@ const credentialService = jest.mocked({
   markAcdc: jest.fn(),
 });
 
-const connectionService = jest.mocked({
+const connectionsService = jest.mocked({
   resolveOobi: jest.fn(),
   getConnectionById: jest.fn().mockResolvedValue({
     serviceEndpoints: [
@@ -244,7 +245,6 @@ const connectionService = jest.mocked({
     ],
     historyItems: [],
   }),
-  shareIdentifier: jest.fn(),
 });
 const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
@@ -257,7 +257,7 @@ const keriaNotificationService = new KeriaNotificationService(
   multiSigs as any,
   ipexCommunications as any,
   credentialService as any,
-  connectionService as any,
+  connectionsService as any,
   Agent.agent.getKeriaOnlineStatus,
   Agent.agent.markAgentStatus,
   Agent.agent.connect
@@ -1122,7 +1122,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(grantExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValue({
+    connectionsService.getConnectionById.mockResolvedValue({
       id: grantExn.exn.i,
       historyItems: [
         { id: grantExn.exn.d, type: ConnectionHistoryType.CREDENTIAL_ISSUANCE },
@@ -1140,7 +1140,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: exchange.exn.e.exn.p,
     });
-    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
       grantExn.exn.i,
       true
     );
@@ -1165,7 +1165,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(grantExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValue({
+    connectionsService.getConnectionById.mockResolvedValue({
       id: grantExn.exn.i,
       historyItems: [],
     });
@@ -1182,7 +1182,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: exchange.exn.e.exn.p,
     });
-    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
       grantExn.exn.i,
       true
     );
@@ -1224,7 +1224,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: exchange.exn.e.exn.p,
     });
-    expect(connectionService.getConnectionById).not.toHaveBeenCalled();
+    expect(connectionsService.getConnectionById).not.toHaveBeenCalled();
     expect(markNotificationMock).not.toHaveBeenCalled();
     expect(notificationStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1268,7 +1268,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(applyExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValue({
+    connectionsService.getConnectionById.mockResolvedValue({
       id: applyExn.exn.i,
       historyItems: [
         {
@@ -1290,7 +1290,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
-    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
       applyExn.exn.i,
       true
     );
@@ -1315,7 +1315,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(applyExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValue({
+    connectionsService.getConnectionById.mockResolvedValue({
       id: applyExn.exn.i,
       historyItems: [],
     });
@@ -1333,7 +1333,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
-    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
       applyExn.exn.i,
       true
     );
@@ -1381,7 +1381,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
-    expect(connectionService.getConnectionById).not.toHaveBeenCalled();
+    expect(connectionsService.getConnectionById).not.toHaveBeenCalled();
     expect(markNotificationMock).not.toHaveBeenCalled();
     expect(notificationStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1425,7 +1425,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(agreeExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValue({
+    connectionsService.getConnectionById.mockResolvedValue({
       id: exchange.exn.i,
       historyItems: [
         {
@@ -1447,7 +1447,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
-    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
       agreeExn.exn.i,
       true
     );
@@ -1472,7 +1472,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(agreeExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValue({
+    connectionsService.getConnectionById.mockResolvedValue({
       id: agreeExn.exn.i,
       historyItems: [],
     });
@@ -1490,7 +1490,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
-    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
       agreeExn.exn.i,
       true
     );
@@ -1534,7 +1534,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
-    expect(connectionService.getConnectionById).not.toHaveBeenCalled();
+    expect(connectionsService.getConnectionById).not.toHaveBeenCalled();
     expect(markNotificationMock).not.toHaveBeenCalled();
     expect(notificationStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1565,7 +1565,7 @@ describe("Signify notification service of agent", () => {
     );
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     credentialStorage.getCredentialMetadata.mockResolvedValue(null);
-    connectionService.getConnectionById.mockResolvedValueOnce({
+    connectionsService.getConnectionById.mockResolvedValueOnce({
       id: multisigExnAdmitForIssuance.exn.i,
       historyItems: [],
       serviceEndpoints: [
@@ -2190,7 +2190,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValueOnce(applyForPresentingExnMessage);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValueOnce({
+    connectionsService.getConnectionById.mockResolvedValueOnce({
       id: multisigExnOfferForPresenting.exn.i,
       historyItems: [],
       serviceEndpoints: [
@@ -2267,7 +2267,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValueOnce(agreeForPresentingExnMessage);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
-    connectionService.getConnectionById.mockResolvedValueOnce({
+    connectionsService.getConnectionById.mockResolvedValueOnce({
       id: multisigExnGrant.exn.i,
       historyItems: [],
       serviceEndpoints: [
@@ -2851,7 +2851,6 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
-    expect(connectionService.shareIdentifier).not.toBeCalled();
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
       creationStatus: CreationStatus.COMPLETE,
@@ -2863,7 +2862,6 @@ describe("Long running operation tracker", () => {
       alias: "CF Credential Issuance",
       createdAt: operationMock.response.dt,
       oobi: "http://oobi.com/",
-      sharedIdentifier: "",
     });
     expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
       type: EventTypes.ConnectionStateChanged,
@@ -2873,129 +2871,6 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, {
-      type: EventTypes.OperationComplete,
-      payload: {
-        opType: operationRecord.recordType,
-        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      },
-    });
-    expect(operationPendingStorage.deleteById).toBeCalledWith(
-      "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
-    );
-  });
-
-  test("Should handle long operations with type oobi and share specified identifier", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const operationMock = {
-      metadata: {
-        said: "said",
-        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
-      },
-      done: true,
-      response: {
-        i: "id",
-        dt: new Date(),
-      },
-    };
-    operationsGetMock.mockResolvedValue(operationMock);
-    const connectionMock = {
-      id: "id",
-      creationStatus: CreationStatus.PENDING,
-      createdAt: new Date(),
-      alias: "CF Credential Issuance",
-      oobi: "http://oobi.com/",
-      sharedIdentifier: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9",
-    };
-    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
-    const operationRecord = {
-      type: "OperationPendingRecord",
-      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      createdAt: new Date("2024-08-01T10:36:17.814Z"),
-      recordType: "oobi",
-      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-    } as OperationPendingRecord;
-    contactGetMock.mockResolvedValueOnce(null);
-
-    await keriaNotificationService.processOperation(operationRecord);
-
-    expect(connectionService.shareIdentifier).toBeCalledWith(
-      connectionMock.id,
-      "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9"
-    );
-    expect(connectionStorage.update).toBeCalledWith({
-      id: connectionMock.id,
-      creationStatus: CreationStatus.COMPLETE,
-      createdAt: operationMock.response.dt,
-      alias: connectionMock.alias,
-      oobi: "http://oobi.com/",
-      sharedIdentifier: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9",
-    });
-    expect(contactsUpdateMock).toBeCalledWith(connectionMock.id, {
-      alias: "CF Credential Issuance",
-      createdAt: operationMock.response.dt,
-      oobi: "http://oobi.com/",
-      sharedIdentifier: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9",
-    });
-    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
-      type: EventTypes.ConnectionStateChanged,
-      payload: {
-        connectionId: "id",
-        status: ConnectionStatus.CONFIRMED,
-      },
-    });
-    expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, {
-      type: EventTypes.OperationComplete,
-      payload: {
-        opType: operationRecord.recordType,
-        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      },
-    });
-    expect(operationPendingStorage.deleteById).toBeCalledWith(
-      "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
-    );
-  });
-
-  test("Should not update connection if it already exists", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const operationMock = {
-      metadata: {
-        said: "said",
-        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
-      },
-      done: true,
-      response: {
-        i: "id",
-        dt: new Date(),
-      },
-    };
-    operationsGetMock.mockResolvedValue(operationMock);
-    operationsGetMock.mockResolvedValue(operationMock);
-    const connectionMock = {
-      id: "id",
-      creationStatus: CreationStatus.PENDING,
-      createdAt: new Date(),
-      alias: "CF Credential Issuance",
-    };
-    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
-    const operationRecord = {
-      type: "OperationPendingRecord",
-      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-      createdAt: new Date("2024-08-01T10:36:17.814Z"),
-      recordType: "oobi",
-      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-    } as OperationPendingRecord;
-    contactGetMock.mockResolvedValueOnce({
-      alias: "alias",
-      oobi: "oobi",
-      id: "id",
-      createdAt: new Date(),
-    });
-
-    await keriaNotificationService.processOperation(operationRecord);
-
-    expect(connectionStorage.update).toHaveBeenCalledWith(connectionMock);
-    expect(contactsUpdateMock).toBeCalledTimes(0);
-    expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,

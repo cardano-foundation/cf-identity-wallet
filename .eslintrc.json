@@ -1,61 +1,66 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "jest": true,
-    "node": true
-  },
-  "globals": {
-    "__dirname": true,
-    "NodeJS": true,
-    "process": "readonly"
-  },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:import/warnings"
-  ],
-  "overrides": [
-    {
-      "files": ["**/*.test.ts", "**/*.test.tsx"],
-      "rules": {
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-vars": "off"
-      }
-    }
-  ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
-  },
-  "plugins": ["react", "@typescript-eslint", "import", "jest"],
-  "rules": {
-    "@typescript-eslint/no-duplicate-enum-values": "error",
-    "react/no-unescaped-entities": 0,
-    "react/react-in-jsx-scope": "off",
-    "no-console": "error",
-    "no-unused-vars": "off",
-    "no-undef": "error",
-    "indent": ["warn", 2, { "SwitchCase": 1 }],
-    "quotes": ["warn", "double"],
-    "import/order": [
-      "warn",
-      {
-        "groups": [
-          ["builtin", "external"],
-          "internal",
-          ["parent", "sibling", "index"]
-        ]
-      }
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "jest": true,
+        "node": true
+    },
+    "globals": {
+        "__dirname": true,
+        "NodeJS": true,
+        "process": "readonly"
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:import/warnings"
     ],
-    "react/display-name": "off"
-  },
-  "settings": {
-    "react": {
-      "version": "detect"
+    "overrides": [
+        {
+            "files": ["**/*.test.ts", "**/*.test.tsx"],
+            "rules": {
+                "@typescript-eslint/no-explicit-any": "off",
+                "@typescript-eslint/no-unused-vars": "off"
+            }
+        }
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint",
+        "import",
+        "jest"
+    ],
+    "rules": {
+        "@typescript-eslint/no-duplicate-enum-values": "error",
+        "react/no-unescaped-entities": 0,
+        "react/react-in-jsx-scope": "off",
+        "no-console": "error",
+        "no-unused-vars": "off",
+        "no-undef": "error",
+        "indent": ["warn", 2],
+        "quotes": ["warn", "double"],
+        "import/order": [
+            "warn",
+            {
+                "groups": [
+                    ["builtin", "external"],
+                    "internal",
+                    ["parent", "sibling", "index"]
+                ]
+            }
+        ],
+        "react/display-name": "off"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     }
-  }
 }

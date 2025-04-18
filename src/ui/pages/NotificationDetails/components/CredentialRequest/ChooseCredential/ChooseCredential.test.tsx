@@ -469,7 +469,7 @@ describe("Credential request - choose request", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("credential-request-spinner-container")).toBeVisible();
+      expect(getByTestId("cre-request-spinner-container")).toBeVisible();
     });
 
     expect(offerAcdcFromApplyMock).toBeCalledWith(

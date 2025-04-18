@@ -128,8 +128,8 @@ const CredentialRequest = ({
   if (!credentialRequest) {
     return (
       <div
-        className="credential-request-spinner-container"
-        data-testid="credential-request-spinner-container"
+        className="cre-request-spinner-container"
+        data-testid="cre-request-spinner-container"
       >
         <IonSpinner name="circular" />
       </div>

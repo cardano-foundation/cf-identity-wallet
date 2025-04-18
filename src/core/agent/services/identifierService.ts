@@ -35,7 +35,6 @@ import {
   NotificationRemovedEvent,
 } from "../event.types";
 import { StorageMessage } from "../../storage/storage.types";
-import { OobiQueryParams } from "./connectionService.types";
 
 const UI_THEMES = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -688,7 +687,7 @@ class IdentifierService extends AgentService {
 
     const witnesses = [];
     for (const oobi of config.iurls) {
-      const role = new URL(oobi).searchParams.get(OobiQueryParams.ROLE);
+      const role = new URL(oobi).searchParams.get("role");
       if (role === "witness") {
         witnesses.push(oobi.split("/oobi/")[1].split("/")[0]); // EID - endpoint identifier
       }

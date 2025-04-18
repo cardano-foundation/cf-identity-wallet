@@ -1,6 +1,6 @@
 {
   "name": "veridian-wallet",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "webpack serve --config webpack.dev.cjs --host 0.0.0.0 --port 3003",
@@ -60,7 +60,7 @@
     "react-qrcode-logo": "^3.0.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.3.4",
-    "signify-ts": "github:WebOfTrust/signify-ts#23b70c9dc0b3e36285ced0ca6c64568ff93fde1f",
+    "signify-ts": "github:WebOfTrust/signify-ts#bb3aba4de6c48a7f3574cfe283747ee6adb96f0c",
     "swiper": "^11.1.14",
     "web-vitals": "^2.1.4"
   },
