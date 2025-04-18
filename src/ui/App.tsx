@@ -10,8 +10,8 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
-import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { ExitApp } from "@jimcase/capacitor-exit-app";
+import { SafeArea } from "capacitor-plugin-safe-area";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -42,7 +42,6 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
-import { getCssVariableValue } from "./utils/styles";
 import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
 import { initializeFreeRASP, ThreatCheck } from "../security/freerasp";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
@@ -150,8 +149,13 @@ const App = () => {
       }
 
       if (platforms.includes("android")) {
-        EdgeToEdge.setBackgroundColor({
-          color: getCssVariableValue("--ion-color-neutral-200"),
+        SafeArea.getSafeAreaInsets().then((insets) => {
+          Object.entries(insets.insets).forEach(([key, value]) => {
+            document.body.style.setProperty(
+              `--ion-safe-area-${key}`,
+              `${value}px`
+            );
+          });
         });
       }
 
