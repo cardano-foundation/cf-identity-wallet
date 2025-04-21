@@ -182,6 +182,7 @@ enum NotificationRoute {
   LocalAcdcRevoked = "/local/acdc/revoked",
   LocalSign = "/local/signrequest",
   LocalConfirmation = "/local/signconfirmation",
+  LocalInformation = "/local/signinformation",
 }
 
 enum ExchangeRoute {

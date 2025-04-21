@@ -1194,7 +1194,7 @@
           "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
           "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>",
           "signconfirmation": "<strong>{{certificate}} for {{connection}} is now fully signed 🎉</strong>",
-          "signeventinfo": "Signing event information"
+          "signeventinfo": "<strong>Signing event information</strong>"
         }
       },
       "details": {
