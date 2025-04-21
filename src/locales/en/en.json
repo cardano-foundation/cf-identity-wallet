@@ -1195,7 +1195,7 @@
           "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>",
           "signconfirmation": "<strong>{{certificate}} for {{connection}} is now fully signed 🎉</strong>",
           "signeventinfo": "<strong>Signing event information</strong>",
-          "connectinstructions": "Check your email for instructions on how to connect with {{connection}}"
+          "connectinstructions": "<strong>Check your email for instructions on how to connect with {{connection}}</strong>"
         }
       },
       "details": {

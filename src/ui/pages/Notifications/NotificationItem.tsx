@@ -5,6 +5,7 @@ import {
   fingerPrintOutline,
   idCardOutline,
   documentOutline,
+  personCircleOutline,
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
@@ -82,6 +83,10 @@ const NotificationItem = ({
         });
       case NotificationRoute.LocalInformation:
         return t("tabs.notifications.tab.labels.signeventinfo");
+      case NotificationRoute.LocalConnectInstructions:
+        return t("tabs.notifications.tab.labels.connectinstructions", {
+          connection: connectionName || t("connections.unknown"),
+        });
       default:
         return "";
     }
@@ -105,6 +110,8 @@ const NotificationItem = ({
         return fingerPrintOutline;
       case NotificationRoute.LocalSign:
         return documentOutline;
+      case NotificationRoute.LocalConnectInstructions:
+        return personCircleOutline;
       default:
         return idCardOutline;
     }
@@ -116,7 +123,10 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isLocalSign = item.a.r === NotificationRoute.LocalSign;
+  const isLocalSign = [
+    NotificationRoute.LocalSign,
+    NotificationRoute.LocalConnectInstructions,
+  ].includes(item.a.r as NotificationRoute);
 
   return (
     <IonItem

@@ -183,6 +183,7 @@ enum NotificationRoute {
   LocalSign = "/local/signrequest",
   LocalConfirmation = "/local/signconfirmation",
   LocalInformation = "/local/signinformation",
+  LocalConnectInstructions = "/local/connectinstructions",
 }
 
 enum ExchangeRoute {
