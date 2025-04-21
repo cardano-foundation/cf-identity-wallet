@@ -133,6 +133,7 @@ const App = () => {
         OperationType.MULTI_SIG_RECEIVER_SCAN,
         OperationType.SCAN_SSI_BOOT_URL,
         OperationType.SCAN_SSI_CONNECT_URL,
+        OperationType.SCAN_REMOTE_CONNECTION,
       ].includes(currentOperation)
     );
   }, [currentOperation]);
@@ -198,40 +199,40 @@ const App = () => {
 
   const renderContentByInitPhase = (initPhase: InitializationPhase) => {
     switch (initPhase) {
-    case InitializationPhase.PHASE_ZERO:
-      return <LoadingPage />;
-    case InitializationPhase.PHASE_ONE:
-      return (
-        <>
-          <LoadingPage type={LoadingType.Splash} />
-          <LockPage />
-        </>
-      );
-    case InitializationPhase.PHASE_TWO:
-      return (
-        <>
-          <IonReactRouter>
-            {showScan ? (
-              <FullPageScanner
-                showScan={showScan}
-                setShowScan={setShowScan}
-              />
-            ) : (
-              <div
-                className="app-spinner-container"
-                data-testid="app-spinner-container"
-              >
-                <IonSpinner name="circular" />
-              </div>
-            )}
-            <div className={showScan ? "ion-hide" : ""}>
-              <Routes />
-            </div>
+      case InitializationPhase.PHASE_ZERO:
+        return <LoadingPage />;
+      case InitializationPhase.PHASE_ONE:
+        return (
+          <>
+            <LoadingPage type={LoadingType.Splash} />
             <LockPage />
-          </IonReactRouter>
-          <AppOffline />
-        </>
-      );
+          </>
+        );
+      case InitializationPhase.PHASE_TWO:
+        return (
+          <>
+            <IonReactRouter>
+              {showScan ? (
+                <FullPageScanner
+                  showScan={showScan}
+                  setShowScan={setShowScan}
+                />
+              ) : (
+                <div
+                  className="app-spinner-container"
+                  data-testid="app-spinner-container"
+                >
+                  <IonSpinner name="circular" />
+                </div>
+              )}
+              <div className={showScan ? "ion-hide" : ""}>
+                <Routes />
+              </div>
+              <LockPage />
+            </IonReactRouter>
+            <AppOffline />
+          </>
+        );
     }
   };
 
