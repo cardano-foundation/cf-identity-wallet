@@ -1321,7 +1321,11 @@
         "signinformation": {
           "title": "Signed event",
           "subtitle": "Waiting for a co-signer",
-          "description": "The certificate for {{certificate}} is still awaiting a signature from the other party. This step may take up to 7 days.\nIf the signature isn't received within this period, the certificate will be finalized without their participation.\nNo action is required from you at this time."
+          "description": {
+            "paragraphone": "The certificate for {{certificate}} is still awaiting a signature from the other party. This step may take up to 7 days.",
+            "paragraphtwo": "If the signature isn't received within this period, the certificate will be finalized without their participation.",
+            "paragraphthree": "No action is required from you at this time."
+          }
         }
       }
     },

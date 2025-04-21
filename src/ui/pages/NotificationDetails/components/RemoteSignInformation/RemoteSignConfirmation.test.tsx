@@ -62,10 +62,23 @@ describe("RemoteSignInformation", () => {
     ).toBeVisible();
 
     const description =
-      EN_TRANSLATIONS.tabs.notifications.details.signinformation.description
+      EN_TRANSLATIONS.tabs.notifications.details.signinformation.description.paragraphone
         .replace("{{certificate}}", certificate)
         .split("\n")
         .join("");
+
     expect(screen.getByText(description)).toBeVisible();
+    expect(
+      screen.getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.signinformation.description
+          .paragraphtwo
+      )
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        EN_TRANSLATIONS.tabs.notifications.details.signinformation.description
+          .paragraphthree
+      )
+    ).toBeVisible();
   });
 });

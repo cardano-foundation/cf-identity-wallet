@@ -14,15 +14,6 @@ function RemoteSignInformation({
 }: NotificationDetailsProps) {
   const certificate = "Certificate"; // TODO: change hardcoded value to dynamic
 
-  const formatNewLines = (text: string) => {
-    return text.split("\n").map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        <br />
-      </React.Fragment>
-    ));
-  };
-
   return (
     <ScrollablePageLayout
       activeStatus={activeStatus}
@@ -44,11 +35,30 @@ function RemoteSignInformation({
       <div className="sign-confirmation-body">
         <h3>{t("tabs.notifications.details.signinformation.subtitle")}</h3>
         <div>
-          {formatNewLines(
-            t("tabs.notifications.details.signinformation.description", {
-              certificate: certificate,
-            })
-          )}
+          <p>
+            {t(
+              "tabs.notifications.details.signinformation.description.paragraphone",
+              {
+                certificate: certificate,
+              }
+            )}
+          </p>
+          <p>
+            {t(
+              "tabs.notifications.details.signinformation.description.paragraphtwo",
+              {
+                certificate: certificate,
+              }
+            )}
+          </p>
+          <p>
+            {t(
+              "tabs.notifications.details.signinformation.description.paragraphthree",
+              {
+                certificate: certificate,
+              }
+            )}
+          </p>
         </div>
       </div>
     </ScrollablePageLayout>
