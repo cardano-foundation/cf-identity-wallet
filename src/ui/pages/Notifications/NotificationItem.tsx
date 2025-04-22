@@ -80,6 +80,8 @@ const NotificationItem = ({
           certificate: "Certificate", // TODO: change hardcoded value to dynamic
           connection: connectionName || t("connections.unknown"),
         });
+      case NotificationRoute.LocalInformation:
+        return t("tabs.notifications.tab.labels.signeventinfo");
       default:
         return "";
     }

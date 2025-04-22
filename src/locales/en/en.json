@@ -1193,7 +1193,8 @@
           "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
           "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
           "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>",
-          "signconfirmation": "<strong>{{certificate}} for {{connection}} is now fully signed 🎉</strong>"
+          "signconfirmation": "<strong>{{certificate}} for {{connection}} is now fully signed 🎉</strong>",
+          "signeventinfo": "<strong>Signing event information</strong>"
         }
       },
       "details": {
@@ -1315,6 +1316,15 @@
           "description": "The {{certificate}} for {{connection}} has been successfully signed by all required parties and is now verified and finalized.\n\nA copy is available for your records. Click below to view or download the certificate.",
           "button": {
             "label": "View {{certificate}}"
+          }
+        },
+        "signinformation": {
+          "title": "Signed event",
+          "subtitle": "Waiting for a co-signer",
+          "description": {
+            "paragraphone": "The certificate for {{certificate}} is still awaiting a signature from the other party. This step may take up to 7 days.",
+            "paragraphtwo": "If the signature isn't received within this period, the certificate will be finalized without their participation.",
+            "paragraphthree": "No action is required from you at this time."
           }
         }
       }
