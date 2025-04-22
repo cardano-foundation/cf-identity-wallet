@@ -31,6 +31,8 @@ import {
   CredentialTableRow,
 } from "./CredentialDetails.types";
 import { triggerToast } from "../../utils/toast";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
+import { filter, FilterBar } from "../../components/FilterBar";
 
 const headers: AppTableHeader<CredentialTableRow>[] = [
   {
@@ -141,12 +143,24 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     nav(RoutePath.ConnectionDetails.replace(":id", cred.identifier));
   };
 
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+
+  const visibleData = filter(visibleRows, filterData, { date: "date" });
+
   return (
-    <>
+    <Box flex={1}>
+      <FilterBar
+        onChange={setFilterData}
+        totalFound={visibleData.length}
+      />
       <Paper className="credentials-table">
         <AppTable
           order={order}
-          rows={visibleRows}
+          rows={visibleData}
           onRenderRow={(row, index) => {
             const isItemSelected = selected.includes(row.id);
             const labelId = `enhanced-table-checkbox-${index}`;
@@ -270,7 +284,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
           </>
         }
       />
-    </>
+    </Box>
   );
 };
 

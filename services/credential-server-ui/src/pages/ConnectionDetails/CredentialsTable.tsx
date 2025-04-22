@@ -31,6 +31,8 @@ import {
   CredentialsTableProps,
   CredentialsTableRow,
 } from "./ConnectionDetails.types";
+import { filter, FilterBar } from "../../components/FilterBar";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
 const headers: AppTableHeader<CredentialsTableRow>[] = [
   {
     id: "name",
@@ -129,12 +131,23 @@ const CredentialsTable = ({
     setOpenModal(true);
   };
 
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+  const visibleData = filter(visibleRows, filterData, { date: "date" });
+
   return (
-    <>
+    <Box className="credential-table-container">
+      <FilterBar
+        onChange={setFilterData}
+        totalFound={visibleData.length}
+      />
       <Paper className="credentials-table">
         <AppTable
           order={order}
-          rows={visibleRows}
+          rows={visibleData}
           onRequestSort={handleRequestSort}
           orderBy={orderBy}
           headers={headers}
@@ -254,7 +267,7 @@ const CredentialsTable = ({
           </>
         }
       />
-    </>
+    </Box>
   );
 };
 

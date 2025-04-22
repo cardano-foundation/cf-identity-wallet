@@ -11,6 +11,8 @@ import { useAppSelector } from "../../store/hooks";
 import { PresentationRequestData } from "../../store/reducers/connectionsSlice.types";
 import { formatDate } from "../../utils/dateFormatter";
 import "./RequestPresentation.scss";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
+import { filter, FilterBar } from "../../components/FilterBar";
 
 const headers: AppTableHeader<PresentationRequestData>[] = [
   {
@@ -56,6 +58,14 @@ export const RequestPresentation = () => {
     setOpenModal(true);
   };
 
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+
+  const visibleData = filter(visibleRows, filterData, { date: "requestDate" });
+
   return (
     <>
       <Box
@@ -83,10 +93,14 @@ export const RequestPresentation = () => {
             </Button>
           }
         />
+        <FilterBar
+          onChange={setFilterData}
+          totalFound={visibleData.length}
+        />
         <Paper className="request-presentation-table">
           <AppTable
             order={order}
-            rows={visibleRows}
+            rows={visibleData}
             onRenderRow={(row) => {
               return (
                 <TableRow

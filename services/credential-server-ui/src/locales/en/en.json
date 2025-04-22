@@ -2,6 +2,27 @@
   "general": {
     "optional": "(optional)"
   },
+  "filterBar": {
+    "date": {
+      "from": "From",
+      "to": "To",
+      "search": "Search"
+    },
+    "search": {
+      "label": "Search",
+      "placeholder": "Search"
+    }
+  },
+  "resultBar": {
+    "result": "results found",
+    "date": {
+      "label": "Date"
+    },
+    "search": {
+      "label": "Search"
+    },
+    "button": "Clear"
+  },
   "navbar": {
     "menu": "Menu",
     "overview": "Overview",

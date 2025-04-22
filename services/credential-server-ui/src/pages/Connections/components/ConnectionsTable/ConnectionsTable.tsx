@@ -30,6 +30,9 @@ import { createMenuItems } from "./menuItems";
 import { RoutePath } from "../../../../const/route";
 import { IssueCredentialModal } from "../../../../components/IssueCredentialModal";
 import { RequestPresentationModal } from "../../../../components/RequestPresentationModal";
+import { FilterBar } from "../../../../components/FilterBar/FilterBar";
+import { filter } from "../../../../components/FilterBar";
+import { FilterData } from "../../../../components/FilterBar/FilterBar.types";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -46,6 +49,11 @@ const ConnectionsTable: React.FC = () => {
   const [selectedConnectionId, setSelectedConnectionId] = useState<string>();
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [openRequestCredModal, setOpenRequestCredModal] = useState(false);
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
 
   const nav = useNavigate();
 
@@ -142,8 +150,15 @@ const ConnectionsTable: React.FC = () => {
     setOpenRequestCredModal(true);
   };
 
+  const visibleData = filter(visibleRows, filterData, { date: "date" });
+  console.log(visibleData);
+
   return (
     <>
+      <FilterBar
+        onChange={setFilterData}
+        totalFound={visibleData.length}
+      />
       <Box sx={{ width: "100%" }}>
         <Paper className="connections-table">
           <EnhancedTableToolbar
@@ -152,7 +167,7 @@ const ConnectionsTable: React.FC = () => {
           />
           <AppTable
             order={order}
-            rows={visibleRows}
+            rows={visibleData}
             onRequestSort={handleRequestSort}
             onSelectAll={handleSelectAllClick}
             selectedRows={selected}

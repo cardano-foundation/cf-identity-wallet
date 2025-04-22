@@ -24,6 +24,8 @@ import { formatDate } from "../../utils/dateFormatter";
 import { CredentialTemplateRow } from "./Credential.types";
 import { useEffect, useState } from "react";
 import { IssueCredentialModal } from "../../components/IssueCredentialModal";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
+import { filter, FilterBar } from "../../components/FilterBar";
 
 const headers: AppTableHeader<CredentialTemplateRow>[] = [
   {
@@ -67,6 +69,13 @@ export const Credentials = () => {
     nav(`${RoutePath.Credentials}/${id}`);
   };
 
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+  const visibleData = filter(visibleRows, filterData, { date: "date" });
+
   return (
     <>
       <Box
@@ -81,6 +90,10 @@ export const Credentials = () => {
             margin: "1.5rem 0",
           }}
         />
+        <FilterBar
+          onChange={setFilterData}
+          totalFound={visibleData.length}
+        />
         <Paper
           sx={{
             borderRadius: "1rem",
@@ -93,7 +106,7 @@ export const Credentials = () => {
         >
           <AppTable
             order={order}
-            rows={visibleRows}
+            rows={visibleData}
             onRenderRow={(row) => {
               return (
                 <TableRow
