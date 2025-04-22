@@ -11,9 +11,10 @@ import { useAppIonRouter } from "../../hooks";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
-import { RemoteSignRequest } from "./components/RemoteSignRequest";
+import { RemoteConnectInstructions } from "./components/RemoteConnectInstructions";
 import { RemoteSignConfirmation } from "./components/RemoteSignConfirmation";
 import { RemoteSignInformation } from "./components/RemoteSignInformation";
+import { RemoteSignRequest } from "./components/RemoteSignRequest";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -50,6 +51,7 @@ const NotificationDetails = () => {
       [NotificationRoute.LocalSign]: RemoteSignRequest,
       [NotificationRoute.LocalConfirmation]: RemoteSignConfirmation,
       [NotificationRoute.LocalInformation]: RemoteSignInformation,
+      [NotificationRoute.LocalConnectInstructions]: RemoteConnectInstructions,
       [NotificationRoute.MultiSigRpy]: null,
       [NotificationRoute.ExnIpexOffer]: null,
       [NotificationRoute.ExnIpexAgree]: null,

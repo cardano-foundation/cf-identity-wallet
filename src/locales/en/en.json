@@ -1194,7 +1194,8 @@
           "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
           "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>",
           "signconfirmation": "<strong>{{certificate}} for {{connection}} is now fully signed 🎉</strong>",
-          "signeventinfo": "<strong>Signing event information</strong>"
+          "signeventinfo": "<strong>Signing event information</strong>",
+          "connectinstructions": "<strong>Check your email for instructions on how to connect with {{connection}}</strong>"
         }
       },
       "details": {
@@ -1325,6 +1326,22 @@
             "paragraphone": "The certificate for {{certificate}} is still awaiting a signature from the other party. This step may take up to 7 days.",
             "paragraphtwo": "If the signature isn't received within this period, the certificate will be finalized without their participation.",
             "paragraphthree": "No action is required from you at this time."
+          }
+        },
+        "connectinstructions": {
+          "title": "Instructions",
+          "subtitle": "Connect with {{connection}}",
+          "description": "You should have received an email explaining how to create a connection between your wallet and with the {{connection}} team.",
+          "steps": {
+            "one": "Open the email subject “Connect with {{connection}} via your Identity Wallet”",
+            "two": "Find the QR code within the email",
+            "three": "Open the scanner using the button at the bottom of this notification or from the wallet’s navigation tab",
+            "four": "Scan the QR code or paste the Connection ID and advance",
+            "five": "Accept the connection to continue",
+            "six": "Wait for {{connection}} to accept"
+          },
+          "button": {
+            "label": "Scan now"
           }
         }
       }

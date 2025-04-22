@@ -189,6 +189,7 @@ const Scanner = forwardRef(
           routePath === TabsRoutePath.SCAN ||
           [
             OperationType.SCAN_CONNECTION,
+            OperationType.SCAN_REMOTE_CONNECTION,
             OperationType.SCAN_WALLET_CONNECTION,
             OperationType.SCAN_SSI_BOOT_URL,
             OperationType.SCAN_SSI_CONNECT_URL,
