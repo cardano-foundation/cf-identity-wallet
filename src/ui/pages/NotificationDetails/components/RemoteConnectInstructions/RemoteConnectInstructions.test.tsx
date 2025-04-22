@@ -52,7 +52,7 @@ describe("Receive credential", () => {
       dispatch: dispatchMock,
     };
 
-    const connectionName = "Tadamon";
+    const connectionName = "Connection";
     const { getAllByText, getByText } = render(
       <Provider store={storeMocked}>
         <RemoteConnectInstructions

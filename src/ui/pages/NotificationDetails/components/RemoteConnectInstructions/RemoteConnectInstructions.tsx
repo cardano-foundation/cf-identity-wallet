@@ -17,7 +17,7 @@ function RemoteConnectInstructions({
   handleBack,
 }: NotificationDetailsProps) {
   const dispatch = useAppDispatch();
-  const connection = "Tadamon"; // TODO: change hardcoded value to dynamic
+  const connection = "Connection"; // TODO: change hardcoded value to dynamic
 
   const handleClick = () => {
     dispatch(setCurrentOperation(OperationType.SCAN_REMOTE_CONNECTION));
