@@ -18,6 +18,17 @@ import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { ConnectWallet } from "./ConnectWallet";
 import { CreationStatus } from "../../../../../core/agent/agent.types";
 
+jest.mock("../../../../../core/configuration", () => ({
+  ...jest.requireActual("../../../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {

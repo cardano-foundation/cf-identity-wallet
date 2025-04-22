@@ -15,6 +15,17 @@ import { OperationType } from "../../globals/types";
 import { Scan } from "./Scan";
 import { StorageMessage } from "../../../core/storage/storage.types";
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 const addListener = jest.fn(
   (eventName: string, listenerFunc: (result: BarcodesScannedEvent) => void) => {
     setTimeout(() => {

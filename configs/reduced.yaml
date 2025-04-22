@@ -4,3 +4,7 @@ security:
     enabled: false
 features:
   cut: ["CONNECT_WALLET"]
+  identifiers:
+    creation: 
+      individualOnly: true
+      defaultName: "CSO Identifier"

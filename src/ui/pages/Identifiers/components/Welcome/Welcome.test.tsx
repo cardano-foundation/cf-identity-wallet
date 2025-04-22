@@ -12,6 +12,17 @@ import { setShowWelcomePage } from "../../../../../store/reducers/stateCache";
 import { CustomInputProps } from "../../../../components/CustomInput/CustomInput.types";
 import { Welcome } from "./Welcome";
 
+jest.mock("../../../../../core/configuration", () => ({
+  ...jest.requireActual("../../../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
