@@ -133,7 +133,6 @@ services:
       - "traefik.http.routers.witness1-http.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
-
   witness-2:
     profiles: [witness,production]
     hostname: witness-2
