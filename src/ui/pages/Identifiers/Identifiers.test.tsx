@@ -43,6 +43,17 @@ import { passcodeFiller } from "../../utils/passcodeFiller";
 const deleteIdentifierMock = jest.fn();
 const markIdentifierPendingDelete = jest.fn();
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
+
 jest.mock("react-qrcode-logo", () => {
   return {
     ...jest.requireActual("react-qrcode-logo"),

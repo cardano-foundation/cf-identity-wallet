@@ -25,7 +25,17 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { Scanner } from "./Scanner";
-import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
+
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+      },
+    },
+  },
+}));
 
 const getPlatformMock = jest.fn(() => ["mobile"]);
 

@@ -11,6 +11,7 @@ import {
   CreateIdentifierInputs,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
+import { ConfigurationService } from "../../../core/configuration";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -62,7 +63,9 @@ const CreateIdentifier = ({
   const dispatch = useAppDispatch();
   const initalState = {
     id: "",
-    displayName: "",
+    displayName:
+      ConfigurationService.env.features.identifiers?.creation?.defaultName ||
+      "",
     selectedAidType: groupId ? 1 : 0,
     selectedTheme: 0,
     color: IdentifierColor.One,
@@ -275,6 +278,10 @@ const CreateIdentifier = ({
     []
   );
 
+  const hiddenTypeSelect =
+    ConfigurationService.env.features.identifiers?.creation?.individualOnly ||
+    multiSigGroup;
+
   return (
     <>
       <IonModal
@@ -339,7 +346,7 @@ const CreateIdentifier = ({
               {hasError && <ErrorMessage message={errorMessage} />}
             </div>
           </div>
-          {!multiSigGroup && (
+          {!hiddenTypeSelect && (
             <div className="aid-type">
               <div className="type-input-title">
                 {`${i18n.t("createidentifier.aidtype.title")}`}

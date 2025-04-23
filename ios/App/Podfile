@@ -29,6 +29,7 @@ def capacitor_pods
   pod 'JimcaseCapacitorExitApp', :path => '../../node_modules/@jimcase/capacitor-exit-app'
   pod 'CapacitorFreerasp', :path => '../../node_modules/capacitor-freerasp'
   pod 'CapacitorNativeSettings', :path => '../../node_modules/capacitor-native-settings'
+  pod 'CapacitorPluginSafeArea', :path => '../../node_modules/capacitor-plugin-safe-area'
 end
 
 target 'App' do
