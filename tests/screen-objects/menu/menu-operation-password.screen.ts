@@ -9,6 +9,10 @@ export class MenuOperationPasswordScreen {
     return '[data-testid="alert-cancel-enable-password-confirm-button"]';
   }
 
+  get alertModalConfirmButtonWebView() {
+    return $('[data-testid="alert-cancel-confirm-button"]');
+  }
+
   get backButton() {
     return $('[data-testid="close-button"]');
   }
@@ -29,6 +33,12 @@ export class MenuOperationPasswordScreen {
     await expect(this.backButton).toBeDisplayed();
     await expect(this.backButton).toBeEnabled();
     await this.backButton.click();
+  }
+
+  async tapOnAlertModalConfirmButton() {
+    await expect(this.alertModalConfirmButtonWebView).toBeDisplayed();
+    await expect(this.alertModalConfirmButtonWebView).toBeEnabled();
+    await this.alertModalConfirmButtonWebView.click();
   }
 
   async tapOnOperationPasswordButton() {

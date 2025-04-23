@@ -22,6 +22,22 @@ enum ConnectionHistoryType {
   IPEX_AGREE_COMPLETE,
 }
 
-export { ConnectionHistoryType, KeriaContactKeyPrefix };
+enum RpyRoute {
+  INTRODUCE = "/introduce",
+}
+
+enum OobiQueryParams {
+  NAME = "name",
+  GROUP_ID = "groupId",
+  ROLE = "role",
+  EXTERNAL_ID = "externalId",
+}
+
+export {
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+  RpyRoute,
+  OobiQueryParams,
+};
 
 export type { ConnectionHistoryItem, ExnMessage };
