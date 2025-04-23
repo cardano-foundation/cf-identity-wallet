@@ -1,8 +1,7 @@
 import { Given, Then, When } from "@wdio/cucumber-framework";
 import PasscodeScreen from "../../screen-objects/onboarding/passcode.screen.js";
-import {expect} from "expect-webdriverio";
-
-
+import { expect } from "expect-webdriverio";
+import MenuPasscodeScreen from "../../screen-objects/menu/menu-passcode.screen.js";
 
 Given(
   /^user enter a generated passcode on Passcode screen$/,
@@ -36,10 +35,10 @@ Then(/^user can see Passcode screen$/, async function () {
 });
 
 Then(
-    /^user can see (.*) on Passcode screen$/,
-    async function (errorMessage: string) {
-        await expect(await PasscodeScreen.errorMessageText.getText()).toMatch(
-            errorMessage
-        );
-    }
+  /^user can see (.*) on Passcode screen$/,
+  async function (errorMessage: string) {
+    await expect(await PasscodeScreen.errorMessageText.getText()).toMatch(
+      errorMessage
+    );
+  }
 );

@@ -1,3 +1,5 @@
+import Gestures from "../helpers/gestures";
+
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const findFilterAndClickElement = async (locator: string) => {
