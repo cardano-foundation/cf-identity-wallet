@@ -1,4 +1,8 @@
-import { Configuration, OptionalFeature } from "./configurationService.types";
+import {
+  Configuration,
+  CustomContent,
+  OptionalFeature,
+} from "./configurationService.types";
 // eslint-disable-next-line no-undef
 
 const environment = process.env.ENVIRONMENT || "local";
@@ -84,7 +88,7 @@ class ConfigurationService {
       return this.invalid("Missing top-level features object");
     }
 
-    const { cut } = features;
+    const { cut, customContent } = features;
     if (!Array.isArray(cut)) {
       return this.invalid("features.cut must be a array");
     }
@@ -92,6 +96,12 @@ class ConfigurationService {
     for (const feature of cut) {
       if (!Object.values(OptionalFeature).includes(feature)) {
         return this.invalid("Invalid features.cut value");
+      }
+    }
+
+    for (const content of customContent) {
+      if (!Object.values(CustomContent).includes(content)) {
+        return this.invalid("Invalid features.customContent value");
       }
     }
 
