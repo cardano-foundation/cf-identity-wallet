@@ -15,7 +15,7 @@ import {
   getConnectionsCache,
   getMultisigConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
-import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import NotificationLogo from "../../assets/images/notification-logo.jpg";
 import { timeDifference } from "../../utils/formatters";
 import { NotificationItemProps } from "./Notification.types";
 
@@ -120,11 +120,6 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isLocalSign = [
-    NotificationRoute.LocalSign,
-    NotificationRoute.LocalConnectInstructions,
-  ].includes(item.a.r as NotificationRoute);
-
   return (
     <IonItem
       onClick={() => onClick(item)}
@@ -132,16 +127,12 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        {isLocalSign ? (
-          <div className="sign-logo" />
-        ) : (
-          <img
-            src={KeriLogo}
-            alt="notifications-tab-item-logo"
-            className="notifications-tab-item-logo"
-            data-testid="notifications-tab-item-logo"
-          />
-        )}
+        <img
+          src={NotificationLogo}
+          alt="notifications-tab-item-logo"
+          className="notifications-tab-item-logo"
+          data-testid="notifications-tab-item-logo"
+        />
         <IonIcon
           src={referIcon(item)}
           size="small"
