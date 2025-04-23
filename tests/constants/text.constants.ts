@@ -83,6 +83,10 @@ export enum VerifyYourRecoveryPhrase {
   MenuTitle = "Forgot passcode",
 }
 
+export enum WrongVerifyYourRecoveryPhrase {
+  Description = "Sorry, the recovery phrase you have entered is incorrect!",
+}
+
 export enum SsiAgentDetails {
   DescriptionTop = "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
   Title = "Enter your SSI agent details",
