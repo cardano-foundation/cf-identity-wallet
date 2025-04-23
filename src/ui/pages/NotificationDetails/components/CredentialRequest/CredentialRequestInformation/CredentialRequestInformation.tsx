@@ -501,8 +501,8 @@ const CredentialRequestInformation = ({
       />
       {loading && (
         <div
-          className="cre-request-spinner-container"
-          data-testid="cre-request-spinner-container"
+          className="credential-request-spinner-container"
+          data-testid="credential-request-spinner-container"
         >
           <IonSpinner name="circular" />
         </div>

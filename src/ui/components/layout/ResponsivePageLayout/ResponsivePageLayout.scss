@@ -4,6 +4,10 @@
   padding: 1.25rem;
   background: var(--ion-color-neutral-200);
 
+  &.md {
+    padding-bottom: calc(var(--ion-safe-area-bottom) + 1.25rem);
+  }
+
   .responsive-page-content {
     display: flex;
     flex-direction: column;

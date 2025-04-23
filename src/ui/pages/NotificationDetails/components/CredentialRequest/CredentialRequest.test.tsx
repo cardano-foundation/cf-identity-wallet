@@ -83,10 +83,10 @@ describe("Credential request", () => {
       </Provider>
     );
 
-    expect(getByTestId("cre-request-spinner-container")).toBeVisible();
+    expect(getByTestId("credential-request-spinner-container")).toBeVisible();
 
     await waitFor(() => {
-      expect(queryByTestId("cre-request-spinner-container")).toBe(null);
+      expect(queryByTestId("credential-request-spinner-container")).toBe(null);
 
       expect(
         getByText(
@@ -138,10 +138,10 @@ describe("Credential request", () => {
       </Provider>
     );
 
-    expect(getByTestId("cre-request-spinner-container")).toBeVisible();
+    expect(getByTestId("credential-request-spinner-container")).toBeVisible();
 
     await waitFor(() => {
-      expect(queryByTestId("cre-request-spinner-container")).toBe(null);
+      expect(queryByTestId("credential-request-spinner-container")).toBe(null);
 
       expect(
         getByText(
@@ -254,10 +254,10 @@ describe("Credential request: Multisig", () => {
       </Provider>
     );
 
-    expect(getByTestId("cre-request-spinner-container")).toBeVisible();
+    expect(getByTestId("credential-request-spinner-container")).toBeVisible();
 
     await waitFor(() => {
-      expect(queryByTestId("cre-request-spinner-container")).toBe(null);
+      expect(queryByTestId("credential-request-spinner-container")).toBe(null);
 
       expect(
         getByText(
