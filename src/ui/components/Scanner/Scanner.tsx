@@ -184,22 +184,25 @@ const Scanner = forwardRef(
             ToastMsgType.CREDENTIAL_REQUEST_PENDING,
           ].includes(item.message)
         );
-
+        const isFullPageScan = !routePath;
         const isScanning =
           routePath === TabsRoutePath.SCAN ||
-          [
-            OperationType.SCAN_CONNECTION,
-            OperationType.SCAN_REMOTE_CONNECTION,
-            OperationType.SCAN_WALLET_CONNECTION,
-            OperationType.SCAN_SSI_BOOT_URL,
-            OperationType.SCAN_SSI_CONNECT_URL,
-          ].includes(currentOperation);
+          (isFullPageScan &&
+            [
+              OperationType.SCAN_CONNECTION,
+              OperationType.SCAN_REMOTE_CONNECTION,
+              OperationType.SCAN_WALLET_CONNECTION,
+              OperationType.SCAN_SSI_BOOT_URL,
+              OperationType.SCAN_SSI_CONNECT_URL,
+            ].includes(currentOperation));
 
         const isMultisignScan =
+          isFullPageScan &&
           [
             OperationType.MULTI_SIG_INITIATOR_SCAN,
             OperationType.MULTI_SIG_RECEIVER_SCAN,
-          ].includes(currentOperation) && !isDuplicateConnectionToast;
+          ].includes(currentOperation) &&
+          !isDuplicateConnectionToast;
 
         if ((isScanning && !isRequestPending) || isMultisignScan) {
           await initScan();
