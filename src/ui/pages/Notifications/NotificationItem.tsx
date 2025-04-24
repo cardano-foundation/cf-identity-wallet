@@ -1,25 +1,24 @@
 import { IonIcon, IonItem, IonLabel } from "@ionic/react";
 import { t } from "i18next";
 import {
+  documentOutline,
   ellipsisHorizontal,
   fingerPrintOutline,
   idCardOutline,
-  documentOutline,
   personCircleOutline,
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
-import { KeriaNotification , NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import { KeriaNotification, NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
   getMultisigConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
-import NotificationLogo from "../../assets/images/notification-logo.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { timeDifference } from "../../utils/formatters";
 import { NotificationItemProps } from "./Notification.types";
-import { ConfigurationService } from "../../../core/configuration";
 
 const NotificationItem = ({
   item,
@@ -28,10 +27,6 @@ const NotificationItem = ({
 }: NotificationItemProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
   const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
-  const customFallbackLogo = ConfigurationService.env.features.notifications
-    ?.fallbackIcon
-    ? NotificationLogo
-    : KeriLogo;
 
   const notificationLabelText = useMemo(() => {
     const connectionName = connectionsCache?.[item.connectionId]?.label;
@@ -133,12 +128,24 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        <img
-          src={customFallbackLogo}
-          alt="notifications-tab-item-logo"
-          className="notifications-tab-item-logo"
-          data-testid="notifications-tab-item-logo"
-        />
+        {ConfigurationService.env.features.notifications?.fallbackIcon ? (
+          <div
+            className="notifications-tab-item-logo card-fallback-logo"
+            data-testid="notifications-tab-item-logo"
+          >
+            <IonIcon
+              icon={personCircleOutline}
+              color="light"
+            />
+          </div>
+        ) : (
+          <img
+            src={KeriLogo}
+            alt="notifications-tab-item-logo"
+            className="notifications-tab-item-logo"
+            data-testid="notifications-tab-item-logo"
+          />
+        )}
         <IonIcon
           src={referIcon(item)}
           size="small"
