@@ -16,8 +16,10 @@ import {
   getMultisigConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
 import NotificationLogo from "../../assets/images/notification-logo.jpg";
+import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { timeDifference } from "../../utils/formatters";
 import { NotificationItemProps } from "./Notification.types";
+import { ConfigurationService } from "../../../core/configuration";
 
 const NotificationItem = ({
   item,
@@ -26,6 +28,10 @@ const NotificationItem = ({
 }: NotificationItemProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
   const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
+  const customFallbackLogo = ConfigurationService.env.features.notifications
+    ?.fallbackIcon
+    ? NotificationLogo
+    : KeriLogo;
 
   const notificationLabelText = useMemo(() => {
     const connectionName = connectionsCache?.[item.connectionId]?.label;
@@ -128,7 +134,7 @@ const NotificationItem = ({
     >
       <div className="notification-logo">
         <img
-          src={NotificationLogo}
+          src={customFallbackLogo}
           alt="notifications-tab-item-logo"
           className="notifications-tab-item-logo"
           data-testid="notifications-tab-item-logo"
