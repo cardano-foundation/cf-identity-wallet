@@ -7,6 +7,10 @@ enum OptionalFeature {
   ConnectWallet = "CONNECT_WALLET",
 }
 
+enum CustomContent {
+  Intro = "INTRO",
+}
+
 interface IdentifierConfig {
   creation?: {
     individualOnly?: boolean;
@@ -17,6 +21,7 @@ interface IdentifierConfig {
 interface AppFeaturesConfig {
   cut: OptionalFeature[];
   identifiers?: IdentifierConfig;
+  customContent: CustomContent[];
 }
 
 interface Configuration {
@@ -32,4 +37,4 @@ interface Configuration {
 }
 
 export type { Configuration };
-export { OptionalFeature };
+export { OptionalFeature, CustomContent };
