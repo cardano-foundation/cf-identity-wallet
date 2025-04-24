@@ -353,7 +353,7 @@ const Identifiers = () => {
         }
         placeholder={
           showWelcomePage ? (
-            <Welcome />
+            <Welcome onCreateGroupIdentifier={handleMultiSigClick} />
           ) : (
             showPlaceholder && (
               <CardsPlaceholder
