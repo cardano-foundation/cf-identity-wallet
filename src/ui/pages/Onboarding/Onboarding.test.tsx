@@ -12,6 +12,18 @@ import { CreatePassword } from "../CreatePassword";
 import { SetPasscode } from "../SetPasscode";
 import { Onboarding } from "./index";
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+        customContent: [],
+      },
+    },
+  },
+}));
+
 const exitApp = jest.fn();
 jest.mock("@capacitor/app", () => ({
   ...jest.requireActual("@capacitor/app"),
