@@ -121,6 +121,11 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
+  const isLocalSign = [
+    NotificationRoute.LocalSign,
+    NotificationRoute.LocalConnectInstructions,
+  ].includes(item.a.r as NotificationRoute);
+
   return (
     <IonItem
       onClick={() => onClick(item)}
@@ -128,7 +133,9 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        {ConfigurationService.env.features.notifications?.fallbackIcon ? (
+        {isLocalSign ? (
+          <div className="sign-logo" />
+        ) : ConfigurationService.env.features.notifications?.fallbackIcon ? (
           <div
             className="notifications-tab-item-logo card-fallback-logo"
             data-testid="notifications-tab-item-logo"
