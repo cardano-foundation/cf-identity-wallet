@@ -105,19 +105,19 @@ export const FilterBar = ({ onChange, totalFound }: FilterBarProps) => {
             align="left"
           >
             <span className="total-items">{totalFound}</span>&nbsp;
-            {i18n.t("resultBar.result")}
+            {i18n.t("resultBar.results")}
           </Typography>
           <Box className="result-bar">
             {(startDate || endDate) && (
               <ResultChip
-                label={i18n.t("resultBar.date.label")}
+                label={i18n.t("resultBar.date")}
                 data={dateChipLabel}
                 onDelete={clearDate}
               />
             )}
             {search && (
               <ResultChip
-                label={i18n.t("resultBar.search.label")}
+                label={i18n.t("resultBar.search")}
                 data={search}
                 onDelete={clearSearch}
               />
@@ -128,7 +128,7 @@ export const FilterBar = ({ onChange, totalFound }: FilterBarProps) => {
               startIcon={<DeleteForeverOutlinedIcon />}
               onClick={clearFilter}
             >
-              {i18n.t("resultBar.button")}
+              {i18n.t("resultBar.clear")}
             </Button>
           </Box>
         </>

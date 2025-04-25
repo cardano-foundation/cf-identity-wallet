@@ -14,14 +14,10 @@
     }
   },
   "resultBar": {
-    "result": "results found",
-    "date": {
-      "label": "Date"
-    },
-    "search": {
-      "label": "Search"
-    },
-    "button": "Clear"
+    "results": "results found",
+    "date": "Date",
+    "search": "Search",
+    "clear": "Clear"
   },
   "navbar": {
     "menu": "Menu",

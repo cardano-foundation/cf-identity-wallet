@@ -151,7 +151,6 @@ const ConnectionsTable: React.FC = () => {
   };
 
   const visibleData = filter(visibleRows, filterData, { date: "date" });
-  console.log(visibleData);
 
   return (
     <>

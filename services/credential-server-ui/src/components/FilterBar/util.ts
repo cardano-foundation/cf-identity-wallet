@@ -48,7 +48,5 @@ export const filter = <T extends AppTableBaseData>(
       return isLessThanEndDate;
     });
 
-  console.log(returnDAta);
-
   return returnDAta;
 };
