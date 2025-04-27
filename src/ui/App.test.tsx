@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { startFreeRASP } from "capacitor-freerasp";
+import { ExitApp } from "@jimcase/capacitor-exit-app";
 import { IdentifierService } from "../core/agent/services";
 import Eng_Trans from "../locales/en/en.json";
 import { TabsRoutePath } from "../routes/paths";
@@ -20,6 +21,12 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
+
+jest.mock("@jimcase/capacitor-exit-app", () => ({
+  ExitApp: {
+    exitApp: jest.fn(),
+  },
+}));
 
 jest.mock("capacitor-freerasp", () => ({
   startFreeRASP: jest.fn(),
@@ -900,7 +907,7 @@ describe("System threat alert", () => {
     startFreeRASPMock = startFreeRASP as jest.Mock;
     startFreeRASPMock.mockResolvedValue(true);
 
-    const { getByText } = render(
+    render(
       <Provider store={storeMocked}>
         <App />
       </Provider>
@@ -918,10 +925,35 @@ describe("System threat alert", () => {
     });
 
     await waitFor(() => {
+      expect(ExitApp.exitApp).toBeCalled();
+    });
+  });
+
+  test("Catch emulator threat and avoid closing the app", async () => {
+    startFreeRASPMock = startFreeRASP as jest.Mock;
+    startFreeRASPMock.mockResolvedValue(true);
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(startFreeRASPMock).toHaveBeenCalled();
+    });
+
+    await act(async () => {
+      const simulatorAction = (startFreeRASPMock.mock.calls[0][1] as any)
+        .simulator;
+
+      simulatorAction();
+    });
+
+    await waitFor(() => {
       expect(getByText("Threats Detected")).toBeVisible();
-      expect(
-        getByText(Eng_Trans.systemthreats.rules.privilegedaccess)
-      ).toBeVisible();
+      expect(getByText(Eng_Trans.systemthreats.rules.simulator)).toBeVisible();
+      expect(ExitApp.exitApp).not.toBeCalled();
     });
   });
 
