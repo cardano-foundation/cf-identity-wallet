@@ -3,19 +3,19 @@ import { Biometric } from "../../constants/text.constants";
 
 export class BiometricScreen {
   get biometricPopup() {
-    return $("[data-testid='alert-setup-biometry'] div.alert-wrapper.ion-overlay-wrapper.sc-ion-alert-md h2");
+    return $("[data-testid='alert-setup-biometry'] .alert-title.sc-ion-alert-md");
   }
 
   get confirmButton() {
-    return $("[data-testid='alert-setup-biometry'] button#confirm-alert-button");
+    return $("[data-testid='alert-setup-biometry'] #confirm-alert-button");
   }
 
   get cancelButton() {
-    return $("[data-testid='alert-setup-biometry'] button#cancel-alert-button");
+    return $("[data-testid='alert-setup-biometry'] #cancel-alert-button");
   }
 
   get cancelBiometricPopup() {
-    return $("#alert-11-hdr")
+    return $("[data-testid='alert-cancel-biometry'] .alert-title.sc-ion-alert-md")
   }
 
   get okButton() {
