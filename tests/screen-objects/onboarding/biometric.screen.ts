@@ -36,10 +36,6 @@ export class BiometricScreen {
     await expect(this.cancelBiometricText).toHaveText(Biometric.DescriptionCancelBiometric)
   }
 
-  async closeCancelBiometricPopup() {
-    await expect(this.cancelBiometricText).not.toBeDisplayed();
-  }
-
   async handleBiometricPopup() {
     await this.cancelButton.click();
     await this.cancelBiometricLoads();
