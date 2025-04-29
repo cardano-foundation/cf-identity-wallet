@@ -3,6 +3,7 @@ Feature: YourRecoveryPhrase
   Background:
     Given user tap Get Started button on Onboarding screen
     And user generate passcode on Passcode screen
+    And user skip Biometric popup
     And skip Create Password screen
 
 

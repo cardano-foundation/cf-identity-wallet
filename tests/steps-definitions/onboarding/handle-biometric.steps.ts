@@ -20,3 +20,7 @@ When(/^user tap OK button$/, async function() {
 Then(/^Biometric popup is closed$/, async function() {
   await BiometricScreen.closeCancelBiometricPopup();
 });
+
+Given(/^user skip Biometric popup$/, async function() {
+  await BiometricScreen.handleBiometricPopup();
+});
