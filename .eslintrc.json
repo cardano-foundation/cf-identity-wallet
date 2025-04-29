@@ -8,8 +8,7 @@
   "globals": {
     "__dirname": true,
     "NodeJS": true,
-    "process": "readonly",
-    "$": true
+    "process": "readonly"
   },
   "extends": [
     "eslint:recommended",
