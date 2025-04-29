@@ -15,3 +15,7 @@ When(
     await MenuSettingsScreen.tapOnOperationPasswordButton();
   }
 );
+
+When(/^user tap on Recovery Phrase button on Menu screen$/, async function () {
+  await MenuSettingsScreen.tapOnRecoveryPhraseButton();
+});
