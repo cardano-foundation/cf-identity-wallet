@@ -135,6 +135,7 @@ jest.mock("../CustomInput", () => ({
 
 const connectByOobiUrlMock = jest.fn();
 const getMultisigLinkedContactsMock = jest.fn();
+const getOobi = jest.fn(() => Promise.resolve("mock-oobi"));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -143,6 +144,7 @@ jest.mock("../../../core/agent/agent", () => ({
         connectByOobiUrl: (...arg: unknown[]) => connectByOobiUrlMock(...arg),
         getMultisigLinkedContacts: (args: unknown) =>
           getMultisigLinkedContactsMock(args),
+        getOobi: () => getOobi(),
       },
     },
   },
@@ -803,6 +805,10 @@ describe("Scanner", () => {
         <Scanner routePath={TabsRoutePath.SCAN} />
       </Provider>
     );
+
+    await waitFor(() => {
+      expect(getOobi).toBeCalledTimes(1);
+    });
 
     await waitFor(() => {
       expect(dispatchMock).toHaveBeenCalledWith({

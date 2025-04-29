@@ -1,7 +1,8 @@
 import { IonCheckbox, IonContent, IonModal } from "@ionic/react";
-import { useState } from "react";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { useMemo, useState } from "react";
 import { CreationStatus } from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { i18n } from "../../../i18n";
 import { useAppSelector } from "../../../store/hooks";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
@@ -11,22 +12,26 @@ import { PageHeader } from "../PageHeader";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import "./IdentifierSelectorModal.scss";
 import { IdentifierSelectorProps } from "./IdentifierSelectorModal.types";
-import { i18n } from "../../../i18n";
 
 const IdentifierSelectorModal = ({
   open,
   setOpen,
   onSubmit,
+  identifiers,
 }: IdentifierSelectorProps) => {
   const identifierCache = useAppSelector(getIdentifiersCache);
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
 
-  const displayIdentifiers = Object.values(identifierCache)
-    .filter((item) => item.creationStatus === CreationStatus.COMPLETE)
-    .filter((item) => !item.groupMetadata?.groupId)
-    .map(
+  const displayIdentifiers = useMemo(() => {
+    const result = identifiers
+      ? identifiers
+      : Object.values(identifierCache)
+        .filter((item) => item.creationStatus === CreationStatus.COMPLETE)
+        .filter((item) => !item.groupMetadata?.groupId);
+
+    return result.map(
       (identifier): CardItem<IdentifierShortDetails> => ({
         id: identifier.id,
         title: identifier.displayName,
@@ -34,6 +39,7 @@ const IdentifierSelectorModal = ({
         data: identifier,
       })
     );
+  }, [identifierCache, identifiers]);
 
   const handleSelectIdentifier = (data: IdentifierShortDetails) => {
     setSelectedIdentifier(selectedIdentifier?.id === data.id ? null : data);

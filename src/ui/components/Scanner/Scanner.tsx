@@ -22,7 +22,6 @@ import {
 } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  CreationStatus,
   OOBI_AGENT_ONLY_RE,
   OobiType,
   WOOBI_RE,
@@ -118,13 +117,29 @@ const Scanner = forwardRef(
     const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
       useState<boolean>(false);
     const scannedConnection = useRef("");
+    const [createdIdentifiers, setCreatedIdentifiers] = useState<
+      IdentifierShortDetails[]
+    >([]);
 
     const scanByTab = routePath === TabsRoutePath.SCAN;
 
-    const createdIdentifiers = Object.values(identifiers).filter(
-      (item) =>
-        !item.groupMetadata && item.creationStatus === CreationStatus.COMPLETE
-    );
+    const getCreatedIdentifiers = async () => {
+      const identifierList = Object.values(identifiers);
+      const checkOobiResponse = await Promise.allSettled(
+        identifierList.map((identifier) =>
+          Agent.agent.connections.getOobi(identifier.id)
+        )
+      );
+
+      const result: IdentifierShortDetails[] = [];
+      checkOobiResponse.forEach((response, index) => {
+        if (response.status === "fulfilled" && response.value) {
+          result.push(identifierList[index]);
+        }
+      });
+
+      return result;
+    };
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -576,19 +591,21 @@ const Scanner = forwardRef(
       }
     };
 
-    const handleResolveConnection = (
+    const handleResolveConnection = async (
       connection: string,
       sharedIdentifier?: string
     ) => {
       let identifier = sharedIdentifier;
       if (!sharedIdentifier) {
         scannedConnection.current = connection;
+        const createdIdentifiers = await getCreatedIdentifiers();
         if (createdIdentifiers.length === 0) {
           setOpenIdentifierMissingAlert(true);
           return;
         }
 
         if (createdIdentifiers.length > 1) {
+          setCreatedIdentifiers(createdIdentifiers);
           setOpenIdentifierSelector(true);
           return;
         }
@@ -598,7 +615,7 @@ const Scanner = forwardRef(
       }
 
       if (!identifier) return;
-
+      checkUrl(connection);
       resolveConnectionOobi(connection, identifier);
       handleReset?.();
       setIsValueCaptured?.(true);
@@ -819,6 +836,7 @@ const Scanner = forwardRef(
           open={openIdentifierSelector}
           setOpen={setOpenIdentifierSelector}
           onSubmit={handleAfterSelectIdentifier}
+          identifiers={createdIdentifiers}
         />
         <Alert
           isOpen={openIdentifierMissingAlert}
