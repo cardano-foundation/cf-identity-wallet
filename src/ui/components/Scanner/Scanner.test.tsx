@@ -1,14 +1,14 @@
+import {
+  BarcodeFormat,
+  BarcodesScannedEvent,
+  BarcodeValueType,
+} from "@capacitor-mlkit/barcode-scanning";
 import { IonInput } from "@ionic/react";
 import { ionFireEvent } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import {
-  BarcodeFormat,
-  BarcodesScannedEvent,
-  BarcodeValueType,
-} from "@capacitor-mlkit/barcode-scanning";
 import { OobiType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import {
@@ -21,6 +21,7 @@ import {
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { identifierFix } from "../../__fixtures__/identifierFix";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -139,7 +140,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        connectByOobiUrl: () => connectByOobiUrlMock(),
+        connectByOobiUrl: (...arg: unknown[]) => connectByOobiUrlMock(...arg),
         getMultisigLinkedContacts: (args: unknown) =>
           getMultisigLinkedContactsMock(args),
       },
@@ -751,7 +752,9 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: {},
+        identifiers: {
+          [identifierFix[0].id]: identifierFix[0],
+        },
       },
       connectionsCache: {
         connections: {},
@@ -763,8 +766,6 @@ describe("Scanner", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-
-    const handleReset = jest.fn();
 
     // Mock connectByOobiUrl to throw a duplicate connection error
     connectByOobiUrlMock.mockImplementation(() => {
@@ -1138,6 +1139,250 @@ describe("Scanner", () => {
       expect(
         getByText(EN_Translation.tabs.scan.tab.cameraunavailable)
       ).toBeVisible();
+    });
+  });
+
+  test("Show create identifier alert", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: {
+          // [identifierFix[0].id]: identifierFix[0]
+        },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodesScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcodes: [
+              {
+                displayValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <Scanner routePath={TabsRoutePath.SCAN} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_Translation.tabs.scan.tab.missingidentifier.title)
+      ).toBeVisible();
+    });
+
+    fireEvent.click(
+      getByText(EN_Translation.tabs.scan.tab.missingidentifier.create)
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_Translation.createidentifier.add.title)
+      ).toBeVisible();
+      expect(
+        getByText(EN_Translation.createidentifier.aidtype.title)
+      ).toBeVisible();
+    });
+  });
+
+  test("Show choose identifier modal", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: {
+          [identifierFix[0].id]: identifierFix[0],
+          [identifierFix[1].id]: identifierFix[1],
+        },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodesScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcodes: [
+              {
+                displayValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <Scanner routePath={TabsRoutePath.SCAN} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_Translation.connections.page.indentifierselector.title)
+      ).toBeVisible();
+    });
+
+    expect(
+      getByTestId("identifier-select-" + identifierFix[0].id)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("identifier-select-" + identifierFix[0].id));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("primary-button").getAttribute("disabled")).toBe(
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button"));
+    });
+
+    await waitFor(() => {
+      expect(connectByOobiUrlMock).toBeCalledWith(
+        "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+        identifierFix[0].id
+      );
+    });
+  });
+
+  test("User has only one identifier", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: {
+          [identifierFix[0].id]: identifierFix[0],
+        },
+      },
+      connectionsCache: {
+        connections: {},
+        multisigConnections: {},
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodesScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcodes: [
+              {
+                displayValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                format: BarcodeFormat.QrCode,
+                rawValue:
+                  "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+                valueType: BarcodeValueType.Url,
+              },
+            ],
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner routePath={TabsRoutePath.SCAN} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(connectByOobiUrlMock).toBeCalledWith(
+        "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+        identifierFix[0].id
+      );
     });
   });
 });
