@@ -4,10 +4,10 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act, ReactNode } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { TabsRoutePath } from "../../../../../routes/paths";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
 import { IdentifierSelectorModal } from "./IdentifierSelectorModal";
-import { CreationStatus } from "../../../../../core/agent/agent.types";
+import { CreationStatus } from "../../../core/agent/agent.types";
 
 setupIonicReact();
 mockIonicReact();

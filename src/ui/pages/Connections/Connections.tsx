@@ -41,7 +41,7 @@ import { useSwipeBack } from "../../hooks/swipeBackHook";
 import { showError } from "../../utils/error";
 import { ConnectionsBody } from "./components/ConnectionsBody";
 import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
-import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
+import { IdentifierSelectorModal } from "../../components/IdentifierSelectorModal";
 import "./Connections.scss";
 import {
   ConnectionsComponentProps,

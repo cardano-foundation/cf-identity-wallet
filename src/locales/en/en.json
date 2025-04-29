@@ -1142,7 +1142,12 @@
       "tab": {
         "title": "Align the QR code within the frame to scan",
         "permissionalert": "Enable the camera in your device settings to start scanning",
-        "cameraunavailable": "We're unable to access your camera."
+        "cameraunavailable": "We're unable to access your camera.",
+        "missingidentifier": {
+          "title": "To establish a connection you will need to create an individual identifier",
+          "create": "Create identifier",
+          "cancel": "Cancel"
+        }
       },
       "pastemeerkatid": "Paste Meerkat ID"
     },

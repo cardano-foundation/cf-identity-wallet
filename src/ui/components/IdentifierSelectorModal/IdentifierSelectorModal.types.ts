@@ -1,4 +1,4 @@
-import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 interface IdentifierSelectorProps {
   open: boolean;
