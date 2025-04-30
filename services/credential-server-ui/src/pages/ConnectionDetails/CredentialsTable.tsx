@@ -25,7 +25,7 @@ import { CredentialService } from "../../services";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
-import { formatDate } from "../../utils/dateFormatter";
+import { formatDate, formatDateTime } from "../../utils/dateFormatter";
 import { triggerToast } from "../../utils/toast";
 import {
   CredentialsTableProps,
@@ -150,7 +150,6 @@ const CredentialsTable = ({
             const isItemSelected = selected.includes(row.id);
             const labelId = `enhanced-table-checkbox-${index}`;
             const isRevoked = row.status !== 0;
-
             return (
               <TableRow
                 hover
@@ -166,15 +165,39 @@ const CredentialsTable = ({
                   id={labelId}
                   scope="row"
                 >
-                  {row.name}
+                  <Tooltip
+                    title={row.name}
+                    placement="top"
+                  >
+                    <span>{row.name}</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="left">
-                  {row.credentialId.substring(0, 4)}...
-                  {row.credentialId.slice(-4)}
+                  <Tooltip
+                    title={row.credentialId}
+                    placement="top"
+                  >
+                    <span>
+                      {row.credentialId.substring(0, 4)}...
+                      {row.credentialId.slice(-4)}
+                    </span>
+                  </Tooltip>
                 </TableCell>
-                <TableCell align="left">{row.attribute}</TableCell>
                 <TableCell align="left">
-                  {formatDate(new Date(row.date))}
+                  <Tooltip
+                    title={row.attribute}
+                    placement="top"
+                  >
+                    <span>{row.attribute}</span>
+                  </Tooltip>
+                </TableCell>
+                <TableCell align="left">
+                  <Tooltip
+                    title={formatDateTime(new Date(row.date))}
+                    placement="top"
+                  >
+                    <span>{formatDate(new Date(row.date))}</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="left">
                   <Box className={`label ${isRevoked ? "revoked" : "issued"}`}>
