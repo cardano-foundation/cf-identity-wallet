@@ -11,7 +11,7 @@ import {
 import { personCircleOutline } from "ionicons/icons";
 import { useCallback, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
-import { NotificationRoute } from "../../../../../core/agent/agent.types";
+import { NotificationRoute } from "../../../../../core/agent/services/keriaNotificationService.types";
 import { MultiSigIcpRequestDetails } from "../../../../../core/agent/services/identifier.types";
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 import { i18n } from "../../../../../i18n";

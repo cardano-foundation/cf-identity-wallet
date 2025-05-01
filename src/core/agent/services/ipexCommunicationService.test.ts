@@ -36,7 +36,7 @@ import {
   credentialStateRevoked,
   admitForIssuanceExnMessage,
 } from "../../__fixtures__/agent/ipexCommunicationFixtures";
-import { NotificationRoute } from "../agent.types";
+import { NotificationRoute } from "./keriaNotificationService.types";
 import {
   gHab,
   mHab,

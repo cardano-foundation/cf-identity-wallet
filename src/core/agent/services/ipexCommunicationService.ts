@@ -8,12 +8,9 @@ import {
   Serder,
   Siger,
 } from "signify-ts";
-import {
-  ExchangeRoute,
-  ExnMessage,
-  type AgentServicesProps,
-  type KeriaNotification,
-} from "../agent.types";
+import { ExnMessage, type AgentServicesProps } from "../agent.types";
+import { type KeriaNotification } from "./keriaNotificationService.types";
+import { ExchangeRoute } from "./keriaNotificationService.types";
 import {
   CredentialStorage,
   IdentifierStorage,
@@ -538,19 +535,19 @@ class IpexCommunicationService extends AgentService {
     let prefix;
     let key;
     switch (historyType) {
-    case ConnectionHistoryType.CREDENTIAL_REVOKED:
-      prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
-      key = message.exn.e.acdc.d;
-      break;
-    case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
-    case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
-    case ConnectionHistoryType.CREDENTIAL_PRESENTED:
-    case ConnectionHistoryType.IPEX_AGREE_COMPLETE:
-      prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
-      key = message.exn.d;
-      break;
-    default:
-      throw new Error(IpexCommunicationService.INVALID_HISTORY_TYPE);
+      case ConnectionHistoryType.CREDENTIAL_REVOKED:
+        prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
+        key = message.exn.e.acdc.d;
+        break;
+      case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
+      case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
+      case ConnectionHistoryType.CREDENTIAL_PRESENTED:
+      case ConnectionHistoryType.IPEX_AGREE_COMPLETE:
+        prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
+        key = message.exn.d;
+        break;
+      default:
+        throw new Error(IpexCommunicationService.INVALID_HISTORY_TYPE);
     }
     const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,

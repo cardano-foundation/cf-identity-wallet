@@ -15,9 +15,8 @@ import {
 import { Alert } from "../../../components/Alert";
 import { OptionItem, OptionModal } from "../../../components/OptionsModal";
 import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
-import { NotificationRoute } from "../../../../core/agent/agent.types";
+import { NotificationRoute } from "../../../../core/agent/services/keriaNotificationService.types";
 import { showError } from "../../../utils/error";
-import { ToastMsgType } from "../../../globals/types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,

@@ -1,5 +1,5 @@
 import { Query, StorageService } from "../../storage/storage.types";
-import { NotificationRoute } from "../agent.types";
+import { NotificationRoute } from "../services/keriaNotificationService.types";
 import {
   NotificationRecord,
   NotificationRecordStorageProps,

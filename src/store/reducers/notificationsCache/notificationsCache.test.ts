@@ -1,5 +1,5 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { KeriaNotification } from "../../../core/agent/agent.types";
+import { KeriaNotification } from "../../../core/agent/services/keriaNotificationService.types";
 import { OperationType } from "../../../ui/globals/types";
 import { RootState } from "../../index";
 import {

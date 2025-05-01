@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { KeriaNotification } from "../../../../core/agent/agent.types";
+import { KeriaNotification } from "../../../../core/agent/services/keriaNotificationService.types";
 import { i18n } from "../../../../i18n";
 import { NotificationItem } from "../NotificationItem";
 import {

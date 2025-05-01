@@ -3,13 +3,10 @@ import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
   ConnectionStatus,
-  ExchangeRoute,
-  KeriaNotification,
-  KeriaNotificationMarker,
   MiscRecordId,
-  NotificationRoute,
   CreationStatus,
 } from "../agent.types";
+import { KeriaNotificationMarker , KeriaNotification , ExchangeRoute , NotificationRoute } from "./keriaNotificationService.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
   BasicRecord,
