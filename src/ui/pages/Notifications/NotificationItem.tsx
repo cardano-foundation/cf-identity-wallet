@@ -9,10 +9,7 @@ import {
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
-import {
-  KeriaNotification,
-  NotificationRoute,
-} from "../../../core/agent/agent.types";
+import { KeriaNotification , NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,

@@ -1,4 +1,4 @@
-import { KeriaNotification } from "../../../core/agent/agent.types";
+import { KeriaNotification } from "../../../core/agent/services/keriaNotificationService.types";
 
 enum NotificationFilters {
   All = "all",
