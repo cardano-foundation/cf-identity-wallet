@@ -9,5 +9,5 @@ Feature: OnboardingAddingIdentifierWelcome
   Scenario: C2547 Welcome message - Add an identifier is successful
     Given user tap Add and Identifier button on Welcome message
     When user add Individual identifier
-    Then user can see toast message about created identifier on Identifiers screen
+    Then user can see toast message about created identifier
     And user can see Identifiers screen with 1 card

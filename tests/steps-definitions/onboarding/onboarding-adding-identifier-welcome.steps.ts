@@ -33,9 +33,14 @@ Given(/^user is onboarded with skipped password creation successful$/, async fun
 });
 
 Then(/^user can see Welcome message$/, async function () {
-  await OnboardingAddingIdentifierWelcomeScreen.loadTitleText(`Welcome, ${this.userName}`);
-  await OnboardingAddingIdentifierWelcomeScreen.loadWelcomeText();
+  await OnboardingAddingIdentifierWelcomeScreen.loads(`Welcome, ${this.userName}`);
 });
+
 Given(/^user tap Add and Identifier button on Welcome message$/, async function() {
   await OnboardingAddingIdentifierWelcomeScreen.addIdentifierButton.click();
+});
+
+Then(/^user can see toast message about created identifier$/, async function() {
+  await OnboardingAddingIdentifierWelcomeScreen.pendingToast();
+  await OnboardingAddingIdentifierWelcomeScreen.createdToast();
 });
