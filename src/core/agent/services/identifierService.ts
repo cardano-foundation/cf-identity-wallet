@@ -3,14 +3,17 @@ import {
   CreateIdentifierResult,
   IdentifierDetails,
   IdentifierShortDetails,
+  RemoteSignRequest,
 } from "./identifier.types";
 import {
   CreationStatus,
   AgentServicesProps,
-  IdentifierResult,
   MiscRecordId,
 } from "../agent.types";
-import { NotificationRoute } from "./keriaNotificationService.types";
+import {
+  ExchangeRoute,
+  NotificationRoute,
+} from "./keriaNotificationService.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -675,6 +678,55 @@ class IdentifierService extends AgentService {
       .identifiers()
       .rotate(identifier);
     await rotateResult.op();
+  }
+
+  @OnlineOnly
+  async getRemoteSignRequestDetails(
+    requestSaid: string
+  ): Promise<RemoteSignRequest> {
+    const exchange = (
+      await this.props.signifyClient.exchanges().get(requestSaid)
+    ).exn;
+    const payload = exchange.a;
+    delete payload.d;
+
+    return {
+      identifier: exchange.rp,
+      payload,
+    };
+  }
+
+  @OnlineOnly
+  async remoteSign(requestSaid: string): Promise<void> {
+    const exchange = await this.props.signifyClient
+      .exchanges()
+      .get(requestSaid);
+
+    const identifier = exchange.exn.rp;
+    const seal = { d: exchange.exn.a.d }; // KeriaNotificationService verifies d is correct for a block
+
+    // @TODO - foconnor: We should track the operation and submit the exn after completion
+    const ixnResult = await this.props.signifyClient
+      .identifiers()
+      .interact(identifier, seal);
+
+    const hab = await this.props.signifyClient.identifiers().get(identifier);
+    const [exn, sigs, atc] = await this.props.signifyClient
+      .exchanges()
+      .createExchangeMessage(
+        hab,
+        ExchangeRoute.RemoteSignRef,
+        { sn: ixnResult.serder.ked.s },
+        [],
+        exchange.exn.i,
+        undefined,
+        requestSaid
+      );
+    await this.props.signifyClient
+      .exchanges()
+      .sendFromEvents(identifier, "remotesign", exn, sigs, atc, [
+        exchange.exn.i,
+      ]);
   }
 
   async getAvailableWitnesses(): Promise<{
