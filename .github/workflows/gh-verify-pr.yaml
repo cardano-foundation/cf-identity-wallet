@@ -41,15 +41,15 @@ jobs:
       with:
         node-version: '20'
 
+    - name: Audit Dependencies
+      run: npm run audit
+    
     - name: Run unit tests
       env:
         NODE_OPTIONS: "--max_old_space_size=8192"
       run: |
         npm ci
         npm run test
-
-    - name: Audit Dependencies
-      run: npm run audit
 
     - name: 🔨 Build project
       run: npm run build
