@@ -1,5 +1,6 @@
 import { expect } from "expect-webdriverio";
 import { WelcomeMessage } from "../../constants/text.constants";
+import { $ } from "@wdio/globals";
 
 export class OnboardingAddingIdentifierWelcomeScreen {
 
@@ -9,6 +10,14 @@ export class OnboardingAddingIdentifierWelcomeScreen {
 
   get welcomeText() {
     return $(".content > p")
+  }
+
+  get addIdentifierButton() {
+    return $("[data-testid='primary-button-welcome']")
+  }
+
+  get skipButton() {
+    return $("[data-testid='action-button']")
   }
 
   async loadWelcomeText() {

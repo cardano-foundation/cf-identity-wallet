@@ -36,3 +36,6 @@ Then(/^user can see Welcome message$/, async function () {
   await OnboardingAddingIdentifierWelcomeScreen.loadTitleText(`Welcome, ${this.userName}`);
   await OnboardingAddingIdentifierWelcomeScreen.loadWelcomeText();
 });
+Given(/^user tap Add and Identifier button on Welcome message$/, async function() {
+  await OnboardingAddingIdentifierWelcomeScreen.addIdentifierButton.click();
+});
