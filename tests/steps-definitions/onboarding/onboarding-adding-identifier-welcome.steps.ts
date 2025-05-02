@@ -12,7 +12,6 @@ import AlertModal from "../../screen-objects/components/alert.modal";
 import SsiAgentDetailsScreen from "../../screen-objects/onboarding/ssi-agent-details.screen";
 import WelcomeModal from "../../screen-objects/components/welcome.modal";
 import IdentifierAddModal from "../../screen-objects/components/identifier/identifier-add.modal";
-import Assert from "../../helpers/assert";
 
 Given(/^user is onboarded with skipped password creation successful$/, async function() {
   await OnboardingScreen.tapOnGetStartedButton();
