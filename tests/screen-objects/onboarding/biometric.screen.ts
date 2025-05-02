@@ -3,8 +3,7 @@ import { Biometric } from "../../constants/text.constants";
 
 export class BiometricScreen {
   get biometricWarningText() {
-    return $("[data-testid='alert-setup-biometry']")
-      .$(".alert-title.sc-ion-alert-md");
+    return $("[data-testid='alert-setup-biometry'] .alert-title.sc-ion-alert-md")
   }
 
   get confirmButton() {
