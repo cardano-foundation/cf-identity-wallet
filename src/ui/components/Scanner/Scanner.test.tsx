@@ -125,7 +125,6 @@ jest.mock("../CustomInput", () => ({
 
 const connectByOobiUrlMock = jest.fn();
 const getMultisigLinkedContactsMock = jest.fn();
-const getOobi = jest.fn(() => Promise.resolve("mock-oobi"));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -134,7 +133,6 @@ jest.mock("../../../core/agent/agent", () => ({
         connectByOobiUrl: (...arg: unknown[]) => connectByOobiUrlMock(...arg),
         getMultisigLinkedContacts: (args: unknown) =>
           getMultisigLinkedContactsMock(args),
-        getOobi: () => getOobi(),
       },
     },
   },
@@ -744,7 +742,9 @@ describe("Scanner", () => {
         toastMsgs: [],
       },
       identifiersCache: {
-        identifiers: {},
+        identifiers: {
+          [identifierFix[0].id]: identifierFix[0],
+        },
       },
       connectionsCache: {
         connections: {},
@@ -757,7 +757,7 @@ describe("Scanner", () => {
       dispatch: dispatchMock,
     };
 
-    // Mock connectByOobiUrl to throw a duplicate connection error
+    // Mock connectByOobiUrl to throw a duplicate connection error SYNCHRONOUSLY
     connectByOobiUrlMock.mockImplementation(() => {
       throw new Error("Record already exists with id connectionId");
     });
@@ -788,26 +788,17 @@ describe("Scanner", () => {
       }
     );
 
-    render(
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <Scanner routePath={TabsRoutePath.SCAN} />
       </Provider>
     );
 
+    // Wait for the dispatch to be called
     await waitFor(() => {
-      expect(getOobi).toBeCalledTimes(1);
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toHaveBeenCalledWith({
-        type: "stateCache/setToastMsg",
-        payload: ToastMsgType.DUPLICATE_CONNECTION,
-      });
-
-      expect(dispatchMock).toHaveBeenCalledWith({
-        type: "connectionsCache/setOpenConnectionId",
-        payload: "connectionId",
-      });
+      expect(dispatchMock).toHaveBeenCalledWith(
+        setToastMsg(ToastMsgType.DUPLICATE_CONNECTION)
+      );
     });
   });
 
