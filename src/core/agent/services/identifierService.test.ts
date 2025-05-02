@@ -16,7 +16,10 @@ import {
   remoteSignRefExn,
   remoteSignReqExn,
 } from "../../__fixtures__/agent/identifierFixtures";
-import { ExchangeRoute } from "./keriaNotificationService.types";
+import {
+  ExchangeRoute,
+  NotificationRoute,
+} from "./keriaNotificationService.types";
 
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
@@ -128,6 +131,7 @@ const basicStorage = jest.mocked({
 const notificationStorage = jest.mocked({
   deleteById: jest.fn(),
   findAllByQuery: jest.fn(),
+  findExpectedById: jest.fn(),
 });
 
 const identifierService = new IdentifierService(
@@ -2201,8 +2205,12 @@ describe("Remote signing", () => {
       ],
       "",
     ]);
+    notificationStorage.findExpectedById.mockResolvedValue({
+      id: "note-id",
+      route: NotificationRoute.RemoteSignReq,
+    });
 
-    await identifierService.remoteSign("req-said");
+    await identifierService.remoteSign("note-id", "req-said");
 
     expect(interactMock).toBeCalledWith(remoteSignReqExn.exn.rp, {
       d: "EIAARCAUQMQrjqMTp6D0Pk3UuOUrrIS8uKC1bvJRpWyJ",
@@ -2226,5 +2234,11 @@ describe("Remote signing", () => {
       "",
       [remoteSignReqExn.exn.i]
     );
+    expect(markNotificationMock).toBeCalledWith("note-id");
+    expect(notificationStorage.deleteById).toBeCalledWith("note-id");
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: "note-id" },
+    });
   });
 });

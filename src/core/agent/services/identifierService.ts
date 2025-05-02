@@ -39,6 +39,7 @@ import {
 } from "../event.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { OobiQueryParams } from "./connectionService.types";
+import type { KeriaNotification } from "./keriaNotificationService.types";
 
 const UI_THEMES = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -697,7 +698,10 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async remoteSign(requestSaid: string): Promise<void> {
+  async remoteSign(notificationId: string, requestSaid: string): Promise<void> {
+    const noteRecord = await this.notificationStorage.findExpectedById(
+      notificationId
+    );
     const exchange = await this.props.signifyClient
       .exchanges()
       .get(requestSaid);
@@ -727,6 +731,19 @@ class IdentifierService extends AgentService {
       .sendFromEvents(identifier, "remotesign", exn, sigs, atc, [
         exchange.exn.i,
       ]);
+
+    await deleteNotificationRecordById(
+      this.props.signifyClient,
+      this.notificationStorage,
+      notificationId,
+      noteRecord.route
+    );
+    this.props.eventEmitter.emit<NotificationRemovedEvent>({
+      type: EventTypes.NotificationRemoved,
+      payload: {
+        id: notificationId,
+      },
+    });
   }
 
   async getAvailableWitnesses(): Promise<{
