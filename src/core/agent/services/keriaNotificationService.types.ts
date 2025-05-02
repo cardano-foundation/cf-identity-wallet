@@ -7,11 +7,10 @@ enum NotificationRoute {
   ExnIpexOffer = "/exn/ipex/offer",
   ExnIpexAgree = "/exn/ipex/agree",
   ExnIpexGrant = "/exn/ipex/grant",
+  HumanReadableMessage = "/exn/hmessage",
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
   LocalSign = "/local/signrequest",
-  LocalConfirmation = "/local/signconfirmation",
-  LocalInformation = "/local/signinformation",
   LocalConnectInstructions = "/local/connectinstructions",
 }
 
