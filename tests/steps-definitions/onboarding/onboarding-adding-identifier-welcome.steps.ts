@@ -1,4 +1,4 @@
-import {Given, Then } from "@wdio/cucumber-framework";
+import { Given, Then, When } from "@wdio/cucumber-framework";
 import OnboardingAddingIdentifierWelcomeScreen from "../../screen-objects/onboarding/onboarding-adding-identifier-welcome.screen";
 import { generateRecoveryPhraseOf, recoveryPhraseWords } from "./verify-your-recovery-phrase.steps";
 import { recoveryPhrase } from "../../helpers/recovery-phrase";
@@ -11,6 +11,8 @@ import CreatePasswordScreen from "../../screen-objects/onboarding/create-passwor
 import AlertModal from "../../screen-objects/components/alert.modal";
 import SsiAgentDetailsScreen from "../../screen-objects/onboarding/ssi-agent-details.screen";
 import WelcomeModal from "../../screen-objects/components/welcome.modal";
+import IdentifierAddModal from "../../screen-objects/components/identifier/identifier-add.modal";
+import Assert from "../../helpers/assert";
 
 Given(/^user is onboarded with skipped password creation successful$/, async function() {
   await OnboardingScreen.tapOnGetStartedButton();
@@ -43,4 +45,13 @@ Given(/^user tap Add and Identifier button on Welcome message$/, async function(
 Then(/^user can see toast message about created identifier$/, async function() {
   await OnboardingAddingIdentifierWelcomeScreen.pendingToast();
   await OnboardingAddingIdentifierWelcomeScreen.createdToast();
+});
+
+When(/^user tap Cancel button on Add and Identifier screen$/, async function() {
+  await IdentifierAddModal.cancelButton.click();
+});
+
+Given(/^user tap Skip button on Welcome message$/, async function() {
+  await OnboardingAddingIdentifierWelcomeScreen.clickOnSkipButton();
+  await OnboardingAddingIdentifierWelcomeScreen.welcomeScreenInvisible();
 });

@@ -34,16 +34,30 @@ export class OnboardingAddingIdentifierWelcomeScreen {
     await expect(this.welcomeText).toHaveText(WelcomeMessage.Description)
     await expect(this.skipButton).toBeDisplayed();
   }
+
+  async welcomeScreenInvisible() {
+    await expect(this.titleText).not.toBeDisplayed();
+    await expect(this.welcomeText).not.toBeDisplayed();
+    await expect(this.skipButton).not.toBeDisplayed();
+  }
+
   async pendingToast() {
     if (await this.pendingToastMessage.isDisplayed()) {
       await expect(this.createdToastMessage.getAttribute("message")).toHaveText("Identifier pending");
       await this.pendingToastMessage.waitForDisplayed({ reverse: true });
     }
   }
+
   async createdToast() {
     if (await this.createdToastMessage.isDisplayed()) {
       await expect(this.createdToastMessage.getAttribute("message")).toHaveText("Identifier created");
       await this.createdToastMessage.waitForDisplayed({ reverse: true });
+    }
+  }
+
+  async clickOnSkipButton() {
+    if (expect(this.skipButton).toBeDisplayed()) {
+      await this.skipButton.click();
     }
   }
 }
