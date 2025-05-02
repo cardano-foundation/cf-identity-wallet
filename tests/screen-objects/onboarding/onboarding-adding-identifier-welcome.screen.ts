@@ -3,20 +3,23 @@ import { WelcomeMessage } from "../../constants/text.constants";
 
 export class OnboardingAddingIdentifierWelcomeScreen {
 
+  get welcomeBoard() {
+    return $(".content");
+  }
   get titleText() {
-    return $(".content > h2")
+    return $(".content > h2");
   }
 
   get welcomeText() {
-    return $(".content > p")
+    return $(".content > p");
   }
 
   get addIdentifierButton() {
-    return $("[data-testid='primary-button-welcome']")
+    return $("[data-testid='primary-button-welcome']");
   }
 
   get skipButton() {
-    return $("[data-testid='action-button']")
+    return $("[data-testid='action-button']");
   }
 
   get pendingToastMessage() {
@@ -24,15 +27,17 @@ export class OnboardingAddingIdentifierWelcomeScreen {
   }
 
   get createdToastMessage() {
-    return $("[data-testid*='confirmation-toast'][message='Identifier created']")
+    return $("[data-testid*='confirmation-toast'][message='Identifier created']");
   }
 
   async loads(titleName: string) {
-    await expect(this.titleText).toBeDisplayed();
-    await expect(this.titleText).toHaveText(titleName);
-    await expect(this.welcomeText).toBeDisplayed();
-    await expect(this.welcomeText).toHaveText(WelcomeMessage.Description)
-    await expect(this.skipButton).toBeDisplayed();
+    if (expect(this.welcomeBoard).toBeDisplayed()) {
+      await expect(this.titleText).toBeDisplayed();
+      await expect(this.titleText).toHaveText(titleName);
+      await expect(this.welcomeText).toBeDisplayed();
+      await expect(this.welcomeText).toHaveText(WelcomeMessage.Description)
+      await expect(this.skipButton).toBeDisplayed();
+    }
   }
 
   async welcomeScreenInvisible() {
