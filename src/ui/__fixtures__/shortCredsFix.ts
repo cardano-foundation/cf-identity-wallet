@@ -79,6 +79,26 @@ const shortCredsFix: CredentialShortDetails[] = [
     identifierId: memberIdentifierRecord.id,
     connectionId: "ebfeb1ebc6f1c276ef71212ec20",
   },
+  {
+    id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF2-ghumzCJ6nv",
+    issuanceDate: "2024-01-23T16:03:44.643Z",
+    credentialType: "Rome Offsite 2025 Credential",
+    status: CredentialStatus.CONFIRMED,
+    schema: "EMkpplwGGw3fwdktSibRph9NSy_o2MvKDKO8ZoONqTOt",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
+  },
+  {
+    id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF3-ghumzCJ6nv",
+    issuanceDate: "2024-01-23T16:03:44.643Z",
+    credentialType: "Rome Offsite 2025 Credential",
+    status: CredentialStatus.PENDING,
+    schema: "EMkpplwGGw3fwdktSibRph9NSy_o2MvKDKO8ZoONqTOt",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
+  },
 ];
 
 export { shortCredsFix };
