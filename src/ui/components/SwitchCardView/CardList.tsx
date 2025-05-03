@@ -9,6 +9,7 @@ import { CardTheme } from "../CardTheme";
 import "./SwitchCardView.scss";
 import { CardListProps } from "./SwitchCardView.types";
 import BackgroundRome from "../../assets/images/rome-bg.png";
+import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
 
 const CardList = ({
   cardsData,
@@ -46,7 +47,7 @@ const CardList = ({
       if (cardTypes === CardType.CREDENTIALS) {
         const card = data as CredentialShortDetails;
 
-        return card.credentialType == "Rome Offsite 2025 Credential" ? (
+        return card.schema == IpexCommunicationService.SCHEMA_SAID_ROME_DEMO ? (
           <img
             src={BackgroundRome}
             alt="rome"
