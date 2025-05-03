@@ -6,8 +6,6 @@ import {
   Saider,
   Serder,
   State,
-  Salter,
-  CredentialData,
 } from "signify-ts";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
@@ -137,33 +135,21 @@ export class SignifyApi {
     let vcdata = {};
     if (
       schemaId === Agent.RARE_EVO_DEMO_SCHEMA_SAID ||
-      schemaId === Agent.QVI_SCHEMA_SAID ||
-      schemaId === Agent.ROME_DEMO_SCHEMA_SAID
+      schemaId === Agent.QVI_SCHEMA_SAID
     ) {
       vcdata = attribute;
     } else {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
 
-    const baseCredentialData: CredentialData = {
+    const result = await this.client.credentials().issue(issuerName, {
       ri: registryId,
       s: schemaId,
       a: {
         i: recipient,
         ...vcdata,
       },
-    };
-
-    if (schemaId === Agent.ROME_DEMO_SCHEMA_SAID) {
-      baseCredentialData.u = new Salter({}).qb64;
-      baseCredentialData.a.u = new Salter({}).qb64;
-    }
-
-    const credentialData = baseCredentialData;
-
-    const result = await this.client
-      .credentials()
-      .issue(issuerName, credentialData);
+    });
     await waitAndGetDoneOp(
       this.client,
       result.op,
