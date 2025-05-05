@@ -61,7 +61,7 @@ export class OnboardingAddingIdentifierWelcomeScreen {
   }
 
   async clickOnSkipButton() {
-    if (await this.skipButton.isDisplayed()) {
+    if (await this.skipButton.isExisting()) {
       await this.skipButton.click();
     }
   }

@@ -36,7 +36,6 @@ Given(/^user is onboarded with skipped password creation$/, async function () {
   await WelcomeModal.confirmButton.waitForClickable();
   await WelcomeModal.confirmButton.click();
   await Assert.toast(`Welcome, ${this.userName}!`);
-  await OnboardingAddingIdentifierWelcomeScreen.clickOnSkipButton();
 });
 
 Given(/^user is onboarded with a password creation$/, async function () {
@@ -67,5 +66,8 @@ Given(/^user is onboarded with a password creation$/, async function () {
   await WelcomeModal.confirmButton.waitForClickable();
   await WelcomeModal.confirmButton.click();
   await Assert.toast(`Welcome, ${this.userName}!`);
+});
+
+Given(/^user skip UNDP flavor application if it exist$/, async function() {
   await OnboardingAddingIdentifierWelcomeScreen.clickOnSkipButton();
 });

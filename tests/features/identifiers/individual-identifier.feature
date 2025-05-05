@@ -2,6 +2,7 @@ Feature: IndividualIdentifier
 
   Background:
     Given user is onboarded with skipped password creation
+    And user skip UNDP flavor application if it exist
 
   Scenario: C135 IndividualIdentifier - Cancel adding an identifier from Add an identifier button
     Given user tap Add an identifier button on the Identifiers screen
