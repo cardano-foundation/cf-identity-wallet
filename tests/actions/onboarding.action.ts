@@ -15,6 +15,7 @@ import VerifySeedPhraseScreen from "../screen-objects/onboarding/verify-your-rec
 import WelcomeModal from "../screen-objects/components/welcome.modal.js";
 import { returnPassword } from "../helpers/generate";
 import BiometricScreen from "../screen-objects/onboarding/biometric.screen";
+import OnboardingAddingIdentifierWelcomeScreen from "../screen-objects/onboarding/onboarding-adding-identifier-welcome.screen";
 
 Given(/^user is onboarded with skipped password creation$/, async function () {
   await OnboardingScreen.tapOnGetStartedButton();
@@ -35,6 +36,7 @@ Given(/^user is onboarded with skipped password creation$/, async function () {
   await WelcomeModal.confirmButton.waitForClickable();
   await WelcomeModal.confirmButton.click();
   await Assert.toast(`Welcome, ${this.userName}!`);
+  await OnboardingAddingIdentifierWelcomeScreen.clickOnSkipButton();
 });
 
 Given(/^user is onboarded with a password creation$/, async function () {
@@ -65,4 +67,5 @@ Given(/^user is onboarded with a password creation$/, async function () {
   await WelcomeModal.confirmButton.waitForClickable();
   await WelcomeModal.confirmButton.click();
   await Assert.toast(`Welcome, ${this.userName}!`);
+  await OnboardingAddingIdentifierWelcomeScreen.clickOnSkipButton();
 });
