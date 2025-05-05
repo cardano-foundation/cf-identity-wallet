@@ -23,11 +23,11 @@ export class OnboardingAddingIdentifierWelcomeScreen {
   }
 
   get pendingToastMessage() {
-    return $("[data-testid*='confirmation-toast'][message='Identifier pending']");
+    return $("[message='Identifier pending']");
   }
 
   get createdToastMessage() {
-    return $("[data-testid*='confirmation-toast'][message='Identifier created']");
+    return $("[message='Identifier created']");
   }
 
   async loads(titleName: string) {

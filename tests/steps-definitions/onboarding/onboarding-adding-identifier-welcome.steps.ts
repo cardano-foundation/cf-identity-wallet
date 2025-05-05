@@ -18,7 +18,7 @@ Given(/^user is onboarded with skipped password creation successful$/, async fun
   await PasscodeScreen.enterPasscode(
     (this.passcode = await PasscodeScreen.createAndEnterRandomPasscode())
   );
-  if (await BiometricScreen.biometricWarningText.isDisplayed()) {
+  if (await BiometricScreen.biometricWarningText.isExisting()) {
     await BiometricScreen.handleBiometricPopup();
   }
   await CreatePasswordScreen.skipButton.click();
