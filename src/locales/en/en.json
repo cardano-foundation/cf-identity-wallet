@@ -1309,14 +1309,6 @@
             "dontallow": "Don't allow"
           }
         },
-        "signconfirmation": {
-          "title": "Signed event",
-          "subtitle": "{{certificate}} for {{connection}} is now fully signed 🎉",
-          "description": "The {{certificate}} for {{connection}} has been successfully signed by all required parties and is now verified and finalized.\n\nA copy is available for your records. Click below to view or download the certificate.",
-          "button": {
-            "label": "View {{certificate}}"
-          }
-        },
         "signinformation": {
           "title": "Signed event",
           "subtitle": "Waiting for a co-signer",
