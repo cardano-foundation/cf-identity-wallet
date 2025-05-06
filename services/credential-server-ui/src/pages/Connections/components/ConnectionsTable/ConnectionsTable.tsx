@@ -174,7 +174,7 @@ const ConnectionsTable: React.FC = () => {
             headers={headers}
             pagination={{
               component: "div",
-              count: rows.length,
+              count: visibleRows.length,
               rowsPerPage: rowsPerPage,
               page: page,
               onPageChange: handleChangePage,
