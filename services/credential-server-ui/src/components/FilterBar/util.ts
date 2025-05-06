@@ -33,9 +33,11 @@ export const filter = <T extends AppTableBaseData>(
         ? dayjs(filterData.startDate)
         : null;
       const endDate = filterData.endDate ? dayjs(filterData.endDate) : null;
+      const compareEndDate = endDate?.add(1, "day");
 
-      const isGreatThanStartDate = date.isAfter(startDate);
-      const isLessThanEndDate = date.isBefore(endDate);
+      const isGreatThanStartDate =
+        date.isAfter(startDate) || date.isSame(startDate);
+      const isLessThanEndDate = date.isBefore(compareEndDate);
 
       if (startDate && endDate) {
         return isGreatThanStartDate && isLessThanEndDate;
