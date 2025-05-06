@@ -94,6 +94,7 @@ const NotificationItem = ({
     item.groupReplied,
     item.groupInitiatorPre,
     multisigConnectionsCache,
+    item.a.m,
   ]);
 
   const referIcon = (item: KeriaNotification) => {
