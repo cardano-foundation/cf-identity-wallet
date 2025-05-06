@@ -251,7 +251,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
           headers={headers}
           pagination={{
             component: "div",
-            count: credentials.length,
+            count: visibleRows.length,
             rowsPerPage: rowsPerPage,
             page: page,
             onPageChange: handleChangePage,
