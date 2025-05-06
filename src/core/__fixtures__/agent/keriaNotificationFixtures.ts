@@ -1,5 +1,11 @@
-import { ExchangeRoute , NotificationRoute } from "../../agent/services/keriaNotificationService.types";
-import { CredentialStatus } from "../../agent/services/credentialService.types";
+import {
+  ExchangeRoute,
+  NotificationRoute,
+} from "../../agent/services/keriaNotificationService.types";
+import {
+  CredentialStatus,
+  Notification,
+} from "../../agent/services/credentialService.types";
 import { MultiSigRoute } from "../../agent/services/multiSig.types";
 
 const credentialMetadataMock = {
@@ -411,6 +417,53 @@ const findNotificationsResult = [
   },
 ];
 
+const humanReadableExn = {
+  exn: {
+    v: "KERI10JSON000149_",
+    t: "exn",
+    d: "EGUCiIyweXtkmgAmvxHHjavfDKBnmbRbFiQ8wBPZuBdJ",
+    i: "EMfeMGnsFnFC0L5awstpS_eSlHiFFb434_WplA6IKFpT",
+    rp: "EBZNh4ChnTeP7R5CxL-IuGNm7TwKu-5ZnrbKToIbm7-d",
+    p: "",
+    dt: "2025-05-02T10:16:50.817000+00:00",
+    r: "/hmessage",
+    q: {},
+    a: {
+      m: "Certificate created",
+      t: "Certificate created",
+      st: "Everything is now fully signed",
+      c: ["First paragraph", "Second paragraph"],
+    },
+    e: {},
+  },
+  pathed: {},
+};
+
+const humanReadableLinkedExn = {
+  exn: {
+    ...humanReadableExn.exn,
+    a: {
+      ...humanReadableExn.exn.a,
+      l: {
+        t: "View certificate",
+        a: "http://test.com",
+      },
+    },
+  },
+  pathed: {},
+};
+
+const humanReadableNotification: Notification = {
+  i: "0ADfXs42uwqd9lYDesWYJVFD",
+  dt: "2025-05-01T11:33:20.613745+00:00",
+  r: false,
+  a: {
+    r: "/exn/hmessage",
+    d: "EGUCiIyweXtkmgAmvxHHjavfDKBnmbRbFiQ8wBPZuBdJ",
+    m: "View certificate",
+  },
+};
+
 export {
   credentialMetadataMock,
   grantForIssuanceExnMessage,
@@ -432,4 +485,7 @@ export {
   groupIdentifierMetadataRecord,
   hab,
   findNotificationsResult,
+  humanReadableExn,
+  humanReadableLinkedExn,
+  humanReadableNotification,
 };

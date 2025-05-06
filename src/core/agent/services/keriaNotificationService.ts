@@ -6,7 +6,12 @@ import {
   MiscRecordId,
   CreationStatus,
 } from "../agent.types";
-import { KeriaNotificationMarker , KeriaNotification , ExchangeRoute , NotificationRoute } from "./keriaNotificationService.types";
+import {
+  KeriaNotificationMarker,
+  KeriaNotification,
+  ExchangeRoute,
+  NotificationRoute,
+} from "./keriaNotificationService.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
   BasicRecord,
@@ -311,6 +316,11 @@ class KeriaNotificationService extends AgentService {
       shouldCreateRecord = await this.processMultiSigIcpNotification(exn);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(
+        notif,
+        exn
+      );
+    } else if (notif.a.r === NotificationRoute.HumanReadableMessage) {
+      shouldCreateRecord = await this.processHumanReadableNotification(
         notif,
         exn
       );
@@ -869,6 +879,35 @@ class KeriaNotificationService extends AgentService {
       default:
         return false;
     }
+  }
+
+  private async processHumanReadableNotification(
+    notif: Notification,
+    exchange: ExnMessage
+  ): Promise<boolean> {
+    const payload = exchange.exn.a;
+
+    const valid = [
+      Object.hasOwn(payload, "m") && typeof payload.m === "string",
+      Object.hasOwn(payload, "t") && typeof payload.t === "string",
+      Object.hasOwn(payload, "st") && typeof payload.st === "string",
+      Array.isArray(payload.c) &&
+        payload.c.length > 0 &&
+        payload.c.every((paragraph: unknown) => typeof paragraph === "string"),
+    ].every(Boolean); // Ensure all true
+
+    if (valid) {
+      if (!payload.l) {
+        return true;
+      }
+
+      if (typeof payload.l.t === "string" && typeof payload.l.a === "string") {
+        return true;
+      }
+    }
+
+    await this.markNotification(notif.i);
+    return false;
   }
 
   private async createNotificationRecord(

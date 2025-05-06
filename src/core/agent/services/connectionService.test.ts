@@ -3,7 +3,7 @@
  */
 // @TODO - foconnor: Core tests should likely all be on node, so we can stop mocking Signify-TS/libsodium.
 
-import { ready, Salter } from "signify-ts";
+import { ready } from "signify-ts";
 import { ConnectionStatus, CreationStatus, OobiType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { CoreEventEmitter } from "../event";
@@ -17,6 +17,10 @@ import {
 } from "./connectionService.types";
 import { memberMetadataRecord } from "../../__fixtures__/agent/multiSigFixtures";
 import { individualRecord } from "../../__fixtures__/agent/identifierFixtures";
+import {
+  humanReadableExn,
+  humanReadableLinkedExn,
+} from "../../__fixtures__/agent/keriaNotificationFixtures";
 
 const contactListMock = jest.fn();
 let deleteContactMock = jest.fn();
@@ -26,19 +30,14 @@ const getIdentifier = jest.fn();
 const saveOperationPendingMock = jest.fn();
 let contactGetMock = jest.fn();
 const submitRpyMock = jest.fn();
+const getExchangeMock = jest.fn();
 
 const failUuid = "fail-uuid";
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
   identifiers: () => ({
-    list: jest.fn(),
     get: getIdentifier,
-    create: jest.fn(),
-    addEndRole: jest.fn(),
-    interact: jest.fn(),
-    rotate: jest.fn(),
-    members: jest.fn(),
   }),
   operations: () => ({
     get: jest.fn().mockImplementation((id: string) => {
@@ -88,28 +87,12 @@ const signifyClient = jest.mocked({
     delete: deleteContactMock,
     update: updateContactMock,
   }),
-  notifications: () => ({
-    list: jest.fn(),
-    mark: jest.fn(),
-  }),
-  ipex: () => ({
-    admit: jest.fn(),
-    submitAdmit: jest.fn(),
-  }),
-  credentials: () => ({
-    list: jest.fn(),
-  }),
   exchanges: () => ({
-    get: jest.fn(),
-    send: jest.fn(),
+    get: getExchangeMock,
   }),
   agent: {
     pre: "pre",
   },
-  keyStates: () => ({
-    query: jest.fn(),
-    get: jest.fn(),
-  }),
   replies: () => ({
     submitRpy: submitRpyMock,
   }),
@@ -1284,5 +1267,32 @@ describe("Connection service of agent", () => {
         "\"http://oobi.com/oobi/ourIdentifier?name=Alice&externalId=test123\""
       )
     );
+  });
+
+  test("Can get details of a human readable message", async () => {
+    getExchangeMock.mockResolvedValue(humanReadableExn);
+    expect(
+      await connectionService.getHumanReadableMessage("message-said")
+    ).toEqual({
+      t: "Certificate created",
+      st: "Everything is now fully signed",
+      c: ["First paragraph", "Second paragraph"],
+      l: undefined,
+    });
+  });
+
+  test("Can get details of a human readable message with a link", async () => {
+    getExchangeMock.mockResolvedValue(humanReadableLinkedExn);
+    expect(
+      await connectionService.getHumanReadableMessage("message-said")
+    ).toEqual({
+      t: "Certificate created",
+      st: "Everything is now fully signed",
+      c: ["First paragraph", "Second paragraph"],
+      l: {
+        t: "View certificate",
+        a: "http://test.com",
+      },
+    });
   });
 });

@@ -34,7 +34,7 @@ interface Notification {
   a: {
     r: string;
     d: string;
-    m: string;
+    m?: string;
   };
 }
 
