@@ -28,7 +28,9 @@ body {
         .app-spinner-container
       ):not(.input-pid-modal):not(.confirmation-toast):not(
         .alert-create-identifier
-      ):not(.create-identifier-modal) {
+      ):not(.create-identifier-modal):not(.identifier-selector-modal):not(
+        .alert-create-identifier
+      ) {
       display: none;
     }
 

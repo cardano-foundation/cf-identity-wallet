@@ -17,6 +17,7 @@ import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { InputRequest } from "./InputRequest";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
+import { identifierFix } from "../../__fixtures__/identifierFix";
 
 const connectByOobiUrl = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
@@ -278,8 +279,10 @@ describe("Set connection alias", () => {
     },
     connectionsCache: {
       connections: connectionsFix,
-      missingAliasUrl:
-        "http://keria:3902/oobi/EJ0XanWANawPeyCzyPxAbilMId9FNHY8eobED84Gxfij/agent/ENmmQwmKjO7UQdRMGd2STVUvjV8y1sKCkg1Wc_QvpZU3",
+      missingAliasUrl: {
+        url: "http://keria:3902/oobi/EJ0XanWANawPeyCzyPxAbilMId9FNHY8eobED84Gxfij/agent/ENmmQwmKjO7UQdRMGd2STVUvjV8y1sKCkg1Wc_QvpZU3",
+        identifier: identifierFix[0].id,
+      },
     },
   };
 
