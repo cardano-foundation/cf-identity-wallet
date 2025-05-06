@@ -141,7 +141,6 @@
     "workbox-webpack-plugin": "^6.5.4",
     "yaml-loader": "^0.8.0"
   },
-
   "overrides": {
     "@aparajita/capacitor-biometric-auth": {
       "@capacitor/android": "^7.0.0",
@@ -154,7 +153,11 @@
       "@capacitor/app": "7.0.0",
       "@capacitor/core": "^7.0.0",
       "@capacitor/ios": "^7.0.0"
-    }
+    },
+    "axios": "^1.6.0",
+    "base-x": "^4.0.0",
+    "ipaddr.js": "^2.2.0",
+    "validate.js": "^0.13.1"
   },
   "eslintConfig": {
     "extends": [
