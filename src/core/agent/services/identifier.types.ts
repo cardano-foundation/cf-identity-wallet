@@ -1,5 +1,9 @@
 import { CreateIdentifierBody } from "signify-ts";
-import { ConnectionShortDetails, CreationStatus } from "../agent.types";
+import {
+  ConnectionShortDetails,
+  CreationStatus,
+  JSONObject,
+} from "../agent.types";
 import { IdentifierMetadataRecord } from "../records";
 
 interface GroupMetadata {
@@ -78,6 +82,11 @@ interface GroupParticipants {
   multisigMembers: any;
 }
 
+interface RemoteSignRequest {
+  identifier: string;
+  payload: JSONObject;
+}
+
 export type {
   IdentifierShortDetails,
   IdentifierDetails,
@@ -92,4 +101,5 @@ export type {
   QueuedGroupProps,
   QueuedGroupCreation,
   GroupParticipants,
+  RemoteSignRequest,
 };

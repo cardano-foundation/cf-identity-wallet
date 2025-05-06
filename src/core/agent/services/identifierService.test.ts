@@ -1,3 +1,4 @@
+import { ready, Serder } from "signify-ts";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
 import { ConnectionStatus, MiscRecordId, CreationStatus } from "../agent.types";
@@ -10,16 +11,29 @@ import * as utils from "./utils";
 import { BasicRecord } from "../records";
 import { StorageMessage } from "../../storage/storage.types";
 import { findNotificationsResult } from "../../__fixtures__/agent/keriaNotificationFixtures";
+import {
+  hab,
+  remoteSignRefExn,
+  remoteSignReqExn,
+} from "../../__fixtures__/agent/identifierFixtures";
+import {
+  ExchangeRoute,
+  NotificationRoute,
+} from "./keriaNotificationService.types";
 
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
-const getIdentifiersMock = jest.fn();
+const getIdentifierMock = jest.fn();
 const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
 const findOperationMock = jest.fn();
 const markNotificationMock = jest.fn();
+const exchangeGetMock = jest.fn();
+const interactMock = jest.fn();
+const sendFromEventsMock = jest.fn();
+const createExchangeMessageMock = jest.fn();
 
 const mockSigner = {
   _code: "A",
@@ -44,21 +58,15 @@ const operationGetMock = jest.fn().mockImplementation((id: string) => {
 });
 const getAgentConfigMock = jest.fn();
 
-jest.mock("signify-ts", () => ({
-  Salter: jest.fn().mockImplementation(() => {
-    return { qb64: "" };
-  }),
-}));
-
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
   identifiers: () => ({
     list: listIdentifiersMock,
-    get: getIdentifiersMock,
+    get: getIdentifierMock,
     create: createIdentifierMock,
     addEndRole: jest.fn().mockResolvedValue({ op: jest.fn() }),
-    interact: jest.fn(),
+    interact: interactMock,
     rotate: rotateIdentifierMock,
     members: getIdentifierMembersMock,
     update: updateIdentifierMock,
@@ -66,50 +74,17 @@ const signifyClient = jest.mocked({
   operations: () => ({
     get: operationGetMock,
   }),
-  oobis: () => ({
-    get: jest.fn(),
-    resolve: jest.fn().mockImplementation((name: string) => {
-      return {
-        done: true,
-        response: {
-          i: name,
-        },
-      };
-    }),
-  }),
-  contacts: () => ({
-    list: jest.fn(),
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
-        oobi: "oobi",
-        id,
-      };
-    }),
-    delete: jest.fn(),
-  }),
   notifications: () => ({
-    list: jest.fn(),
     mark: markNotificationMock,
   }),
-  ipex: () => ({
-    admit: jest.fn(),
-    submitAdmit: jest.fn(),
-  }),
-  credentials: () => ({
-    list: jest.fn(),
-  }),
   exchanges: () => ({
-    get: jest.fn(),
-    send: jest.fn(),
+    get: exchangeGetMock,
+    sendFromEvents: sendFromEventsMock,
+    createExchangeMessage: createExchangeMessageMock,
   }),
   agent: {
     pre: "pre",
   },
-  keyStates: () => ({
-    query: jest.fn(),
-    get: jest.fn(),
-  }),
   manager: undefined,
   config: () => ({
     get: getAgentConfigMock,
@@ -156,6 +131,7 @@ const basicStorage = jest.mocked({
 const notificationStorage = jest.mocked({
   deleteById: jest.fn(),
   findAllByQuery: jest.fn(),
+  findExpectedById: jest.fn(),
 });
 
 const identifierService = new IdentifierService(
@@ -280,6 +256,10 @@ const witnessEids = WITNESSES.map(
 );
 
 describe("Single sig service of agent", () => {
+  beforeAll(async () => {
+    await ready();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
 
@@ -349,7 +329,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    getIdentifiersMock.mockRejectedValue(
+    getIdentifierMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
     );
     await expect(
@@ -391,7 +371,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
 
     expect(
       await identifierService.getIdentifier(keriMetadataRecord.id)
@@ -413,7 +393,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+    getIdentifierMock.mockResolvedValue(groupIdentifierStateKeria);
     getIdentifierMembersMock.mockResolvedValue(identifierMembersState);
 
     expect(
@@ -506,7 +486,7 @@ describe("Single sig service of agent", () => {
           },
         })
       );
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
@@ -591,7 +571,7 @@ describe("Single sig service of agent", () => {
           },
         })
       );
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
@@ -693,7 +673,7 @@ describe("Single sig service of agent", () => {
           },
         })
       );
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
@@ -783,7 +763,7 @@ describe("Single sig service of agent", () => {
         },
       })
     );
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
@@ -852,7 +832,7 @@ describe("Single sig service of agent", () => {
       .mockResolvedValueOnce({
         aids: [{ prefix: "id", name: "0:displayName" }],
       });
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
@@ -921,7 +901,7 @@ describe("Single sig service of agent", () => {
       .mockResolvedValueOnce({
         aids: [],
       });
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
@@ -972,7 +952,7 @@ describe("Single sig service of agent", () => {
         },
       })
     );
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "op123",
       recordType: OperationPendingRecordType.Witness,
@@ -1036,7 +1016,7 @@ describe("Single sig service of agent", () => {
         },
       })
     );
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     identifierStorage.createIdentifierMetadataRecord = jest
       .fn()
       .mockRejectedValue(
@@ -1366,7 +1346,7 @@ describe("Single sig service of agent", () => {
         done: true,
         name: "group.EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJljTz8",
       });
-    getIdentifiersMock
+    getIdentifierMock
       .mockResolvedValueOnce({
         salty: {
           sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
@@ -1529,7 +1509,7 @@ describe("Single sig service of agent", () => {
         done: true,
         name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       });
-    getIdentifiersMock
+    getIdentifierMock
       .mockResolvedValueOnce({
         salty: {
           sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
@@ -1646,7 +1626,7 @@ describe("Single sig service of agent", () => {
         done: false,
         name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
       });
-    getIdentifiersMock
+    getIdentifierMock
       .mockResolvedValueOnce({
         salty: {
           sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
@@ -1789,7 +1769,7 @@ describe("Single sig service of agent", () => {
         name: "group.EPMFON5GHY3o4mLr7XsHvXBCED4gkr1ILUX9NSRkOPM",
         error: { code: 400 },
       });
-    getIdentifiersMock
+    getIdentifierMock
       .mockResolvedValueOnce({
         salty: {
           sxlt: "1AAHFlFbNZ29MWHve6gyXfaJr4q2xgCmNEadpkh7IPuP1weDcOEb-bv3CmOoXK3xIik85tc9AYlNxFn_sTMpcvlbog8k4T5rE35i",
@@ -1892,7 +1872,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
 
     await expect(
       identifierService.getSigner(keriMetadataRecord.id)
@@ -1904,7 +1884,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
+    getIdentifierMock.mockResolvedValue(identifierStateKeria);
     signifyClient.manager = managerMock as any;
     expect(
       await identifierService.getSigner(keriMetadataRecord.id)
@@ -2185,6 +2165,80 @@ describe("Single sig service of agent", () => {
     expect(await identifierService.getAvailableWitnesses()).toStrictEqual({
       toad: 8,
       witnesses: [...witnessEids.slice(0, 12)],
+    });
+  });
+});
+
+describe("Remote signing", () => {
+  beforeAll(() => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+  });
+
+  test("Can retrieve remote sign request details", async () => {
+    exchangeGetMock.mockResolvedValue(
+      JSON.parse(JSON.stringify(remoteSignReqExn))
+    ); // Deep clone so delete doesn't impact other tests
+    expect(
+      await identifierService.getRemoteSignRequestDetails("req-said")
+    ).toEqual({
+      identifier: "EBsX58cp09dyBfsS6xQ8O-p67HYQR4zYQLPfT9ht8swD",
+      payload: {
+        t: 2,
+      },
+    });
+  });
+
+  test("Can anchor a SealDigest for remote signing and respond", async () => {
+    exchangeGetMock.mockResolvedValue(remoteSignReqExn);
+    interactMock.mockResolvedValue({
+      serder: {
+        ked: {
+          s: "1",
+        },
+      },
+    });
+    getIdentifierMock.mockResolvedValue(hab);
+    createExchangeMessageMock.mockResolvedValue([
+      new Serder(remoteSignRefExn.exn),
+      [
+        "AADYM8tdhMLLMPfbOgMIFWh0egygPgRxITKZ7ntqpOXD2G1wBA2C13mPvJo6ECiQbYlGoXOR1Fu-oAcF1UD0qaYF",
+      ],
+      "",
+    ]);
+    notificationStorage.findExpectedById.mockResolvedValue({
+      id: "note-id",
+      route: NotificationRoute.RemoteSignReq,
+    });
+
+    await identifierService.remoteSign("note-id", "req-said");
+
+    expect(interactMock).toBeCalledWith(remoteSignReqExn.exn.rp, {
+      d: "EIAARCAUQMQrjqMTp6D0Pk3UuOUrrIS8uKC1bvJRpWyJ",
+    });
+    expect(createExchangeMessageMock).toBeCalledWith(
+      hab,
+      ExchangeRoute.RemoteSignRef,
+      { sn: "1" },
+      [],
+      remoteSignReqExn.exn.i,
+      undefined,
+      "req-said"
+    );
+    expect(sendFromEventsMock).toBeCalledWith(
+      remoteSignReqExn.exn.rp,
+      "remotesign",
+      new Serder(remoteSignRefExn.exn),
+      [
+        "AADYM8tdhMLLMPfbOgMIFWh0egygPgRxITKZ7ntqpOXD2G1wBA2C13mPvJo6ECiQbYlGoXOR1Fu-oAcF1UD0qaYF",
+      ],
+      "",
+      [remoteSignReqExn.exn.i]
+    );
+    expect(markNotificationMock).toBeCalledWith("note-id");
+    expect(notificationStorage.deleteById).toBeCalledWith("note-id");
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: { id: "note-id" },
     });
   });
 });

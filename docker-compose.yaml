@@ -3,10 +3,11 @@ services:
   keria:
     container_name: idw-keria
     restart: unless-stopped
-    image: cardanofoundation/cf-idw-keria:1.0.0-PR1130-a3e957d-GHRUN14507582084
+    image: cardanofoundation/cf-idw-keria:1.1.0-PR1165-21bbe7b-GHRUN14776762583
     environment:
       - KERI_AGENT_CORS=true
       - ALLOW_INTRODUCTIONS=true
+      - REMOTE_SIGNING=true
     volumes:
       - keria-data:/usr/local/var/keri
       - ./keria-config/config.json:/keria/scripts/keri/cf/backer-oobis.json

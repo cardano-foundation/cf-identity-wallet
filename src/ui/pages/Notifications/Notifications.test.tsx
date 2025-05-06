@@ -391,7 +391,7 @@ describe("Notifications Tab", () => {
       read: false,
       createdAt: new Date().toISOString(),
       a: {
-        r: NotificationRoute.LocalSign,
+        r: NotificationRoute.RemoteSignReq,
         payload: {},
       },
 

@@ -7,9 +7,9 @@ enum NotificationRoute {
   ExnIpexOffer = "/exn/ipex/offer",
   ExnIpexAgree = "/exn/ipex/agree",
   ExnIpexGrant = "/exn/ipex/grant",
+  RemoteSignReq = "/exn/remotesign/ixn/req",
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
-  LocalSign = "/local/signrequest",
   LocalConfirmation = "/local/signconfirmation",
   LocalInformation = "/local/signinformation",
   LocalConnectInstructions = "/local/connectinstructions",
@@ -21,6 +21,7 @@ enum ExchangeRoute {
   IpexApply = "/ipex/apply",
   IpexAgree = "/ipex/agree",
   IpexOffer = "/ipex/offer",
+  RemoteSignRef = "/remotesign/ixn/ref",
 }
 
 interface KeriaNotification {
@@ -39,5 +40,15 @@ interface KeriaNotificationMarker {
   lastNotificationId: string;
 }
 
+interface Notification {
+  i: string;
+  dt: string;
+  r: boolean;
+  a: {
+    r: string;
+    d: string;
+  };
+}
+
 export { NotificationRoute, ExchangeRoute };
-export type { KeriaNotification, KeriaNotificationMarker };
+export type { KeriaNotification, KeriaNotificationMarker, Notification };

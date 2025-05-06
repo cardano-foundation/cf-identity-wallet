@@ -9,7 +9,10 @@ import {
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
-import { KeriaNotification , NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/services/keriaNotificationService.types";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
@@ -68,7 +71,7 @@ const NotificationItem = ({
         return t("tabs.notifications.tab.labels.multisigexn", {
           connection: connectionName || t("connections.unknown"),
         });
-      case NotificationRoute.LocalSign:
+      case NotificationRoute.RemoteSignReq:
         return t("tabs.notifications.tab.labels.sign", {
           certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
           connection: connectionName || t("connections.unknown"),
@@ -105,7 +108,7 @@ const NotificationItem = ({
         return idCardOutline;
       case NotificationRoute.MultiSigIcp:
         return fingerPrintOutline;
-      case NotificationRoute.LocalSign:
+      case NotificationRoute.RemoteSignReq:
         return documentOutline;
       case NotificationRoute.LocalConnectInstructions:
         return personCircleOutline;
@@ -121,7 +124,7 @@ const NotificationItem = ({
   };
 
   const isLocalSign = [
-    NotificationRoute.LocalSign,
+    NotificationRoute.RemoteSignReq,
     NotificationRoute.LocalConnectInstructions,
   ].includes(item.a.r as NotificationRoute);
 

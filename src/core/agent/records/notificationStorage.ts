@@ -1,4 +1,8 @@
-import { Query, StorageService } from "../../storage/storage.types";
+import {
+  Query,
+  StorageMessage,
+  StorageService,
+} from "../../storage/storage.types";
 import {
   NotificationRecord,
   NotificationRecordStorageProps,
@@ -26,6 +30,13 @@ class NotificationStorage {
   }
   findById(id: string): Promise<NotificationRecord | null> {
     return this.storageService.findById(id, NotificationRecord);
+  }
+  async findExpectedById(id: string): Promise<NotificationRecord> {
+    const record = await this.findById(id);
+    if (!record) {
+      throw new Error(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG);
+    }
+    return record;
   }
   findAllByQuery(
     query: Query<NotificationRecord>

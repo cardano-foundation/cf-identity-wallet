@@ -141,12 +141,6 @@ interface AgentServicesProps {
   eventEmitter: CoreEventEmitter;
 }
 
-interface IdentifierResult {
-  name: string;
-  prefix: string;
-  salty: any;
-}
-
 interface AgentUrls {
   url: string;
   bootUrl: string;
@@ -180,7 +174,6 @@ export type {
   ConnectionHistoryItem,
   OobiScan,
   AgentServicesProps,
-  IdentifierResult,
   AgentUrls,
   BranAndMnemonic,
   ExnMessage,

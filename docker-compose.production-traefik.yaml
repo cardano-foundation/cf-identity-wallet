@@ -22,8 +22,10 @@ services:
     restart: unless-stopped
     image: ${KERIA_IMAGE:-cardanofoundation/cf-idw-keria:main}
     environment:
-      - KERI_AGENT_CORS=true
+      - KERI_AGENT_CORS=${KERI_AGENT_CORS:-true}
       - KERIA_PASSCODE=${KERIA_PASSCODE:-DLDRW3f108LaQB2qscJOd}
+      - ALLOW_INTRODUCTIONS=${ALLOW_INTRODUCTIONS:-true}
+      - REMOTE_SIGNING=${REMOTE_SIGNING:-true}
     volumes:
       - keria-data:/usr/local/var/keri
       - keria-config:/keria/scripts/keri/cf
