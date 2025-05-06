@@ -1,5 +1,5 @@
 import { Given, Then, When } from "@wdio/cucumber-framework";
-import OnboardingAddingIdentifierWelcomeScreen from "../../screen-objects/onboarding/onboarding-adding-identifier-welcome.screen";
+import UNDPWelcomeScreen from "../../screen-objects/onboarding/undp-welcome.screen";
 import { generateRecoveryPhraseOf, recoveryPhraseWords } from "./verify-your-recovery-phrase.steps";
 import { recoveryPhrase } from "../../helpers/recovery-phrase";
 import VerifySeedPhraseScreen from "../../screen-objects/onboarding/verify-your-recovery-phrase.screen";
@@ -34,16 +34,16 @@ Given(/^user is onboarded with skipped password creation successful$/, async fun
 });
 
 Then(/^user can see Welcome message$/, async function () {
-  await OnboardingAddingIdentifierWelcomeScreen.loads(`Welcome, ${this.userName}`);
+  await UNDPWelcomeScreen.loads(`Welcome, ${this.userName}`);
 });
 
 Given(/^user tap Add and Identifier button on Welcome message$/, async function() {
-  await OnboardingAddingIdentifierWelcomeScreen.addIdentifierButton.click();
+  await UNDPWelcomeScreen.addIdentifierButton.click();
 });
 
 Then(/^user can see toast message about created identifier$/, async function() {
-  await OnboardingAddingIdentifierWelcomeScreen.pendingToast();
-  await OnboardingAddingIdentifierWelcomeScreen.createdToast();
+  await UNDPWelcomeScreen.pendingToast();
+  await UNDPWelcomeScreen.createdToast();
 });
 
 When(/^user tap Cancel button on Add and Identifier screen$/, async function() {
@@ -51,6 +51,6 @@ When(/^user tap Cancel button on Add and Identifier screen$/, async function() {
 });
 
 Given(/^user tap Skip button on Welcome message$/, async function() {
-  await OnboardingAddingIdentifierWelcomeScreen.clickOnSkipButton();
-  await OnboardingAddingIdentifierWelcomeScreen.welcomeScreenInvisible();
+  await UNDPWelcomeScreen.handleSkipUNDPScreen();
+  await UNDPWelcomeScreen.welcomeScreenInvisible();
 });

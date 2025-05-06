@@ -1,7 +1,7 @@
 import { expect } from "expect-webdriverio";
 import { WelcomeMessage } from "../../constants/text.constants";
 
-export class OnboardingAddingIdentifierWelcomeScreen {
+export class UNDPWelcomeScreen {
 
   get welcomeBoard() {
     return $(".content");
@@ -60,7 +60,7 @@ export class OnboardingAddingIdentifierWelcomeScreen {
     }
   }
 
-  async clickOnSkipButton() {
+  async handleSkipUNDPScreen() {
     if (await this.skipButton.isExisting()) {
       await this.skipButton.click();
     }
@@ -68,4 +68,4 @@ export class OnboardingAddingIdentifierWelcomeScreen {
 }
 
 
-export default new OnboardingAddingIdentifierWelcomeScreen();
+export default new UNDPWelcomeScreen();
