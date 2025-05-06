@@ -141,6 +141,7 @@
     "workbox-webpack-plugin": "^6.5.4",
     "yaml-loader": "^0.8.0"
   },
+
   "overrides": {
     "@aparajita/capacitor-biometric-auth": {
       "@capacitor/android": "^7.0.0",
