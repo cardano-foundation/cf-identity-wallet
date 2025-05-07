@@ -1,10 +1,10 @@
 import { randomPasscode, ready as signifyReady } from "signify-ts";
+import { readFile, writeFile } from "fs/promises";
+import { existsSync, mkdirSync } from "fs";
+import path from "path";
 import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
-import { readFile, writeFile } from "fs/promises";
-import { existsSync, mkdir, mkdirSync } from "fs";
-import path from "path";
 
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
