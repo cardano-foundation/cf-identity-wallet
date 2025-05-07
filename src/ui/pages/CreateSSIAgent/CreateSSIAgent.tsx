@@ -93,7 +93,7 @@ const CreateSSIAgent = () => {
   const isRecoveryMode = stateCache.authentication.recoveryWalletProgress;
   const isIndividualOnlyFirstCreateMode =
     ConfigurationService.env.features.identifiers?.creation?.individualOnly ===
-    IndividualOnlyMode.FirstCreate;
+    IndividualOnlyMode.FirstTime;
 
   useEffect(() => {
     if (!ssiAgent.bootUrl && !ssiAgent.connectUrl) {

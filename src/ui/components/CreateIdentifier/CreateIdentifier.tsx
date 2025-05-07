@@ -290,7 +290,7 @@ const CreateIdentifier = ({
 
   const hiddenTypeSelect =
     ConfigurationService.env.features.identifiers?.creation?.individualOnly ===
-      IndividualOnlyMode.Alway ||
+      IndividualOnlyMode.Always ||
     multiSigGroup ||
     individualFirstCreate;
 

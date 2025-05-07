@@ -28,7 +28,7 @@ jest.mock("../../../core/configuration/configurationService", () => ({
         customContent: [],
         identifiers: {
           creation: {
-            individualOnly: "FirstCreate",
+            individualOnly: "FirstTime",
           },
         },
       },

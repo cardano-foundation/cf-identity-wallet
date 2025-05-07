@@ -12,8 +12,8 @@ enum CustomContent {
 }
 
 enum IndividualOnlyMode {
-  FirstCreate = "FirstCreate",
-  Alway = "Alway",
+  FirstTime = "FirstTime",
+  Always = "Always",
 }
 
 interface IdentifierConfig {
