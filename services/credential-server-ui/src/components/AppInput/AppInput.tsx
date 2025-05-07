@@ -19,17 +19,25 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(3),
   },
-  "& input": {
-    padding: "1rem 1.25rem",
+  "&": {
     borderRadius: "0.5rem",
     border: "1px solid var(--color-neutral-400)",
-    "&:focus": {
+    "& input": {
+      padding: "1rem 1.25rem",
+    },
+    "&.Mui-focused": {
       borderWidth: "2px",
       borderStyle: "solid",
       borderColor: theme.palette.primary.main,
     },
+    "&.MuiInputBase-adornedStart": {
+      paddingLeft: "1rem",
+      input: {
+        padding: "1rem 0.5rem",
+      },
+    },
   },
-  "&.Mui-error input": {
+  "&.Mui-error": {
     borderWidth: "2px",
     borderStyle: "solid",
     borderColor: theme.palette.error.main,

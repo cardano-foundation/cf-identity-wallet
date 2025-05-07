@@ -10,9 +10,10 @@ import {
 import { useState } from "react";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
+import { filter, FilterBar } from "../../components/FilterBar";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
 import { PageHeader } from "../../components/PageHeader";
 import { RequestPresentationModal } from "../../components/RequestPresentationModal";
-import { CredentialTypes } from "../../const";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { PresentationRequestData } from "../../store/reducers/connectionsSlice.types";
@@ -63,6 +64,14 @@ export const RequestPresentation = () => {
     setOpenModal(true);
   };
 
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+
+  const visibleData = filter(visibleRows, filterData, { date: "requestDate" });
+
   return (
     <>
       <Box
@@ -90,10 +99,14 @@ export const RequestPresentation = () => {
             </Button>
           }
         />
+        <FilterBar
+          onChange={setFilterData}
+          totalFound={visibleData.length}
+        />
         <Paper className="request-presentation-table">
           <AppTable
             order={order}
-            rows={visibleRows}
+            rows={visibleData}
             onRenderRow={(row) => {
               return (
                 <TableRow
@@ -160,7 +173,7 @@ export const RequestPresentation = () => {
             headers={headers}
             pagination={{
               component: "div",
-              count: CredentialTypes.length,
+              count: visibleData.length,
               rowsPerPage: rowsPerPage,
               page: page,
               onPageChange: handleChangePage,
