@@ -6,28 +6,42 @@ import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
-import {
-  setCurrentOperation,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { CustomInputProps } from "../../components/CustomInput/CustomInput.types";
 import {
   ONBOARDING_DOCUMENTATION_LINK,
   RECOVERY_DOCUMENTATION_LINK,
 } from "../../globals/constants";
-import { OperationType, ToastMsgType } from "../../globals/types";
+import { OperationType } from "../../globals/types";
 import { CreateSSIAgent } from "./CreateSSIAgent";
-import { Agent } from "../../../core/agent/agent";
+
+jest.mock("../../../core/configuration/configurationService", () => ({
+  ConfigurationService: {
+    env: {
+      features: {
+        cut: [],
+        customContent: [],
+        identifiers: {
+          creation: {
+            individualOnly: "FirstCreate",
+          },
+        },
+      },
+    },
+  },
+}));
 
 const bootAndConnectMock = jest.fn((...args: unknown[]) =>
   Promise.resolve(args)
 );
 const recoverKeriaAgentMock = jest.fn();
 const basicStorageDeleteMock = jest.fn();
+const createOrUpdateBasicRecordMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   ...jest.requireActual("../../../core/agent/agent"),
@@ -48,6 +62,8 @@ jest.mock("../../../core/agent/agent", () => ({
       recoverKeriaAgent: (...args: unknown[]) => recoverKeriaAgentMock(...args),
       basicStorage: {
         deleteById: (...args: unknown[]) => basicStorageDeleteMock(...args),
+        createOrUpdateBasicRecord: (...args: unknown[]) =>
+          createOrUpdateBasicRecordMock(...args),
       },
     },
   },
@@ -414,6 +430,10 @@ describe("SSI agent page", () => {
 
     await waitFor(() => {
       expect(getByTestId("ssi-spinner-container")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordMock).toBeCalled();
     });
   });
 

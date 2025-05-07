@@ -1,6 +1,7 @@
 import {
   Configuration,
   CustomContent,
+  IndividualOnlyMode,
   OptionalFeature,
 } from "./configurationService.types";
 // eslint-disable-next-line no-undef
@@ -88,7 +89,7 @@ class ConfigurationService {
       return this.invalid("Missing top-level features object");
     }
 
-    const { cut, customContent } = features;
+    const { cut, customContent, identifiers } = features;
     if (!Array.isArray(cut)) {
       return this.invalid("features.cut must be a array");
     }
@@ -102,6 +103,18 @@ class ConfigurationService {
     for (const content of customContent) {
       if (!Object.values(CustomContent).includes(content)) {
         return this.invalid("Invalid features.customContent value");
+      }
+    }
+
+    if (identifiers?.creation?.individualOnly) {
+      if (
+        !Object.values(IndividualOnlyMode).includes(
+          identifiers.creation.individualOnly
+        )
+      ) {
+        return this.invalid(
+          "Invalid identifiers.creation.individualOnly value"
+        );
       }
     }
 

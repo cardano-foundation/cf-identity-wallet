@@ -19,6 +19,7 @@ interface IdentifierCacheState {
   multiSigGroup: MultiSigGroup | undefined;
   openMultiSigId?: string;
   scanGroupId?: string;
+  individualFirstCreate?: boolean;
 }
 
 export type { FavouriteIdentifier, MultiSigGroup, IdentifierCacheState };

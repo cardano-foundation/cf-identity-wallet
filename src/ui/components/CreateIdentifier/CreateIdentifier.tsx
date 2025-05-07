@@ -5,7 +5,7 @@ import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
-import { CreationStatus } from "../../../core/agent/agent.types";
+import { CreationStatus, MiscRecordId } from "../../../core/agent/agent.types";
 import { IdentifierService } from "../../../core/agent/services";
 import {
   CreateIdentifierInputs,
@@ -16,6 +16,8 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifiersCache,
+  getIndividualFirstCreateSetting,
+  setIndividualFirstCreate,
   setMultiSigGroupCache,
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
@@ -47,6 +49,7 @@ import {
   CreateIdentifierProps,
   IdentifierModel,
 } from "./CreateIdentifier.types";
+import { IndividualOnlyMode } from "../../../core/configuration/configurationService.types";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
 const DUPLICATE_NAME = "Identifier name is a duplicate";
@@ -58,6 +61,7 @@ const CreateIdentifier = ({
   groupId,
 }: CreateIdentifierProps) => {
   const identifiers = useAppSelector(getIdentifiersCache);
+  const individualFirstCreate = useAppSelector(getIndividualFirstCreateSetting);
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const componentId = "create-identifier-modal";
   const dispatch = useAppDispatch();
@@ -186,6 +190,12 @@ const CreateIdentifier = ({
         dispatch(setMultiSigGroupCache(newMultiSigGroup));
       }
 
+      if (individualFirstCreate) {
+        await Agent.agent.basicStorage
+          .deleteById(MiscRecordId.INDIVIDUAL_FIRST_CREATE)
+          .then(() => dispatch(setIndividualFirstCreate(false)));
+      }
+
       resetModal({
         id: identifier,
         creationStatus: CreationStatus.PENDING,
@@ -279,8 +289,10 @@ const CreateIdentifier = ({
   );
 
   const hiddenTypeSelect =
-    ConfigurationService.env.features.identifiers?.creation?.individualOnly ||
-    multiSigGroup;
+    ConfigurationService.env.features.identifiers?.creation?.individualOnly ===
+      IndividualOnlyMode.Alway ||
+    multiSigGroup ||
+    individualFirstCreate;
 
   return (
     <>

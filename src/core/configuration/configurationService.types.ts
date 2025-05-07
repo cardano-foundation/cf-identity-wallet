@@ -11,9 +11,14 @@ enum CustomContent {
   Intro = "INTRO",
 }
 
+enum IndividualOnlyMode {
+  FirstCreate = "FirstCreate",
+  Alway = "Alway",
+}
+
 interface IdentifierConfig {
   creation?: {
-    individualOnly?: boolean;
+    individualOnly?: IndividualOnlyMode;
     defaultName?: string;
   };
 }
@@ -42,4 +47,4 @@ interface Configuration {
 }
 
 export type { Configuration };
-export { OptionalFeature, CustomContent };
+export { OptionalFeature, CustomContent, IndividualOnlyMode };
