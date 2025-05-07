@@ -29,6 +29,10 @@
 .connections-body {
   .alphabet-selector {
     transition: all 0.25s;
+
+    .active {
+      transform: scale(2);
+    }
   }
 
   &.keyboard {
