@@ -54,6 +54,14 @@ export const Credentials = () => {
     if (roleViewIndex !== RoleIndex.ISSUER) nav(RoutePath.Connections);
   }, [nav, roleViewIndex]);
 
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+
+  const visibleData = filter(tableRows, filterData, { date: "date" });
+
   const {
     order,
     orderBy,
@@ -68,13 +76,6 @@ export const Credentials = () => {
   const viewCredTemplate = (id: string) => {
     nav(`${RoutePath.Credentials}/${id}`);
   };
-
-  const [filterData, setFilterData] = useState<FilterData>({
-    startDate: null,
-    endDate: null,
-    keyword: "",
-  });
-  const visibleData = filter(visibleRows, filterData, { date: "date" });
 
   return (
     <>
@@ -106,7 +107,7 @@ export const Credentials = () => {
         >
           <AppTable
             order={order}
-            rows={visibleData}
+            rows={visibleRows}
             onRenderRow={(row) => {
               return (
                 <TableRow

@@ -72,6 +72,11 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
     useState<CredentialTableRow | null>(null);
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
   const nav = useNavigate();
 
   const tableRows: CredentialTableRow[] = credentials.map((row) => {
@@ -90,6 +95,8 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     };
   });
 
+  const filterRows = filter(tableRows, filterData, { date: "date" });
+
   const {
     order,
     orderBy,
@@ -100,7 +107,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "date");
+  } = useTable(filterRows, "date");
 
   const revokeCred = async () => {
     setOpenModal(false);
@@ -143,24 +150,16 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     nav(RoutePath.ConnectionDetails.replace(":id", cred.identifier));
   };
 
-  const [filterData, setFilterData] = useState<FilterData>({
-    startDate: null,
-    endDate: null,
-    keyword: "",
-  });
-
-  const visibleData = filter(visibleRows, filterData, { date: "date" });
-
   return (
     <Box flex={1}>
       <FilterBar
         onChange={setFilterData}
-        totalFound={visibleData.length}
+        totalFound={filterRows.length}
       />
       <Paper className="credentials-table">
         <AppTable
           order={order}
-          rows={visibleData}
+          rows={visibleRows}
           onRenderRow={(row, index) => {
             const isItemSelected = selected.includes(row.id);
             const labelId = `enhanced-table-checkbox-${index}`;
@@ -251,7 +250,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
           headers={headers}
           pagination={{
             component: "div",
-            count: visibleRows.length,
+            count: filterRows.length,
             rowsPerPage: rowsPerPage,
             page: page,
             onPageChange: handleChangePage,

@@ -66,6 +66,8 @@ const ConnectionsTable: React.FC = () => {
     return generateRows(filteredContacts, credentials);
   }, [connectionsFilterBySearch, contacts, credentials]);
 
+  const filterRows = filter(rows, filterData, { date: "date" });
+
   const {
     order,
     orderBy,
@@ -79,7 +81,7 @@ const ConnectionsTable: React.FC = () => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(rows, "date");
+  } = useTable(filterRows, "date");
 
   useEffect(() => {
     setSelected([]);
@@ -150,13 +152,11 @@ const ConnectionsTable: React.FC = () => {
     setOpenRequestCredModal(true);
   };
 
-  const visibleData = filter(visibleRows, filterData, { date: "date" });
-
   return (
     <>
       <FilterBar
         onChange={setFilterData}
-        totalFound={visibleData.length}
+        totalFound={filterRows.length}
       />
       <Box sx={{ width: "100%" }}>
         <Paper className="connections-table">
@@ -166,7 +166,7 @@ const ConnectionsTable: React.FC = () => {
           />
           <AppTable
             order={order}
-            rows={visibleData}
+            rows={visibleRows}
             onRequestSort={handleRequestSort}
             onSelectAll={handleSelectAllClick}
             selectedRows={selected}
@@ -174,7 +174,7 @@ const ConnectionsTable: React.FC = () => {
             headers={headers}
             pagination={{
               component: "div",
-              count: visibleRows.length,
+              count: filterRows.length,
               rowsPerPage: rowsPerPage,
               page: page,
               onPageChange: handleChangePage,
