@@ -14,3 +14,17 @@ When(
     await MenuPasscodeScreen.cantRememberButton.click();
   }
 );
+
+When(
+  /^user tap forgotten passcode button on Passcode screen from Menu screen$/,
+  async function () {
+    await MenuPasscodeScreen.tapOnForgottenPasswordButton();
+  }
+);
+
+Then(
+  /^user can see Enter passcode screen from Menu screen$/,
+  async function () {
+    await MenuPasscodeScreen.loadsOnEnterPasscodeScreen();
+  }
+);
