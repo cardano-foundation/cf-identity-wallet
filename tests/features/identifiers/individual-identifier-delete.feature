@@ -2,6 +2,7 @@ Feature: IndividualIdentifierDelete
 
   Background:
     Given user is onboarded with skipped password creation
+    And user skip UNDP flavor application if it exist
     And identifier is created and user can see Identifier Card Details screen for Individual
 
   Scenario: C148 IndividualIdentifierDelete - Identifier removed by details screen
