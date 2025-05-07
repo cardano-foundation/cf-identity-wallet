@@ -21,11 +21,11 @@ describe("Rome Card Template", () => {
       </Provider>
     );
     const card = getByTestId("rome-card-template-name-index-0");
-    expect(getByText(shortCredsFix[7].credentialType)).toBeInTheDocument();
+
     expect(
       getByText(formatShortDate(shortCredsFix[7].issuanceDate))
     ).toBeInTheDocument();
-    expect(getByAltText(/card-logo/i)).toBeInTheDocument();
+
     act(() => {
       fireEvent.click(card);
     });

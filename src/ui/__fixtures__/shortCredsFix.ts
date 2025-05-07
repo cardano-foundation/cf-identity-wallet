@@ -1,4 +1,5 @@
 import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multiSigFixtures";
+import { IpexCommunicationService } from "../../core/agent/services";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -84,7 +85,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-23T16:03:44.643Z",
     credentialType: "Rome Offsite 2025 Credential",
     status: CredentialStatus.CONFIRMED,
-    schema: "EMkpplwGGw3fwdktSibRph9NSy_o2MvKDKO8ZoONqTOt",
+    schema: IpexCommunicationService.SCHEMA_SAID_ROME_DEMO,
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
     connectionId: "ebfeb1ebc6f1c276ef71212ec20",
