@@ -40,11 +40,7 @@ import {
   randomSalt,
 } from "./utils";
 import { CredentialService } from "./credentialService";
-import {
-  ConnectionHistoryItem,
-  ConnectionHistoryType,
-  ExnMessage,
-} from "./connectionService.types";
+import { ConnectionHistoryType, ExnMessage } from "./connectionService.types";
 import { NotificationAttempts } from "../records/notificationRecord.types";
 import { StorageMessage } from "../../storage/storage.types";
 import { IdentifierService } from "./identifierService";
@@ -1121,6 +1117,13 @@ class KeriaNotificationService extends AgentService {
         );
 
         if (connectionRecord && !connectionRecord.pendingDeletion) {
+          if (connectionRecord.sharedIdentifier) {
+            await this.connectionService.shareIdentifier(
+              connectionRecord.id,
+              connectionRecord.sharedIdentifier
+            );
+          }
+
           connectionRecord.creationStatus = CreationStatus.COMPLETE;
 
           const keriaContact = await this.props.signifyClient
@@ -1135,6 +1138,7 @@ class KeriaNotificationService extends AgentService {
                 alias: connectionRecord.alias,
                 createdAt: new Date((operation.response as State).dt),
                 oobi: connectionRecord.oobi,
+                sharedIdentifier: connectionRecord.sharedIdentifier ?? "",
               });
           }
 

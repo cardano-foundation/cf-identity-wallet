@@ -22,17 +22,19 @@ import {
 } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
+  CreationStatus,
   OOBI_AGENT_ONLY_RE,
   OobiType,
   WOOBI_RE,
 } from "../../../core/agent/agent.types";
+import { OobiQueryParams } from "../../../core/agent/services/connectionService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
-  setMissingAliasUrl,
+  setMissingAliasConnection,
   setOpenConnectionId,
   updateOrAddMultisigConnectionCache,
 } from "../../../store/reducers/connectionsCache";
@@ -62,9 +64,11 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
 import { isValidConnectionUrl, isValidHttpUrl } from "../../utils/urlChecker";
+import { Alert } from "../Alert";
 import { CreateGroupIdentifier } from "../CreateGroupIdentifier";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
+import { IdentifierSelectorModal } from "../IdentifierSelectorModal";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
@@ -94,7 +98,7 @@ const Scanner = forwardRef(
     const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsgs = useAppSelector(getToastMsgs);
     const loggedIn = useAppSelector(getAuthentication).loggedIn;
-    const groupIdentifierCache = useAppSelector(getIdentifiersCache);
+    const identifiers = useAppSelector(getIdentifiersCache);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
@@ -110,8 +114,17 @@ const Scanner = forwardRef(
     const isHandlingQR = useRef(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [isAlreadyLoaded, setIsAlreadyLoaded] = useState(false);
+    const [openIdentifierSelector, setOpenIdentifierSelector] = useState(false);
+    const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
+      useState<boolean>(false);
+    const scannedConnection = useRef("");
 
     const scanByTab = routePath === TabsRoutePath.SCAN;
+
+    const createdIdentifiers = Object.values(identifiers).filter(
+      (item) =>
+        !item.groupMetadata && item.creationStatus === CreationStatus.COMPLETE
+    );
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -168,7 +181,8 @@ const Scanner = forwardRef(
         if (
           (routePath === TabsRoutePath.SCAN &&
             (isShowConnectionsModal || createIdentifierModalIsOpen)) ||
-          !loggedIn
+          !loggedIn ||
+          openIdentifierSelector
         ) {
           await stopScan();
           return;
@@ -311,7 +325,24 @@ const Scanner = forwardRef(
       );
     };
 
+    const handleAfterSelectIdentifier = (
+      identifier: IdentifierShortDetails
+    ) => {
+      handleResolveConnection(scannedConnection.current, identifier.id);
+      scannedConnection.current = "";
+    };
+
     const openGroupIdentifierSetup = (identifier?: IdentifierShortDetails) => {
+      if (
+        !groupId &&
+        scannedConnection.current &&
+        identifier &&
+        !identifier.groupMetadata
+      ) {
+        handleAfterSelectIdentifier(identifier);
+        return;
+      }
+
       if (!scanByTab && identifier?.groupMetadata?.groupId) {
         openGroupIdentifierSetupWhenScanByFullPage(
           identifier?.groupMetadata?.groupId
@@ -328,7 +359,7 @@ const Scanner = forwardRef(
 
     const handleAfterScanMultisig = (groupId: string | null) => {
       if (!groupId) return;
-      const identifier = Object.values(groupIdentifierCache).find(
+      const identifier = Object.values(identifiers).find(
         (identifier) => identifier.groupMetadata?.groupId === groupId
       );
 
@@ -346,7 +377,7 @@ const Scanner = forwardRef(
     ) => {
       let urlId: string | null = null;
       if (isMultisig) {
-        urlId = new URL(url).searchParams.get("groupId");
+        urlId = new URL(url).searchParams.get(OobiQueryParams.GROUP_ID);
       } else {
         urlId = e.message
           .replace(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
@@ -387,8 +418,10 @@ const Scanner = forwardRef(
     };
 
     const checkUrl = (url: string) => {
-      const isMultiSigUrl = url.includes("groupId");
-      const urlGroupId = new URL(url).searchParams.get("groupId");
+      const isMultiSigUrl = url.includes(OobiQueryParams.GROUP_ID);
+      const urlGroupId = new URL(url).searchParams.get(
+        OobiQueryParams.GROUP_ID
+      );
       const openScanFromMultiSig = [
         OperationType.MULTI_SIG_INITIATOR_SCAN,
         OperationType.MULTI_SIG_RECEIVER_SCAN,
@@ -424,7 +457,9 @@ const Scanner = forwardRef(
 
         if (invitation.type === OobiType.NORMAL) {
           setIsValueCaptured && setIsValueCaptured(true);
-          const groupId = new URL(content).searchParams.get("groupId");
+          const groupId = new URL(content).searchParams.get(
+            OobiQueryParams.GROUP_ID
+          );
 
           if (
             currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
@@ -487,13 +522,23 @@ const Scanner = forwardRef(
       }
     };
 
-    const resolveConnectionOobi = async (content: string) => {
+    const resolveConnectionOobi = async (
+      content: string,
+      sharedIdentifier: string
+    ) => {
       // Adding a pending connection item to the UI.
       // This will be removed when the create connection process ends.
-      const connectionName = new URL(content).searchParams.get("name");
+      const connectionName = new URL(content).searchParams.get(
+        OobiQueryParams.NAME
+      );
       if (!connectionName) {
         setTimeout(() => {
-          dispatch(setMissingAliasUrl(content));
+          dispatch(
+            setMissingAliasConnection({
+              url: content,
+              identifier: sharedIdentifier,
+            })
+          );
         }, OPEN_CONNECTION_TIME);
         return;
       }
@@ -510,7 +555,10 @@ const Scanner = forwardRef(
           );
         }
 
-        await Agent.agent.connections.connectByOobiUrl(content);
+        await Agent.agent.connections.connectByOobiUrl(
+          content,
+          sharedIdentifier
+        );
       } catch (e) {
         const errorMessage = (e as Error).message;
 
@@ -527,15 +575,40 @@ const Scanner = forwardRef(
       }
     };
 
+    const handleResolveConnection = (
+      connection: string,
+      sharedIdentifier?: string
+    ) => {
+      let identifier = sharedIdentifier;
+      if (!sharedIdentifier) {
+        scannedConnection.current = connection;
+        if (createdIdentifiers.length === 0) {
+          setOpenIdentifierMissingAlert(true);
+          return;
+        }
+
+        if (createdIdentifiers.length > 1) {
+          setOpenIdentifierSelector(true);
+          return;
+        }
+
+        scannedConnection.current = "";
+        identifier = createdIdentifiers[0].id;
+      }
+
+      if (!identifier) return;
+
+      resolveConnectionOobi(connection, identifier);
+      handleReset?.();
+      setIsValueCaptured?.(true);
+    };
+
     const handleResolveOobi = async (content: string) => {
-      const isMultisigUrl = content.includes("groupId");
+      const isMultisigUrl = content.includes(OobiQueryParams.GROUP_ID);
 
       try {
         if (!isMultisigUrl) {
-          checkUrl(content);
-          resolveConnectionOobi(content);
-          handleReset?.();
-          setIsValueCaptured?.(true);
+          handleResolveConnection(content);
           return;
         }
 
@@ -644,6 +717,14 @@ const Scanner = forwardRef(
       "scan-unavailable": scanUnavailable,
     });
 
+    const handleCloseAlert = () => {
+      setOpenIdentifierMissingAlert(false);
+    };
+
+    const handleCreateIdentifier = () => {
+      setCreateIdentifierModalIsOpen(true);
+    };
+
     return (
       <>
         <IonGrid
@@ -731,6 +812,27 @@ const Scanner = forwardRef(
             value={pastedValue}
           />
         </OptionModal>
+        <IdentifierSelectorModal
+          open={openIdentifierSelector}
+          setOpen={setOpenIdentifierSelector}
+          onSubmit={handleAfterSelectIdentifier}
+        />
+        <Alert
+          isOpen={openIdentifierMissingAlert}
+          setIsOpen={setOpenIdentifierMissingAlert}
+          dataTestId="alert-create-identifier"
+          className="alert-create-identifier"
+          headerText={i18n.t("tabs.scan.tab.missingidentifier.title")}
+          confirmButtonText={`${i18n.t(
+            "tabs.scan.tab.missingidentifier.create"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "tabs.scan.tab.missingidentifier.cancel"
+          )}`}
+          actionConfirm={handleCreateIdentifier}
+          actionCancel={handleCloseAlert}
+          actionDismiss={handleCloseAlert}
+        />
       </>
     );
   }

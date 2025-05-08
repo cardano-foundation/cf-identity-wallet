@@ -58,6 +58,8 @@ class IpexCommunicationService extends AgentService {
   static readonly NO_CURRENT_IPEX_MSG_TO_JOIN =
     "Cannot join IPEX message as there is no current exn to join from the group leader";
   static readonly INVALID_HISTORY_TYPE = "Invalid history type";
+  static readonly SCHEMA_SAID_ROME_DEMO =
+    "EMkpplwGGw3fwdktSibRph9NSy_o2MvKDKO8ZoONqTOt";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
