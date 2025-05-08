@@ -9,7 +9,10 @@ import {
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
-import { KeriaNotification, NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/services/keriaNotificationService.types";
 import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
@@ -71,12 +74,10 @@ const NotificationItem = ({
         });
       case NotificationRoute.LocalSign:
         return t("tabs.notifications.tab.labels.sign", {
-          certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
           connection: connectionName || t("connections.unknown"),
         });
       case NotificationRoute.LocalConfirmation:
         return t("tabs.notifications.tab.labels.signconfirmation", {
-          certificate: "Certificate", // TODO: change hardcoded value to dynamic
           connection: connectionName || t("connections.unknown"),
         });
       case NotificationRoute.LocalInformation:
@@ -159,7 +160,7 @@ const NotificationItem = ({
           className="notification-ref-icon"
         />
       </div>
-      <IonLabel>
+      <IonLabel data-testid="notifications-tab-item-label">
         <Trans>{notificationLabelText}</Trans>
         <br />
         <span className="notifications-tab-item-time">
@@ -167,14 +168,16 @@ const NotificationItem = ({
           {timeDifference(item.createdAt)[1]}
         </span>
       </IonLabel>
-      <IonIcon
-        aria-hidden="true"
-        icon={ellipsisHorizontal}
-        slot="end"
-        className="notifications-tab-item-ellipsis"
-        data-testid={`${item.id}-option-btn`}
-        onClick={openOptionModal}
-      />
+      {!isLocalSign && (
+        <IonIcon
+          aria-hidden="true"
+          icon={ellipsisHorizontal}
+          slot="end"
+          className="notifications-tab-item-ellipsis"
+          data-testid={`${item.id}-option-btn`}
+          onClick={openOptionModal}
+        />
+      )}
     </IonItem>
   );
 };
