@@ -9,7 +9,10 @@ import {
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
-import { KeriaNotification, NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/services/keriaNotificationService.types";
 import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
@@ -121,11 +124,6 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isLocalSign = [
-    NotificationRoute.LocalSign,
-    NotificationRoute.LocalConnectInstructions,
-  ].includes(item.a.r as NotificationRoute);
-
   return (
     <IonItem
       onClick={() => onClick(item)}
@@ -133,9 +131,7 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        {isLocalSign ? (
-          <div className="sign-logo" />
-        ) : ConfigurationService.env.features.notifications?.fallbackIcon ? (
+        {ConfigurationService.env.features.notifications?.fallbackIcon ? (
           <div
             className="notifications-tab-item-logo card-fallback-logo"
             data-testid="notifications-tab-item-logo"
