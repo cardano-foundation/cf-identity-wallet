@@ -1,6 +1,9 @@
 import { ElementType, useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { KeriaNotification , NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/services/keriaNotificationService.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppSelector } from "../../../store/hooks";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
