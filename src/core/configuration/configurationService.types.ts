@@ -11,17 +11,27 @@ enum CustomContent {
   Intro = "INTRO",
 }
 
+enum IndividualOnlyMode {
+  FirstTime = "FirstTime",
+  Always = "Always",
+}
+
 interface IdentifierConfig {
   creation?: {
-    individualOnly?: boolean;
+    individualOnly?: IndividualOnlyMode;
     defaultName?: string;
   };
+}
+
+interface NotificationConfig {
+  fallbackIcon: boolean;
 }
 
 interface AppFeaturesConfig {
   cut: OptionalFeature[];
   identifiers?: IdentifierConfig;
   customContent: CustomContent[];
+  notifications?: NotificationConfig;
 }
 
 interface Configuration {
@@ -37,4 +47,4 @@ interface Configuration {
 }
 
 export type { Configuration };
-export { OptionalFeature, CustomContent };
+export { OptionalFeature, CustomContent, IndividualOnlyMode };

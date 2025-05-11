@@ -2,7 +2,7 @@ import { Operation, Salter, SignifyClient } from "signify-ts";
 import { CredentialMetadataRecord, NotificationStorage } from "../records";
 import { CredentialShortDetails } from "./credentialService.types";
 import { Agent } from "../agent";
-import { NotificationRoute } from "../agent.types";
+import { NotificationRoute } from "./keriaNotificationService.types";
 
 async function waitAndGetDoneOp(
   client: SignifyClient,

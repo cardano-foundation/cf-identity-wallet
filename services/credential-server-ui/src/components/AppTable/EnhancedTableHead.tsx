@@ -28,6 +28,7 @@ const EnhancedTableHead = <T extends AppTableBaseData = AppTableBaseData>({
     return (
       <TableCell padding="checkbox">
         <Checkbox
+          className="check-all"
           color="primary"
           indeterminate={selectAllIndeterminate}
           checked={selectAll}
@@ -35,6 +36,7 @@ const EnhancedTableHead = <T extends AppTableBaseData = AppTableBaseData>({
           slotProps={{
             input: { "aria-labelledby": "select all" },
           }}
+          icon={<span className="custom-icon" />}
         />
       </TableCell>
     );

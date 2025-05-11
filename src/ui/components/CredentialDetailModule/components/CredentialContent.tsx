@@ -31,7 +31,7 @@ import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
 
-const IGNORE_KEYS = ["i", "dt", "d"];
+const IGNORE_KEYS = ["i", "dt", "d", "u"];
 
 const CredentialContent = ({
   cardData,

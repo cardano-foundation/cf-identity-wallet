@@ -1,15 +1,23 @@
 import { SwapHorizontalCircleOutlined } from "@mui/icons-material";
-import { Box, Button, Paper, TableCell, TableRow } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  TableCell,
+  TableRow,
+  Tooltip,
+} from "@mui/material";
 import { useState } from "react";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
+import { filter, FilterBar } from "../../components/FilterBar";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
 import { PageHeader } from "../../components/PageHeader";
 import { RequestPresentationModal } from "../../components/RequestPresentationModal";
-import { CredentialTypes } from "../../const";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { PresentationRequestData } from "../../store/reducers/connectionsSlice.types";
-import { formatDate } from "../../utils/dateFormatter";
+import { formatDate, formatDateTime } from "../../utils/dateFormatter";
 import "./RequestPresentation.scss";
 
 const headers: AppTableHeader<PresentationRequestData>[] = [
@@ -56,6 +64,14 @@ export const RequestPresentation = () => {
     setOpenModal(true);
   };
 
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+
+  const visibleData = filter(visibleRows, filterData, { date: "requestDate" });
+
   return (
     <>
       <Box
@@ -83,10 +99,14 @@ export const RequestPresentation = () => {
             </Button>
           }
         />
+        <FilterBar
+          onChange={setFilterData}
+          totalFound={visibleData.length}
+        />
         <Paper className="request-presentation-table">
           <AppTable
             order={order}
-            rows={visibleRows}
+            rows={visibleData}
             onRenderRow={(row) => {
               return (
                 <TableRow
@@ -100,20 +120,42 @@ export const RequestPresentation = () => {
                     component="th"
                     scope="row"
                   >
-                    {row.connectionName}
+                    <Tooltip
+                      title={row.connectionName}
+                      placement="top"
+                    >
+                      <span>{row.connectionName}</span>
+                    </Tooltip>
                   </TableCell>
                   <TableCell
                     component="th"
                     scope="row"
                   >
-                    {row.credentialType}
+                    <Tooltip
+                      title={row.credentialType}
+                      placement="top"
+                    >
+                      <span>{row.credentialType}</span>
+                    </Tooltip>
                   </TableCell>
-                  <TableCell align="left">{row.attribute}</TableCell>
+                  <TableCell align="left">
+                    <Tooltip
+                      title={row.attribute}
+                      placement="top"
+                    >
+                      <span>{row.attribute}</span>
+                    </Tooltip>
+                  </TableCell>
                   <TableCell
                     component="th"
                     scope="row"
                   >
-                    {formatDate(new Date(row.requestDate))}
+                    <Tooltip
+                      title={formatDateTime(new Date(row.requestDate))}
+                      placement="top"
+                    >
+                      <span>{formatDate(new Date(row.requestDate))}</span>
+                    </Tooltip>
                   </TableCell>
                   <TableCell align="left">
                     <Box className={`label ${row.status}`}>
@@ -131,7 +173,7 @@ export const RequestPresentation = () => {
             headers={headers}
             pagination={{
               component: "div",
-              count: CredentialTypes.length,
+              count: visibleData.length,
               rowsPerPage: rowsPerPage,
               page: page,
               onPageChange: handleChangePage,

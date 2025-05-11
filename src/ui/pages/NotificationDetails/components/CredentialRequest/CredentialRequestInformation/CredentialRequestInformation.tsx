@@ -2,7 +2,7 @@ import { IonIcon, IonSpinner, IonText } from "@ionic/react";
 import { chevronForward, warningOutline } from "ionicons/icons";
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../../core/agent/agent";
-import { NotificationRoute } from "../../../../../../core/agent/agent.types";
+import { NotificationRoute } from "../../../../../../core/agent/services/keriaNotificationService.types";
 import { i18n } from "../../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../../store/reducers/connectionsCache";
