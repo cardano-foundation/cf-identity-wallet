@@ -12,7 +12,7 @@ export class MenuSettingsSupportScreen {
   }
 
   get backButton() {
-    return $("[data-testid='sub-menu term-and-privacy-page'] [data-testid='close-button']");
+    return $("[data-testid='close-button']");
   }
 
   get doneButton() {
