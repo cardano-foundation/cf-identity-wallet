@@ -35,7 +35,7 @@ export class MenuSettingsSupportScreen {
     await expect(this.componentsText).toHaveText("Components");
   }
 
-  async navigationToNewTab() {
+  async navigateToAnotherWebview() {
     const contexts = await driver.getContexts();
     log.info(`Contexts: ${contexts}`);
     await driver.switchContext("WEBVIEW_org.cardanofoundation.idw");

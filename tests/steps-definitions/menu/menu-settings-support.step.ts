@@ -44,21 +44,12 @@ When(/^user click term of use button$/, async function() {
   await MenuSettingsSupportScreen.termsOfUseItem.click();
 });
 
-When(/^user click on Veridian Support Portal$/, async function() {
-  await MenuSettingsScreen.connectViaDiscordItem.click()
-});
-
-Then(/^user got navigate to Veridian Support Portal$/, async function() {
-  // TBD
-  await MenuSettingsSupportScreen.navigationToNewTab();
-});
-
 When(/^user click on learn more$/, async function() {
   await MenuSettingsScreen.learnMoreItem.click();
 });
 
 Then(/^user got navigate to a website$/, async function() {
-  await MenuSettingsSupportScreen.navigationToNewTab();
+  await MenuSettingsSupportScreen.navigateToAnotherWebview();
   await MenuSettingsSupportScreen.checkTitle("Overview");
   await MenuSettingsSupportScreen.checkComponentsText();
 });
