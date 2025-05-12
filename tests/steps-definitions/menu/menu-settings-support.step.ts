@@ -2,7 +2,6 @@ import { Given, When, Then } from "@wdio/cucumber-framework";
 import MenuScreen from "../../screen-objects/menu/menu.screen";
 import MenuSettingsScreen from "../../screen-objects/menu/menu-settings.screen";
 import MenuSettingsSupportScreen from "../../screen-objects/menu/menu-settings-support.screen";
-import { browser } from '@wdio/globals';
 
 Given(/^user click on Settings icon$/, async function() {
   await MenuScreen.settingsButton.click();
@@ -50,7 +49,8 @@ When(/^user click on Veridian Support Portal$/, async function() {
 });
 
 Then(/^user got navigate to Veridian Support Portal$/, async function() {
-
+  // TBD
+  await MenuSettingsSupportScreen.navigationToNewTab();
 });
 
 When(/^user click on learn more$/, async function() {
@@ -58,7 +58,7 @@ When(/^user click on learn more$/, async function() {
 });
 
 Then(/^user got navigate to a website$/, async function() {
-  const currentUrl = await browser.getUrl();
-  expect(currentUrl).toContain("https://docs.veridian.id/");
-
+  await MenuSettingsSupportScreen.navigationToNewTab();
+  await MenuSettingsSupportScreen.checkTitle("Overview");
+  await MenuSettingsSupportScreen.checkComponentsText();
 });
