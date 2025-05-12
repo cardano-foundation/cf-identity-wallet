@@ -29,11 +29,6 @@ Feature: Menu Settings Support
     And user click Done button
     Then user see term and privacy screen
 
-  Scenario: C424 MenuSettingsSupport - Veridian Support Portal
-    Given user click on Settings icon
-    When user click on Veridian Support Portal
-    Then user got navigate to Veridian Support Portal
-
   Scenario: C425 MenuSettingsSupport - Learn more about Cardano IDW
     Given user click on Settings icon
     When user click on learn more
