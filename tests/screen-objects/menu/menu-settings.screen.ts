@@ -55,6 +55,10 @@ export class MenuSettingsScreen {
     await expect(this.manageOperationsPasswordItem).toBeEnabled();
     await this.manageOperationsPasswordItem.click();
   }
+
+  async checkAppVersionIsDisplayed() {
+    await expect(this.appVersionItem).toBeDisplayed();
+  }
 }
 
 export default new MenuSettingsScreen();
