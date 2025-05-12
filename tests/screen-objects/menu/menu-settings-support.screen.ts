@@ -16,7 +16,7 @@ export class MenuSettingsSupportScreen {
   }
 
   get doneButton() {
-    return $("[data-testid='privacy-policy-modal-content-page'] [data-testid='close-button']");
+    return $("[data-testid='close-button-label']");
   }
 
   get componentsText() {
