@@ -79,6 +79,8 @@ export enum YourRecoveryPhrase {
 export enum VerifyYourRecoveryPhrase {
   Description = "Please select each word in the order it was presented to you.",
   Title = "Verify your recovery phrase",
+  MenuDescription = "Please verify your recovery phrase to reset your passcode. To start typing click on the first option.",
+  MenuTitle = "Forgot passcode",
 }
 
 export enum SsiAgentDetails {

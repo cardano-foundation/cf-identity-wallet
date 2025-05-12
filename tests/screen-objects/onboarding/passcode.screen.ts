@@ -6,28 +6,29 @@ import BaseModal from "../components/base.modal.js";
 
 export class PasscodeScreen {
   get cantRememberButton() {
-    return $("[data-testid=\"secondary-button-set-passcode\"]");
+    return $('[data-testid="secondary-button-set-passcode"]');
   }
 
   get id() {
-    return "[data-testid=\"set-passcode-page\"]";
+    return '[data-testid="set-passcode-page"]';
   }
 
   get screenTitle() {
-    return $("[data-testid=\"set-passcode-title\"]");
+    return $('[data-testid="set-passcode-title"]');
   }
 
   get screenDescriptionText() {
-    return $("[data-testid=\"set-passcode-description\"]");
+    return $('[data-testid="set-passcode-description"]');
   }
 
   get errorMessageText() {
-    return $("[data-testid=\"error-message-text\"]");
+    return $('[data-testid="error-message-text"]');
   }
 
-
   async digitButton(digit: number, parentElement = "") {
-    return $(`${parentElement} [data-testid="passcode-button-${digit}"]`.trimStart());
+    return $(
+      `${parentElement} [data-testid="passcode-button-${digit}"]`.trimStart()
+    );
   }
 
   async loads() {
@@ -66,6 +67,13 @@ export class PasscodeScreen {
     const randomPasscode = generateRandomNumbersArray();
     log.info(`randomPasscode: ${randomPasscode}`);
     await this.enterPasscode(randomPasscode);
+    return randomPasscode;
+  }
+
+  async createAndEnterRandomPasscodeWithParentElement(parentElement = "") {
+    const randomPasscode = generateRandomNumbersArray();
+    log.info(`randomPasscode: ${randomPasscode}`);
+    await this.enterPasscode(randomPasscode, parentElement);
     return randomPasscode;
   }
 }
