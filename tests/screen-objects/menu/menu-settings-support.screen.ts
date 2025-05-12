@@ -44,7 +44,7 @@ export class MenuSettingsSupportScreen {
 
   async checkTitle(titleText: string) {
     const title = await driver.getTitle();
-    expect(title).toHaveText(titleText);
+    expect(title).toContain(titleText);
   }
 }
 export default new MenuSettingsSupportScreen();

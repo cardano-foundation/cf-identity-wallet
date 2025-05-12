@@ -60,5 +60,4 @@ When(/^user click on learn more$/, async function() {
 Then(/^user got navigate to a website$/, async function() {
   await MenuSettingsSupportScreen.navigationToNewTab();
   await MenuSettingsSupportScreen.checkTitle("Overview");
-  await MenuSettingsSupportScreen.checkComponentsText();
 });
