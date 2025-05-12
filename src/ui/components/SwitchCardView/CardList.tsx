@@ -8,6 +8,8 @@ import { CardList as BaseCardList, CardItem } from "../CardList";
 import { CardTheme } from "../CardTheme";
 import "./SwitchCardView.scss";
 import { CardListProps } from "./SwitchCardView.types";
+import BackgroundRome from "../../assets/images/rome-bg.png";
+import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
 
 const CardList = ({
   cardsData,
@@ -43,7 +45,16 @@ const CardList = ({
   const renderStartSlot = useCallback(
     (data: IdentifierShortDetails | CredentialShortDetails) => {
       if (cardTypes === CardType.CREDENTIALS) {
-        return (
+        const card = data as CredentialShortDetails;
+
+        return card.schema == IpexCommunicationService.SCHEMA_SAID_ROME_DEMO ? (
+          <img
+            src={BackgroundRome}
+            alt="rome"
+            className="card-logo"
+            data-testid="card-logo"
+          />
+        ) : (
           <CardTheme
             className="card-logo"
             layout={0}

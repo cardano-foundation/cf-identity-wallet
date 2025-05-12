@@ -1,11 +1,6 @@
 import { Agent } from "../agent";
-import {
-  ConnectionStatus,
-  ExchangeRoute,
-  MiscRecordId,
-  NotificationRoute,
-  CreationStatus,
-} from "../agent.types";
+import { ConnectionStatus, MiscRecordId, CreationStatus } from "../agent.types";
+import { ExchangeRoute , NotificationRoute } from "./keriaNotificationService.types";
 import {
   BasicRecord,
   IdentifierStorage,

@@ -13,10 +13,23 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { NotificationFilters } from "./Notification.types";
 import { Notifications } from "./Notifications";
-import { NotificationRoute } from "../../../core/agent/agent.types";
+import { NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
 import { NotificationItem } from "./NotificationItem";
 
 mockIonicReact();
+
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        notifications: {
+          fallbackIcon: false,
+        },
+      },
+    },
+  },
+}));
 
 const readNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 jest.mock("../../../core/agent/agent", () => ({

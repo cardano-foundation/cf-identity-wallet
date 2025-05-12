@@ -98,6 +98,12 @@
             border-radius: 0.625rem;
             padding: 0.25rem;
             background-color: var(--ion-color-neutral-300);
+
+            @media screen and (min-width: 250px) and (max-width: 370px) {
+              width: 0.65rem;
+              height: 0.65rem;
+              bottom: 0.1rem;
+            }
           }
         }
 
@@ -106,6 +112,18 @@
           width: 3rem;
           height: 3rem;
           margin-right: 1rem;
+        }
+
+        .card-fallback-logo {
+          background-color: var(--ion-color-neutral-800);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          ion-icon {
+            width: 100%;
+            height: 100%;
+          }
         }
 
         @media screen and (min-width: 250px) and (max-width: 370px) {

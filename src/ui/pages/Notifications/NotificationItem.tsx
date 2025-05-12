@@ -1,18 +1,16 @@
 import { IonIcon, IonItem, IonLabel } from "@ionic/react";
 import { t } from "i18next";
 import {
+  documentOutline,
   ellipsisHorizontal,
   fingerPrintOutline,
   idCardOutline,
-  documentOutline,
   personCircleOutline,
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
-import {
-  KeriaNotification,
-  NotificationRoute,
-} from "../../../core/agent/agent.types";
+import { KeriaNotification, NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
@@ -137,6 +135,16 @@ const NotificationItem = ({
       <div className="notification-logo">
         {isLocalSign ? (
           <div className="sign-logo" />
+        ) : ConfigurationService.env.features.notifications?.fallbackIcon ? (
+          <div
+            className="notifications-tab-item-logo card-fallback-logo"
+            data-testid="notifications-tab-item-logo"
+          >
+            <IonIcon
+              icon={personCircleOutline}
+              color="light"
+            />
+          </div>
         ) : (
           <img
             src={KeriLogo}

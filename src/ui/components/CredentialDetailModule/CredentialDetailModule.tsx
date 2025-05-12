@@ -5,8 +5,8 @@ import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
   MiscRecordId,
-  NotificationRoute,
 } from "../../../core/agent/agent.types";
+import { NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
 import { BasicRecord } from "../../../core/agent/records";
 import {
   ACDCDetails,

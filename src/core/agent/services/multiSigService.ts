@@ -9,11 +9,11 @@ import {
   State,
 } from "signify-ts";
 import {
-  NotificationRoute,
   AgentServicesProps,
   MiscRecordId,
   CreationStatus,
 } from "../agent.types";
+import { NotificationRoute } from "./keriaNotificationService.types";
 import type {
   ConnectionShortDetails,
   AuthorizationRequestExn,
@@ -369,7 +369,9 @@ class MultiSigService extends AgentService {
     for (const prefix of smids) {
       if (prefix === senderPrefix || prefix === ourIdentifier.id) continue;
 
-      const linkedConnection = linkedConnections.find(connection => connection.id === prefix);
+      const linkedConnection = linkedConnections.find(
+        (connection) => connection.id === prefix
+      );
       if (!linkedConnection) {
         throw new Error(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
       }

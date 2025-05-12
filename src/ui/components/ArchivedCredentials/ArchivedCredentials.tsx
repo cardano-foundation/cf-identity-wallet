@@ -15,7 +15,7 @@ import {
   useState,
 } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { NotificationRoute } from "../../../core/agent/agent.types";
+import { NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -417,8 +417,8 @@ const ArchivedCredentialsContainer = forwardRef<
                 {selectedCredentials.length === 1
                   ? i18n.t("tabs.credentials.archived.oneselected")
                   : t("tabs.credentials.archived.manyselected", {
-                      amount: selectedCredentials.length,
-                    })}
+                    amount: selectedCredentials.length,
+                  })}
               </div>
               <IonButtons slot="end">
                 <IonButton

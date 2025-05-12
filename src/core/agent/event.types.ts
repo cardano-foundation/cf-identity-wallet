@@ -1,4 +1,5 @@
-import { ConnectionStatus, KeriaNotification } from "./agent.types";
+import { ConnectionStatus } from "./agent.types";
+import { KeriaNotification } from "./services/keriaNotificationService.types";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import {
