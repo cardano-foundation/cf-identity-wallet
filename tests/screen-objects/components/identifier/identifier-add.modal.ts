@@ -22,6 +22,10 @@ export class IdentifierAddModal extends CommonIdentifierModal {
     return this.modalTitleElement("add-an-identifier");
   }
 
+  get cancelButton() {
+    return $("[data-testid='close-button']");
+  }
+
   async loads() {
     await expect(await this.id).toBeDisplayed();
     await expect(await this.modalTitle).toHaveText("Add an identifier");
