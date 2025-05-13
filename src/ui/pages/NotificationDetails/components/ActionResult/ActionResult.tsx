@@ -6,10 +6,10 @@ import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePa
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import "./RemoteSignConfirmation.scss";
+import "./ActionResult.scss";
 import { openBrowserLink } from "../../../../utils/openBrowserLink";
 
-function RemoteSignConfirmation({
+function ActionResult({
   pageId,
   activeStatus,
   notificationDetails,
@@ -39,9 +39,7 @@ function RemoteSignConfirmation({
           closeButtonLabel={`${i18n.t(
             "tabs.notifications.details.buttons.close"
           )}`}
-          title={`${i18n.t(
-            "tabs.notifications.details.signconfirmation.title"
-          )}`}
+          title={`${i18n.t("tabs.notifications.details.actionresult.title")}`}
         />
       }
       footer={
@@ -49,7 +47,7 @@ function RemoteSignConfirmation({
           customClass="sign-confirmation-footer"
           primaryButtonIcon={openOutline}
           primaryButtonText={`${t(
-            "tabs.notifications.details.signconfirmation.button.label",
+            "tabs.notifications.details.actionresult.button.label",
             {
               certificate: certificate.toLocaleLowerCase(),
             }
@@ -60,14 +58,14 @@ function RemoteSignConfirmation({
     >
       <div className="sign-confirmation-body">
         <h3>
-          {t("tabs.notifications.details.signconfirmation.subtitle", {
+          {t("tabs.notifications.details.actionresult.subtitle", {
             certificate: certificate,
             connection: connection,
           })}
         </h3>
         <p>
           {formatNewLines(
-            t("tabs.notifications.details.signconfirmation.description", {
+            t("tabs.notifications.details.actionresult.description", {
               certificate: certificate,
               connection: connection,
             })
@@ -78,4 +76,4 @@ function RemoteSignConfirmation({
   );
 }
 
-export { RemoteSignConfirmation };
+export { ActionResult };

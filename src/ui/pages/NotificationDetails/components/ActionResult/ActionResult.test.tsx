@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { legacy_createStore as createStore } from "redux";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { RemoteSignConfirmation } from "./RemoteSignConfirmation";
+import { ActionResult } from "./ActionResult";
 
 const mockStore = (initialState: any) => createStore(() => initialState);
 const dispatchMock = jest.fn();
@@ -17,7 +17,7 @@ const initialState = {
   },
 };
 
-describe("RemoteSignConfirmation", () => {
+describe("ActionResult", () => {
   test("renders the component with correct title, subtitle, and description", () => {
     const storeMocked = {
       ...mockStore(initialState),
@@ -35,7 +35,7 @@ describe("RemoteSignConfirmation", () => {
 
     render(
       <Provider store={storeMocked}>
-        <RemoteSignConfirmation
+        <ActionResult
           pageId="sign-confirmation"
           activeStatus
           handleBack={jest.fn()}
@@ -49,20 +49,20 @@ describe("RemoteSignConfirmation", () => {
 
     expect(
       screen.getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.title
+        EN_TRANSLATIONS.tabs.notifications.details.actionresult.title
       )
     ).toBeVisible();
 
     expect(
       screen.getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.subtitle
+        EN_TRANSLATIONS.tabs.notifications.details.actionresult.subtitle
           .replace("{{certificate}}", certificate)
           .replace("{{connection}}", connection)
       )
     ).toBeVisible();
 
     const description =
-      EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.description
+      EN_TRANSLATIONS.tabs.notifications.details.actionresult.description
         .replace("{{certificate}}", certificate)
         .replace("{{connection}}", connection)
         .split("\n")
@@ -71,7 +71,7 @@ describe("RemoteSignConfirmation", () => {
 
     expect(
       screen.getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.button.label.replace(
+        EN_TRANSLATIONS.tabs.notifications.details.actionresult.button.label.replace(
           "{{certificate}}",
           certificate.toLocaleLowerCase()
         )
@@ -89,7 +89,7 @@ describe("RemoteSignConfirmation", () => {
 
     render(
       <Provider store={storeMocked}>
-        <RemoteSignConfirmation
+        <ActionResult
           pageId="sign-confirmation"
           activeStatus
           handleBack={handleBackMock}
