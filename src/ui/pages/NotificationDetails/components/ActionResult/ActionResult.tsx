@@ -10,9 +10,10 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { showError } from "../../../../utils/error";
 import { openBrowserLink } from "../../../../utils/openBrowserLink";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
+import "./ActionResult.scss";
 import "./RemoteSignConfirmation.scss";
 
-function RemoteSignConfirmation({
+function ActionResult({
   pageId,
   activeStatus,
   notificationDetails,
@@ -80,4 +81,4 @@ function RemoteSignConfirmation({
   );
 }
 
-export { RemoteSignConfirmation };
+export { ActionResult };

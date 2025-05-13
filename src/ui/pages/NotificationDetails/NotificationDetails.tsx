@@ -8,12 +8,12 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { useAppSelector } from "../../../store/hooks";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { useAppIonRouter } from "../../hooks";
+import { ActionRequest } from "./components/ActionRequest";
+import { ActionResult } from "./components/ActionResult";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
 import { RemoteConnectInstructions } from "./components/RemoteConnectInstructions";
-import { RemoteSignConfirmation } from "./components/RemoteSignConfirmation";
-import { ActionRequest } from "./components/ActionRequest";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -48,7 +48,7 @@ const NotificationDetails = () => {
       [NotificationRoute.ExnIpexApply]: CredentialRequest,
       [NotificationRoute.MultiSigExn]: ReceiveCredential,
       [NotificationRoute.RemoteSignReq]: ActionRequest,
-      [NotificationRoute.HumanReadableMessage]: RemoteSignConfirmation,
+      [NotificationRoute.HumanReadableMessage]: ActionResult,
       [NotificationRoute.LocalConnectInstructions]: RemoteConnectInstructions,
       [NotificationRoute.MultiSigRpy]: null,
       [NotificationRoute.ExnIpexOffer]: null,
