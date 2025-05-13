@@ -8,7 +8,7 @@ import {
 } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
-import { RemoteSignRequest as RemoteSignRequestModel } from "../../../../../core/agent/services/identifier.types";
+import { RemoteSignRequest } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
@@ -27,7 +27,7 @@ import { Verification } from "../../../../components/Verification";
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import "./RemoteSignRequest.scss";
+import "./ActionRequest.scss";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
 
@@ -35,7 +35,7 @@ function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
 }
 
-const RemoteSignRequest = ({
+const ActionRequest = ({
   pageId,
   activeStatus,
   notificationDetails,
@@ -50,7 +50,7 @@ const RemoteSignRequest = ({
   const attributeContainerRef = useRef<HTMLDivElement>(null);
   const attributeRef = useRef<HTMLDivElement>(null);
   const connectionName = connections[notificationDetails.connectionId];
-  const [requestData, setRequestData] = useState<RemoteSignRequestModel>();
+  const [requestData, setRequestData] = useState<RemoteSignRequest>();
   const [loading, showLoading] = useState(true);
 
   useEffect(() => {
@@ -282,4 +282,4 @@ const RemoteSignRequest = ({
   );
 };
 
-export { RemoteSignRequest };
+export { ActionRequest };

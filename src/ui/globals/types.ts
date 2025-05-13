@@ -82,7 +82,7 @@ enum ToastMsgType {
   GROUP_ID_NOT_MATCH_ERROR = "groupidnotmatcherror",
   DELETE_ACCOUNT_ERROR = "deleteaccounterror",
   DELETE_ACCOUNT_SUCCESS = "deleteaccountsuccess",
-  REMOTE_SIGN_SUCCESS = "remotesignsuccess",
+  REMOTE_SIGN_SUCCESS = "actionrequestsuccess",
   UNKNOWN_ERROR = "unknownerror",
 }
 

@@ -6,7 +6,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierMapFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { RemoteSignRequest } from "./RemoteSignRequest";
+import { ActionRequest } from "./ActionRequest";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 const mockStore = configureStore();
@@ -85,7 +85,7 @@ describe("Receive credential", () => {
     const customCertificateName = "CSO Certificate";
     const { getAllByText, getByText } = render(
       <Provider store={storeMocked}>
-        <RemoteSignRequest
+        <ActionRequest
           pageId="creadential-request"
           activeStatus
           handleBack={jest.fn()}
@@ -126,7 +126,7 @@ describe("Receive credential", () => {
 
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <RemoteSignRequest
+        <ActionRequest
           pageId="creadential-request"
           activeStatus
           handleBack={jest.fn()}
