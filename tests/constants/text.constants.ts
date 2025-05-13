@@ -147,3 +147,8 @@ export enum TermsOfUse {
   Section6Subtitle1 = "a. Amendment:",
   Section6Subtitle2 = "b. Application Provider Terms:",
 }
+
+export enum ScanContent {
+  ScannerText = "Align the QR code within the frame to scan",
+  ErrorMessage = "Something went wrong. Please try again.",
+}
