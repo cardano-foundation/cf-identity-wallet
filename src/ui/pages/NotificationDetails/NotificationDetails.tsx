@@ -13,7 +13,7 @@ import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
 import { RemoteConnectInstructions } from "./components/RemoteConnectInstructions";
 import { RemoteSignConfirmation } from "./components/RemoteSignConfirmation";
-import { RemoteSignRequest } from "./components/RemoteSignRequest";
+import { ActionRequest } from "./components/ActionRequest";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -47,7 +47,7 @@ const NotificationDetails = () => {
       [NotificationRoute.ExnIpexGrant]: ReceiveCredential,
       [NotificationRoute.ExnIpexApply]: CredentialRequest,
       [NotificationRoute.MultiSigExn]: ReceiveCredential,
-      [NotificationRoute.RemoteSignReq]: RemoteSignRequest,
+      [NotificationRoute.RemoteSignReq]: ActionRequest,
       [NotificationRoute.HumanReadableMessage]: RemoteSignConfirmation,
       [NotificationRoute.LocalConnectInstructions]: RemoteConnectInstructions,
       [NotificationRoute.MultiSigRpy]: null,

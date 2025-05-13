@@ -1861,7 +1861,7 @@
     "proposalcredfailerror": "Unable to record response",
     "deleteaccounterror": "Unable to delete account",
     "deleteaccountsuccess": "Account deleted successfully",
-    "remotesignsuccess": "Certificate signed successfully"
+    "actionrequestsuccess": "Certificate signed successfully"
   },
   "request": {
     "sign": {
