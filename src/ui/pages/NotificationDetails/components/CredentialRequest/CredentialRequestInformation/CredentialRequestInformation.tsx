@@ -13,7 +13,6 @@ import {
   setNotificationsCache,
 } from "../../../../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../../../../store/reducers/stateCache";
-import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
 import { Alert as AlertDecline } from "../../../../../components/Alert";
 import {
   CardDetailsAttributes,
@@ -23,6 +22,7 @@ import {
   MemberAcceptStatus,
   MultisigMember,
 } from "../../../../../components/CredentialDetailModule/components";
+import { FallbackIcon } from "../../../../../components/FallbackIcon";
 import { InfoCard } from "../../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../../components/PageFooter";
@@ -351,7 +351,7 @@ const CredentialRequestInformation = ({
               )}`}
             >
               <div className="request-from-content">
-                <img src={KeriLogo} />
+                <FallbackIcon />
                 <p>
                   {linkedGroup?.memberInfos.at(0)?.name ||
                     i18n.t("connections.unknown")}
@@ -371,7 +371,7 @@ const CredentialRequestInformation = ({
                 )}`}
               >
                 <div className="request-from-content">
-                  <img src={KeriLogo} />
+                  <FallbackIcon />
                   <p>
                     {credentialRequest.schema.name ||
                       i18n.t("connections.unknown")}
@@ -405,7 +405,7 @@ const CredentialRequestInformation = ({
             )}`}
           >
             <div className="request-from-content">
-              <img src={connection?.logo || KeriLogo} />
+              <FallbackIcon src={connection?.logo} />
               <p>{connection?.label || i18n.t("connections.unknown")}</p>
             </div>
           </CardDetailsBlock>

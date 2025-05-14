@@ -18,15 +18,11 @@ interface IdentifierConfig {
   };
 }
 
-interface NotificationConfig {
-  fallbackIcon: boolean;
-}
-
 interface AppFeaturesConfig {
   cut: OptionalFeature[];
   identifiers?: IdentifierConfig;
   customContent: CustomContent[];
-  notifications?: NotificationConfig;
+  fallbackIcon: boolean;
 }
 
 interface Configuration {
