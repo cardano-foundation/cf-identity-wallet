@@ -10,7 +10,6 @@ import { useAppSelector } from "../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 import { getAuthentication } from "../../../../store/reducers/stateCache";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { CardDetailsContent } from "../../../components/CardDetails";
 import {
   CardBlock,
@@ -23,6 +22,7 @@ import {
   formatTimeToSec,
   getUTCOffset,
 } from "../../../utils/formatters";
+import { getFallbackIcon } from "../../FallbackIcon";
 import { IdentifierAttributeDetailModal } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal";
 import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierContentProps } from "./IdentifierContent.types";
@@ -83,7 +83,7 @@ const IdentifierContent = ({
                 <CardDetailsItem
                   key={index}
                   info={item}
-                  customIcon={KeriLogo}
+                  customIcon={getFallbackIcon()}
                   className="member"
                   testId={`group-member-${index}`}
                 />

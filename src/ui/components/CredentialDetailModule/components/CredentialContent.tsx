@@ -8,7 +8,6 @@ import { JSONObject } from "../../../../core/agent/agent.types";
 import { i18n } from "../../../../i18n";
 import { useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import {
   formatShortDate,
   formatTimeToSec,
@@ -24,6 +23,7 @@ import {
   FlatBorderType,
 } from "../../CardDetails";
 import { CardTheme } from "../../CardTheme";
+import { getFallbackIcon } from "../../FallbackIcon";
 import { IdentifierDetailModal } from "../../IdentifierDetailModule";
 import { ListHeader } from "../../ListHeader";
 import { ReadMore } from "../../ReadMore";
@@ -130,7 +130,7 @@ const CredentialContent = ({
               ? connectionShortDetails.label
               : i18n.t("connections.unknown")
           }
-          customIcon={KeriLogo}
+          customIcon={getFallbackIcon()}
           className="member"
           testId={"credential-details-issuer"}
         />
