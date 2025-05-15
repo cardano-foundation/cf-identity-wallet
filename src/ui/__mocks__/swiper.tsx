@@ -24,3 +24,7 @@ jest.mock("swiper/modules", () => ({
     return <div data-testid={testId}>{children}</div>;
   },
 }));
+
+jest.mock("swiper/css", () => ({}));
+jest.mock("swiper/css/autoplay", () => ({}));
+jest.mock("@ionic/react/css/ionic-swiper.css", () => ({}));

@@ -18,6 +18,9 @@ module.exports = merge(require("./webpack.common.cjs"), {
                },
                {
                   loader: 'sass-loader',
+                  options: {
+                     api: "modern",
+                  },
                },
             ],
          },

@@ -7,6 +7,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperClass } from "swiper/types";
 import "./Slides.scss";
 import { SlideProps } from "./Slides.types";
+import "swiper/css";
+import "swiper/css/autoplay";
+import "@ionic/react/css/ionic-swiper.css";
 
 const Slides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
