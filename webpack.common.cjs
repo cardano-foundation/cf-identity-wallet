@@ -47,6 +47,10 @@ const config = {
         test: /\.ya?ml$/,
         use: "yaml-loader",
       },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
     ],
   },
   resolve: {
