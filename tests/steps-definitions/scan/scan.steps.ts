@@ -18,12 +18,3 @@ Then(/^a error message appear$/, async function() {
   await ScanScreen.checkErrorMessage();
   await ScanScreen.confirmAlertButton.click();
 });
-
-When(/^user paste content$/, async function() {
-  await ScanScreen.inputToPasteContentTextbox("");
-  await ScanScreen.confirmButton.click();
-});
-
-Then(/^connection setup successfully$/, async function() {
-  // TBD
-});
