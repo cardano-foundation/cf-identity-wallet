@@ -2,6 +2,7 @@ Feature: Scan
 
   Background:
     Given user is onboarded with skipped password creation
+    And user create new Identifier
 
   Scenario: C225 Scan - Loads correctly
     When user click on scan button

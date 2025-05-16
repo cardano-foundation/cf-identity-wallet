@@ -15,7 +15,7 @@ export class ScanScreen {
   }
 
   get pasteTextbox() {
-    return $("#ion-input-10");
+    return $("[id*='ion-input']");
   }
 
   get confirmButton() {
