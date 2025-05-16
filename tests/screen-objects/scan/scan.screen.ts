@@ -19,7 +19,7 @@ export class ScanScreen {
   }
 
   get confirmButton() {
-    return $("[data-testid='action-button']");
+    return $("p.sc-ion-buttons-ios");
   }
 
   get errorMessage() {
