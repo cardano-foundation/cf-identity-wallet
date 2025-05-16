@@ -16,6 +16,7 @@ export enum Passcode {
   TitleReEnter = "Re-enter your Passcode",
   TitleNewPasscode = "Create new passcode",
   TitleEnterPasscode = "Enter passcode",
+  TitleReEnterNewPasscode = "Re-enter new passcode",
 }
 
 export enum PrivacyPolicy {
