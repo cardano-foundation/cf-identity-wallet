@@ -22,7 +22,7 @@ import { i18n } from "../../../../i18n";
 import { AppDispatch, RootState } from "../../../../store";
 import { useAppSelector } from "../../../../store/hooks";
 import { getRoleView } from "../../../../store/reducers/stateCache";
-import { formatDate } from "../../../../utils/dateFormatter";
+import { formatDate, formatDateTime } from "../../../../utils/dateFormatter";
 import { Contact, Data } from "../ConnectionsTable/ConnectionsTable.types";
 import { EnhancedTableToolbar } from "./EnhancedTableToolbar";
 import { generateRows, handleDeleteContact } from "./helpers";
@@ -30,6 +30,9 @@ import { createMenuItems } from "./menuItems";
 import { RoutePath } from "../../../../const/route";
 import { IssueCredentialModal } from "../../../../components/IssueCredentialModal";
 import { RequestPresentationModal } from "../../../../components/RequestPresentationModal";
+import { FilterBar } from "../../../../components/FilterBar/FilterBar";
+import { filter } from "../../../../components/FilterBar";
+import { FilterData } from "../../../../components/FilterBar/FilterBar.types";
 
 const ConnectionsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -46,6 +49,11 @@ const ConnectionsTable: React.FC = () => {
   const [selectedConnectionId, setSelectedConnectionId] = useState<string>();
   const [openIssueModal, setOpenIssueModal] = useState(false);
   const [openRequestCredModal, setOpenRequestCredModal] = useState(false);
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
 
   const nav = useNavigate();
 
@@ -57,6 +65,8 @@ const ConnectionsTable: React.FC = () => {
 
     return generateRows(filteredContacts, credentials);
   }, [connectionsFilterBySearch, contacts, credentials]);
+
+  const filterRows = filter(rows, filterData, { date: "date" });
 
   const {
     order,
@@ -71,7 +81,7 @@ const ConnectionsTable: React.FC = () => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(rows, "date");
+  } = useTable(filterRows, "date");
 
   useEffect(() => {
     setSelected([]);
@@ -144,6 +154,10 @@ const ConnectionsTable: React.FC = () => {
 
   return (
     <>
+      <FilterBar
+        onChange={setFilterData}
+        totalFound={filterRows.length}
+      />
       <Box sx={{ width: "100%" }}>
         <Paper className="connections-table">
           <EnhancedTableToolbar
@@ -160,7 +174,7 @@ const ConnectionsTable: React.FC = () => {
             headers={headers}
             pagination={{
               component: "div",
-              count: rows.length,
+              count: filterRows.length,
               rowsPerPage: rowsPerPage,
               page: page,
               onPageChange: handleChangePage,
@@ -188,14 +202,18 @@ const ConnectionsTable: React.FC = () => {
                       slotProps={{ input: { "aria-labelledby": labelId } }}
                     />
                   </TableCell>
-
                   <TableCell
                     component="th"
                     id={labelId}
                     scope="row"
                     padding="none"
                   >
-                    {row.name}
+                    <Tooltip
+                      title={row.name}
+                      placement="top"
+                    >
+                      <span>{row.name}</span>
+                    </Tooltip>
                   </TableCell>
                   <TableCell
                     component="th"
@@ -203,10 +221,22 @@ const ConnectionsTable: React.FC = () => {
                     scope="row"
                     padding="none"
                   >
-                    {row.id.substring(0, 4)}...{row.id.slice(-4)}
+                    <Tooltip
+                      title={row.id}
+                      placement="top"
+                    >
+                      <span>
+                        {row.id.substring(0, 4)}...{row.id.slice(-4)}
+                      </span>
+                    </Tooltip>
                   </TableCell>
                   <TableCell align="left">
-                    {formatDate(new Date(row.date))}
+                    <Tooltip
+                      title={formatDateTime(new Date(row.date))}
+                      placement="top"
+                    >
+                      <span>{formatDate(new Date(row.date))}</span>
+                    </Tooltip>
                   </TableCell>
                   {isIssuer && (
                     <TableCell align="left">{row.credentials}</TableCell>
@@ -215,6 +245,7 @@ const ConnectionsTable: React.FC = () => {
                     <DropdownMenu
                       button={
                         <Tooltip
+                          className="tooltip"
                           title={i18n.t("pages.connections.actions")}
                           placement="top"
                         >

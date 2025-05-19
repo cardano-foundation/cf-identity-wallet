@@ -1,17 +1,19 @@
 import { IonIcon, IonItem, IonLabel } from "@ionic/react";
 import { t } from "i18next";
 import {
+  documentOutline,
   ellipsisHorizontal,
   fingerPrintOutline,
   idCardOutline,
-  documentOutline,
+  personCircleOutline,
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
 import {
   KeriaNotification,
   NotificationRoute,
-} from "../../../core/agent/agent.types";
+} from "../../../core/agent/services/keriaNotificationService.types";
+import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
@@ -33,50 +35,61 @@ const NotificationItem = ({
     const connectionName = connectionsCache?.[item.connectionId]?.label;
 
     switch (item.a.r) {
-    case NotificationRoute.ExnIpexGrant:
-      return t("tabs.notifications.tab.labels.exnipexgrant", {
-        connection: connectionName || t("connections.unknown"),
-      });
-    case NotificationRoute.MultiSigIcp:
-      return t("tabs.notifications.tab.labels.multisigicp", {
-        connection:
+      case NotificationRoute.ExnIpexGrant:
+        return t("tabs.notifications.tab.labels.exnipexgrant", {
+          connection: connectionName || t("connections.unknown"),
+        });
+      case NotificationRoute.MultiSigIcp:
+        return t("tabs.notifications.tab.labels.multisigicp", {
+          connection:
             multisigConnectionsCache?.[item.connectionId]?.label ||
             t("connections.unknown"),
-      });
-    case NotificationRoute.ExnIpexApply: {
-      if (
-        item.groupReplied &&
+        });
+      case NotificationRoute.ExnIpexApply: {
+        if (
+          item.groupReplied &&
           !item.groupInitiator &&
           item.groupInitiatorPre
-      ) {
-        const initiator = item.groupInitiatorPre
-          ? multisigConnectionsCache[item.groupInitiatorPre].label
-          : t("connections.unknown");
-        return t("tabs.notifications.tab.labels.exnipexapplyproposed", {
+        ) {
+          const initiator = item.groupInitiatorPre
+            ? multisigConnectionsCache[item.groupInitiatorPre].label
+            : t("connections.unknown");
+          return t("tabs.notifications.tab.labels.exnipexapplyproposed", {
+            connection: connectionName || t("connections.unknown"),
+            initiator,
+          });
+        }
+
+        return t("tabs.notifications.tab.labels.exnipexapply", {
           connection: connectionName || t("connections.unknown"),
-          initiator,
         });
       }
-
-      return t("tabs.notifications.tab.labels.exnipexapply", {
-        connection: connectionName || t("connections.unknown"),
-      });
-    }
-    case NotificationRoute.LocalAcdcRevoked:
-      return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
-        credential: item.a.credentialTitle,
-      });
-    case NotificationRoute.MultiSigExn:
-      return t("tabs.notifications.tab.labels.multisigexn", {
-        connection: connectionName || t("connections.unknown"),
-      });
-    case NotificationRoute.LocalSign:
-      return t("tabs.notifications.tab.labels.sign", {
-        certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
-        connection: connectionName || t("connections.unknown"),
-      });
-    default:
-      return "";
+      case NotificationRoute.LocalAcdcRevoked:
+        return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
+          credential: item.a.credentialTitle,
+        });
+      case NotificationRoute.MultiSigExn:
+        return t("tabs.notifications.tab.labels.multisigexn", {
+          connection: connectionName || t("connections.unknown"),
+        });
+      case NotificationRoute.RemoteSignReq:
+        return t("tabs.notifications.tab.labels.sign", {
+          certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
+          connection: connectionName || t("connections.unknown"),
+        });
+      case NotificationRoute.LocalConfirmation:
+        return t("tabs.notifications.tab.labels.signconfirmation", {
+          certificate: "Certificate", // TODO: change hardcoded value to dynamic
+          connection: connectionName || t("connections.unknown"),
+        });
+      case NotificationRoute.LocalInformation:
+        return t("tabs.notifications.tab.labels.signeventinfo");
+      case NotificationRoute.LocalConnectInstructions:
+        return t("tabs.notifications.tab.labels.connectinstructions", {
+          connection: connectionName || t("connections.unknown"),
+        });
+      default:
+        return "";
     }
   }, [
     connectionsCache,
@@ -91,15 +104,17 @@ const NotificationItem = ({
 
   const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {
-    case NotificationRoute.ExnIpexGrant:
-    case NotificationRoute.ExnIpexApply:
-      return idCardOutline;
-    case NotificationRoute.MultiSigIcp:
-      return fingerPrintOutline;
-    case NotificationRoute.LocalSign:
-      return documentOutline;
-    default:
-      return idCardOutline;
+      case NotificationRoute.ExnIpexGrant:
+      case NotificationRoute.ExnIpexApply:
+        return idCardOutline;
+      case NotificationRoute.MultiSigIcp:
+        return fingerPrintOutline;
+      case NotificationRoute.RemoteSignReq:
+        return documentOutline;
+      case NotificationRoute.LocalConnectInstructions:
+        return personCircleOutline;
+      default:
+        return idCardOutline;
     }
   };
 
@@ -109,7 +124,10 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isLocalSign = item.a.r === NotificationRoute.LocalSign;
+  const isLocalSign = [
+    NotificationRoute.RemoteSignReq,
+    NotificationRoute.LocalConnectInstructions,
+  ].includes(item.a.r as NotificationRoute);
 
   return (
     <IonItem
@@ -120,6 +138,16 @@ const NotificationItem = ({
       <div className="notification-logo">
         {isLocalSign ? (
           <div className="sign-logo" />
+        ) : ConfigurationService.env.features.notifications?.fallbackIcon ? (
+          <div
+            className="notifications-tab-item-logo card-fallback-logo"
+            data-testid="notifications-tab-item-logo"
+          >
+            <IonIcon
+              icon={personCircleOutline}
+              color="light"
+            />
+          </div>
         ) : (
           <img
             src={KeriLogo}

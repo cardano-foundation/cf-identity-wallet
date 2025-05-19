@@ -21,6 +21,7 @@ enum OperationType {
   SCAN_SSI_CONNECT_URL = "scanSSIConnectUrl",
   OPEN_WALLET_CONNECTION_DETAIL = "openWalletConnection",
   OPEN_MULTISIG_IDENTIFIER = "openMultisignIdentifier",
+  SCAN_REMOTE_CONNECTION = "scanRemoteConnection",
 }
 
 enum ToastMsgType {
@@ -81,6 +82,7 @@ enum ToastMsgType {
   GROUP_ID_NOT_MATCH_ERROR = "groupidnotmatcherror",
   DELETE_ACCOUNT_ERROR = "deleteaccounterror",
   DELETE_ACCOUNT_SUCCESS = "deleteaccountsuccess",
+  REMOTE_SIGN_SUCCESS = "remotesignsuccess",
   UNKNOWN_ERROR = "unknownerror",
 }
 

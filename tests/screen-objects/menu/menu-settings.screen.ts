@@ -56,6 +56,10 @@ export class MenuSettingsScreen {
     await this.manageOperationsPasswordItem.click();
   }
 
+  async checkAppVersionIsDisplayed() {
+    await expect(this.appVersionItem).toBeDisplayed();
+  }
+
   async tapOnRecoveryPhraseButton() {
     await expect(this.recoveryPhraseItem).toBeDisplayed();
     await expect(this.recoveryPhraseItem).toBeEnabled();

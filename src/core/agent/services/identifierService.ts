@@ -3,14 +3,17 @@ import {
   CreateIdentifierResult,
   IdentifierDetails,
   IdentifierShortDetails,
+  RemoteSignRequest,
 } from "./identifier.types";
 import {
   CreationStatus,
   AgentServicesProps,
-  IdentifierResult,
   MiscRecordId,
-  NotificationRoute,
 } from "../agent.types";
+import {
+  ExchangeRoute,
+  NotificationRoute,
+} from "./keriaNotificationService.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -35,6 +38,8 @@ import {
   NotificationRemovedEvent,
 } from "../event.types";
 import { StorageMessage } from "../../storage/storage.types";
+import { OobiQueryParams } from "./connectionService.types";
+import type { KeriaNotification } from "./keriaNotificationService.types";
 
 const UI_THEMES = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -676,6 +681,71 @@ class IdentifierService extends AgentService {
     await rotateResult.op();
   }
 
+  @OnlineOnly
+  async getRemoteSignRequestDetails(
+    requestSaid: string
+  ): Promise<RemoteSignRequest> {
+    const exchange = (
+      await this.props.signifyClient.exchanges().get(requestSaid)
+    ).exn;
+    const payload = exchange.a;
+    delete payload.d;
+
+    return {
+      identifier: exchange.rp,
+      payload,
+    };
+  }
+
+  @OnlineOnly
+  async remoteSign(notificationId: string, requestSaid: string): Promise<void> {
+    const noteRecord = await this.notificationStorage.findExpectedById(
+      notificationId
+    );
+    const exchange = await this.props.signifyClient
+      .exchanges()
+      .get(requestSaid);
+
+    const identifier = exchange.exn.rp;
+    const seal = { d: exchange.exn.a.d }; // KeriaNotificationService verifies d is correct for a block
+
+    // @TODO - foconnor: We should track the operation and submit the exn after completion
+    const ixnResult = await this.props.signifyClient
+      .identifiers()
+      .interact(identifier, seal);
+
+    const hab = await this.props.signifyClient.identifiers().get(identifier);
+    const [exn, sigs, atc] = await this.props.signifyClient
+      .exchanges()
+      .createExchangeMessage(
+        hab,
+        ExchangeRoute.RemoteSignRef,
+        { sn: ixnResult.serder.ked.s },
+        [],
+        exchange.exn.i,
+        undefined,
+        requestSaid
+      );
+    await this.props.signifyClient
+      .exchanges()
+      .sendFromEvents(identifier, "remotesign", exn, sigs, atc, [
+        exchange.exn.i,
+      ]);
+
+    await deleteNotificationRecordById(
+      this.props.signifyClient,
+      this.notificationStorage,
+      notificationId,
+      noteRecord.route
+    );
+    this.props.eventEmitter.emit<NotificationRemovedEvent>({
+      type: EventTypes.NotificationRemoved,
+      payload: {
+        id: notificationId,
+      },
+    });
+  }
+
   async getAvailableWitnesses(): Promise<{
     toad: number;
     witnesses: string[];
@@ -687,7 +757,7 @@ class IdentifierService extends AgentService {
 
     const witnesses = [];
     for (const oobi of config.iurls) {
-      const role = new URL(oobi).searchParams.get("role");
+      const role = new URL(oobi).searchParams.get(OobiQueryParams.ROLE);
       if (role === "witness") {
         witnesses.push(oobi.split("/oobi/")[1].split("/")[0]); // EID - endpoint identifier
       }

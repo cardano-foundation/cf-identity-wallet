@@ -1142,7 +1142,12 @@
       "tab": {
         "title": "Align the QR code within the frame to scan",
         "permissionalert": "Enable the camera in your device settings to start scanning",
-        "cameraunavailable": "We're unable to access your camera."
+        "cameraunavailable": "We're unable to access your camera.",
+        "missingidentifier": {
+          "title": "To establish a connection you will need to create an identifier",
+          "create": "Create identifier",
+          "cancel": "Cancel"
+        }
       },
       "pastemeerkatid": "Paste Meerkat ID"
     },
@@ -1192,7 +1197,10 @@
           "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you",
           "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
           "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
-          "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>"
+          "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>",
+          "signconfirmation": "<strong>{{certificate}} for {{connection}} is now fully signed 🎉</strong>",
+          "signeventinfo": "<strong>Signing event information</strong>",
+          "connectinstructions": "<strong>Check your email for instructions on how to connect with {{connection}}</strong>"
         }
       },
       "details": {
@@ -1306,6 +1314,39 @@
           "button": {
             "sign": "Sign",
             "dontallow": "Don't allow"
+          }
+        },
+        "signconfirmation": {
+          "title": "Signed event",
+          "subtitle": "{{certificate}} for {{connection}} is now fully signed 🎉",
+          "description": "The {{certificate}} for {{connection}} has been successfully signed by all required parties and is now verified and finalized.\n\nA copy is available for your records. Click below to view or download the certificate.",
+          "button": {
+            "label": "View {{certificate}}"
+          }
+        },
+        "signinformation": {
+          "title": "Signed event",
+          "subtitle": "Waiting for a co-signer",
+          "description": {
+            "paragraphone": "The certificate for {{certificate}} is still awaiting a signature from the other party. This step may take up to 7 days.",
+            "paragraphtwo": "If the signature isn't received within this period, the certificate will be finalized without their participation.",
+            "paragraphthree": "No action is required from you at this time."
+          }
+        },
+        "connectinstructions": {
+          "title": "Instructions",
+          "subtitle": "Connect with {{connection}}",
+          "description": "You should have received an email explaining how to create a connection between your wallet and with the {{connection}} team.",
+          "steps": {
+            "one": "Open the email subject “Connect with {{connection}} via your Identity Wallet”",
+            "two": "Find the QR code within the email",
+            "three": "Open the scanner using the button at the bottom of this notification or from the wallet’s navigation tab",
+            "four": "Scan the QR code or paste the Connection ID and advance",
+            "five": "Accept the connection to continue",
+            "six": "Wait for {{connection}} to accept"
+          },
+          "button": {
+            "label": "Scan now"
           }
         }
       }
@@ -1773,8 +1814,8 @@
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
     "identifierrequested": "Identifier request pending",
-    "identifiercreated": "New identifier created successfully",
-    "identifierupdated": "Identifier successfully updated",
+    "identifiercreated": "Identifier pending",
+    "identifierupdated": "Identifier created",
     "identifierdeleted": "Identifier successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "credentialsdeleted": "Credentials deleted successfully",
@@ -1829,7 +1870,8 @@
     "proposalcredreject": "Credential proposal rejected",
     "proposalcredfailerror": "Unable to record response",
     "deleteaccounterror": "Unable to delete account",
-    "deleteaccountsuccess": "Account deleted successfully"
+    "deleteaccountsuccess": "Account deleted successfully",
+    "remotesignsuccess": "Certificate signed successfully"
   },
   "request": {
     "sign": {

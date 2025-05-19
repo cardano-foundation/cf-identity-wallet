@@ -3,13 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
+import { OobiQueryParams } from "../../../core/agent/services/connectionService.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
-  getMissingAliasUrl,
-  setMissingAliasUrl,
+  getMissingAliasConnection,
+  setMissingAliasConnection,
   setOpenConnectionId,
 } from "../../../store/reducers/connectionsCache";
 import {
@@ -31,8 +32,9 @@ const InputRequest = () => {
   const dispatch = useAppDispatch();
   const connections = useAppSelector(getConnectionsCache);
   const authentication = useAppSelector(getAuthentication);
-  const missingAliasUrl = useAppSelector(getMissingAliasUrl);
+  const missingAliasConnection = useAppSelector(getMissingAliasConnection);
   const currentRoute = useAppSelector(getCurrentRoute);
+  const missingAliasUrl = missingAliasConnection?.url;
 
   const componentId = "input-request";
   const [inputChange, setInputChange] = useState(false);
@@ -76,7 +78,10 @@ const InputRequest = () => {
         );
       }
 
-      await Agent.agent.connections.connectByOobiUrl(content);
+      await Agent.agent.connections.connectByOobiUrl(
+        content,
+        missingAliasConnection?.identifier
+      );
     } catch (e) {
       const errorMessage = (e as Error).message;
 
@@ -137,9 +142,9 @@ const InputRequest = () => {
     if (missingAliasUrl) {
       if (!missingAliasUrl) return;
       const url = new URL(missingAliasUrl);
-      url.searchParams.set("name", inputValue);
+      url.searchParams.set(OobiQueryParams.NAME, inputValue);
       resolveConnectionOobi(url.toString());
-      dispatch(setMissingAliasUrl(undefined));
+      dispatch(setMissingAliasConnection(undefined));
       setInputValue("");
       return;
     }

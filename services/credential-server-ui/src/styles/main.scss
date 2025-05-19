@@ -26,8 +26,7 @@ body {
 
       &:hover,
       &:active {
-        background:
-          linear-gradient(
+        background: linear-gradient(
             0deg,
             rgba(var(--color-neutral-800-rgb), 0.2) 0%,
             rgba(var(--color-neutral-800-rgb), 0.2) 100%
@@ -45,8 +44,7 @@ body {
 
       &:hover,
       &:active {
-        background:
-          linear-gradient(
+        background: linear-gradient(
             0deg,
             rgba(var(--color-neutral-800-rgb), 0.2) 0%,
             rgba(var(--color-neutral-800-rgb), 0.2) 100%
@@ -64,8 +62,7 @@ body {
 
       &:hover,
       &:active {
-        background:
-          linear-gradient(
+        background: linear-gradient(
             0deg,
             rgba(var(--color-neutral-800-rgb), 0.2) 0%,
             rgba(var(--color-neutral-800-rgb), 0.2) 100%
@@ -79,8 +76,7 @@ body {
 
       &:hover,
       &:active {
-        background:
-          linear-gradient(
+        background: linear-gradient(
             0deg,
             rgba(var(--color-neutral-800-rgb), 0.2) 0%,
             rgba(var(--color-neutral-800-rgb), 0.2) 100%
@@ -129,6 +125,14 @@ body {
           }
         }
       }
+    }
+  }
+
+  .MuiTooltip-popper {
+    margin: 0;
+    > * {
+      color: var(--color-neutral-100);
+      background-color: var(--color-neutral-700);
     }
   }
 }

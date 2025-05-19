@@ -5,16 +5,19 @@ import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Salter } from "signify-ts";
 import { Agent } from "../../../core/agent/agent";
-import { CreationStatus } from "../../../core/agent/agent.types";
+import { CreationStatus, MiscRecordId } from "../../../core/agent/agent.types";
 import { IdentifierService } from "../../../core/agent/services";
 import {
   CreateIdentifierInputs,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
+import { ConfigurationService } from "../../../core/configuration";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifiersCache,
+  getIndividualFirstCreateSetting,
+  setIndividualFirstCreate,
   setMultiSigGroupCache,
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
@@ -46,6 +49,7 @@ import {
   CreateIdentifierProps,
   IdentifierModel,
 } from "./CreateIdentifier.types";
+import { IndividualOnlyMode } from "../../../core/configuration/configurationService.types";
 
 const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
 const DUPLICATE_NAME = "Identifier name is a duplicate";
@@ -57,12 +61,15 @@ const CreateIdentifier = ({
   groupId,
 }: CreateIdentifierProps) => {
   const identifiers = useAppSelector(getIdentifiersCache);
+  const individualFirstCreate = useAppSelector(getIndividualFirstCreateSetting);
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const componentId = "create-identifier-modal";
   const dispatch = useAppDispatch();
   const initalState = {
     id: "",
-    displayName: "",
+    displayName:
+      ConfigurationService.env.features.identifiers?.creation?.defaultName ||
+      "",
     selectedAidType: groupId ? 1 : 0,
     selectedTheme: 0,
     color: IdentifierColor.One,
@@ -183,6 +190,12 @@ const CreateIdentifier = ({
         dispatch(setMultiSigGroupCache(newMultiSigGroup));
       }
 
+      if (individualFirstCreate) {
+        await Agent.agent.basicStorage
+          .deleteById(MiscRecordId.INDIVIDUAL_FIRST_CREATE)
+          .then(() => dispatch(setIndividualFirstCreate(false)));
+      }
+
       resetModal({
         id: identifier,
         creationStatus: CreationStatus.PENDING,
@@ -275,6 +288,12 @@ const CreateIdentifier = ({
     []
   );
 
+  const hiddenTypeSelect =
+    ConfigurationService.env.features.identifiers?.creation?.individualOnly ===
+      IndividualOnlyMode.Always ||
+    multiSigGroup ||
+    individualFirstCreate;
+
   return (
     <>
       <IonModal
@@ -339,7 +358,7 @@ const CreateIdentifier = ({
               {hasError && <ErrorMessage message={errorMessage} />}
             </div>
           </div>
-          {!multiSigGroup && (
+          {!hiddenTypeSelect && (
             <div className="aid-type">
               <div className="type-input-title">
                 {`${i18n.t("createidentifier.aidtype.title")}`}

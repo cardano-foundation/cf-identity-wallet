@@ -26,6 +26,10 @@ ion-modal.create-identifier-modal {
 
     .page-header {
       margin-top: 0.625rem;
+
+      .buttons-last-slot {
+        display: none;
+      }
     }
 
     ion-grid {

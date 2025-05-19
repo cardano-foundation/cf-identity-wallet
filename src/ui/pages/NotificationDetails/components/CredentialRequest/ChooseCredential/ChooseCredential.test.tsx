@@ -7,7 +7,7 @@ import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { KeriaNotification } from "../../../../../../core/agent/agent.types";
+import { KeriaNotification } from "../../../../../../core/agent/services/keriaNotificationService.types";
 import { CredentialStatus } from "../../../../../../core/agent/services/credentialService.types";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
@@ -469,7 +469,7 @@ describe("Credential request - choose request", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("cre-request-spinner-container")).toBeVisible();
+      expect(getByTestId("credential-request-spinner-container")).toBeVisible();
     });
 
     expect(offerAcdcFromApplyMock).toBeCalledWith(

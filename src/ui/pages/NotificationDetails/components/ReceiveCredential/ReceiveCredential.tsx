@@ -8,7 +8,7 @@ import {
 } from "ionicons/icons";
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
-import { NotificationRoute } from "../../../../../core/agent/agent.types";
+import { NotificationRoute } from "../../../../../core/agent/services/keriaNotificationService.types";
 import {
   ACDCDetails,
   CredentialStatus,

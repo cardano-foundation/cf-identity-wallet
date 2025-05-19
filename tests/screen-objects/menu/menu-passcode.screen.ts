@@ -1,6 +1,8 @@
 import { expect } from "expect-webdriverio";
 import { PasscodeScreen } from "../onboarding/passcode.screen";
 import { Passcode } from "../../constants/text.constants";
+import { PasscodeScreen } from "../onboarding/passcode.screen";
+import { Passcode } from "../../constants/text.constants";
 
 export class MenuPasscodeScreen extends PasscodeScreen {
   get cancelButton() {

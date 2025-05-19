@@ -20,6 +20,9 @@ import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import "./Onboarding.scss";
 import { SlideItem } from "./components/Slides/Slides.types";
 import { Slides } from "./components/Slides";
+import { ConfigurationService } from "../../../core/configuration";
+import { CustomContent } from "../../../core/configuration/configurationService.types";
+import { Intro } from "../../components/CustomContent";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -30,6 +33,9 @@ const Onboarding = () => {
   const stateCache = useAppSelector(getStateCache);
   const [hiddenPage, setHiddenPage] = useState(false);
   useExitAppWithDoubleTap(hiddenPage);
+  const customIntro = ConfigurationService.env.features.customContent.includes(
+    CustomContent.Intro
+  );
 
   useEffect(() => {
     setHiddenPage(history?.location?.pathname !== RoutePath.ONBOARDING);
@@ -89,7 +95,7 @@ const Onboarding = () => {
 
   return (
     <ResponsivePageLayout pageId={pageId}>
-      <Slides items={items} />
+      {customIntro ? <Intro /> : <Slides items={items} />}
       <PageFooter
         pageId={pageId}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}

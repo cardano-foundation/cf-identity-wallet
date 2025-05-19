@@ -1,4 +1,5 @@
 import { Then, When } from "@wdio/cucumber-framework";
+import { Then, When } from "@wdio/cucumber-framework";
 import MenuPasscodeScreen from "../../screen-objects/menu/menu-passcode.screen.js";
 
 Then(
