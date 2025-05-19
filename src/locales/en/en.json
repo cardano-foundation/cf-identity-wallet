@@ -1870,7 +1870,8 @@
     "proposalcredreject": "Credential proposal rejected",
     "proposalcredfailerror": "Unable to record response",
     "deleteaccounterror": "Unable to delete account",
-    "deleteaccountsuccess": "Account deleted successfully"
+    "deleteaccountsuccess": "Account deleted successfully",
+    "remotesignsuccess": "Certificate signed successfully"
   },
   "request": {
     "sign": {
