@@ -3,6 +3,8 @@ import {
   BiometryErrorType,
 } from "@aparajita/capacitor-biometric-auth";
 import { Capacitor } from "@capacitor/core";
+import { IonIcon } from "@ionic/react";
+import { fingerPrintOutline } from "ionicons/icons";
 import { useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
@@ -19,7 +21,6 @@ import {
   showGenericError,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import BiometricIcon from "../../assets/images/biometric-icon.svg";
 import { Alert } from "../../components/Alert";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
@@ -132,10 +133,7 @@ const SetupBiometrics = () => {
         header={<PageHeader currentPath={RoutePath.SETUP_BIOMETRICS} />}
       >
         <div className="page-info">
-          <img
-            src={BiometricIcon}
-            alt="biometric-icon"
-          />
+          <IonIcon icon={fingerPrintOutline} />
           <h1>{i18n.t("setupbiometrics.title")}</h1>
           <p>{i18n.t("setupbiometrics.description")}</p>
         </div>
