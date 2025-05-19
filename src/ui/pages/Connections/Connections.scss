@@ -107,13 +107,12 @@
 
     &.md {
       --top-space-space: calc(8.125rem + var(--ion-safe-area-bottom));
+      height: calc(100vh - (var(--top-space-space) + var(--ion-safe-area-top)));
 
       @media screen and (min-width: 250px) and (max-width: 370px) {
         --top-space-space: calc(7.625rem + var(--ion-safe-area-bottom));
       }
     }
-
-    height: calc(100vh - (var(--top-space-space) + var(--ion-safe-area-top)));
 
     > ion-grid {
       padding: 0;

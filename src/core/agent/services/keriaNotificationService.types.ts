@@ -8,10 +8,9 @@ enum NotificationRoute {
   ExnIpexAgree = "/exn/ipex/agree",
   ExnIpexGrant = "/exn/ipex/grant",
   RemoteSignReq = "/exn/remotesign/ixn/req",
+  HumanReadableMessage = "/exn/hmessage",
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
-  LocalConfirmation = "/local/signconfirmation",
-  LocalInformation = "/local/signinformation",
   LocalConnectInstructions = "/local/connectinstructions",
 }
 
@@ -47,6 +46,7 @@ interface Notification {
   a: {
     r: string;
     d: string;
+    m?: string;
   };
 }
 
