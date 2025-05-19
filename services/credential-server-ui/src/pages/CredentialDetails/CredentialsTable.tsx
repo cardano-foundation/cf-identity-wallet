@@ -31,6 +31,8 @@ import {
   CredentialTableRow,
 } from "./CredentialDetails.types";
 import { triggerToast } from "../../utils/toast";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
+import { filter, FilterBar } from "../../components/FilterBar";
 
 const headers: AppTableHeader<CredentialTableRow>[] = [
   {
@@ -70,6 +72,11 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
     useState<CredentialTableRow | null>(null);
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
   const nav = useNavigate();
 
   const tableRows: CredentialTableRow[] = credentials.map((row) => {
@@ -88,6 +95,8 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     };
   });
 
+  const filterRows = filter(tableRows, filterData, { date: "date" });
+
   const {
     order,
     orderBy,
@@ -98,7 +107,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "date");
+  } = useTable(filterRows, "date");
 
   const revokeCred = async () => {
     setOpenModal(false);
@@ -142,7 +151,11 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
   };
 
   return (
-    <>
+    <Box flex={1}>
+      <FilterBar
+        onChange={setFilterData}
+        totalFound={filterRows.length}
+      />
       <Paper className="credentials-table">
         <AppTable
           order={order}
@@ -269,7 +282,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
           headers={headers}
           pagination={{
             component: "div",
-            count: credentials.length,
+            count: filterRows.length,
             rowsPerPage: rowsPerPage,
             page: page,
             onPageChange: handleChangePage,
@@ -302,7 +315,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
           </>
         }
       />
-    </>
+    </Box>
   );
 };
 

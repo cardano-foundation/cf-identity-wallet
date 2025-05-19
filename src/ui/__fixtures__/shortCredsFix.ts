@@ -1,4 +1,5 @@
 import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multiSigFixtures";
+import { IpexCommunicationService } from "../../core/agent/services";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -75,6 +76,26 @@ const shortCredsFix: CredentialShortDetails[] = [
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.PENDING,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
+  },
+  {
+    id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF2-ghumzCJ6nv",
+    issuanceDate: "2024-01-23T16:03:44.643Z",
+    credentialType: "Rome Offsite 2025 Credential",
+    status: CredentialStatus.CONFIRMED,
+    schema: IpexCommunicationService.SCHEMA_SAID_ROME_DEMO,
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
+    connectionId: "ebfeb1ebc6f1c276ef71212ec20",
+  },
+  {
+    id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF3-ghumzCJ6nv",
+    issuanceDate: "2024-01-23T16:03:44.643Z",
+    credentialType: "Rome Offsite 2025 Credential",
+    status: CredentialStatus.PENDING,
+    schema: "EMkpplwGGw3fwdktSibRph9NSy_o2MvKDKO8ZoONqTOt",
     identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
     connectionId: "ebfeb1ebc6f1c276ef71212ec20",

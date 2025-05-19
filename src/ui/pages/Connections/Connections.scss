@@ -63,6 +63,7 @@
   .connections-body {
     display: flex;
     flex-direction: row;
+    margin-bottom: 0 !important;
   }
 
   .alphabet-selector {
@@ -71,11 +72,11 @@
     margin-top: calc(3.25rem + env(safe-area-inset-bottom));
 
     ion-button {
-      width: 1.2rem;
-      height: 1rem;
+      width: 1.5rem;
+      height: 1.25rem;
       min-height: 1rem;
       margin: 0;
-      font-size: 0.625rem;
+      font-size: 0.85rem;
       font-style: normal;
       font-weight: 500;
       line-height: 1rem;
@@ -90,11 +91,11 @@
       }
     }
 
-    @media screen and (min-width: 250px) and (max-width: 370px) {
+    @media screen and (min-width: 250px) and (max-width: 375px) {
       ion-button {
-        height: 0.65rem;
-        width: 1rem;
-        font-size: 0.5rem;
+        height: 0.75rem;
+        width: 1.25rem;
+        font-size: 0.65rem;
         min-height: 0.8rem;
         line-height: 0.8rem;
       }
@@ -102,13 +103,23 @@
   }
 
   .connections-list {
-    height: calc(100vh - 7.4rem);
+    --top-space-space: 7.5rem;
+
+    &.md {
+      --top-space-space: calc(8.125rem + var(--ion-safe-area-bottom));
+
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        --top-space-space: calc(7.625rem + var(--ion-safe-area-bottom));
+      }
+    }
+
+    height: calc(100vh - (var(--top-space-space) + var(--ion-safe-area-top)));
 
     > ion-grid {
       padding: 0;
 
       > ion-row > ion-col {
-        padding: 0 0 2rem;
+        padding: 0 0 var(--ion-safe-area-bottom);
       }
     }
 
@@ -180,11 +191,7 @@
     }
 
     .alphabet-selector {
-      margin-top: calc(2.5rem + env(safe-area-inset-bottom));
-    }
-
-    .connections-list {
-      height: calc(100vh - 6.9rem);
+      margin-top: calc(1.5rem + env(safe-area-inset-bottom));
     }
 
     .connections-list-alphabetic-block {

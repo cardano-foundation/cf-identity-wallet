@@ -43,6 +43,7 @@ enum MiscRecordId {
   IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
   MULTISIG_IDENTIFIERS_PENDING_CREATION = "multisig-identifiers-pending-creation",
   APP_FIRST_INSTALL = "app-first-install",
+  INDIVIDUAL_FIRST_CREATE = "individual-first-create",
 }
 
 interface ConnectionShortDetails {
