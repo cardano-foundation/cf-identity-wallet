@@ -21,7 +21,11 @@ export enum Passcode {
 
 export enum Biometric {
   Description = "Do you want to allow “Veridian” to use biometrics?",
-  DescriptionCancelBiometric = "You canceled Biometrics. You can set this up later via the settings page."
+  DescriptionCancelBiometric = "You canceled Biometrics. You can set this up later via the settings page.",
+}
+
+export enum WelcomeMessage {
+  Description = "You're in the perfect spot to create your secure and private digital identity. Let's begin by adding your first identifier!",
 }
 
 export enum PrivacyPolicy {
