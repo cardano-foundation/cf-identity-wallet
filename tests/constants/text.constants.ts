@@ -86,6 +86,11 @@ export enum YourRecoveryPhrase {
   Title = "Your recovery phrase",
 }
 
+export enum RecoveryPhrase {
+  DescriptionBottom = "Keep these words safe! Store them securely and never share them with anyone.",
+  Title = "Recovery phrase",
+}
+
 export enum VerifyYourRecoveryPhrase {
   Description = "Please select each word in the order it was presented to you.",
   Title = "Verify your recovery phrase",

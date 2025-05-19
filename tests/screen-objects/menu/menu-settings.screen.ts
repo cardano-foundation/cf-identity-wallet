@@ -59,6 +59,12 @@ export class MenuSettingsScreen {
   async checkAppVersionIsDisplayed() {
     await expect(this.appVersionItem).toBeDisplayed();
   }
+
+  async tapOnRecoveryPhraseButton() {
+    await expect(this.recoveryPhraseItem).toBeDisplayed();
+    await expect(this.recoveryPhraseItem).toBeEnabled();
+    await this.recoveryPhraseItem.click();
+  }
 }
 
 export default new MenuSettingsScreen();
