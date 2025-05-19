@@ -6,7 +6,6 @@ import { i18n } from "../../../i18n";
 import { useAppSelector } from "../../../store/hooks";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import { CardItem, CardList } from "../CardList";
-import { getFallbackIcon } from "../FallbackIcon";
 import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
@@ -35,7 +34,6 @@ const IdentifierSelectorModal = ({
       (identifier): CardItem<IdentifierShortDetails> => ({
         id: identifier.id,
         title: identifier.displayName,
-        image: getFallbackIcon(),
         data: identifier,
       })
     );

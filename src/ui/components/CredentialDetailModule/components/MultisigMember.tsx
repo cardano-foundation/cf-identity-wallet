@@ -5,6 +5,7 @@ import { combineClassNames } from "../../../utils/style";
 import { FallbackIcon } from "../../FallbackIcon";
 import "./MultisigMember.scss";
 import { MemberAcceptStatus, MemberProps } from "./MultisigMember.types";
+import Keri from "../../../assets/images/KeriGeneric.jpg";
 
 const MultisigMember = ({ name, status }: MemberProps) => {
   const statusClasses = combineClassNames("status", {

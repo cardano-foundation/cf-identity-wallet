@@ -23,7 +23,6 @@ import { setToastMsg } from "../../../../../../store/reducers/stateCache";
 import { CardDetailsBlock } from "../../../../../components/CardDetails";
 import { CardItem, CardList } from "../../../../../components/CardList";
 import { BackReason } from "../../../../../components/CredentialDetailModule/CredentialDetailModule.types";
-import { getFallbackIcon } from "../../../../../components/FallbackIcon";
 import { PageFooter } from "../../../../../components/PageFooter";
 import { PageHeader } from "../../../../../components/PageHeader";
 import { Verification } from "../../../../../components/Verification";
@@ -77,7 +76,6 @@ const ChooseCredential = ({
         subtitle: `${formatShortDate(cred.acdc.a.dt)} - ${formatTimeToSec(
           cred.acdc.a.dt
         )}`,
-        image: getFallbackIcon(),
         data: cred,
       };
     }

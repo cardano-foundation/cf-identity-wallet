@@ -22,10 +22,10 @@ import {
   formatTimeToSec,
   getUTCOffset,
 } from "../../../utils/formatters";
-import { getFallbackIcon } from "../../FallbackIcon";
 import { IdentifierAttributeDetailModal } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal";
 import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierContentProps } from "./IdentifierContent.types";
+import { FallbackIcon } from "../../FallbackIcon";
 
 const DISPLAY_MEMBERS = 3;
 
@@ -83,7 +83,7 @@ const IdentifierContent = ({
                 <CardDetailsItem
                   key={index}
                   info={item}
-                  customIcon={getFallbackIcon()}
+                  startSlot={<FallbackIcon />}
                   className="member"
                   testId={`group-member-${index}`}
                 />

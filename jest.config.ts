@@ -47,5 +47,5 @@ export default {
     "\\.yaml$": "jest-transform-yaml",
   },
   setupFilesAfterEnv: ["jest-canvas-mock", "<rootDir>/src/setupTests.ts"],
-  setupFiles: ["<rootDir>/src/ui/__mocks__/swiper.tsx", "<rootDir>/src/ui/__mocks__/fallbackIconMock.ts"]
+  setupFiles: ["<rootDir>/src/ui/__mocks__/swiper.tsx"]
 };

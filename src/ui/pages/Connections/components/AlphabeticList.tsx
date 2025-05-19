@@ -7,7 +7,6 @@ import {
 } from "../../../../core/agent/agent.types";
 import { CardList } from "../../../components/CardList";
 import { CardItem } from "../../../components/CardList/CardList.types";
-import { getFallbackIcon } from "../../../components/FallbackIcon";
 import { formatShortDate } from "../../../utils/formatters";
 
 const AlphabeticList = ({
@@ -22,7 +21,7 @@ const AlphabeticList = ({
       id: connection.id,
       title: connection.label as string,
       subtitle: formatShortDate(`${connection?.createdAtUTC}`),
-      image: connection.logo || getFallbackIcon(),
+      image: connection.logo,
       data: connection,
     }));
   }, [items]);

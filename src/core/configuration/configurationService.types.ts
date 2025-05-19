@@ -27,7 +27,6 @@ interface AppFeaturesConfig {
   cut: OptionalFeature[];
   identifiers?: IdentifierConfig;
   customContent: CustomContent[];
-  fallbackIcon: boolean;
 }
 
 interface Configuration {

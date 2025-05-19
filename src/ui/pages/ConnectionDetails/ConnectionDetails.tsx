@@ -28,7 +28,6 @@ import { Alert as AlertDeleteConnection } from "../../components/Alert";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { CloudError } from "../../components/CloudError";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
-import { getFallbackIcon } from "../../components/FallbackIcon";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { Verification } from "../../components/Verification";
@@ -222,7 +221,7 @@ const ConnectionDetails = ({
         >
           <div className="connection-details-content">
             <ConnectionDetailsHeader
-              logo={connectionDetails?.logo || getFallbackIcon()}
+              logo={connectionDetails?.logo}
               label={connectionDetails?.label}
               date={connectionDetails?.createdAtUTC}
             />

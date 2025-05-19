@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { ConnectionShortDetails } from "../../../../../core/agent/agent.types";
 import { i18n } from "../../../../../i18n";
 import { CardItem, CardList } from "../../../../components/CardList";
-import { getFallbackIcon } from "../../../../components/FallbackIcon";
 import { ListHeader } from "../../../../components/ListHeader";
 import {
   SearchConnectionContentProps,
@@ -23,7 +22,7 @@ const SearchConnectionList = ({
       return {
         id: connection.id,
         title: connection.label,
-        image: connection.logo || getFallbackIcon(),
+        image: connection.logo,
         data: connection,
       };
     });

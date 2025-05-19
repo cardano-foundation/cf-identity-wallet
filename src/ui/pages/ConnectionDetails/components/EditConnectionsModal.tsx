@@ -7,7 +7,6 @@ import { i18n } from "../../../../i18n";
 import { useAppDispatch } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { Alert } from "../../../components/Alert";
-import { getFallbackIcon } from "../../../components/FallbackIcon";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../components/PageFooter";
 import { PageHeader } from "../../../components/PageHeader";
@@ -172,7 +171,7 @@ export const EditConnectionsContainer = ({
       >
         <div className="connection-details-content">
           <ConnectionDetailsHeader
-            logo={connectionDetails?.logo || getFallbackIcon()}
+            logo={connectionDetails?.logo}
             label={connectionDetails?.label}
             date={connectionDetails?.createdAtUTC}
           />

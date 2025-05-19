@@ -13,7 +13,6 @@ import {
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
 import { CardItem, CardList } from "../../components/CardList";
-import { getFallbackIcon } from "../../components/FallbackIcon";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
@@ -44,7 +43,6 @@ const WalletConnectStageTwo = ({
       (identifier): CardItem<IdentifierShortDetails> => ({
         id: identifier.id,
         title: identifier.displayName,
-        image: getFallbackIcon(),
         data: identifier,
       })
     );

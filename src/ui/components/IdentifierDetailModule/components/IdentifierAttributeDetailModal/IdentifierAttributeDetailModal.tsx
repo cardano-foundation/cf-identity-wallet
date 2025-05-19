@@ -6,7 +6,6 @@ import { getAuthentication } from "../../../../../store/reducers/stateCache";
 import { InfoCard } from "../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
-import { getFallbackIcon } from "../../../FallbackIcon";
 import { Advanced } from "./Advanced";
 import "./IdentifierAttributeDetailModal.scss";
 import {
@@ -43,7 +42,6 @@ const IdentifierAttributeDetailModal = ({
       }
 
       return {
-        image: getFallbackIcon(),
         title: name,
         isCurrentUser: !memberConnection?.label,
       };

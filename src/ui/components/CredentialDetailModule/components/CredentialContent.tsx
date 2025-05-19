@@ -23,13 +23,13 @@ import {
   FlatBorderType,
 } from "../../CardDetails";
 import { CardTheme } from "../../CardTheme";
-import { getFallbackIcon } from "../../FallbackIcon";
 import { IdentifierDetailModal } from "../../IdentifierDetailModule";
 import { ListHeader } from "../../ListHeader";
 import { ReadMore } from "../../ReadMore";
 import { CredentialContentProps } from "./CredentialContent.types";
 import { MultisigMember } from "./MultisigMember";
 import { MemberAcceptStatus } from "./MultisigMember.types";
+import { FallbackIcon } from "../../FallbackIcon";
 
 const IGNORE_KEYS = ["i", "dt", "d", "u"];
 
@@ -130,7 +130,7 @@ const CredentialContent = ({
               ? connectionShortDetails.label
               : i18n.t("connections.unknown")
           }
-          customIcon={getFallbackIcon()}
+          startSlot={<FallbackIcon />}
           className="member"
           testId={"credential-details-issuer"}
         />

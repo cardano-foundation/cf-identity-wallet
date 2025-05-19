@@ -6,7 +6,6 @@ import {
   CardDetailsAttributes,
   CardDetailsBlock,
 } from "../../../components/CardDetails";
-import { getFallbackIcon } from "../../../components/FallbackIcon";
 import { PageFooter } from "../../../components/PageFooter";
 import { PageHeader } from "../../../components/PageHeader";
 import { Spinner } from "../../../components/Spinner";
@@ -41,7 +40,7 @@ const SignRequest = ({
   }, [requestData.type]);
 
   const signRequest = requestData.signTransaction;
-  const logo = requestData.peerConnection.iconB64 || getFallbackIcon();
+  const logo = requestData.peerConnection.iconB64;
 
   const handleSign = () => {
     handleAccept();
