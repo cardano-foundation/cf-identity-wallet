@@ -2,6 +2,7 @@ Feature: Menu
 
   Background:
     Given user is onboarded with skipped password creation
+    And user skip UNDP flavor application if it exist
 
   Scenario: C158 Menu - loads correctly
     Given user tap Menu button on Tab bar

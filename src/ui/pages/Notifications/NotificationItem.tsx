@@ -72,7 +72,7 @@ const NotificationItem = ({
         return t("tabs.notifications.tab.labels.multisigexn", {
           connection: connectionName || t("connections.unknown"),
         });
-      case NotificationRoute.LocalSign:
+      case NotificationRoute.RemoteSignReq:
         return t("tabs.notifications.tab.labels.sign", {
           connection: connectionName || t("connections.unknown"),
         });
@@ -107,7 +107,7 @@ const NotificationItem = ({
         return idCardOutline;
       case NotificationRoute.MultiSigIcp:
         return fingerPrintOutline;
-      case NotificationRoute.LocalSign:
+      case NotificationRoute.RemoteSignReq:
         return documentOutline;
       case NotificationRoute.LocalConnectInstructions:
         return personCircleOutline;
@@ -123,7 +123,7 @@ const NotificationItem = ({
   };
 
   const isLocalSign = [
-    NotificationRoute.LocalSign,
+    NotificationRoute.RemoteSignReq,
     NotificationRoute.LocalConnectInstructions,
   ].includes(item.a.r as NotificationRoute);
 

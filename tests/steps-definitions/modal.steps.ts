@@ -12,6 +12,7 @@ import WelcomeModal from "../screen-objects/components/welcome.modal.js";
 import YourRecoveryPhraseScreen from "../screen-objects/onboarding/your-recovery-phrase.screen.js";
 import MenuOperationPasswordScreen from "../screen-objects/menu/menu-operation-password.screen.js";
 import EnterPasswordModal from "../screen-objects/components/enter-password.modal.js";
+import MenuPasscodeScreen from "../screen-objects/menu/menu-passcode.screen.js";
 
 When(
   /^tap Cancel button on alert modal for Create Password screen$/,
@@ -32,6 +33,24 @@ When(
   async function () {
     await AlertModal.clickCancelButtonSameLevelInDOM(
       MenuOperationPasswordScreen.alertModalCancelButton
+    );
+  }
+);
+
+When(
+  /^user tap Cancel button on alert modal for Passcode screen from Menu screen$/,
+  async function () {
+    await AlertModal.clickCancelButtonSameLevelInDOM(
+      MenuPasscodeScreen.cancelButtonOnModal
+    );
+  }
+);
+
+When(
+  /^user tap Verify your Recovery Phrase button on alert modal for Passcode screen from Menu screen$/,
+  async function () {
+    await AlertModal.clickConfirmButtonSameLevelInDOM(
+      MenuPasscodeScreen.verifyYourRecoveryButton
     );
   }
 );

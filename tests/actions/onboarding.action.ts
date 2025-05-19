@@ -14,12 +14,17 @@ import SsiAgentDetailsScreen from "../screen-objects/onboarding/ssi-agent-detail
 import VerifySeedPhraseScreen from "../screen-objects/onboarding/verify-your-recovery-phrase.screen.js";
 import WelcomeModal from "../screen-objects/components/welcome.modal.js";
 import { returnPassword } from "../helpers/generate";
+import BiometricScreen from "../screen-objects/onboarding/biometric.screen";
+import UNDPWelcomeScreen from "../screen-objects/onboarding/undp-welcome.screen";
 
 Given(/^user is onboarded with skipped password creation$/, async function () {
   await OnboardingScreen.tapOnGetStartedButton();
   await PasscodeScreen.enterPasscode(
     (this.passcode = await PasscodeScreen.createAndEnterRandomPasscode())
   );
+  if (await BiometricScreen.biometricWarningText.isExisting()) {
+    await BiometricScreen.handleBiometricPopup();
+  }
   await CreatePasswordScreen.skipButton.click();
   await AlertModal.clickConfirmButtonOf(CreatePasswordScreen.alertModal);
   await generateRecoveryPhraseOf();
@@ -38,6 +43,9 @@ Given(/^user is onboarded with a password creation$/, async function () {
   await PasscodeScreen.enterPasscode(
     (this.passcode = await PasscodeScreen.createAndEnterRandomPasscode())
   );
+  if (await BiometricScreen.biometricWarningText.isExisting()) {
+    await BiometricScreen.handleBiometricPopup();
+  }
   (global as any).generatedPassword = await returnPassword(10);
   await CreatePasswordScreen.createPasswordInput.addValue(
     (global as any).generatedPassword
@@ -58,4 +66,8 @@ Given(/^user is onboarded with a password creation$/, async function () {
   await WelcomeModal.confirmButton.waitForClickable();
   await WelcomeModal.confirmButton.click();
   await Assert.toast(`Welcome, ${this.userName}!`);
+});
+
+Given(/^user skip UNDP flavor application if it exist$/, async function () {
+  await UNDPWelcomeScreen.handleSkipUNDPScreen();
 });
