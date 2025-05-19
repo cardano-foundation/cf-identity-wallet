@@ -43,6 +43,7 @@ enum MiscRecordId {
   IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
   MULTISIG_IDENTIFIERS_PENDING_CREATION = "multisig-identifiers-pending-creation",
   APP_FIRST_INSTALL = "app-first-install",
+  INDIVIDUAL_FIRST_CREATE = "individual-first-create",
 }
 
 interface ConnectionShortDetails {
@@ -141,12 +142,6 @@ interface AgentServicesProps {
   eventEmitter: CoreEventEmitter;
 }
 
-interface IdentifierResult {
-  name: string;
-  prefix: string;
-  salty: any;
-}
-
 interface AgentUrls {
   url: string;
   bootUrl: string;
@@ -180,7 +175,6 @@ export type {
   ConnectionHistoryItem,
   OobiScan,
   AgentServicesProps,
-  IdentifierResult,
   AgentUrls,
   BranAndMnemonic,
   ExnMessage,

@@ -47,7 +47,7 @@ const NotificationDetails = () => {
       [NotificationRoute.ExnIpexGrant]: ReceiveCredential,
       [NotificationRoute.ExnIpexApply]: CredentialRequest,
       [NotificationRoute.MultiSigExn]: ReceiveCredential,
-      [NotificationRoute.LocalSign]: RemoteSignRequest,
+      [NotificationRoute.RemoteSignReq]: RemoteSignRequest,
       [NotificationRoute.HumanReadableMessage]: RemoteSignConfirmation,
       [NotificationRoute.LocalConnectInstructions]: RemoteConnectInstructions,
       [NotificationRoute.MultiSigRpy]: null,

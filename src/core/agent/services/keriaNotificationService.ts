@@ -1,4 +1,4 @@
-import { Ilks, State } from "signify-ts";
+import { Ilks, Saider, State } from "signify-ts";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -11,8 +11,9 @@ import {
   KeriaNotification,
   ExchangeRoute,
   NotificationRoute,
+  Notification,
 } from "./keriaNotificationService.types";
-import { CredentialStatus, Notification } from "./credentialService.types";
+import { CredentialStatus } from "./credentialService.types";
 import {
   BasicRecord,
   BasicStorage,
@@ -324,6 +325,8 @@ class KeriaNotificationService extends AgentService {
         notif,
         exn
       );
+    } else if (notif.a.r === NotificationRoute.RemoteSignReq) {
+      shouldCreateRecord = await this.processRemoteSignReq(notif, exn);
     }
 
     if (!shouldCreateRecord) {
@@ -902,6 +905,22 @@ class KeriaNotificationService extends AgentService {
       }
 
       if (typeof payload.l.t === "string" && typeof payload.l.a === "string") {
+        return true;
+      }
+    }
+
+    await this.markNotification(notif.i);
+    return false;
+  }
+
+  private async processRemoteSignReq(
+    notif: Notification,
+    exchange: ExnMessage
+  ): Promise<boolean> {
+    const payload = exchange.exn.a;
+    if (payload.d) {
+      const [saider, _] = Saider.saidify(payload);
+      if (payload.d === saider.qb64) {
         return true;
       }
     }

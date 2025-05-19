@@ -1,11 +1,9 @@
 import {
   ExchangeRoute,
   NotificationRoute,
-} from "../../agent/services/keriaNotificationService.types";
-import {
-  CredentialStatus,
   Notification,
-} from "../../agent/services/credentialService.types";
+} from "../../agent/services/keriaNotificationService.types";
+import { CredentialStatus } from "../../agent/services/credentialService.types";
 import { MultiSigRoute } from "../../agent/services/multiSig.types";
 
 const credentialMetadataMock = {
@@ -464,6 +462,16 @@ const humanReadableNotification: Notification = {
   },
 };
 
+const remoteSignReqNotification = {
+  i: "0ADfXs42uwqd9lYDesWYJVFD",
+  dt: "2025-05-01T11:33:20.613745+00:00",
+  r: false,
+  a: {
+    r: "/exn/remotesign/ixn/req",
+    d: "EMAFpQQYEoGVtNP6jTijgeap3UQB5LoY3U3FlyCdAsTE",
+  },
+};
+
 export {
   credentialMetadataMock,
   grantForIssuanceExnMessage,
@@ -488,4 +496,5 @@ export {
   humanReadableExn,
   humanReadableLinkedExn,
   humanReadableNotification,
+  remoteSignReqNotification,
 };

@@ -16,6 +16,12 @@ export enum Passcode {
   TitleReEnter = "Re-enter your Passcode",
   TitleNewPasscode = "Create new passcode",
   TitleEnterPasscode = "Enter passcode",
+  TitleReEnterNewPasscode = "Re-enter new passcode",
+}
+
+export enum Biometric {
+  Description = "Do you want to allow “Veridian” to use biometrics?",
+  DescriptionCancelBiometric = "You canceled Biometrics. You can set this up later via the settings page."
 }
 
 export enum PrivacyPolicy {

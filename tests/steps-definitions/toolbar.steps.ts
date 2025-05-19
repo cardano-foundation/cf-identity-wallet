@@ -17,19 +17,22 @@ Given(/^user tap Back arrow icon on the screen$/, async function () {
 });
 
 Given(
-    /^user tap Cancel button on Passcode screen(?: from (Setting screen))?$/,
-    async function (screenContext) {
-    if (screenContext === 'Setting screen') {
-        await MenuPasscodeScreen.tapOnCancelButton();
-    }else {
-        await BaseModal.clickCloseButtonOf(PasscodeScreen.id);
+  /^user tap Cancel button on Passcode screen(?: from (Setting screen))?$/,
+  async function (screenContext) {
+    if (screenContext === "Setting screen") {
+      await MenuPasscodeScreen.tapOnCancelButton();
+    } else {
+      await BaseModal.clickCloseButtonOf(PasscodeScreen.id);
     }
-});
+  }
+);
 
-
-When(/^user tap Back button on Re-enter your Passcode screen$/, async function () {
-  await BaseModal.clickCloseButtonOf(PasscodeScreen.id);
-});
+When(
+  /^user tap Back button on Re-enter your Passcode screen$/,
+  async function () {
+    await BaseModal.clickCloseButtonOf(PasscodeScreen.id);
+  }
+);
 
 When(
   /^user tap Back button on Verify Your Recovery Phrase screen$/,

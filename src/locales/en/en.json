@@ -1142,7 +1142,12 @@
       "tab": {
         "title": "Align the QR code within the frame to scan",
         "permissionalert": "Enable the camera in your device settings to start scanning",
-        "cameraunavailable": "We're unable to access your camera."
+        "cameraunavailable": "We're unable to access your camera.",
+        "missingidentifier": {
+          "title": "To establish a connection you will need to create an identifier",
+          "create": "Create identifier",
+          "cancel": "Cancel"
+        }
       },
       "pastemeerkatid": "Paste Meerkat ID"
     },
@@ -1855,7 +1860,8 @@
     "proposalcredreject": "Credential proposal rejected",
     "proposalcredfailerror": "Unable to record response",
     "deleteaccounterror": "Unable to delete account",
-    "deleteaccountsuccess": "Account deleted successfully"
+    "deleteaccountsuccess": "Account deleted successfully",
+    "remotesignsuccess": "Certificate signed successfully"
   },
   "request": {
     "sign": {

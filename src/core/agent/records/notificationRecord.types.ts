@@ -1,4 +1,4 @@
-import { Notification } from "../services/credentialService.types";
+import { Notification } from "../services/keriaNotificationService.types";
 
 interface LinkedRequest {
   accepted: boolean;

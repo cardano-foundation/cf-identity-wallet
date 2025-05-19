@@ -52,6 +52,8 @@ import { showError } from "../../utils/error";
 import { openBrowserLink } from "../../utils/openBrowserLink";
 import { isValidHttpUrl } from "../../utils/urlChecker";
 import "./CreateSSIAgent.scss";
+import { IndividualOnlyMode } from "../../../core/configuration/configurationService.types";
+import { setIndividualFirstCreate } from "../../../store/reducers/identifiersCache";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 const SEED_PHRASE_EMPTY = "Invalid seed phrase";
@@ -89,6 +91,9 @@ const CreateSSIAgent = () => {
   const [showSwitchModeModal, setSwitchModeModal] = useState(false);
 
   const isRecoveryMode = stateCache.authentication.recoveryWalletProgress;
+  const isIndividualOnlyFirstCreateMode =
+    ConfigurationService.env.features.identifiers?.creation?.individualOnly ===
+    IndividualOnlyMode.FirstTime;
 
   useEffect(() => {
     if (!ssiAgent.bootUrl && !ssiAgent.connectUrl) {
@@ -203,9 +208,13 @@ const CreateSSIAgent = () => {
         throw new Error(SEED_PHRASE_EMPTY);
       }
 
+      const connectUrl = removeLastSlash(ssiAgent.connectUrl.trim());
+
+      dispatch(setConnectUrl(connectUrl));
+
       await Agent.agent.recoverKeriaAgent(
         seedPhraseCache.seedPhrase.split(" "),
-        ssiAgent.connectUrl
+        connectUrl
       );
 
       dispatch(setRecoveryCompleteNoInterruption());
@@ -253,12 +262,31 @@ const CreateSSIAgent = () => {
         throw new Error(SSI_URLS_EMPTY);
       }
 
+      const bootUrl = removeLastSlash(ssiAgent.bootUrl.trim());
+      const connectUrl = removeLastSlash(ssiAgent.connectUrl.trim());
+
+      dispatch(setBootUrl(bootUrl));
+      dispatch(setConnectUrl(connectUrl));
+
       await Agent.agent.bootAndConnect({
-        bootUrl: ssiAgent.bootUrl,
-        url: ssiAgent.connectUrl,
+        bootUrl: bootUrl,
+        url: connectUrl,
       });
 
       await updateFirstInstallValue(true);
+
+      if (isIndividualOnlyFirstCreateMode) {
+        await Agent.agent.basicStorage
+          .createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.INDIVIDUAL_FIRST_CREATE,
+              content: { value: true },
+            })
+          )
+          .then(() =>
+            dispatch(setIndividualFirstCreate(isIndividualOnlyFirstCreateMode))
+          );
+      }
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
         store: { stateCache },

@@ -12,6 +12,8 @@ import { formatShortDate } from "../../utils/formatters";
 import { CardTheme } from "../CardTheme";
 import "./ArchivedCredentials.scss";
 import { CredentialItemProps } from "./ArchivedCredentials.types";
+import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
+import BackgroundROME from "../../assets/images/rome-bg.png";
 
 const CredentialItem = ({
   credential,
@@ -23,6 +25,8 @@ const CredentialItem = ({
   onRestore,
 }: CredentialItemProps) => {
   const isRevoked = credential.status === CredentialStatus.REVOKED;
+  const isRome =
+    credential.schema === IpexCommunicationService.SCHEMA_SAID_ROME_DEMO;
 
   return (
     <IonItemSliding>
@@ -41,9 +45,17 @@ const CredentialItem = ({
               aria-label=""
             />
           )}
-          <div className="credential-miniature">
-            <CardTheme />
-          </div>
+          {isRome ? (
+            <img
+              src={BackgroundROME}
+              alt="credential-miniature"
+              className="credential-miniature"
+            />
+          ) : (
+            <div className="credential-miniature">
+              <CardTheme />
+            </div>
+          )}
           <div className="credential-info">
             <div
               data-testid={`credential-name-${credential.id}`}

@@ -24,6 +24,8 @@ import "./styles/colors.scss";
 import { theme } from "./theme/theme"; // Import the theme
 import { CredentialDetails } from "./pages/CredentialDetails";
 import { RequestPresentation } from "./pages/RequestPresentation";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const App = () => {
   const MAX_TOAST_MESSAGES = 10;
@@ -43,77 +45,79 @@ const App = () => {
   }, [contacts, dispatch]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <SnackbarProvider
-        maxSnack={MAX_TOAST_MESSAGES}
-        autoHideDuration={TOAST_MESSAGE_DURATION}
-        iconVariant={{
-          success: <CheckCircleOutline />,
-          error: <WarningAmber />,
-        }}
-        action={(snackbarId) => (
-          <IconButton
-            aria-label="actions"
-            onClick={() => closeSnackbar(snackbarId)}
-          >
-            <Close />
-          </IconButton>
-        )}
-      >
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={<Layout />}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <SnackbarProvider
+          maxSnack={MAX_TOAST_MESSAGES}
+          autoHideDuration={TOAST_MESSAGE_DURATION}
+          iconVariant={{
+            success: <CheckCircleOutline />,
+            error: <WarningAmber />,
+          }}
+          action={(snackbarId) => (
+            <IconButton
+              aria-label="actions"
+              onClick={() => closeSnackbar(snackbarId)}
             >
-              {/* TODO: Bring back when we're ready to ship Overview */}
-              {/* <Route
+              <Close />
+            </IconButton>
+          )}
+        >
+          <BrowserRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={<Layout />}
+              >
+                {/* TODO: Bring back when we're ready to ship Overview */}
+                {/* <Route
                 index
                 element={<Overview />}
               /> */}
-              <Route
-                index
-                //path={RoutePath.Connections}
-                element={<Connections />}
-              />
-              <Route
-                path={RoutePath.ConnectionDetails}
-                element={<ConnectionDetails />}
-              />
-              <Route
-                path={RoutePath.Credentials}
-                element={<Credentials />}
-              />
-              <Route
-                path={RoutePath.CredentialDetails}
-                element={<CredentialDetails />}
-              />
-              <Route
-                path={RoutePath.Credentials}
-                element={<Credentials />}
-              />
-              <Route
-                path={RoutePath.Notifications}
-                element={<Notifications />}
-              />
-              <Route
-                path={RoutePath.Settings}
-                element={<Settings />}
-              />
-              <Route
-                path={RoutePath.RequestPresentation}
-                element={<RequestPresentation />}
-              />
-              <Route
-                path="*"
-                element={<NoPage />}
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </SnackbarProvider>
-    </ThemeProvider>
+                <Route
+                  index
+                  //path={RoutePath.Connections}
+                  element={<Connections />}
+                />
+                <Route
+                  path={RoutePath.ConnectionDetails}
+                  element={<ConnectionDetails />}
+                />
+                <Route
+                  path={RoutePath.Credentials}
+                  element={<Credentials />}
+                />
+                <Route
+                  path={RoutePath.CredentialDetails}
+                  element={<CredentialDetails />}
+                />
+                <Route
+                  path={RoutePath.Credentials}
+                  element={<Credentials />}
+                />
+                <Route
+                  path={RoutePath.Notifications}
+                  element={<Notifications />}
+                />
+                <Route
+                  path={RoutePath.Settings}
+                  element={<Settings />}
+                />
+                <Route
+                  path={RoutePath.RequestPresentation}
+                  element={<RequestPresentation />}
+                />
+                <Route
+                  path="*"
+                  element={<NoPage />}
+                />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </SnackbarProvider>
+      </ThemeProvider>
+    </LocalizationProvider>
   );
 };
 

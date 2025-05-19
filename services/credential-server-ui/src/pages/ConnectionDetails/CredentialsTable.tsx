@@ -31,6 +31,8 @@ import {
   CredentialsTableProps,
   CredentialsTableRow,
 } from "./ConnectionDetails.types";
+import { filter, FilterBar } from "../../components/FilterBar";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
 const headers: AppTableHeader<CredentialsTableRow>[] = [
   {
     id: "name",
@@ -66,6 +68,12 @@ const CredentialsTable = ({
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
     useState<CredentialsTableRow | null>(null);
+
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
   const tableRows: CredentialsTableRow[] = credentials.map((row) => ({
     id: row.status.i,
     name: row.schema.title,
@@ -75,6 +83,8 @@ const CredentialsTable = ({
     status: Number(row.status.s),
     data: row,
   }));
+
+  const filterRows = filter(tableRows, filterData, { date: "date" });
 
   const {
     order,
@@ -86,7 +96,7 @@ const CredentialsTable = ({
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "date");
+  } = useTable(filterRows, "date");
 
   const viewCredTemplate = (id: string) => {
     nav(`${RoutePath.Credentials}/${id}`);
@@ -130,7 +140,11 @@ const CredentialsTable = ({
   };
 
   return (
-    <>
+    <Box className="credential-table-container">
+      <FilterBar
+        onChange={setFilterData}
+        totalFound={filterRows.length}
+      />
       <Paper className="credentials-table">
         <AppTable
           order={order}
@@ -140,7 +154,7 @@ const CredentialsTable = ({
           headers={headers}
           pagination={{
             component: "div",
-            count: credentials.length,
+            count: filterRows.length,
             rowsPerPage: rowsPerPage,
             page: page,
             onPageChange: handleChangePage,
@@ -277,7 +291,7 @@ const CredentialsTable = ({
           </>
         }
       />
-    </>
+    </Box>
   );
 };
 

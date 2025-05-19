@@ -18,6 +18,19 @@ import { NotificationItem } from "./NotificationItem";
 
 mockIonicReact();
 
+jest.mock("../../../core/configuration", () => ({
+  ...jest.requireActual("../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        notifications: {
+          fallbackIcon: false,
+        },
+      },
+    },
+  },
+}));
+
 const readNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -391,7 +404,7 @@ describe("Notifications Tab", () => {
       read: false,
       createdAt: new Date().toISOString(),
       a: {
-        r: NotificationRoute.LocalSign,
+        r: NotificationRoute.RemoteSignReq,
         payload: {},
       },
 

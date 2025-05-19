@@ -27,16 +27,5 @@ interface ACDCDetails
   };
 }
 
-interface Notification {
-  i: string;
-  dt: string;
-  r: boolean;
-  a: {
-    r: string;
-    d: string;
-    m?: string;
-  };
-}
-
 export { CredentialStatus };
-export type { CredentialShortDetails, ACDCDetails, Notification };
+export type { CredentialShortDetails, ACDCDetails };

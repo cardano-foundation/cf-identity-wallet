@@ -7,6 +7,7 @@ services:
     environment:
       - KERI_AGENT_CORS=true
       - ALLOW_INTRODUCTIONS=true
+      - REMOTE_SIGNING=true
     volumes:
       - keria-data:/usr/local/var/keri
       - ./keria-config/config.json:/keria/scripts/keri/cf/backer-oobis.json
