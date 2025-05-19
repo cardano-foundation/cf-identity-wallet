@@ -33,6 +33,18 @@ enum OobiQueryParams {
   EXTERNAL_ID = "externalId",
 }
 
+interface ExternalLink {
+  t: string;
+  a: string;
+}
+
+interface HumanReadableMessage {
+  t: string;
+  st: string;
+  c: string[];
+  l?: ExternalLink;
+}
+
 export {
   ConnectionHistoryType,
   KeriaContactKeyPrefix,
@@ -40,4 +52,9 @@ export {
   OobiQueryParams,
 };
 
-export type { ConnectionHistoryItem, ExnMessage };
+export type {
+  ConnectionHistoryItem,
+  ExnMessage,
+  ExternalLink,
+  HumanReadableMessage,
+};

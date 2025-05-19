@@ -1,7 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { legacy_createStore as createStore } from "redux";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { RemoteSignConfirmation } from "./RemoteSignConfirmation";
 
 const mockStore = (initialState: any) => createStore(() => initialState);
@@ -17,8 +16,38 @@ const initialState = {
   },
 };
 
+const getHumanReadableMessageMock = jest.fn();
+jest.mock("../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      connections: {
+        getHumanReadableMessage: () => getHumanReadableMessageMock(),
+      },
+      auth: {
+        verifySecret: jest.fn().mockResolvedValue(true),
+      },
+    },
+  },
+}));
+
+const openBrowserMock = jest.fn();
+jest.mock("@capacitor/browser", () => ({
+  Browser: {
+    open: () => openBrowserMock(),
+  },
+}));
+
 describe("RemoteSignConfirmation", () => {
-  test("renders the component with correct title, subtitle, and description", () => {
+  test("renders the component with correct title, subtitle, and description", async () => {
+    const mockValue = {
+      m: "Message",
+      t: "Message title",
+      st: "Message sub title",
+      c: ["paragraph 1", "paragraph 2"],
+      l: { t: "Link", a: "https://www.google.com/" },
+    };
+
+    getHumanReadableMessageMock.mockResolvedValue(mockValue);
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
@@ -44,71 +73,57 @@ describe("RemoteSignConfirmation", () => {
       </Provider>
     );
 
-    const certificate = "Certificate";
-    const connection = "Connection Name";
+    await waitFor(() => {
+      expect(screen.getByText(mockValue.t)).toBeVisible();
+    });
+    expect(screen.getByText(mockValue.st)).toBeVisible();
+    expect(screen.getByText(mockValue.c.join(""))).toBeVisible();
+    expect(screen.getByText(mockValue.l.t)).toBeVisible();
 
-    expect(
-      screen.getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.title
-      )
-    ).toBeVisible();
+    fireEvent.click(screen.getByText(mockValue.l.t));
 
-    expect(
-      screen.getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.subtitle
-          .replace("{{certificate}}", certificate)
-          .replace("{{connection}}", connection)
-      )
-    ).toBeVisible();
-
-    const description =
-      EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.description
-        .replace("{{certificate}}", certificate)
-        .replace("{{connection}}", connection)
-        .split("\n")
-        .join("");
-    expect(screen.getByText(description)).toBeVisible();
-
-    expect(
-      screen.getByText(
-        EN_TRANSLATIONS.tabs.notifications.details.signconfirmation.button.label.replace(
-          "{{certificate}}",
-          certificate.toLocaleLowerCase()
-        )
-      )
-    ).toBeVisible();
+    expect(openBrowserMock).toBeCalled();
   });
 
-  test("calls handleBack when the close button is clicked", () => {
+  test("Hidden link button when link is empty", async () => {
+    const mockValue = {
+      m: "Message",
+      t: "Message title",
+      st: "Message sub title",
+      c: ["paragraph 1", "paragraph 2"],
+    };
+
+    getHumanReadableMessageMock.mockResolvedValue(mockValue);
+
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
 
-    const handleBackMock = jest.fn();
+    const mockNotificationDetails = {
+      id: "123",
+      createdAt: new Date().toISOString(),
+      a: {},
+      connectionId: "connection-456",
+      read: false,
+      groupReplied: false,
+    };
 
-    render(
+    const { queryByTestId } = render(
       <Provider store={storeMocked}>
         <RemoteSignConfirmation
           pageId="sign-confirmation"
           activeStatus
-          handleBack={handleBackMock}
-          notificationDetails={{
-            id: "123",
-            createdAt: new Date().toISOString(),
-            a: {},
-            connectionId: "connection-456",
-            read: false,
-            groupReplied: false,
-          }}
+          handleBack={jest.fn()}
+          notificationDetails={mockNotificationDetails}
         />
       </Provider>
     );
 
-    screen
-      .getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.close)
-      .click();
+    await waitFor(() => {
+      expect(screen.getByText(mockValue.t)).toBeVisible();
+    });
 
-    expect(handleBackMock).toHaveBeenCalled();
+    expect(queryByTestId("primary-button")).toBeNull();
   });
 });

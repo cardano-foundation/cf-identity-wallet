@@ -76,12 +76,8 @@ const NotificationItem = ({
         return t("tabs.notifications.tab.labels.sign", {
           connection: connectionName || t("connections.unknown"),
         });
-      case NotificationRoute.LocalConfirmation:
-        return t("tabs.notifications.tab.labels.signconfirmation", {
-          connection: connectionName || t("connections.unknown"),
-        });
-      case NotificationRoute.LocalInformation:
-        return t("tabs.notifications.tab.labels.signeventinfo");
+      case NotificationRoute.HumanReadableMessage:
+        return item.a.m as string;
       case NotificationRoute.LocalConnectInstructions:
         return t("tabs.notifications.tab.labels.connectinstructions", {
           connection: connectionName || t("connections.unknown"),
@@ -98,6 +94,7 @@ const NotificationItem = ({
     item.groupReplied,
     item.groupInitiatorPre,
     multisigConnectionsCache,
+    item.a.m,
   ]);
 
   const referIcon = (item: KeriaNotification) => {

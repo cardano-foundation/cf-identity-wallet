@@ -47,6 +47,7 @@ import {
 import {
   ConnectionHistoryItem,
   ConnectionHistoryType,
+  HumanReadableMessage,
   KeriaContactKeyPrefix,
   OobiQueryParams,
   RpyRoute,
@@ -631,6 +632,18 @@ class ConnectionService extends AgentService {
     );
 
     await this.props.signifyClient.replies().submitRpy(connectionId, ims);
+  }
+
+  async getHumanReadableMessage(
+    exnSaid: string
+  ): Promise<HumanReadableMessage> {
+    const exn = (await this.props.signifyClient.exchanges().get(exnSaid)).exn;
+    return {
+      t: exn.a.t,
+      st: exn.a.st,
+      c: exn.a.c,
+      l: exn.a.l,
+    };
   }
 }
 

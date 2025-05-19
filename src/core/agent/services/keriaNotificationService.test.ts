@@ -36,6 +36,9 @@ import {
   notificationIpexAgreeProp,
   groupIdentifierMetadataRecord,
   hab,
+  humanReadableExn,
+  humanReadableNotification,
+  humanReadableLinkedExn,
   remoteSignReqNotification,
 } from "../../__fixtures__/agent/keriaNotificationFixtures";
 import { ConnectionHistoryType } from "./connectionService.types";
@@ -2370,6 +2373,225 @@ describe("Group IPEX presentation", () => {
       "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli"
     );
     expect(ipexCommunications.grantAcdcFromAgree).not.toBeCalled();
+  });
+});
+
+describe("Human readable messages", () => {
+  beforeEach(() => {
+    identifiersGetMock.mockResolvedValueOnce(hab);
+  });
+
+  test("Can receive a human readable exn message", async () => {
+    exchangesGetMock.mockResolvedValue(humanReadableExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: humanReadableExn.exn.i,
+      a: humanReadableNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      humanReadableNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: humanReadableNotification.a,
+        connectionId: humanReadableExn.exn.i,
+        read: false,
+        receivingPre: humanReadableExn.exn.rp,
+        route: NotificationRoute.HumanReadableMessage,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: humanReadableNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Can receive a human readable exn message with a link", async () => {
+    exchangesGetMock.mockResolvedValue(humanReadableLinkedExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: humanReadableLinkedExn.exn.i,
+      a: humanReadableNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      humanReadableNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: humanReadableNotification.a,
+        connectionId: humanReadableLinkedExn.exn.i,
+        read: false,
+        receivingPre: humanReadableLinkedExn.exn.rp,
+        route: NotificationRoute.HumanReadableMessage,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: humanReadableNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Ignores malformed human readable messages", async () => {
+    const variants = [
+      {
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: "Not an array",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: [],
+      },
+    ];
+
+    for (const variant of variants) {
+      identifiersGetMock.mockResolvedValueOnce(hab);
+      exchangesGetMock.mockResolvedValueOnce({
+        exn: {
+          ...humanReadableExn.exn,
+          a: variant,
+        },
+        pathed: {},
+      });
+      identifierStorage.getIdentifierMetadata = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+        );
+
+      await keriaNotificationService.processNotification(
+        humanReadableNotification
+      );
+
+      expect(notificationStorage.save).not.toBeCalled();
+      expect(eventEmitter.emit).not.toBeCalled();
+      expect(markNotificationMock).toBeCalledWith(humanReadableNotification.i);
+    }
+  });
+
+  test("Ignores malformed human readable messages where the link is malformed", async () => {
+    const variants = [
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: "View certificate",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: ["View certificate"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: {},
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: { t: "View certificate" },
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: { a: "http://test.com" },
+      },
+    ];
+
+    for (const variant of variants) {
+      identifiersGetMock.mockResolvedValueOnce(hab);
+      exchangesGetMock.mockResolvedValueOnce({
+        exn: {
+          ...humanReadableLinkedExn.exn,
+          a: variant,
+        },
+        pathed: {},
+      });
+      identifierStorage.getIdentifierMetadata = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+        );
+
+      await keriaNotificationService.processNotification(
+        humanReadableNotification
+      );
+
+      expect(notificationStorage.save).not.toBeCalled();
+      expect(eventEmitter.emit).not.toBeCalled();
+      expect(markNotificationMock).toBeCalledWith(humanReadableNotification.i);
+    }
   });
 });
 
