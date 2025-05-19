@@ -11,7 +11,8 @@ import {
   KeriaNotification,
   ExchangeRoute,
   NotificationRoute,
-  Notification } from "./keriaNotificationService.types";
+  Notification,
+} from "./keriaNotificationService.types";
 import { CredentialStatus } from "./credentialService.types";
 import {
   BasicRecord,
