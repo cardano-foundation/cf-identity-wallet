@@ -9,6 +9,7 @@ export let recoveryPhraseWords: string[] = [];
 export async function generateRecoveryPhraseOf() {
   await YourRecoveryPhraseScreen.viewRecoveryPhraseButton.click();
   recoveryPhraseWords = await recoveryPhrase().save();
+  (global as any).recoveryPhraseWords = recoveryPhraseWords;
   await YourRecoveryPhraseScreen.termsAndConditionsCheckbox.click();
   await YourRecoveryPhraseScreen.continueButton.scrollIntoView();
   await YourRecoveryPhraseScreen.continueButton.click();
