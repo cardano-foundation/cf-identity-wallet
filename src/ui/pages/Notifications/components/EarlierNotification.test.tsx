@@ -10,6 +10,19 @@ import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 
 mockIonicReact();
 
+jest.mock("../../../../core/configuration", () => ({
+  ...jest.requireActual("../../../../core/configuration"),
+  ConfigurationService: {
+    env: {
+      features: {
+        notifications: {
+          fallbackIcon: false,
+        },
+      },
+    },
+  },
+}));
+
 jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {

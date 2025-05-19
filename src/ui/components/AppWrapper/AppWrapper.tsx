@@ -40,6 +40,7 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   setIdentifiersFilters,
+  setIndividualFirstCreate,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
@@ -506,6 +507,18 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
 
       const loginAttempt = await Agent.agent.auth.getLoginAttempts();
+
+      const individualFirstCreate = await Agent.agent.basicStorage.findById(
+        MiscRecordId.INDIVIDUAL_FIRST_CREATE
+      );
+
+      if (individualFirstCreate) {
+        dispatch(
+          setIndividualFirstCreate(
+            individualFirstCreate.content.value as boolean
+          )
+        );
+      }
 
       dispatch(
         setAuthentication({

@@ -125,6 +125,10 @@ jest.mock("../core/configuration/configurationService", () => ({
           enabled: true,
         },
       },
+      features: {
+        cut: [],
+        customContent: [],
+      },
     },
   },
 }));

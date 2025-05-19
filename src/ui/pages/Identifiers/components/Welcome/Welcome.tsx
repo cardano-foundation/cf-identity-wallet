@@ -17,7 +17,11 @@ import { Agent } from "../../../../../core/agent/agent";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
 
-const Welcome = () => {
+interface WelcomeProps {
+  onCreateGroupIdentifier?: (identifier: IdentifierShortDetails) => void;
+}
+
+const Welcome = ({ onCreateGroupIdentifier }: WelcomeProps) => {
   const pageId = "welcome";
   const auth = useAppSelector(getAuthentication);
   const dispatch = useAppDispatch();
@@ -34,6 +38,9 @@ const Welcome = () => {
 
   const handleCloseModal = (identifier?: IdentifierShortDetails) => {
     if (identifier) {
+      if (identifier.groupMetadata) {
+        onCreateGroupIdentifier?.(identifier);
+      }
       skip();
     }
 

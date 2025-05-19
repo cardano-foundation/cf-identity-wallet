@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Router } from "express";
 import { config } from "./config";
 import { ping } from "./apis/ping.api";
 import { keriOobiApi } from "./apis/invitation.api";
@@ -13,7 +13,7 @@ import { schemaApi } from "./apis/schema.api";
 import { contactList, deleteContact } from "./apis/contact.api";
 import { resolveOobi } from "./apis/oobi.api";
 
-const router = express.Router();
+const router: Router = express.Router();
 router.get(config.path.ping, ping);
 router.get(config.path.shorten, getFullUrl);
 router.post(config.path.createShorten, createShortenUrl);

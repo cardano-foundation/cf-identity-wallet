@@ -5,7 +5,7 @@ import { Agent } from "../../../core/agent/agent";
 import {
   KeriaNotification,
   NotificationRoute,
-} from "../../../core/agent/agent.types";
+} from "../../../core/agent/services/keriaNotificationService.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";

@@ -4,3 +4,4 @@ security:
     enabled: true
 features:
   cut: []
+  customContent: []

@@ -1,6 +1,5 @@
 import { SignifyClient } from "signify-ts";
 import { CoreEventEmitter } from "./event";
-import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./services/connectionService.types";
 
 enum ConnectionStatus {
@@ -44,6 +43,7 @@ enum MiscRecordId {
   IDENTIFIERS_PENDING_CREATION = "identifiers-pending-creation",
   MULTISIG_IDENTIFIERS_PENDING_CREATION = "multisig-identifiers-pending-creation",
   APP_FIRST_INSTALL = "app-first-install",
+  INDIVIDUAL_FIRST_CREATE = "individual-first-create",
 }
 
 interface ConnectionShortDetails {
@@ -124,17 +124,6 @@ interface AuthorizationRequestExn {
   e: { rpy: NotificationRpy; d: string };
 }
 
-interface KeriaNotification {
-  id: string;
-  createdAt: string;
-  a: Record<string, unknown>;
-  connectionId: string;
-  read: boolean;
-  groupReplied: boolean;
-  groupInitiatorPre?: string;
-  groupInitiator?: boolean;
-}
-
 enum OobiType {
   NORMAL = "NORMAL",
   MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
@@ -148,20 +137,9 @@ type OobiScan =
       connection: ConnectionShortDetails;
     };
 
-interface KeriaNotificationMarker {
-  nextIndex: number;
-  lastNotificationId: string;
-}
-
 interface AgentServicesProps {
   signifyClient: SignifyClient;
   eventEmitter: CoreEventEmitter;
-}
-
-interface IdentifierResult {
-  name: string;
-  prefix: string;
-  salty: any;
 }
 
 interface AgentUrls {
@@ -169,43 +147,10 @@ interface AgentUrls {
   bootUrl: string;
 }
 
-enum NotificationRoute {
-  // "Real" notifications from KERIA
-  MultiSigIcp = "/multisig/icp",
-  MultiSigExn = "/multisig/exn",
-  MultiSigRpy = "/multisig/rpy",
-  ExnIpexApply = "/exn/ipex/apply",
-  ExnIpexOffer = "/exn/ipex/offer",
-  ExnIpexAgree = "/exn/ipex/agree",
-  ExnIpexGrant = "/exn/ipex/grant",
-  // Notifications from our wallet to give further feedback to the user
-  LocalAcdcRevoked = "/local/acdc/revoked",
-  LocalSign = "/local/signrequest",
-  LocalConfirmation = "/local/signconfirmation",
-  LocalInformation = "/local/signinformation",
-  LocalConnectInstructions = "/local/connectinstructions",
-}
-
-enum ExchangeRoute {
-  IpexAdmit = "/ipex/admit",
-  IpexGrant = "/ipex/grant",
-  IpexApply = "/ipex/apply",
-  IpexAgree = "/ipex/agree",
-  IpexOffer = "/ipex/offer",
-}
-
 interface BranAndMnemonic {
   bran: string;
   mnemonic: string;
 }
-
-type OperationCallback = ({
-  oid,
-  opType,
-}: {
-  oid: string;
-  opType: OperationPendingRecordType;
-}) => void;
 
 enum CreationStatus {
   PENDING = "PENDING",
@@ -220,14 +165,7 @@ export const OOBI_AGENT_ONLY_RE =
 export const DOOBI_RE = /^\/oobi\/(?<said>[^/]+)$/i;
 export const WOOBI_RE = /^\/\.well-known\/keri\/oobi\/(?<cid>[^/]+)$/;
 
-export {
-  ConnectionStatus,
-  MiscRecordId,
-  NotificationRoute,
-  ExchangeRoute,
-  OobiType,
-  CreationStatus,
-};
+export { ConnectionStatus, MiscRecordId, OobiType, CreationStatus };
 
 export type {
   ConnectionShortDetails,
@@ -235,17 +173,13 @@ export type {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionHistoryItem,
-  KeriaNotification,
   OobiScan,
-  KeriaNotificationMarker,
   AgentServicesProps,
-  IdentifierResult,
   AgentUrls,
   BranAndMnemonic,
   ExnMessage,
   NotificationRpy,
   AuthorizationRequestExn,
-  OperationCallback,
   JSONValue,
   JSONObject,
 };

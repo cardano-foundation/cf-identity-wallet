@@ -23,6 +23,13 @@ jest.mock("../../../../../core/configuration", () => ({
   },
 }));
 
+jest.mock("signify-ts", () => ({
+  ...jest.requireActual("signify-ts"),
+  Salter: class Salter {
+    public qb64 = "mock";
+  },
+}));
+
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
@@ -192,5 +199,47 @@ describe("Welcome page", () => {
 
     expect(deleteMock).toBeCalledWith(MiscRecordId.APP_FIRST_INSTALL);
     expect(dispatchMock).toBeCalledWith(setShowWelcomePage(false));
+  });
+
+  test("Create new group identifier", async () => {
+    const openGroupIdentifier = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={mockedStore}>
+        <Welcome onCreateGroupIdentifier={openGroupIdentifier} />
+      </Provider>
+    );
+
+    fireEvent.click(getByText(ENG_TRANS.tabs.identifiers.tab.welcome.add));
+
+    expect(getByText(ENG_TRANS.createidentifier.add.title)).toBeVisible();
+
+    const displayNameInput = getByTestId("display-name-input");
+
+    fireEvent.click(getByTestId("identifier-aidtype-multisig"));
+    fireEvent.click(getByTestId("color-1"));
+    fireEvent.click(getByTestId("identifier-theme-selector-item-1"));
+    ionFireEvent.ionInput(displayNameInput, "Test");
+
+    await waitFor(() => {
+      expect(getByTestId("color-1").classList.contains("selected"));
+    });
+
+    fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+
+    await waitFor(() => {
+      expect(createIdentifierMock).toBeCalledWith({
+        displayName: "Test",
+        theme: 11,
+        groupMetadata: {
+          groupCreated: false,
+          groupId: "mock",
+          groupInitiator: true,
+        },
+      });
+    });
+
+    expect(deleteMock).toBeCalledWith(MiscRecordId.APP_FIRST_INSTALL);
+    expect(dispatchMock).toBeCalledWith(setShowWelcomePage(false));
+    expect(openGroupIdentifier).toBeCalled();
   });
 });
