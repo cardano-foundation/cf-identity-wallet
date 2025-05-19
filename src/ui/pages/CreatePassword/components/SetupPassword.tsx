@@ -1,8 +1,9 @@
+import { IonIcon } from "@ionic/react";
+import { lockClosedOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
-import LockIcon from "../../../assets/images/lock-icon.png";
 import { PageFooter } from "../../../components/PageFooter";
-import { SetupPasswordProps } from "./SetupPassword.types";
 import "./SetupPassword.scss";
+import { SetupPasswordProps } from "./SetupPassword.types";
 
 export const SetupPassword = ({
   onSetupPasswordClick,
@@ -11,10 +12,7 @@ export const SetupPassword = ({
   return (
     <div className="setup-password">
       <div className="page-info">
-        <img
-          src={LockIcon}
-          alt="lock-icon"
-        />
+        <IonIcon icon={lockClosedOutline} />
         <h1>{i18n.t("createpassword.setuppassword.title")}</h1>
         <p>{i18n.t("createpassword.setuppassword.description")}</p>
       </div>

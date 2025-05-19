@@ -19,7 +19,7 @@ import {
   showGenericError,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import BiometricIcon from "../../assets/images/biometric-icon.png";
+import BiometricIcon from "../../assets/images/biometric-icon.svg";
 import { Alert } from "../../components/Alert";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
