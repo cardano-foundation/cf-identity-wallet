@@ -8,7 +8,6 @@ import {
 } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
-import { JSONObject } from "../../../../../core/agent/agent.types";
 import { RemoteSignRequest as RemoteSignRequestModel } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
@@ -34,25 +33,6 @@ import "./RemoteSignRequest.scss";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
-}
-
-function ellipsisAttributes(signContent: JSONObject) {
-  const ellipsisFields = ["id", "aid", "address"];
-  const result = { ...signContent };
-
-  Object.keys(result).forEach((key) => {
-    const value = result[key];
-
-    if (typeof value === "string" && !ellipsisFields.includes(key)) {
-      result[key] = ellipsisText(value);
-    }
-
-    if (typeof value === "object" && !Array.isArray(value)) {
-      result[key] = ellipsisAttributes(value);
-    }
-  });
-
-  return result;
 }
 
 const RemoteSignRequest = ({
@@ -95,18 +75,14 @@ const RemoteSignRequest = ({
 
   const signDetails = useMemo(() => {
     if (!requestData?.payload) {
+      setIsSigningObject(true);
       return {};
     }
 
-    let signContent: JSONObject = {};
-    try {
-      signContent = ellipsisAttributes(requestData.payload);
-
+    if (typeof requestData.payload === "object") {
       setIsSigningObject(true);
-    } catch (error) {
-      signContent = requestData.payload;
     }
-    return signContent;
+    return requestData.payload;
   }, [requestData]);
 
   const handleSign = async () => {
@@ -127,9 +103,10 @@ const RemoteSignRequest = ({
 
   const itemProps = useCallback((key?: string) => {
     return {
-      copyButton: ["id", "address"].includes(key || ""),
+      copyButton: false,
       className: "sign-info-item",
       keyValue: `${reservedKeysFilter(key || "")}:`,
+      mask: false,
     };
   }, []);
 
