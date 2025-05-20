@@ -8,7 +8,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { useAppSelector } from "../../../store/hooks";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { useAppIonRouter } from "../../hooks";
-import { ActionRequest } from "./components/ActionRequest";
+import { RemoteSignRequest } from "./components/RemoteSignRequest";
 import { ActionResult } from "./components/ActionResult";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
@@ -47,7 +47,7 @@ const NotificationDetails = () => {
       [NotificationRoute.ExnIpexGrant]: ReceiveCredential,
       [NotificationRoute.ExnIpexApply]: CredentialRequest,
       [NotificationRoute.MultiSigExn]: ReceiveCredential,
-      [NotificationRoute.RemoteSignReq]: ActionRequest,
+      [NotificationRoute.RemoteSignReq]: RemoteSignRequest,
       [NotificationRoute.HumanReadableMessage]: ActionResult,
       [NotificationRoute.LocalConnectInstructions]: RemoteConnectInstructions,
       [NotificationRoute.MultiSigRpy]: null,

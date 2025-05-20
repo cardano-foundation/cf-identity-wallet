@@ -8,10 +8,11 @@ import {
 } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
-import { RemoteSignRequest } from "../../../../../core/agent/services/identifier.types";
+import { RemoteSignRequest as RemoteSignRequestModel } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import {
   CardBlock,
   CardDetailsAttributes,
@@ -24,18 +25,38 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { Spinner } from "../../../../components/Spinner";
 import { SpinnerConverage } from "../../../../components/Spinner/Spinner.type";
 import { Verification } from "../../../../components/Verification";
+import { ToastMsgType } from "../../../../globals/types";
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import "./ActionRequest.scss";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
+import "./RemoteSignRequest.scss";
+import { JSONObject } from "../../../../../core/agent/agent.types";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
 }
 
-const ActionRequest = ({
+function ellipsisAttributes(signContent: JSONObject) {
+  const dateRegex =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}([+-]\d{2}:\d{2}|Z)$/;
+  const result = { ...signContent };
+
+  Object.keys(result).forEach((key) => {
+    const value = result[key];
+
+    if (typeof value === "string" && !dateRegex.test(value)) {
+      result[key] = ellipsisText(value);
+    }
+
+    if (typeof value === "object" && !Array.isArray(value)) {
+      result[key] = ellipsisAttributes(value);
+    }
+  });
+
+  return result;
+}
+
+const RemoteSignRequest = ({
   pageId,
   activeStatus,
   notificationDetails,
@@ -50,7 +71,7 @@ const ActionRequest = ({
   const attributeContainerRef = useRef<HTMLDivElement>(null);
   const attributeRef = useRef<HTMLDivElement>(null);
   const connectionName = connections[notificationDetails.connectionId];
-  const [requestData, setRequestData] = useState<RemoteSignRequest>();
+  const [requestData, setRequestData] = useState<RemoteSignRequestModel>();
   const [loading, showLoading] = useState(true);
 
   useEffect(() => {
@@ -78,16 +99,9 @@ const ActionRequest = ({
       return {};
     }
 
-    let signContent;
+    let signContent: JSONObject = {};
     try {
-      signContent = requestData.payload;
-      if (signContent["id"]) {
-        signContent["id"] = ellipsisText(`${signContent["id"]}`);
-      }
-
-      if (signContent["address"]) {
-        signContent["address"] = ellipsisText(`${signContent["address"]}`);
-      }
+      signContent = ellipsisAttributes(requestData.payload);
 
       setIsSigningObject(true);
     } catch (error) {
@@ -282,4 +296,4 @@ const ActionRequest = ({
   );
 };
 
-export { ActionRequest };
+export { RemoteSignRequest };

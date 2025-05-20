@@ -1314,15 +1314,6 @@
             "dontallow": "Don't allow"
           }
         },
-        "signinformation": {
-          "title": "Signed event",
-          "subtitle": "Waiting for a co-signer",
-          "description": {
-            "paragraphone": "The certificate for {{certificate}} is still awaiting a signature from the other party. This step may take up to 7 days.",
-            "paragraphtwo": "If the signature isn't received within this period, the certificate will be finalized without their participation.",
-            "paragraphthree": "No action is required from you at this time."
-          }
-        },
         "connectinstructions": {
           "title": "Instructions",
           "subtitle": "Connect with {{connection}}",
@@ -1861,7 +1852,7 @@
     "proposalcredfailerror": "Unable to record response",
     "deleteaccounterror": "Unable to delete account",
     "deleteaccountsuccess": "Account deleted successfully",
-    "actionrequestsuccess": "Certificate signed successfully"
+    "remotesignsuccess": "Signed successfully"
   },
   "request": {
     "sign": {

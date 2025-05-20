@@ -6,7 +6,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierMapFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { ActionRequest } from "./ActionRequest";
+import { ActionRequest } from "./RemoteSignRequest";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 const mockStore = configureStore();
