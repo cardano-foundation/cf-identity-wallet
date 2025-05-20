@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { legacy_createStore as createStore } from "redux";
-import { ActionResult } from "./ActionResult";
+import { RemoteMessage } from "./RemoteMessage";
 
 const mockStore = (initialState: any) => createStore(() => initialState);
 const dispatchMock = jest.fn();
@@ -37,7 +37,7 @@ jest.mock("@capacitor/browser", () => ({
   },
 }));
 
-describe("ActionResult", () => {
+describe("RemoteMessage", () => {
   test("renders the component with correct title, subtitle, and description", async () => {
     const mockValue = {
       m: "Message",
@@ -64,7 +64,7 @@ describe("ActionResult", () => {
 
     render(
       <Provider store={storeMocked}>
-        <ActionResult
+        <RemoteMessage
           pageId="sign-confirmation"
           activeStatus
           handleBack={jest.fn()}
@@ -111,7 +111,7 @@ describe("ActionResult", () => {
 
     const { queryByTestId } = render(
       <Provider store={storeMocked}>
-        <ActionResult
+        <RemoteMessage
           pageId="sign-confirmation"
           activeStatus
           handleBack={jest.fn()}

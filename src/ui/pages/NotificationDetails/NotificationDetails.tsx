@@ -9,7 +9,7 @@ import { useAppSelector } from "../../../store/hooks";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { useAppIonRouter } from "../../hooks";
 import { RemoteSignRequest } from "./components/RemoteSignRequest";
-import { ActionResult } from "./components/ActionResult";
+import { RemoteMessage } from "./components/RemoteMessage";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
@@ -48,7 +48,7 @@ const NotificationDetails = () => {
       [NotificationRoute.ExnIpexApply]: CredentialRequest,
       [NotificationRoute.MultiSigExn]: ReceiveCredential,
       [NotificationRoute.RemoteSignReq]: RemoteSignRequest,
-      [NotificationRoute.HumanReadableMessage]: ActionResult,
+      [NotificationRoute.HumanReadableMessage]: RemoteMessage,
       [NotificationRoute.LocalConnectInstructions]: RemoteConnectInstructions,
       [NotificationRoute.MultiSigRpy]: null,
       [NotificationRoute.ExnIpexOffer]: null,
