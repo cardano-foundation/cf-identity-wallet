@@ -208,9 +208,13 @@ const CreateSSIAgent = () => {
         throw new Error(SEED_PHRASE_EMPTY);
       }
 
+      const connectUrl = removeLastSlash(ssiAgent.connectUrl.trim());
+
+      dispatch(setConnectUrl(connectUrl));
+
       await Agent.agent.recoverKeriaAgent(
         seedPhraseCache.seedPhrase.split(" "),
-        ssiAgent.connectUrl
+        connectUrl
       );
 
       dispatch(setRecoveryCompleteNoInterruption());
@@ -258,9 +262,15 @@ const CreateSSIAgent = () => {
         throw new Error(SSI_URLS_EMPTY);
       }
 
+      const bootUrl = removeLastSlash(ssiAgent.bootUrl.trim());
+      const connectUrl = removeLastSlash(ssiAgent.connectUrl.trim());
+
+      dispatch(setBootUrl(bootUrl));
+      dispatch(setConnectUrl(connectUrl));
+
       await Agent.agent.bootAndConnect({
-        bootUrl: ssiAgent.bootUrl,
-        url: ssiAgent.connectUrl,
+        bootUrl: bootUrl,
+        url: connectUrl,
       });
 
       await updateFirstInstallValue(true);

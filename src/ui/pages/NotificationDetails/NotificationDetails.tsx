@@ -1,6 +1,9 @@
 import { ElementType, useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { KeriaNotification , NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/services/keriaNotificationService.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppSelector } from "../../../store/hooks";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
@@ -10,7 +13,6 @@ import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
 import { RemoteConnectInstructions } from "./components/RemoteConnectInstructions";
 import { RemoteSignConfirmation } from "./components/RemoteSignConfirmation";
-import { RemoteSignInformation } from "./components/RemoteSignInformation";
 import { RemoteSignRequest } from "./components/RemoteSignRequest";
 
 const NotificationDetails = () => {
@@ -45,9 +47,8 @@ const NotificationDetails = () => {
       [NotificationRoute.ExnIpexGrant]: ReceiveCredential,
       [NotificationRoute.ExnIpexApply]: CredentialRequest,
       [NotificationRoute.MultiSigExn]: ReceiveCredential,
-      [NotificationRoute.LocalSign]: RemoteSignRequest,
-      [NotificationRoute.LocalConfirmation]: RemoteSignConfirmation,
-      [NotificationRoute.LocalInformation]: RemoteSignInformation,
+      [NotificationRoute.RemoteSignReq]: RemoteSignRequest,
+      [NotificationRoute.HumanReadableMessage]: RemoteSignConfirmation,
       [NotificationRoute.LocalConnectInstructions]: RemoteConnectInstructions,
       [NotificationRoute.MultiSigRpy]: null,
       [NotificationRoute.ExnIpexOffer]: null,

@@ -1,6 +1,10 @@
+import { ready } from "signify-ts";
 import { Agent } from "../agent";
 import { ConnectionStatus, MiscRecordId, CreationStatus } from "../agent.types";
-import { ExchangeRoute , NotificationRoute } from "./keriaNotificationService.types";
+import {
+  ExchangeRoute,
+  NotificationRoute,
+} from "./keriaNotificationService.types";
 import {
   BasicRecord,
   IdentifierStorage,
@@ -32,6 +36,10 @@ import {
   notificationIpexAgreeProp,
   groupIdentifierMetadataRecord,
   hab,
+  humanReadableExn,
+  humanReadableNotification,
+  humanReadableLinkedExn,
+  remoteSignReqNotification,
 } from "../../__fixtures__/agent/keriaNotificationFixtures";
 import { ConnectionHistoryType } from "./connectionService.types";
 import { StorageMessage } from "../../storage/storage.types";
@@ -43,6 +51,7 @@ import {
 import { IdentifierService } from "./identifierService";
 import { CredentialService } from "./credentialService";
 import { MultiSigRoute } from "./multiSig.types";
+import { remoteSignReqExn } from "../../__fixtures__/agent/identifierFixtures";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -69,19 +78,6 @@ const operationsGetMock = jest.fn().mockImplementation((id: string) => {
     },
   };
 });
-
-jest.mock("signify-ts", () => ({
-  Salter: jest.fn().mockImplementation(() => {
-    return { qb64: "" };
-  }),
-  Ilks: {
-    iss: "iss",
-    rev: "rev",
-  },
-  Tier: {
-    low: "low",
-  },
-}));
 
 const contactsUpdateMock = jest.fn();
 const contactGetMock = jest.fn();
@@ -274,6 +270,10 @@ eventEmitter.on = jest.fn();
 const DATETIME = new Date();
 
 describe("Signify notification service of agent", () => {
+  beforeAll(async () => {
+    await ready();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
     markNotificationMock.mockResolvedValue({ status: "done" });
@@ -2373,6 +2373,321 @@ describe("Group IPEX presentation", () => {
       "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli"
     );
     expect(ipexCommunications.grantAcdcFromAgree).not.toBeCalled();
+  });
+});
+
+describe("Human readable messages", () => {
+  beforeEach(() => {
+    identifiersGetMock.mockResolvedValueOnce(hab);
+  });
+
+  test("Can receive a human readable exn message", async () => {
+    exchangesGetMock.mockResolvedValue(humanReadableExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: humanReadableExn.exn.i,
+      a: humanReadableNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      humanReadableNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: humanReadableNotification.a,
+        connectionId: humanReadableExn.exn.i,
+        read: false,
+        receivingPre: humanReadableExn.exn.rp,
+        route: NotificationRoute.HumanReadableMessage,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: humanReadableNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Can receive a human readable exn message with a link", async () => {
+    exchangesGetMock.mockResolvedValue(humanReadableLinkedExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: humanReadableLinkedExn.exn.i,
+      a: humanReadableNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      humanReadableNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: humanReadableNotification.a,
+        connectionId: humanReadableLinkedExn.exn.i,
+        read: false,
+        receivingPre: humanReadableLinkedExn.exn.rp,
+        route: NotificationRoute.HumanReadableMessage,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: humanReadableNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Ignores malformed human readable messages", async () => {
+    const variants = [
+      {
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: "Not an array",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: [],
+      },
+    ];
+
+    for (const variant of variants) {
+      identifiersGetMock.mockResolvedValueOnce(hab);
+      exchangesGetMock.mockResolvedValueOnce({
+        exn: {
+          ...humanReadableExn.exn,
+          a: variant,
+        },
+        pathed: {},
+      });
+      identifierStorage.getIdentifierMetadata = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+        );
+
+      await keriaNotificationService.processNotification(
+        humanReadableNotification
+      );
+
+      expect(notificationStorage.save).not.toBeCalled();
+      expect(eventEmitter.emit).not.toBeCalled();
+      expect(markNotificationMock).toBeCalledWith(humanReadableNotification.i);
+    }
+  });
+
+  test("Ignores malformed human readable messages where the link is malformed", async () => {
+    const variants = [
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: "View certificate",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: ["View certificate"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: {},
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: { t: "View certificate" },
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: { a: "http://test.com" },
+      },
+    ];
+
+    for (const variant of variants) {
+      identifiersGetMock.mockResolvedValueOnce(hab);
+      exchangesGetMock.mockResolvedValueOnce({
+        exn: {
+          ...humanReadableLinkedExn.exn,
+          a: variant,
+        },
+        pathed: {},
+      });
+      identifierStorage.getIdentifierMetadata = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+        );
+
+      await keriaNotificationService.processNotification(
+        humanReadableNotification
+      );
+
+      expect(notificationStorage.save).not.toBeCalled();
+      expect(eventEmitter.emit).not.toBeCalled();
+      expect(markNotificationMock).toBeCalledWith(humanReadableNotification.i);
+    }
+  });
+});
+
+describe("Remote signing", () => {
+  beforeEach(() => {
+    identifiersGetMock.mockResolvedValueOnce(hab);
+  });
+
+  test("Can receive a remote signing request", async () => {
+    exchangesGetMock.mockResolvedValue(remoteSignReqExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: remoteSignReqExn.exn.i,
+      a: remoteSignReqNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      remoteSignReqNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: remoteSignReqNotification.a,
+        connectionId: remoteSignReqExn.exn.i,
+        read: false,
+        receivingPre: remoteSignReqExn.exn.rp,
+        route: NotificationRoute.RemoteSignReq,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: remoteSignReqNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Ignores un-saidified signing requests", async () => {
+    exchangesGetMock.mockResolvedValue({
+      exn: {
+        ...remoteSignReqExn.exn,
+        a: { t: 2 },
+      },
+      pathed: {},
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+
+    await keriaNotificationService.processNotification(
+      remoteSignReqNotification
+    );
+
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(markNotificationMock).toBeCalledWith(remoteSignReqNotification.i);
+  });
+
+  test("Ignores mis-saidified signing requests", async () => {
+    exchangesGetMock.mockResolvedValue({
+      exn: {
+        ...remoteSignReqExn.exn,
+        a: { t: 2, d: "BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7Pfsp" },
+      },
+      pathed: {},
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+
+    await keriaNotificationService.processNotification(
+      remoteSignReqNotification
+    );
+
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(markNotificationMock).toBeCalledWith(remoteSignReqNotification.i);
   });
 });
 

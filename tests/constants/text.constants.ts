@@ -16,6 +16,16 @@ export enum Passcode {
   TitleReEnter = "Re-enter your Passcode",
   TitleNewPasscode = "Create new passcode",
   TitleEnterPasscode = "Enter passcode",
+  TitleReEnterNewPasscode = "Re-enter new passcode",
+}
+
+export enum Biometric {
+  Description = "Do you want to allow “Veridian” to use biometrics?",
+  DescriptionCancelBiometric = "You canceled Biometrics. You can set this up later via the settings page.",
+}
+
+export enum WelcomeMessage {
+  Description = "You're in the perfect spot to create your secure and private digital identity. Let's begin by adding your first identifier!",
 }
 
 export enum PrivacyPolicy {
@@ -76,9 +86,20 @@ export enum YourRecoveryPhrase {
   Title = "Your recovery phrase",
 }
 
+export enum RecoveryPhrase {
+  DescriptionBottom = "Keep these words safe! Store them securely and never share them with anyone.",
+  Title = "Recovery phrase",
+}
+
 export enum VerifyYourRecoveryPhrase {
   Description = "Please select each word in the order it was presented to you.",
   Title = "Verify your recovery phrase",
+  MenuDescription = "Please verify your recovery phrase to reset your passcode. To start typing click on the first option.",
+  MenuTitle = "Forgot passcode",
+}
+
+export enum WrongVerifyYourRecoveryPhrase {
+  Description = "Sorry, the recovery phrase you have entered is incorrect!",
 }
 
 export enum SsiAgentDetails {

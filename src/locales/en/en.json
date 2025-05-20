@@ -1198,8 +1198,6 @@
           "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
           "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
           "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>",
-          "signconfirmation": "<strong>{{certificate}} for {{connection}} is now fully signed 🎉</strong>",
-          "signeventinfo": "<strong>Signing event information</strong>",
           "connectinstructions": "<strong>Check your email for instructions on how to connect with {{connection}}</strong>"
         }
       },
@@ -1314,14 +1312,6 @@
           "button": {
             "sign": "Sign",
             "dontallow": "Don't allow"
-          }
-        },
-        "signconfirmation": {
-          "title": "Signed event",
-          "subtitle": "{{certificate}} for {{connection}} is now fully signed 🎉",
-          "description": "The {{certificate}} for {{connection}} has been successfully signed by all required parties and is now verified and finalized.\n\nA copy is available for your records. Click below to view or download the certificate.",
-          "button": {
-            "label": "View {{certificate}}"
           }
         },
         "signinformation": {
@@ -1870,7 +1860,8 @@
     "proposalcredreject": "Credential proposal rejected",
     "proposalcredfailerror": "Unable to record response",
     "deleteaccounterror": "Unable to delete account",
-    "deleteaccountsuccess": "Account deleted successfully"
+    "deleteaccountsuccess": "Account deleted successfully",
+    "remotesignsuccess": "Certificate signed successfully"
   },
   "request": {
     "sign": {

@@ -9,7 +9,10 @@ import {
 } from "ionicons/icons";
 import { MouseEvent, useMemo } from "react";
 import { Trans } from "react-i18next";
-import { KeriaNotification, NotificationRoute } from "../../../core/agent/services/keriaNotificationService.types";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/services/keriaNotificationService.types";
 import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
@@ -69,18 +72,13 @@ const NotificationItem = ({
         return t("tabs.notifications.tab.labels.multisigexn", {
           connection: connectionName || t("connections.unknown"),
         });
-      case NotificationRoute.LocalSign:
+      case NotificationRoute.RemoteSignReq:
         return t("tabs.notifications.tab.labels.sign", {
           certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
           connection: connectionName || t("connections.unknown"),
         });
-      case NotificationRoute.LocalConfirmation:
-        return t("tabs.notifications.tab.labels.signconfirmation", {
-          certificate: "Certificate", // TODO: change hardcoded value to dynamic
-          connection: connectionName || t("connections.unknown"),
-        });
-      case NotificationRoute.LocalInformation:
-        return t("tabs.notifications.tab.labels.signeventinfo");
+      case NotificationRoute.HumanReadableMessage:
+        return item.a.m as string;
       case NotificationRoute.LocalConnectInstructions:
         return t("tabs.notifications.tab.labels.connectinstructions", {
           connection: connectionName || t("connections.unknown"),
@@ -97,6 +95,7 @@ const NotificationItem = ({
     item.groupReplied,
     item.groupInitiatorPre,
     multisigConnectionsCache,
+    item.a.m,
   ]);
 
   const referIcon = (item: KeriaNotification) => {
@@ -106,7 +105,7 @@ const NotificationItem = ({
         return idCardOutline;
       case NotificationRoute.MultiSigIcp:
         return fingerPrintOutline;
-      case NotificationRoute.LocalSign:
+      case NotificationRoute.RemoteSignReq:
         return documentOutline;
       case NotificationRoute.LocalConnectInstructions:
         return personCircleOutline;
@@ -122,7 +121,7 @@ const NotificationItem = ({
   };
 
   const isLocalSign = [
-    NotificationRoute.LocalSign,
+    NotificationRoute.RemoteSignReq,
     NotificationRoute.LocalConnectInstructions,
   ].includes(item.a.r as NotificationRoute);
 

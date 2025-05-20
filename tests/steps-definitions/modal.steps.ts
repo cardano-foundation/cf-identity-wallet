@@ -12,6 +12,8 @@ import WelcomeModal from "../screen-objects/components/welcome.modal.js";
 import YourRecoveryPhraseScreen from "../screen-objects/onboarding/your-recovery-phrase.screen.js";
 import MenuOperationPasswordScreen from "../screen-objects/menu/menu-operation-password.screen.js";
 import EnterPasswordModal from "../screen-objects/components/enter-password.modal.js";
+import MenuPasscodeScreen from "../screen-objects/menu/menu-passcode.screen.js";
+import StaySafeModal from "../screen-objects/components/stay-safe.modal";
 
 When(
   /^tap Cancel button on alert modal for Create Password screen$/,
@@ -32,6 +34,38 @@ When(
   async function () {
     await AlertModal.clickCancelButtonSameLevelInDOM(
       MenuOperationPasswordScreen.alertModalCancelButton
+    );
+  }
+);
+
+When(
+  /^user tap Cancel button on alert modal for Passcode screen from Menu screen$/,
+  async function () {
+    await AlertModal.clickCancelButtonSameLevelInDOM(
+      MenuPasscodeScreen.cancelButtonOnModal
+    );
+  }
+);
+
+When(
+  /^user tap Cancel button on Stay Safe Modal from Recovery Phrase screen$/,
+  async function () {
+    await StaySafeModal.cancelButton.click();
+  }
+);
+
+When(
+  /^user confirm and acknowledge warning then click View Recovery Phrase button on Stay Safe Modal from Recovery Phrase screen$/,
+  async function () {
+    await StaySafeModal.confirmConditionAndClickViewRecoveryPhraseButton();
+  }
+);
+
+When(
+  /^user tap Verify your Recovery Phrase button on alert modal for Passcode screen from Menu screen$/,
+  async function () {
+    await AlertModal.clickConfirmButtonSameLevelInDOM(
+      MenuPasscodeScreen.verifyYourRecoveryButton
     );
   }
 );
