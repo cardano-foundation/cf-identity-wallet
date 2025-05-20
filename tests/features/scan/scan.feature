@@ -2,6 +2,7 @@ Feature: Scan
 
   Background:
     Given user is onboarded with skipped password creation
+    And user skip UNDP flavor application if it exist
     And user create new Identifier
 
   Scenario: C225 Scan - Loads correctly
