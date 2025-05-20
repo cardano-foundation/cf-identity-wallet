@@ -8,6 +8,7 @@ import {
 } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
+import { JSONObject } from "../../../../../core/agent/agent.types";
 import { RemoteSignRequest as RemoteSignRequestModel } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
@@ -30,21 +31,19 @@ import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./RemoteSignRequest.scss";
-import { JSONObject } from "../../../../../core/agent/agent.types";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
 }
 
 function ellipsisAttributes(signContent: JSONObject) {
-  const dateRegex =
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}([+-]\d{2}:\d{2}|Z)$/;
+  const ellipsisFields = ["id", "aid", "address"];
   const result = { ...signContent };
 
   Object.keys(result).forEach((key) => {
     const value = result[key];
 
-    if (typeof value === "string" && !dateRegex.test(value)) {
+    if (typeof value === "string" && !ellipsisFields.includes(key)) {
       result[key] = ellipsisText(value);
     }
 
