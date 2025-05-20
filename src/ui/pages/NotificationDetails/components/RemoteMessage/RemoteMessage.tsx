@@ -11,7 +11,6 @@ import { showError } from "../../../../utils/error";
 import { openBrowserLink } from "../../../../utils/openBrowserLink";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./RemoteMessage.scss";
-import "./RemoteSignConfirmation.scss";
 
 function RemoteMessage({
   pageId,
