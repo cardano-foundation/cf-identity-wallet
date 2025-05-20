@@ -13,13 +13,12 @@ import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/services/keriaNotificationService.types";
-import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
   getMultisigConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
-import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import { FallbackIcon } from "../../components/FallbackIcon";
 import { timeDifference } from "../../utils/formatters";
 import { NotificationItemProps } from "./Notification.types";
 
@@ -120,11 +119,6 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isLocalSign = [
-    NotificationRoute.RemoteSignReq,
-    NotificationRoute.LocalConnectInstructions,
-  ].includes(item.a.r as NotificationRoute);
-
   return (
     <IonItem
       onClick={() => onClick(item)}
@@ -132,26 +126,11 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        {isLocalSign ? (
-          <div className="sign-logo" />
-        ) : ConfigurationService.env.features.notifications?.fallbackIcon ? (
-          <div
-            className="notifications-tab-item-logo card-fallback-logo"
-            data-testid="notifications-tab-item-logo"
-          >
-            <IonIcon
-              icon={personCircleOutline}
-              color="light"
-            />
-          </div>
-        ) : (
-          <img
-            src={KeriLogo}
-            alt="notifications-tab-item-logo"
-            className="notifications-tab-item-logo"
-            data-testid="notifications-tab-item-logo"
-          />
-        )}
+        <FallbackIcon
+          alt="notifications-tab-item-logo"
+          className="notifications-tab-item-logo"
+          data-testid="notifications-tab-item-logo"
+        />
         <IonIcon
           src={referIcon(item)}
           size="small"

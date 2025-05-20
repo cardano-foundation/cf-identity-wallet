@@ -1,14 +1,13 @@
-import { useMemo } from "react";
-import { hourglassOutline } from "ionicons/icons";
 import { IonChip, IonIcon } from "@ionic/react";
-import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
-import { CardItem } from "../../../components/CardList/CardList.types";
-import { formatShortDate } from "../../../utils/formatters";
-import { CardList } from "../../../components/CardList";
+import { hourglassOutline } from "ionicons/icons";
+import { useMemo } from "react";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../../../../core/agent/agent.types";
+import { CardList } from "../../../components/CardList";
+import { CardItem } from "../../../components/CardList/CardList.types";
+import { formatShortDate } from "../../../utils/formatters";
 
 const AlphabeticList = ({
   items,
@@ -22,7 +21,7 @@ const AlphabeticList = ({
       id: connection.id,
       title: connection.label as string,
       subtitle: formatShortDate(`${connection?.createdAtUTC}`),
-      image: connection.logo || KeriLogo,
+      image: connection.logo,
       data: connection,
     }));
   }, [items]);

@@ -10,7 +10,6 @@ import { useAppSelector } from "../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 import { getAuthentication } from "../../../../store/reducers/stateCache";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { CardDetailsContent } from "../../../components/CardDetails";
 import {
   CardBlock,
@@ -26,6 +25,7 @@ import {
 import { IdentifierAttributeDetailModal } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal";
 import { DetailView } from "./IdentifierAttributeDetailModal/IdentifierAttributeDetailModal.types";
 import { IdentifierContentProps } from "./IdentifierContent.types";
+import { FallbackIcon } from "../../FallbackIcon";
 
 const DISPLAY_MEMBERS = 3;
 
@@ -83,7 +83,7 @@ const IdentifierContent = ({
                 <CardDetailsItem
                   key={index}
                   info={item}
-                  customIcon={KeriLogo}
+                  startSlot={<FallbackIcon />}
                   className="member"
                   testId={`group-member-${index}`}
                 />

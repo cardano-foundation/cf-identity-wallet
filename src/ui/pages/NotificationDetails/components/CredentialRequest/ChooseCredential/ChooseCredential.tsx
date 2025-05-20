@@ -20,7 +20,6 @@ import {
   setNotificationsCache,
 } from "../../../../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../../../../store/reducers/stateCache";
-import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../../../../components/CardDetails";
 import { CardItem, CardList } from "../../../../../components/CardList";
 import { BackReason } from "../../../../../components/CredentialDetailModule/CredentialDetailModule.types";
@@ -77,7 +76,6 @@ const ChooseCredential = ({
         subtitle: `${formatShortDate(cred.acdc.a.dt)} - ${formatTimeToSec(
           cred.acdc.a.dt
         )}`,
-        image: KeriLogo,
         data: cred,
       };
     }

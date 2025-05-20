@@ -1,8 +1,8 @@
 import { IonIcon } from "@ionic/react";
 import { search } from "ionicons/icons";
 import { useMemo } from "react";
+import { ConnectionShortDetails } from "../../../../../core/agent/agent.types";
 import { i18n } from "../../../../../i18n";
-import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { CardItem, CardList } from "../../../../components/CardList";
 import { ListHeader } from "../../../../components/ListHeader";
 import {
@@ -10,7 +10,6 @@ import {
   SearchConnectionListProps,
 } from "../ConnectionsBody/ConnectionsBody.types";
 import "./SearchConnectionContent.scss";
-import { ConnectionShortDetails } from "../../../../../core/agent/agent.types";
 
 const SearchConnectionList = ({
   connections,
@@ -23,7 +22,7 @@ const SearchConnectionList = ({
       return {
         id: connection.id,
         title: connection.label,
-        image: connection.logo || KeriLogo,
+        image: connection.logo,
         data: connection,
       };
     });

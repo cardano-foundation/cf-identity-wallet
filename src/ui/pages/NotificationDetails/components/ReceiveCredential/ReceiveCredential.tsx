@@ -8,13 +8,13 @@ import {
 } from "ionicons/icons";
 import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
-import { NotificationRoute } from "../../../../../core/agent/services/keriaNotificationService.types";
 import {
   ACDCDetails,
   CredentialStatus,
 } from "../../../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { LinkedGroupInfo } from "../../../../../core/agent/services/ipexCommunicationService.types";
+import { NotificationRoute } from "../../../../../core/agent/services/keriaNotificationService.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
@@ -28,7 +28,6 @@ import {
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
 import { getAuthentication } from "../../../../../store/reducers/stateCache";
-import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { Alert, Alert as AlertDecline } from "../../../../components/Alert";
 import { CardDetailsBlock } from "../../../../components/CardDetails";
 import { CardTheme } from "../../../../components/CardTheme";
@@ -37,6 +36,7 @@ import {
   MemberAcceptStatus,
   MultisigMember,
 } from "../../../../components/CredentialDetailModule/components";
+import { FallbackIcon } from "../../../../components/FallbackIcon";
 import { IdentifierDetailModal } from "../../../../components/IdentifierDetailModule";
 import { InfoCard } from "../../../../components/InfoCard";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
@@ -69,7 +69,6 @@ const ReceiveCredential = ({
   const userName = useAppSelector(getAuthentication)?.userName;
   const connectionsCache = useAppSelector(getConnectionsCache);
   const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
-  const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
@@ -401,9 +400,8 @@ const ReceiveCredential = ({
               </span>
             </div>
             <div className="request-provider-logo">
-              <img
+              <FallbackIcon
                 data-testid="credential-request-provider-logo"
-                src={fallbackLogo}
                 alt="request-provider-logo"
               />
             </div>
