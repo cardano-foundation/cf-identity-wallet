@@ -7,7 +7,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Agent } from "../../../../../../core/agent/agent";
 import { CredentialStatus } from "../../../../../../core/agent/services/credentialService.types";
@@ -93,9 +93,8 @@ const ChooseCredential = ({
     return dateA - dateB;
   });
 
-  const revokedCredsCache = useMemo(
-    () => credsCache.filter((item) => item.status === CredentialStatus.REVOKED),
-    [credsCache]
+  const revokedCredsCache = credsCache.filter(
+    (item) => item.status === CredentialStatus.REVOKED
   );
 
   const revokedCredentials = sortedCredentials.filter((cred) =>
@@ -175,14 +174,9 @@ const ChooseCredential = ({
   };
 
   // @TODO - foconnor: joinedCredMembers and showCredMembers of these will default to all joined members, this UI will change.
-  const joinedCredMembers = useMemo(() => {
-    if (!viewCredDetail) return [];
-
-    return linkedGroup?.memberInfos.filter((member) => member.joined) || [];
-    // return linkedGroup?.memberInfos.filter(
-    //   (item) => item.joinedCred === viewCredDetail.acdc.d
-    // ) || [];
-  }, [linkedGroup?.memberInfos, viewCredDetail]);
+  const joinedCredMembers = !viewCredDetail
+    ? []
+    : linkedGroup?.memberInfos.filter((member) => member.joined) || [];
 
   return (
     <>

@@ -1,12 +1,10 @@
 import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
-import { useMemo } from "react";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../../../../core/agent/agent.types";
 import { CardList } from "../../../components/CardList";
-import { CardItem } from "../../../components/CardList/CardList.types";
 import { formatShortDate } from "../../../utils/formatters";
 
 const AlphabeticList = ({
@@ -16,15 +14,13 @@ const AlphabeticList = ({
   items: ConnectionShortDetails[];
   handleShowConnectionDetails: (item: ConnectionShortDetails) => void;
 }) => {
-  const displayConnection = useMemo((): CardItem<ConnectionShortDetails>[] => {
-    return items.map((connection) => ({
-      id: connection.id,
-      title: connection.label as string,
-      subtitle: formatShortDate(`${connection?.createdAtUTC}`),
-      image: connection.logo,
-      data: connection,
-    }));
-  }, [items]);
+  const displayConnection = items.map((connection) => ({
+    id: connection.id,
+    title: connection.label as string,
+    subtitle: formatShortDate(`${connection?.createdAtUTC}`),
+    image: connection.logo,
+    data: connection,
+  }));
 
   return (
     <CardList

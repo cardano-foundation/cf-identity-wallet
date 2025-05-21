@@ -1,5 +1,5 @@
 import { IonText } from "@ionic/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { i18n } from "../../../../i18n";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -22,9 +22,9 @@ const SignRequest = ({
   handleAccept,
   handleCancel,
 }: RequestProps<IncomingRequestType.PEER_CONNECT_SIGN>) => {
-  const [isSigningObject, setIsSigningObject] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
-  const signDetails = useMemo(() => {
+
+  const signDetails = (() => {
     if (!requestData.signTransaction) {
       return {};
     }
@@ -32,12 +32,11 @@ const SignRequest = ({
     let signContent;
     try {
       signContent = JSON.parse(requestData.signTransaction.payload.payload);
-      setIsSigningObject(true);
     } catch (error) {
       signContent = requestData.signTransaction.payload.payload;
     }
     return signContent;
-  }, [requestData.type]);
+  })();
 
   const signRequest = requestData.signTransaction;
   const logo = requestData.peerConnection.iconB64;
@@ -91,7 +90,7 @@ const SignRequest = ({
             className="sign-data"
             title={i18n.t("request.sign.transaction.data")}
           >
-            {isSigningObject ? (
+            {typeof signDetails === "object" ? (
               <CardDetailsAttributes
                 data={signDetails}
                 itemProps={{

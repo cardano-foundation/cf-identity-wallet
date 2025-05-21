@@ -6,7 +6,7 @@ import {
   personCircleOutline,
   swapHorizontalOutline,
 } from "ionicons/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import {
   ACDCDetails,
@@ -102,10 +102,7 @@ const ReceiveCredential = ({
       (multisigMemberStatus.linkedRequest.accepted ? 1 : 0) >=
       Number(multisigMemberStatus.threshold);
 
-  const identifier = useMemo(() => {
-    return identifiersData[credDetail?.identifierId || ""];
-  }, [credDetail?.identifierId, identifiersData]);
-
+  const identifier = identifiersData[credDetail?.identifierId || ""];
   const groupInitiatorAid = multisigMemberStatus.members[0] || "";
   const isGroupInitiator = identifier?.groupMemberPre === groupInitiatorAid;
   const displayInitiatorNotAcceptedAlert =
@@ -276,22 +273,20 @@ const ReceiveCredential = ({
     ]
   );
 
-  const members = useMemo(() => {
-    return multisigMemberStatus.members.map((member) => {
-      const memberConnection = multisignConnectionsCache[member];
+  const members = multisigMemberStatus.members.map((member) => {
+    const memberConnection = multisignConnectionsCache[member];
 
-      let name = memberConnection?.label || member;
+    let name = memberConnection?.label || member;
 
-      if (!memberConnection?.label) {
-        name = userName;
-      }
+    if (!memberConnection?.label) {
+      name = userName;
+    }
 
-      return {
-        id: member,
-        name,
-      };
-    });
-  }, [multisigMemberStatus.members, multisignConnectionsCache, userName]);
+    return {
+      id: member,
+      name,
+    };
+  });
 
   const handleConfirm = () => {
     if (displayInitiatorNotAcceptedAlert) {

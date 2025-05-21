@@ -223,14 +223,11 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
 
     useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
 
-    const deletePendingCheckProps = useMemo(
-      () => ({
-        title: i18n.t("connections.page.deletepending.title"),
-        description: i18n.t("connections.page.deletepending.description"),
-        button: i18n.t("connections.page.deletepending.button"),
-      }),
-      []
-    );
+    const deletePendingCheckProps = {
+      title: i18n.t("connections.page.deletepending.title"),
+      description: i18n.t("connections.page.deletepending.description"),
+      button: i18n.t("connections.page.deletepending.button"),
+    };
 
     const deleteConnection = async () => {
       if (!deletePendingItem) return;

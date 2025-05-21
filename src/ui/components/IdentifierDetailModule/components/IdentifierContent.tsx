@@ -4,7 +4,7 @@ import {
   keyOutline,
   refreshOutline,
 } from "ionicons/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { useAppSelector } from "../../../../store/hooks";
 import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
@@ -45,26 +45,21 @@ const IdentifierContent = ({
     setOpenDetailModal(true);
   }, []);
 
-  const isMultiSig = useMemo(() => {
-    const identifier = identifiersData[cardData.id];
+  const isMultiSig =
+    cardData.groupMemberPre || identifiersData[cardData.id]?.groupMemberPre;
 
-    return cardData.groupMemberPre || (identifier && identifier.groupMemberPre);
-  }, [cardData.id, cardData.groupMemberPre, identifiersData]);
+  const members = cardData.members
+    ?.map((member) => {
+      const memberConnection = multisignConnectionsCache[member];
+      let name = memberConnection?.label || member;
 
-  const members = useMemo(() => {
-    return cardData.members
-      ?.map((member) => {
-        const memberConnection = multisignConnectionsCache[member];
-        let name = memberConnection?.label || member;
+      if (!memberConnection?.label) {
+        name = userName;
+      }
 
-        if (!memberConnection?.label) {
-          name = userName;
-        }
-
-        return name;
-      })
-      .slice(0, DISPLAY_MEMBERS);
-  }, [cardData.members, multisignConnectionsCache, userName]);
+      return name;
+    })
+    .slice(0, DISPLAY_MEMBERS);
 
   const openGroupMember = () => openPropDetailModal(DetailView.GroupMember);
 

@@ -10,27 +10,21 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { i18n } from "../../../../../i18n";
 import { combineClassNames } from "../../../../utils/style";
 import { AlphabetSelector } from "../AlphabetSelector";
 import { AlphabeticList } from "../AlphabeticList";
 
+import { SearchConnectionContent } from "../SearchConnectionContent";
 import "./ConnectionsBody.scss";
 import {
   ConnectionsBodyProps,
   SearchInputProps,
 } from "./ConnectionsBody.types";
-import { SearchConnectionContent } from "../SearchConnectionContent";
 
 const SearchInput = ({ onFocus, onInputChange, value }: SearchInputProps) => {
-  const showCancel = useMemo(() => {
-    if (value) {
-      return "always";
-    }
-
-    return value ? "always" : "focus";
-  }, [value]);
+  const showCancel = value ? "always" : "focus";
 
   const handleBlur = () => {
     if (value) return;

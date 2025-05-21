@@ -7,7 +7,7 @@ import {
   idCardOutline,
   personCircleOutline,
 } from "ionicons/icons";
-import { MouseEvent, useMemo } from "react";
+import { MouseEvent } from "react";
 import { Trans } from "react-i18next";
 import {
   KeriaNotification,
@@ -30,7 +30,7 @@ const NotificationItem = ({
   const connectionsCache = useAppSelector(getConnectionsCache);
   const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
 
-  const notificationLabelText = useMemo(() => {
+  const notificationLabelText = (() => {
     const connectionName = connectionsCache?.[item.connectionId]?.label;
 
     switch (item.a.r) {
@@ -85,17 +85,7 @@ const NotificationItem = ({
       default:
         return "";
     }
-  }, [
-    connectionsCache,
-    item.a.credentialTitle,
-    item.a.r,
-    item.connectionId,
-    item.groupInitiator,
-    item.groupReplied,
-    item.groupInitiatorPre,
-    multisigConnectionsCache,
-    item.a.m,
-  ]);
+  })();
 
   const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {
