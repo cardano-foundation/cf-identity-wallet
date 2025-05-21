@@ -10,8 +10,8 @@ Then(/^scan screen load correctly$/, async function () {
 });
 
 When(/^user paste faulty content$/, async function () {
-  await ScanScreen.inputToPasteContentTextbox("faulty content");
-  await ScanScreen.confirmButton.click();
+  await ScanScreen.inputToPasteContentTextbox("https://www.google.com/");
+  await ScanScreen.clickConfirmButtonOf(ScanScreen.confirmButton);
 });
 
 Then(/^a error message appear$/, async function () {

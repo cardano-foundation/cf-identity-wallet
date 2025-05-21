@@ -1,5 +1,6 @@
 import { expect } from "expect-webdriverio";
 import { ScanContent } from "../../constants/text.constants";
+import { findAndClickLocator } from "../base.screen";
 
 export class ScanScreen {
   get scanItem() {
@@ -19,7 +20,7 @@ export class ScanScreen {
   }
 
   get confirmButton() {
-    return $("p.sc-ion-buttons-ios");
+    return ("//*[@data-testid='action-button']/following::p[text()='Confirm']");
   }
 
   get errorMessage() {
@@ -44,6 +45,10 @@ export class ScanScreen {
   async inputToPasteContentTextbox(content: string) {
     await this.pasteButton.click();
     await this.pasteTextbox.setValue(content);
+  }
+
+  async clickConfirmButtonOf(locator: string) {
+    await findAndClickLocator(`${locator}`);
   }
 }
 
