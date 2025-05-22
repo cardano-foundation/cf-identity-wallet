@@ -22,10 +22,7 @@ export interface OneOf {
 }
 
 export interface OneOfProperties {
-  d: D;
-  i: D;
-  dt: Dt;
-  attendeeName: D;
+  [key: string]: string;
 }
 
 export interface D {
