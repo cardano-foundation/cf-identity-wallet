@@ -80,9 +80,14 @@ async function revokeCredential(req: Request, res: Response): Promise<void> {
   }
 }
 
+async function schemas() {
+  return await Agent.agent.schemas();
+}
+
 export {
   issueAcdcCredential,
   requestDisclosure,
   revokeCredential,
   contactCredentials,
+  schemas,
 };
