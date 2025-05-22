@@ -12,6 +12,7 @@ import { RemoteSignRequest as RemoteSignRequestModel } from "../../../../../core
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import {
   CardBlock,
   CardDetailsAttributes,
@@ -24,13 +25,12 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { Spinner } from "../../../../components/Spinner";
 import { SpinnerConverage } from "../../../../components/Spinner/Spinner.type";
 import { Verification } from "../../../../components/Verification";
+import { ToastMsgType } from "../../../../globals/types";
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./RemoteSignRequest.scss";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
@@ -76,25 +76,14 @@ const RemoteSignRequest = ({
 
   const signDetails = useMemo(() => {
     if (!requestData?.payload) {
+      setIsSigningObject(true);
       return {};
     }
 
-    let signContent;
-    try {
-      signContent = requestData.payload;
-      if (signContent["id"]) {
-        signContent["id"] = ellipsisText(`${signContent["id"]}`);
-      }
-
-      if (signContent["address"]) {
-        signContent["address"] = ellipsisText(`${signContent["address"]}`);
-      }
-
+    if (typeof requestData.payload === "object") {
       setIsSigningObject(true);
-    } catch (error) {
-      signContent = requestData.payload;
     }
-    return signContent;
+    return requestData.payload;
   }, [requestData]);
 
   const handleSign = async () => {
@@ -115,9 +104,10 @@ const RemoteSignRequest = ({
 
   const itemProps = useCallback((key?: string) => {
     return {
-      copyButton: ["id", "address"].includes(key || ""),
+      copyButton: false,
       className: "sign-info-item",
       keyValue: `${reservedKeysFilter(key || "")}:`,
+      mask: false,
     };
   }, []);
 

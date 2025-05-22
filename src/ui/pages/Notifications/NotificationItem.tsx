@@ -7,19 +7,18 @@ import {
   idCardOutline,
   personCircleOutline,
 } from "ionicons/icons";
-import { MouseEvent, useMemo } from "react";
+import { MouseEvent } from "react";
 import { Trans } from "react-i18next";
 import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/services/keriaNotificationService.types";
-import { ConfigurationService } from "../../../core/configuration";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
   getMultisigConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
-import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import { FallbackIcon } from "../../components/FallbackIcon";
 import { timeDifference } from "../../utils/formatters";
 import { NotificationItemProps } from "./Notification.types";
 
@@ -31,7 +30,7 @@ const NotificationItem = ({
   const connectionsCache = useAppSelector(getConnectionsCache);
   const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
 
-  const notificationLabelText = useMemo(() => {
+  const notificationLabelText = (() => {
     const connectionName = connectionsCache?.[item.connectionId]?.label;
 
     switch (item.a.r) {
@@ -85,17 +84,7 @@ const NotificationItem = ({
       default:
         return "";
     }
-  }, [
-    connectionsCache,
-    item.a.credentialTitle,
-    item.a.r,
-    item.connectionId,
-    item.groupInitiator,
-    item.groupReplied,
-    item.groupInitiatorPre,
-    multisigConnectionsCache,
-    item.a.m,
-  ]);
+  })();
 
   const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {
@@ -119,11 +108,6 @@ const NotificationItem = ({
     onOptionButtonClick(item);
   };
 
-  const isLocalSign = [
-    NotificationRoute.RemoteSignReq,
-    NotificationRoute.LocalConnectInstructions,
-  ].includes(item.a.r as NotificationRoute);
-
   return (
     <IonItem
       onClick={() => onClick(item)}
@@ -131,26 +115,11 @@ const NotificationItem = ({
       data-testid={`notifications-tab-item-${item.id}`}
     >
       <div className="notification-logo">
-        {isLocalSign ? (
-          <div className="sign-logo" />
-        ) : ConfigurationService.env.features.notifications?.fallbackIcon ? (
-          <div
-            className="notifications-tab-item-logo card-fallback-logo"
-            data-testid="notifications-tab-item-logo"
-          >
-            <IonIcon
-              icon={personCircleOutline}
-              color="light"
-            />
-          </div>
-        ) : (
-          <img
-            src={KeriLogo}
-            alt="notifications-tab-item-logo"
-            className="notifications-tab-item-logo"
-            data-testid="notifications-tab-item-logo"
-          />
-        )}
+        <FallbackIcon
+          alt="notifications-tab-item-logo"
+          className="notifications-tab-item-logo"
+          data-testid="notifications-tab-item-logo"
+        />
         <IonIcon
           src={referIcon(item)}
           size="small"

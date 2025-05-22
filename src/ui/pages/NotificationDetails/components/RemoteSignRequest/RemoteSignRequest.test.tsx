@@ -6,8 +6,8 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierMapFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { RemoteSignRequest } from "./RemoteSignRequest";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { RemoteSignRequest } from "./RemoteSignRequest";
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
