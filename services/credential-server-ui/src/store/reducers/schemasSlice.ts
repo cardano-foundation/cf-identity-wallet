@@ -22,7 +22,7 @@ export const fetchSchemas = createAsyncThunk(
       `${config.endpoint}${config.path.schemas}`
     );
 
-    return responses.data;
+    return responses.data.data;
   }
 );
 
