@@ -1,6 +1,5 @@
 import { IonIcon } from "@ionic/react";
 import { search } from "ionicons/icons";
-import { useMemo } from "react";
 import { ConnectionShortDetails } from "../../../../../core/agent/agent.types";
 import { i18n } from "../../../../../i18n";
 import { CardItem, CardList } from "../../../../components/CardList";
@@ -17,16 +16,16 @@ const SearchConnectionList = ({
   testId,
   title,
 }: SearchConnectionListProps) => {
-  const cardListData = useMemo(() => {
-    return connections.map((connection): CardItem<ConnectionShortDetails> => {
+  const cardListData = connections.map(
+    (connection): CardItem<ConnectionShortDetails> => {
       return {
         id: connection.id,
         title: connection.label,
         image: connection.logo,
         data: connection,
       };
-    });
-  }, [connections]);
+    }
+  );
 
   return (
     <div>
@@ -47,13 +46,11 @@ const SearchConnectionContent = ({
   onItemClick,
   keyword,
 }: SearchConnectionContentProps) => {
-  const connections = useMemo(() => {
-    return mappedConnections.flatMap((item) => {
-      return item.value.filter((item) =>
-        item.label.toLowerCase().includes(keyword.toLowerCase())
-      );
-    });
-  }, [mappedConnections, keyword]);
+  const connections = mappedConnections.flatMap((item) => {
+    return item.value.filter((item) =>
+      item.label.toLowerCase().includes(keyword.toLowerCase())
+    );
+  });
 
   if (connections.length === 0) {
     return (

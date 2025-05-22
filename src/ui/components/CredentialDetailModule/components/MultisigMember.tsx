@@ -1,11 +1,9 @@
 import { IonIcon, IonItem, IonText } from "@ionic/react";
 import { checkmark, closeOutline, hourglassOutline } from "ionicons/icons";
-import { useMemo } from "react";
 import { combineClassNames } from "../../../utils/style";
 import { FallbackIcon } from "../../FallbackIcon";
 import "./MultisigMember.scss";
 import { MemberAcceptStatus, MemberProps } from "./MultisigMember.types";
-import Keri from "../../../assets/images/KeriGeneric.jpg";
 
 const MultisigMember = ({ name, status }: MemberProps) => {
   const statusClasses = combineClassNames("status", {
@@ -14,7 +12,7 @@ const MultisigMember = ({ name, status }: MemberProps) => {
     rejected: status === MemberAcceptStatus.Rejected,
   });
 
-  const icon = useMemo(() => {
+  const icon = (() => {
     switch (status) {
       case MemberAcceptStatus.Accepted:
         return checkmark;
@@ -25,7 +23,7 @@ const MultisigMember = ({ name, status }: MemberProps) => {
       default:
         return null;
     }
-  }, [status]);
+  })();
 
   return (
     <IonItem

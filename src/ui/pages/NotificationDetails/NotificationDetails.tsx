@@ -1,4 +1,4 @@
-import { ElementType, useCallback, useEffect, useMemo, useRef } from "react";
+import { ElementType, useCallback, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
   KeriaNotification,
@@ -21,9 +21,9 @@ const NotificationDetails = () => {
   const notificationCache = useAppSelector(getNotificationsCache);
   const { id } = useParams<{ id: string }>();
 
-  const notificationDetails = useMemo(() => {
-    return notificationCache.find((notification) => notification.id === id);
-  }, [id, notificationCache]);
+  const notificationDetails = notificationCache.find(
+    (notification) => notification.id === id
+  );
 
   const currentNotification = useRef<KeriaNotification | undefined>(
     notificationDetails
