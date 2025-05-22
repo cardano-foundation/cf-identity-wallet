@@ -1,5 +1,3 @@
-import { CredentialType } from "../../const";
-
 interface A {
   d: string;
   i: string;
@@ -56,11 +54,11 @@ enum PresentationRequestStatus {
 interface PresentationRequestData {
   id: string;
   connectionName: string;
-  credentialType: CredentialType;
+  credentialType: string;
   attribute: string;
   requestDate: number;
   status: PresentationRequestStatus;
 }
 
-export type { Credential, PresentationRequestData };
 export { PresentationRequestStatus };
+export type { Credential, PresentationRequestData };
