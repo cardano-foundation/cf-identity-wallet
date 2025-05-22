@@ -1,3 +1,5 @@
+import { Schema } from "./schemasSlice.types";
+
 interface A {
   d: string;
   i: string;
@@ -12,19 +14,6 @@ interface Sad {
   ri: string;
   s: string;
   a: A;
-}
-
-interface Schema {
-  $id: string;
-  $schema: string;
-  title: string;
-  description: string;
-  type: string;
-  credentialType: string;
-  version: string;
-  properties: Record<string, number | string>;
-  additionalProperties: boolean;
-  required: string[];
 }
 
 interface Status {

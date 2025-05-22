@@ -165,6 +165,16 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
             const labelId = `enhanced-table-checkbox-${index}`;
             const isRevoked = row.status !== 0;
 
+            const attributeDescriptionObject =
+              row.data.schema.properties.a.oneOf[1].properties?.[
+                Object.keys(row.data.sad.a)[2]
+              ];
+
+            const attributeKey =
+              typeof attributeDescriptionObject === "object"
+                ? attributeDescriptionObject.description
+                : attributeDescriptionObject;
+
             return (
               <TableRow
                 hover
@@ -189,7 +199,7 @@ const CredentialsTable = ({ credentials }: CredentialTableProps) => {
                 </TableCell>
                 <TableCell align="left">
                   <Tooltip
-                    title={row.attribute}
+                    title={`${attributeKey}: ${row.attribute}`}
                     placement="top"
                   >
                     <span>{row.attribute}</span>

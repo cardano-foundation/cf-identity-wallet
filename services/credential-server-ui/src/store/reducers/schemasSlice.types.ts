@@ -22,7 +22,7 @@ export interface OneOf {
 }
 
 export interface OneOfProperties {
-  [key: string]: string;
+  [key: string]: string | D;
 }
 
 export interface D {
