@@ -73,7 +73,6 @@ const NotificationItem = ({
         });
       case NotificationRoute.RemoteSignReq:
         return t("tabs.notifications.tab.labels.sign", {
-          certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
           connection: connectionName || t("connections.unknown"),
         });
       case NotificationRoute.HumanReadableMessage:
@@ -127,7 +126,7 @@ const NotificationItem = ({
           className="notification-ref-icon"
         />
       </div>
-      <IonLabel>
+      <IonLabel data-testid="notifications-tab-item-label">
         <Trans>{notificationLabelText}</Trans>
         <br />
         <span className="notifications-tab-item-time">

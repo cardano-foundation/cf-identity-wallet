@@ -30,6 +30,7 @@ import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./RemoteSignRequest.scss";
+import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
@@ -38,9 +39,9 @@ function ellipsisText(text: string) {
 const RemoteSignRequest = ({
   pageId,
   activeStatus,
-  notificationDetails,
   handleBack,
 }: NotificationDetailsProps) => {
+  const notificationDetails = notificationsFix[7];
   const dispatch = useAppDispatch();
   const connections = useAppSelector(getConnectionsCache);
   const [isSigningObject, setIsSigningObject] = useState(false);
@@ -172,14 +173,12 @@ const RemoteSignRequest = ({
         customClass="custom-sign-request"
         header={
           <PageHeader
-            closeButton
-            closeButtonLabel={`${t(
+            closeButton={true}
+            closeButtonAction={handleBack}
+            closeButtonLabel={`${i18n.t(
               "tabs.notifications.details.buttons.close"
             )}`}
-            closeButtonAction={handleBack}
-            title={`${t("tabs.notifications.details.sign.title", {
-              certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
-            })}`}
+            title={`${i18n.t("tabs.notifications.details.sign.title")}`}
           />
         }
         footer={
