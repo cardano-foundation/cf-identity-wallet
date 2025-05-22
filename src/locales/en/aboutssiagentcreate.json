@@ -11,11 +11,11 @@
         "content": [
           {
             "subtitle": "",
-            "text": "The Cardano Foundation Identity Wallet requires connecting to a Cloud Agent, securely controlled by the keys on your mobile device."
+            "text": "The Veridian Wallet requires connecting to a Cloud Agent, securely controlled by the keys on your mobile device."
           },
           {
             "subtitle": "",
-            "text": "As part of the Identity Wallet onboarding process a Boot URL and a Connect URL must be provided to establish the secure connection between the edge and the cloud."
+            "text": "As part of the Veridian Wallet onboarding process a Boot URL and a Connect URL must be provided to establish the secure connection between the edge and the cloud."
           }
         ]
       }

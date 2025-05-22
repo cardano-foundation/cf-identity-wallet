@@ -11,11 +11,11 @@
         "content": [
           {
             "subtitle": "",
-            "text": "Recovering your Identity Wallet requires re-establishing an existing connection to your Cloud Agent using the Connect URL."
+            "text": "Recovering your Veridian Wallet requires re-establishing an existing connection to your Cloud Agent using the Connect URL."
           },
           {
             "subtitle": "",
-            "text": "Upon successful reconnecting the Identity Wallet will begin re-syncing with the cloud agent to complete recovery of identifiers and credentials."
+            "text": "Upon successful reconnecting the Veridian Wallet will begin re-syncing with the cloud agent to complete recovery of identifiers and credentials."
           }
         ]
       }
