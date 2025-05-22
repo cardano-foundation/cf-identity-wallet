@@ -134,16 +134,14 @@ const NotificationItem = ({
           {timeDifference(item.createdAt)[1]}
         </span>
       </IonLabel>
-      {!isLocalSign && (
-        <IonIcon
-          aria-hidden="true"
-          icon={ellipsisHorizontal}
-          slot="end"
-          className="notifications-tab-item-ellipsis"
-          data-testid={`${item.id}-option-btn`}
-          onClick={openOptionModal}
-        />
-      )}
+      <IonIcon
+        aria-hidden="true"
+        icon={ellipsisHorizontal}
+        slot="end"
+        className="notifications-tab-item-ellipsis"
+        data-testid={`${item.id}-option-btn`}
+        onClick={openOptionModal}
+      />
     </IonItem>
   );
 };
