@@ -78,7 +78,7 @@ const ConnectionsBody = ({
     }
   }, [search]);
 
-  const classes = combineClassNames("connections-body", {
+  const classes: string | undefined = combineClassNames("connections-body", {
     keyboard: keyboardIsOpen,
   });
 
