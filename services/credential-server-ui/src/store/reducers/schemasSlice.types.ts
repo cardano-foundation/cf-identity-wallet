@@ -21,13 +21,14 @@ export interface OneOf {
   required?: string[];
 }
 
-export interface OneOfProperties {
+export type OneOfProperties = {
   d: D;
   i: D;
   dt: Dt;
   u?: D;
-  [key: string]: string | Dt | D | undefined; // TODO - This needs to be expanded in the future.
-}
+} & {
+  [key: string]: D; // TODO - This needs to be expanded in the future.
+};
 
 export interface D {
   description: string;
