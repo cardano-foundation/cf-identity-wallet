@@ -157,7 +157,7 @@ const TermsModal = ({
     returnObjects: true,
   });
   const introText = `${i18n.t(`${nameNoDash}.intro.text`, { ns: nameNoDash })}`;
-  const sections = termsObject?.sections || [];
+  const sections = termsObject.sections;
 
   const closeModal = () => setIsOpen(false);
 
