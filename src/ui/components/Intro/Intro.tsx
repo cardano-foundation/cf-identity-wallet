@@ -8,11 +8,11 @@ import "swiper/css/autoplay";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperClass } from "swiper/types";
-import { i18n } from "../../../../i18n";
-import introImg0 from "../../../assets/images/intro-0.png";
-import introImg1 from "../../../assets/images/intro-1.png";
-import introImg2 from "../../../assets/images/intro-2.png";
-import introImg3 from "../../../assets/images/intro-3.png";
+import { i18n } from "../../../i18n";
+import introImg0 from "../../assets/images/intro-0.png";
+import introImg1 from "../../assets/images/intro-1.png";
+import introImg2 from "../../assets/images/intro-2.png";
+import introImg3 from "../../assets/images/intro-3.png";
 import "./Intro.scss";
 import { SlideItem } from "./Intro.types";
 

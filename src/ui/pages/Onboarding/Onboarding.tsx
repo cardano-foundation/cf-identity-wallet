@@ -10,7 +10,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { Intro } from "../../components/CustomContent/Intro";
+import { Intro } from "../../components/Intro";
 import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
