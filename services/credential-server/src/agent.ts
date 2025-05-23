@@ -3,7 +3,7 @@ import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
 import { readFile, writeFile } from "fs/promises";
-import { existsSync, mkdir, mkdirSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import path from "path";
 
 class Agent {
@@ -265,6 +265,10 @@ class Agent {
       this.issuerAid.prefix
     );
     await this.signifyApi.deleteNotification(grantNotification.i);
+  }
+
+  async schemas() {
+    return await this.signifyApi.schemas();
   }
 }
 

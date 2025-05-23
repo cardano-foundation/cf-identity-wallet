@@ -6,6 +6,7 @@ import {
   Saider,
   Serder,
   State,
+  Contact,
 } from "signify-ts";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
@@ -324,8 +325,20 @@ export class SignifyApi {
     await this.client.ipex().submitApply(senderName, apply, sigs, [recipient]);
   }
 
-  async contacts(): Promise<any> {
-    return this.client.contacts().list();
+  async contacts(): Promise<Contact[]> {
+    // @TODO - foconnor: Temporary hack to add createdAt after one-way scan, doing this now
+    // to avoid updating keripy and making a change which might make backwards compatability or migrations harder later.
+    const contacts = await this.client.contacts().list();
+    for (const contact of contacts) {
+      if (!contact.createdAt) {
+        contact.createdAt = new Date();
+        this.client.contacts().update(contact.id, {
+          createdAt: contact.createdAt,
+        });
+      }
+    }
+
+    return contacts;
   }
 
   async deleteContact(id: string): Promise<any> {
@@ -429,5 +442,9 @@ export class SignifyApi {
       await new Promise((resolve) => setTimeout(resolve, interval));
     }
     return op;
+  }
+
+  async schemas() {
+    return await this.client.schemas().list();
   }
 }

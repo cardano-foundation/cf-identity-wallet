@@ -41,7 +41,7 @@ import { useSwipeBack } from "../../hooks/swipeBackHook";
 import { showError } from "../../utils/error";
 import { ConnectionsBody } from "./components/ConnectionsBody";
 import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
-import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
+import { IdentifierSelectorModal } from "../../components/IdentifierSelectorModal";
 import "./Connections.scss";
 import {
   ConnectionsComponentProps,
@@ -223,14 +223,11 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
 
     useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
 
-    const deletePendingCheckProps = useMemo(
-      () => ({
-        title: i18n.t("connections.page.deletepending.title"),
-        description: i18n.t("connections.page.deletepending.description"),
-        button: i18n.t("connections.page.deletepending.button"),
-      }),
-      []
-    );
+    const deletePendingCheckProps = {
+      title: i18n.t("connections.page.deletepending.title"),
+      description: i18n.t("connections.page.deletepending.description"),
+      button: i18n.t("connections.page.deletepending.button"),
+    };
 
     const deleteConnection = async () => {
       if (!deletePendingItem) return;

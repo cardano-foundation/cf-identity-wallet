@@ -111,6 +111,9 @@ const identifiersCacheSlice = createSlice({
     ) => {
       state.filters = action.payload;
     },
+    setIndividualFirstCreate: (state, action: PayloadAction<boolean>) => {
+      state.individualFirstCreate = action.payload;
+    },
     clearIdentifierCache: () => initialState,
   },
 });
@@ -131,6 +134,7 @@ export const {
   removeIdentifierCache,
   addGroupIdentifierCache,
   clearIdentifierCache,
+  setIndividualFirstCreate,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
@@ -151,6 +155,9 @@ const getScanGroupId = (state: RootState) =>
 const getIdentifiersFilters = (state: RootState) =>
   state.identifiersCache.filters;
 
+const getIndividualFirstCreateSetting = (state: RootState) =>
+  state.identifiersCache.individualFirstCreate;
+
 export {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
@@ -158,4 +165,5 @@ export {
   getOpenMultiSig,
   getScanGroupId,
   getIdentifiersFilters,
+  getIndividualFirstCreateSetting,
 };

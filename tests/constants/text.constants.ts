@@ -10,8 +10,22 @@ export enum IdentifierDetails {
 
 export enum Passcode {
   Description = "Create a passcode to secure your wallet and to continue the onboarding process",
+  DescriptionNewPasscode = "Create a new passcode to secure your wallet",
+  DescriptionEnterPasscode = "Please enter your passcode to verify",
   Title = "Create your Passcode",
   TitleReEnter = "Re-enter your Passcode",
+  TitleNewPasscode = "Create new passcode",
+  TitleEnterPasscode = "Enter passcode",
+  TitleReEnterNewPasscode = "Re-enter new passcode",
+}
+
+export enum Biometric {
+  Description = "Do you want to allow “Veridian” to use biometrics?",
+  DescriptionCancelBiometric = "You canceled Biometrics. You can set this up later via the settings page.",
+}
+
+export enum WelcomeMessage {
+  Description = "You're in the perfect spot to create your secure and private digital identity. Let's begin by adding your first identifier!",
 }
 
 export enum PrivacyPolicy {
@@ -72,9 +86,20 @@ export enum YourRecoveryPhrase {
   Title = "Your recovery phrase",
 }
 
+export enum RecoveryPhrase {
+  DescriptionBottom = "Keep these words safe! Store them securely and never share them with anyone.",
+  Title = "Recovery phrase",
+}
+
 export enum VerifyYourRecoveryPhrase {
   Description = "Please select each word in the order it was presented to you.",
   Title = "Verify your recovery phrase",
+  MenuDescription = "Please verify your recovery phrase to reset your passcode. To start typing click on the first option.",
+  MenuTitle = "Forgot passcode",
+}
+
+export enum WrongVerifyYourRecoveryPhrase {
+  Description = "Sorry, the recovery phrase you have entered is incorrect!",
 }
 
 export enum SsiAgentDetails {
@@ -88,7 +113,7 @@ export enum TermsOfUse {
   Section1Content1 = "You represent and warrant that you: (a) are of legal age to form a binding contract in your jurisdiction; (b) have not previously been suspended or removed from using the Products; and (c) have full power and authority to enter into these Terms of Use and in doing so will not violate any other agreement to which you are a party. If you are registering to use the Products on behalf of a legal entity, you further represent and warrant that (i) such legal entity is duly organized and validly existing under the applicable laws of the jurisdiction of its organization, and (ii) you are duly authorized by such legal entity to act on its behalf.",
   Section1Content2 = "We reserve the right to make changes or updates to the Products at any time without notice, for any reason at Our sole discretion. We retain the authority to modify, update, limit, or revoke your access to Our Products, including any related accounts, at any time and without prior notice, for any reason at Our sole discretion.",
   Section1Content3 = "In addition, some Products may be subject to additional terms and conditions promulgated by the Foundation from time to time; your use of such Products is subject to those additional terms and conditions, which are incorporated into these Terms of Use by this reference. If there are any inconsistencies between these Terms of Use and the additional terms, the additional terms will take precedence.",
-  Section1Content4 =  "By using the Products in any way, you understand and acknowledge that the terms of the Privacy Policy apply to you.",
+  Section1Content4 = "By using the Products in any way, you understand and acknowledge that the terms of the Privacy Policy apply to you.",
   Section1Content5 = "We appreciate any feedback or suggestions you might have regarding Our Products. You can share your thoughts at https://cardanofoundation.org/en/contact-us/. When you provide feedback in any form, you give Us permission to use, share, and build upon your input as We see fit, without owing you anything in return.",
   Section1Content6 = "If you have a dispute with the Foundation or a claim to raise in relation to the Products, you agree to contact Us using the form at https://cardanofoundation.org/en/contact-us/ to attempt to resolve the issue informally first.",
   Section1Subtitle1 = "a. Eligibility:",
@@ -103,8 +128,8 @@ export enum TermsOfUse {
   Section2Content3 = "You retain ownership rights in Your Content. However, by submitting Your Content to Our Products, you hereby grant Us the non-exclusive rights and license as set out above. Other than the rights and license you grant in these Terms of Use, We acknowledge and agree that We obtain no right, title, or interest from you under these Terms of Use in any of Your Content.",
   Section2Content4 = "You represent and warrant that:",
   Section2Content5 = "You either own Your Content or have the necessary licenses, rights, consents, and permissions to grant the rights and licenses as provided herein;",
-  Section2Content6 =  "Your Content does not and will not infringe or violate any third party's intellectual property rights, proprietary rights, privacy rights, confidentiality, rights of publicity or otherwise violate these Terms of Use or applicable law; and",
-  Section2Content7 =  "You have obtained all required permissions from any individual whose personal data is part of Your Content, allowing Us to use and disclose the data as set out in these Terms of Use.",
+  Section2Content6 = "Your Content does not and will not infringe or violate any third party's intellectual property rights, proprietary rights, privacy rights, confidentiality, rights of publicity or otherwise violate these Terms of Use or applicable law; and",
+  Section2Content7 = "You have obtained all required permissions from any individual whose personal data is part of Your Content, allowing Us to use and disclose the data as set out in these Terms of Use.",
   Section2Content8 = "You are solely responsible for Your Content and the consequences of posting, publishing, or sharing it. We do not endorse any of Your Content or any opinion, recommendation, or advice expressed therein, and We expressly disclaim any and all liability in connection with Your Content.",
   Section2Subtitle1 = "a. Definition of “Your Content“:",
   Section2Subtitle2 = "b. License Grant:",
@@ -126,7 +151,7 @@ export enum TermsOfUse {
   Section3Subtitle3 = "c. Restrictions:",
   Section3Subtitle4 = "d. Trademarks:",
   Section4Title = "4. DISCLAIMERS; LIMITATION OF LIABILITY",
-  Section4Content1 ="“FOUNDATION ENTITIES“ REFERS TO CARDANO FOUNDATION ALONG WITH ITS SUBSIDIARIES, AFFILIATED FIRMS, ASSOCIATED COMPANIES, SUPPLIERS, LICENSORS, AND PARTNERS. THIS DEFINITION ALSO INCLUDES THE OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, AND REPRESENTATIVES OF THESE ENTITIES. EACH OF THE FOLLOWING PROVISIONS IS ENFORCEABLE TO THE FULLEST EXTENT ALLOWED BY THE RELEVANT LAW:",
+  Section4Content1 = "“FOUNDATION ENTITIES“ REFERS TO CARDANO FOUNDATION ALONG WITH ITS SUBSIDIARIES, AFFILIATED FIRMS, ASSOCIATED COMPANIES, SUPPLIERS, LICENSORS, AND PARTNERS. THIS DEFINITION ALSO INCLUDES THE OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, AND REPRESENTATIVES OF THESE ENTITIES. EACH OF THE FOLLOWING PROVISIONS IS ENFORCEABLE TO THE FULLEST EXTENT ALLOWED BY THE RELEVANT LAW:",
   Section4Content2 = "YOU UNDERSTAND AND ACKNOWLEDGE THAT WE ARE PROVIDING THE PRODUCTS, SERVICES, INCLUDING RELATED INFORMATION AND CONTENT, ON AN “AS IS” AND “AS AVAILABLE” BASIS, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. THIS MAY INCLUDE PRODUCTS OFFERED IN ‘ALPHA RELEASE’ or ‘BETA’ VERSIONS, INTENDED TO PROVIDE THE FOUNDATION WITH FEEDBACK ON THE QUALITY AND USABILITY OF THE PRODUCTS AND APPLICATION PROGRAMMING INTERFACES (APIs). THE FOUNDATION ENTITIES MAKE NO REPRESENTATIONS AND EXPRESSLY DISCLAIM ALL WARRANTIES ABOUT THE SUITABILITY, MERCHANTABILITY, FITNESS FOR PURPOSE, RELIABILITY, AVAILABILITY, TIMELINESS, SECURITY, TITLE AND NON-INFRINGEMENT, ACCURACY OR COMPLETENESS, DATA SYNCHED TO OR MADE AVAILABLE FROM THE PRODUCTS, PRODUCT CONTENT, OR ANY CONSULTING SERVICES WE PROVIDE FOR ANY ASSOCIATED PURPOSE.",
   Section4Content3 = "TO THE EXTENT PERMITTED BY LAW, IN NO EVENT WILL FOUNDATION ENTITIES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, PUNITIVE, OR CONSEQUENTIAL DAMAGES, OR LOSS OF PROFITS, REVENUE, DATA OR BUSINESS OPPORTUNITIES ARISING OUT OF OR RELATED TO THESE TERMS OF USE, WHETHER AN ACTION IS IN CONTRACT OR TORT AND REGARDLESS OF THE THEORY OF LIABILITY.",
   Section4Content4 = "THE FOUNDATION ENTITIES MAKE NO PROMISES WITH RESPECT TO, AND EXPRESSLY DISCLAIM ALL LIABILITY, TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOR: (i) CONTENT POSTED BY ANY THIRD-PARTY ON THE PRODUCTS, (ii) THE PRODUCT DESCRIPTIONS OR PRODUCTS, (iii) THIRD-PARTY SITES AND ANY THIRD-PARTY PRODUCT OR SERVICE LISTED ON OR ACCESSIBLE TO YOU THROUGH THE PRODUCTS, AND (iv) THE QUALITY OR CONDUCT OF ANY THIRD PARTY YOU ENCOUNTER IN CONNECTION WITH YOUR USE OF ANY PRODUCT OR WEBSITE (“Third Party Products).",

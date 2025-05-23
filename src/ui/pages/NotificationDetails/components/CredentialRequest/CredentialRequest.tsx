@@ -1,5 +1,5 @@
 import { IonSpinner } from "@ionic/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
@@ -40,13 +40,9 @@ const CredentialRequest = ({
       (linkedGroup.linkedRequest.accepted ? 1 : 0) >=
       Number(linkedGroup.threshold);
 
-  const userAID = useMemo(() => {
-    if (!credentialRequest) return null;
-
-    const identifier = identifiersData[credentialRequest.identifier];
-
-    return identifier ? identifier.groupMemberPre : null;
-  }, [credentialRequest, identifiersData]);
+  const userAID = !credentialRequest
+    ? null
+    : identifiersData[credentialRequest.identifier]?.groupMemberPre || null;
 
   const getMultisigInfo = useCallback(async () => {
     const linkedGroup =
@@ -99,12 +95,7 @@ const CredentialRequest = ({
       handleBack();
       showError("Unable to get credential request detail", e, dispatch);
     }
-  }, [
-    notificationDetails,
-    identifiersData,
-    getMultisigInfo,
-    dispatch,
-  ]);
+  }, [notificationDetails, identifiersData, getMultisigInfo, dispatch]);
 
   useOnlineStatusEffect(getCrendetialRequest);
 
@@ -133,8 +124,8 @@ const CredentialRequest = ({
   if (!credentialRequest) {
     return (
       <div
-        className="cre-request-spinner-container"
-        data-testid="cre-request-spinner-container"
+        className="credential-request-spinner-container"
+        data-testid="credential-request-spinner-container"
       >
         <IonSpinner name="circular" />
       </div>

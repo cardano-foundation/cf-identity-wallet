@@ -17,6 +17,8 @@ import { useNavigate } from "react-router";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../components/DropdownMenu";
+import { filter, FilterBar } from "../../components/FilterBar";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PopupModal } from "../../components/PopupModal";
 import { RoutePath } from "../../const/route";
@@ -25,7 +27,7 @@ import { CredentialService } from "../../services";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { fetchContactCredentials } from "../../store/reducers/connectionsSlice";
-import { formatDate } from "../../utils/dateFormatter";
+import { formatDate, formatDateTime } from "../../utils/dateFormatter";
 import { triggerToast } from "../../utils/toast";
 import {
   CredentialsTableProps,
@@ -66,6 +68,12 @@ const CredentialsTable = ({
   const [openModal, setOpenModal] = useState(false);
   const [revokeCredItem, setRevokeCredItem] =
     useState<CredentialsTableRow | null>(null);
+
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
   const tableRows: CredentialsTableRow[] = credentials.map((row) => ({
     id: row.status.i,
     name: row.schema.title,
@@ -75,6 +83,8 @@ const CredentialsTable = ({
     status: Number(row.status.s),
     data: row,
   }));
+
+  const filterRows = filter(tableRows, filterData, { date: "date" });
 
   const {
     order,
@@ -86,7 +96,7 @@ const CredentialsTable = ({
     handleChangePage,
     handleChangeRowsPerPage,
     visibleRows,
-  } = useTable(tableRows, "date");
+  } = useTable(filterRows, "date");
 
   const viewCredTemplate = (id: string) => {
     nav(`${RoutePath.Credentials}/${id}`);
@@ -130,7 +140,11 @@ const CredentialsTable = ({
   };
 
   return (
-    <>
+    <Box className="credential-table-container">
+      <FilterBar
+        onChange={setFilterData}
+        totalFound={filterRows.length}
+      />
       <Paper className="credentials-table">
         <AppTable
           order={order}
@@ -140,7 +154,7 @@ const CredentialsTable = ({
           headers={headers}
           pagination={{
             component: "div",
-            count: credentials.length,
+            count: filterRows.length,
             rowsPerPage: rowsPerPage,
             page: page,
             onPageChange: handleChangePage,
@@ -150,6 +164,16 @@ const CredentialsTable = ({
             const isItemSelected = selected.includes(row.id);
             const labelId = `enhanced-table-checkbox-${index}`;
             const isRevoked = row.status !== 0;
+
+            const attributeDescriptionObject =
+              row.data.schema.properties.a.oneOf[1].properties?.[
+                Object.keys(row.data.sad.a)[2]
+              ];
+
+            const attributeKey =
+              typeof attributeDescriptionObject === "object"
+                ? attributeDescriptionObject.description
+                : attributeDescriptionObject;
 
             return (
               <TableRow
@@ -166,15 +190,39 @@ const CredentialsTable = ({
                   id={labelId}
                   scope="row"
                 >
-                  {row.name}
+                  <Tooltip
+                    title={row.name}
+                    placement="top"
+                  >
+                    <span>{row.name}</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="left">
-                  {row.credentialId.substring(0, 4)}...
-                  {row.credentialId.slice(-4)}
+                  <Tooltip
+                    title={row.credentialId}
+                    placement="top"
+                  >
+                    <span>
+                      {row.credentialId.substring(0, 4)}...
+                      {row.credentialId.slice(-4)}
+                    </span>
+                  </Tooltip>
                 </TableCell>
-                <TableCell align="left">{row.attribute}</TableCell>
                 <TableCell align="left">
-                  {formatDate(new Date(row.date))}
+                  <Tooltip
+                    title={`${attributeKey}: ${row.attribute}`}
+                    placement="top"
+                  >
+                    <span>{row.attribute}</span>
+                  </Tooltip>
+                </TableCell>
+                <TableCell align="left">
+                  <Tooltip
+                    title={formatDateTime(new Date(row.date))}
+                    placement="top"
+                  >
+                    <span>{formatDate(new Date(row.date))}</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="left">
                   <Box className={`label ${isRevoked ? "revoked" : "issued"}`}>
@@ -254,7 +302,7 @@ const CredentialsTable = ({
           </>
         }
       />
-    </>
+    </Box>
   );
 };
 

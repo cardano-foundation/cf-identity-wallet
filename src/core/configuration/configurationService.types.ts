@@ -7,6 +7,28 @@ enum OptionalFeature {
   ConnectWallet = "CONNECT_WALLET",
 }
 
+enum CustomContent {
+  Intro = "INTRO",
+}
+
+enum IndividualOnlyMode {
+  FirstTime = "FirstTime",
+  Always = "Always",
+}
+
+interface IdentifierConfig {
+  creation?: {
+    individualOnly?: IndividualOnlyMode;
+    defaultName?: string;
+  };
+}
+
+interface AppFeaturesConfig {
+  cut: OptionalFeature[];
+  identifiers?: IdentifierConfig;
+  customContent: CustomContent[];
+}
+
 interface Configuration {
   keri: {
     keria?: KeriaConfig;
@@ -16,10 +38,8 @@ interface Configuration {
       enabled: boolean;
     };
   };
-  features: {
-    cut: OptionalFeature[];
-  };
+  features: AppFeaturesConfig;
 }
 
 export type { Configuration };
-export { OptionalFeature };
+export { OptionalFeature, CustomContent, IndividualOnlyMode };

@@ -143,7 +143,8 @@ class Agent {
         this.connectionStorage,
         this.credentialStorage,
         this.operationPendingStorage,
-        this.identifierStorage
+        this.identifierStorage,
+        this.basicStorage
       );
     }
     return this.connectionService;

@@ -855,7 +855,13 @@
           "placeholder": "You haven’t created any {{ type }} identifiers yet."
         },
         "pendingidentifiers": "Pending identifiers",
-        "multisigidentifiers": "For groups"
+        "multisigidentifiers": "For groups",
+        "welcome": {
+          "skip": "Skip",
+          "welcometext": "Welcome, {{name}}",
+          "text": "You're in the perfect spot to create your secure and private digital identity. Let's begin by adding your first identifier!",
+          "add": "Add an Identifier"
+        }
       },
       "deletepending": {
         "title": "Identifier options",
@@ -1136,7 +1142,12 @@
       "tab": {
         "title": "Align the QR code within the frame to scan",
         "permissionalert": "Enable the camera in your device settings to start scanning",
-        "cameraunavailable": "We're unable to access your camera."
+        "cameraunavailable": "We're unable to access your camera.",
+        "missingidentifier": {
+          "title": "To establish a connection you will need to create an identifier",
+          "create": "Create identifier",
+          "cancel": "Cancel"
+        }
       },
       "pastemeerkatid": "Paste Meerkat ID"
     },
@@ -1186,7 +1197,9 @@
           "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you",
           "exnipexgrantrevoke": "Your <strong>{{credential}}</strong> credential has been revoked",
           "exnipexapplyproposed": "<strong>{{initiator}}</strong> has proposed a credential for the <strong>{{connection}}’s</strong> request",
-          "sign": "<strong>Sign {{certificate}}</strong> for <strong>{{connection}}</strong>"
+          "sign": "<strong>Signing request</strong> for <strong>{{connection}}</strong>",
+          "signeventinfo": "<strong>Signing event information</strong>",
+          "connectinstructions": "<strong>Check your email for instructions on how to connect with {{connection}}</strong>"
         }
       },
       "details": {
@@ -1291,7 +1304,7 @@
           }
         },
         "sign": {
-          "title": "Sign {{certificate}}",
+          "title": "Signing request",
           "identifier": "Identifier",
           "info": "Signature information",
           "transaction": {
@@ -1300,6 +1313,22 @@
           "button": {
             "sign": "Sign",
             "dontallow": "Don't allow"
+          }
+        },
+        "connectinstructions": {
+          "title": "Instructions",
+          "subtitle": "Connect with {{connection}}",
+          "description": "You should have received an email explaining how to create a connection between your wallet and with the {{connection}} team.",
+          "steps": {
+            "one": "Open the email subject “Connect with {{connection}} via your Identity Wallet”",
+            "two": "Find the QR code within the email",
+            "three": "Open the scanner using the button at the bottom of this notification or from the wallet’s navigation tab",
+            "four": "Scan the QR code or paste the Connection ID and advance",
+            "five": "Accept the connection to continue",
+            "six": "Wait for {{connection}} to accept"
+          },
+          "button": {
+            "label": "Scan now"
           }
         }
       }
@@ -1767,8 +1796,8 @@
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
     "identifierrequested": "Identifier request pending",
-    "identifiercreated": "New identifier created successfully",
-    "identifierupdated": "Identifier successfully updated",
+    "identifiercreated": "Identifier pending",
+    "identifierupdated": "Identifier created",
     "identifierdeleted": "Identifier successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "credentialsdeleted": "Credentials deleted successfully",
@@ -1823,7 +1852,8 @@
     "proposalcredreject": "Credential proposal rejected",
     "proposalcredfailerror": "Unable to record response",
     "deleteaccounterror": "Unable to delete account",
-    "deleteaccountsuccess": "Account deleted successfully"
+    "deleteaccountsuccess": "Account deleted successfully",
+    "remotesignsuccess": "Signed successfully"
   },
   "request": {
     "sign": {

@@ -1,4 +1,5 @@
 import { IonIcon, IonText } from "@ionic/react";
+import { t } from "i18next";
 import {
   chevronDownOutline,
   chevronUpOutline,
@@ -6,10 +7,12 @@ import {
   personCircleOutline,
 } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { t } from "i18next";
+import { Agent } from "../../../../../core/agent/agent";
+import { RemoteSignRequest as RemoteSignRequestModel } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
-import { useAppSelector } from "../../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import {
   CardBlock,
   CardDetailsAttributes,
@@ -19,10 +22,15 @@ import { reservedKeysFilter } from "../../../../components/CardDetails/CardDetai
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
+import { Spinner } from "../../../../components/Spinner";
+import { SpinnerConverage } from "../../../../components/Spinner/Spinner.type";
 import { Verification } from "../../../../components/Verification";
+import { ToastMsgType } from "../../../../globals/types";
+import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./RemoteSignRequest.scss";
+import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 
 function ellipsisText(text: string) {
   return `${text.substring(0, 8)}...${text.slice(-8)}`;
@@ -31,9 +39,10 @@ function ellipsisText(text: string) {
 const RemoteSignRequest = ({
   pageId,
   activeStatus,
-  notificationDetails,
   handleBack,
 }: NotificationDetailsProps) => {
+  const notificationDetails = notificationsFix[7];
+  const dispatch = useAppDispatch();
   const connections = useAppSelector(getConnectionsCache);
   const [isSigningObject, setIsSigningObject] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
@@ -41,37 +50,64 @@ const RemoteSignRequest = ({
   const [displayExpandButton, setDisplayExpandButton] = useState(false);
   const attributeContainerRef = useRef<HTMLDivElement>(null);
   const attributeRef = useRef<HTMLDivElement>(null);
-  const requestData = notificationDetails.a.payload as Record<string, string>;
   const connectionName = connections[notificationDetails.connectionId];
+  const [requestData, setRequestData] = useState<RemoteSignRequestModel>();
+  const [loading, showLoading] = useState(true);
+
+  useEffect(() => {
+    const getSignData = async () => {
+      try {
+        showLoading(true);
+        const requestData =
+          await Agent.agent.identifiers.getRemoteSignRequestDetails(
+            notificationDetails.a.d as string
+          );
+        setRequestData(requestData);
+      } catch (e) {
+        showError("Failed to get sign data", e, dispatch);
+        handleBack();
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    getSignData();
+  }, [dispatch, handleBack, notificationDetails.a.d]);
 
   const signDetails = useMemo(() => {
     if (!requestData?.payload) {
+      setIsSigningObject(true);
       return {};
     }
 
-    let signContent;
-    try {
-      signContent = JSON.parse(requestData.payload);
-
-      signContent["id"] = ellipsisText(signContent["id"]);
-      signContent["address"] = ellipsisText(signContent["address"]);
-
+    if (typeof requestData.payload === "object") {
       setIsSigningObject(true);
-    } catch (error) {
-      signContent = requestData.payload;
     }
-    return signContent;
+    return requestData.payload;
   }, [requestData]);
 
-  const handleSign = () => {
-    handleBack();
+  const handleSign = async () => {
+    try {
+      showLoading(true);
+      await Agent.agent.identifiers.remoteSign(
+        notificationDetails.id,
+        notificationDetails.a.d as string
+      );
+      dispatch(setToastMsg(ToastMsgType.REMOTE_SIGN_SUCCESS));
+      handleBack();
+    } catch (e) {
+      showError("Failed to sign", e, dispatch);
+    } finally {
+      showLoading(false);
+    }
   };
 
   const itemProps = useCallback((key?: string) => {
     return {
-      copyButton: ["id", "address"].includes(key || ""),
+      copyButton: false,
       className: "sign-info-item",
       keyValue: `${reservedKeysFilter(key || "")}:`,
+      mask: false,
     };
   }, []);
 
@@ -137,10 +173,12 @@ const RemoteSignRequest = ({
         customClass="custom-sign-request"
         header={
           <PageHeader
-            onBack={handleBack}
-            title={`${t("tabs.notifications.details.sign.title", {
-              certificate: "CSO Certificate", // TODO: change hardcoded value to dynamic
-            })}`}
+            closeButton={true}
+            closeButtonAction={handleBack}
+            closeButtonLabel={`${i18n.t(
+              "tabs.notifications.details.buttons.close"
+            )}`}
+            title={`${i18n.t("tabs.notifications.details.sign.title")}`}
           />
         }
         footer={
@@ -173,7 +211,7 @@ const RemoteSignRequest = ({
             className="sign-identifier"
           >
             <CardDetailsItem
-              info={ellipsisText(requestData.identifier || "")}
+              info={ellipsisText(requestData?.identifier || "")}
               icon={keyOutline}
               testId="identifier-id"
               className="identifier-id"
@@ -220,6 +258,10 @@ const RemoteSignRequest = ({
           </CardBlock>
         </div>
       </ScrollablePageLayout>
+      <Spinner
+        show={loading}
+        coverage={SpinnerConverage.Screen}
+      />
       <Verification
         verifyIsOpen={verifyIsOpen}
         setVerifyIsOpen={setVerifyIsOpen}

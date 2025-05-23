@@ -1,10 +1,17 @@
+import { TapJacking } from "@capacitor-community/tap-jacking";
 import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { Device } from "@capacitor/device";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
   MiscRecordId,
 } from "../../../core/agent/agent.types";
+import {
+  AcdcStateChangedEvent,
+  ConnectionStateChangedEvent,
+} from "../../../core/agent/event.types";
+import { IdentifierService } from "../../../core/agent/services";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
 import {
@@ -33,34 +40,36 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   setIdentifiersFilters,
+  setIndividualFirstCreate,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import {
-  setCredentialViewTypeCache,
-  setIdentifierFavouriteIndex,
-  setIdentifierViewTypeCache,
-} from "../../../store/reducers/viewTypeCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   getAuthentication,
+  getForceInitApp,
   getInitializationPhase,
-  setInitializationPhase,
   getIsOnline,
   getRecoveryCompleteNoInterruption,
   setAuthentication,
   setCameraDirection,
   setCurrentOperation,
+  setInitializationPhase,
   setIsOnline,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
+  setShowWelcomePage,
   setToastMsg,
   showNoWitnessAlert,
-  getForceInitApp,
 } from "../../../store/reducers/stateCache";
 import {
   IncomingRequestType,
   InitializationPhase,
 } from "../../../store/reducers/stateCache/stateCache.types";
+import {
+  setCredentialViewTypeCache,
+  setIdentifierFavouriteIndex,
+  setIdentifierViewTypeCache,
+} from "../../../store/reducers/viewTypeCache";
 import {
   getConnectedWallet,
   setConnectedWallet,
@@ -68,27 +77,20 @@ import {
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
+import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
+import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
 import { showError } from "../../utils/error";
 import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
-import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
+  groupCreatedHandler,
   identifierAddedHandler,
   notificationStateChanged,
   operationCompleteHandler,
   operationFailureHandler,
-  groupCreatedHandler,
 } from "./coreEventListeners";
-import {
-  AcdcStateChangedEvent,
-  ConnectionStateChangedEvent,
-} from "../../../core/agent/event.types";
-import { IdentifiersFilters } from "../../pages/Identifiers/Identifiers.types";
-import { CredentialsFilters } from "../../pages/Credentials/Credentials.types";
-import { IdentifierService } from "../../../core/agent/services";
-import { TapJacking } from "@capacitor-community/tap-jacking";
-import { Device } from "@capacitor/device";
+import { useActivityTimer } from "./hooks/useActivityTimer";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -492,11 +494,31 @@ const AppWrapper = (props: { children: ReactNode }) => {
         );
       }
 
+      const firstInstall = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_FIRST_INSTALL
+      );
+
+      if (firstInstall) {
+        dispatch(setShowWelcomePage(firstInstall.content.value as boolean));
+      }
+
       const passwordSkipped = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_PASSWORD_SKIPPED
       );
 
       const loginAttempt = await Agent.agent.auth.getLoginAttempts();
+
+      const individualFirstCreate = await Agent.agent.basicStorage.findById(
+        MiscRecordId.INDIVIDUAL_FIRST_CREATE
+      );
+
+      if (individualFirstCreate) {
+        dispatch(
+          setIndividualFirstCreate(
+            individualFirstCreate.content.value as boolean
+          )
+        );
+      }
 
       dispatch(
         setAuthentication({

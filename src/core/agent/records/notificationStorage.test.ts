@@ -1,5 +1,9 @@
-import { Query, StorageService } from "../../storage/storage.types";
-import { NotificationRoute } from "../agent.types";
+import {
+  Query,
+  StorageMessage,
+  StorageService,
+} from "../../storage/storage.types";
+import { NotificationRoute } from "../services/keriaNotificationService.types";
 import {
   NotificationRecord,
   NotificationRecordStorageProps,
@@ -70,6 +74,21 @@ describe("Notification Storage", () => {
     storageService.findById.mockResolvedValue(notificationRecordA);
     const result = await notificationStorage.findById(notificationRecordA.id);
     expect(result).toEqual(notificationRecordA);
+  });
+
+  test("Can find expected notification by ID", async () => {
+    storageService.findById.mockResolvedValue(notificationRecordA);
+    const result = await notificationStorage.findExpectedById(
+      notificationRecordA.id
+    );
+    expect(result).toEqual(notificationRecordA);
+  });
+
+  test("Should throw for missing expected notification", async () => {
+    storageService.findById.mockResolvedValue(null);
+    await expect(
+      notificationStorage.findExpectedById(notificationRecordA.id)
+    ).rejects.toThrowError(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG);
   });
 
   test("Should find all notification records by query", async () => {

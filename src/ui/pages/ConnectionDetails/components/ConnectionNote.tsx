@@ -3,6 +3,7 @@ import { trashOutline } from "ionicons/icons";
 import { IonButton, IonIcon, IonInput, IonTextarea } from "@ionic/react";
 import { i18n } from "../../../../i18n";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
+import { useHideKeyboard } from "../../../hooks/useHideKeyboard";
 
 const ConnectionNote = ({
   data,
@@ -12,6 +13,7 @@ const ConnectionNote = ({
   const { title, message, id } = data;
   const [newTitle, setNewTitle] = useState(title);
   const [newMessage, setNewMessage] = useState(message);
+  const { hideKeyboard } = useHideKeyboard();
   const TITLE_MAX_LENGTH = 64;
   const MESSAGE_MAX_LENGTH = 576;
 
@@ -42,6 +44,7 @@ const ConnectionNote = ({
             onIonInput={(e) => setNewTitle(`${e.target.value ?? ""}`)}
             onIonBlur={submitNoteChange}
             value={newTitle}
+            onKeyDown={hideKeyboard}
           />
         </div>
         <div className="connection-details-info-block-data">

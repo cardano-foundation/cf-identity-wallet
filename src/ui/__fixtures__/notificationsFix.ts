@@ -1,4 +1,4 @@
-import { KeriaNotification } from "../../core/agent/agent.types";
+import { KeriaNotification } from "../../core/agent/services/keriaNotificationService.types";
 
 const now = new Date(Date.now());
 const notificationsFix: KeriaNotification[] = [
@@ -101,12 +101,12 @@ const notificationsFix: KeriaNotification[] = [
       payload: {
         identifier: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
         payload: JSON.stringify({
-          action: "Sign CSO Certificate",
-          actionText: "Sign CSO Certificate",
+          action: "Sign custom Certificate",
+          actionText: "Sign custom Certificate",
           id: "2658fb7d-cd12-48c3-bc95-23e73616b79f",
           address:
             "stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek",
-          event: "Sign CSO Certificate",
+          event: "Sign custom Certificate",
           network: "PREPROD",
           slot: "40262407",
         }),

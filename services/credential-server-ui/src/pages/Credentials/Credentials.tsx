@@ -9,21 +9,22 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { AppTable, useTable } from "../../components/AppTable";
 import { AppTableHeader } from "../../components/AppTable/AppTable.types";
 import { DropdownMenu } from "../../components/DropdownMenu";
+import { filter, FilterBar } from "../../components/FilterBar";
+import { FilterData } from "../../components/FilterBar/FilterBar.types";
+import { IssueCredentialModal } from "../../components/IssueCredentialModal";
 import { RoleIndex } from "../../components/NavBar/constants/roles";
 import { PageHeader } from "../../components/PageHeader";
-import { CredentialTypes, SchemaAID } from "../../const";
 import { RoutePath } from "../../const/route";
 import { i18n } from "../../i18n";
 import { useAppSelector } from "../../store/hooks";
 import { getRoleView } from "../../store/reducers";
 import { formatDate } from "../../utils/dateFormatter";
 import { CredentialTemplateRow } from "./Credential.types";
-import { useEffect, useState } from "react";
-import { IssueCredentialModal } from "../../components/IssueCredentialModal";
 
 const headers: AppTableHeader<CredentialTemplateRow>[] = [
   {
@@ -38,9 +39,10 @@ const headers: AppTableHeader<CredentialTemplateRow>[] = [
 
 export const Credentials = () => {
   const roleViewIndex = useAppSelector(getRoleView) as RoleIndex;
-  const tableRows: CredentialTemplateRow[] = CredentialTypes.map((row) => ({
-    id: SchemaAID[row],
-    name: row,
+  const schemaCaches = useAppSelector((state) => state.schemasCache.schemas);
+  const tableRows: CredentialTemplateRow[] = schemaCaches.map((row) => ({
+    id: row.$id,
+    name: row.title,
     date: new Date().getTime(),
   }));
   const nav = useNavigate();
@@ -51,6 +53,14 @@ export const Credentials = () => {
   useEffect(() => {
     if (roleViewIndex !== RoleIndex.ISSUER) nav(RoutePath.Connections);
   }, [nav, roleViewIndex]);
+
+  const [filterData, setFilterData] = useState<FilterData>({
+    startDate: null,
+    endDate: null,
+    keyword: "",
+  });
+
+  const visibleData = filter(tableRows, filterData, { date: "date" });
 
   const {
     order,
@@ -75,11 +85,15 @@ export const Credentials = () => {
       >
         <PageHeader
           title={`${i18n.t("pages.credentials.title", {
-            number: CredentialTypes.length,
+            number: schemaCaches.length,
           })}`}
           sx={{
             margin: "1.5rem 0",
           }}
+        />
+        <FilterBar
+          onChange={setFilterData}
+          totalFound={visibleData.length}
         />
         <Paper
           sx={{
@@ -166,7 +180,7 @@ export const Credentials = () => {
             headers={headers}
             pagination={{
               component: "div",
-              count: CredentialTypes.length,
+              count: visibleData.length,
               rowsPerPage: rowsPerPage,
               page: page,
               onPageChange: handleChangePage,

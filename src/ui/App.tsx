@@ -10,8 +10,8 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { StrictMode, useEffect, useState } from "react";
-import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { ExitApp } from "@jimcase/capacitor-exit-app";
+import { SafeArea } from "capacitor-plugin-safe-area";
 import { Routes } from "../routes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -42,7 +42,6 @@ import {
   WEBVIEW_MIN_VERSION,
 } from "./globals/constants";
 import { InitializationPhase } from "../store/reducers/stateCache/stateCache.types";
-import { getCssVariableValue } from "./utils/styles";
 import { LoadingType } from "./pages/LoadingPage/LoadingPage.types";
 import { initializeFreeRASP, ThreatCheck } from "../security/freerasp";
 import SystemThreatAlert from "./pages/SystemThreatAlert/SystemThreatAlert";
@@ -134,6 +133,7 @@ const App = () => {
         OperationType.MULTI_SIG_RECEIVER_SCAN,
         OperationType.SCAN_SSI_BOOT_URL,
         OperationType.SCAN_SSI_CONNECT_URL,
+        OperationType.SCAN_REMOTE_CONNECTION,
       ].includes(currentOperation)
     );
   }, [currentOperation]);
@@ -150,8 +150,13 @@ const App = () => {
       }
 
       if (platforms.includes("android")) {
-        EdgeToEdge.setBackgroundColor({
-          color: getCssVariableValue("--ion-color-neutral-200"),
+        SafeArea.getSafeAreaInsets().then((insets) => {
+          Object.entries(insets.insets).forEach(([key, value]) => {
+            document.body.style.setProperty(
+              `--ion-safe-area-${key}`,
+              `${value}px`
+            );
+          });
         });
       }
 
@@ -194,40 +199,40 @@ const App = () => {
 
   const renderContentByInitPhase = (initPhase: InitializationPhase) => {
     switch (initPhase) {
-    case InitializationPhase.PHASE_ZERO:
-      return <LoadingPage />;
-    case InitializationPhase.PHASE_ONE:
-      return (
-        <>
-          <LoadingPage type={LoadingType.Splash} />
-          <LockPage />
-        </>
-      );
-    case InitializationPhase.PHASE_TWO:
-      return (
-        <>
-          <IonReactRouter>
-            {showScan ? (
-              <FullPageScanner
-                showScan={showScan}
-                setShowScan={setShowScan}
-              />
-            ) : (
-              <div
-                className="app-spinner-container"
-                data-testid="app-spinner-container"
-              >
-                <IonSpinner name="circular" />
-              </div>
-            )}
-            <div className={showScan ? "ion-hide" : ""}>
-              <Routes />
-            </div>
+      case InitializationPhase.PHASE_ZERO:
+        return <LoadingPage />;
+      case InitializationPhase.PHASE_ONE:
+        return (
+          <>
+            <LoadingPage type={LoadingType.Splash} />
             <LockPage />
-          </IonReactRouter>
-          <AppOffline />
-        </>
-      );
+          </>
+        );
+      case InitializationPhase.PHASE_TWO:
+        return (
+          <>
+            <IonReactRouter>
+              {showScan ? (
+                <FullPageScanner
+                  showScan={showScan}
+                  setShowScan={setShowScan}
+                />
+              ) : (
+                <div
+                  className="app-spinner-container"
+                  data-testid="app-spinner-container"
+                >
+                  <IonSpinner name="circular" />
+                </div>
+              )}
+              <div className={showScan ? "ion-hide" : ""}>
+                <Routes />
+              </div>
+              <LockPage />
+            </IonReactRouter>
+            <AppOffline />
+          </>
+        );
     }
   };
 

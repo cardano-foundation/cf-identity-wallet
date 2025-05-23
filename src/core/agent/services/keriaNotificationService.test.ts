@@ -1,11 +1,10 @@
+import { ready } from "signify-ts";
 import { Agent } from "../agent";
+import { ConnectionStatus, MiscRecordId, CreationStatus } from "../agent.types";
 import {
-  ConnectionStatus,
   ExchangeRoute,
-  MiscRecordId,
   NotificationRoute,
-  CreationStatus,
-} from "../agent.types";
+} from "./keriaNotificationService.types";
 import {
   BasicRecord,
   IdentifierStorage,
@@ -37,10 +36,13 @@ import {
   notificationIpexAgreeProp,
   groupIdentifierMetadataRecord,
   hab,
+  humanReadableExn,
+  humanReadableNotification,
+  humanReadableLinkedExn,
+  remoteSignReqNotification,
 } from "../../__fixtures__/agent/keriaNotificationFixtures";
 import { ConnectionHistoryType } from "./connectionService.types";
 import { StorageMessage } from "../../storage/storage.types";
-import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import {
   getMemberIdentifierResponse,
   getMultisigIdentifierResponse,
@@ -49,6 +51,7 @@ import {
 import { IdentifierService } from "./identifierService";
 import { CredentialService } from "./credentialService";
 import { MultiSigRoute } from "./multiSig.types";
+import { remoteSignReqExn } from "../../__fixtures__/agent/identifierFixtures";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -75,19 +78,6 @@ const operationsGetMock = jest.fn().mockImplementation((id: string) => {
     },
   };
 });
-
-jest.mock("signify-ts", () => ({
-  Salter: jest.fn().mockImplementation(() => {
-    return { qb64: "" };
-  }),
-  Ilks: {
-    iss: "iss",
-    rev: "rev",
-  },
-  Tier: {
-    low: "low",
-  },
-}));
 
 const contactsUpdateMock = jest.fn();
 const contactGetMock = jest.fn();
@@ -237,7 +227,7 @@ const credentialService = jest.mocked({
   markAcdc: jest.fn(),
 });
 
-const connectionsService = jest.mocked({
+const connectionService = jest.mocked({
   resolveOobi: jest.fn(),
   getConnectionById: jest.fn().mockResolvedValue({
     serviceEndpoints: [
@@ -245,6 +235,7 @@ const connectionsService = jest.mocked({
     ],
     historyItems: [],
   }),
+  shareIdentifier: jest.fn(),
 });
 const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
@@ -257,7 +248,7 @@ const keriaNotificationService = new KeriaNotificationService(
   multiSigs as any,
   ipexCommunications as any,
   credentialService as any,
-  connectionsService as any,
+  connectionService as any,
   Agent.agent.getKeriaOnlineStatus,
   Agent.agent.markAgentStatus,
   Agent.agent.connect
@@ -279,6 +270,10 @@ eventEmitter.on = jest.fn();
 const DATETIME = new Date();
 
 describe("Signify notification service of agent", () => {
+  beforeAll(async () => {
+    await ready();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
     markNotificationMock.mockResolvedValue({ status: "done" });
@@ -1122,7 +1117,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(grantExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValue({
+    connectionService.getConnectionById.mockResolvedValue({
       id: grantExn.exn.i,
       historyItems: [
         { id: grantExn.exn.d, type: ConnectionHistoryType.CREDENTIAL_ISSUANCE },
@@ -1140,7 +1135,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: exchange.exn.e.exn.p,
     });
-    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
       grantExn.exn.i,
       true
     );
@@ -1165,7 +1160,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(grantExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValue({
+    connectionService.getConnectionById.mockResolvedValue({
       id: grantExn.exn.i,
       historyItems: [],
     });
@@ -1182,7 +1177,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: exchange.exn.e.exn.p,
     });
-    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
       grantExn.exn.i,
       true
     );
@@ -1224,7 +1219,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: exchange.exn.e.exn.p,
     });
-    expect(connectionsService.getConnectionById).not.toHaveBeenCalled();
+    expect(connectionService.getConnectionById).not.toHaveBeenCalled();
     expect(markNotificationMock).not.toHaveBeenCalled();
     expect(notificationStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1268,7 +1263,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(applyExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValue({
+    connectionService.getConnectionById.mockResolvedValue({
       id: applyExn.exn.i,
       historyItems: [
         {
@@ -1290,7 +1285,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
-    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
       applyExn.exn.i,
       true
     );
@@ -1315,7 +1310,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(applyExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValue({
+    connectionService.getConnectionById.mockResolvedValue({
       id: applyExn.exn.i,
       historyItems: [],
     });
@@ -1333,7 +1328,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
-    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
       applyExn.exn.i,
       true
     );
@@ -1381,7 +1376,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: applyForPresentingExnMessage.exn.d,
     });
-    expect(connectionsService.getConnectionById).not.toHaveBeenCalled();
+    expect(connectionService.getConnectionById).not.toHaveBeenCalled();
     expect(markNotificationMock).not.toHaveBeenCalled();
     expect(notificationStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1425,7 +1420,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(agreeExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValue({
+    connectionService.getConnectionById.mockResolvedValue({
       id: exchange.exn.i,
       historyItems: [
         {
@@ -1447,7 +1442,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
-    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
       agreeExn.exn.i,
       true
     );
@@ -1472,7 +1467,7 @@ describe("Signify notification service of agent", () => {
     exchangesGetMock.mockResolvedValueOnce(agreeExn);
     notificationStorage.findAllByQuery.mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValue({
+    connectionService.getConnectionById.mockResolvedValue({
       id: agreeExn.exn.i,
       historyItems: [],
     });
@@ -1490,7 +1485,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
-    expect(connectionsService.getConnectionById).toHaveBeenCalledWith(
+    expect(connectionService.getConnectionById).toHaveBeenCalledWith(
       agreeExn.exn.i,
       true
     );
@@ -1534,7 +1529,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
       exnSaid: agreeForPresentingExnMessage.exn.d,
     });
-    expect(connectionsService.getConnectionById).not.toHaveBeenCalled();
+    expect(connectionService.getConnectionById).not.toHaveBeenCalled();
     expect(markNotificationMock).not.toHaveBeenCalled();
     expect(notificationStorage.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1565,7 +1560,7 @@ describe("Signify notification service of agent", () => {
     );
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     credentialStorage.getCredentialMetadata.mockResolvedValue(null);
-    connectionsService.getConnectionById.mockResolvedValueOnce({
+    connectionService.getConnectionById.mockResolvedValueOnce({
       id: multisigExnAdmitForIssuance.exn.i,
       historyItems: [],
       serviceEndpoints: [
@@ -2190,7 +2185,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValueOnce(applyForPresentingExnMessage);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValueOnce({
+    connectionService.getConnectionById.mockResolvedValueOnce({
       id: multisigExnOfferForPresenting.exn.i,
       historyItems: [],
       serviceEndpoints: [
@@ -2267,7 +2262,7 @@ describe("Group IPEX presentation", () => {
       .mockResolvedValueOnce(agreeForPresentingExnMessage);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
-    connectionsService.getConnectionById.mockResolvedValueOnce({
+    connectionService.getConnectionById.mockResolvedValueOnce({
       id: multisigExnGrant.exn.i,
       historyItems: [],
       serviceEndpoints: [
@@ -2378,6 +2373,321 @@ describe("Group IPEX presentation", () => {
       "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli"
     );
     expect(ipexCommunications.grantAcdcFromAgree).not.toBeCalled();
+  });
+});
+
+describe("Human readable messages", () => {
+  beforeEach(() => {
+    identifiersGetMock.mockResolvedValueOnce(hab);
+  });
+
+  test("Can receive a human readable exn message", async () => {
+    exchangesGetMock.mockResolvedValue(humanReadableExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: humanReadableExn.exn.i,
+      a: humanReadableNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      humanReadableNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: humanReadableNotification.a,
+        connectionId: humanReadableExn.exn.i,
+        read: false,
+        receivingPre: humanReadableExn.exn.rp,
+        route: NotificationRoute.HumanReadableMessage,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: humanReadableNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Can receive a human readable exn message with a link", async () => {
+    exchangesGetMock.mockResolvedValue(humanReadableLinkedExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: humanReadableLinkedExn.exn.i,
+      a: humanReadableNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      humanReadableNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: humanReadableNotification.a,
+        connectionId: humanReadableLinkedExn.exn.i,
+        read: false,
+        receivingPre: humanReadableLinkedExn.exn.rp,
+        route: NotificationRoute.HumanReadableMessage,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: humanReadableNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Ignores malformed human readable messages", async () => {
+    const variants = [
+      {
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        c: ["First paragraph", "Second paragraph"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: "Not an array",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: [],
+      },
+    ];
+
+    for (const variant of variants) {
+      identifiersGetMock.mockResolvedValueOnce(hab);
+      exchangesGetMock.mockResolvedValueOnce({
+        exn: {
+          ...humanReadableExn.exn,
+          a: variant,
+        },
+        pathed: {},
+      });
+      identifierStorage.getIdentifierMetadata = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+        );
+
+      await keriaNotificationService.processNotification(
+        humanReadableNotification
+      );
+
+      expect(notificationStorage.save).not.toBeCalled();
+      expect(eventEmitter.emit).not.toBeCalled();
+      expect(markNotificationMock).toBeCalledWith(humanReadableNotification.i);
+    }
+  });
+
+  test("Ignores malformed human readable messages where the link is malformed", async () => {
+    const variants = [
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: "View certificate",
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: ["View certificate"],
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: {},
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: { t: "View certificate" },
+      },
+      {
+        m: "Certificate created",
+        t: "Certificate created",
+        st: "Everything is now fully signed",
+        c: ["First paragraph", "Second paragraph"],
+        l: { a: "http://test.com" },
+      },
+    ];
+
+    for (const variant of variants) {
+      identifiersGetMock.mockResolvedValueOnce(hab);
+      exchangesGetMock.mockResolvedValueOnce({
+        exn: {
+          ...humanReadableLinkedExn.exn,
+          a: variant,
+        },
+        pathed: {},
+      });
+      identifierStorage.getIdentifierMetadata = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+        );
+
+      await keriaNotificationService.processNotification(
+        humanReadableNotification
+      );
+
+      expect(notificationStorage.save).not.toBeCalled();
+      expect(eventEmitter.emit).not.toBeCalled();
+      expect(markNotificationMock).toBeCalledWith(humanReadableNotification.i);
+    }
+  });
+});
+
+describe("Remote signing", () => {
+  beforeEach(() => {
+    identifiersGetMock.mockResolvedValueOnce(hab);
+  });
+
+  test("Can receive a remote signing request", async () => {
+    exchangesGetMock.mockResolvedValue(remoteSignReqExn);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    const date = new Date();
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "id",
+      createdAt: date,
+      linkedRequest: { accepted: false },
+      read: false,
+      connectionId: remoteSignReqExn.exn.i,
+      a: remoteSignReqNotification.a,
+    });
+
+    await keriaNotificationService.processNotification(
+      remoteSignReqNotification
+    );
+
+    expect(notificationStorage.save).toBeCalledWith(
+      expect.objectContaining({
+        a: remoteSignReqNotification.a,
+        connectionId: remoteSignReqExn.exn.i,
+        read: false,
+        receivingPre: remoteSignReqExn.exn.rp,
+        route: NotificationRoute.RemoteSignReq,
+      })
+    );
+    expect(eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.NotificationAdded,
+      payload: {
+        note: expect.objectContaining({
+          id: "id",
+          createdAt: date.toISOString(),
+          a: remoteSignReqNotification.a,
+          read: false,
+        }),
+      },
+    });
+    expect(markNotificationMock).not.toBeCalled();
+  });
+
+  test("Ignores un-saidified signing requests", async () => {
+    exchangesGetMock.mockResolvedValue({
+      exn: {
+        ...remoteSignReqExn.exn,
+        a: { t: 2 },
+      },
+      pathed: {},
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+
+    await keriaNotificationService.processNotification(
+      remoteSignReqNotification
+    );
+
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(markNotificationMock).toBeCalledWith(remoteSignReqNotification.i);
+  });
+
+  test("Ignores mis-saidified signing requests", async () => {
+    exchangesGetMock.mockResolvedValue({
+      exn: {
+        ...remoteSignReqExn.exn,
+        a: { t: 2, d: "BF2rZTW79z4IXocYRQnjjsOuvFUQv-ptCf8Yltd7Pfsp" },
+      },
+      pathed: {},
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+
+    await keriaNotificationService.processNotification(
+      remoteSignReqNotification
+    );
+
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(eventEmitter.emit).not.toBeCalled();
+    expect(markNotificationMock).toBeCalledWith(remoteSignReqNotification.i);
   });
 });
 
@@ -2851,6 +3161,7 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
 
+    expect(connectionService.shareIdentifier).not.toBeCalled();
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
       creationStatus: CreationStatus.COMPLETE,
@@ -2862,6 +3173,7 @@ describe("Long running operation tracker", () => {
       alias: "CF Credential Issuance",
       createdAt: operationMock.response.dt,
       oobi: "http://oobi.com/",
+      sharedIdentifier: "",
     });
     expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
       type: EventTypes.ConnectionStateChanged,
@@ -2871,6 +3183,129 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, {
+      type: EventTypes.OperationComplete,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledWith(
+      "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
+    );
+  });
+
+  test("Should handle long operations with type oobi and share specified identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    const connectionMock = {
+      id: "id",
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date(),
+      alias: "CF Credential Issuance",
+      oobi: "http://oobi.com/",
+      sharedIdentifier: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9",
+    };
+    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    contactGetMock.mockResolvedValueOnce(null);
+
+    await keriaNotificationService.processOperation(operationRecord);
+
+    expect(connectionService.shareIdentifier).toBeCalledWith(
+      connectionMock.id,
+      "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9"
+    );
+    expect(connectionStorage.update).toBeCalledWith({
+      id: connectionMock.id,
+      creationStatus: CreationStatus.COMPLETE,
+      createdAt: operationMock.response.dt,
+      alias: connectionMock.alias,
+      oobi: "http://oobi.com/",
+      sharedIdentifier: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9",
+    });
+    expect(contactsUpdateMock).toBeCalledWith(connectionMock.id, {
+      alias: "CF Credential Issuance",
+      createdAt: operationMock.response.dt,
+      oobi: "http://oobi.com/",
+      sharedIdentifier: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_p9",
+    });
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(1, {
+      type: EventTypes.ConnectionStateChanged,
+      payload: {
+        connectionId: "id",
+        status: ConnectionStatus.CONFIRMED,
+      },
+    });
+    expect(eventEmitter.emit).toHaveBeenNthCalledWith(2, {
+      type: EventTypes.OperationComplete,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
+    expect(operationPendingStorage.deleteById).toBeCalledWith(
+      "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA"
+    );
+  });
+
+  test("Should not update connection if it already exists", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+        oobi: "http://keria:3902/oobi/ELDjcyhsjppizfKQ_AvYeF4RuF1u0O6ya6OYUM6zLYH-/agent/EI4-oLA5XcrZepuB5mDrl3279EjbFtiDrz4im5Q4Ht0O?name=CF%20Credential%20Issuance",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    operationsGetMock.mockResolvedValue(operationMock);
+    const connectionMock = {
+      id: "id",
+      creationStatus: CreationStatus.PENDING,
+      createdAt: new Date(),
+      alias: "CF Credential Issuance",
+    };
+    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    contactGetMock.mockResolvedValueOnce({
+      alias: "alias",
+      oobi: "oobi",
+      id: "id",
+      createdAt: new Date(),
+    });
+
+    await keriaNotificationService.processOperation(operationRecord);
+
+    expect(connectionStorage.update).toHaveBeenCalledWith(connectionMock);
+    expect(contactsUpdateMock).toBeCalledTimes(0);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,

@@ -1,4 +1,5 @@
 import { RectReturn } from "@wdio/protocols/build/types";
+import { log } from "../helpers/logger.js";
 
 /**
  * To make a Gesture methods more robust for multiple devices and also
@@ -158,8 +159,8 @@ class Gestures {
     const x = width / 2;
     const y = (height * safePercentage) / 100;
     await driver
-      .action('pointer')
-      .move(Math.round(x),Math.round(y))
+      .action("pointer")
+      .move(Math.round(x), Math.round(y))
       .down()
       .pause(10)
       .up()

@@ -35,11 +35,6 @@ jest.mock("capacitor-freerasp", () => ({
 const mockInitDatabase = jest.fn();
 const getAvailableWitnessesMock = jest.fn();
 const setBackgroundColorMock = jest.fn();
-jest.mock("@capawesome/capacitor-android-edge-to-edge-support", () => ({
-  EdgeToEdge: {
-    setBackgroundColor: () => setBackgroundColorMock(),
-  },
-}));
 
 jest.mock("../core/agent/agent", () => ({
   Agent: {
@@ -130,6 +125,10 @@ jest.mock("../core/configuration/configurationService", () => ({
           enabled: true,
         },
       },
+      features: {
+        cut: [],
+        customContent: [],
+      },
     },
   },
 }));
@@ -148,6 +147,7 @@ jest.mock("@capacitor/status-bar", () => ({
   ...jest.requireActual("@capacitor/status-bar"),
   StatusBar: {
     setStyle: (params: StyleOptions) => setStyleMock(params),
+    setBackgroundColor: () => setBackgroundColorMock(),
   },
 }));
 
@@ -297,21 +297,6 @@ describe("App", () => {
     await waitFor(() => {
       expect(queryByTestId("mobile-preview-header")).not.toBeInTheDocument();
       expect(queryByTestId("offline-page")).toBe(null);
-    });
-  });
-
-  test("Set background color of status bar on android", async () => {
-    getPlatformsMock.mockImplementation(() => ["android"]);
-    isNativeMock.mockImplementation(() => true);
-
-    render(
-      <Provider store={store}>
-        <App />
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(setBackgroundColorMock).toBeCalled();
     });
   });
 

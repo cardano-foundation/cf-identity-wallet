@@ -1,4 +1,7 @@
-import { ExchangeRoute, NotificationRoute } from "../../agent/agent.types";
+import {
+  ExchangeRoute,
+  NotificationRoute,
+} from "../../agent/services/keriaNotificationService.types";
 import { CredentialStatus } from "../../agent/services/credentialService.types";
 
 const grantForIssuanceExnMessage = {

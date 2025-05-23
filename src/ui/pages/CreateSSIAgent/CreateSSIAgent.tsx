@@ -6,19 +6,17 @@ import {
   refreshOutline,
   scanOutline,
 } from "ionicons/icons";
-import {
-  MouseEvent as ReactMouseEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { MouseEvent as ReactMouseEvent, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 import { ConfigurationService } from "../../../core/configuration";
+import { IndividualOnlyMode } from "../../../core/configuration/configurationService.types";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { setIndividualFirstCreate } from "../../../store/reducers/identifiersCache";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import {
   clearSSIAgent,
@@ -30,6 +28,7 @@ import {
   getStateCache,
   setCurrentOperation,
   setRecoveryCompleteNoInterruption,
+  setShowWelcomePage,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { CustomInput } from "../../components/CustomInput";
@@ -87,6 +86,9 @@ const CreateSSIAgent = () => {
   const [showSwitchModeModal, setSwitchModeModal] = useState(false);
 
   const isRecoveryMode = stateCache.authentication.recoveryWalletProgress;
+  const isIndividualOnlyFirstCreateMode =
+    ConfigurationService.env.features.identifiers?.creation?.individualOnly ===
+    IndividualOnlyMode.FirstTime;
 
   useEffect(() => {
     if (!ssiAgent.bootUrl && !ssiAgent.connectUrl) {
@@ -107,15 +109,11 @@ const CreateSSIAgent = () => {
     setBootUrlInputTouched(true);
   };
 
-  const validBootUrl = useMemo(() => {
-    return (
-      isRecoveryMode || (ssiAgent.bootUrl && isValidHttpUrl(ssiAgent.bootUrl))
-    );
-  }, [isRecoveryMode, ssiAgent.bootUrl]);
+  const validBootUrl =
+    isRecoveryMode || (ssiAgent.bootUrl && isValidHttpUrl(ssiAgent.bootUrl));
 
-  const validConnectUrl = useMemo(() => {
-    return ssiAgent.connectUrl && isValidHttpUrl(ssiAgent.connectUrl);
-  }, [ssiAgent]);
+  const validConnectUrl =
+    ssiAgent.connectUrl && isValidHttpUrl(ssiAgent.connectUrl);
 
   const displayBootUrlError =
     !isRecoveryMode &&
@@ -168,6 +166,28 @@ const CreateSSIAgent = () => {
     );
   };
 
+  const updateFirstInstallValue = async (value: boolean) => {
+    try {
+      dispatch(setShowWelcomePage(value));
+      if (value) {
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.APP_FIRST_INSTALL,
+            content: {
+              value: value,
+            },
+          })
+        );
+      } else {
+        await Agent.agent.basicStorage.deleteById(
+          MiscRecordId.APP_FIRST_INSTALL
+        );
+      }
+    } catch (e) {
+      showError("Unable to set first app launch", e);
+    }
+  };
+
   const handleRecoveryWallet = async () => {
     setLoading(true);
     try {
@@ -179,12 +199,18 @@ const CreateSSIAgent = () => {
         throw new Error(SEED_PHRASE_EMPTY);
       }
 
+      const connectUrl = removeLastSlash(ssiAgent.connectUrl.trim());
+
+      dispatch(setConnectUrl(connectUrl));
+
       await Agent.agent.recoverKeriaAgent(
         seedPhraseCache.seedPhrase.split(" "),
-        ssiAgent.connectUrl
+        connectUrl
       );
 
       dispatch(setRecoveryCompleteNoInterruption());
+
+      await updateFirstInstallValue(false);
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
         store: { stateCache },
@@ -227,10 +253,31 @@ const CreateSSIAgent = () => {
         throw new Error(SSI_URLS_EMPTY);
       }
 
+      const bootUrl = removeLastSlash(ssiAgent.bootUrl.trim());
+      const connectUrl = removeLastSlash(ssiAgent.connectUrl.trim());
+
+      dispatch(setBootUrl(bootUrl));
+      dispatch(setConnectUrl(connectUrl));
+
       await Agent.agent.bootAndConnect({
-        bootUrl: ssiAgent.bootUrl,
-        url: ssiAgent.connectUrl,
+        bootUrl: bootUrl,
+        url: connectUrl,
       });
+
+      await updateFirstInstallValue(true);
+
+      if (isIndividualOnlyFirstCreateMode) {
+        await Agent.agent.basicStorage
+          .createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.INDIVIDUAL_FIRST_CREATE,
+              content: { value: true },
+            })
+          )
+          .then(() =>
+            dispatch(setIndividualFirstCreate(isIndividualOnlyFirstCreateMode))
+          );
+      }
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
         store: { stateCache },
@@ -316,7 +363,7 @@ const CreateSSIAgent = () => {
     isInvalidConnectUrl ||
     unknownError;
 
-  const connectionUrlError = useMemo(() => {
+  const connectionUrlError = (() => {
     if (unknownError) {
       return "ssiagent.error.unknownissue";
     }
@@ -333,13 +380,7 @@ const CreateSSIAgent = () => {
     }
 
     return "ssiagent.error.invalidconnecturl";
-  }, [
-    displayBootUrlError,
-    hasMismatchError,
-    isInvalidConnectUrl,
-    isRecoveryMode,
-    unknownError,
-  ]);
+  })();
 
   return (
     <>

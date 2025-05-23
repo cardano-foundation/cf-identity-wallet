@@ -15,6 +15,17 @@
         white-space: nowrap;
         max-width: calc(100vw / 6);
       }
+
+      .check-all:not(.Mui-checked) {
+        .custom-icon {
+          background-color: var(--color-neutral-100);
+          border: 2.5px solid var(--color-neutral-500);
+          width: 1.3rem;
+          height: 1.3rem;
+          border-radius: 0.2rem;
+          margin: 0.2rem;
+        }
+      }
     }
 
     .MuiTableCell-head:last-of-type {
