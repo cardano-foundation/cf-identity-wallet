@@ -55,6 +55,7 @@ const LockPageContainer = () => {
   const dispatch = useAppDispatch();
   const [passcode, setPasscode] = useState("");
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [restartAlertIsOpen, setRestartAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const [showMaxAttemptsAlert, setShowMaxAttemptsAlert] = useState(false);
 
@@ -88,13 +89,15 @@ const LockPageContainer = () => {
   } = useLoginAttempt();
 
   useExitAppWithDoubleTap(
-    alertIsOpen || openRecoveryAuth,
+    alertIsOpen || restartAlertIsOpen || openRecoveryAuth,
     BackEventPriorityType.LockPage
   );
 
   const headerText = i18n.t("lockpage.alert.text.verify");
   const confirmButtonText = i18n.t("lockpage.alert.button.verify");
   const cancelButtonText = i18n.t("lockpage.alert.button.cancel");
+  const restartHeaderText = i18n.t("lockpage.alert.text.restart");
+  const restartConfirmButtonText = i18n.t("lockpage.alert.button.restart");
 
   const handleClearState = () => {
     setAlertIsOpen(false);
@@ -263,27 +266,41 @@ const LockPageContainer = () => {
   }, [handleAppStateChange]);
 
   const handleRecoveryButtonClick = async () => {
-    if (authentication.seedPhraseIsSet) {
+    // A wallet with a bran can always go through the recovery phrase, the verify
+    // step being pending says nothing about the phrase existing
+    const walletExists = await SecureStorage.keyExists(
+      KeyStoreKeys.SIGNIFY_BRAN
+    );
+
+    if (walletExists) {
       setAlertIsOpen(true);
       return;
     }
+
+    setRestartAlertIsOpen(true);
+  };
+
+  const handleRestartOnboarding = async () => {
     try {
       await Promise.all([
         SecureStorage.delete(KeyStoreKeys.APP_PASSCODE),
         SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD),
       ]);
+      // APP_ALREADY_INIT stays on purpose, without it the next launch reads the
+      // app as a fresh install and wipes the whole keystore
       await Promise.allSettled([
         Agent.agent.basicStorage.deleteById(MiscRecordId.OP_PASS_HINT),
         Agent.agent.basicStorage.deleteById(MiscRecordId.APP_PASSWORD_SKIPPED),
-        Agent.agent.basicStorage.deleteById(MiscRecordId.APP_ALREADY_INIT),
         Agent.agent.basicStorage.deleteById(MiscRecordId.APP_BIOMETRY),
       ]);
+      await resetLoginAttempt();
       dispatch(
         setAuthentication({
           ...authentication,
           passcodeIsSet: false,
           passwordIsSet: false,
           passwordIsSkipped: false,
+          ssiAgentIsSet: false,
           loggedIn: false,
           finishSetupBiometrics: false,
         })
@@ -351,6 +368,16 @@ const LockPageContainer = () => {
         className="force-on-top"
       />
       <Alert
+        isOpen={restartAlertIsOpen}
+        setIsOpen={setRestartAlertIsOpen}
+        dataTestId="alert-restart"
+        headerText={restartHeaderText}
+        confirmButtonText={restartConfirmButtonText}
+        cancelButtonText={cancelButtonText}
+        actionConfirm={handleRestartOnboarding}
+        className="force-on-top"
+      />
+      <Alert
         isOpen={showMaxAttemptsAlert}
         setIsOpen={setShowMaxAttemptsAlert}
         dataTestId="alert-max-attempts"
@@ -374,7 +401,11 @@ const LockPageContainer = () => {
       />
       <ForgotAuthInfo
         isOpen={openRecoveryAuth}
-        onClose={() => setOpenRecoveryAuth(false)}
+        onClose={(passcodeChanged) => {
+          setOpenRecoveryAuth(false);
+          // Otherwise an earlier lockout would still block the new passcode
+          if (passcodeChanged) void resetLoginAttempt();
+        }}
         type={ForgotType.Passcode}
         overrideAlertZIndex
       />

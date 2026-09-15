@@ -51,10 +51,12 @@ function makeRealStore(
 }
 
 const deleteSecureStorageMock = jest.fn();
+const keyExistsMock = jest.fn();
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
     delete: (params: unknown) => deleteSecureStorageMock(params),
+    keyExists: (params: unknown) => keyExistsMock(params),
   },
 }));
 
@@ -164,6 +166,7 @@ describe("Lock Page", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    keyExistsMock.mockResolvedValue(true);
     handleBiometricAuthMock = jest.fn(() => Promise.resolve(true));
 
     jest.doMock("@ionic/react", () => {
@@ -261,7 +264,7 @@ describe("Lock Page", () => {
     ).toBeVisible();
   });
 
-  test("Forgot passcode before verify seedphrase", async () => {
+  test("Offers the recovery phrase even when it was never verified", async () => {
     const customInitialState = {
       ...initialState,
       stateCache: {
@@ -273,7 +276,7 @@ describe("Lock Page", () => {
       },
     };
 
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <Provider store={storeMocked(customInitialState)}>
         <MemoryRouter initialEntries={[RoutePath.ROOT]}>
           <IonReactRouter>
@@ -289,6 +292,51 @@ describe("Lock Page", () => {
 
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
 
+    expect(
+      await findByText(EN_TRANSLATIONS.lockpage.alert.text.verify)
+    ).toBeVisible();
+
+    expect(deleteSecureStorageMock).not.toBeCalled();
+    expect(deleteById).not.toBeCalled();
+  });
+
+  test("Asks before starting over when there is no wallet", async () => {
+    keyExistsMock.mockResolvedValue(false);
+
+    const customInitialState = {
+      ...initialState,
+      stateCache: {
+        ...initialState.stateCache,
+        authentication: {
+          ...initialState.stateCache.authentication,
+          seedPhraseIsSet: false,
+        },
+      },
+    };
+
+    const { getByText, findByText } = render(
+      <Provider store={storeMocked(customInitialState)}>
+        <MemoryRouter initialEntries={[RoutePath.ROOT]}>
+          <IonReactRouter>
+            <LockPage />
+            <Route
+              path={RoutePath.SET_PASSCODE}
+              component={SetPasscode}
+            />
+          </IonReactRouter>
+        </MemoryRouter>
+      </Provider>
+    );
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
+
+    expect(
+      await findByText(EN_TRANSLATIONS.lockpage.alert.text.restart)
+    ).toBeVisible();
+    expect(deleteSecureStorageMock).not.toBeCalled();
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.alert.button.restart));
+
     await waitFor(() => {
       expect(deleteSecureStorageMock).toBeCalledWith(KeyStoreKeys.APP_PASSCODE);
       expect(deleteSecureStorageMock).toBeCalledWith(
@@ -296,9 +344,37 @@ describe("Lock Page", () => {
       );
       expect(deleteById).toBeCalledWith(MiscRecordId.OP_PASS_HINT);
       expect(deleteById).toBeCalledWith(MiscRecordId.APP_PASSWORD_SKIPPED);
-      expect(deleteById).toBeCalledWith(MiscRecordId.APP_ALREADY_INIT);
       expect(deleteById).toBeCalledWith(MiscRecordId.APP_BIOMETRY);
     });
+  });
+
+  test("Keeps the already init record so the next launch does not wipe the keystore", async () => {
+    keyExistsMock.mockResolvedValue(false);
+
+    const { getByText, findByText } = render(
+      <Provider store={storeMocked(initialState)}>
+        <MemoryRouter initialEntries={[RoutePath.ROOT]}>
+          <IonReactRouter>
+            <LockPage />
+            <Route
+              path={RoutePath.SET_PASSCODE}
+              component={SetPasscode}
+            />
+          </IonReactRouter>
+        </MemoryRouter>
+      </Provider>
+    );
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
+    fireEvent.click(
+      await findByText(EN_TRANSLATIONS.lockpage.alert.button.restart)
+    );
+
+    await waitFor(() => {
+      expect(deleteById).toBeCalledWith(MiscRecordId.OP_PASS_HINT);
+    });
+
+    expect(deleteById).not.toBeCalledWith(MiscRecordId.APP_ALREADY_INIT);
   });
 
   test("Verifies passcode and hides page upon correct input", async () => {
