@@ -66,6 +66,7 @@ const VerifySeedPhrase = ({
         description={`${i18n.t(seedPhraseDescription)}`}
         ref={ref}
         testId={recoverySeedId}
+        matchStoredPhrase
         onVerifySuccess={handleAfterVerifySeedPhrase}
         overrideAlertZIndex={overrideAlertZIndex}
       />

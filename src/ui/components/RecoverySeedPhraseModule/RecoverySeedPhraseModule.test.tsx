@@ -10,11 +10,13 @@ import { RecoverySeedPhraseModule } from "./RecoverySeedPhraseModule";
 const SEED_PHRASE_LENGTH = 18;
 
 const verifySeedPhraseFnc = jest.fn();
+const getMnemonicFnc = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       isMnemonicValid: () => verifySeedPhraseFnc(),
+      getMnemonic: () => getMnemonicFnc(),
     },
   },
 }));
@@ -249,5 +251,122 @@ describe("Recovery Seed Phrase", () => {
         })
       );
     });
+  });
+  const fillSeedPhrase = async (
+    getByText: (text: string) => HTMLElement,
+    getByTestId: (id: string) => HTMLElement
+  ) => {
+    for (let i = 0; i < SEED_PHRASE_LENGTH; i++) {
+      act(() => {
+        const input = getByTestId(`word-input-${i}`);
+        fireEvent.focus(input);
+        fireEvent.change(input, {
+          target: { value: "a" },
+        });
+      });
+
+      await waitFor(() => {
+        expect(getByText("abandon")).toBeVisible();
+      });
+
+      act(() => {
+        fireEvent.click(getByText("abandon"));
+      });
+
+      if (i < SEED_PHRASE_LENGTH - 1) {
+        await waitFor(() => {
+          expect(getByTestId(`word-input-${i}`)).toBeVisible();
+        });
+      }
+    }
+
+    act(() => {
+      fireEvent.click(
+        getByText(TRANSLATIONS.verifyrecoveryseedphrase.button.continue)
+      );
+    });
+  };
+
+  test("Rejects a phrase that is valid but not the one of this wallet", async () => {
+    verifySeedPhraseFnc.mockImplementation(() => Promise.resolve(true));
+    getMnemonicFnc.mockImplementation(() =>
+      Promise.resolve(new Array(SEED_PHRASE_LENGTH).fill("ability").join(" "))
+    );
+
+    const onVerifySuccess = jest.fn();
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RecoverySeedPhraseModule
+          title={TRANSLATIONS.verifyrecoveryseedphrase.title}
+          description={TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top}
+          testId="verify-recovery-seed-phrase"
+          matchStoredPhrase
+          onVerifySuccess={onVerifySuccess}
+        />
+      </Provider>
+    );
+
+    await fillSeedPhrase(getByText, getByTestId);
+
+    await waitFor(() => {
+      expect(
+        getByText(TRANSLATIONS.verifyrecoveryseedphrase.alert.fail.text)
+      ).toBeVisible();
+    });
+
+    expect(onVerifySuccess).not.toBeCalled();
+  });
+
+  test("Accepts the phrase of this wallet", async () => {
+    verifySeedPhraseFnc.mockImplementation(() => Promise.resolve(true));
+    getMnemonicFnc.mockImplementation(() =>
+      Promise.resolve(new Array(SEED_PHRASE_LENGTH).fill("abandon").join(" "))
+    );
+
+    const onVerifySuccess = jest.fn();
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RecoverySeedPhraseModule
+          title={TRANSLATIONS.verifyrecoveryseedphrase.title}
+          description={TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top}
+          testId="verify-recovery-seed-phrase"
+          matchStoredPhrase
+          onVerifySuccess={onVerifySuccess}
+        />
+      </Provider>
+    );
+
+    await fillSeedPhrase(getByText, getByTestId);
+
+    await waitFor(() => {
+      expect(onVerifySuccess).toBeCalled();
+    });
+  });
+
+  test("Does not look at the stored phrase when recovering a wallet", async () => {
+    verifySeedPhraseFnc.mockImplementation(() => Promise.resolve(true));
+
+    const onVerifySuccess = jest.fn();
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RecoverySeedPhraseModule
+          title={TRANSLATIONS.verifyrecoveryseedphrase.title}
+          description={TRANSLATIONS.verifyrecoveryseedphrase.paragraph.top}
+          testId="verify-recovery-seed-phrase"
+          onVerifySuccess={onVerifySuccess}
+        />
+      </Provider>
+    );
+
+    await fillSeedPhrase(getByText, getByTestId);
+
+    await waitFor(() => {
+      expect(onVerifySuccess).toBeCalled();
+    });
+
+    expect(getMnemonicFnc).not.toBeCalled();
   });
 });

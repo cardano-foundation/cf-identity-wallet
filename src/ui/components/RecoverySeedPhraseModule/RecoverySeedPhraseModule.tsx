@@ -25,6 +25,9 @@ const SUGGEST_SEED_PHRASE_LENGTH = 4;
 const SELECT_WORD_LIST = wordlists.english;
 const INVALID_SEED_PHRASE = "Invalid seed phrase";
 
+const normalisePhrase = (phrase: string) =>
+  phrase.trim().toLowerCase().split(/\s+/).join(" ");
+
 const RecoverySeedPhraseModule = forwardRef<
   RecoverySeedPhraseModuleRef,
   RecoverySeedPhraseModuleProps
@@ -36,6 +39,7 @@ const RecoverySeedPhraseModule = forwardRef<
       testId,
       overrideAlertZIndex,
       displaySwitchModeButton,
+      matchStoredPhrase,
       onVerifySuccess,
     },
     ref
@@ -173,6 +177,16 @@ const RecoverySeedPhraseModule = forwardRef<
 
         if (!verifyResult) {
           throw new Error(INVALID_SEED_PHRASE);
+        }
+
+        if (matchStoredPhrase) {
+          const storedPhrase = await Agent.agent.getMnemonic();
+
+          if (
+            normalisePhrase(storedPhrase) !== normalisePhrase(seedPhraseText)
+          ) {
+            throw new Error(INVALID_SEED_PHRASE);
+          }
         }
 
         dispatch(

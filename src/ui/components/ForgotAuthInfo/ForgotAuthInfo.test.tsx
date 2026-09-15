@@ -26,6 +26,9 @@ jest.mock("../../utils/passcodeChecker", () => ({
 }));
 
 const verifySeedPhraseFnc = jest.fn();
+const getMnemonicFnc = jest
+  .fn()
+  .mockResolvedValue(new Array(18).fill("abandon").join(" "));
 
 const createOrUpdateBasicStore = jest.fn((arg: unknown) =>
   Promise.resolve(arg)
@@ -36,6 +39,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       isMnemonicValid: () => verifySeedPhraseFnc(),
+      getMnemonic: () => getMnemonicFnc(),
       isSeedPhraseVerified: jest.fn().mockResolvedValue(true),
       basicStorage: {
         findById: jest.fn(),
